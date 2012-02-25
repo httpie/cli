@@ -16,7 +16,7 @@ HTTPie is a CLI frontend for [python-requests](http://python-requests.org).
 
 The default request `Content-Type` in `application/json` and data fields are automatically serialized as a JSON `Object`, so this:
 
-    httpie PATCH name=John api.example.com/person/1 X-API-Token:123
+    httpie PATCH api.example.com/person/1 X-API-Token:123 name=John
 
 Will issue the following request:
 
