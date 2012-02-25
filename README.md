@@ -1,6 +1,6 @@
 ## HTTPie: cURL for humans
 
-HTTPie is a CLI frontend for [python-requests](python-requests.org).
+HTTPie is a CLI frontend for [python-requests](http://python-requests.org).
 
 
 ### Installation
