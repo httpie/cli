@@ -12,11 +12,11 @@ HTTPie is a CLI frontend for [python-requests](python-requests.org).
 
     httpie [flags] METHOD [header:value data-field-name=value]* URL
 
-The default request `Content-Type` in `application/json` and data fields are automatically serialized as a JSON `Object`:
+The default request `Content-Type` in `application/json` and data fields are automatically serialized as a JSON `Object`, so this:
 
-    httpie PATCH  name=John api.example.com/person/1
+    httpie PATCH X-API-Token:123 name=John api.example.com/person/1
 
-That will issue the following request:
+Will issue the following request:
 
     PATCH /person/1 HTTP/1.1
     User-Agent: HTTPie/0.1
@@ -24,13 +24,14 @@ That will issue the following request:
     Content-Type: application/json; charset=utf-8
 
     {"name": "John"}
-
+    
+You can use the `--form` flag to set `Content-Type` and serialize the data as `application/x-www-form-urlencoded`.
 
 The data to be sent can also be passed via `stdin`:
 
     httpie PUT X-API-Token:123 api.example.com/person/1 < person.json
 
-The flags mirror many of the arguments you would use with `requests.request`. See `httpie -h` for more details.
+Most of the flags mirror the arguments you would use with `requests.request`. See `httpie -h` for more details.
 
 
 ### Screenshot
