@@ -1,7 +1,7 @@
 from setuptools import setup
 
 
-setup(name='httpie',version='0.1',
+setup(name='httpie',version='0.1.1',
     description='cURL for humans',
     url='https://github.com/jkbr/httpie',
     author='Jakub Roztocil',

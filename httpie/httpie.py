@@ -10,7 +10,7 @@ from .pretty import prettify
 
 
 __author__ = 'Jakub Roztocil'
-__version__ = '0.1'
+__version__ = '0.1.1'
 
 
 DEFAULT_UA = 'HTTPie/%s' % __version__
