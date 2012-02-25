@@ -2,6 +2,8 @@
 
 HTTPie is a CLI frontend for [python-requests](http://python-requests.org).
 
+![httpie](https://github.com/jkbr/httpie/raw/master/httpie.png)
+
 
 ### Installation
 
@@ -33,7 +35,3 @@ The data to be sent can also be passed via `stdin`:
 
 Most of the flags mirror the arguments you would use with `requests.request`. See `httpie -h` for more details.
 
-
-### Screenshot
-
-![httpie](https://github.com/jkbr/httpie/raw/master/httpie.png)
