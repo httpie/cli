@@ -42,7 +42,7 @@ class KeyValueType(object):
 
 
 parser = argparse.ArgumentParser(
-    description='HTTPie - URL for humans.')
+    description='HTTPie - cURL for humans.')
 
 
 # Content type.
@@ -90,8 +90,6 @@ parser.add_argument('url', metavar='URL',
 parser.add_argument('items', metavar='item', nargs='*',
                     type=KeyValueType([SEP_COMMON, SEP_DATA]),
                     help='HTTP header (key:value) or data field (key=value)')
-
-
 
 
 def main():
