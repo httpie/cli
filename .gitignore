@@ -1,0 +1,4 @@
+dist
+httpie.egg-info
+build
+*.pyc
