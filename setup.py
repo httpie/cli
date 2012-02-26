@@ -1,11 +1,12 @@
 from setuptools import setup
+from httpie import httpie
 
 
-setup(name='httpie',version='0.1.1',
-    description='cURL for humans',
+setup(name='httpie',version=httpie.__version__,
+    description=httpie.__doc__.strip(),
     url='https://github.com/jkbr/httpie',
-    author='Jakub Roztocil',
-    license='BSD',
+    author=httpie.__author__,
+    license=httpie.__licence__,
     packages=['httpie'],
     entry_points={'console_scripts': ['httpie = httpie.httpie:main']},
     install_requires=['requests>=0.10.4', 'Pygments>=1.4'])

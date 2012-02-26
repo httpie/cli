@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+"""
+HTTPie - cURL for humans.
+
+"""
 import os
 import sys
 import json
@@ -10,7 +14,8 @@ from . import pretty
 
 
 __author__ = 'Jakub Roztocil'
-__version__ = '0.1.1'
+__version__ = '0.1.2'
+__licence__ = 'BSD'
 
 
 DEFAULT_UA = 'HTTPie/%s' % __version__
@@ -42,7 +47,7 @@ class KeyValueType(object):
 
 
 parser = argparse.ArgumentParser(
-    description='HTTPie - cURL for humans.')
+    description=__doc__.strip())
 
 
 # Content type.
