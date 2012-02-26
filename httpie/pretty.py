@@ -28,22 +28,26 @@ highlight = partial(pygments.highlight,
 highlight_http = partial(highlight, lexer=HTTPLexer())
 
 
-def prettify(content_type, status_line, headers, body):
-    content_type = content_type.split(';')[0]
+def prettify_http(headers):
+    return highlight_http(headers)[:-1]
 
+
+def prettify_body(content, content_type):
+    content_type = content_type.split(';')[0]
     if 'json' in content_type:
         content_type = TYPE_JS
         try:
             # Indent JSON
-            body = json.dumps(json.loads(body), sort_keys=True, indent=4)
+            content = json.dumps(json.loads(content),
+                                sort_keys=True, indent=4)
         except Exception:
             pass
-
     try:
-        body = highlight(code=body, lexer=get_lexer_for_mimetype(content_type))
+        lexer = get_lexer_for_mimetype(content_type)
+        content = highlight(code=content, lexer=lexer)
+        if content:
+            content = content[:-1]
     except Exception:
         pass
+    return content
 
-    return (highlight_http(code=status_line).strip(),
-            highlight_http(code=headers),
-            body)

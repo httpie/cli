@@ -6,7 +6,7 @@ import argparse
 from collections import namedtuple
 import requests
 from requests.structures import CaseInsensitiveDict
-from .pretty import prettify
+from . import pretty
 
 
 __author__ = 'Jakub Roztocil'
@@ -46,17 +46,26 @@ parser = argparse.ArgumentParser(
 
 
 # Content type.
-group = parser.add_mutually_exclusive_group(required=False)
-group.add_argument('--json', '-j', action='store_true',
+group_type = parser.add_mutually_exclusive_group(required=False)
+group_type.add_argument('--json', '-j', action='store_true',
                    help='Serialize data items as a JSON object and set'
                         ' Content-Type to application/json, if not specified.')
-group.add_argument('--form', '-f', action='store_true',
+group_type.add_argument('--form', '-f', action='store_true',
                    help='Serialize data items as form values and set'
                         ' Content-Type to application/x-www-form-urlencoded,'
                         ' if not specified.')
 
+# Output options.
 parser.add_argument('--ugly', '-u', help='Do not prettify the response.',
                      dest='prettify', action='store_false', default=True)
+group_only = parser.add_mutually_exclusive_group(required=False)
+group_only.add_argument('--headers', '-t', dest='print_body',
+                        action='store_false', default=True,
+                        help='Print only the response headers.')
+group_only.add_argument('--body', '-b', dest='print_headers',
+                        action='store_false', default=True,
+                        help='Print only the response body.')
+
 
 # ``requests.request`` keyword arguments.
 parser.add_argument('--auth', help='username:password',
@@ -136,7 +145,7 @@ def main():
 
     # Display the response.
     original = response.raw._original_response
-    response_bits = (
+    status_line, headers, body = (
         u'HTTP/{version} {status} {reason}'.format(
             version='.'.join(str(original.version)),
             status=original.status, reason=original.reason,
@@ -146,10 +155,20 @@ def main():
     )
 
     if args.prettify and sys.stdout.isatty():
-        response_bits = prettify(response.headers['content-type'], *response_bits)
+        if args.print_headers:
+            status_line = pretty.prettify_http(status_line)
+            headers = pretty.prettify_http(headers)
+        if args.print_body:
+            body = pretty.prettify_body(body,
+                response.headers['content-type'])
 
-    print u'\n'.join(response_bits)
-
+    if args.print_headers:
+        print status_line
+        print headers
+    if args.print_body:
+        if args.print_headers:
+            print
+        print body
 
 if __name__ == '__main__':
     main()
