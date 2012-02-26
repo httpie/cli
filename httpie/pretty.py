@@ -5,6 +5,7 @@ from pygments.lexers import get_lexer_for_mimetype
 from pygments.formatters.terminal256 import Terminal256Formatter
 from pygments.lexer import RegexLexer, bygroups
 from pygments import token
+from . import solarized
 
 
 TYPE_JS = 'application/javascript'
@@ -24,7 +25,8 @@ class HTTPLexer(RegexLexer):
 
 
 highlight = partial(pygments.highlight,
-                    formatter=Terminal256Formatter(style='native'))
+                    formatter=Terminal256Formatter(
+                        style=solarized.SolarizedStyle))
 highlight_http = partial(highlight, lexer=HTTPLexer())
 
 

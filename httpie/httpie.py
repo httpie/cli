@@ -56,6 +56,9 @@ group_type.add_argument('--form', '-f', action='store_true',
                         ' if not specified.')
 
 # Output options.
+parser.add_argument('--traceback', action='store_true', default=False,
+                  help='Print a full exception traceback should one'
+                       ' be raised by `requests`.')
 parser.add_argument('--ugly', '-u', help='Do not prettify the response.',
                      dest='prettify', action='store_false', default=True)
 group_only = parser.add_mutually_exclusive_group(required=False)
@@ -131,17 +134,26 @@ def main():
         headers['Content-Type'] = TYPE_FORM
 
     # Fire the request.
-    response = requests.request(
-        method=args.method.lower(),
-        url=args.url if '://' in args.url else 'http://%s' % args.url,
-        headers=headers,
-        data=data,
-        verify=True if args.verify == 'yes' else args.verify,
-        timeout=args.timeout,
-        auth=(args.auth.key, args.auth.value) if args.auth else None,
-        proxies={proxy.key: proxy.value for proxy in args.proxy},
-        files={os.path.basename(f.name): f for f in args.file}
-    )
+    try:
+        response = requests.request(
+            method=args.method.lower(),
+            url=args.url if '://' in args.url else 'http://%s' % args.url,
+            headers=headers,
+            data=data,
+            verify=True if args.verify == 'yes' else args.verify,
+            timeout=args.timeout,
+            auth=(args.auth.key, args.auth.value) if args.auth else None,
+            proxies={proxy.key: proxy.value for proxy in args.proxy},
+            files={os.path.basename(f.name): f for f in args.file}
+        )
+    except (KeyboardInterrupt, SystemExit) as e:
+        sys.stderr.write('\n')
+        sys.exit(1)
+    except Exception as e:
+        if args.traceback:
+            raise
+        sys.stderr.write(str(e.message) + '\n')
+        sys.exit(1)
 
     # Display the response.
     original = response.raw._original_response
