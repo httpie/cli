@@ -156,7 +156,7 @@ def main():
 
     if args.prettify and sys.stdout.isatty():
         if args.print_headers:
-            status_line = pretty.prettify_http(status_line)
+            status_line = pretty.prettify_http(status_line).strip()
             headers = pretty.prettify_http(headers)
         if args.print_body:
             body = pretty.prettify_body(body,
@@ -166,8 +166,6 @@ def main():
         print status_line
         print headers
     if args.print_body:
-        if args.print_headers:
-            print
         print body
 
 if __name__ == '__main__':

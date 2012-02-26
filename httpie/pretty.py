@@ -29,7 +29,7 @@ highlight_http = partial(highlight, lexer=HTTPLexer())
 
 
 def prettify_http(headers):
-    return highlight_http(headers)[:-1]
+    return highlight_http(headers)
 
 
 def prettify_body(content, content_type):
