@@ -8,5 +8,5 @@ setup(name='httpie',version=httpie.__version__,
     author=httpie.__author__,
     license=httpie.__licence__,
     packages=['httpie'],
-    entry_points={'console_scripts': ['httpie = httpie.httpie:main']},
+    entry_points={'console_scripts': ['http = httpie.httpie:main']},
     install_requires=['requests>=0.10.4', 'Pygments>=1.4'])

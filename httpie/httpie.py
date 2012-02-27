@@ -14,7 +14,7 @@ from . import pretty
 
 
 __author__ = 'Jakub Roztocil'
-__version__ = '0.1.2'
+__version__ = '0.1.3'
 __licence__ = 'BSD'
 
 
@@ -76,7 +76,7 @@ group_only.add_argument('--body', '-b', dest='print_headers',
 
 
 # ``requests.request`` keyword arguments.
-parser.add_argument('--auth', help='username:password',
+parser.add_argument('--auth', '-a', help='username:password',
                     type=KeyValueType(SEP_COMMON))
 parser.add_argument('--verify',
                     help='Set to "yes" to check the host\'s SSL certificate.'
