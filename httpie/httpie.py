@@ -27,10 +27,9 @@ class KeyValueType(object):
         self.separators = separators
 
     def __call__(self, string):
-        found = dict(
-            (string.find(sep), sep) for sep in self.separators
-                if string.find(sep) != -1 
-        )
+        found = dict((string.find(sep), sep)
+                     for sep in self.separators
+                     if string.find(sep) != -1)
 
         if not found:
             raise argparse.ArgumentTypeError(
@@ -155,14 +154,15 @@ def main():
         sys.exit(1)
 
     # Display the response.
+    encoding = response.encoding or 'ISO-8859-1'
     original = response.raw._original_response
     status_line, headers, body = (
         u'HTTP/{version} {status} {reason}'.format(
             version='.'.join(str(original.version)),
             status=original.status, reason=original.reason,
         ),
-        str(original.msg).decode('utf-8'),
-        response.content.decode('utf-8') if response.content else u''
+        str(original.msg).decode(encoding),
+        response.content.decode(encoding) if response.content else u''
     )
 
     if args.prettify and sys.stdout.isatty():
