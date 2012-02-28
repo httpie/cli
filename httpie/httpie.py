@@ -34,10 +34,10 @@ class KeyValueType(object):
         self.separators = separators
 
     def __call__(self, string):
-        found = dict([
+        found = dict(
             (string.find(sep), sep) for sep in self.separators
                 if string.find(sep) != -1 
-        ])
+        )
 
         if not found:
             raise argparse.ArgumentTypeError(
@@ -149,8 +149,8 @@ def main():
             verify=True if args.verify == 'yes' else args.verify,
             timeout=args.timeout,
             auth=(args.auth.key, args.auth.value) if args.auth else None,
-            proxies=dict([(p.key, p.value) for p in args.proxy]),
-            files=dict([(os.path.basename(f.name), f) for f in args.file]),
+            proxies=dict((p.key, p.value) for p in args.proxy),
+            files=dict((os.path.basename(f.name), f) for f in args.file),
         )
     except (KeyboardInterrupt, SystemExit) as e:
         sys.stderr.write('\n')
