@@ -66,6 +66,8 @@ group_only.add_argument('--headers', '-t', dest='print_body',
 group_only.add_argument('--body', '-b', dest='print_headers',
                         action='store_false', default=True,
                         help='Print only the response body.')
+parser.add_argument('--style', '-s', dest='style', default='solarized',
+                    help='Output coloring style')
 
 
 # ``requests.request`` keyword arguments.
@@ -167,11 +169,11 @@ def main():
 
     if args.prettify and sys.stdout.isatty():
         if args.print_headers:
-            status_line = pretty.prettify_http(status_line).strip()
-            headers = pretty.prettify_http(headers)
+            status_line = pretty.prettify_http(status_line, args.style).strip()
+            headers = pretty.prettify_http(headers, args.style)
         if args.print_body:
             body = pretty.prettify_body(body,
-                response.headers['content-type'])
+                response.headers['content-type'], args.style)
 
     if args.print_headers:
         print status_line

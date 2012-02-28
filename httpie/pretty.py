@@ -5,6 +5,7 @@ from pygments.lexers import get_lexer_for_mimetype
 from pygments.formatters.terminal256 import Terminal256Formatter
 from pygments.lexer import RegexLexer, bygroups
 from pygments import token
+from pygments.styles import get_style_by_name
 from . import solarized
 
 
@@ -24,17 +25,21 @@ class HTTPLexer(RegexLexer):
     ]}
 
 
-highlight = partial(pygments.highlight,
-                    formatter=Terminal256Formatter(
-                        style=solarized.SolarizedStyle))
-highlight_http = partial(highlight, lexer=HTTPLexer())
+def _get_highlighter(style_name='solarized'):
+    try:
+        style = get_style_by_name(style_name)
+    except pygments.util.ClassNotFound:
+        style = solarized.SolarizedStyle
+    return partial(pygments.highlight,
+                   formatter=Terminal256Formatter(style=style))
 
 
-def prettify_http(headers):
-    return highlight_http(headers)
+def prettify_http(headers, style_name='solarized'):
+    highlight = partial(_get_highlighter(style_name), lexer=HTTPLexer())
+    return highlight(headers)
 
 
-def prettify_body(content, content_type):
+def prettify_body(content, content_type, style_name='solarized'):
     content_type = content_type.split(';')[0]
     if 'json' in content_type:
         content_type = TYPE_JS
@@ -46,10 +51,10 @@ def prettify_body(content, content_type):
             pass
     try:
         lexer = get_lexer_for_mimetype(content_type)
+        highlight = _get_highlighter(style_name)
         content = highlight(code=content, lexer=lexer)
         if content:
             content = content[:-1]
     except Exception:
         pass
     return content
-
