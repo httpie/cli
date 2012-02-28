@@ -1,8 +1,4 @@
 #!/usr/bin/env python
-"""
-HTTPie - cURL for humans.
-
-"""
 import os
 import sys
 import json
@@ -11,11 +7,6 @@ from collections import namedtuple
 import requests
 from requests.structures import CaseInsensitiveDict
 from . import pretty
-
-
-__author__ = 'Jakub Roztocil'
-__version__ = '0.1.3'
-__licence__ = 'BSD'
 
 
 DEFAULT_UA = 'HTTPie/%s' % __version__

@@ -1,5 +1,5 @@
 from setuptools import setup
-from httpie import httpie
+import httpie
 
 
 setup(name='httpie',version=httpie.__version__,
