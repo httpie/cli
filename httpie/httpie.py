@@ -7,9 +7,11 @@ from collections import namedtuple
 import requests
 from requests.structures import CaseInsensitiveDict
 from . import pretty
+from . import __version__ as version
+from . import __doc__ as doc
 
 
-DEFAULT_UA = 'HTTPie/%s' % __version__
+DEFAULT_UA = 'HTTPie/%s' % version
 SEP_COMMON = ':'
 SEP_DATA = '='
 TYPE_FORM = 'application/x-www-form-urlencoded; charset=utf-8'
@@ -38,7 +40,7 @@ class KeyValueType(object):
 
 
 parser = argparse.ArgumentParser(
-    description=__doc__.strip())
+    description=doc.strip())
 
 
 # Content type.
