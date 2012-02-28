@@ -6,7 +6,7 @@ import argparse
 from collections import namedtuple
 import requests
 from requests.structures import CaseInsensitiveDict
-from . import pretty, __version__
+from . import pretty, __version__, __doc__
 
 
 DEFAULT_UA = 'HTTPie/%s' % __version__
