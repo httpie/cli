@@ -163,22 +163,13 @@ def main():
 
     # Display the response.
     original = response.raw._original_response
-    
-    try:
-        decode_from = [
-            bit.split('=')[1] for bit in response.headers['content-type'].split(';')
-                if 'charset' in bit
-        ][0]
-    except IndexError:
-        decode_from = 'utf-8'
-    
     status_line, headers, body = (
         u'HTTP/{version} {status} {reason}'.format(
             version='.'.join(str(original.version)),
             status=original.status, reason=original.reason,
         ),
-        str(original.msg).decode(decode_from),
-        response.content.decode(decode_from) if response.content else u''
+        str(original.msg).decode('utf-8'),
+        response.content.decode('utf-8') if response.content else u''
     )
 
     if args.prettify and sys.stdout.isatty():
