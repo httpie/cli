@@ -1,8 +1,10 @@
 import json
 from functools import partial
 import pygments
+import os
 from pygments.lexers import get_lexer_for_mimetype
 from pygments.formatters.terminal256 import Terminal256Formatter
+from pygments.formatters.terminal import TerminalFormatter
 from pygments.lexer import RegexLexer, bygroups
 from pygments import token
 from . import solarized
@@ -23,9 +25,14 @@ class HTTPLexer(RegexLexer):
             (r'(.*?:)(.+)',  bygroups(token.Name, token.String))
     ]}
 
+if os.environ['TERM'] == 'xterm-256color':
+    formatter = Terminal256Formatter
+else:
+    formatter = TerminalFormatter
+
 
 highlight = partial(pygments.highlight,
-                    formatter=Terminal256Formatter(
+                    formatter=formatter(
                         style=solarized.SolarizedStyle))
 highlight_http = partial(highlight, lexer=HTTPLexer())
 
