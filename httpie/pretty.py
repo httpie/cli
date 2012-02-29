@@ -35,8 +35,8 @@ def _get_highlighter(style_name='solarized'):
 
 
 def prettify_http(headers, style_name='solarized'):
-    highlight = partial(_get_highlighter(style_name), lexer=HTTPLexer())
-    return highlight(headers)
+    highlight = _get_highlighter(style_name)
+    return highlight(headers, lexer=HTTPLexer())
 
 
 def prettify_body(content, content_type, style_name='solarized'):
