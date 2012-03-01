@@ -125,6 +125,11 @@ def main():
     # JSON/Form content type.
     if args.json or (not args.form and data):
         if sys.stdin.isatty():
+            for key, value in data.items():
+                try:
+                    data[key] = json.loads(value)
+                except ValueError:
+                    pass
             data = json.dumps(data)
         if 'Content-Type' not in headers and (data or args.json):
             headers['Content-Type'] = TYPE_JSON
