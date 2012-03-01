@@ -42,6 +42,9 @@ def prettify_http(headers):
 
 
 def prettify_body(content, content_type):
+    if not content_type:
+        return content
+
     content_type = content_type.split(';')[0]
     if 'json' in content_type:
         content_type = TYPE_JS
