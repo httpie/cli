@@ -1,5 +1,12 @@
+import sys
 from setuptools import setup
 import httpie
+
+
+requirements = ['requests>=0.10.4', 'Pygments>=1.4']
+
+if sys.version_info < (2 , 7):
+    requirements.append('argparse>=1.2.1')
 
 
 setup(name='httpie',version=httpie.__version__,
@@ -9,4 +16,4 @@ setup(name='httpie',version=httpie.__version__,
     license=httpie.__licence__,
     packages=['httpie'],
     entry_points={'console_scripts': ['http = httpie.httpie:main']},
-    install_requires=['requests>=0.10.4', 'Pygments>=1.4', 'argparse>=1.2.1'])
+    install_requires=requirements)
