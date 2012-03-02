@@ -186,7 +186,7 @@ def main(args=None,
         stdout.write(status_line)
         stdout.write('\n')
         stdout.write(headers.encode('utf-8'))
-        stdout.write('\n')
+        stdout.write('\n\n')
     if args.print_body:
         stdout.write(body.encode('utf-8'))
         stdout.write('\n')
