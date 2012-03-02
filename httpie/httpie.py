@@ -119,14 +119,26 @@ def main(args=None,
     headers['User-Agent'] = DEFAULT_UA
     data = {}
     for item in args.items:
-        if item.sep == SEP_COMMON:
+        if item.sep == SEP_COMMON and item.value.startswith(SEP_DATA):
+            # The user has passed a raw data field.
+            target = data
+            try:
+                value = json.loads(item.value[1:])
+            except ValueError, e:
+                parser.error("'%s' is not a JSON object." % item.value[1:])
+        elif item.sep == SEP_COMMON:
+            # The user has passed a header.
             target = headers
+            value = item.value
         else:
+            assert item.sep == SEP_DATA
+            # The user has passed a string data field.
             if not stdin_isatty:
                 parser.error('Request body (stdin) and request '
                             'data (key=value) cannot be mixed.')
             target = data
-        target[item.key] = item.value
+            value = item.value
+        target[item.key] = value
 
     if not stdin_isatty:
         data = stdin.read()
