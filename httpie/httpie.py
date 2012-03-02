@@ -70,7 +70,8 @@ parser.add_argument('--style', '-s', dest='style', default='solarized', metavar=
                     choices=pretty.AVAILABLE_STYLES,
                     help='Output coloring style, one of %s. Defaults to solarized.'
                           % ', '.join(sorted(pretty.AVAILABLE_STYLES)))
-
+parser.add_argument('--pretty', '-p', help='Force pretty print.',
+                     dest='force_pretty', action='store_false', default=False)
 
 # ``requests.request`` keyword arguments.
 parser.add_argument('--auth', '-a', help='username:password',
@@ -113,6 +114,7 @@ def main(args=None,
          stdout_isatty=sys.stdout.isatty()):
 
     args = parser.parse_args(args if args is not None else sys.argv[1:])
+    is_pretty = args.force_pretty or stdout_isatty
 
     # Parse request headers and data from the command line.
     headers = CaseInsensitiveDict()
@@ -174,7 +176,7 @@ def main(args=None,
         response.content.decode(encoding) if response.content else u''
     )
 
-    if args.prettify and stdout_isatty:
+    if args.prettify and is_pretty:
         prettify = pretty.PrettyHttp(args.style)
         if args.print_headers:
             status_line = prettify.headers(status_line).strip()
