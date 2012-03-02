@@ -66,8 +66,10 @@ group_only.add_argument('--headers', '-t', dest='print_body',
 group_only.add_argument('--body', '-b', dest='print_headers',
                         action='store_false', default=True,
                         help='Print only the response body.')
-parser.add_argument('--style', '-s', dest='style', default='solarized',
-                    help='Output coloring style')
+parser.add_argument('--style', '-s', dest='style', default='solarized', metavar='STYLE',
+                    choices=pretty.AVAILABLE_STYLES,
+                    help='Output coloring style, one of %s. Defaults to solarized.'
+                          % ', '.join(sorted(pretty.AVAILABLE_STYLES)))
 
 
 # ``requests.request`` keyword arguments.
@@ -104,8 +106,13 @@ parser.add_argument('items', metavar='item', nargs='*',
                     help='HTTP header (key:value) or data field (key=value)')
 
 
-def main():
-    args = parser.parse_args()
+def main(args=None,
+         stdin=sys.stdin,
+         stdin_isatty=sys.stdout.isatty(),
+         stdout=sys.stdout,
+         stdout_isatty=sys.stdout.isatty()):
+
+    args = parser.parse_args(args if args is not None else sys.argv[1:])
 
     # Parse request headers and data from the command line.
     headers = CaseInsensitiveDict()
@@ -115,18 +122,18 @@ def main():
         if item.sep == SEP_COMMON:
             target = headers
         else:
-            if not sys.stdin.isatty():
+            if not stdin_isatty:
                 parser.error('Request body (stdin) and request '
                             'data (key=value) cannot be mixed.')
             target = data
         target[item.key] = item.value
 
-    if not sys.stdin.isatty():
-        data = sys.stdin.read()
+    if not stdin_isatty:
+        data = stdin.read()
 
     # JSON/Form content type.
     if args.json or (not args.form and data):
-        if sys.stdin.isatty():
+        if stdin_isatty:
             data = json.dumps(data)
         if 'Content-Type' not in headers and (data or args.json):
             headers['Content-Type'] = TYPE_JSON
@@ -167,19 +174,21 @@ def main():
         response.content.decode(encoding) if response.content else u''
     )
 
-    if args.prettify and sys.stdout.isatty():
+    if args.prettify and stdout_isatty:
+        prettify = pretty.PrettyHttp(args.style)
         if args.print_headers:
-            status_line = pretty.prettify_http(status_line, args.style).strip()
-            headers = pretty.prettify_http(headers, args.style)
-        if args.print_body:
-            body = pretty.prettify_body(body,
-                response.headers['content-type'], args.style)
+            status_line = prettify.headers(status_line).strip()
+            headers = prettify.headers(headers)
+        if args.print_body and 'content-type' in response.headers:
+            body = prettify.body(body, response.headers['content-type'])
 
     if args.print_headers:
-        print status_line
-        print headers
+        stdout.write(status_line)
+        stdout.write('\n')
+        stdout.write(headers)
+        stdout.write('\n')
     if args.print_body:
-        print body
+        stdout.write(body)
 
 if __name__ == '__main__':
     main()

@@ -35,11 +35,11 @@ The data to be sent can also be passed via `stdin`:
 
 Most of the flags mirror the arguments you would use with `requests.request`. See `http -h`:
 
-    $ http -h
-    usage: http [-h] [--json | --form] [--traceback] [--ugly] [--headers | --body]
-                [--auth AUTH] [--verify VERIFY] [--proxy PROXY]
-                [--allow-redirects] [--file PATH] [--timeout TIMEOUT]
-                method URL [item [item ...]]
+    usage: httpie.py [-h] [--json | --form] [--traceback] [--ugly]
+                     [--headers | --body] [--style STYLE] [--auth AUTH]
+                     [--verify VERIFY] [--proxy PROXY] [--allow-redirects]
+                     [--file PATH] [--timeout TIMEOUT]
+                     method URL [item [item ...]]
 
     HTTPie - cURL for humans.
 
@@ -62,6 +62,11 @@ Most of the flags mirror the arguments you would use with `requests.request`. Se
       --ugly, -u            Do not prettify the response.
       --headers, -t         Print only the response headers.
       --body, -b            Print only the response body.
+      --style STYLE, -s STYLE
+                            Output coloring style, one of autumn, borland, bw,
+                            colorful, default, emacs, friendly, fruity, manni,
+                            monokai, murphy, native, pastie, perldoc, solarized,
+                            tango, trac, vim, vs. Defaults to solarized.
       --auth AUTH, -a AUTH  username:password
       --verify VERIFY       Set to "yes" to check the host's SSL certificate. You
                             can also pass the path to a CA_BUNDLE file for private
@@ -74,4 +79,3 @@ Most of the flags mirror the arguments you would use with `requests.request`. Se
       --file PATH           File to multipart upload
       --timeout TIMEOUT     Float describes the timeout of the request (Use
                             socket.setdefaulttimeout() as fallback).
-
