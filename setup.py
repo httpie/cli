@@ -15,5 +15,5 @@ setup(name='httpie',version=httpie.__version__,
     author=httpie.__author__,
     license=httpie.__licence__,
     packages=['httpie'],
-    entry_points={'console_scripts': ['http = httpie.httpie:main']},
+    entry_points={'console_scripts': ['http = httpie.__main__:main']},
     install_requires=requirements)

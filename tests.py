@@ -1,13 +1,12 @@
 import unittest
 from StringIO import StringIO
-from httpie import httpie
+from httpie import __main__
 
 
 def http(*args, **kwargs):
     stdout = StringIO()
-    httpie.main(args=args, stdout=stdout,
-                stdin_isatty=True,
-                stdout_isatty=False)
+    __main__.main(args=args, stdout=stdout, stdin_isatty=True,
+                  stdout_isatty=False)
     return stdout.getvalue()
 
 
