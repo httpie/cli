@@ -108,7 +108,7 @@ parser.add_argument('items', metavar='item', nargs='*',
 
 def main(args=None,
          stdin=sys.stdin,
-         stdin_isatty=sys.stdout.isatty(),
+         stdin_isatty=sys.stdin.isatty(),
          stdout=sys.stdout,
          stdout_isatty=sys.stdout.isatty()):
 
@@ -166,7 +166,7 @@ def main(args=None,
     encoding = response.encoding or 'ISO-8859-1'
     original = response.raw._original_response
     status_line, headers, body = (
-        u'HTTP/{version} {status} {reason}'.format(
+        'HTTP/{version} {status} {reason}'.format(
             version='.'.join(str(original.version)),
             status=original.status, reason=original.reason,
         ),
@@ -185,10 +185,11 @@ def main(args=None,
     if args.print_headers:
         stdout.write(status_line)
         stdout.write('\n')
-        stdout.write(headers)
+        stdout.write(headers.encode('utf-8'))
         stdout.write('\n')
     if args.print_body:
-        stdout.write(body)
+        stdout.write(body.encode('utf-8'))
+        stdout.write('\n')
 
 if __name__ == '__main__':
     main()
