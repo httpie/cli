@@ -71,7 +71,7 @@ parser.add_argument('--style', '-s', dest='style', default='solarized', metavar=
                     help='Output coloring style, one of %s. Defaults to solarized.'
                           % ', '.join(sorted(pretty.AVAILABLE_STYLES)))
 parser.add_argument('--pretty', '-p', help='Force pretty print.',
-                     dest='force_pretty', action='store_false', default=False)
+                     dest='force_pretty', action='store_true', default=False)
 
 # ``requests.request`` keyword arguments.
 parser.add_argument('--auth', '-a', help='username:password',
