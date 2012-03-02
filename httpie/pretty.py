@@ -1,16 +1,23 @@
-import json
-from functools import partial
-import pygments
+import re
 import os
+import json
+import pygments
+from pygments import token
+from pygments.util import ClassNotFound
 from pygments.lexers import get_lexer_for_mimetype
 from pygments.formatters.terminal256 import Terminal256Formatter
 from pygments.formatters.terminal import TerminalFormatter
 from pygments.lexer import RegexLexer, bygroups
-from pygments import token
+from pygments.styles import get_style_by_name, STYLE_MAP
 from . import solarized
 
 
+DEFAULT_STYLE = 'solarized'
+AVAILABLE_STYLES = [DEFAULT_STYLE] + STYLE_MAP.keys()
 TYPE_JS = 'application/javascript'
+FORMATTER = (Terminal256Formatter
+             if os.environ.get('TERM', None) == 'xterm-256color'
+             else TerminalFormatter)
 
 
 class HTTPLexer(RegexLexer):
@@ -25,38 +32,34 @@ class HTTPLexer(RegexLexer):
             (r'(.*?:)(.+)',  bygroups(token.Name, token.String))
     ]}
 
-if os.environ['TERM'] == 'xterm-256color':
-    formatter = Terminal256Formatter
-else:
-    formatter = TerminalFormatter
 
+class PrettyHttp(object):
 
-highlight = partial(pygments.highlight,
-                    formatter=formatter(
-                        style=solarized.SolarizedStyle))
-highlight_http = partial(highlight, lexer=HTTPLexer())
+    def __init__(self, style_name):
+        if style_name == 'solarized':
+            style = solarized.SolarizedStyle
+        else:
+            style = get_style_by_name(style_name)
+        self.formatter = FORMATTER(style=style)
 
+    def headers(self, content):
+        return pygments.highlight(content, HTTPLexer(), self.formatter).strip()
 
-def prettify_http(headers):
-    return highlight_http(headers)
-
-
-def prettify_body(content, content_type):
-    content_type = content_type.split(';')[0]
-    if 'json' in content_type:
-        content_type = TYPE_JS
+    def body(self, content, content_type):
+        content_type = content_type.split(';')[0]
+        if 'json' in content_type:
+            content_type = TYPE_JS
+            try:
+                # Indent JSON
+                content = json.dumps(json.loads(content),
+                                    sort_keys=True, indent=4)
+            except Exception:
+                pass
         try:
-            # Indent JSON
-            content = json.dumps(json.loads(content),
-                                sort_keys=True, indent=4)
-        except Exception:
-            pass
-    try:
-        lexer = get_lexer_for_mimetype(content_type)
-        content = highlight(code=content, lexer=lexer)
-        if content:
-            content = content[:-1]
-    except Exception:
-        pass
-    return content
-
+            lexer = get_lexer_for_mimetype(content_type)
+        except ClassNotFound:
+            return content
+        content = pygments.highlight(content, lexer, self.formatter)
+        # TODO: Make sure the leading/trailing whitespaces remain.
+        #        Some of the Pygments styles add superfluous line breaks.
+        return content.strip()
