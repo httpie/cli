@@ -93,6 +93,9 @@ parser.add_argument('--file', metavar='PATH', type=argparse.FileType(),
 parser.add_argument('--timeout', type=float,
                     help='Float describes the timeout of the request'
                          ' (Use socket.setdefaulttimeout() as fallback).')
+parser.add_argument('--cookies',type=KeyValueType(SEP_DATA),nargs='*',default={},
+                    help='Include cookies with your request'
+                         '(e.g. --cookies key=value)')
 
 # Positional arguments.
 parser.add_argument('method',
@@ -152,6 +155,7 @@ def main(args=None,
             auth=(args.auth.key, args.auth.value) if args.auth else None,
             proxies=dict((p.key, p.value) for p in args.proxy),
             files=dict((os.path.basename(f.name), f) for f in args.file),
+            cookies=dict((c.key, c.value) for c in args.cookies),
         )
     except (KeyboardInterrupt, SystemExit) as e:
         sys.stderr.write('\n')
