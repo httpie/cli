@@ -152,6 +152,7 @@ def main(args=None,
             auth=(args.auth.key, args.auth.value) if args.auth else None,
             proxies=dict((p.key, p.value) for p in args.proxy),
             files=dict((os.path.basename(f.name), f) for f in args.file),
+            allow_redirects=args.allow_redirects,
         )
     except (KeyboardInterrupt, SystemExit) as e:
         sys.stderr.write('\n')
