@@ -35,11 +35,10 @@ The data to be sent can also be passed via `stdin`:
 
 Most of the flags mirror the arguments you would use with `requests.request`. See `http -h`:
 
-    usage: httpie.py [-h] [--json | --form] [--traceback] [--ugly]
-                     [--headers | --body] [--style STYLE] [--auth AUTH]
-                     [--verify VERIFY] [--proxy PROXY] [--allow-redirects]
-                     [--file PATH] [--timeout TIMEOUT]
-                     method URL [item [item ...]]
+    usage: http [-h] [--json | --form] [--traceback] [--ugly] [--headers | --body]
+                [--style STYLE] [--auth AUTH] [--verify VERIFY] [--proxy PROXY]
+                [--allow-redirects] [--file PATH] [--timeout TIMEOUT]
+                method URL [item [item ...]]
 
     HTTPie - cURL for humans.
 
