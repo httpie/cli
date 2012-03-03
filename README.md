@@ -1,6 +1,6 @@
 ## HTTPie: cURL for humans
 
-HTTPie is a CLI frontend for [python-requests](http://python-requests.org) built out of frustration. It provides an `http` command that can be used to easily issue HTTP requests. It is meant to be used by humans to interact with HTTP-based APIs and web servers. The response headers are colorized and the body is syntax-highlighed if its `Content-Type` is known to [Pygments](http://pygments.org/) (unless the output is redirected).
+HTTPie is a CLI frontend for [python-requests](http://python-requests.org) built out of frustration. It provides an `http` command that can be used to easily issue HTTP requests. It is meant to be used by humans to interact with HTTP-based APIs and web servers. The response headers are colorized and the body is syntax-highlighted if its `Content-Type` is known to [Pygments](http://pygments.org/) (unless the output is redirected).
 
 ![httpie](https://github.com/jkbr/httpie/raw/master/httpie.png)
 
