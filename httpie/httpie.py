@@ -126,15 +126,12 @@ def main(args=None,
             if not stdin_isatty:
                 parser.error('Request body (stdin) and request '
                             'data (key=value) cannot be mixed.')
-            target = data
+
+            target = data if args.method.lower() != 'get' else params
         target[item.key] = item.value
 
     if not stdin_isatty:
         data = stdin.read()
-
-    if args.method.lower() == 'get':
-        params = data
-        data = {}
 
     # JSON/Form content type.
     if args.json or (not args.form and data):
