@@ -19,7 +19,32 @@ def http(*args, **kwargs):
     return stdout.getvalue()
 
 
-class TestItemParsing(unittest.TestCase):
+class BaseTest(unittest.TestCase):
+
+    def assertIn(self, member, container, msg=None):
+        sup = super(BaseTest, self)
+        if hasattr('sup', 'assertIn'):
+            sup.assertIn(member, container, msg)
+        else:
+            self.assert_(member in container, msg)
+
+    def assertNotIn(self, member, container, msg=None):
+        sup = super(BaseTest, self)
+        if hasattr('sup', 'assertNotIn'):
+            sup.assertIn(member, container, msg)
+        else:
+            self.assert_(member not in container, msg)
+
+    def assertDictEqual(self, d1, d2, msg=None):
+        sup = super(BaseTest, self)
+        if hasattr('sup', 'assertDictEqual'):
+            self.assertDictEqual(d1, d2, msg)
+        else:
+            sup.assertEqual(set(d1.keys()), set(d2.keys()), msg)
+            sup.assertEqual(sorted(d1.values()), sorted(d2.values()), msg)
+
+
+class TestItemParsing(BaseTest):
 
     def setUp(self):
         self.kv = cli.KeyValueType(
@@ -31,8 +56,8 @@ class TestItemParsing(unittest.TestCase):
     def test_invalid_items(self):
         items = ['no-separator']
         for item in items:
-            with self.assertRaises(argparse.ArgumentTypeError):
-                self.kv(item)
+            self.assertRaises(argparse.ArgumentTypeError,
+                              lambda: self.kv(item))
 
     def test_valid_items(self):
         headers, data = cli.parse_items([
@@ -57,7 +82,7 @@ class TestItemParsing(unittest.TestCase):
         })
 
 
-class TestHTTPie(unittest.TestCase):
+class TestHTTPie(BaseTest):
 
     def test_get(self):
         http('GET', 'http://httpbin.org/get')
@@ -76,7 +101,7 @@ class TestHTTPie(unittest.TestCase):
         self.assertIn('"Foo": "bar"', response)
 
 
-class TestPrettyFlag(unittest.TestCase):
+class TestPrettyFlag(BaseTest):
     """Test the --pretty / --ugly flag handling."""
 
     def test_pretty_enabled_by_default(self):
