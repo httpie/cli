@@ -15,7 +15,7 @@ DEFAULT_STYLE = 'solarized'
 AVAILABLE_STYLES = [DEFAULT_STYLE] + STYLE_MAP.keys()
 TYPE_JS = 'application/javascript'
 FORMATTER = (Terminal256Formatter
-             if os.environ.get('TERM') == 'xterm-256color'
+             if '256color' in os.environ.get('TERM', '')
              else TerminalFormatter)
 
 
