@@ -6,5 +6,6 @@ python:
   #- 3.2
 script: python setup.py test
 install:
-  - pip -q install requests pygments argparse
+  - pip install requests pygments
+  - "if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install argparse; fi"
 
