@@ -1,56 +1,92 @@
-## HTTPie: cURL for humans
+HTTPie: cURL for humans
+=======================
 
-[![Build Status](https://secure.travis-ci.org/jkbr/httpie.png)](http://travis-ci.org/jkbr/httpie)
+**HTTPie is a CLI HTTP utility** built out of frustration with existing tools. The goal is to make CLI interaction with HTTP-based services as human-friendly as possible.
 
+HTTPie does so by providing an ``http`` command that allows for issuing arbitrary HTTP requests using a **simple and natural syntax** and displaying **colorized responses**:
 
-HTTPie is a CLI frontend for [python-requests](http://python-requests.org) built out of frustration. It provides an `http` command that can be used to easily issue HTTP requests. It is meant to be used by humans to interact with HTTP-based APIs and web servers. The response headers are colorized and the body is syntax-highlighted if its `Content-Type` is known to [Pygments](http://pygments.org/) (unless the output is redirected).
+.. image:: https://github.com/jkbr/httpie/raw/master/httpie.png
+    :alt: HTTPie compared to cURL
 
-![httpie](https://github.com/jkbr/httpie/raw/master/httpie.png)
+Under the hood, HTTPie uses the excellent `Requests <http://python-requests.org>`_ and `Pygments <http://pygments.org/>`_ Python libraries.
 
-### Installation
+Installation
+------------
 
-Latest stable version using [pip](http://www.pip-installer.org/en/latest/index.html):
+The latest **stable version** of HTTPie can always be installed (or updated to) via `pip <http://www.pip-installer.org/en/latest/index.html>`_::
 
     pip install -U httpie
-    # easy_install httpie
 
-Master:
+
+Or, you can install the **development version** directly from GitHub:
+
+.. image:: https://secure.travis-ci.org/jkbr/httpie.png
+    :target: http://travis-ci.org/jkbr/httpie
+    :alt: Build Status of the master branch
+
+::
 
     pip install -U https://github.com/jkbr/httpie/tarball/master
 
 
-### Usage
+Usage
+-----
 
-    http [flags] METHOD URL [header:value | data-field-name=value]*
+Hello world::
 
-The default request `Content-Type` is `application/json` and data fields are automatically serialized as a JSON `Object`, so this:
+    http GET httpie.org
 
-    http PATCH api.example.com/person/1 X-API-Token:123 name=John email=john@example.org
+Synopsis::
 
-Will issue the following request:
+    http [flags] METHOD URL [items]
+
+There are three types of key-value pair items available:
+
+Headers
+   Arbitrary HTTP headers. The ``:`` character is used to separate a header's name from its value, e.g., ``X-API-Token:123``.
+
+Simple data items
+  Data items are included in the request body. Depending on the ``Content-Type``, they are automatically serialized as a JSON ``Object`` (default) or ``application/x-www-form-urlencoded`` (the ``-f`` flag). Data items use ``=`` as the separator, e.g., ``hello=world``.
+
+Raw JSON items
+  This item type is needed when ``Content-Type`` is JSON and a field's value is a ``Boolean``, ``Number``,  nested ``Object`` or an ``Array``, because simple data items are always serialized as ``String``. E.g. ``pies=[1,2,3]``.
+
+Examples
+^^^^^^^^
+::
+
+    http PATCH api.example.com/person/1 X-API-Token:123 name=John email=john@example.org age:=29
+
+
+The following request is issued::
 
     PATCH /person/1 HTTP/1.1
     User-Agent: HTTPie/0.1
     X-API-Token: 123
     Content-Type: application/json; charset=utf-8
 
-    {"name": "John", "email": "john@example.org"}
+    {"name": "John", "email": "john@example.org", "age": 29}
 
-You can pass other types than just strings using the `field:=value` notation. It allows you to set arbitrary JSON to the data fields:
 
-    http PUT httpie.org/pies bool:=true list:=[1,2,3] 'object:={"a": "b", "c": "d"}'
+It can easily be changed to a 'form' request using the ``-f`` (or ``--form``) flag, which produces::
 
-Produces the following JSON request:
+    PATCH /person/1 HTTP/1.1
+    User-Agent: HTTPie/0.1
+    X-API-Token: 123
+    Content-Type: application/x-www-form-urlencoded; charset=utf-8
 
-    {"bool": true, "list": [1, 2, 3], "object": {"a": "b", "c": "d"}}
+    age=29&name=John&email=john%40example.org
 
-You can use the `--form` flag to set `Content-Type` and serialize the data as `application/x-www-form-urlencoded`.
+A whole request body can be passed in via ``stdin`` instead::
 
-The data to be sent can also be passed via `stdin`:
+    echo '{"name": "John"}' | http PATCH example.com/person/1 X-API-Token:123
+    # Or:
+    http POST example.com/person/1 X-API-Token:123 < person.json
 
-    http PUT api.example.com/person/1 X-API-Token:123 < person.json
 
-Most of the flags mirror the arguments you would use with `requests.request`. See `http -h`:
+Flags
+^^^^^
+Most of the flags mirror the arguments understood by ``requests.request``. See ``http -h`` for more details::
 
     usage: http [-h] [--version] [--json | --form] [--traceback]
                 [--pretty | --ugly] [--headers | --body] [--style STYLE]
@@ -103,11 +139,13 @@ Most of the flags mirror the arguments you would use with `requests.request`. Se
                             socket.setdefaulttimeout() as fallback).
 
 
-### Contributors
+Contributors
+------------
 
-[View contributors on GitHub](https://github.com/jkbr/httpie/contributors).
+`View contributors on GitHub <https://github.com/jkbr/httpie/contributors>`_.
 
 
-### Changelog
+Changelog
+---------
 
-* [0.1.6](https://github.com/jkbr/httpie/compare/0.1.4...0.1.6) (2012-03-04)
+* `0.1.6 <https://github.com/jkbr/httpie/compare/0.1.4...0.1.6>`_ (2012-03-04)
