@@ -1,13 +1,20 @@
+from functools import partial
 import unittest
 from StringIO import StringIO
 from httpie import httpie
 
 
+TERMINAL_COLOR_END = '\x1b[39m'
+
+
 def http(*args, **kwargs):
-    stdout = StringIO()
-    httpie.main(args=args, stdout=stdout,
-                stdin_isatty=True,
-                stdout_isatty=False)
+    http_kwargs = {
+        'stdin_isatty': True,
+        'stdout_isatty': False
+    }
+    http_kwargs.update(kwargs)
+    stdout = http_kwargs.setdefault('stdout', StringIO())
+    httpie.main(args=args, **http_kwargs)
     return stdout.getvalue()
 
 
@@ -30,6 +37,26 @@ class TestHTTPie(unittest.TestCase):
         response = http('GET', 'http://httpbin.org/headers', 'Foo:bar')
         self.assertIn('"User-Agent": "HTTPie', response)
         self.assertIn('"Foo": "bar"', response)
+
+
+class TestPrettyFlag(unittest.TestCase):
+    """Test the --pretty / --ugly flag handling."""
+
+    def test_pretty_enabled_by_default(self):
+        r = http('GET', 'http://httpbin.org/get', stdout_isatty=True)
+        self.assertIn(TERMINAL_COLOR_END, r)
+
+    def test_pretty_enabled_by_default_unless_stdin_redirected(self):
+        r = http('GET', 'http://httpbin.org/get', stdout_isatty=False)
+        self.assertNotIn(TERMINAL_COLOR_END, r)
+
+    def test_force_pretty(self):
+        r = http('GET', '--pretty', 'http://httpbin.org/get', stdout_isatty=False)
+        self.assertIn(TERMINAL_COLOR_END, r)
+
+    def test_force_ugly(self):
+        r = http('GET', '--ugly', 'http://httpbin.org/get', stdout_isatty=True)
+        self.assertNotIn(TERMINAL_COLOR_END, r)
 
 
 if __name__ == '__main__':

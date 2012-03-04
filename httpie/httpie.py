@@ -16,6 +16,7 @@ SEP_COMMON = ':'
 SEP_DATA = '='
 TYPE_FORM = 'application/x-www-form-urlencoded; charset=utf-8'
 TYPE_JSON = 'application/json; charset=utf-8'
+PRETTIFY_STDOUT_TTY_ONLY = object()
 
 
 KeyValue = namedtuple('KeyValue', ['key', 'value', 'sep'])
@@ -57,8 +58,15 @@ group_type.add_argument('--form', '-f', action='store_true',
 parser.add_argument('--traceback', action='store_true', default=False,
                   help='Print a full exception traceback should one'
                        ' be raised by `requests`.')
-parser.add_argument('--ugly', '-u', help='Do not prettify the response.',
-                     dest='prettify', action='store_false', default=True)
+group_pretty = parser.add_mutually_exclusive_group(required=False)
+group_pretty.add_argument('--pretty', '-p', dest='prettify', action='store_true',
+                          default=PRETTIFY_STDOUT_TTY_ONLY,
+                          help='If stdout is a terminal, '
+                               ' the response is prettified by default (colorized and'
+                               ' indented if it is JSON). This flag ensures'
+                               ' prettifying even when stdout is redirected.')
+group_pretty.add_argument('--ugly', '-u', help='Do not prettify the response.',
+                          dest='prettify', action='store_false')
 group_only = parser.add_mutually_exclusive_group(required=False)
 group_only.add_argument('--headers', '-t', dest='print_body',
                         action='store_false', default=True,
@@ -70,8 +78,6 @@ parser.add_argument('--style', '-s', dest='style', default='solarized', metavar=
                     choices=pretty.AVAILABLE_STYLES,
                     help='Output coloring style, one of %s. Defaults to solarized.'
                           % ', '.join(sorted(pretty.AVAILABLE_STYLES)))
-parser.add_argument('--pretty', '-p', help='Force pretty print.',
-                     dest='force_pretty', action='store_true', default=False)
 
 # ``requests.request`` keyword arguments.
 parser.add_argument('--auth', '-a', help='username:password',
@@ -96,13 +102,13 @@ parser.add_argument('--timeout', type=float,
                          ' (Use socket.setdefaulttimeout() as fallback).')
 
 # Positional arguments.
-parser.add_argument('method',
+parser.add_argument('method', metavar='METHOD',
                     help='HTTP method to be used for the request'
                          ' (GET, POST, PUT, DELETE, PATCH, ...).')
 parser.add_argument('url', metavar='URL',
                     help='Protocol defaults to http:// if the'
                          ' URL does not include it.')
-parser.add_argument('items', metavar='item', nargs='*',
+parser.add_argument('items', nargs='*',
                     type=KeyValueType([SEP_COMMON, SEP_DATA]),
                     help='HTTP header (key:value) or data field (key=value)')
 
@@ -114,8 +120,8 @@ def main(args=None,
          stdout_isatty=sys.stdout.isatty()):
 
     args = parser.parse_args(args if args is not None else sys.argv[1:])
-    is_pretty = args.force_pretty or stdout_isatty
-
+    do_prettify = (args.prettify is True or
+                     (args.prettify == PRETTIFY_STDOUT_TTY_ONLY and stdout_isatty))
     # Parse request headers and data from the command line.
     headers = CaseInsensitiveDict()
     headers['User-Agent'] = DEFAULT_UA
@@ -177,7 +183,7 @@ def main(args=None,
         response.content.decode(encoding) if response.content else u''
     )
 
-    if args.prettify and is_pretty:
+    if do_prettify:
         prettify = pretty.PrettyHttp(args.style)
         if args.print_headers:
             status_line = prettify.headers(status_line).strip()
