@@ -42,7 +42,7 @@ class PrettyHttp(object):
         self.formatter = FORMATTER(style=style)
 
     def headers(self, content):
-        return pygments.highlight(content, HTTPLexer(), self.formatter).strip()
+        return pygments.highlight(content, HTTPLexer(), self.formatter)
 
     def body(self, content, content_type):
         content_type = content_type.split(';')[0]
@@ -59,6 +59,4 @@ class PrettyHttp(object):
         except ClassNotFound:
             return content
         content = pygments.highlight(content, lexer, self.formatter)
-        # TODO: Make sure the leading/trailing whitespaces remain.
-        #        Some of the Pygments styles add superfluous line breaks.
-        return content.strip()
+        return content

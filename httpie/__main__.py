@@ -100,13 +100,15 @@ def main(args=None,
             body = prettify.body(body, response.headers['Content-Type'])
 
     # Output.
+    # TODO: preserve leading/trailing whitespaces in the body.
+    #        Some of the Pygments styles add superfluous line breaks.
     if args.print_headers:
-        stdout.write(status_line)
+        stdout.write(status_line.strip())
         stdout.write('\n')
-        stdout.write(headers.encode('utf-8'))
+        stdout.write(headers.strip().encode('utf-8'))
         stdout.write('\n\n')
     if args.print_body:
-        stdout.write(body.encode('utf-8'))
+        stdout.write(body.strip().encode('utf-8'))
         stdout.write('\n')
 
 
