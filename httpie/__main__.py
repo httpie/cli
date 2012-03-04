@@ -3,7 +3,10 @@ import os
 import sys
 import json
 import requests
-from collections import OrderedDict
+try:
+    from collections import OrderedDict
+except ImportError:
+    OrderedDict = dict
 from requests.structures import CaseInsensitiveDict
 from . import cli
 from . import pretty
@@ -105,6 +108,7 @@ def main(args=None,
     if args.print_body:
         stdout.write(body.encode('utf-8'))
         stdout.write('\n')
+
 
 if __name__ == '__main__':
     main()
