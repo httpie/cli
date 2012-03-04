@@ -15,7 +15,8 @@ if sys.version_info < (2, 7):
 
 
 setup(
-    name='httpie',version=httpie.__version__,
+    name='httpie',
+    version=httpie.__version__,
     description=httpie.__doc__.strip(),
     long_description=open('README.md').read(),
     url='http://httpie.org/',
