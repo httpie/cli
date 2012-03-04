@@ -1,7 +1,6 @@
-from functools import partial
 import unittest
 from StringIO import StringIO
-from httpie import httpie
+from httpie import __main__
 
 
 TERMINAL_COLOR_END = '\x1b[39m'
@@ -14,7 +13,7 @@ def http(*args, **kwargs):
     }
     http_kwargs.update(kwargs)
     stdout = http_kwargs.setdefault('stdout', StringIO())
-    httpie.main(args=args, **http_kwargs)
+    __main__.main(args=args, **http_kwargs)
     return stdout.getvalue()
 
 
