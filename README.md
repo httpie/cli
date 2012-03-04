@@ -102,6 +102,12 @@ Most of the flags mirror the arguments you would use with `requests.request`. Se
       --timeout TIMEOUT     Float describes the timeout of the request (Use
                             socket.setdefaulttimeout() as fallback).
 
+
+### Contributors
+
+[View contributors on GitHub](https://github.com/jkbr/httpie/contributors).
+
+
 ### Changelog
 
 * [0.1.6](https://github.com/jkbr/httpie/compare/0.1.4...0.1.6) (2012-03-04)
