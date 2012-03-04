@@ -7,7 +7,14 @@ HTTPie is a CLI frontend for [python-requests](http://python-requests.org) built
 
 ### Installation
 
-    pip install httpie
+Latest stable version using [pip](http://www.pip-installer.org/en/latest/index.html):
+
+    pip install -U httpie
+    # easy_install httpie
+
+Master:
+
+    pip install -U https://github.com/jkbr/httpie/tarball/master
 
 
 ### Usage
@@ -27,6 +34,14 @@ Will issue the following request:
 
     {"name": "John", "email": "john@example.org"}
 
+You can pass other types then just strings using the `field:=value` notation. It allows you to set arbitrary JSON to the data fields:
+
+    http PUT httpie.org/pies bool:=true list:=[1,2,3] 'object:={"a": "b", "c": "d"}'
+
+Produces the following JSON request:
+
+{"bool": true, "list": [1, 2, 3], "object": {"a": "b", "c": "d"}}
+
 You can use the `--form` flag to set `Content-Type` and serialize the data as `application/x-www-form-urlencoded`.
 
 The data to be sent can also be passed via `stdin`:
@@ -34,6 +49,7 @@ The data to be sent can also be passed via `stdin`:
     http PUT api.example.com/person/1 X-API-Token:123 < person.json
 
 Most of the flags mirror the arguments you would use with `requests.request`. See `http -h`:
+
 usage: http [-h] [--json | --form] [--traceback] [--ugly] [--headers | --body]
             [--request] [--style STYLE] [--auth AUTH] [--verify VERIFY]
             [--proxy PROXY] [--allow-redirects] [--file PATH]

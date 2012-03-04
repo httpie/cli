@@ -14,6 +14,7 @@ from . import __doc__ as doc
 DEFAULT_UA = 'HTTPie/%s' % version
 SEP_COMMON = ':'
 SEP_DATA = '='
+SEP_DATA_RAW = ':='
 TYPE_FORM = 'application/x-www-form-urlencoded; charset=utf-8'
 TYPE_JSON = 'application/json; charset=utf-8'
 PRETTIFY_STDOUT_TTY_ONLY = object()
@@ -33,6 +34,7 @@ class KeyValueType(object):
                      if string.find(sep) != -1)
 
         if not found:
+            #noinspection PyExceptionInherit
             raise argparse.ArgumentTypeError(
                 '"%s" is not a valid value' % string)
         sep = found[min(found.keys())]
@@ -109,8 +111,9 @@ parser.add_argument('url', metavar='URL',
                     help='Protocol defaults to http:// if the'
                          ' URL does not include it.')
 parser.add_argument('items', nargs='*',
-                    type=KeyValueType([SEP_COMMON, SEP_DATA]),
-                    help='HTTP header (key:value) or data field (key=value)')
+                    type=KeyValueType([SEP_COMMON, SEP_DATA, SEP_DATA_RAW]),
+                    help='HTTP header (key:value), data field (key=value)'
+                         ' or raw JSON field (field:=value).')
 
 
 def main(args=None,
@@ -127,14 +130,23 @@ def main(args=None,
     headers['User-Agent'] = DEFAULT_UA
     data = {}
     for item in args.items:
+        value = item.value
         if item.sep == SEP_COMMON:
             target = headers
         else:
             if not stdin_isatty:
                 parser.error('Request body (stdin) and request '
                             'data (key=value) cannot be mixed.')
+            if item.sep == SEP_DATA_RAW:
+                try:
+                    value = json.loads(item.value)
+                except ValueError:
+                    if args.traceback:
+                        raise
+                    parser.error('%s:=%s is not valid JSON'
+                                 % (item.key, item.value))
             target = data
-        target[item.key] = item.value
+        target[item.key] = value
 
     if not stdin_isatty:
         data = stdin.read()
@@ -171,7 +183,7 @@ def main(args=None,
         sys.stderr.write(str(e.message) + '\n')
         sys.exit(1)
 
-    # Display the response.
+    # Reconstruct the raw response.
     encoding = response.encoding or 'ISO-8859-1'
     original = response.raw._original_response
     status_line, headers, body = (
@@ -186,11 +198,12 @@ def main(args=None,
     if do_prettify:
         prettify = pretty.PrettyHttp(args.style)
         if args.print_headers:
-            status_line = prettify.headers(status_line).strip()
+            status_line = prettify.headers(status_line)
             headers = prettify.headers(headers)
-        if args.print_body and 'content-type' in response.headers:
-            body = prettify.body(body, response.headers['content-type'])
+        if args.print_body and 'Content-Type' in response.headers:
+            body = prettify.body(body, response.headers['Content-Type'])
 
+    # Output.
     if args.print_headers:
         stdout.write(status_line)
         stdout.write('\n')
