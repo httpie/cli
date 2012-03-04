@@ -1,4 +1,3 @@
-import re
 import os
 import json
 import pygments
@@ -16,7 +15,7 @@ DEFAULT_STYLE = 'solarized'
 AVAILABLE_STYLES = [DEFAULT_STYLE] + STYLE_MAP.keys()
 TYPE_JS = 'application/javascript'
 FORMATTER = (Terminal256Formatter
-             if os.environ.get('TERM', None) == 'xterm-256color'
+             if os.environ.get('TERM') == 'xterm-256color'
              else TerminalFormatter)
 
 
