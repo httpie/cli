@@ -14,8 +14,9 @@ from . import solarized
 DEFAULT_STYLE = 'solarized'
 AVAILABLE_STYLES = [DEFAULT_STYLE] + STYLE_MAP.keys()
 TYPE_JS = 'application/javascript'
+TERMS_256 = ('rxvt-unicode-256color', 'screen-256color', 'xterm-256color')
 FORMATTER = (Terminal256Formatter
-             if os.environ.get('TERM') == 'xterm-256color'
+             if os.environ.get('TERM', '') in TERMS_256
              else TerminalFormatter)
 
 
