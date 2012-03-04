@@ -6,7 +6,7 @@ from httpie import __main__
 from httpie import cli
 
 
-TERMINAL_COLOR_END = '\x1b[39m'
+TERMINAL_COLOR_CHECK = '\x1b['
 
 
 def http(*args, **kwargs):
@@ -96,19 +96,19 @@ class TestPrettyFlag(BaseTest):
 
     def test_pretty_enabled_by_default(self):
         r = http('GET', 'http://httpbin.org/get', stdout_isatty=True)
-        self.assertIn(TERMINAL_COLOR_END, r)
+        self.assertIn(TERMINAL_COLOR_CHECK, r)
 
     def test_pretty_enabled_by_default_unless_stdin_redirected(self):
         r = http('GET', 'http://httpbin.org/get', stdout_isatty=False)
-        self.assertNotIn(TERMINAL_COLOR_END, r)
+        self.assertNotIn(TERMINAL_COLOR_CHECK, r)
 
     def test_force_pretty(self):
         r = http('GET', '--pretty', 'http://httpbin.org/get', stdout_isatty=False)
-        self.assertIn(TERMINAL_COLOR_END, r)
+        self.assertIn(TERMINAL_COLOR_CHECK, r)
 
     def test_force_ugly(self):
         r = http('GET', '--ugly', 'http://httpbin.org/get', stdout_isatty=True)
-        self.assertNotIn(TERMINAL_COLOR_END, r)
+        self.assertNotIn(TERMINAL_COLOR_CHECK, r)
 
 
 if __name__ == '__main__':
