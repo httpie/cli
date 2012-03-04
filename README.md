@@ -50,33 +50,38 @@ The data to be sent can also be passed via `stdin`:
 
 Most of the flags mirror the arguments you would use with `requests.request`. See `http -h`:
 
-    usage: http [-h] [--json | --form] [--traceback] [--ugly] [--headers | --body]
-                [--request] [--style STYLE] [--auth AUTH] [--verify VERIFY]
-                [--proxy PROXY] [--allow-redirects] [--file PATH]
-                [--timeout TIMEOUT]
-                method URL [item [item ...]]
+    usage: http [-h] [--version] [--json | --form] [--traceback]
+                [--pretty | --ugly] [--headers | --body] [--style STYLE]
+                [--auth AUTH] [--verify VERIFY] [--proxy PROXY]
+                [--allow-redirects] [--file PATH] [--timeout TIMEOUT]
+                METHOD URL [items [items ...]]
 
     HTTPie - cURL for humans.
 
     positional arguments:
-      method                HTTP method to be used for the request (GET, POST,
+      METHOD                HTTP method to be used for the request (GET, POST,
                             PUT, DELETE, PATCH, ...).
       URL                   Protocol defaults to http:// if the URL does not
                             include it.
-      item                  HTTP header (key:value) or data field (key=value)
+      items                 HTTP header (key:value), data field (key=value) or raw
+                            JSON field (field:=value).
 
     optional arguments:
       -h, --help            show this help message and exit
+      --version             show program's version number and exit
       --json, -j            Serialize data items as a JSON object and set Content-
                             Type to application/json, if not specified.
       --form, -f            Serialize data items as form values and set Content-
                             Type to application/x-www-form-urlencoded, if not
                             specified.
-      --traceback           Print a full exception traceback should one occur.
+      --traceback           Print exception traceback should one occur.
+      --pretty, -p          If stdout is a terminal, the response is prettified by
+                            default (colorized and indented if it is JSON). This
+                            flag ensures prettifying even when stdout is
+                            redirected.
       --ugly, -u            Do not prettify the response.
       --headers, -t         Print only the response headers.
       --body, -b            Print only the response body.
-      --request, -r         Print only the response body.
       --style STYLE, -s STYLE
                             Output coloring style, one of autumn, borland, bw,
                             colorful, default, emacs, friendly, fruity, manni,
