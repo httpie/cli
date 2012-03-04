@@ -14,16 +14,10 @@ if sys.version_info < (2, 7):
     requirements.append('argparse>=1.2.1')
 
 
-try:
-    long_description = open('README.md').read()
-except IOError:
-    long_description = ''
-
-
 setup(
     name='httpie',version=httpie.__version__,
     description=httpie.__doc__.strip(),
-    long_description=long_description,
+    long_description=open('README.md').read(),
     url='http://httpie.org/',
     download_url='https://github.com/jkbr/httpie',
     author=httpie.__author__,
