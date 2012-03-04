@@ -101,3 +101,7 @@ Most of the flags mirror the arguments you would use with `requests.request`. Se
       --file PATH           File to multipart upload
       --timeout TIMEOUT     Float describes the timeout of the request (Use
                             socket.setdefaulttimeout() as fallback).
+
+### Changelog
+
+* [0.1.5](https://github.com/jkbr/httpie/compare/0.1.4...0.1.5) (2012-03-04)
