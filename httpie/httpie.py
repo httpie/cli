@@ -126,6 +126,7 @@ def main(args=None,
     headers = CaseInsensitiveDict()
     headers['User-Agent'] = DEFAULT_UA
     data = {}
+    params = {}
     for item in args.items:
         if item.sep == SEP_COMMON:
             target = headers
@@ -133,7 +134,8 @@ def main(args=None,
             if not stdin_isatty:
                 parser.error('Request body (stdin) and request '
                             'data (key=value) cannot be mixed.')
-            target = data
+
+            target = data if args.method.lower() != 'get' else params
         target[item.key] = item.value
 
     if not stdin_isatty:
@@ -155,6 +157,7 @@ def main(args=None,
             url=args.url if '://' in args.url else 'http://%s' % args.url,
             headers=headers,
             data=data,
+            params=params,
             verify=True if args.verify == 'yes' else args.verify,
             timeout=args.timeout,
             auth=(args.auth.key, args.auth.value) if args.auth else None,
