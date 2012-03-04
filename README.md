@@ -34,7 +34,7 @@ Will issue the following request:
 
     {"name": "John", "email": "john@example.org"}
 
-You can pass other types then just strings using the `field:=value` notation. It allows you to set arbitrary JSON to the data fields:
+You can pass other types than just strings using the `field:=value` notation. It allows you to set arbitrary JSON to the data fields:
 
     http PUT httpie.org/pies bool:=true list:=[1,2,3] 'object:={"a": "b", "c": "d"}'
 

@@ -1,6 +1,8 @@
 import unittest
+import argparse
 from StringIO import StringIO
 from httpie import __main__
+from httpie import cli
 
 
 TERMINAL_COLOR_END = '\x1b[39m'
@@ -17,7 +19,43 @@ def http(*args, **kwargs):
     return stdout.getvalue()
 
 
-# TODO: moar!
+class TestItemParsing(unittest.TestCase):
+
+    def setUp(self):
+        self.kv = cli.KeyValueType(
+            cli.SEP_HEADERS,
+            cli.SEP_DATA,
+            cli.SEP_DATA_RAW_JSON
+        )
+
+    def test_invalid_items(self):
+        items = ['no-separator']
+        for item in items:
+            with self.assertRaises(argparse.ArgumentTypeError):
+                self.kv(item)
+
+    def test_valid_items(self):
+        headers, data = cli.parse_items([
+            self.kv('string=value'),
+            self.kv('header:value'),
+            self.kv('list:=["a", 1, {}, false]'),
+            self.kv('obj:={"a": "b"}'),
+            self.kv('eh:'),
+            self.kv('ed='),
+            self.kv('bool:=true'),
+        ])
+        self.assertDictEqual(headers, {
+            'header': 'value',
+            'eh': ''
+        })
+        self.assertDictEqual(data, {
+            "ed": "",
+            "string": "value",
+            "bool": True,
+            "list": ["a", 1, {}, False],
+            "obj": {"a": "b"}
+        })
+
 
 class TestHTTPie(unittest.TestCase):
 
