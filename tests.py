@@ -1,3 +1,4 @@
+import sys
 import unittest
 import argparse
 from StringIO import StringIO
@@ -21,25 +22,14 @@ def http(*args, **kwargs):
 
 class BaseTest(unittest.TestCase):
 
-    def assertIn(self, member, container, msg=None):
-        sup = super(BaseTest, self)
-        if hasattr('sup', 'assertIn'):
-            sup.assertIn(member, container, msg)
-        else:
+    if sys.version < (2, 7):
+        def assertIn(self, member, container, msg=None):
             self.assert_(member in container, msg)
 
-    def assertNotIn(self, member, container, msg=None):
-        sup = super(BaseTest, self)
-        if hasattr(sup, 'assertNotIn'):
-            sup.assertNotIn(member, container, msg)
-        else:
+        def assertNotIn(self, member, container, msg=None):
             self.assert_(member not in container, msg)
 
-    def assertDictEqual(self, d1, d2, msg=None):
-        sup = super(BaseTest, self)
-        if hasattr(sup, 'assertDictEqual'):
-            sup.assertDictEqual(d1, d2, msg)
-        else:
+        def assertDictEqual(self, d1, d2, msg=None):
             self.assertEqual(set(d1.keys()), set(d2.keys()), msg)
             self.assertEqual(sorted(d1.values()), sorted(d2.values()), msg)
 
