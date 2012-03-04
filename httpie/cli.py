@@ -73,6 +73,7 @@ def _(text):
 
 
 parser = argparse.ArgumentParser(description=doc.strip(),)
+parser.add_argument('--version', action='version', version=version)
 
 # Content type.
 #############################################
