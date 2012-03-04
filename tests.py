@@ -30,18 +30,18 @@ class BaseTest(unittest.TestCase):
 
     def assertNotIn(self, member, container, msg=None):
         sup = super(BaseTest, self)
-        if hasattr('sup', 'assertNotIn'):
-            sup.assertIn(member, container, msg)
+        if hasattr(sup, 'assertNotIn'):
+            sup.assertNotIn(member, container, msg)
         else:
             self.assert_(member not in container, msg)
 
     def assertDictEqual(self, d1, d2, msg=None):
         sup = super(BaseTest, self)
-        if hasattr('sup', 'assertDictEqual'):
-            self.assertDictEqual(d1, d2, msg)
+        if hasattr(sup, 'assertDictEqual'):
+            sup.assertDictEqual(d1, d2, msg)
         else:
-            sup.assertEqual(set(d1.keys()), set(d2.keys()), msg)
-            sup.assertEqual(sorted(d1.values()), sorted(d2.values()), msg)
+            self.assertEqual(set(d1.keys()), set(d2.keys()), msg)
+            self.assertEqual(sorted(d1.values()), sorted(d2.values()), msg)
 
 
 class TestItemParsing(BaseTest):
