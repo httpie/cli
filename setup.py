@@ -18,7 +18,7 @@ setup(
     name='httpie',
     version=httpie.__version__,
     description=httpie.__doc__.strip(),
-    long_description=open('README.md').read(),
+    long_description=open('README.rst').read(),
     url='http://httpie.org/',
     download_url='https://github.com/jkbr/httpie',
     author=httpie.__author__,
