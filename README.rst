@@ -158,4 +158,5 @@ Contributors
 Changelog
 ---------
 
+* `New in development version <https://github.com/jkbr/httpie/compare/0.1.6...master>`_
 * `0.1.6 <https://github.com/jkbr/httpie/compare/0.1.4...0.1.6>`_ (2012-03-04)
