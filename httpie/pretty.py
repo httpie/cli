@@ -8,8 +8,8 @@ from pygments.formatters.terminal256 import Terminal256Formatter
 from pygments.formatters.terminal import TerminalFormatter
 from pygments.lexer import  RegexLexer, bygroups
 from pygments.styles import get_style_by_name, STYLE_MAP
-from . import solarized
 from .pygson import JSONLexer
+from . import solarized
 
 
 DEFAULT_STYLE = 'solarized'

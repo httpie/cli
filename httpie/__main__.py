@@ -2,6 +2,7 @@
 import os
 import sys
 import json
+from urlparse import urlparse
 import requests
 try:
     from collections import OrderedDict
@@ -18,6 +19,69 @@ TYPE_FORM = 'application/x-www-form-urlencoded; charset=utf-8'
 TYPE_JSON = 'application/json; charset=utf-8'
 
 
+class HTTPMessage(object):
+
+    def __init__(self, line, headers, body, content_type=None):
+        # {Request,Status}-Line
+        self.line = line
+        self.headers = headers
+        self.body = body
+        self.content_type = content_type
+
+
+def format_http_message(message, prettifier=None,
+                        with_headers=True, with_body=True):
+    bits = []
+    if with_headers:
+        if prettifier:
+            bits.append(prettifier.headers(message.line))
+            bits.append(prettifier.headers(message.headers))
+        else:
+            bits.append(message.line)
+            bits.append(message.headers)
+        if with_body:
+            bits.append('\n')
+    if with_body:
+        if prettifier and message.content_type:
+            bits.append(prettifier.body(message.body, message.content_type))
+        else:
+            bits.append(message.body)
+    bits = [bit.strip() for bit in bits]
+    bits.append('')
+    return '\n'.join(bits)
+
+
+def make_request_message(request):
+    """Make an `HTTPMessage` from `requests.models.Request`."""
+    url = urlparse(request.url)
+    request_headers = dict(request.headers)
+    request_headers['Host'] = url.netloc
+    return HTTPMessage(
+        line='{method} {path} HTTP/1.1'.format(
+                method=request.method,
+                path=url.path),
+        headers='\n'.join('%s: %s' % (name, value)
+                          for name, value
+                          in request_headers.iteritems()),
+        body=request._enc_data,
+        content_type=request_headers.get('Content-Type')
+    )
+
+
+def make_response_message(response):
+    """Make an `HTTPMessage` from `requests.models.Response`."""
+    encoding = response.encoding or 'ISO-8859-1'
+    original = response.raw._original_response
+    response_headers = response.headers
+    return HTTPMessage(
+        line='HTTP/{version} {status} {reason}'.format(
+                version='.'.join(str(original.version)),
+                status=original.status, reason=original.reason,),
+        headers=str(original.msg).decode(encoding),
+        body=response.content.decode(encoding) if response.content else u'',
+        content_type=response_headers.get('Content-Type'))
+
+
 def main(args=None,
          stdin=sys.stdin,
          stdin_isatty=sys.stdin.isatty(),
@@ -28,7 +92,8 @@ def main(args=None,
 
     args = parser.parse_args(args if args is not None else sys.argv[1:])
     do_prettify = (args.prettify is True or
-                     (args.prettify == cli.PRETTIFY_STDOUT_TTY_ONLY and stdout_isatty))
+                   (args.prettify == cli.PRETTIFY_STDOUT_TTY_ONLY
+                    and stdout_isatty))
 
     # Parse request headers and data from the command line.
     headers = CaseInsensitiveDict()
@@ -79,36 +144,31 @@ def main(args=None,
         sys.stderr.write(str(e.message) + '\n')
         sys.exit(1)
 
-    # Reconstruct the raw response.
-    encoding = response.encoding or 'ISO-8859-1'
-    original = response.raw._original_response
-    status_line, headers, body = (
-        'HTTP/{version} {status} {reason}'.format(
-            version='.'.join(str(original.version)),
-            status=original.status, reason=original.reason,
-        ),
-        str(original.msg).decode(encoding),
-        response.content.decode(encoding) if response.content else u''
-    )
+    prettifier = pretty.PrettyHttp(args.style) if do_prettify else None
 
-    if do_prettify:
-        prettify = pretty.PrettyHttp(args.style)
-        if args.print_headers:
-            status_line = prettify.headers(status_line)
-            headers = prettify.headers(headers)
-        if args.print_body and 'Content-Type' in response.headers:
-            body = prettify.body(body, response.headers['Content-Type'])
+    output_request = (cli.OUT_REQUEST_HEADERS in args.output_options
+                      or cli.OUT_REQUEST_BODY in args.output_options)
 
-    # Output.
-    # TODO: preserve leading/trailing whitespaces in the body.
-    #        Some of the Pygments styles add superfluous line breaks.
-    if args.print_headers:
-        stdout.write(status_line.strip())
-        stdout.write('\n')
-        stdout.write(headers.strip().encode('utf-8'))
-        stdout.write('\n\n')
-    if args.print_body:
-        stdout.write(body.strip().encode('utf-8'))
+    output_response = (cli.OUT_RESPONSE_HEADERS in args.output_options
+                      or cli.OUT_RESPONSE_BODY in args.output_options)
+
+    if output_request:
+        stdout.write(format_http_message(
+            message=make_request_message(response.request),
+            prettifier=prettifier,
+            with_headers=cli.OUT_REQUEST_HEADERS in args.output_options,
+            with_body=cli.OUT_REQUEST_BODY in args.output_options
+        ).encode('utf-8'))
+        if output_response:
+            stdout.write('\n')
+
+    if output_response:
+        stdout.write(format_http_message(
+            message=make_response_message(response),
+            prettifier=prettifier,
+            with_headers=cli.OUT_RESPONSE_HEADERS in args.output_options,
+            with_body=cli.OUT_RESPONSE_BODY in args.output_options
+        ).encode('utf-8'))
         stdout.write('\n')
 
 

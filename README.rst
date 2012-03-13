@@ -89,10 +89,12 @@ Flags
 Most of the flags mirror the arguments understood by ``requests.request``. See ``http -h`` for more details::
 
     usage: http [-h] [--version] [--json | --form] [--traceback]
-                [--pretty | --ugly] [--headers | --body] [--style STYLE]
-                [--auth AUTH] [--verify VERIFY] [--proxy PROXY]
-                [--allow-redirects] [--file PATH] [--timeout TIMEOUT]
-                METHOD URL [items [items ...]]
+                       [--pretty | --ugly]
+                       [--print OUTPUT_OPTIONS | --headers | --body]
+                       [--style STYLE] [--auth AUTH] [--verify VERIFY]
+                       [--proxy PROXY] [--allow-redirects] [--file PATH]
+                       [--timeout TIMEOUT]
+                       METHOD URL [items [items ...]]
 
     HTTPie - cURL for humans.
 
@@ -113,13 +115,21 @@ Most of the flags mirror the arguments understood by ``requests.request``. See `
                             Type to application/x-www-form-urlencoded, if not
                             specified.
       --traceback           Print exception traceback should one occur.
-      --pretty, -p          If stdout is a terminal, the response is prettified by
+      --pretty              If stdout is a terminal, the response is prettified by
                             default (colorized and indented if it is JSON). This
                             flag ensures prettifying even when stdout is
                             redirected.
       --ugly, -u            Do not prettify the response.
-      --headers, -t         Print only the response headers.
-      --body, -b            Print only the response body.
+      --print OUTPUT_OPTIONS, -p OUTPUT_OPTIONS
+                            String specifying what should the output contain. "H"
+                            stands for request headers and "B" for request body.
+                            "h" stands for response headers and "b" for response
+                            body. Defaults to "hb" which means that the whole
+                            response (headers and body) is printed.
+      --headers, -t         Print only the response headers. It's a shortcut for
+                            --print=h.
+      --body, -b            Print only the response body. It's a shortcut for
+                            --print=b.
       --style STYLE, -s STYLE
                             Output coloring style, one of autumn, borland, bw,
                             colorful, default, emacs, friendly, fruity, manni,

@@ -12,6 +12,16 @@ SEP_DATA = '='
 SEP_DATA_RAW_JSON = ':='
 PRETTIFY_STDOUT_TTY_ONLY = object()
 
+OUT_REQUEST_HEADERS = 'H'
+OUT_REQUEST_BODY = 'B'
+OUT_RESPONSE_HEADERS = 'h'
+OUT_RESPONSE_BODY = 'b'
+
+OUTPUT_OPTIONS = [OUT_REQUEST_HEADERS,
+                  OUT_REQUEST_BODY,
+                  OUT_RESPONSE_HEADERS,
+                  OUT_RESPONSE_BODY]
+
 
 class ParseError(Exception):
     pass
@@ -72,7 +82,19 @@ def _(text):
     return ' '.join(text.strip().split())
 
 
-parser = argparse.ArgumentParser(description=doc.strip(),)
+class HTTPieArgumentParser(argparse.ArgumentParser):
+    def parse_args(self, args=None, namespace=None):
+        args = super(HTTPieArgumentParser, self).parse_args(args, namespace)
+        self._validate_output_options(args)
+        return args
+
+    def _validate_output_options(self, args):
+        unknown_output_options = set(args.output_options) - set(OUTPUT_OPTIONS)
+        if unknown_output_options:
+            self.error('Unknown output options: %s' % ','.join(unknown_output_options))
+
+
+parser = HTTPieArgumentParser(description=doc.strip(),)
 parser.add_argument('--version', action='version', version=version)
 
 # Content type.
@@ -96,7 +118,7 @@ group_type.add_argument(
 )
 
 
-# Output options.
+# output_options options.
 #############################################
 
 parser.add_argument(
@@ -108,13 +130,12 @@ parser.add_argument(
 
 prettify = parser.add_mutually_exclusive_group(required=False)
 prettify.add_argument(
-    '--pretty', '-p', dest='prettify', action='store_true',
+    '--pretty', dest='prettify', action='store_true',
     default=PRETTIFY_STDOUT_TTY_ONLY,
     help=_('''
-        If stdout is a terminal,
-        the response is prettified by default (colorized and
-        indented if it is JSON). This flag ensures
-        prettifying even when stdout is redirected.
+        If stdout is a terminal, the response is prettified
+        by default (colorized and indented if it is JSON).
+        This flag ensures prettifying even when stdout is redirected.
     ''')
 )
 prettify.add_argument(
@@ -124,21 +145,41 @@ prettify.add_argument(
     ''')
 )
 
-only = parser.add_mutually_exclusive_group(required=False)
-only.add_argument(
-    '--headers', '-t', dest='print_body',
-    action='store_false', default=True,
-    help=('''
+output_options = parser.add_mutually_exclusive_group(required=False)
+output_options.add_argument('--print', '-p', dest='output_options',
+    default=OUT_RESPONSE_HEADERS + OUT_RESPONSE_BODY,
+    help=_('''
+        String specifying what should the output contain.
+        "{request_headers}" stands for request headers and
+        "{request_body}" for request body.
+        "{response_headers}" stands for response headers and
+        "{response_body}" for response body.
+        Defaults to "hb" which means that the whole response
+        (headers and body) is printed.
+    '''.format(
+        request_headers=OUT_REQUEST_HEADERS,
+        request_body=OUT_REQUEST_BODY,
+        response_headers=OUT_RESPONSE_HEADERS,
+        response_body=OUT_RESPONSE_BODY,
+    ))
+)
+output_options.add_argument(
+    '--headers', '-t', dest='output_options',
+    action='store_const', const=OUT_RESPONSE_HEADERS,
+    help=_('''
         Print only the response headers.
-    ''')
+        It's a shortcut for --print={0}.
+    '''.format(OUT_RESPONSE_HEADERS))
 )
-only.add_argument(
-    '--body', '-b', dest='print_headers',
-    action='store_false', default=True,
-    help=('''
+output_options.add_argument(
+    '--body', '-b', dest='output_options',
+    action='store_const', const=OUT_RESPONSE_BODY,
+    help=_('''
         Print only the response body.
-    ''')
+        It's a shortcut for --print={0}.
+    '''.format(OUT_RESPONSE_BODY))
 )
+
 parser.add_argument(
     '--style', '-s', dest='style', default='solarized', metavar='STYLE',
     choices=pretty.AVAILABLE_STYLES,
