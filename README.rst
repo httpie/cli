@@ -40,15 +40,18 @@ Synopsis::
 
     http [flags] METHOD URL [items]
 
-There are three types of key-value pair items available:
+There are four types of key-value pair items available:
 
 Headers
    Arbitrary HTTP headers. The ``:`` character is used to separate a header's name from its value, e.g., ``X-API-Token:123``.
 
-Simple data items
+Simple data fields
   Data items are included in the request body. Depending on the ``Content-Type``, they are automatically serialized as a JSON ``Object`` (default) or ``application/x-www-form-urlencoded`` (the ``-f`` flag). Data items use ``=`` as the separator, e.g., ``hello=world``.
 
-Raw JSON items
+File fields
+  Only available with ``-f`` / ``--form``. Use ``@`` as the separator, e.g., ``screenshot@/path/to/file.png``.
+
+Raw JSON fields
   This item type is needed when ``Content-Type`` is JSON and a field's value is a ``Boolean``, ``Number``,  nested ``Object`` or an ``Array``, because simple data items are always serialized as ``String``. E.g. ``pies:=[1,2,3]``.
 
 Examples
@@ -77,6 +80,17 @@ It can easily be changed to a 'form' request using the ``-f`` (or ``--form``) fl
 
     age=29&name=John&email=john%40example.org
 
+It is also possible to send ``multipart/form-data`` requests, i.e., to simulate a file upload form submission. It is done using the ``--form`` / ``-f`` flag and passing one or more file fields::
+
+    http -f POST example.com/job-application email=John cv@~/Documents/cv.pdf
+
+The above will send a request equivalent to submitting the following form::
+
+    <form enctype="multipart/form-data" method="post" action="http://example.com/job-application" >
+        <input type="text" name="email" />
+        <input type="file" name="cv" />
+    </form>
+
 A whole request body can be passed in via ``stdin`` instead::
 
     echo '{"name": "John"}' | http PATCH example.com/person/1 X-API-Token:123
@@ -88,14 +102,6 @@ Flags
 ^^^^^
 Most of the flags mirror the arguments understood by ``requests.request``. See ``http -h`` for more details::
 
-    usage: http [-h] [--version] [--json | --form] [--traceback]
-                       [--pretty | --ugly]
-                       [--print OUTPUT_OPTIONS | --headers | --body]
-                       [--style STYLE] [--auth AUTH] [--verify VERIFY]
-                       [--proxy PROXY] [--allow-redirects] [--file PATH]
-                       [--timeout TIMEOUT]
-                       METHOD URL [items [items ...]]
-
     HTTPie - cURL for humans.
 
     positional arguments:
@@ -103,17 +109,20 @@ Most of the flags mirror the arguments understood by ``requests.request``. See `
                             PUT, DELETE, PATCH, ...).
       URL                   Protocol defaults to http:// if the URL does not
                             include it.
-      items                 HTTP header (key:value), data field (key=value) or raw
-                            JSON field (field:=value).
+      items                 HTTP header (header:value), data field (field=value),
+                            raw JSON field (field:=value) or file field
+                            (field@/path/to/file).
 
     optional arguments:
       -h, --help            show this help message and exit
       --version             show program's version number and exit
       --json, -j            Serialize data items as a JSON object and set Content-
                             Type to application/json, if not specified.
-      --form, -f            Serialize data items as form values and set Content-
-                            Type to application/x-www-form-urlencoded, if not
-                            specified.
+      --form, -f            Serialize fields as form values. The Content-Type is
+                            set to application/x-www-form-urlencoded. The presence
+                            of any file fields results into a multipart/form-data
+                            request. Note that Content-Type is not automatically
+                            set if explicitely specified.
       --traceback           Print exception traceback should one occur.
       --pretty              If stdout is a terminal, the response is prettified by
                             default (colorized and indented if it is JSON). This
@@ -126,10 +135,11 @@ Most of the flags mirror the arguments understood by ``requests.request``. See `
                             "h" stands for response headers and "b" for response
                             body. Defaults to "hb" which means that the whole
                             response (headers and body) is printed.
-      --headers, -t         Print only the response headers. It's a shortcut for
+      --verbose, -v         Print the whole request as well as response. Shortcut
+                            for --print=HBhb.
+      --headers, -t         Print only the response headers. Shortcut for
                             --print=h.
-      --body, -b            Print only the response body. It's a shortcut for
-                            --print=b.
+      --body, -b            Print only the response body. Shortcut for --print=b.
       --style STYLE, -s STYLE
                             Output coloring style, one of autumn, borland, bw,
                             colorful, default, emacs, friendly, fruity, manni,
@@ -144,10 +154,8 @@ Most of the flags mirror the arguments understood by ``requests.request``. See `
                             http:foo.bar:3128).
       --allow-redirects     Set this flag if full redirects are allowed (e.g. re-
                             POST-ing of data at new ``Location``)
-      --file PATH           File to multipart upload
       --timeout TIMEOUT     Float describes the timeout of the request (Use
                             socket.setdefaulttimeout() as fallback).
-
 
 Contributors
 ------------

@@ -100,12 +100,22 @@ def main(args=None,
     headers = CaseInsensitiveDict()
     headers['User-Agent'] = DEFAULT_UA
     data = OrderedDict()
+    files = OrderedDict()
     try:
-        cli.parse_items(items=args.items, headers=headers, data=data)
+        cli.parse_items(items=args.items, headers=headers,
+                        data=data, files=files)
     except cli.ParseError as e:
         if args.traceback:
             raise
         parser.error(e.message)
+
+    if files and not args.form:
+        # We could just switch to --form automatically here,
+        # but I think it's better to make it explicit.
+        parser.error(
+            ' You need to set the --form / -f flag to'
+            ' to issue a multipart request. File fields: %s'
+            % ','.join(files.keys()))
 
     if not stdin_isatty:
         if data:
@@ -113,13 +123,14 @@ def main(args=None,
                                 'data (key=value) cannot be mixed.')
         data = stdin.read()
 
+
     # JSON/Form content type.
     if args.json or (not args.form and data):
         if stdin_isatty:
             data = json.dumps(data)
-        if 'Content-Type' not in headers and (data or args.json):
+        if not files and ('Content-Type' not in headers and (data or args.json)):
             headers['Content-Type'] = TYPE_JSON
-    elif 'Content-Type' not in headers:
+    elif not files and 'Content-Type' not in headers:
         headers['Content-Type'] = TYPE_FORM
 
     # Fire the request.
@@ -133,7 +144,7 @@ def main(args=None,
             timeout=args.timeout,
             auth=(args.auth.key, args.auth.value) if args.auth else None,
             proxies=dict((p.key, p.value) for p in args.proxy),
-            files=dict((os.path.basename(f.name), f) for f in args.file),
+            files=files,
             allow_redirects=args.allow_redirects,
         )
     except (KeyboardInterrupt, SystemExit):

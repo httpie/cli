@@ -1,3 +1,4 @@
+import os
 import json
 import argparse
 from collections import namedtuple
@@ -10,6 +11,7 @@ SEP_COMMON = ':'
 SEP_HEADERS = SEP_COMMON
 SEP_DATA = '='
 SEP_DATA_RAW_JSON = ':='
+SEP_FILES = '@'
 PRETTIFY_STDOUT_TTY_ONLY = object()
 
 OUT_REQUEST_HEADERS = 'H'
@@ -49,16 +51,28 @@ class KeyValueType(object):
         return KeyValue(key=key, value=value, sep=sep, orig=string)
 
 
-def parse_items(items, data=None, headers=None):
-    """Parse `KeyValueType` `items` into `data` and `headers`."""
+def parse_items(items, data=None, headers=None, files=None):
+    """Parse `KeyValueType` `items` into `data`, `headers` and `files`."""
     if headers is None:
         headers = {}
     if data is None:
         data = {}
+    if files is None:
+        files = {}
     for item in items:
         value = item.value
+        key = item.key
         if item.sep == SEP_HEADERS:
             target = headers
+        elif item.sep == SEP_FILES:
+            try:
+                value = open(os.path.expanduser(item.value), 'r')
+            except IOError as e:
+                raise ParseError(
+                    'Invalid argument %r. %s' % (item.orig, e))
+            if not key:
+                key = os.path.basename(value.name)
+            target = files
         elif item.sep in [SEP_DATA, SEP_DATA_RAW_JSON]:
             if item.sep == SEP_DATA_RAW_JSON:
                 try:
@@ -69,12 +83,12 @@ def parse_items(items, data=None, headers=None):
         else:
             raise ParseError('%s is not valid item' % item.orig)
 
-        if item.key in target:
+        if key in target:
             ParseError('duplicate item %s (%s)' % (item.key, item.orig))
 
-        target[item.key] = value
+        target[key] = value
 
-    return headers, data
+    return headers, data, files
 
 
 def _(text):
@@ -111,9 +125,9 @@ group_type.add_argument(
 group_type.add_argument(
     '--form', '-f', action='store_true',
     help=_('''
-        Serialize data items as form values and set
-        Content-Type to application/x-www-form-urlencoded,
-         if not specified.
+        Serialize fields as form values. The Content-Type is set to application/x-www-form-urlencoded.
+        The presence of any file fields results into a multipart/form-data request.
+        Note that Content-Type is not automatically set if explicitely specified.
      ''')
 )
 
@@ -226,11 +240,6 @@ parser.add_argument(
     ''')
 )
 parser.add_argument(
-    '--file', metavar='PATH', type=argparse.FileType(),
-    default=[], action='append',
-    help='File to multipart upload'
-)
-parser.add_argument(
     '--timeout', type=float,
     help=_('''
         Float describes the timeout of the request
@@ -258,9 +267,10 @@ parser.add_argument(
 )
 parser.add_argument(
     'items', nargs='*',
-    type=KeyValueType(SEP_COMMON, SEP_DATA, SEP_DATA_RAW_JSON),
+    type=KeyValueType(SEP_COMMON, SEP_DATA, SEP_DATA_RAW_JSON, SEP_FILES),
     help=_('''
-        HTTP header (key:value), data field (key=value)
-        or raw JSON field (field:=value).
+        HTTP header (header:value), data field (field=value),
+        raw JSON field (field:=value)
+        or file field (field@/path/to/file).
     ''')
 )

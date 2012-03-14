@@ -1,7 +1,13 @@
+# coding:utf8
+import os
 import sys
 import unittest
 import argparse
 from StringIO import StringIO
+
+
+TESTS_ROOT = os.path.dirname(__file__)
+sys.path.insert(0, os.path.abspath(os.path.join(TESTS_ROOT, '..')))
 from httpie import __main__
 from httpie import cli
 
@@ -82,7 +88,7 @@ class TestHTTPie(BaseTest):
         self.assertIn('"foo": "bar"', response)
 
     def test_form(self):
-        response = http('POST', '--form', 'http://httpbin.org/post', 'foo=bar')
+        response = http('--form', 'POST', 'http://httpbin.org/post', 'foo=bar')
         self.assertIn('"foo": "bar"', response)
 
     def test_headers(self):
@@ -103,12 +109,26 @@ class TestPrettyFlag(BaseTest):
         self.assertNotIn(TERMINAL_COLOR_CHECK, r)
 
     def test_force_pretty(self):
-        r = http('GET', '--pretty', 'http://httpbin.org/get', stdout_isatty=False)
+        r = http('--pretty', 'GET', 'http://httpbin.org/get', stdout_isatty=False)
         self.assertIn(TERMINAL_COLOR_CHECK, r)
 
     def test_force_ugly(self):
-        r = http('GET', '--ugly', 'http://httpbin.org/get', stdout_isatty=True)
+        r = http('--ugly', 'GET', 'http://httpbin.org/get', stdout_isatty=True)
         self.assertNotIn(TERMINAL_COLOR_CHECK, r)
+
+
+class TestFileUpload(BaseTest):
+
+    def test_non_existent_file_raises_parse_error(self):
+        self.assertRaises(cli.ParseError, http,
+            '--form', '--traceback',
+            'POST', 'http://httpbin.org/post',
+            'foo@/__does_not_exist__')
+
+    def test_upload_ok(self):
+        r = http('--form', 'POST', 'http://httpbin.org/post',
+             'test-file@%s' % os.path.join(TESTS_ROOT, 'file.txt'))
+        self.assertIn('"test-file": "__test_file_content__', r)
 
 
 if __name__ == '__main__':
