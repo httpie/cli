@@ -164,11 +164,19 @@ output_options.add_argument('--print', '-p', dest='output_options',
     ))
 )
 output_options.add_argument(
+    '--verbose', '-v', dest='output_options',
+    action='store_const', const=''.join(OUTPUT_OPTIONS),
+    help=_('''
+        Print the whole request as well as response.
+        Shortcut for --print={0}.
+    '''.format(''.join(OUTPUT_OPTIONS)))
+)
+output_options.add_argument(
     '--headers', '-t', dest='output_options',
     action='store_const', const=OUT_RESPONSE_HEADERS,
     help=_('''
         Print only the response headers.
-        It's a shortcut for --print={0}.
+        Shortcut for --print={0}.
     '''.format(OUT_RESPONSE_HEADERS))
 )
 output_options.add_argument(
@@ -176,7 +184,7 @@ output_options.add_argument(
     action='store_const', const=OUT_RESPONSE_BODY,
     help=_('''
         Print only the response body.
-        It's a shortcut for --print={0}.
+        Shortcut for --print={0}.
     '''.format(OUT_RESPONSE_BODY))
 )
 
