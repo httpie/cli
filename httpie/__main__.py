@@ -1,19 +1,19 @@
 #!/usr/bin/env python
-import os
 import sys
 import json
-from urlparse import urlparse
-import requests
 try:
     from collections import OrderedDict
 except ImportError:
     OrderedDict = dict
+import requests
+from requests.compat import urlparse, str
 from requests.structures import CaseInsensitiveDict
 from . import cli
 from . import pretty
 from . import __version__ as version
 
 
+NEW_LINE = str('\n')
 DEFAULT_UA = 'HTTPie/%s' % version
 TYPE_FORM = 'application/x-www-form-urlencoded; charset=utf-8'
 TYPE_JSON = 'application/json; charset=utf-8'
@@ -40,15 +40,14 @@ def format_http_message(message, prettifier=None,
             bits.append(message.line)
             bits.append(message.headers)
         if with_body and message.body:
-            bits.append('\n')
+            bits.append(NEW_LINE)
     if with_body and message.body:
         if prettifier and message.content_type:
             bits.append(prettifier.body(message.body, message.content_type))
         else:
             bits.append(message.body)
-    bits = [bit.strip() for bit in bits]
-    bits.append('')
-    return '\n'.join(bits)
+    bits.append(NEW_LINE)
+    return NEW_LINE.join(bit.strip() for bit in bits)
 
 
 def make_request_message(request):
@@ -61,9 +60,9 @@ def make_request_message(request):
         line='{method} {path} HTTP/1.1'.format(
                 method=request.method,
                 path=url.path or '/'),
-        headers='\n'.join('%s: %s' % (name, value)
+        headers=NEW_LINE.join(str('%s: %s') % (name, value)
                           for name, value
-                          in request_headers.iteritems()),
+                          in request_headers.items()),
         body=request._enc_data,
         content_type=request_headers.get('Content-Type')
     )
@@ -78,8 +77,8 @@ def make_response_message(response):
         line='HTTP/{version} {status} {reason}'.format(
                 version='.'.join(str(original.version)),
                 status=original.status, reason=original.reason,),
-        headers=str(original.msg).decode(encoding),
-        body=response.content.decode(encoding) if response.content else u'',
+        headers=str(original.msg),
+        body=response.content.decode(encoding) if response.content else '',
         content_type=response_headers.get('Content-Type'))
 
 
@@ -123,7 +122,6 @@ def main(args=None,
                                 'data (key=value) cannot be mixed.')
         data = stdin.read()
 
-
     # JSON/Form content type.
     if args.json or (not args.form and data):
         if stdin_isatty:
@@ -148,12 +146,12 @@ def main(args=None,
             allow_redirects=args.allow_redirects,
         )
     except (KeyboardInterrupt, SystemExit):
-        sys.stderr.write('\n')
+        sys.stderr.write(NEW_LINE)
         sys.exit(1)
     except Exception as e:
         if args.traceback:
             raise
-        sys.stderr.write(str(e.message) + '\n')
+        sys.stderr.write(str(e.message) + NEW_LINE)
         sys.exit(1)
 
     prettifier = pretty.PrettyHttp(args.style) if do_prettify else None
@@ -170,9 +168,9 @@ def main(args=None,
             prettifier=prettifier,
             with_headers=cli.OUT_REQUEST_HEADERS in args.output_options,
             with_body=cli.OUT_REQUEST_BODY in args.output_options
-        ).encode('utf-8'))
+        ))
         if output_response:
-            stdout.write('\n')
+            stdout.write(NEW_LINE)
 
     if output_response:
         stdout.write(format_http_message(
@@ -180,8 +178,8 @@ def main(args=None,
             prettifier=prettifier,
             with_headers=cli.OUT_RESPONSE_HEADERS in args.output_options,
             with_body=cli.OUT_RESPONSE_BODY in args.output_options
-        ).encode('utf-8'))
-        stdout.write('\n')
+        ))
+        stdout.write(NEW_LINE)
 
 
 if __name__ == '__main__':

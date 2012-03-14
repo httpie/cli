@@ -1,9 +1,10 @@
-# coding:utf8
+# coding:utf-8
 import os
 import sys
 import unittest
 import argparse
-from StringIO import StringIO
+from requests.compat import StringIO, is_py26, str
+
 
 TESTS_ROOT = os.path.dirname(__file__)
 sys.path.insert(0, os.path.realpath(os.path.join(TESTS_ROOT, '..')))
@@ -12,9 +13,7 @@ from httpie import cli
 
 
 TEST_FILE = os.path.join(TESTS_ROOT, 'file.txt')
-
-
-TERMINAL_COLOR_CHECK = '\x1b['
+TERMINAL_COLOR_PRESENCE_CHECK = '\x1b['
 
 
 def http(*args, **kwargs):
@@ -30,7 +29,7 @@ def http(*args, **kwargs):
 
 class BaseTest(unittest.TestCase):
 
-    if sys.version < (2, 7):
+    if is_py26:
         def assertIn(self, member, container, msg=None):
             self.assert_(member in container, msg)
 
@@ -88,6 +87,10 @@ class TestHTTPie(BaseTest):
     def test_get(self):
         http('GET', 'http://httpbin.org/get')
 
+    def test_verbose(self):
+        r = http('--verbose', 'GET', 'http://httpbin.org/get', 'test-header:__test__')
+        self.assertEqual(r.count('__test__'), 2)
+
     def test_json(self):
         response = http('POST', 'http://httpbin.org/post', 'foo=bar')
         self.assertIn('"foo": "bar"', response)
@@ -107,19 +110,19 @@ class TestPrettyFlag(BaseTest):
 
     def test_pretty_enabled_by_default(self):
         r = http('GET', 'http://httpbin.org/get', stdout_isatty=True)
-        self.assertIn(TERMINAL_COLOR_CHECK, r)
+        self.assertIn(TERMINAL_COLOR_PRESENCE_CHECK, r)
 
     def test_pretty_enabled_by_default_unless_stdin_redirected(self):
         r = http('GET', 'http://httpbin.org/get', stdout_isatty=False)
-        self.assertNotIn(TERMINAL_COLOR_CHECK, r)
+        self.assertNotIn(TERMINAL_COLOR_PRESENCE_CHECK, r)
 
     def test_force_pretty(self):
         r = http('--pretty', 'GET', 'http://httpbin.org/get', stdout_isatty=False)
-        self.assertIn(TERMINAL_COLOR_CHECK, r)
+        self.assertIn(TERMINAL_COLOR_PRESENCE_CHECK, r)
 
     def test_force_ugly(self):
         r = http('--ugly', 'GET', 'http://httpbin.org/get', stdout_isatty=True)
-        self.assertNotIn(TERMINAL_COLOR_CHECK, r)
+        self.assertNotIn(TERMINAL_COLOR_PRESENCE_CHECK, r)
 
 
 class TestFileUpload(BaseTest):
