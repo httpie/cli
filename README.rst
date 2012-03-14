@@ -8,7 +8,7 @@ HTTPie does so by providing an ``http`` command that allows for issuing arbitrar
 .. image:: https://github.com/jkbr/httpie/raw/master/httpie.png
     :alt: HTTPie compared to cURL
 
-Under the hood, HTTPie uses the excellent `Requests <http://python-requests.org>`_ and `Pygments <http://pygments.org/>`_ Python libraries. Python >= 2.6 is supported (including Python 3.x).
+Under the hood, HTTPie uses the excellent `Requests <http://python-requests.org>`_ and `Pygments <http://pygments.org/>`_ Python libraries. Python 2.6+ is supported (including 3.x).
 
 Installation
 ------------

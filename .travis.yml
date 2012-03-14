@@ -4,9 +4,8 @@ python:
   - 2.7
   - 3.1
   - 3.2
-  - 3.3
 script: python tests/tests.py
 install:
   - pip install requests pygments
-  - "if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install argparse; fi"
+  - "if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]] || [[ $TRAVIS_PYTHON_VERSION == '3.1' ]]; then echo pip install argparse; fi"
 
