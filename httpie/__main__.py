@@ -55,7 +55,8 @@ def make_request_message(request):
     """Make an `HTTPMessage` from `requests.models.Request`."""
     url = urlparse(request.url)
     request_headers = dict(request.headers)
-    request_headers['Host'] = url.netloc
+    if 'Host' not in request_headers:
+        request_headers['Host'] = url.netloc
     return HTTPMessage(
         line='{method} {path} HTTP/1.1'.format(
                 method=request.method,
