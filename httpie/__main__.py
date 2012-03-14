@@ -60,7 +60,7 @@ def make_request_message(request):
     return HTTPMessage(
         line='{method} {path} HTTP/1.1'.format(
                 method=request.method,
-                path=url.path),
+                path=url.path or '/'),
         headers='\n'.join('%s: %s' % (name, value)
                           for name, value
                           in request_headers.iteritems()),
