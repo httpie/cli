@@ -42,17 +42,18 @@ Synopsis::
 
 There are four types of key-value pair items available:
 
-Headers
+Headers (``Name:Value``)
    Arbitrary HTTP headers. The ``:`` character is used to separate a header's name from its value, e.g., ``X-API-Token:123``.
 
-Simple data fields
+Simple data fields (``field=value``)
   Data items are included in the request body. Depending on the ``Content-Type``, they are automatically serialized as a JSON ``Object`` (default) or ``application/x-www-form-urlencoded`` (the ``-f`` flag). Data items use ``=`` as the separator, e.g., ``hello=world``.
 
-File fields
-  Only available with ``-f`` / ``--form``. Use ``@`` as the separator, e.g., ``screenshot@/path/to/file.png``.
-
-Raw JSON fields
+Raw JSON fields (``field:=value``)
   This item type is needed when ``Content-Type`` is JSON and a field's value is a ``Boolean``, ``Number``,  nested ``Object`` or an ``Array``, because simple data items are always serialized as ``String``. E.g. ``pies:=[1,2,3]``.
+
+File fields (``field@/path/to/file``)
+  Only available with ``-f`` / ``--form``. Use ``@`` as the separator, e.g., ``screenshot@/path/to/file.png``. The presence of a file field results into a ``multipart/form-data`` request.
+
 
 Examples
 ^^^^^^^^
@@ -82,12 +83,12 @@ It can easily be changed to a 'form' request using the ``-f`` (or ``--form``) fl
 
 It is also possible to send ``multipart/form-data`` requests, i.e., to simulate a file upload form submission. It is done using the ``--form`` / ``-f`` flag and passing one or more file fields::
 
-    http -f POST example.com/job-application email=John cv@~/Documents/cv.pdf
+    http -f POST example.com/jobs name=John cv@~/Documents/cv.pdf
 
-The above will send a request equivalent to submitting the following form::
+The above will send the same request as if the following HTML form were submitted::
 
-    <form enctype="multipart/form-data" method="post" action="http://example.com/job-application" >
-        <input type="text" name="email" />
+    <form enctype="multipart/form-data" method="post" action="http://example.com/jobs">
+        <input type="text" name="name" />
         <input type="file" name="cv" />
     </form>
 
