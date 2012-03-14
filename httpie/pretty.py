@@ -26,9 +26,14 @@ class HTTPLexer(RegexLexer):
     tokens = {
         'root': [
             (r'\s+', token.Text),
+            # Request-Line
+            (r'([A-Z]+\s+)(/.*?)(\s+HTTP/[\d.]+)', bygroups(
+             token.Keyword, token.String, token.Keyword)),
+            # Status-Line
             (r'(HTTP/[\d.]+\s+)(\d+)(\s+.+)', bygroups(
-             token.Operator, token.Number, token.String)),
-            (r'(.*?:)(.+)',  bygroups(token.Name, token.String))
+             token.Keyword, token.Number, token.String)),
+            # Header
+            (r'(.*?:)(.+)',  bygroups(token.Name, token.Keyword))
     ]}
 
 

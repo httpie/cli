@@ -39,9 +39,9 @@ def format_http_message(message, prettifier=None,
         else:
             bits.append(message.line)
             bits.append(message.headers)
-        if with_body:
+        if with_body and message.body:
             bits.append('\n')
-    if with_body:
+    if with_body and message.body:
         if prettifier and message.content_type:
             bits.append(prettifier.body(message.body, message.content_type))
         else:
