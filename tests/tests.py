@@ -5,11 +5,13 @@ import unittest
 import argparse
 from StringIO import StringIO
 
-
 TESTS_ROOT = os.path.dirname(__file__)
-sys.path.insert(0, os.path.abspath(os.path.join(TESTS_ROOT, '..')))
+sys.path.insert(0, os.path.realpath(os.path.join(TESTS_ROOT, '..')))
 from httpie import __main__
 from httpie import cli
+
+
+TEST_FILE = os.path.join(TESTS_ROOT, 'file.txt')
 
 
 TERMINAL_COLOR_CHECK = '\x1b['
@@ -46,7 +48,8 @@ class TestItemParsing(BaseTest):
         self.kv = cli.KeyValueType(
             cli.SEP_HEADERS,
             cli.SEP_DATA,
-            cli.SEP_DATA_RAW_JSON
+            cli.SEP_DATA_RAW_JSON,
+            cli.SEP_FILES,
         )
 
     def test_invalid_items(self):
@@ -56,7 +59,7 @@ class TestItemParsing(BaseTest):
                               lambda: self.kv(item))
 
     def test_valid_items(self):
-        headers, data = cli.parse_items([
+        headers, data, files = cli.parse_items([
             self.kv('string=value'),
             self.kv('header:value'),
             self.kv('list:=["a", 1, {}, false]'),
@@ -64,6 +67,7 @@ class TestItemParsing(BaseTest):
             self.kv('eh:'),
             self.kv('ed='),
             self.kv('bool:=true'),
+            self.kv('test-file@%s' % TEST_FILE),
         ])
         self.assertDictEqual(headers, {
             'header': 'value',
@@ -76,6 +80,7 @@ class TestItemParsing(BaseTest):
             "list": ["a", 1, {}, False],
             "obj": {"a": "b"}
         })
+        self.assertIn('test-file', files)
 
 
 class TestHTTPie(BaseTest):
@@ -127,7 +132,7 @@ class TestFileUpload(BaseTest):
 
     def test_upload_ok(self):
         r = http('--form', 'POST', 'http://httpbin.org/post',
-             'test-file@%s' % os.path.join(TESTS_ROOT, 'file.txt'))
+             'test-file@%s' % TEST_FILE)
         self.assertIn('"test-file": "__test_file_content__', r)
 
 
