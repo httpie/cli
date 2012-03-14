@@ -7,5 +7,5 @@ python:
 script: python tests/tests.py
 install:
   - pip install requests pygments
-  - "if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]] || [[ $TRAVIS_PYTHON_VERSION == '3.1' ]]; then echo pip install argparse; fi"
+  - "if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]] || [[ $TRAVIS_PYTHON_VERSION == '3.1' ]]; then pip install argparse; fi"
 
