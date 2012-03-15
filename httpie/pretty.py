@@ -13,7 +13,7 @@ from .pygson import JSONLexer
 
 
 DEFAULT_STYLE = 'solarized'
-AVAILABLE_STYLES = [DEFAULT_STYLE] + STYLE_MAP.keys()
+AVAILABLE_STYLES = [DEFAULT_STYLE] + list(STYLE_MAP.keys())
 FORMATTER = (Terminal256Formatter
              if '256color' in os.environ.get('TERM', '')
              else TerminalFormatter)

@@ -8,11 +8,7 @@ if sys.argv[-1] == 'test':
     os.system('python tests.py')
     sys.exit()
 
-
 requirements = ['requests>=0.10.4', 'Pygments>=1.4']
-if sys.version_info < (2, 7):
-    requirements.append('argparse>=1.2.1')
-
 
 setup(
     name='httpie',
@@ -22,7 +18,7 @@ setup(
     url='http://httpie.org/',
     download_url='https://github.com/jkbr/httpie',
     author=httpie.__author__,
-    author_email='jakub@roztocil.name',
+    author_email=['jakub@roztocil.name', 'kuba.misiorny@gmail.com'],
     license=httpie.__licence__,
     packages=['httpie'],
     entry_points={
@@ -34,12 +30,10 @@ setup(
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2.6',
-        'Programming Language :: Python :: 2.7',
-        # TODO: Python 3
-        # 'Programming Language :: Python :: 3.1'
-        # 'Programming Language :: Python :: 3.2'
-        # 'Programming Language :: Python :: 3.3'
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.1'
+        'Programming Language :: Python :: 3.2'
+        'Programming Language :: Python :: 3.3'
         'Environment :: Console',
         'Intended Audience :: Developers',
         'Intended Audience :: System Administrators',

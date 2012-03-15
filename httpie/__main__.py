@@ -87,8 +87,8 @@ def main(args=None,
             version='.'.join(str(original.version)),
             status=original.status, reason=original.reason,
         ),
-        str(original.msg).decode(encoding),
-        response.content.decode(encoding) if response.content else u''
+        str(original.msg),
+        response.content if response.content else ''
     )
 
     if do_prettify:
@@ -105,10 +105,16 @@ def main(args=None,
     if args.print_headers:
         stdout.write(status_line.strip())
         stdout.write('\n')
-        stdout.write(headers.strip().encode('utf-8'))
+        #stdout.write(headers.strip().encode('utf-8'))
+        #all string are utf-8
+        stdout.write(headers.strip())
         stdout.write('\n\n')
     if args.print_body:
-        stdout.write(body.strip().encode('utf-8'))
+        #stdout.write(body.strip().encode('utf-8'))
+        if isinstance(body, str):
+            stdout.write(body.strip())
+        else:
+            stdout.write(body.strip().decode())
         stdout.write('\n')
 
 

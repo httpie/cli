@@ -1,7 +1,7 @@
 import sys
 import unittest
 import argparse
-from StringIO import StringIO
+from io import StringIO
 from httpie import __main__
 from httpie import cli
 
@@ -22,7 +22,7 @@ def http(*args, **kwargs):
 
 class BaseTest(unittest.TestCase):
 
-    if sys.version < (2, 7):
+    if sys.version_info < (2, 7):
         def assertIn(self, member, container, msg=None):
             self.assert_(member in container, msg)
 
