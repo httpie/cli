@@ -1,5 +1,6 @@
 import os
 import json
+import xml.dom.minidom
 import pygments
 from pygments import token
 from pygments.util import ClassNotFound
@@ -37,6 +38,10 @@ class HTTPLexer(RegexLexer):
     ]}
 
 
+def xml_prettify(buf, indent_spaces=4):
+    doc = xml.dom.minidom.parseString(buf)
+    return doc.toprettyxml(indent=' ' * indent_spaces)
+
 class PrettyHttp(object):
 
     def __init__(self, style_name):
@@ -50,19 +55,29 @@ class PrettyHttp(object):
         return pygments.highlight(content, HTTPLexer(), self.formatter)
 
     def body(self, content, content_type):
-        lexer = None
+        prettyfiers_by_lexer = {
+            JSONLexer: lambda x: json.dumps(json.loads(x),
+                                    sort_keys=True, indent=4),
+            pygments.lexers.XmlLexer: xml_prettify,
+        }
+
         content_type = content_type.split(';')[0]
-        if 'json' in content_type:
-            lexer = JSONLexer()
+        try:
+            lexer = get_lexer_for_mimetype(content_type)
+        except ClassNotFound:
+            if 'json' in content_type:
+                # JSON lexer not found, use internal
+                lexer = JSONLexer()
+            else:
+                # no lexer for mimetype
+                return content
+
+        prettyfier = prettyfiers_by_lexer.get(lexer.__class__)
+        if prettyfier is not None:
             try:
-                # Indent the JSON data.
-                content = json.dumps(json.loads(content),
-                                    sort_keys=True, indent=4)
+                # prettify the data.
+                content = prettyfier(content)
             except Exception:
                 pass
-        if not lexer:
-            try:
-                lexer = get_lexer_for_mimetype(content_type)
-            except ClassNotFound:
-                return content
         return pygments.highlight(content, lexer, self.formatter)
+
