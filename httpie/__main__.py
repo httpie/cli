@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import sys
 import json
+import pydoc
 try:
     from collections import OrderedDict
 except ImportError:
@@ -82,6 +83,13 @@ def make_response_message(response):
         content_type=response_headers.get('Content-Type'))
 
 
+def pager(text, stdout):
+    try:
+        # use pydoc's pager
+        pydoc.pager(text)
+    except Exception:
+        stdout.write(text)
+
 def main(args=None,
          stdin=sys.stdin,
          stdin_isatty=sys.stdin.isatty(),
@@ -162,24 +170,31 @@ def main(args=None,
     output_response = (cli.OUT_RESPONSE_HEADERS in args.output_options
                       or cli.OUT_RESPONSE_BODY in args.output_options)
 
+
+    buf = list()
     if output_request:
-        stdout.write(format_http_message(
+        buf.append(format_http_message(
             message=make_request_message(response.request),
             prettifier=prettifier,
             with_headers=cli.OUT_REQUEST_HEADERS in args.output_options,
             with_body=cli.OUT_REQUEST_BODY in args.output_options
         ))
         if output_response:
-            stdout.write(NEW_LINE)
+            buf.append(NEW_LINE)
 
     if output_response:
-        stdout.write(format_http_message(
+        buf.append(format_http_message(
             message=make_response_message(response),
             prettifier=prettifier,
             with_headers=cli.OUT_RESPONSE_HEADERS in args.output_options,
             with_body=cli.OUT_RESPONSE_BODY in args.output_options
-        ))
-        stdout.write(NEW_LINE)
+        ) + NEW_LINE)
+
+    if args.no_pager or stdout != sys.stdout:
+        # don't want to use pager or output is redirected
+        stdout.write(''.join(buf))
+    else:
+        pager(''.join(buf), stdout)
 
 
 if __name__ == '__main__':

@@ -203,6 +203,14 @@ output_options.add_argument(
 )
 
 parser.add_argument(
+    '--no-pager', '-n', dest='no_pager',
+    action='store_true',
+    help=_('''
+        Don't use pager when print output.
+    ''')
+)
+
+parser.add_argument(
     '--style', '-s', dest='style', default='solarized', metavar='STYLE',
     choices=pretty.AVAILABLE_STYLES,
     help=_('''
