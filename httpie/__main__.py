@@ -131,6 +131,13 @@ def main(args=None,
     elif not files and 'Content-Type' not in headers:
         headers['Content-Type'] = TYPE_FORM
 
+    if args.verify == 'yes':
+        verify = True
+    elif args.verify == 'no':
+        verify = False
+    else:
+        verify = args.verify
+
     # Fire the request.
     try:
         response = requests.request(
@@ -138,7 +145,7 @@ def main(args=None,
             url=args.url if '://' in args.url else 'http://%s' % args.url,
             headers=headers,
             data=data,
-            verify=True if args.verify == 'yes' else args.verify,
+            verify=verify,
             timeout=args.timeout,
             auth=(args.auth.key, args.auth.value) if args.auth else None,
             proxies=dict((p.key, p.value) for p in args.proxy),
