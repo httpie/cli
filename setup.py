@@ -4,11 +4,6 @@ from setuptools import setup
 import httpie
 
 
-if sys.argv[-1] == 'test':
-    os.system('python tests.py')
-    sys.exit()
-
-
 requirements = ['requests>=0.10.4', 'Pygments>=1.4']
 if sys.version_info[:2] in ((2, 6), (3, 1)):
     # argparse has been added in Python 3.2 / 2.7
@@ -32,6 +27,7 @@ setup(
         ],
     },
     install_requires=requirements,
+    test_suite = 'tests.tests',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Programming Language :: Python',
