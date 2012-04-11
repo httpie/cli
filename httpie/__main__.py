@@ -133,6 +133,12 @@ def main(args=None,
 
     # Fire the request.
     try:
+        credentials = None
+        if args.auth and args.digest:
+            credentials = requests.auth.HTTPDigestAuth(args.auth.key, args.auth.value)
+        elif args.auth:
+            credentials = requests.auth.HTTPBasicAuth(args.auth.key, args.auth.value)
+
         response = requests.request(
             method=args.method.lower(),
             url=args.url if '://' in args.url else 'http://%s' % args.url,
@@ -140,7 +146,7 @@ def main(args=None,
             data=data,
             verify={'yes': True, 'no': False}.get(args.verify, args.verify),
             timeout=args.timeout,
-            auth=(args.auth.key, args.auth.value) if args.auth else None,
+            auth=credentials,
             proxies=dict((p.key, p.value) for p in args.proxy),
             files=files,
             allow_redirects=args.allow_redirects,
