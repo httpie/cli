@@ -103,6 +103,13 @@ Flags
 ^^^^^
 Most of the flags mirror the arguments understood by ``requests.request``. See ``http -h`` for more details::
 
+    usage: http [-h] [--version] [--json | --form] [--traceback]
+                       [--pretty | --ugly]
+                       [--print OUTPUT_OPTIONS | --verbose | --headers | --body]
+                       [--style STYLE] [--auth AUTH] [--verify VERIFY]
+                       [--proxy PROXY] [--allow-redirects] [--timeout TIMEOUT]
+                       METHOD URL [items [items ...]]
+
     HTTPie - cURL for humans.
 
     positional arguments:
@@ -147,10 +154,11 @@ Most of the flags mirror the arguments understood by ``requests.request``. See `
                             monokai, murphy, native, pastie, perldoc, solarized,
                             tango, trac, vim, vs. Defaults to solarized.
       --auth AUTH, -a AUTH  username:password
-      --verify VERIFY       Set to "yes" to check the host's SSL certificate. You
-                            can also pass the path to a CA_BUNDLE file for private
-                            certs. You can also set the REQUESTS_CA_BUNDLE
-                            environment variable.
+      --verify VERIFY       Set to "no" to skip checking the host's SSL
+                            certificate. You can also pass the path to a CA_BUNDLE
+                            file for private certs. You can also set the
+                            REQUESTS_CA_BUNDLE environment variable. Defaults to
+                            "yes".
       --proxy PROXY         String mapping protocol to the URL of the proxy (e.g.
                             http:foo.bar:3128).
       --allow-redirects     Set this flag if full redirects are allowed (e.g. re-
