@@ -215,6 +215,11 @@ parser.add_argument(
     '--auth', '-a', help='username:password',
     type=KeyValueType(SEP_COMMON)
 )
+
+parser.add_argument(
+    '--digest', '-d', action='store_true', help=_('Use Digest authentication')
+)
+
 parser.add_argument(
     '--verify', default='yes',
     help=_('''
