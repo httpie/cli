@@ -134,10 +134,11 @@ def main(args=None,
     # Fire the request.
     try:
         credentials = None
-        if args.auth and args.digest:
-            credentials = requests.auth.HTTPDigestAuth(args.auth.key, args.auth.value)
-        elif args.auth:
-            credentials = requests.auth.HTTPBasicAuth(args.auth.key, args.auth.value)
+        if args.auth:
+            auth_type = (requests.auth.HTTPDigestAuth
+                         if args.auth_type == 'digest'
+                         else requests.auth.HTTPBasicAuth)
+            credentials = auth_type(args.auth.key, args.auth.value)
 
         response = requests.request(
             method=args.method.lower(),

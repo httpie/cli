@@ -139,5 +139,20 @@ class TestFileUpload(BaseTest):
         self.assertIn('"test-file": "__test_file_content__', r)
 
 
+class TestAuth(BaseTest):
+
+    def test_basic_auth(self):
+        r = http('--auth', 'user:password',
+                 'GET', 'httpbin.org/basic-auth/user/password')
+        self.assertIn('"authenticated": true', r)
+        self.assertIn('"user": "user"', r)
+
+    def test_digest_auth(self):
+        r = http('--auth-type=digest', '--auth', 'user:password',
+                 'GET', 'httpbin.org/digest-auth/auth/user/password')
+        self.assertIn('"authenticated": true', r)
+        self.assertIn('"user": "user"', r)
+
+
 if __name__ == '__main__':
     unittest.main()

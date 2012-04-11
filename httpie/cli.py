@@ -100,12 +100,18 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
     def parse_args(self, args=None, namespace=None):
         args = super(HTTPieArgumentParser, self).parse_args(args, namespace)
         self._validate_output_options(args)
+        self._validate_auth_options(args)
         return args
 
     def _validate_output_options(self, args):
         unknown_output_options = set(args.output_options) - set(OUTPUT_OPTIONS)
         if unknown_output_options:
             self.error('Unknown output options: %s' % ','.join(unknown_output_options))
+
+    def _validate_auth_options(self, args):
+        if args.auth_type and not args.auth:
+            self.error('--auth-type can only be used with --auth')
+
 
 
 parser = HTTPieArgumentParser(description=doc.strip(),)
@@ -217,7 +223,8 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    '--digest', '-d', action='store_true', help=_('Use Digest authentication')
+    '--auth-type', choices=['basic', 'digest'],
+    help=_('The type of authentication ("basic" or "digest"). Defaults to "basic".')
 )
 
 parser.add_argument(
