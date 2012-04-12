@@ -82,14 +82,6 @@ def make_response_message(response):
         body=response.content.decode(encoding) if response.content else '',
         content_type=response_headers.get('Content-Type'))
 
-
-def pager(text, stdout):
-    try:
-        # use pydoc's pager
-        pydoc.pager(text)
-    except Exception:
-        stdout.write(text)
-
 def main(args=None,
          stdin=sys.stdin,
          stdin_isatty=sys.stdin.isatty(),
@@ -190,12 +182,23 @@ def main(args=None,
             with_body=cli.OUT_RESPONSE_BODY in args.output_options
         ) + NEW_LINE)
 
-    if args.no_pager or stdout != sys.stdout:
-        # don't want to use pager or output is redirected
-        stdout.write(''.join(buf))
-    else:
-        pager(''.join(buf), stdout)
+    buf = ''.join(buf)
+    if isinstance(buf, unicode):
+        # try to encode the output to what's expected
+        encoding = getattr(stdout, 'encoding', None) or 'UTF-8'
+        try:
+            buf = buf.encode(encoding)
+        except UnicodeEncodeError, e:
+            pass
 
+    if args.no_pager or stdout != sys.stdout:
+        # don't use pager when output is redirected
+        stdout.write(buf)
+    else:
+        try:
+            pydoc.pager(buf)
+        except Exception:
+            stdout.write(buf)
 
 if __name__ == '__main__':
     main()
