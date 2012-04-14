@@ -124,6 +124,8 @@ def main(args=None,
 
     # JSON/Form content type.
     if args.json or (not args.form and data):
+        if args.method.lower() == 'get' and 'Accept' not in headers:
+            headers['Accept'] = 'application/json'
         if stdin_isatty:
             data = json.dumps(data)
         if not files and ('Content-Type' not in headers and (data or args.json)):
