@@ -94,6 +94,10 @@ class TestHTTPie(BaseTest):
     def test_json(self):
         response = http('POST', 'http://httpbin.org/post', 'foo=bar')
         self.assertIn('"foo": "bar"', response)
+        response2 = http('-j', 'GET', 'http://httpbin.org/headers')
+        self.assertIn('"Accept": "application/json"', response2)
+        response3 = http('-j', 'GET', 'http://httpbin.org/headers', 'Accept:application/xml')
+        self.assertIn('"Accept": "application/xml"', response3)
 
     def test_form(self):
         response = http('--form', 'POST', 'http://httpbin.org/post', 'foo=bar')
