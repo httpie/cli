@@ -1,6 +1,7 @@
 import os
 import json
 import argparse
+import re
 from collections import namedtuple
 from . import pretty
 from . import __doc__ as doc
@@ -31,6 +32,19 @@ class ParseError(Exception):
 
 KeyValue = namedtuple('KeyValue', ['key', 'value', 'sep', 'orig'])
 
+def find_separator(string, sep, depth = 1):
+    for i in range(depth):
+        loc = string.find(sep)
+    if loc != -1:
+        # check if previous char is escape char
+        possible_escape = loc - 1 
+        if possible_escape <= 0 or string[possible_escape] != '\\':
+            return loc
+        else:
+            # remove the escape char
+            string = string.replace('\\' + sep, sep, 1)
+            return find_separator(string, sep, depth + 1)
+        
 
 class KeyValueType(object):
     """A type used with `argparse`."""
@@ -38,16 +52,28 @@ class KeyValueType(object):
         self.separators = separators
 
     def __call__(self, string):
-        found = dict((string.find(sep), sep)
-                     for sep in self.separators
-                     if string.find(sep) != -1)
+        found = {}
+        for sep in self.separators:
+            regex = '[^\\\\]' + sep
+            match = re.search(regex, string)
+            if match:
+                found[match.start() + 1] = sep
 
         if not found:
             #noinspection PyExceptionInherit
             raise argparse.ArgumentTypeError(
                 '"%s" is not a valid value' % string)
-        sep = found[min(found.keys())]
-        key, value = string.split(sep, 1)
+
+        # split the string at the earliest non-escaped separator.
+        seploc = min(found.keys())
+        sep = found[seploc]
+        key = string[:seploc]
+        value = string[seploc + len(sep):]
+
+        # remove escape chars
+        for sepstr in self.separators:
+            key = key.replace('\\' + sepstr, sepstr)
+            value = value.replace('\\' + sepstr, sepstr)
         return KeyValue(key=key, value=value, sep=sep, orig=string)
 
 
