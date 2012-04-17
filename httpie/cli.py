@@ -32,20 +32,6 @@ class ParseError(Exception):
 
 KeyValue = namedtuple('KeyValue', ['key', 'value', 'sep', 'orig'])
 
-def find_separator(string, sep, depth = 1):
-    for i in range(depth):
-        loc = string.find(sep)
-    if loc != -1:
-        # check if previous char is escape char
-        possible_escape = loc - 1 
-        if possible_escape <= 0 or string[possible_escape] != '\\':
-            return loc
-        else:
-            # remove the escape char
-            string = string.replace('\\' + sep, sep, 1)
-            return find_separator(string, sep, depth + 1)
-        
-
 class KeyValueType(object):
     """A type used with `argparse`."""
     def __init__(self, *separators):
