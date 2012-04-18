@@ -57,6 +57,33 @@ class TestItemParsing(BaseTest):
             self.assertRaises(argparse.ArgumentTypeError,
                               lambda: self.kv(item))
 
+    def test_escape(self):
+        headers, data, files = cli.parse_items([
+            # headers
+            self.kv('foo\\:bar:baz'),
+            self.kv('jack\\@jill:hill'),
+            # data
+            self.kv('baz\\=bar=foo'),
+            # files
+            self.kv('bar\\@baz@%s' % TEST_FILE)
+        ])
+        self.assertDictEqual(headers, {
+            'foo:bar': 'baz',
+            'jack@jill': 'hill',
+        })
+        self.assertDictEqual(data, {
+            'baz=bar': 'foo',
+        })
+        self.assertIn('bar@baz', files)
+
+    def test_escape_longsep(self):
+        headers, data, files = cli.parse_items([
+            self.kv('bob\\:==foo'),
+        ])
+        self.assertDictEqual(data, {
+            'bob:=': 'foo',
+        })
+    
     def test_valid_items(self):
         headers, data, files = cli.parse_items([
             self.kv('string=value'),
