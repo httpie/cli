@@ -36,14 +36,24 @@ class KeyValueType(object):
     """A type used with `argparse`."""
     def __init__(self, *separators):
         self.separators = separators
+        self.escapes = ['\\\\' + sep for sep in separators]
 
     def __call__(self, string):
         found = {}
+        found_escapes = []
+        for esc in self.escapes:
+            found_escapes += [m.span() for m in re.finditer(esc, string)]
         for sep in self.separators:
-            regex = '[^\\\\]' + sep
-            match = re.search(regex, string)
-            if match:
-                found[match.start() + 1] = sep
+            matches = re.finditer(sep, string)
+            for match in matches:
+                start, end = match.span()
+                inside_escape = False
+                for estart, eend in found_escapes:
+                    if start >= estart and end <= eend:
+                        inside_escape = True
+                        break
+                if not inside_escape:
+                    found[start] = sep
 
         if not found:
             #noinspection PyExceptionInherit

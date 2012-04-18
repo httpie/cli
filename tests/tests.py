@@ -76,6 +76,13 @@ class TestItemParsing(BaseTest):
         })
         self.assertIn('bar@baz', files)
 
+    def test_escape_longsep(self):
+        headers, data, files = cli.parse_items([
+            self.kv('bob\\:==foo'),
+        ])
+        self.assertDictEqual(data, {
+            'bob:=': 'foo',
+        })
     
     def test_valid_items(self):
         headers, data, files = cli.parse_items([
