@@ -10,7 +10,7 @@ import tempfile
 TESTS_ROOT = os.path.dirname(__file__)
 sys.path.insert(0, os.path.realpath(os.path.join(TESTS_ROOT, '..')))
 from httpie import __main__
-from httpie import cli
+from httpie import cliparse
 
 
 TEST_FILE = os.path.join(TESTS_ROOT, 'file.txt')
@@ -48,28 +48,28 @@ class BaseTest(unittest.TestCase):
 class TestItemParsing(BaseTest):
 
     def setUp(self):
-        self.kv = cli.KeyValueType(
-            cli.SEP_HEADERS,
-            cli.SEP_DATA,
-            cli.SEP_DATA_RAW_JSON,
-            cli.SEP_FILES,
+        self.key_value_type = cliparse.KeyValueType(
+            cliparse.SEP_HEADERS,
+            cliparse.SEP_DATA,
+            cliparse.SEP_DATA_RAW_JSON,
+            cliparse.SEP_FILES,
         )
 
     def test_invalid_items(self):
         items = ['no-separator']
         for item in items:
             self.assertRaises(argparse.ArgumentTypeError,
-                              lambda: self.kv(item))
+                              lambda: self.key_value_type(item))
 
     def test_escape(self):
-        headers, data, files = cli.parse_items([
+        headers, data, files = cliparse.parse_items([
             # headers
-            self.kv('foo\\:bar:baz'),
-            self.kv('jack\\@jill:hill'),
+            self.key_value_type('foo\\:bar:baz'),
+            self.key_value_type('jack\\@jill:hill'),
             # data
-            self.kv('baz\\=bar=foo'),
+            self.key_value_type('baz\\=bar=foo'),
             # files
-            self.kv('bar\\@baz@%s' % TEST_FILE)
+            self.key_value_type('bar\\@baz@%s' % TEST_FILE)
         ])
         self.assertDictEqual(headers, {
             'foo:bar': 'baz',
@@ -81,23 +81,23 @@ class TestItemParsing(BaseTest):
         self.assertIn('bar@baz', files)
 
     def test_escape_longsep(self):
-        headers, data, files = cli.parse_items([
-            self.kv('bob\\:==foo'),
+        headers, data, files = cliparse.parse_items([
+            self.key_value_type('bob\\:==foo'),
         ])
         self.assertDictEqual(data, {
             'bob:=': 'foo',
         })
 
     def test_valid_items(self):
-        headers, data, files = cli.parse_items([
-            self.kv('string=value'),
-            self.kv('header:value'),
-            self.kv('list:=["a", 1, {}, false]'),
-            self.kv('obj:={"a": "b"}'),
-            self.kv('eh:'),
-            self.kv('ed='),
-            self.kv('bool:=true'),
-            self.kv('test-file@%s' % TEST_FILE),
+        headers, data, files = cliparse.parse_items([
+            self.key_value_type('string=value'),
+            self.key_value_type('header:value'),
+            self.key_value_type('list:=["a", 1, {}, false]'),
+            self.key_value_type('obj:={"a": "b"}'),
+            self.key_value_type('eh:'),
+            self.key_value_type('ed='),
+            self.key_value_type('bool:=true'),
+            self.key_value_type('test-file@%s' % TEST_FILE),
         ])
         self.assertDictEqual(headers, {
             'header': 'value',
@@ -163,7 +163,7 @@ class TestPrettyFlag(BaseTest):
 class TestFileUpload(BaseTest):
 
     def test_non_existent_file_raises_parse_error(self):
-        self.assertRaises(cli.ParseError, http,
+        self.assertRaises(cliparse.ParseError, http,
             '--form', '--traceback',
             'POST', 'http://httpbin.org/post',
             'foo@/__does_not_exist__')
