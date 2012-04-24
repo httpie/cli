@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import sys
 import json
+import pydoc
 try:
     from collections import OrderedDict
 except ImportError:
@@ -80,7 +81,6 @@ def make_response_message(response):
         headers=str(original.msg),
         body=response.content.decode(encoding) if response.content else '',
         content_type=response_headers.get('Content-Type'))
-
 
 def main(args=None,
          stdin=sys.stdin,
@@ -171,25 +171,43 @@ def main(args=None,
     output_response = (cli.OUT_RESPONSE_HEADERS in args.output_options
                       or cli.OUT_RESPONSE_BODY in args.output_options)
 
+
+    buf = list()
     if output_request:
-        stdout.write(format_http_message(
+        buf.append(format_http_message(
             message=make_request_message(response.request),
             prettifier=prettifier,
             with_headers=cli.OUT_REQUEST_HEADERS in args.output_options,
             with_body=cli.OUT_REQUEST_BODY in args.output_options
         ))
         if output_response:
-            stdout.write(NEW_LINE)
+            buf.append(NEW_LINE)
 
     if output_response:
-        stdout.write(format_http_message(
+        buf.append(format_http_message(
             message=make_response_message(response),
             prettifier=prettifier,
             with_headers=cli.OUT_RESPONSE_HEADERS in args.output_options,
             with_body=cli.OUT_RESPONSE_BODY in args.output_options
-        ))
-        stdout.write(NEW_LINE)
+        ) + NEW_LINE)
 
+    buf = ''.join(buf)
+    if isinstance(buf, unicode):
+        # try to encode the output to what's expected
+        encoding = getattr(stdout, 'encoding', None) or 'UTF-8'
+        try:
+            buf = buf.encode(encoding)
+        except UnicodeEncodeError, e:
+            pass
+
+    if args.no_pager or stdout != sys.stdout:
+        # don't use pager when output is redirected
+        stdout.write(buf)
+    else:
+        try:
+            pydoc.pager(buf)
+        except Exception:
+            stdout.write(buf)
 
 if __name__ == '__main__':
     main()
