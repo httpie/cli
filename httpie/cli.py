@@ -13,17 +13,19 @@ SEP_HEADERS = SEP_COMMON
 SEP_DATA = '='
 SEP_DATA_RAW_JSON = ':='
 SEP_FILES = '@'
+
+
+OUT_REQ_HEADERS = 'H'
+OUT_REQ_BODY = 'B'
+OUT_RESP_HEADERS = 'h'
+OUT_RESP_BODY = 'b'
+OUTPUT_OPTIONS = [OUT_REQ_HEADERS,
+                  OUT_REQ_BODY,
+                  OUT_RESP_HEADERS,
+                  OUT_RESP_BODY]
+
+
 PRETTIFY_STDOUT_TTY_ONLY = object()
-
-OUT_REQUEST_HEADERS = 'H'
-OUT_REQUEST_BODY = 'B'
-OUT_RESPONSE_HEADERS = 'h'
-OUT_RESPONSE_BODY = 'b'
-
-OUTPUT_OPTIONS = [OUT_REQUEST_HEADERS,
-                  OUT_REQUEST_BODY,
-                  OUT_RESPONSE_HEADERS,
-                  OUT_RESPONSE_BODY]
 
 
 class ParseError(Exception):
@@ -34,6 +36,7 @@ KeyValue = namedtuple('KeyValue', ['key', 'value', 'sep', 'orig'])
 
 class KeyValueType(object):
     """A type used with `argparse`."""
+
     def __init__(self, *separators):
         self.separators = separators
         self.escapes = ['\\\\' + sep for sep in separators]
@@ -56,7 +59,6 @@ class KeyValueType(object):
                     found[start] = sep
 
         if not found:
-            #noinspection PyExceptionInherit
             raise argparse.ArgumentTypeError(
                 '"%s" is not a valid value' % string)
 
@@ -160,7 +162,7 @@ group_type.add_argument(
 )
 
 
-# output_options options.
+# Output options.
 #############################################
 
 parser.add_argument(
@@ -189,7 +191,7 @@ prettify.add_argument(
 
 output_options = parser.add_mutually_exclusive_group(required=False)
 output_options.add_argument('--print', '-p', dest='output_options',
-    default=OUT_RESPONSE_HEADERS + OUT_RESPONSE_BODY,
+    default=OUT_RESP_HEADERS + OUT_RESP_BODY,
     help=_('''
         String specifying what should the output contain.
         "{request_headers}" stands for request headers and
@@ -199,10 +201,10 @@ output_options.add_argument('--print', '-p', dest='output_options',
         Defaults to "hb" which means that the whole response
         (headers and body) is printed.
     '''.format(
-        request_headers=OUT_REQUEST_HEADERS,
-        request_body=OUT_REQUEST_BODY,
-        response_headers=OUT_RESPONSE_HEADERS,
-        response_body=OUT_RESPONSE_BODY,
+        request_headers=OUT_REQ_HEADERS,
+        request_body=OUT_REQ_BODY,
+        response_headers=OUT_RESP_HEADERS,
+        response_body=OUT_RESP_BODY,
     ))
 )
 output_options.add_argument(
@@ -215,19 +217,19 @@ output_options.add_argument(
 )
 output_options.add_argument(
     '--headers', '-t', dest='output_options',
-    action='store_const', const=OUT_RESPONSE_HEADERS,
+    action='store_const', const=OUT_RESP_HEADERS,
     help=_('''
         Print only the response headers.
         Shortcut for --print={0}.
-    '''.format(OUT_RESPONSE_HEADERS))
+    '''.format(OUT_RESP_HEADERS))
 )
 output_options.add_argument(
     '--body', '-b', dest='output_options',
-    action='store_const', const=OUT_RESPONSE_BODY,
+    action='store_const', const=OUT_RESP_BODY,
     help=_('''
         Print only the response body.
         Shortcut for --print={0}.
-    '''.format(OUT_RESPONSE_BODY))
+    '''.format(OUT_RESP_BODY))
 )
 
 parser.add_argument(

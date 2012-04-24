@@ -3,7 +3,8 @@ import os
 import sys
 import unittest
 import argparse
-from requests.compat import StringIO, is_py26, str
+from requests.compat import is_py26
+import tempfile
 
 
 TESTS_ROOT = os.path.dirname(__file__)
@@ -22,9 +23,12 @@ def http(*args, **kwargs):
         'stdout_isatty': False
     }
     http_kwargs.update(kwargs)
-    stdout = http_kwargs.setdefault('stdout', StringIO())
+    stdout = http_kwargs.setdefault('stdout', tempfile.TemporaryFile())
     __main__.main(args=args, **http_kwargs)
-    return stdout.getvalue()
+    stdout.seek(0)
+    response = stdout.read().decode('utf8')
+    stdout.close()
+    return response
 
 
 class BaseTest(unittest.TestCase):
@@ -83,7 +87,7 @@ class TestItemParsing(BaseTest):
         self.assertDictEqual(data, {
             'bob:=': 'foo',
         })
-    
+
     def test_valid_items(self):
         headers, data, files = cli.parse_items([
             self.kv('string=value'),

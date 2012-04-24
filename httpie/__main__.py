@@ -6,7 +6,7 @@ try:
 except ImportError:
     OrderedDict = dict
 import requests
-from requests.compat import urlparse, str
+from requests.compat import urlparse, str, is_py3
 from requests.structures import CaseInsensitiveDict
 from . import cli
 from . import pretty
@@ -165,30 +165,35 @@ def main(args=None,
 
     prettifier = pretty.PrettyHttp(args.style) if do_prettify else None
 
-    output_request = (cli.OUT_REQUEST_HEADERS in args.output_options
-                      or cli.OUT_REQUEST_BODY in args.output_options)
+    do_output_request = (cli.OUT_REQ_HEADERS in args.output_options
+                         or cli.OUT_REQ_BODY in args.output_options)
 
-    output_response = (cli.OUT_RESPONSE_HEADERS in args.output_options
-                      or cli.OUT_RESPONSE_BODY in args.output_options)
+    do_output_response = (cli.OUT_RESP_HEADERS in args.output_options
+                          or cli.OUT_RESP_BODY in args.output_options)
 
-    if output_request:
-        stdout.write(format_http_message(
+    output = []
+    if do_output_request:
+        output.append(format_http_message(
             message=make_request_message(response.request),
             prettifier=prettifier,
-            with_headers=cli.OUT_REQUEST_HEADERS in args.output_options,
-            with_body=cli.OUT_REQUEST_BODY in args.output_options
+            with_headers=cli.OUT_REQ_HEADERS in args.output_options,
+            with_body=cli.OUT_REQ_BODY in args.output_options
         ))
-        if output_response:
-            stdout.write(NEW_LINE)
+        if do_output_response:
+            output.append(NEW_LINE)
 
-    if output_response:
-        stdout.write(format_http_message(
+    if do_output_response:
+        output.append(format_http_message(
             message=make_response_message(response),
             prettifier=prettifier,
-            with_headers=cli.OUT_RESPONSE_HEADERS in args.output_options,
-            with_body=cli.OUT_RESPONSE_BODY in args.output_options
+            with_headers=cli.OUT_RESP_HEADERS in args.output_options,
+            with_body=cli.OUT_RESP_BODY in args.output_options
         ))
-        stdout.write(NEW_LINE)
+        output.append(NEW_LINE)
+
+    output_bytes = ''.join(output).encode('utf8')
+    f = (stdout.buffer if is_py3 and hasattr(stdout, 'buffer') else stdout)
+    f.write(output_bytes)
 
 
 if __name__ == '__main__':
