@@ -30,7 +30,7 @@ def _get_response(parser, args, stdin, stdin_isatty):
         if stdin_isatty:
             # Serialize the parsed data.
             args.data = json.dumps(args.data)
-        if args.method.lower() == 'get' and 'Accept' not in args.headers:
+        if 'Accept' not in args.headers:
             # Default Accept to JSON as well.
             args.headers['Accept'] = 'application/json'
     elif not args.files and 'Content-Type' not in args.headers:

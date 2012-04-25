@@ -106,31 +106,36 @@ Most of the flags mirror the arguments understood by ``requests.request``. See `
     usage: http [-h] [--version] [--json | --form] [--traceback]
                        [--pretty | --ugly]
                        [--print OUTPUT_OPTIONS | --verbose | --headers | --body]
-                       [--style STYLE] [--auth AUTH] [--verify VERIFY]
-                       [--proxy PROXY] [--allow-redirects] [--timeout TIMEOUT]
-                       METHOD URL [items [items ...]]
+                       [--style STYLE] [--auth AUTH] [--auth-type {basic,digest}]
+                       [--verify VERIFY] [--proxy PROXY] [--allow-redirects]
+                       [--timeout TIMEOUT]
+                       METHOD URL [ITEM [ITEM ...]]
 
-    HTTPie - cURL for humans.
+    HTTPie - cURL for humans. <http://httpie.org>
 
     positional arguments:
-      METHOD                HTTP method to be used for the request (GET, POST,
+      METHOD                The HTTP method to be used for the request (GET, POST,
                             PUT, DELETE, PATCH, ...).
-      URL                   Protocol defaults to http:// if the URL does not
-                            include it.
-      items                 HTTP header (header:value), data field (field=value),
-                            raw JSON field (field:=value) or file field
-                            (field@/path/to/file).
+      URL                   The protocol defaults to http:// if the URL does not
+                            include one.
+      ITEM                  A key-value pair whose type is defined by the
+                            separator used. It can be an HTTP header
+                            (header:value), a data field to be used in the request
+                            body (field_name=value), a raw JSON data field
+                            (field_name:=value) or a file field
+                            (field_name@/path/to/file). You can use a backslash to
+                            escape a colliding separator in the field name.
 
     optional arguments:
       -h, --help            show this help message and exit
       --version             show program's version number and exit
-      --json, -j            Serialize data items as a JSON object and set Content-
-                            Type to application/json, if not specified.
-      --form, -f            Serialize fields as form values. The Content-Type is
-                            set to application/x-www-form-urlencoded. The presence
-                            of any file fields results into a multipart/form-data
-                            request. Note that Content-Type is not automatically
-                            set if explicitely specified.
+      --json, -j            (default) Data items are serialized as a JSON object.
+                            The Content-Type and Accept headers are set to
+                            application/json (if not set via the command line).
+      --form, -f            Data items are serialized as form fields. The Content-
+                            Type is set to application/x-www-form-urlencoded (if
+                            not specifid). The presence of any file fields results
+                            into a multipart/form-data request.
       --traceback           Print exception traceback should one occur.
       --pretty              If stdout is a terminal, the response is prettified by
                             default (colorized and indented if it is JSON). This
@@ -139,12 +144,12 @@ Most of the flags mirror the arguments understood by ``requests.request``. See `
       --ugly, -u            Do not prettify the response.
       --print OUTPUT_OPTIONS, -p OUTPUT_OPTIONS
                             String specifying what should the output contain. "H"
-                            stands for request headers and "B" for request body.
-                            "h" stands for response headers and "b" for response
-                            body. Defaults to "hb" which means that the whole
-                            response (headers and body) is printed.
-      --verbose, -v         Print the whole request as well as response. Shortcut
-                            for --print=HBhb.
+                            stands for the request headers and "B" for the request
+                            body. "h" stands for the response headers and "b" for
+                            response the body. Defaults to "hb" which means that
+                            the whole response (headers and body) is printed.
+      --verbose, -v         Print the whole request as well as the response.
+                            Shortcut for --print=HBhb.
       --headers, -t         Print only the response headers. Shortcut for
                             --print=h.
       --body, -b            Print only the response body. Shortcut for --print=b.
@@ -152,8 +157,15 @@ Most of the flags mirror the arguments understood by ``requests.request``. See `
                             Output coloring style, one of autumn, borland, bw,
                             colorful, default, emacs, friendly, fruity, manni,
                             monokai, murphy, native, pastie, perldoc, solarized,
-                            tango, trac, vim, vs. Defaults to solarized.
+                            tango, trac, vim, vs. Defaults to solarized. For this
+                            option to work properly, please make sure that the
+                            $TERM environment variable is set to "xterm-256color"
+                            or similar (e.g., via `export TERM=xterm-256color' in
+                            your ~/.bashrc).
       --auth AUTH, -a AUTH  username:password
+      --auth-type {basic,digest}
+                            The authentication mechanism to be used. Defaults to
+                            "basic".
       --verify VERIFY       Set to "no" to skip checking the host's SSL
                             certificate. You can also pass the path to a CA_BUNDLE
                             file for private certs. You can also set the
@@ -166,6 +178,7 @@ Most of the flags mirror the arguments understood by ``requests.request``. See `
       --timeout TIMEOUT     Float describes the timeout of the request (Use
                             socket.setdefaulttimeout() as fallback).
 
+
 Contributors
 ------------
 
@@ -175,5 +188,15 @@ Contributors
 Changelog
 ---------
 
-* `New in development version <https://github.com/jkbr/httpie/compare/0.1.6...master>`_
+* `New in development version <https://github.com/jkbr/httpie/compare/0.2.0...master>`_
+* 0.2.0 (2012-04-25)
+    * Added Python 3 support.
+    * Added the ability to print the HTTP request as well (see --print and --verbose).
+    * Added support for Digest authentication.
+    * Added file upload support (http -f POST file_field_name@/path/to/file).
+    * Improved syntax highlighting for JSON.
+    * Added support for field name escaping.
+    * Many bug fixes.
+    * `Complete changelog <https://github.com/jkbr/httpie/compare/0.1.6...0.2.0>`_
+
 * `0.1.6 <https://github.com/jkbr/httpie/compare/0.1.4...0.1.6>`_ (2012-03-04)

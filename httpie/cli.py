@@ -3,8 +3,8 @@ CLI definition.
 
 """
 from . import pretty
-from . import __doc__ as doc
-from . import __version__ as version
+from . import __doc__
+from . import __version__
 from . import cliparse
 
 
@@ -13,8 +13,9 @@ def _(text):
     return ' '.join(text.strip().split())
 
 
-parser = cliparse.HTTPieArgumentParser(description=doc.strip(),)
-parser.add_argument('--version', action='version', version=version)
+desc = '%s <http://httpie.org>'
+parser = cliparse.HTTPieArgumentParser(description=desc % __doc__.strip(),)
+parser.add_argument('--version', action='version', version=__version__)
 
 
 # Content type.
@@ -24,16 +25,17 @@ group_type = parser.add_mutually_exclusive_group(required=False)
 group_type.add_argument(
     '--json', '-j', action='store_true',
     help=_('''
-        Serialize data items as a JSON object and set
-        Content-Type to application/json, if not specified.
+        (default) Data items are serialized as a JSON object.
+        The Content-Type and Accept headers
+        are set to application/json (if not set via the command line).
     ''')
 )
 group_type.add_argument(
     '--form', '-f', action='store_true',
     help=_('''
-        Serialize fields as form values. The Content-Type is set to application/x-www-form-urlencoded.
+        Data items are serialized as form fields.
+        The Content-Type is set to application/x-www-form-urlencoded (if not specifid).
         The presence of any file fields results into a multipart/form-data request.
-        Note that Content-Type is not automatically set if explicitely specified.
      ''')
 )
 
@@ -70,10 +72,10 @@ output_options.add_argument('--print', '-p', dest='output_options',
     default=cliparse.OUT_RESP_HEADERS + cliparse.OUT_RESP_BODY,
     help=_('''
         String specifying what should the output contain.
-        "{request_headers}" stands for request headers and
-        "{request_body}" for request body.
-        "{response_headers}" stands for response headers and
-        "{response_body}" for response body.
+        "{request_headers}" stands for the request headers and
+        "{request_body}" for the request body.
+        "{response_headers}" stands for the response headers and
+        "{response_body}" for response the body.
         Defaults to "hb" which means that the whole response
         (headers and body) is printed.
     '''.format(
@@ -87,7 +89,7 @@ output_options.add_argument(
     '--verbose', '-v', dest='output_options',
     action='store_const', const=''.join(cliparse.OUTPUT_OPTIONS),
     help=_('''
-        Print the whole request as well as response.
+        Print the whole request as well as the response.
         Shortcut for --print={0}.
     '''.format(''.join(cliparse.OUTPUT_OPTIONS)))
 )
@@ -113,6 +115,9 @@ parser.add_argument(
     choices=pretty.AVAILABLE_STYLES,
     help=_('''
         Output coloring style, one of %s. Defaults to solarized.
+        For this option to work properly, please make sure that the
+        $TERM environment variable is set to "xterm-256color" or similar
+        (e.g., via `export TERM=xterm-256color' in your ~/.bashrc).
     ''') % ', '.join(sorted(pretty.AVAILABLE_STYLES))
 )
 
@@ -124,7 +129,7 @@ parser.add_argument(
 
 parser.add_argument(
     '--auth-type', choices=['basic', 'digest'],
-    help=_('The type of authentication ("basic" or "digest"). Defaults to "basic".')
+    help=_('The authentication mechanism to be used. Defaults to "basic".')
 )
 
 parser.add_argument(
@@ -167,19 +172,20 @@ parser.add_argument(
 parser.add_argument(
     'method', metavar='METHOD',
     help=_('''
-        HTTP method to be used for the request
+        The HTTP method to be used for the request
         (GET, POST, PUT, DELETE, PATCH, ...).
     ''')
 )
 parser.add_argument(
     'url', metavar='URL',
     help=_('''
-        Protocol defaults to http:// if the
-        URL does not include it.
+        The protocol defaults to http:// if the
+        URL does not include one.
     ''')
 )
 parser.add_argument(
     'items', nargs='*',
+    metavar='ITEM',
     type=cliparse.KeyValueType(
         cliparse.SEP_COMMON,
         cliparse.SEP_DATA,
@@ -187,8 +193,11 @@ parser.add_argument(
         cliparse.SEP_FILES
     ),
     help=_('''
-        HTTP header (header:value), data field (field=value),
-        raw JSON field (field:=value)
-        or file field (field@/path/to/file).
+        A key-value pair whose type is defined by the separator used. It can be an
+        HTTP header (header:value),
+        a data field to be used in the request body (field_name=value),
+        a raw JSON data field (field_name:=value)
+        or a file field (field_name@/path/to/file).
+        You can use a backslash to escape a colliding separator in the field name.
     ''')
 )
