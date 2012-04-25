@@ -191,9 +191,9 @@ Changelog
 * `New in development version <https://github.com/jkbr/httpie/compare/0.2.0...master>`_
 * 0.2.0 (2012-04-25)
     * Added Python 3 support.
-    * Added the ability to print the HTTP request as well (see --print and --verbose).
+    * Added the ability to print the HTTP request as well as the response (see ``--print`` and ``--verbose``).
     * Added support for Digest authentication.
-    * Added file upload support (http -f POST file_field_name@/path/to/file).
+    * Added file upload support (``http -f POST file_field_name@/path/to/file``).
     * Improved syntax highlighting for JSON.
     * Added support for field name escaping.
     * Many bug fixes.
