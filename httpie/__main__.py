@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 import sys
 import json
+
 import requests
+
 from requests.compat import str
+
 from . import httpmessage
 from . import cliparse
 from . import cli
@@ -81,13 +84,14 @@ def _get_output(args, stdout_isatty, response):
     do_output_response = (cliparse.OUT_RESP_HEADERS in args.output_options
                           or cliparse.OUT_RESP_BODY in args.output_options)
 
-    prettifier = pretty.PrettyHttp(args.style) if do_prettify else None
+    formatter = pretty.formatter(args.style) if do_prettify else None
     output = []
 
     if do_output_request:
         output.append(httpmessage.format(
             message=httpmessage.from_request(response.request),
-            prettifier=prettifier,
+            pretty=do_prettify,
+            formatter=formatter,
             with_headers=cliparse.OUT_REQ_HEADERS in args.output_options,
             with_body=cliparse.OUT_REQ_BODY in args.output_options
         ))
@@ -97,7 +101,8 @@ def _get_output(args, stdout_isatty, response):
     if do_output_response:
         output.append(httpmessage.format(
             message=httpmessage.from_response(response),
-            prettifier=prettifier,
+            pretty=do_prettify,
+            formatter=formatter,
             with_headers=cliparse.OUT_RESP_HEADERS in args.output_options,
             with_body=cliparse.OUT_RESP_BODY in args.output_options
         ))

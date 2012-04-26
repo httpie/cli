@@ -1,3 +1,7 @@
+import json
+
+from pygments import highlight
+from pygments.lexers import HttpLexer
 from requests.compat import urlparse
 
 
@@ -38,29 +42,32 @@ def from_response(response):
     return HTTPMessage(
         line='HTTP/{version} {status} {reason}'.format(
                 version='.'.join(str(original.version)),
-                status=original.status, reason=original.reason,),
+                status=original.status, reason=original.reason),
         headers=str(original.msg),
         body=response.content.decode(encoding) if response.content else '',
         content_type=response_headers.get('Content-Type'))
 
 
-def format(message, prettifier=None,
+def format(message, formatter=None, pretty=False,
            with_headers=True, with_body=True):
     """Return a `unicode` representation of `message`. """
     bits = []
     if with_headers:
-        if prettifier:
-            bits.append(prettifier.headers(message.line))
-            bits.append(prettifier.headers(message.headers))
-        else:
-            bits.append(message.line)
-            bits.append(message.headers)
+        bits.append(message.line)
+        bits.append(message.headers)
         if with_body and message.body:
             bits.append('\n')
     if with_body and message.body:
-        if prettifier and message.content_type:
-            bits.append(prettifier.body(message.body, message.content_type))
+        if (pretty and message.content_type and
+                message.content_type.split(';')[0] == 'application/json'):
+            # Indent and sort the JSON data.
+            bits.append(json.dumps(json.loads(message.body),
+                                   sort_keys=True, indent=4))
         else:
             bits.append(message.body)
     bits.append('\n')
-    return '\n'.join(bit.strip() for bit in bits)
+    result = '\n'.join(bit.strip() for bit in bits)
+    if pretty:
+        return highlight(result, HttpLexer(), formatter)
+
+    return result
