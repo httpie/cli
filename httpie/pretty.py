@@ -4,10 +4,10 @@ import json
 import pygments
 
 from pygments.util import ClassNotFound
+from pygments.styles import get_style_by_name, STYLE_MAP
 from pygments.lexers import get_lexer_for_mimetype, HttpLexer
 from pygments.formatters.terminal256 import Terminal256Formatter
 from pygments.formatters.terminal import TerminalFormatter
-from pygments.styles import get_style_by_name, STYLE_MAP
 
 from . import solarized
 

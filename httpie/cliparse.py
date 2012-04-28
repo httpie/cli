@@ -3,15 +3,19 @@ CLI argument parsing logic.
 
 """
 import os
-import json
 import re
+import json
+import argparse
+
 from collections import namedtuple
+
 try:
     from collections import OrderedDict
 except ImportError:
     OrderedDict = dict
-import argparse
+
 from requests.structures import CaseInsensitiveDict
+
 from . import __version__
 
 
