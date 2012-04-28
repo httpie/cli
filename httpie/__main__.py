@@ -84,14 +84,13 @@ def _get_output(args, stdout_isatty, response):
     do_output_response = (cliparse.OUT_RESP_HEADERS in args.output_options
                           or cliparse.OUT_RESP_BODY in args.output_options)
 
-    formatter = pretty.formatter(args.style) if do_prettify else None
+    prettifier = pretty.PrettyHttp(args.style) if do_prettify else None
     output = []
 
     if do_output_request:
         output.append(httpmessage.format(
             message=httpmessage.from_request(response.request),
-            pretty=do_prettify,
-            formatter=formatter,
+            prettifier=prettifier,
             with_headers=cliparse.OUT_REQ_HEADERS in args.output_options,
             with_body=cliparse.OUT_REQ_BODY in args.output_options
         ))
@@ -101,8 +100,7 @@ def _get_output(args, stdout_isatty, response):
     if do_output_response:
         output.append(httpmessage.format(
             message=httpmessage.from_response(response),
-            pretty=do_prettify,
-            formatter=formatter,
+            prettifier=prettifier,
             with_headers=cliparse.OUT_RESP_HEADERS in args.output_options,
             with_body=cliparse.OUT_RESP_BODY in args.output_options
         ))

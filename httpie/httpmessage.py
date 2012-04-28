@@ -1,7 +1,3 @@
-import json
-
-from pygments import highlight
-from pygments.lexers import HttpLexer
 from requests.compat import urlparse
 
 
@@ -48,26 +44,24 @@ def from_response(response):
         content_type=response_headers.get('Content-Type'))
 
 
-def format(message, formatter=None, pretty=False,
+def format(message, prettifier=None,
            with_headers=True, with_body=True):
     """Return a `unicode` representation of `message`. """
+    pretty = prettifier is not None
     bits = []
+
     if with_headers:
         bits.append(message.line)
         bits.append(message.headers)
+        if pretty:
+            bits = [prettifier.headers('\n'.join(bits))]
         if with_body and message.body:
             bits.append('\n')
+
     if with_body and message.body:
-        if (pretty and message.content_type and
-                message.content_type.split(';')[0] == 'application/json'):
-            # Indent and sort the JSON data.
-            bits.append(json.dumps(json.loads(message.body),
-                                   sort_keys=True, indent=4))
+        if pretty and message.content_type:
+            bits.append(prettifier.body(message.body, message.content_type))
         else:
             bits.append(message.body)
-    bits.append('\n')
-    result = '\n'.join(bit.strip() for bit in bits)
-    if pretty:
-        return highlight(result, HttpLexer(), formatter)
 
-    return result
+    return '\n'.join(bit.strip() for bit in bits)
