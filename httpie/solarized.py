@@ -27,7 +27,8 @@ THE SOFTWARE.
 
 """
 from pygments.style import Style
-from pygments.token import Token, Comment, Name, Keyword, Generic, Number, Operator, String
+from pygments.token import (Token, Comment, Name, Keyword, Generic, Number,
+                            Operator, String)
 
 
 BASE03 = '#002B36'
