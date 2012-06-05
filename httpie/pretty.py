@@ -53,11 +53,12 @@ class PrettyHttp(object):
         lexer = None
         content_type = content_type.split(';')[0]
         if 'json' in content_type:
-            lexer = JSONLexer()
+            lexer = JSONLexer(encoding='utf-8')
             try:
                 # Indent the JSON data.
                 content = json.dumps(json.loads(content),
-                                    sort_keys=True, indent=4)
+                                    sort_keys=True, indent=4,
+                                    ensure_ascii=False)
             except Exception:
                 pass
         if not lexer:
