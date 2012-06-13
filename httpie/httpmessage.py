@@ -18,6 +18,13 @@ def from_request(request):
     request_headers = dict(request.headers)
     if 'Host' not in request_headers:
         request_headers['Host'] = url.netloc
+
+    try:
+        body = request.data
+    except AttributeError:
+        # requests < 0.12.1
+        body = request._enc_data
+
     return HTTPMessage(
         line='{method} {path} HTTP/1.1'.format(
                 method=request.method,
@@ -25,7 +32,7 @@ def from_request(request):
         headers='\n'.join(str('%s: %s') % (name, value)
                           for name, value
                           in request_headers.items()),
-        body=request.data,
+        body=body,
         content_type=request_headers.get('Content-Type')
     )
 
