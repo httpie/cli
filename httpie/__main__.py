@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 import sys
 import json
+
 import requests
+
 from requests.compat import str
+
 from . import httpmessage
 from . import cliparse
 from . import cli

@@ -9,7 +9,7 @@ if sys.argv[-1] == 'test':
     sys.exit()
 
 
-requirements = ['requests>=0.10.1', 'Pygments>=1.4']
+requirements = ['requests>=0.10.1', 'Pygments>=1.5']
 if sys.version_info[:2] in ((2, 6), (3, 1)):
     # argparse has been added in Python 3.2 / 2.7
     requirements.append('argparse>=1.2.1')
