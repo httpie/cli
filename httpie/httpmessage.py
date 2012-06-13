@@ -25,7 +25,7 @@ def from_request(request):
         headers='\n'.join(str('%s: %s') % (name, value)
                           for name, value
                           in request_headers.items()),
-        body=request._enc_data,
+        body=request.data,
         content_type=request_headers.get('Content-Type')
     )
 
