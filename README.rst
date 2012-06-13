@@ -188,7 +188,11 @@ Contributors
 Changelog
 ---------
 
-* `New in development version <https://github.com/jkbr/httpie/compare/0.2.0...master>`_
+* `New in development version <https://github.com/jkbr/httpie/compare/0.2.1...master>`_
+* 0.2.1 (2012-06-13)
+    * Added compatibility with ``requests-0.12.1``.
+    * Dropped custom JSON and HTTP lexers in favor of the ones newly included in ``pygments-1.5``.
+    * `Complete changelog <https://github.com/jkbr/httpie/compare/0.2.0...0.2.1>`_
 * 0.2.0 (2012-04-25)
     * Added Python 3 support.
     * Added the ability to print the HTTP request as well as the response (see ``--print`` and ``--verbose``).
@@ -198,5 +202,4 @@ Changelog
     * Added support for field name escaping.
     * Many bug fixes.
     * `Complete changelog <https://github.com/jkbr/httpie/compare/0.1.6...0.2.0>`_
-
 * `0.1.6 <https://github.com/jkbr/httpie/compare/0.1.4...0.1.6>`_ (2012-03-04)
