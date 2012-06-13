@@ -94,6 +94,7 @@ def _get_output(args, stdout_isatty, response):
             with_headers=cliparse.OUT_REQ_HEADERS in args.output_options,
             with_body=cliparse.OUT_REQ_BODY in args.output_options
         ))
+        output.append('\n')
         if do_output_response:
             output.append('\n')
 
