@@ -5,7 +5,7 @@ import httpie
 
 
 if sys.argv[-1] == 'test':
-    os.system('python tests.py')
+    os.system('python tests/tests.py')
     sys.exit()
 
 
