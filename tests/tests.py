@@ -122,6 +122,11 @@ class TestHTTPie(BaseTest):
         r = http('--verbose', 'GET', 'http://httpbin.org/get', 'test-header:__test__')
         self.assertEqual(r.count('__test__'), 2)
 
+    def test_verbose_form(self):
+        # https://github.com/jkbr/httpie/issues/53
+        r = http('--verbose', '--form', 'POST', 'http://httpbin.org/post', 'foo=bar', 'baz=bar')
+        self.assertIn('foo=bar&baz=bar', r)
+
     def test_json(self):
         response = http('POST', 'http://httpbin.org/post', 'foo=bar')
         self.assertIn('"foo": "bar"', response)

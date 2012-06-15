@@ -25,6 +25,10 @@ def from_request(request):
         # requests < 0.12.1
         body = request._enc_data
 
+    if isinstance(body, dict):
+        # --form
+        body = request.__class__._encode_params(body)
+
     return HTTPMessage(
         line='{method} {path} HTTP/1.1'.format(
                 method=request.method,
