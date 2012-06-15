@@ -179,21 +179,32 @@ Most of the flags mirror the arguments understood by ``requests.request``. See `
                             socket.setdefaulttimeout() as fallback).
 
 
-Contributors
-------------
+Contribute
+-----------
 
 `View contributors on GitHub <https://github.com/jkbr/httpie/contributors>`_.
 
+If you have found a bug or have a feature requests, the `issues tracker <https://github.com/jkbr/httpie/issues>`_ is the place to start a discussion about it.
+
+To contribute code or documentation, please first browse the exsiting issues to see if the feature/bug has previously been discussed. Then fork `the repository <https://github.com/jkbr/httpie>`_, make changes in your develop branch and submit a pull request. Note: Pull requests with tests are 53.6%  more awesome :)
+
+Before a pull requests is submitted, it's a good idea to run the existing suite of tests::
+
+    python setup.py test
+
+`Tox <http://tox.testrun.org/>`_ can used to conveniently run tests in all of the `supported Python environments <https://github.com/jkbr/httpie/blob/master/tox.ini>`_::
+
+    pip install tox
+    tox test
 
 Changelog
 ---------
 
 * `New in development version <https://github.com/jkbr/httpie/compare/0.2.1...master>`_
-* 0.2.1 (2012-06-13)
+* `0.2.1 <https://github.com/jkbr/httpie/compare/0.2.0...0.2.1>`_ (2012-06-13)
     * Added compatibility with ``requests-0.12.1``.
     * Dropped custom JSON and HTTP lexers in favor of the ones newly included in ``pygments-1.5``.
-    * `Complete changelog <https://github.com/jkbr/httpie/compare/0.2.0...0.2.1>`_
-* 0.2.0 (2012-04-25)
+* `0.2.0 <https://github.com/jkbr/httpie/compare/0.1.6...0.2.0>`_ (2012-04-25)
     * Added Python 3 support.
     * Added the ability to print the HTTP request as well as the response (see ``--print`` and ``--verbose``).
     * Added support for Digest authentication.
@@ -201,5 +212,4 @@ Changelog
     * Improved syntax highlighting for JSON.
     * Added support for field name escaping.
     * Many bug fixes.
-    * `Complete changelog <https://github.com/jkbr/httpie/compare/0.1.6...0.2.0>`_
 * `0.1.6 <https://github.com/jkbr/httpie/compare/0.1.4...0.1.6>`_ (2012-03-04)
