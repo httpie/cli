@@ -184,9 +184,9 @@ Contribute
 
 `View contributors on GitHub <https://github.com/jkbr/httpie/contributors>`_.
 
-If you have found a bug or have a feature requests, the `issues tracker <https://github.com/jkbr/httpie/issues>`_ is the place to start a discussion about it.
+If you have found a bug or have a feature request, the `issue tracker <https://github.com/jkbr/httpie/issues?state=open>`_ is the place to start a discussion about it.
 
-To contribute code or documentation, please first browse the exsiting issues to see if the feature/bug has previously been discussed. Then fork `the repository <https://github.com/jkbr/httpie>`_, make changes in your develop branch and submit a pull request. Note: Pull requests with tests are 53.6%  more awesome :)
+To contribute code or documentation, please first browse the exsiting issues to see if the feature/bug has previously been discussed. Then fork `the repository <https://github.com/jkbr/httpie>`_, make changes in your develop branch and submit a pull request. Note: Pull requests with tests and documentation are 53.6%  more awesome :)
 
 Before a pull requests is submitted, it's a good idea to run the existing suite of tests::
 
@@ -194,8 +194,11 @@ Before a pull requests is submitted, it's a good idea to run the existing suite 
 
 `Tox <http://tox.testrun.org/>`_ can used to conveniently run tests in all of the `supported Python environments <https://github.com/jkbr/httpie/blob/master/tox.ini>`_::
 
+    # Install tox
     pip install tox
-    tox test
+
+    # Run tests
+    tox
 
 Changelog
 ---------
