@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import re
 import sys
 import json
 
@@ -39,6 +40,12 @@ def _get_response(parser, args, stdin, stdin_isatty):
     elif not args.files and 'Content-Type' not in args.headers:
         # Form
         args.headers['Content-Type'] = TYPE_FORM
+
+    if args.method is None and not args.items:
+        args.method = 'GET'
+    elif not re.match('^[a-zA-Z]+$', args.method):
+        args.items.insert(0, args.url)
+        args.method, args.url = 'POST', args.method
 
     # Fire the request.
     try:

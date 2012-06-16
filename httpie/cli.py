@@ -171,6 +171,8 @@ parser.add_argument(
 
 parser.add_argument(
     'method', metavar='METHOD',
+    nargs='?',
+    default=None,
     help=_('''
         The HTTP method to be used for the request
         (GET, POST, PUT, DELETE, PATCH, ...).

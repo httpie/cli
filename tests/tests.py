@@ -144,6 +144,12 @@ class TestHTTPie(BaseTest):
         self.assertIn('"User-Agent": "HTTPie', response)
         self.assertIn('"Foo": "bar"', response)
 
+    def test_get_suggestion(self):
+        http('http://httpbin.org/get')
+
+    def test_post_suggestion(self):
+        http('http://httpbin.org/post', 'hello=world')
+
 
 class TestPrettyFlag(BaseTest):
     """Test the --pretty / --ugly flag handling."""
