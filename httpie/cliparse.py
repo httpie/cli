@@ -47,8 +47,53 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
         args = super(HTTPieArgumentParser, self).parse_args(args, namespace)
         self._validate_output_options(args)
         self._validate_auth_options(args)
+        self.suggest_method(args)
         self._parse_items(args)
         return args
+
+    def suggest_method(self, args):
+        """Suggests HTTP method by positional argument values.
+
+        In following description by data item it means one of:
+        * form data item (key=value)
+        * JSON raw item (key:=value)
+        * file item (key@value)
+
+        If METHOD argument is omitted and no data ITEM is given then method is GET:
+        http http://example.com/
+            - is shortcut for -
+        http GET http://example.com.
+
+        If METHOD argument is omitted but at least one data ITEM
+        is present then method is POST:
+        http http://example.com/ hello=world
+            - is shortcut for -
+        http POST http://example.com hello=world.
+
+        If METHOD is specified then http behaves as it is now.
+
+        The first argument should be treated as method
+        if it matches ^[a-zA-Z]+$ regexp. Otherwise it is url.
+        """
+        if args.method is None:
+            assert not args.items
+            args.method = 'GET'
+        elif not re.match('^[a-zA-Z]+$', args.method):
+            # If first position argument is not http method going guessing mode.
+            # The second positional argument (if any) definitely must be an item.
+            item = KeyValueType(
+                SEP_COMMON,
+                SEP_DATA,
+                SEP_DATA_RAW_JSON,
+                SEP_FILES
+            )(args.url)
+            args.url = args.method
+            args.items.insert(0, item)
+            # Check if any data item presents
+            if any(item[2] in ('=', ':=', '@') for item in args.items):
+                args.method = 'POST'
+            else:
+                args.method = 'GET'
 
     def _parse_items(self, args):
         args.headers = CaseInsensitiveDict()

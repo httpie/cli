@@ -144,11 +144,40 @@ class TestHTTPie(BaseTest):
         self.assertIn('"User-Agent": "HTTPie', response)
         self.assertIn('"Foo": "bar"', response)
 
-    def test_get_suggestion(self):
+
+
+class TestHTTPieSuggestion(BaseTest):
+    def test_get(self):
         http('http://httpbin.org/get')
 
-    def test_post_suggestion(self):
-        http('http://httpbin.org/post', 'hello=world')
+    def test_post(self):
+        r = http('http://httpbin.org/post', 'hello=world')
+        self.assertIn('"hello": "world"', r)
+
+    def test_verbose(self):
+        r = http('--verbose', 'http://httpbin.org/get', 'test-header:__test__')
+        self.assertEqual(r.count('__test__'), 2)
+
+    def test_verbose_form(self):
+        r = http('--verbose', '--form', 'http://httpbin.org/post', 'foo=bar', 'baz=bar')
+        self.assertIn('foo=bar&baz=bar', r)
+
+    def test_json(self):
+        response = http('http://httpbin.org/post', 'foo=bar')
+        self.assertIn('"foo": "bar"', response)
+        response2 = http('-j', 'GET', 'http://httpbin.org/headers')
+        self.assertIn('"Accept": "application/json"', response2)
+        response3 = http('-j', 'GET', 'http://httpbin.org/headers', 'Accept:application/xml')
+        self.assertIn('"Accept": "application/xml"', response3)
+
+    def test_form(self):
+        response = http('--form', 'http://httpbin.org/post', 'foo=bar')
+        self.assertIn('"foo": "bar"', response)
+
+    def test_headers(self):
+        response = http('http://httpbin.org/headers', 'Foo:bar')
+        self.assertIn('"User-Agent": "HTTPie', response)
+        self.assertIn('"Foo": "bar"', response)
 
 
 class TestPrettyFlag(BaseTest):

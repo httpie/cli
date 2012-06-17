@@ -34,11 +34,11 @@ Usage
 
 Hello world::
 
-    http GET httpie.org
+    http httpie.org
 
 Synopsis::
 
-    http [flags] METHOD URL [items]
+    http [flags] [METHOD] URL [items]
 
 There are four types of key-value pair items available:
 
@@ -115,7 +115,10 @@ Most of the flags mirror the arguments understood by ``requests.request``. See `
 
     positional arguments:
       METHOD                The HTTP method to be used for the request (GET, POST,
-                            PUT, DELETE, PATCH, ...).
+                            PUT, DELETE, PATCH, ...). If this argument is omitted
+                            then httpie will guess HTTP method. If there is either
+                            form data field or JSON data field or file field
+                            presents then method is POST otherwise it is GET.
       URL                   The protocol defaults to http:// if the URL does not
                             include one.
       ITEM                  A key-value pair whose type is defined by the
