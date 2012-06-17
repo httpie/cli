@@ -90,7 +90,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
             args.url = args.method
             args.items.insert(0, item)
             # Check if any data item presents
-            if any(item[2] in ('=', ':=', '@') for item in args.items):
+            if any(item[2] in (SEP_DATA, SEP_DATA_RAW_JSON, SEP_FILES) for item in args.items):
                 args.method = 'POST'
             else:
                 args.method = 'GET'
