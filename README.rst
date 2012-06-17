@@ -109,7 +109,7 @@ Most of the flags mirror the arguments understood by ``requests.request``. See `
                        [--style STYLE] [--auth AUTH] [--auth-type {basic,digest}]
                        [--verify VERIFY] [--proxy PROXY] [--allow-redirects]
                        [--timeout TIMEOUT]
-                       METHOD URL [ITEM [ITEM ...]]
+                       [METHOD] URL [ITEM [ITEM ...]]
 
     HTTPie - cURL for humans. <http://httpie.org>
 
@@ -117,7 +117,7 @@ Most of the flags mirror the arguments understood by ``requests.request``. See `
       METHOD                The HTTP method to be used for the request (GET, POST,
                             PUT, DELETE, PATCH, ...). If this argument is omitted
                             then httpie will guess HTTP method. If there is either
-                            form data field or JSON data field or file field
+                            simple data field or JSON data field or file field
                             presents then method is POST otherwise it is GET.
       URL                   The protocol defaults to http:// if the URL does not
                             include one.

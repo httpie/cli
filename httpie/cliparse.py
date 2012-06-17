@@ -55,7 +55,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
         """Suggests HTTP method by positional argument values.
 
         In following description by data item it means one of:
-        * form data item (key=value)
+        * simple data item (key=value)
         * JSON raw item (key:=value)
         * file item (key@value)
 
