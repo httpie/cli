@@ -35,10 +35,13 @@ Usage
 Hello world::
 
     http GET httpie.org
+or
+    python2 -m httpie GET httpie.org
 
 Synopsis::
 
     http [flags] METHOD URL [items]
+
 
 There are four types of key-value pair items available:
 
