@@ -9,6 +9,7 @@ import tempfile
 
 TESTS_ROOT = os.path.dirname(__file__)
 sys.path.insert(0, os.path.realpath(os.path.join(TESTS_ROOT, '..')))
+
 from httpie import __main__
 from httpie import cliparse
 
@@ -145,39 +146,31 @@ class TestHTTPie(BaseTest):
         self.assertIn('"Foo": "bar"', response)
 
 
+class TestImplicitHTTPMethod(BaseTest):
 
-class TestHTTPieSuggestion(BaseTest):
-    def test_get(self):
-        http('http://httpbin.org/get')
+    def test_implicit_GET(self):
+        r = http('http://httpbin.org/get')
+        self.assertIn('HTTP/1.1 200', r)
 
-    def test_post(self):
+    def test_implicit_GET_with_headers(self):
+        r = http('http://httpbin.org/headers', 'Foo:bar')
+        self.assertIn('"Foo": "bar"', r)
+        self.assertIn('HTTP/1.1 200', r)
+
+    def test_implicit_POST_json(self):
         r = http('http://httpbin.org/post', 'hello=world')
         self.assertIn('"hello": "world"', r)
+        self.assertIn('HTTP/1.1 200', r)
 
-    def test_verbose(self):
-        r = http('--verbose', 'http://httpbin.org/get', 'test-header:__test__')
-        self.assertEqual(r.count('__test__'), 2)
+    def test_implicit_POST_form(self):
+        r = http('--form', 'http://httpbin.org/post', 'foo=bar')
+        self.assertIn('"foo": "bar"', r)
+        self.assertIn('HTTP/1.1 200', r)
 
-    def test_verbose_form(self):
-        r = http('--verbose', '--form', 'http://httpbin.org/post', 'foo=bar', 'baz=bar')
-        self.assertIn('foo=bar&baz=bar', r)
-
-    def test_json(self):
-        response = http('http://httpbin.org/post', 'foo=bar')
-        self.assertIn('"foo": "bar"', response)
-        response2 = http('-j', 'GET', 'http://httpbin.org/headers')
-        self.assertIn('"Accept": "application/json"', response2)
-        response3 = http('-j', 'GET', 'http://httpbin.org/headers', 'Accept:application/xml')
-        self.assertIn('"Accept": "application/xml"', response3)
-
-    def test_form(self):
-        response = http('--form', 'http://httpbin.org/post', 'foo=bar')
-        self.assertIn('"foo": "bar"', response)
-
-    def test_headers(self):
-        response = http('http://httpbin.org/headers', 'Foo:bar')
-        self.assertIn('"User-Agent": "HTTPie', response)
-        self.assertIn('"Foo": "bar"', response)
+    def test_implicit_POST_stdin(self):
+        r = http('--form', 'http://httpbin.org/post',
+                 stdin=open(TEST_FILE), stdin_isatty=False)
+        self.assertIn('HTTP/1.1 200', r)
 
 
 class TestPrettyFlag(BaseTest):

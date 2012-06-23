@@ -176,9 +176,8 @@ parser.add_argument(
     help=_('''
         The HTTP method to be used for the request
         (GET, POST, PUT, DELETE, PATCH, ...).
-        If this argument is omitted then httpie will guess HTTP method.
-        If there is either form simple field or JSON data field
-        or file field presents then method is POST otherwise it is GET.
+        If this argument is omitted then httpie will guess the HTTP method.
+        If there is any data to be sent then method is POST otherwise it is GET.
     ''')
 )
 parser.add_argument(

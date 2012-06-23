@@ -18,12 +18,6 @@ TYPE_JSON = 'application/json; charset=utf-8'
 
 def _get_response(parser, args, stdin, stdin_isatty):
 
-    if not stdin_isatty:
-        if args.data:
-            parser.error('Request body (stdin) and request '
-                                'data (key=value) cannot be mixed.')
-        args.data = stdin.read()
-
     if args.json or (not args.form and args.data):
         # JSON
         if not args.files and (
@@ -114,7 +108,11 @@ def main(args=None,
          stdin=sys.stdin, stdin_isatty=sys.stdin.isatty(),
          stdout=sys.stdout, stdout_isatty=sys.stdout.isatty()):
     parser = cli.parser
-    args = parser.parse_args(args if args is not None else sys.argv[1:])
+    args = parser.parse_args(
+        args=args if args is not None else sys.argv[1:],
+        stdin=stdin,
+        stdin_isatty=stdin_isatty
+    )
     response = _get_response(parser, args, stdin, stdin_isatty)
     output = _get_output(args, stdout_isatty, response)
     output_bytes = output.encode('utf8')

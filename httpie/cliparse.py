@@ -3,6 +3,7 @@ CLI argument parsing logic.
 
 """
 import os
+import sys
 import re
 import json
 import argparse
@@ -24,6 +25,11 @@ SEP_HEADERS = SEP_COMMON
 SEP_DATA = '='
 SEP_DATA_RAW_JSON = ':='
 SEP_FILES = '@'
+DATA_ITEM_SEPARATORS = {
+    SEP_DATA,
+    SEP_DATA_RAW_JSON,
+    SEP_FILES
+}
 
 
 OUT_REQ_HEADERS = 'H'
@@ -43,15 +49,25 @@ DEFAULT_UA = 'HTTPie/%s' % __version__
 
 class HTTPieArgumentParser(argparse.ArgumentParser):
 
-    def parse_args(self, args=None, namespace=None):
+    def parse_args(self, args=None, namespace=None,
+                   stdin=sys.stdin,
+                   stdin_isatty=sys.stdin.isatty()):
         args = super(HTTPieArgumentParser, self).parse_args(args, namespace)
         self._validate_output_options(args)
         self._validate_auth_options(args)
-        self.suggest_method(args)
+        self._guess_method(args, stdin_isatty)
         self._parse_items(args)
+        if not stdin_isatty:
+            self._process_stdin(args, stdin)
         return args
 
-    def suggest_method(self, args):
+    def _process_stdin(self, args, stdin):
+        if args.data:
+            self.error('Request body (stdin) and request '
+                       'data (key=value) cannot be mixed.')
+        args.data = stdin.read()
+
+    def _guess_method(self, args, stdin_isatty=sys.stdin.isatty()):
         """Suggests HTTP method by positional argument values.
 
         In following description by data item it means one of:
@@ -74,28 +90,47 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
 
         The first argument should be treated as method
         if it matches ^[a-zA-Z]+$ regexp. Otherwise it is url.
+
         """
         if args.method is None:
+            # Invoked as `http URL'.
             assert not args.items
-            args.method = 'GET'
+            if not stdin_isatty:
+                args.method = 'POST'
+            else:
+                args.method = 'GET'
+        # FIXME: False positive, e.g., "localhost" matches but is a valid URL.
         elif not re.match('^[a-zA-Z]+$', args.method):
-            # If first position argument is not http method going guessing mode.
-            # The second positional argument (if any) definitely must be an item.
+            # Invoked as `http URL item+':
+            # - The URL is now in `args.method`.
+            # - The first item is now in `args.url`.
+            #
+            # So we need to:
+            # - Guess the HTTP method.
+            # - Set `args.url` correctly.
+            # - Parse the first item and move it to `args.items[0]`.
+
             item = KeyValueType(
                 SEP_COMMON,
                 SEP_DATA,
                 SEP_DATA_RAW_JSON,
-                SEP_FILES
-            )(args.url)
+                SEP_FILES).__call__(args.url)
+
             args.url = args.method
             args.items.insert(0, item)
-            # Check if any data item presents
-            if any(item[2] in (SEP_DATA, SEP_DATA_RAW_JSON, SEP_FILES) for item in args.items):
+
+            has_data = not stdin_isatty or any(
+                item.sep in DATA_ITEM_SEPARATORS for item in args.items)
+            if has_data:
                 args.method = 'POST'
             else:
                 args.method = 'GET'
 
     def _parse_items(self, args):
+        """
+        Parse `args.items` into `args.headers`, `args.data` and `args.files`.
+
+        """
         args.headers = CaseInsensitiveDict()
         args.headers['User-Agent'] = DEFAULT_UA
         args.data = OrderedDict()
