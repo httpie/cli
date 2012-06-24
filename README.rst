@@ -104,28 +104,28 @@ Flags
 Most of the flags mirror the arguments understood by ``requests.request``. See ``http -h`` for more details::
 
     usage: http [-h] [--version] [--json | --form] [--traceback]
-                       [--pretty | --ugly]
-                       [--print OUTPUT_OPTIONS | --verbose | --headers | --body]
-                       [--style STYLE] [--auth AUTH] [--auth-type {basic,digest}]
-                       [--verify VERIFY] [--proxy PROXY] [--allow-redirects]
-                       [--timeout TIMEOUT]
-                       [METHOD] URL [ITEM [ITEM ...]]
+                [--pretty | --ugly]
+                [--print OUTPUT_OPTIONS | --verbose | --headers | --body]
+                [--style STYLE] [--auth AUTH] [--auth-type {basic,digest}]
+                [--verify VERIFY] [--proxy PROXY] [--allow-redirects]
+                [--timeout TIMEOUT]
+                [METHOD] URL [ITEM [ITEM ...]]
 
     HTTPie - cURL for humans. <http://httpie.org>
 
     positional arguments:
       METHOD                The HTTP method to be used for the request (GET, POST,
-                            PUT, DELETE, PATCH, ...). If this argument is omitted
-                            then httpie will guess HTTP method. If there is either
-                            simple data field or JSON data field or file field
-                            presents then method is POST otherwise it is GET.
+                            PUT, DELETE, PATCH, ...). If this argument is omitted,
+                            then HTTPie will guess the HTTP method. If there is
+                            some data to be sent, then it will be POST, otherwise
+                            GET.
       URL                   The protocol defaults to http:// if the URL does not
                             include one.
       ITEM                  A key-value pair whose type is defined by the
                             separator used. It can be an HTTP header
                             (header:value), a data field to be used in the request
                             body (field_name=value), a raw JSON data field
-                            (field_name:=value) or a file field
+                            (field_name:=value), or a file field
                             (field_name@/path/to/file). You can use a backslash to
                             escape a colliding separator in the field name.
 
@@ -159,12 +159,12 @@ Most of the flags mirror the arguments understood by ``requests.request``. See `
       --style STYLE, -s STYLE
                             Output coloring style, one of autumn, borland, bw,
                             colorful, default, emacs, friendly, fruity, manni,
-                            monokai, murphy, native, pastie, perldoc, solarized,
-                            tango, trac, vim, vs. Defaults to solarized. For this
-                            option to work properly, please make sure that the
-                            $TERM environment variable is set to "xterm-256color"
-                            or similar (e.g., via `export TERM=xterm-256color' in
-                            your ~/.bashrc).
+                            monokai, murphy, native, pastie, perldoc, rrt,
+                            solarized, tango, trac, vim, vs. Defaults to
+                            solarized. For this option to work properly, please
+                            make sure that the $TERM environment variable is set
+                            to "xterm-256color" or similar (e.g., via `export TERM
+                            =xterm-256color' in your ~/.bashrc).
       --auth AUTH, -a AUTH  username:password
       --auth-type {basic,digest}
                             The authentication mechanism to be used. Defaults to
@@ -189,7 +189,7 @@ Contribute
 
 If you have found a bug or have a feature request, the `issue tracker <https://github.com/jkbr/httpie/issues?state=open>`_ is the place to start a discussion about it.
 
-To contribute code or documentation, please first browse the exsiting issues to see if the feature/bug has previously been discussed. Then fork `the repository <https://github.com/jkbr/httpie>`_, make changes in your develop branch and submit a pull request. Note: Pull requests with tests and documentation are 53.6%  more awesome :)
+To contribute code or documentation, please first browse the existing issues to see if the feature/bug has previously been discussed. Then fork `the repository <https://github.com/jkbr/httpie>`_, make changes in your develop branch and submit a pull request. Note: Pull requests with tests and documentation are 53.6%  more awesome :)
 
 Before a pull requests is submitted, it's a good idea to run the existing suite of tests::
 
@@ -206,7 +206,9 @@ Before a pull requests is submitted, it's a good idea to run the existing suite 
 Changelog
 ---------
 
-* `New in development version <https://github.com/jkbr/httpie/compare/0.2.1...master>`_
+* `0.2.2dev <https://github.com/jkbr/httpie/compare/0.2.1...master>`_
+    * The ``METHOD`` positional argument can now be omitted (defaults to ``GET``, or to ``POST`` with data).
+    * Fixed --verbose --form.
 * `0.2.1 <https://github.com/jkbr/httpie/compare/0.2.0...0.2.1>`_ (2012-06-13)
     * Added compatibility with ``requests-0.12.1``.
     * Dropped custom JSON and HTTP lexers in favor of the ones newly included in ``pygments-1.5``.

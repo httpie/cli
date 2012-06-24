@@ -14,7 +14,7 @@ def _(text):
 
 
 desc = '%s <http://httpie.org>'
-parser = cliparse.HTTPieArgumentParser(description=desc % __doc__.strip(),)
+parser = cliparse.Parser(description=desc % __doc__.strip(),)
 parser.add_argument('--version', action='version', version=__version__)
 
 
@@ -176,8 +176,8 @@ parser.add_argument(
     help=_('''
         The HTTP method to be used for the request
         (GET, POST, PUT, DELETE, PATCH, ...).
-        If this argument is omitted then httpie will guess the HTTP method.
-        If there is any data to be sent then method is POST otherwise it is GET.
+        If this argument is omitted, then HTTPie will guess the HTTP method.
+        If there is some data to be sent, then it will be POST, otherwise GET.
     ''')
 )
 parser.add_argument(
@@ -200,7 +200,7 @@ parser.add_argument(
         A key-value pair whose type is defined by the separator used. It can be an
         HTTP header (header:value),
         a data field to be used in the request body (field_name=value),
-        a raw JSON data field (field_name:=value)
+        a raw JSON data field (field_name:=value),
         or a file field (field_name@/path/to/file).
         You can use a backslash to escape a colliding separator in the field name.
     ''')

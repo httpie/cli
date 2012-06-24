@@ -1,24 +1,36 @@
-# coding:utf-8
-import os
-import sys
+"""
+High-level tests.
+
+"""
 import unittest
 import argparse
-from requests.compat import is_py26
+import os
+import sys
 import tempfile
+from requests.compat import is_py26
 
 
+#################################################################
+# Utils/setup
+#################################################################
+
+# HACK: Prepend ../ to PYTHONPATH so that we can import httpie form there.
 TESTS_ROOT = os.path.dirname(__file__)
 sys.path.insert(0, os.path.realpath(os.path.join(TESTS_ROOT, '..')))
 
-from httpie import __main__
-from httpie import cliparse
+from httpie import __main__, cliparse
 
 
-TEST_FILE = os.path.join(TESTS_ROOT, 'file.txt')
+TEST_FILE_PATH = os.path.join(TESTS_ROOT, 'file.txt')
 TERMINAL_COLOR_PRESENCE_CHECK = '\x1b['
 
 
 def http(*args, **kwargs):
+    """
+    Invoke `httpie.__main__.main` with `args` and `kwargs`,
+    and return a unicode response.
+
+    """
     http_kwargs = {
         'stdin_isatty': True,
         'stdout_isatty': False
@@ -32,7 +44,7 @@ def http(*args, **kwargs):
     return response
 
 
-class BaseTest(unittest.TestCase):
+class BaseTestCase(unittest.TestCase):
 
     if is_py26:
         def assertIn(self, member, container, msg=None):
@@ -46,7 +58,149 @@ class BaseTest(unittest.TestCase):
             self.assertEqual(sorted(d1.values()), sorted(d2.values()), msg)
 
 
-class TestItemParsing(BaseTest):
+#################################################################
+# High-level tests using httpbin.org.
+#################################################################
+
+class HTTPieTest(BaseTestCase):
+
+    def test_GET(self):
+        r = http('GET', 'http://httpbin.org/get')
+        self.assertIn('HTTP/1.1 200', r)
+
+    def test_DELETE(self):
+        r = http('DELETE', 'http://httpbin.org/delete')
+        self.assertIn('HTTP/1.1 200', r)
+
+    def test_PUT(self):
+        r = http('PUT', 'http://httpbin.org/put', 'foo=bar')
+        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn('"foo": "bar"', r)
+
+    def test_POST_JSON_data(self):
+        r = http('POST', 'http://httpbin.org/post', 'foo=bar')
+        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn('"foo": "bar"', r)
+
+    def test_GET_JSON_implicit_accept(self):
+        r = http('-j', 'GET', 'http://httpbin.org/headers')
+        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn('"Accept": "application/json"', r)
+
+    def test_GET_JSON_explicit_accept(self):
+        r = http('-j', 'GET', 'http://httpbin.org/headers', 'Accept:application/xml')
+        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn('"Accept": "application/xml"', r)
+
+    def test_POST_form(self):
+        response = http('--form', 'POST', 'http://httpbin.org/post', 'foo=bar')
+        self.assertIn('"foo": "bar"', response)
+
+    def test_POST_stdin(self):
+        r = http('--form', 'POST', 'http://httpbin.org/post',
+                 stdin=open(TEST_FILE_PATH), stdin_isatty=False)
+        self.assertIn('HTTP/1.1 200', r)
+
+    def test_headers(self):
+        response = http('GET', 'http://httpbin.org/headers', 'Foo:bar')
+        self.assertIn('"User-Agent": "HTTPie', response)
+        self.assertIn('"Foo": "bar"', response)
+
+
+class ImplicitHTTPMethodTest(BaseTestCase):
+
+    def test_implicit_GET(self):
+        r = http('http://httpbin.org/get')
+        self.assertIn('HTTP/1.1 200', r)
+
+    def test_implicit_GET_with_headers(self):
+        r = http('http://httpbin.org/headers', 'Foo:bar')
+        self.assertIn('"Foo": "bar"', r)
+        self.assertIn('HTTP/1.1 200', r)
+
+    def test_implicit_POST_json(self):
+        r = http('http://httpbin.org/post', 'hello=world')
+        self.assertIn('"hello": "world"', r)
+        self.assertIn('HTTP/1.1 200', r)
+
+    def test_implicit_POST_form(self):
+        r = http('--form', 'http://httpbin.org/post', 'foo=bar')
+        self.assertIn('"foo": "bar"', r)
+        self.assertIn('HTTP/1.1 200', r)
+
+    def test_implicit_POST_stdin(self):
+        r = http('--form', 'http://httpbin.org/post',
+                 stdin=open(TEST_FILE_PATH), stdin_isatty=False)
+        self.assertIn('HTTP/1.1 200', r)
+
+
+class PrettyFlagTest(BaseTestCase):
+    """Test the --pretty / --ugly flag handling."""
+
+    def test_pretty_enabled_by_default(self):
+        r = http('GET', 'http://httpbin.org/get', stdout_isatty=True)
+        self.assertIn(TERMINAL_COLOR_PRESENCE_CHECK, r)
+
+    def test_pretty_enabled_by_default_unless_stdin_redirected(self):
+        r = http('GET', 'http://httpbin.org/get', stdout_isatty=False)
+        self.assertNotIn(TERMINAL_COLOR_PRESENCE_CHECK, r)
+
+    def test_force_pretty(self):
+        r = http('--pretty', 'GET', 'http://httpbin.org/get', stdout_isatty=False)
+        self.assertIn(TERMINAL_COLOR_PRESENCE_CHECK, r)
+
+    def test_force_ugly(self):
+        r = http('--ugly', 'GET', 'http://httpbin.org/get', stdout_isatty=True)
+        self.assertNotIn(TERMINAL_COLOR_PRESENCE_CHECK, r)
+
+
+class VerboseFlagTest(BaseTestCase):
+
+    def test_verbose(self):
+        r = http('--verbose', 'GET', 'http://httpbin.org/get', 'test-header:__test__')
+        self.assertEqual(r.count('__test__'), 2)
+
+    def test_verbose_form(self):
+        # https://github.com/jkbr/httpie/issues/53
+        r = http('--verbose', '--form', 'POST', 'http://httpbin.org/post', 'foo=bar', 'baz=bar')
+        self.assertIn('foo=bar&baz=bar', r)
+
+
+class MultipartFormDataFileUploadTest(BaseTestCase):
+
+    def test_non_existent_file_raises_parse_error(self):
+        self.assertRaises(cliparse.ParseError, http,
+            '--form', '--traceback',
+            'POST', 'http://httpbin.org/post',
+            'foo@/__does_not_exist__')
+
+    def test_upload_ok(self):
+        r = http('--form', 'POST', 'http://httpbin.org/post',
+             'test-file@%s' % TEST_FILE_PATH, 'foo=bar')
+        self.assertIn('"test-file": "__test_file_content__', r)
+        self.assertIn('"foo": "bar"', r)
+
+
+class AuthTest(BaseTestCase):
+
+    def test_basic_auth(self):
+        r = http('--auth', 'user:password',
+                 'GET', 'httpbin.org/basic-auth/user/password')
+        self.assertIn('"authenticated": true', r)
+        self.assertIn('"user": "user"', r)
+
+    def test_digest_auth(self):
+        r = http('--auth-type=digest', '--auth', 'user:password',
+                 'GET', 'httpbin.org/digest-auth/auth/user/password')
+        self.assertIn('"authenticated": true', r)
+        self.assertIn('"user": "user"', r)
+
+
+#################################################################
+# CLI argument parsing related tests.
+#################################################################
+
+class ItemParsingTest(BaseTestCase):
 
     def setUp(self):
         self.key_value_type = cliparse.KeyValueType(
@@ -70,7 +224,7 @@ class TestItemParsing(BaseTest):
             # data
             self.key_value_type('baz\\=bar=foo'),
             # files
-            self.key_value_type('bar\\@baz@%s' % TEST_FILE)
+            self.key_value_type('bar\\@baz@%s' % TEST_FILE_PATH)
         ])
         self.assertDictEqual(headers, {
             'foo:bar': 'baz',
@@ -98,7 +252,7 @@ class TestItemParsing(BaseTest):
             self.key_value_type('eh:'),
             self.key_value_type('ed='),
             self.key_value_type('bool:=true'),
-            self.key_value_type('test-file@%s' % TEST_FILE),
+            self.key_value_type('test-file@%s' % TEST_FILE_PATH),
         ])
         self.assertDictEqual(headers, {
             'header': 'value',
@@ -114,112 +268,77 @@ class TestItemParsing(BaseTest):
         self.assertIn('test-file', files)
 
 
-class TestHTTPie(BaseTest):
+class HTTPieArgumentParserTestCase(unittest.TestCase):
 
-    def test_get(self):
-        http('GET', 'http://httpbin.org/get')
+    def setUp(self):
+        self.parser = cliparse.Parser()
 
-    def test_verbose(self):
-        r = http('--verbose', 'GET', 'http://httpbin.org/get', 'test-header:__test__')
-        self.assertEqual(r.count('__test__'), 2)
+    def test_guess_when_method_set_and_valid(self):
+        args = argparse.Namespace()
+        args.method = 'GET'
+        args.url = 'http://example.com/'
+        args.items = []
 
-    def test_verbose_form(self):
-        # https://github.com/jkbr/httpie/issues/53
-        r = http('--verbose', '--form', 'POST', 'http://httpbin.org/post', 'foo=bar', 'baz=bar')
-        self.assertIn('foo=bar&baz=bar', r)
+        self.parser._guess_method(args)
 
-    def test_json(self):
-        response = http('POST', 'http://httpbin.org/post', 'foo=bar')
-        self.assertIn('"foo": "bar"', response)
-        response2 = http('-j', 'GET', 'http://httpbin.org/headers')
-        self.assertIn('"Accept": "application/json"', response2)
-        response3 = http('-j', 'GET', 'http://httpbin.org/headers', 'Accept:application/xml')
-        self.assertIn('"Accept": "application/xml"', response3)
+        self.assertEquals(args.method, 'GET')
+        self.assertEquals(args.url, 'http://example.com/')
+        self.assertEquals(args.items, [])
 
-    def test_form(self):
-        response = http('--form', 'POST', 'http://httpbin.org/post', 'foo=bar')
-        self.assertIn('"foo": "bar"', response)
+    def test_guess_when_method_not_set(self):
+        args = argparse.Namespace()
+        args.method = None
+        args.url = 'http://example.com/'
+        args.items = []
 
-    def test_headers(self):
-        response = http('GET', 'http://httpbin.org/headers', 'Foo:bar')
-        self.assertIn('"User-Agent": "HTTPie', response)
-        self.assertIn('"Foo": "bar"', response)
+        self.parser._guess_method(args)
 
+        self.assertEquals(args.method, 'GET')
+        self.assertEquals(args.url, 'http://example.com/')
+        self.assertEquals(args.items, [])
 
-class TestImplicitHTTPMethod(BaseTest):
+    def test_guess_when_method_set_but_invalid_and_data_field(self):
+        args = argparse.Namespace()
+        args.method = 'http://example.com/'
+        args.url = 'data=field'
+        args.items = []
 
-    def test_implicit_GET(self):
-        r = http('http://httpbin.org/get')
-        self.assertIn('HTTP/1.1 200', r)
+        self.parser._guess_method(args)
 
-    def test_implicit_GET_with_headers(self):
-        r = http('http://httpbin.org/headers', 'Foo:bar')
-        self.assertIn('"Foo": "bar"', r)
-        self.assertIn('HTTP/1.1 200', r)
+        self.assertEquals(args.method, 'POST')
+        self.assertEquals(args.url, 'http://example.com/')
+        self.assertEquals(
+            args.items,
+            [cliparse.KeyValue(key='data', value='field', sep='=', orig='data=field')])
 
-    def test_implicit_POST_json(self):
-        r = http('http://httpbin.org/post', 'hello=world')
-        self.assertIn('"hello": "world"', r)
-        self.assertIn('HTTP/1.1 200', r)
+    def test_guess_when_method_set_but_invalid_and_header_field(self):
+        args = argparse.Namespace()
+        args.method = 'http://example.com/'
+        args.url = 'test:header'
+        args.items = []
 
-    def test_implicit_POST_form(self):
-        r = http('--form', 'http://httpbin.org/post', 'foo=bar')
-        self.assertIn('"foo": "bar"', r)
-        self.assertIn('HTTP/1.1 200', r)
+        self.parser._guess_method(args)
 
-    def test_implicit_POST_stdin(self):
-        r = http('--form', 'http://httpbin.org/post',
-                 stdin=open(TEST_FILE), stdin_isatty=False)
-        self.assertIn('HTTP/1.1 200', r)
+        self.assertEquals(args.method, 'GET')
+        self.assertEquals(args.url, 'http://example.com/')
+        self.assertEquals(
+            args.items,
+            [cliparse.KeyValue(key='test', value='header', sep=':', orig='test:header')])
 
+    def test_guess_when_method_set_but_invalid_and_item_exists(self):
+        args = argparse.Namespace()
+        args.method = 'http://example.com/'
+        args.url = 'new_item=a'
+        args.items = [
+            cliparse.KeyValue(key='old_item', value='b', sep='=', orig='old_item=b')
+        ]
 
-class TestPrettyFlag(BaseTest):
-    """Test the --pretty / --ugly flag handling."""
+        self.parser._guess_method(args)
 
-    def test_pretty_enabled_by_default(self):
-        r = http('GET', 'http://httpbin.org/get', stdout_isatty=True)
-        self.assertIn(TERMINAL_COLOR_PRESENCE_CHECK, r)
-
-    def test_pretty_enabled_by_default_unless_stdin_redirected(self):
-        r = http('GET', 'http://httpbin.org/get', stdout_isatty=False)
-        self.assertNotIn(TERMINAL_COLOR_PRESENCE_CHECK, r)
-
-    def test_force_pretty(self):
-        r = http('--pretty', 'GET', 'http://httpbin.org/get', stdout_isatty=False)
-        self.assertIn(TERMINAL_COLOR_PRESENCE_CHECK, r)
-
-    def test_force_ugly(self):
-        r = http('--ugly', 'GET', 'http://httpbin.org/get', stdout_isatty=True)
-        self.assertNotIn(TERMINAL_COLOR_PRESENCE_CHECK, r)
-
-
-class TestFileUpload(BaseTest):
-
-    def test_non_existent_file_raises_parse_error(self):
-        self.assertRaises(cliparse.ParseError, http,
-            '--form', '--traceback',
-            'POST', 'http://httpbin.org/post',
-            'foo@/__does_not_exist__')
-
-    def test_upload_ok(self):
-        r = http('--form', 'POST', 'http://httpbin.org/post',
-             'test-file@%s' % TEST_FILE)
-        self.assertIn('"test-file": "__test_file_content__', r)
-
-
-class TestAuth(BaseTest):
-
-    def test_basic_auth(self):
-        r = http('--auth', 'user:password',
-                 'GET', 'httpbin.org/basic-auth/user/password')
-        self.assertIn('"authenticated": true', r)
-        self.assertIn('"user": "user"', r)
-
-    def test_digest_auth(self):
-        r = http('--auth-type=digest', '--auth', 'user:password',
-                 'GET', 'httpbin.org/digest-auth/auth/user/password')
-        self.assertIn('"authenticated": true', r)
-        self.assertIn('"user": "user"', r)
+        self.assertEquals(args.items, [
+            cliparse.KeyValue(key='new_item', value='a', sep='=', orig='new_item=a'),
+            cliparse.KeyValue(key='old_item', value='b', sep='=', orig='old_item=b'),
+        ])
 
 
 if __name__ == '__main__':

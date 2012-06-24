@@ -25,11 +25,11 @@ SEP_HEADERS = SEP_COMMON
 SEP_DATA = '='
 SEP_DATA_RAW_JSON = ':='
 SEP_FILES = '@'
-DATA_ITEM_SEPARATORS = {
+DATA_ITEM_SEPARATORS = [
     SEP_DATA,
     SEP_DATA_RAW_JSON,
     SEP_FILES
-}
+]
 
 
 OUT_REQ_HEADERS = 'H'
@@ -47,12 +47,12 @@ PRETTIFY_STDOUT_TTY_ONLY = object()
 DEFAULT_UA = 'HTTPie/%s' % __version__
 
 
-class HTTPieArgumentParser(argparse.ArgumentParser):
+class Parser(argparse.ArgumentParser):
 
     def parse_args(self, args=None, namespace=None,
                    stdin=sys.stdin,
                    stdin_isatty=sys.stdin.isatty()):
-        args = super(HTTPieArgumentParser, self).parse_args(args, namespace)
+        args = super(Parser, self).parse_args(args, namespace)
         self._validate_output_options(args)
         self._validate_auth_options(args)
         self._guess_method(args, stdin_isatty)
@@ -68,28 +68,9 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
         args.data = stdin.read()
 
     def _guess_method(self, args, stdin_isatty=sys.stdin.isatty()):
-        """Suggests HTTP method by positional argument values.
-
-        In following description by data item it means one of:
-        * simple data item (key=value)
-        * JSON raw item (key:=value)
-        * file item (key@value)
-
-        If METHOD argument is omitted and no data ITEM is given then method is GET:
-        http http://example.com/
-            - is shortcut for -
-        http GET http://example.com.
-
-        If METHOD argument is omitted but at least one data ITEM
-        is present then method is POST:
-        http http://example.com/ hello=world
-            - is shortcut for -
-        http POST http://example.com hello=world.
-
-        If METHOD is specified then http behaves as it is now.
-
-        The first argument should be treated as method
-        if it matches ^[a-zA-Z]+$ regexp. Otherwise it is url.
+        """
+        Set `args.method`, if not specified, to either POST or GET
+        based on whether the request has data or not.
 
         """
         if args.method is None:
