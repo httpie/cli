@@ -1,7 +1,3 @@
-"""
-High-level tests.
-
-"""
 import unittest
 import argparse
 import os
@@ -22,6 +18,7 @@ from httpie import __main__, cliparse
 
 
 TEST_FILE_PATH = os.path.join(TESTS_ROOT, 'file.txt')
+TEST_FILE_CONTENT = open(TEST_FILE_PATH).read().strip()
 TERMINAL_COLOR_PRESENCE_CHECK = '\x1b['
 
 
@@ -93,18 +90,21 @@ class HTTPieTest(BaseTestCase):
         self.assertIn('"Accept": "application/xml"', r)
 
     def test_POST_form(self):
-        response = http('--form', 'POST', 'http://httpbin.org/post', 'foo=bar')
-        self.assertIn('"foo": "bar"', response)
+        r = http('--form', 'POST', 'http://httpbin.org/post', 'foo=bar')
+        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn('"foo": "bar"', r)
 
     def test_POST_stdin(self):
         r = http('--form', 'POST', 'http://httpbin.org/post',
                  stdin=open(TEST_FILE_PATH), stdin_isatty=False)
         self.assertIn('HTTP/1.1 200', r)
+        self.assertIn(TEST_FILE_CONTENT, r)
 
     def test_headers(self):
-        response = http('GET', 'http://httpbin.org/headers', 'Foo:bar')
-        self.assertIn('"User-Agent": "HTTPie', response)
-        self.assertIn('"Foo": "bar"', response)
+        r = http('GET', 'http://httpbin.org/headers', 'Foo:bar')
+        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn('"User-Agent": "HTTPie', r)
+        self.assertIn('"Foo": "bar"', r)
 
 
 class ImplicitHTTPMethodTest(BaseTestCase):
@@ -115,18 +115,18 @@ class ImplicitHTTPMethodTest(BaseTestCase):
 
     def test_implicit_GET_with_headers(self):
         r = http('http://httpbin.org/headers', 'Foo:bar')
-        self.assertIn('"Foo": "bar"', r)
         self.assertIn('HTTP/1.1 200', r)
+        self.assertIn('"Foo": "bar"', r)
 
     def test_implicit_POST_json(self):
         r = http('http://httpbin.org/post', 'hello=world')
-        self.assertIn('"hello": "world"', r)
         self.assertIn('HTTP/1.1 200', r)
+        self.assertIn('"hello": "world"', r)
 
     def test_implicit_POST_form(self):
         r = http('--form', 'http://httpbin.org/post', 'foo=bar')
-        self.assertIn('"foo": "bar"', r)
         self.assertIn('HTTP/1.1 200', r)
+        self.assertIn('"foo": "bar"', r)
 
     def test_implicit_POST_stdin(self):
         r = http('--form', 'http://httpbin.org/post',
@@ -158,11 +158,13 @@ class VerboseFlagTest(BaseTestCase):
 
     def test_verbose(self):
         r = http('--verbose', 'GET', 'http://httpbin.org/get', 'test-header:__test__')
+        self.assertIn('HTTP/1.1 200', r)
         self.assertEqual(r.count('__test__'), 2)
 
     def test_verbose_form(self):
         # https://github.com/jkbr/httpie/issues/53
         r = http('--verbose', '--form', 'POST', 'http://httpbin.org/post', 'foo=bar', 'baz=bar')
+        self.assertIn('HTTP/1.1 200', r)
         self.assertIn('foo=bar&baz=bar', r)
 
 
@@ -177,6 +179,7 @@ class MultipartFormDataFileUploadTest(BaseTestCase):
     def test_upload_ok(self):
         r = http('--form', 'POST', 'http://httpbin.org/post',
              'test-file@%s' % TEST_FILE_PATH, 'foo=bar')
+        self.assertIn('HTTP/1.1 200', r)
         self.assertIn('"test-file": "__test_file_content__', r)
         self.assertIn('"foo": "bar"', r)
 
@@ -186,12 +189,14 @@ class AuthTest(BaseTestCase):
     def test_basic_auth(self):
         r = http('--auth', 'user:password',
                  'GET', 'httpbin.org/basic-auth/user/password')
+        self.assertIn('HTTP/1.1 200', r)
         self.assertIn('"authenticated": true', r)
         self.assertIn('"user": "user"', r)
 
     def test_digest_auth(self):
         r = http('--auth-type=digest', '--auth', 'user:password',
                  'GET', 'httpbin.org/digest-auth/auth/user/password')
+        self.assertIn('HTTP/1.1 200', r)
         self.assertIn('"authenticated": true', r)
         self.assertIn('"user": "user"', r)
 
