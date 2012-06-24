@@ -28,7 +28,6 @@ Or, you can install the **development version** directly from GitHub:
 
     pip install -U https://github.com/jkbr/httpie/tarball/master
 
-HTTPie should also
 
 Usage
 -----
