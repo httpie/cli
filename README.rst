@@ -28,6 +28,7 @@ Or, you can install the **development version** directly from GitHub:
 
     pip install -U https://github.com/jkbr/httpie/tarball/master
 
+HTTPie should also
 
 Usage
 -----
@@ -206,9 +207,11 @@ Before a pull requests is submitted, it's a good idea to run the existing suite 
 Changelog
 ---------
 
-* `0.2.2dev <https://github.com/jkbr/httpie/compare/0.2.1...master>`_
+* `0.2.3dev <https://github.com/jkbr/httpie/compare/0.2.2...master>`_
+* `0.2.2 <https://github.com/jkbr/httpie/compare/0.2.1...0.2.2>`_ (2012-06-24)
     * The ``METHOD`` positional argument can now be omitted (defaults to ``GET``, or to ``POST`` with data).
     * Fixed --verbose --form.
+    * Added support for `Tox <http://tox.testrun.org/>`_.
 * `0.2.1 <https://github.com/jkbr/httpie/compare/0.2.0...0.2.1>`_ (2012-06-13)
     * Added compatibility with ``requests-0.12.1``.
     * Dropped custom JSON and HTTP lexers in favor of the ones newly included in ``pygments-1.5``.
