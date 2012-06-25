@@ -72,7 +72,7 @@ The following request is issued::
     {"name": "John", "email": "john@example.org", "age": 29}
 
 
-It can easily be changed to a 'form' request using the ``-f`` (or ``--form``) flag, which produces::
+It can easily be changed to a **form** request using the ``-f`` (or ``--form``) flag, which produces::
 
     PATCH /person/1 HTTP/1.1
     User-Agent: HTTPie/0.1
@@ -81,7 +81,7 @@ It can easily be changed to a 'form' request using the ``-f`` (or ``--form``) fl
 
     age=29&name=John&email=john%40example.org
 
-It is also possible to send ``multipart/form-data`` requests, i.e., to simulate a file upload form submission. It is done using the ``--form`` / ``-f`` flag and passing one or more file fields::
+It is also possible to send ``multipart/form-data`` requests, i.e., to simulate a **file upload form** submission. It is done using the ``--form`` / ``-f`` flag and passing one or more file fields::
 
     http -f POST example.com/jobs name=John cv@~/Documents/cv.pdf
 
@@ -92,11 +92,19 @@ The above will send the same request as if the following HTML form were submitte
         <input type="file" name="cv" />
     </form>
 
-A whole request body can be passed in via ``stdin`` instead::
+A whole request body can be passed in via **``stdin``** instead, in which case it will be used with no further processing::
 
     echo '{"name": "John"}' | http PATCH example.com/person/1 X-API-Token:123
     # Or:
     http POST example.com/person/1 X-API-Token:123 < person.json
+
+That can be used for **piping services together**. The following example ``GET``s JSON data from the Github API and ``POST``s it to httpbin.org::
+
+    http -b GET https://api.github.com/repos/jkbr/httpie | http POST httpbin.org/post
+
+The above can be further simplified by omitting ``GET`` and ``POST`` because they are both default here. The first command has no request data, whereas the second one does via ``stdin``::
+
+    http -b https://api.github.com/repos/jkbr/httpie | http httpbin.org/post
 
 
 Flags
