@@ -106,6 +106,10 @@ The above can be further simplified by omitting ``GET`` and ``POST`` because the
 
     http -b https://api.github.com/repos/jkbr/httpie | http httpbin.org/post
 
+An alternative to ``stdin`` is to pass a file name whose content will be used as the request body. It has the advantage that the ``Content-Type`` header will automatically be set to the appropriate value based on the filename extension (using the ``mimetypes`` module). Therefore, the following will request will send the verbatim contents of the file with ``Content-Type: application/xml``::
+
+    http PUT httpbin.org/put @/data/file.xml
+
 
 Flags
 ^^^^^
@@ -215,6 +219,7 @@ Changelog
 ---------
 
 * `0.2.3dev <https://github.com/jkbr/httpie/compare/0.2.2...master>`_
+    * Added support for request payloads from a file path with automatic ``Content-Type`` (``http URL @/path``).
 * `0.2.2 <https://github.com/jkbr/httpie/compare/0.2.1...0.2.2>`_ (2012-06-24)
     * The ``METHOD`` positional argument can now be omitted (defaults to ``GET``, or to ``POST`` with data).
     * Fixed --verbose --form.

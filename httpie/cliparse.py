@@ -7,6 +7,7 @@ import sys
 import re
 import json
 import argparse
+import mimetypes
 
 from collections import namedtuple
 
@@ -58,14 +59,14 @@ class Parser(argparse.ArgumentParser):
         self._guess_method(args, stdin_isatty)
         self._parse_items(args)
         if not stdin_isatty:
-            self._process_stdin(args, stdin)
+            self._body_from_file(args, stdin)
         return args
 
-    def _process_stdin(self, args, stdin):
+    def _body_from_file(self, args, f):
         if args.data:
-            self.error('Request body (stdin) and request '
+            self.error('Request body (from stdin or a file) and request '
                        'data (key=value) cannot be mixed.')
-        args.data = stdin.read()
+        args.data = f.read()
 
     def _guess_method(self, args, stdin_isatty=sys.stdin.isatty()):
         """
@@ -125,12 +126,26 @@ class Parser(argparse.ArgumentParser):
             self.error(e.message)
 
         if args.files and not args.form:
-            # We could just switch to --form automatically here,
-            # but I think it's better to make it explicit.
-            self.error(
-                ' You need to set the --form / -f flag to'
-                ' to issue a multipart request. File fields: %s'
-                % ','.join(args.files.keys()))
+            # `http url @/path/to/file`
+            # It's not --form so the file contents will be used as the
+            # body of the requests. Also, we try to detect the appropriate
+            # Content-Type.
+            if len(args.files) > 1:
+                self.error(
+                    'Only one file can be specified unless'
+                    ' --form is used. File fields: %s'
+                    % ','.join(args.files.keys()))
+            f = list(args.files.values())[0]
+            self._body_from_file(args, f)
+            args.files = {}
+            if 'Content-Type' not in args.headers:
+                mime, encoding = mimetypes.guess_type(f.name, strict=False)
+                if mime:
+                    content_type = mime
+                    if encoding:
+                        content_type = '%s; charset=%s' % (mime, encoding)
+                    args.headers['Content-Type'] = content_type
+
 
     def _validate_output_options(self, args):
         unknown_output_options = set(args.output_options) - set(OUTPUT_OPTIONS)

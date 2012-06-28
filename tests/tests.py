@@ -18,6 +18,7 @@ from httpie import __main__, cliparse
 
 
 TEST_FILE_PATH = os.path.join(TESTS_ROOT, 'file.txt')
+TEST_FILE2_PATH = os.path.join(TESTS_ROOT, 'file2.txt')
 TEST_FILE_CONTENT = open(TEST_FILE_PATH).read().strip()
 TERMINAL_COLOR_PRESENCE_CHECK = '\x1b['
 
@@ -180,8 +181,40 @@ class MultipartFormDataFileUploadTest(BaseTestCase):
         r = http('--form', 'POST', 'http://httpbin.org/post',
              'test-file@%s' % TEST_FILE_PATH, 'foo=bar')
         self.assertIn('HTTP/1.1 200', r)
-        self.assertIn('"test-file": "__test_file_content__', r)
+        self.assertIn('"test-file": "%s' % TEST_FILE_CONTENT, r)
         self.assertIn('"foo": "bar"', r)
+
+
+class RequestBodyFromFilePathTest(BaseTestCase):
+    """
+    `http URL @file'
+
+    """
+    def test_request_body_from_file_by_path(self):
+        r = http('POST', 'http://httpbin.org/post', '@' + TEST_FILE_PATH)
+        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn(TEST_FILE_CONTENT, r)
+        self.assertIn('"Content-Type": "text/plain"', r)
+
+    def test_request_body_from_file_by_path_with_explicit_content_type(self):
+        r = http('POST', 'http://httpbin.org/post', '@' + TEST_FILE_PATH, 'Content-Type:x-foo/bar')
+        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn(TEST_FILE_CONTENT, r)
+        self.assertIn('"Content-Type": "x-foo/bar"', r)
+
+    def test_request_body_from_file_by_path_only_one_file_allowed(self):
+        self.assertRaises(SystemExit, lambda: http(
+            'POST',
+                'http://httpbin.org/post',
+                '@' + TEST_FILE_PATH,
+                '@' + TEST_FILE2_PATH))
+
+    def test_request_body_from_file_by_path_only_no_data_items_allowed(self):
+        self.assertRaises(SystemExit, lambda: http(
+            'POST',
+                'http://httpbin.org/post',
+                '@' + TEST_FILE_PATH,
+                'foo=bar'))
 
 
 class AuthTest(BaseTestCase):
@@ -273,7 +306,7 @@ class ItemParsingTest(BaseTestCase):
         self.assertIn('test-file', files)
 
 
-class HTTPieArgumentParserTestCase(unittest.TestCase):
+class ArgumentParserTestCase(unittest.TestCase):
 
     def setUp(self):
         self.parser = cliparse.Parser()

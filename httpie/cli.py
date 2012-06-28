@@ -25,16 +25,16 @@ group_type = parser.add_mutually_exclusive_group(required=False)
 group_type.add_argument(
     '--json', '-j', action='store_true',
     help=_('''
-        (default) Data items are serialized as a JSON object.
+        (default) Data items from the command line are serialized as a JSON object.
         The Content-Type and Accept headers
-        are set to application/json (if not set via the command line).
+        are set to application/json (if not specified).
     ''')
 )
 group_type.add_argument(
     '--form', '-f', action='store_true',
     help=_('''
-        Data items are serialized as form fields.
-        The Content-Type is set to application/x-www-form-urlencoded (if not specifid).
+        Data items from the command line are serialized as form fields.
+        The Content-Type is set to application/x-www-form-urlencoded (if not specified).
         The presence of any file fields results into a multipart/form-data request.
      ''')
 )

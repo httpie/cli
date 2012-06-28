@@ -24,8 +24,8 @@ def _get_response(parser, args, stdin, stdin_isatty):
             'Content-Type' not in args.headers
             and (args.data or args.json)):
                 args.headers['Content-Type'] = TYPE_JSON
-        if stdin_isatty:
-            # Serialize the parsed data.
+        if isinstance(args.data, dict):
+            # Serialize the data dict parsed from arguments.
             args.data = json.dumps(args.data)
         if 'Accept' not in args.headers:
             # Default Accept to JSON as well.
