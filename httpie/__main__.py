@@ -16,23 +16,29 @@ TYPE_FORM = 'application/x-www-form-urlencoded; charset=utf-8'
 TYPE_JSON = 'application/json; charset=utf-8'
 
 
-def _get_response(parser, args, stdin, stdin_isatty):
+def _get_response(args):
 
-    if args.json or (not args.form and args.data):
+    auto_json = args.data and not args.form
+    if args.json or auto_json:
         # JSON
-        if not args.files and (
-            'Content-Type' not in args.headers
-            and (args.data or args.json)):
-                args.headers['Content-Type'] = TYPE_JSON
-        if isinstance(args.data, dict):
-            # Serialize the data dict parsed from arguments.
-            args.data = json.dumps(args.data)
+        if 'Content-Type' not in args.headers:
+            args.headers['Content-Type'] = TYPE_JSON
+
         if 'Accept' not in args.headers:
             # Default Accept to JSON as well.
             args.headers['Accept'] = 'application/json'
-    elif not args.files and 'Content-Type' not in args.headers:
+
+        if isinstance(args.data, dict):
+            # If not empty, serialize the data `dict` parsed from arguments.
+            # Otherwise set it to `None` avoid sending "{}".
+            args.data = json.dumps(args.data) if args.data else None
+
+    elif args.form:
         # Form
-        args.headers['Content-Type'] = TYPE_FORM
+        if not args.files and 'Content-Type' not in args.headers:
+            # If sending files, `requests` will set
+            # the `Content-Type` for us.
+            args.headers['Content-Type'] = TYPE_FORM
 
     # Fire the request.
     try:
@@ -113,7 +119,7 @@ def main(args=None,
         stdin=stdin,
         stdin_isatty=stdin_isatty
     )
-    response = _get_response(parser, args, stdin, stdin_isatty)
+    response = _get_response(args)
     output = _get_output(args, stdout_isatty, response)
     output_bytes = output.encode('utf8')
     f = (stdout.buffer if hasattr(stdout, 'buffer') else stdout)

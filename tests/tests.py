@@ -80,16 +80,6 @@ class HTTPieTest(BaseTestCase):
         self.assertIn('HTTP/1.1 200', r)
         self.assertIn('"foo": "bar"', r)
 
-    def test_GET_JSON_implicit_accept(self):
-        r = http('-j', 'GET', 'http://httpbin.org/headers')
-        self.assertIn('HTTP/1.1 200', r)
-        self.assertIn('"Accept": "application/json"', r)
-
-    def test_GET_JSON_explicit_accept(self):
-        r = http('-j', 'GET', 'http://httpbin.org/headers', 'Accept:application/xml')
-        self.assertIn('HTTP/1.1 200', r)
-        self.assertIn('"Accept": "application/xml"', r)
-
     def test_POST_form(self):
         r = http('--form', 'POST', 'http://httpbin.org/post', 'foo=bar')
         self.assertIn('HTTP/1.1 200', r)
@@ -106,6 +96,69 @@ class HTTPieTest(BaseTestCase):
         self.assertIn('HTTP/1.1 200', r)
         self.assertIn('"User-Agent": "HTTPie', r)
         self.assertIn('"Foo": "bar"', r)
+
+
+class AutoContentTypeAndAcceptHeadersTest(BaseTestCase):
+    """
+    Test that Accept and Content-Type correctly defaults to JSON,
+    but can still be overridden. The same with Content-Type when --form
+    -f is used.
+
+    """
+    def test_GET_no_data_no_auto_headers(self):
+        # https://github.com/jkbr/httpie/issues/62
+        r = http('GET', 'http://httpbin.org/headers')
+        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn('"Accept": "*/*"', r)
+        # Although an empty header is present in the response from httpbin,
+        # it's not included in the request.
+        self.assertIn('"Content-Type": ""', r)
+
+    def test_POST_no_data_no_auto_headers(self):
+        # JSON headers shouldn't be automatically set for POST with no data.
+        r = http('POST', 'http://httpbin.org/post')
+        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn('"Accept": "*/*"', r)
+        # Although an empty header is present in the response from httpbin,
+        # it's not included in the request.
+        self.assertIn(' "Content-Type": ""', r)
+
+    def test_POST_with_data_auto_JSON_headers(self):
+        r = http('POST', 'http://httpbin.org/post', 'a=b')
+        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn('"Accept": "application/json"', r)
+        self.assertIn('"Content-Type": "application/json; charset=utf-8', r)
+
+    def test_GET_with_data_auto_JSON_headers(self):
+        # JSON headers should automatically be set also for GET with data.
+        r = http('POST', 'http://httpbin.org/post', 'a=b')
+        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn('"Accept": "application/json"', r)
+        self.assertIn('"Content-Type": "application/json; charset=utf-8', r)
+
+    def test_POST_explicit_JSON_auto_JSON_headers(self):
+        r = http('-j', 'POST', 'http://httpbin.org/post')
+        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn('"Accept": "application/json"', r)
+        self.assertIn('"Content-Type": "application/json; charset=utf-8', r)
+
+    def test_GET_explicit_JSON_explicit_headers(self):
+        r = http('-j', 'GET', 'http://httpbin.org/headers',
+                'Accept:application/xml',
+                'Content-Type:application/xml')
+        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn('"Accept": "application/xml"', r)
+        self.assertIn('"Content-Type": "application/xml"', r)
+
+    def test_POST_form_auto_Content_Type(self):
+        r = http('-f', 'POST', 'http://httpbin.org/post')
+        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn('"Content-Type": "application/x-www-form-urlencoded; charset=utf-8"', r)
+
+    def test_POST_form_Content_Type_override(self):
+        r = http('-f', 'POST', 'http://httpbin.org/post', 'Content-Type:application/xml')
+        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn('"Content-Type": "application/xml"', r)
 
 
 class ImplicitHTTPMethodTest(BaseTestCase):
@@ -209,7 +262,7 @@ class RequestBodyFromFilePathTest(BaseTestCase):
                 '@' + TEST_FILE_PATH,
                 '@' + TEST_FILE2_PATH))
 
-    def test_request_body_from_file_by_path_only_no_data_items_allowed(self):
+    def test_request_body_from_file_by_path_no_data_items_allowed(self):
         self.assertRaises(SystemExit, lambda: http(
             'POST',
                 'http://httpbin.org/post',

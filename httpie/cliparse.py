@@ -146,7 +146,6 @@ class Parser(argparse.ArgumentParser):
                         content_type = '%s; charset=%s' % (mime, encoding)
                     args.headers['Content-Type'] = content_type
 
-
     def _validate_output_options(self, args):
         unknown_output_options = set(args.output_options) - set(OUTPUT_OPTIONS)
         if unknown_output_options:
