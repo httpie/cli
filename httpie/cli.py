@@ -50,6 +50,13 @@ parser.add_argument(
     ''')
 )
 
+parser.add_argument(
+    '--user-agent', '-A', default='',
+    help=_('''
+        Change the user agent of the request.
+    ''')
+)
+
 prettify = parser.add_mutually_exclusive_group(required=False)
 prettify.add_argument(
     '--pretty', dest='prettify', action='store_true',

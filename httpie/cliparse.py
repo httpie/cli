@@ -114,7 +114,7 @@ class Parser(argparse.ArgumentParser):
 
         """
         args.headers = CaseInsensitiveDict()
-        args.headers['User-Agent'] = DEFAULT_UA
+        args.headers['User-Agent'] = args.user_agent or DEFAULT_UA
         args.data = OrderedDict()
         args.files = OrderedDict()
         try:
