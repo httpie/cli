@@ -97,6 +97,10 @@ class HTTPieTest(BaseTestCase):
         self.assertIn('"User-Agent": "HTTPie', r)
         self.assertIn('"Foo": "bar"', r)
 
+        r = http('-A HeaderTest', 'GET', 'http://httpbin.org/headers')
+        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn('"User-Agent": "HeaderTest"', r)
+
 
 class AutoContentTypeAndAcceptHeadersTest(BaseTestCase):
     """

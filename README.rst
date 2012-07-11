@@ -155,6 +155,8 @@ Most of the flags mirror the arguments understood by ``requests.request``. See `
                             not specifid). The presence of any file fields results
                             into a multipart/form-data request.
       --traceback           Print exception traceback should one occur.
+      --user-agent USER_AGENT, -A USER_AGENT
+                             Change the user agent of the request.
       --pretty              If stdout is a terminal, the response is prettified by
                             default (colorized and indented if it is JSON). This
                             flag ensures prettifying even when stdout is
