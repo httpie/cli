@@ -29,6 +29,9 @@ Or, you can install the **development version** directly from GitHub:
     pip install -U https://github.com/jkbr/httpie/tarball/master
 
 
+There are packages available for `Ubuntu <http://packages.ubuntu.com/quantal/httpie>`_ and `Debian <http://packages.debian.org/wheezy/httpie>`_.
+
+
 Usage
 -----
 
