@@ -30,9 +30,10 @@ def from_request(request):
         body = request.__class__._encode_params(body)
 
     return HTTPMessage(
-        line='{method} {path} HTTP/1.1'.format(
+        line='{method} {path}{query} HTTP/1.1'.format(
                 method=request.method,
-                path=url.path or '/'),
+                path=url.path or '/',
+                query='' if url.query is '' else '?' + url.query),
         headers='\n'.join(str('%s: %s') % (name, value)
                           for name, value
                           in request_headers.items()),
