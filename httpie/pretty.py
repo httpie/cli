@@ -1,4 +1,5 @@
 import os
+import re
 import json
 
 import pygments
@@ -18,6 +19,8 @@ FORMATTER = (Terminal256Formatter
              if '256color' in os.environ.get('TERM', '')
              else TerminalFormatter)
 
+application_content_type_re = re.compile(r'application/(.+\+)?(json|xml)$')
+
 
 class PrettyHttp(object):
 
@@ -33,12 +36,18 @@ class PrettyHttp(object):
 
     def body(self, content, content_type):
         content_type = content_type.split(';')[0]
+        application_match = re.match(application_content_type_re, content_type)
+        if application_match:
+            # Strip vendor and extensions from Content-Type
+            vendor, extension = application_match.groups()
+            content_type = content_type.replace(vendor, u"")
+
         try:
             lexer = get_lexer_for_mimetype(content_type)
         except ClassNotFound:
             return content
 
-        if content_type == 'application/json':
+        if content_type == "application/json":
             try:
                 # Indent and sort the JSON data.
                 content = json.dumps(json.loads(content),
