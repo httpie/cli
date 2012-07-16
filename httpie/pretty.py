@@ -19,7 +19,7 @@ FORMATTER = (Terminal256Formatter
              if '256color' in os.environ.get('TERM', '')
              else TerminalFormatter)
 
-application_content_type_re = re.compile(r'application/(.+\+)?(json|xml)$')
+application_content_type_re = re.compile(r'application/(.+\+)(json|xml)$')
 
 
 class PrettyHttp(object):
