@@ -226,6 +226,7 @@ Changelog
 ---------
 
 * `0.2.3dev <https://github.com/jkbr/httpie/compare/0.2.2...master>`_
+    * Unicode characters in prettified JSON now don't get escaped to improve readability.
     * --auth now prompts for a password if only a username provided.
     * Added support for request payloads from a file path with automatic ``Content-Type`` (``http URL @/path``).
     * Fixed missing query string when displaing the request headers via ``--verbose``.
