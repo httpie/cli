@@ -126,7 +126,7 @@ parser.add_argument(
     '--auth', '-a', type=cliparse.AuthCredentialsType(cliparse.SEP_COMMON),
     help=_('''
         username:password.
-        If the password is omitted (-a username), HTTPie will prompt for it.
+        If only the username is provided (-a username), HTTPie will prompt for the password.
     '''),
 )
 

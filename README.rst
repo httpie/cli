@@ -226,7 +226,7 @@ Changelog
 ---------
 
 * `0.2.3dev <https://github.com/jkbr/httpie/compare/0.2.2...master>`_
-    * --auth now prompts for a password if none is provided.
+    * --auth now prompts for a password if only a username provided.
     * Added support for request payloads from a file path with automatic ``Content-Type`` (``http URL @/path``).
     * Fixed missing query string when displaing the request headers via ``--verbose``.
     * Fixed Content-Type for requests with no data.

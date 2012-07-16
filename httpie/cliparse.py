@@ -230,6 +230,7 @@ class AuthCredentials(KeyValue):
 
     """
     def _getpass(self, prompt):
+        # To allow mocking.
         return getpass.getpass(prompt)
 
     def has_password(self):
