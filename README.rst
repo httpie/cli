@@ -101,7 +101,7 @@ A whole request body can be passed in via **``stdin``** instead, in which case i
     # Or:
     http POST example.com/person/1 X-API-Token:123 < person.json
 
-That can be used for **piping services together**. The following example ``GET``s JSON data from the Github API and ``POST``s it to httpbin.org::
+That can be used for **piping services together**. The following example ``GET``-s JSON data from the Github API and ``POST``-s it to httpbin.org::
 
     http -b GET https://api.github.com/repos/jkbr/httpie | http POST httpbin.org/post
 
