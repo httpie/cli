@@ -5,7 +5,7 @@ import os
 import sys
 import tempfile
 import json
-from requests.compat import is_py26
+from requests.compat import is_py26, is_py3
 from requests import Response
 
 
@@ -453,7 +453,7 @@ class FakeResponse(Response):
             return self
 
         def __repr__(self):
-            return u'Mock string'
+            return 'Mock string'
 
         def __unicode__(self):
             return self.__repr__()
@@ -470,8 +470,13 @@ class UnicodeOutputTestCase(BaseTestCase):
 
     def test_unicode_output(self):
         # some cyrillic and simplified chinese symbols
-        response_dict = {u'Привет': u'Мир!',
-                         u'Hello': u'世界'}
+        response_dict = {'Привет': 'Мир!',
+                         'Hello': '世界'}
+        if not is_py3:
+            response_dict = dict(
+                (k.decode('utf8'), v.decode('utf8'))
+                for k, v in response_dict.items()
+            )
         response_body = json.dumps(response_dict)
         # emulate response
         response = FakeResponse(response_body)
@@ -486,7 +491,7 @@ class UnicodeOutputTestCase(BaseTestCase):
         # colorized output contains escape sequences
         output = __main__._get_output(args, True, response)
 
-        for key, value in response_dict.iteritems():
+        for key, value in response_dict.items():
             self.assertIn(key, output)
             self.assertIn(value, output)
 

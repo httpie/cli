@@ -40,7 +40,7 @@ class PrettyHttp(object):
         if application_match:
             # Strip vendor and extensions from Content-Type
             vendor, extension = application_match.groups()
-            content_type = content_type.replace(vendor, u"")
+            content_type = content_type.replace(vendor, '')
 
         try:
             lexer = get_lexer_for_mimetype(content_type)
