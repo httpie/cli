@@ -8,9 +8,7 @@ import re
 import json
 import argparse
 import mimetypes
-
-from collections import namedtuple
-from getpass import getpass
+import getpass
 
 try:
     from collections import OrderedDict
@@ -54,13 +52,22 @@ class Parser(argparse.ArgumentParser):
     def parse_args(self, args=None, namespace=None,
                    stdin=sys.stdin,
                    stdin_isatty=sys.stdin.isatty()):
+
         args = super(Parser, self).parse_args(args, namespace)
+
         self._validate_output_options(args)
         self._validate_auth_options(args)
         self._guess_method(args, stdin_isatty)
         self._parse_items(args)
+
         if not stdin_isatty:
             self._body_from_file(args, stdin)
+
+        if args.auth and not args.auth.has_password():
+            # stdin has already been read (if not a tty) so
+            # it's save to prompt now.
+            args.auth.prompt_password()
+
         return args
 
     def _body_from_file(self, args, f):
@@ -161,11 +168,23 @@ class ParseError(Exception):
     pass
 
 
-KeyValue = namedtuple('KeyValue', ['key', 'value', 'sep', 'orig'])
+class KeyValue(object):
+    """Base key-value pair parsed from CLI."""
+
+    def __init__(self, key, value, sep, orig):
+        self.key = key
+        self.value = value
+        self.sep = sep
+        self.orig = orig
+
+    def __eq__(self, other):
+        return self.__dict__ == other.__dict__
 
 
 class KeyValueType(object):
     """A type used with `argparse`."""
+
+    key_value_class = KeyValue
 
     def __init__(self, *separators):
         self.separators = separators
@@ -202,21 +221,43 @@ class KeyValueType(object):
         for sepstr in self.separators:
             key = key.replace('\\' + sepstr, sepstr)
             value = value.replace('\\' + sepstr, sepstr)
-        return KeyValue(key=key, value=value, sep=sep, orig=string)
+        return self.key_value_class(key=key, value=value, sep=sep, orig=string)
 
 
-class AuthCredentials(KeyValueType):
+class AuthCredentials(KeyValue):
+    """
+    Represents parsed credentials.
+
+    """
+    def _getpass(self, prompt):
+        return getpass.getpass(prompt)
+
+    def has_password(self):
+        return self.value is not None
+
+    def prompt_password(self):
+        try:
+            self.value = self._getpass("Password for user '%s': " % self.key)
+        except (EOFError, KeyboardInterrupt):
+            sys.stderr.write('\n')
+            sys.exit(0)
+
+
+class AuthCredentialsType(KeyValueType):
+
+    key_value_class = AuthCredentials
+
     def __call__(self, string):
         try:
-            return super(AuthCredentials, self).__call__(string)
+            return super(AuthCredentialsType, self).__call__(string)
         except argparse.ArgumentTypeError:
-            try:
-                password = getpass("Password for user '%s': " % string)
-            except (EOFError, KeyboardInterrupt):
-                sys.stderr.write('\n')
-                sys.exit(0)
-            return KeyValue(key=string, value=password, sep=SEP_COMMON,
-                            orig=string)
+            # No password provided, will prompt for it later.
+            return self.key_value_class(
+                key=string,
+                value=None,
+                sep=SEP_COMMON,
+                orig=string
+            )
 
 
 def parse_items(items, data=None, headers=None, files=None):

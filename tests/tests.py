@@ -286,6 +286,16 @@ class AuthTest(BaseTestCase):
         self.assertIn('"authenticated": true', r)
         self.assertIn('"user": "user"', r)
 
+    def test_password_prompt(self):
+        cliparse.AuthCredentials._getpass = lambda self, prompt: 'password'
+
+        r = http('--auth', 'user',
+                 'GET', 'httpbin.org/basic-auth/user/password')
+
+        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn('"authenticated": true', r)
+        self.assertIn('"user": "user"', r)
+
 
 #################################################################
 # CLI argument parsing related tests.

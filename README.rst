@@ -118,6 +118,7 @@ Flags
 ^^^^^
 Most of the flags mirror the arguments understood by ``requests.request``. See ``http -h`` for more details::
 
+    $ http --help
     usage: http [-h] [--version] [--json | --form] [--traceback]
                 [--pretty | --ugly]
                 [--print OUTPUT_OPTIONS | --verbose | --headers | --body]
@@ -147,13 +148,15 @@ Most of the flags mirror the arguments understood by ``requests.request``. See `
     optional arguments:
       -h, --help            show this help message and exit
       --version             show program's version number and exit
-      --json, -j            (default) Data items are serialized as a JSON object.
-                            The Content-Type and Accept headers are set to
-                            application/json (if not set via the command line).
-      --form, -f            Data items are serialized as form fields. The Content-
-                            Type is set to application/x-www-form-urlencoded (if
-                            not specifid). The presence of any file fields results
-                            into a multipart/form-data request.
+      --json, -j            (default) Data items from the command line are
+                            serialized as a JSON object. The Content-Type and
+                            Accept headers are set to application/json (if not
+                            specified).
+      --form, -f            Data items from the command line are serialized as
+                            form fields. The Content-Type is set to application/x
+                            -www-form-urlencoded (if not specified). The presence
+                            of any file fields results into a multipart/form-data
+                            request.
       --traceback           Print exception traceback should one occur.
       --pretty              If stdout is a terminal, the response is prettified by
                             default (colorized and indented if it is JSON). This
@@ -180,8 +183,8 @@ Most of the flags mirror the arguments understood by ``requests.request``. See `
                             make sure that the $TERM environment variable is set
                             to "xterm-256color" or similar (e.g., via `export TERM
                             =xterm-256color' in your ~/.bashrc).
-      --auth AUTH, -a AUTH  username:password. If the password is omitted, HTTPie
-                            will prompt for it.
+      --auth AUTH, -a AUTH  username:password. If the password is omitted (-a
+                            username), HTTPie will prompt for it.
       --auth-type {basic,digest}
                             The authentication mechanism to be used. Defaults to
                             "basic".
@@ -223,7 +226,10 @@ Changelog
 ---------
 
 * `0.2.3dev <https://github.com/jkbr/httpie/compare/0.2.2...master>`_
+    * --auth now prompts for a password if none is provided.
     * Added support for request payloads from a file path with automatic ``Content-Type`` (``http URL @/path``).
+    * Fixed missing query string when displaing the request headers via ``--verbose``.
+    * Fixed Content-Type for requests with no data.
 * `0.2.2 <https://github.com/jkbr/httpie/compare/0.2.1...0.2.2>`_ (2012-06-24)
     * The ``METHOD`` positional argument can now be omitted (defaults to ``GET``, or to ``POST`` with data).
     * Fixed --verbose --form.
