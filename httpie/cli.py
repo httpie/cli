@@ -49,6 +49,13 @@ parser.add_argument(
         Print exception traceback should one occur.
     ''')
 )
+parser.add_argument(
+    '--forced-content-type', dest='forced_content_type',
+    help=_('''
+        Response content type can be specified explicitly via this option.
+        Useful when content type is detected incorrectly.
+    ''')
+)
 
 prettify = parser.add_mutually_exclusive_group(required=False)
 prettify.add_argument(

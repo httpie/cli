@@ -42,18 +42,18 @@ def from_request(request):
     )
 
 
-def from_response(response):
+def from_response(response, forced_content_type=None):
     """Make an `HTTPMessage` from `requests.models.Response`."""
     encoding = response.encoding or 'ISO-8859-1'
     original = response.raw._original_response
-    response_headers = response.headers
+    content_type = forced_content_type or response.headers.get('Content-Type')
     return HTTPMessage(
         line='HTTP/{version} {status} {reason}'.format(
                 version='.'.join(str(original.version)),
                 status=original.status, reason=original.reason),
         headers=str(original.msg),
         body=response.content.decode(encoding) if response.content else '',
-        content_type=response_headers.get('Content-Type'))
+        content_type=content_type)
 
 
 def format(message, prettifier=None,

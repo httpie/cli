@@ -1,9 +1,12 @@
+# -*- coding: utf-8 -*-
 import unittest
 import argparse
 import os
 import sys
 import tempfile
+import json
 from requests.compat import is_py26
+from requests import Response
 
 
 #################################################################
@@ -440,6 +443,52 @@ class ArgumentParserTestCase(unittest.TestCase):
             cliparse.KeyValue(key='new_item', value='a', sep='=', orig='new_item=a'),
             cliparse.KeyValue(key='old_item', value='b', sep='=', orig='old_item=b'),
         ])
+
+
+class FakeResponse(Response):
+
+    class Mock(object):
+
+        def __getattr__(self, item):
+            return self
+
+        def __repr__(self):
+            return u'Mock string'
+
+        def __unicode__(self):
+            return self.__repr__()
+
+    def __init__(self, content=None, encoding='utf-8'):
+        super(FakeResponse, self).__init__()
+        self.headers['Content-Type'] = 'application/json'
+        self.encoding = encoding
+        self._content = content.encode(encoding)
+        self.raw = self.Mock()
+
+
+class UnicodeOutputTestCase(BaseTestCase):
+
+    def test_unicode_output(self):
+        # some cyrillic and simplified chinese symbols
+        response_dict = {u'Привет': u'Мир!',
+                         u'Hello': u'世界'}
+        response_body = json.dumps(response_dict)
+        # emulate response
+        response = FakeResponse(response_body)
+
+        # emulate cli arguments
+        args = argparse.Namespace()
+        args.prettify = True
+        args.output_options = 'b'
+        args.forced_content_type = None
+        args.style = 'default'
+
+        # colorized output contains escape sequences
+        output = __main__._get_output(args, True, response)
+
+        for key, value in response_dict.iteritems():
+            self.assertIn(key, output)
+            self.assertIn(value, output)
 
 
 if __name__ == '__main__':

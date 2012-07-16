@@ -100,7 +100,7 @@ def _get_output(args, stdout_isatty, response):
 
     if do_output_response:
         output.append(httpmessage.format(
-            message=httpmessage.from_response(response),
+            message=httpmessage.from_response(response, args.forced_content_type),
             prettifier=prettifier,
             with_headers=cliparse.OUT_RESP_HEADERS in args.output_options,
             with_body=cliparse.OUT_RESP_BODY in args.output_options

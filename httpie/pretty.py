@@ -42,7 +42,8 @@ class PrettyHttp(object):
             try:
                 # Indent and sort the JSON data.
                 content = json.dumps(json.loads(content),
-                                     sort_keys=True, indent=4)
+                                     sort_keys=True, indent=4,
+                                     ensure_ascii=False)
             except:
                 pass
 
