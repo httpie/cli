@@ -5,7 +5,8 @@ import httpie
 
 
 if sys.argv[-1] == 'test':
-    sys.exit(os.system('python tests/tests.py'))
+    status = os.system('python tests/tests.py')
+    sys.exit(1 if status > 127 else status)
 
 
 requirements = [
