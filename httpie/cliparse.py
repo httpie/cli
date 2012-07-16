@@ -10,6 +10,7 @@ import argparse
 import mimetypes
 
 from collections import namedtuple
+from getpass import getpass
 
 try:
     from collections import OrderedDict
@@ -202,6 +203,20 @@ class KeyValueType(object):
             key = key.replace('\\' + sepstr, sepstr)
             value = value.replace('\\' + sepstr, sepstr)
         return KeyValue(key=key, value=value, sep=sep, orig=string)
+
+
+class AuthCredentials(KeyValueType):
+    def __call__(self, string):
+        try:
+            return super(AuthCredentials, self).__call__(string)
+        except argparse.ArgumentTypeError:
+            try:
+                password = getpass("Password for user '%s': " % string)
+            except (EOFError, KeyboardInterrupt):
+                sys.stderr.write('\n')
+                sys.exit(0)
+            return KeyValue(key=string, value=password, sep=SEP_COMMON,
+                            orig=string)
 
 
 def parse_items(items, data=None, headers=None, files=None):
