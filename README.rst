@@ -225,7 +225,7 @@ Before a pull requests is submitted, it's a good idea to run the existing suite 
 Changelog
 ---------
 
-* `0.2.4dev <https://github.com/jkbr/httpie/compare/0.2.4...master>`_
+* `0.2.5dev <https://github.com/jkbr/httpie/compare/0.2.4...master>`_
 * `0.2.4 <https://github.com/jkbr/httpie/compare/0.2.2...0.2.4>`_ (2012-06-24)
     * Unicode characters in prettified JSON now don't get escaped to improve readability.
     * --auth now prompts for a password if only a username provided.
