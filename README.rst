@@ -180,7 +180,8 @@ Most of the flags mirror the arguments understood by ``requests.request``. See `
                             make sure that the $TERM environment variable is set
                             to "xterm-256color" or similar (e.g., via `export TERM
                             =xterm-256color' in your ~/.bashrc).
-      --auth AUTH, -a AUTH  username:password
+      --auth AUTH, -a AUTH  username:password. If the password is omitted, HTTPie
+                            will prompt for it.
       --auth-type {basic,digest}
                             The authentication mechanism to be used. Defaults to
                             "basic".
