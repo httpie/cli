@@ -12,6 +12,7 @@ from . import cli
 from . import pretty
 
 
+
 TYPE_FORM = 'application/x-www-form-urlencoded; charset=utf-8'
 TYPE_JSON = 'application/json; charset=utf-8'
 

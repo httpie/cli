@@ -17,6 +17,9 @@ requirements = [
 if sys.version_info[:2] in ((2, 6), (3, 1)):
     # argparse has been added in Python 3.2 / 2.7
     requirements.append('argparse>=1.2.1')
+if 'win32' in str(sys.platform).lower():
+    # Terminal colors for Windows
+    requirements.append('colorama>=0.2.4')
 
 
 setup(

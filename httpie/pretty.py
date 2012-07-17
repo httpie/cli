@@ -9,15 +9,24 @@ from pygments.styles import get_style_by_name, STYLE_MAP
 from pygments.lexers import get_lexer_for_mimetype, HttpLexer
 from pygments.formatters.terminal256 import Terminal256Formatter
 from pygments.formatters.terminal import TerminalFormatter
-
+from requests.compat import is_windows
 from . import solarized
+
+if is_windows:
+    import colorama
+    colorama.init()
+    # 256 looks better on Windows
+    FORMATTER = Terminal256Formatter
+else:
+    FORMATTER = (
+        Terminal256Formatter
+        if '256color' in os.environ.get('TERM', '')
+        else TerminalFormatter
+    )
 
 
 DEFAULT_STYLE = 'solarized'
 AVAILABLE_STYLES = [DEFAULT_STYLE] + list(STYLE_MAP.keys())
-FORMATTER = (Terminal256Formatter
-             if '256color' in os.environ.get('TERM', '')
-             else TerminalFormatter)
 
 application_content_type_re = re.compile(r'application/(.+\+)(json|xml)$')
 
