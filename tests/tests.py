@@ -156,10 +156,15 @@ class AutoContentTypeAndAcceptHeadersTest(BaseTestCase):
     def test_POST_form_auto_Content_Type(self):
         r = http('-f', 'POST', 'http://httpbin.org/post')
         self.assertIn('HTTP/1.1 200', r)
-        self.assertIn('"Content-Type": "application/x-www-form-urlencoded; charset=utf-8"', r)
+        self.assertIn(
+            '"Content-Type":'
+            ' "application/x-www-form-urlencoded; charset=utf-8"',
+            r
+        )
 
     def test_POST_form_Content_Type_override(self):
-        r = http('-f', 'POST', 'http://httpbin.org/post', 'Content-Type:application/xml')
+        r = http('-f', 'POST', 'http://httpbin.org/post',
+            'Content-Type:application/xml')
         self.assertIn('HTTP/1.1 200', r)
         self.assertIn('"Content-Type": "application/xml"', r)
 
@@ -203,24 +208,46 @@ class PrettyFlagTest(BaseTestCase):
         self.assertNotIn(TERMINAL_COLOR_PRESENCE_CHECK, r)
 
     def test_force_pretty(self):
-        r = http('--pretty', 'GET', 'http://httpbin.org/get', stdout_isatty=False)
+        r = http(
+            '--pretty',
+            'GET',
+            'http://httpbin.org/get',
+            stdout_isatty=False
+        )
         self.assertIn(TERMINAL_COLOR_PRESENCE_CHECK, r)
 
     def test_force_ugly(self):
-        r = http('--ugly', 'GET', 'http://httpbin.org/get', stdout_isatty=True)
+        r = http(
+            '--ugly',
+            'GET',
+            'http://httpbin.org/get',
+            stdout_isatty=True
+        )
         self.assertNotIn(TERMINAL_COLOR_PRESENCE_CHECK, r)
 
 
 class VerboseFlagTest(BaseTestCase):
 
     def test_verbose(self):
-        r = http('--verbose', 'GET', 'http://httpbin.org/get', 'test-header:__test__')
+        r = http(
+            '--verbose',
+            'GET',
+            'http://httpbin.org/get',
+            'test-header:__test__'
+        )
         self.assertIn('HTTP/1.1 200', r)
         self.assertEqual(r.count('__test__'), 2)
 
     def test_verbose_form(self):
         # https://github.com/jkbr/httpie/issues/53
-        r = http('--verbose', '--form', 'POST', 'http://httpbin.org/post', 'foo=bar', 'baz=bar')
+        r = http(
+            '--verbose',
+            '--form',
+            'POST',
+            'http://httpbin.org/post',
+            'foo=bar',
+            'baz=bar'
+        )
         self.assertIn('HTTP/1.1 200', r)
         self.assertIn('foo=bar&baz=bar', r)
 
@@ -253,7 +280,12 @@ class RequestBodyFromFilePathTest(BaseTestCase):
         self.assertIn('"Content-Type": "text/plain"', r)
 
     def test_request_body_from_file_by_path_with_explicit_content_type(self):
-        r = http('POST', 'http://httpbin.org/post', '@' + TEST_FILE_PATH, 'Content-Type:x-foo/bar')
+        r = http(
+            'POST',
+            'http://httpbin.org/post',
+            '@' + TEST_FILE_PATH,
+            'Content-Type:x-foo/bar'
+        )
         self.assertIn('HTTP/1.1 200', r)
         self.assertIn(TEST_FILE_CONTENT, r)
         self.assertIn('"Content-Type": "x-foo/bar"', r)
@@ -413,7 +445,8 @@ class ArgumentParserTestCase(unittest.TestCase):
         self.assertEquals(args.url, 'http://example.com/')
         self.assertEquals(
             args.items,
-            [cliparse.KeyValue(key='data', value='field', sep='=', orig='data=field')])
+            [cliparse.KeyValue(
+                key='data', value='field', sep='=', orig='data=field')])
 
     def test_guess_when_method_set_but_invalid_and_header_field(self):
         args = argparse.Namespace()
@@ -427,21 +460,25 @@ class ArgumentParserTestCase(unittest.TestCase):
         self.assertEquals(args.url, 'http://example.com/')
         self.assertEquals(
             args.items,
-            [cliparse.KeyValue(key='test', value='header', sep=':', orig='test:header')])
+            [cliparse.KeyValue(
+                key='test', value='header', sep=':', orig='test:header')])
 
     def test_guess_when_method_set_but_invalid_and_item_exists(self):
         args = argparse.Namespace()
         args.method = 'http://example.com/'
         args.url = 'new_item=a'
         args.items = [
-            cliparse.KeyValue(key='old_item', value='b', sep='=', orig='old_item=b')
+            cliparse.KeyValue(
+                key='old_item', value='b', sep='=', orig='old_item=b')
         ]
 
         self.parser._guess_method(args)
 
         self.assertEquals(args.items, [
-            cliparse.KeyValue(key='new_item', value='a', sep='=', orig='new_item=a'),
-            cliparse.KeyValue(key='old_item', value='b', sep='=', orig='old_item=b'),
+            cliparse.KeyValue(
+                key='new_item', value='a', sep='=', orig='new_item=a'),
+            cliparse.KeyValue(key
+                ='old_item', value='b', sep='=', orig='old_item=b'),
         ])
 
 

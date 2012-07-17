@@ -155,9 +155,12 @@ class Parser(argparse.ArgumentParser):
                     args.headers['Content-Type'] = content_type
 
     def _validate_output_options(self, args):
-        unknown_output_options = set(args.output_options) - set(OUTPUT_OPTIONS)
-        if unknown_output_options:
-            self.error('Unknown output options: %s' % ','.join(unknown_output_options))
+        unknown = set(args.output_options) - set(OUTPUT_OPTIONS)
+        if unknown:
+            self.error(
+                'Unknown output options: %s' %
+                ','.join(unknown)
+            )
 
     def _validate_auth_options(self, args):
         if args.auth_type and not args.auth:

@@ -45,7 +45,8 @@ class PrettyHttp(object):
 
     def body(self, content, content_type):
         content_type = content_type.split(';')[0]
-        application_match = re.match(application_content_type_re, content_type)
+        application_match = re.match(application_content_type_re,
+                                     content_type)
         if application_match:
             # Strip vendor and extensions from Content-Type
             vendor, extension = application_match.groups()

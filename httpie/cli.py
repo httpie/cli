@@ -25,7 +25,8 @@ group_type = parser.add_mutually_exclusive_group(required=False)
 group_type.add_argument(
     '--json', '-j', action='store_true',
     help=_('''
-        (default) Data items from the command line are serialized as a JSON object.
+        (default) Data items from the command
+        line are serialized as a JSON object.
         The Content-Type and Accept headers
         are set to application/json (if not specified).
     ''')
@@ -34,8 +35,10 @@ group_type.add_argument(
     '--form', '-f', action='store_true',
     help=_('''
         Data items from the command line are serialized as form fields.
-        The Content-Type is set to application/x-www-form-urlencoded (if not specified).
-        The presence of any file fields results into a multipart/form-data request.
+        The Content-Type is set to application/x-www-form-urlencoded
+        (if not specified).
+        The presence of any file fields results
+        into a multipart/form-data request.
      ''')
 )
 
@@ -126,13 +129,17 @@ parser.add_argument(
     '--auth', '-a', type=cliparse.AuthCredentialsType(cliparse.SEP_COMMON),
     help=_('''
         username:password.
-        If only the username is provided (-a username), HTTPie will prompt for the password.
+        If only the username is provided (-a username),
+        HTTPie will prompt for the password.
     '''),
 )
 
 parser.add_argument(
     '--auth-type', choices=['basic', 'digest'],
-    help=_('The authentication mechanism to be used. Defaults to "basic".')
+    help=_('''
+        The authentication mechanism to be used.
+        Defaults to "basic".
+    ''')
 )
 
 parser.add_argument(
@@ -179,8 +186,9 @@ parser.add_argument(
     help=_('''
         The HTTP method to be used for the request
         (GET, POST, PUT, DELETE, PATCH, ...).
-        If this argument is omitted, then HTTPie will guess the HTTP method.
-        If there is some data to be sent, then it will be POST, otherwise GET.
+        If this argument is omitted, then HTTPie
+        will guess the HTTP method. If there is some
+        data to be sent, then it will be POST, otherwise GET.
     ''')
 )
 parser.add_argument(
@@ -200,11 +208,12 @@ parser.add_argument(
         cliparse.SEP_FILES
     ),
     help=_('''
-        A key-value pair whose type is defined by the separator used. It can be an
-        HTTP header (header:value),
+        A key-value pair whose type is defined by the
+        separator used. It can be an HTTP header (header:value),
         a data field to be used in the request body (field_name=value),
         a raw JSON data field (field_name:=value),
         or a file field (field_name@/path/to/file).
-        You can use a backslash to escape a colliding separator in the field name.
+        You can use a backslash to escape a colliding
+        separator in the field name.
     ''')
 )
