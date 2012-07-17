@@ -226,6 +226,7 @@ Changelog
 ---------
 
 * `0.2.6dev <https://github.com/jkbr/httpie/compare/0.2.5...master>`_
+    * Added support for terminal colors under Windows.
 * `0.2.5 <https://github.com/jkbr/httpie/compare/0.2.2...0.2.5>`_ (2012-07-17)
     * Unicode characters in prettified JSON now don't get escaped to improve readability.
     * --auth now prompts for a password if only a username provided.
