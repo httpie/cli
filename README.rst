@@ -54,7 +54,7 @@ Synopsis::
 
     http [flags] [METHOD] URL [items]
 
-There are four types of key-value pair items available:
+There are five types of key-value pair items available:
 
 Headers (``Name:Value``)
    Arbitrary HTTP headers. The ``:`` character is used to separate a header's
@@ -76,6 +76,9 @@ File fields (``field@/path/to/file``)
   Only available with ``-f`` / ``--form``. Use ``@`` as the separator, e.g.,
   ``screenshot@/path/to/file.png``. The presence of a file field results into
   a ``multipart/form-data`` request.
+
+Query String Parameters (``name=:value``)
+  Appends the given name/value pair as a query string to the URL.
 
 
 Examples
@@ -117,6 +120,12 @@ The above will send the same request as if the following HTML form were submitte
         <input type="text" name="name" />
         <input type="file" name="cv" />
     </form>
+
+Query string parameters can be added to any request::
+
+    http GET example.com/ search=:donuts
+
+Will GET the URL "example.com/?search=donuts".
 
 A whole request body can be passed in via **``stdin``** instead, in which
 case it will be used with no further processing::
@@ -172,8 +181,9 @@ See ``http -h`` for more details::
                             include one.
       ITEM                  A key-value pair whose type is defined by the
                             separator used. It can be an HTTP header
-                            (header:value), a data field to be used in the request
-                            body (field_name=value), a raw JSON data field
+                            (header:value), a query parameter (name=:value),
+                            a data field to be used in the request body 
+                            (field_name=value), a raw JSON data field
                             (field_name:=value), or a file field
                             (field_name@/path/to/file). You can use a backslash to
                             escape a colliding separator in the field name.

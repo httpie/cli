@@ -25,6 +25,7 @@ SEP_HEADERS = SEP_COMMON
 SEP_DATA = '='
 SEP_DATA_RAW_JSON = ':='
 SEP_FILES = '@'
+SEP_QUERY = '=:'
 DATA_ITEM_SEPARATORS = [
     SEP_DATA,
     SEP_DATA_RAW_JSON,
@@ -102,6 +103,7 @@ class Parser(argparse.ArgumentParser):
 
             item = KeyValueType(
                 SEP_COMMON,
+                SEP_QUERY,
                 SEP_DATA,
                 SEP_DATA_RAW_JSON,
                 SEP_FILES).__call__(args.url)
@@ -118,16 +120,17 @@ class Parser(argparse.ArgumentParser):
 
     def _parse_items(self, args):
         """
-        Parse `args.items` into `args.headers`, `args.data` and `args.files`.
+        Parse `args.items` into `args.headers`, `args.data`, `args.queries`, and `args.files`.
 
         """
         args.headers = CaseInsensitiveDict()
         args.headers['User-Agent'] = DEFAULT_UA
         args.data = OrderedDict()
         args.files = OrderedDict()
+        args.queries = CaseInsensitiveDict()
         try:
             parse_items(items=args.items, headers=args.headers,
-                        data=args.data, files=args.files)
+                        data=args.data, files=args.files, queries=args.queries)
         except ParseError as e:
             if args.traceback:
                 raise
@@ -207,6 +210,8 @@ class KeyValueType(object):
                     if start >= estart and end <= eend:
                         inside_escape = True
                         break
+                if start in found and len(found[start]) > len(sep):
+                    break
                 if not inside_escape:
                     found[start] = sep
 
@@ -264,19 +269,23 @@ class AuthCredentialsType(KeyValueType):
             )
 
 
-def parse_items(items, data=None, headers=None, files=None):
-    """Parse `KeyValueType` `items` into `data`, `headers` and `files`."""
+def parse_items(items, data=None, headers=None, files=None, queries=None):
+    """Parse `KeyValueType` `items` into `data`, `headers`, `files`, and `queries`."""
     if headers is None:
         headers = {}
     if data is None:
         data = {}
     if files is None:
         files = {}
+    if queries is None:
+        queries = {}
     for item in items:
         value = item.value
         key = item.key
         if item.sep == SEP_HEADERS:
             target = headers
+        elif item.sep == SEP_QUERY:
+            target = queries
         elif item.sep == SEP_FILES:
             try:
                 value = open(os.path.expanduser(item.value), 'r')
@@ -301,4 +310,4 @@ def parse_items(items, data=None, headers=None, files=None):
 
         target[key] = value
 
-    return headers, data, files
+    return headers, data, files, queries

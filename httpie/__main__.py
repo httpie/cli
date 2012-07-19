@@ -41,6 +41,7 @@ def _get_response(args):
             # the `Content-Type` for us.
             args.headers['Content-Type'] = TYPE_FORM
 
+
     # Fire the request.
     try:
         credentials = None
@@ -61,6 +62,7 @@ def _get_response(args):
             proxies=dict((p.key, p.value) for p in args.proxy),
             files=args.files,
             allow_redirects=args.allow_redirects,
+            params=args.queries,
         )
 
     except (KeyboardInterrupt, SystemExit):
