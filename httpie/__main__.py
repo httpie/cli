@@ -1,15 +1,18 @@
 #!/usr/bin/env python
 import sys
 import json
+import os
 
 import requests
 
 from requests.compat import str
+from colorama import init
 
 from . import httpmessage
 from . import cliparse
 from . import cli
 from . import pretty
+
 
 
 
@@ -122,9 +125,14 @@ def main(args=None,
     )
     response = _get_response(args)
     output = _get_output(args, stdout_isatty, response)
-    output_bytes = output.encode('utf8')
-    f = (stdout.buffer if hasattr(stdout, 'buffer') else stdout)
-    f.write(output_bytes)
+    
+    if os.name == 'nt': # Windows
+        init()
+        print(output)
+    else:
+        output_bytes = output.encode('utf8')
+        f = (stdout.buffer if hasattr(stdout, 'buffer') else stdout)
+        f.write(output_bytes)
 
 
 if __name__ == '__main__':
