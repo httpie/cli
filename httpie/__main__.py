@@ -5,11 +5,13 @@ import json
 import requests
 
 from requests.compat import str
+from requests.compat import is_windows
 
 from . import httpmessage
 from . import cliparse
 from . import cli
 from . import pretty
+
 
 
 
@@ -124,9 +126,13 @@ def main(args=None,
     )
     response = _get_response(args)
     output = _get_output(args, stdout_isatty, response)
-    output_bytes = output.encode('utf8')
-    f = (stdout.buffer if hasattr(stdout, 'buffer') else stdout)
-    f.write(output_bytes)
+    
+    if is_windows:
+        print(output)
+    else:
+        output_bytes = output.encode('utf8')
+        f = (stdout.buffer if hasattr(stdout, 'buffer') else stdout)
+        f.write(output_bytes)
 
 
 if __name__ == '__main__':
