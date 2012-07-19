@@ -203,6 +203,7 @@ parser.add_argument(
     metavar='ITEM',
     type=cliparse.KeyValueType(
         cliparse.SEP_COMMON,
+        cliparse.SEP_QUERY,
         cliparse.SEP_DATA,
         cliparse.SEP_DATA_RAW_JSON,
         cliparse.SEP_FILES
@@ -211,7 +212,8 @@ parser.add_argument(
         A key-value pair whose type is defined by the
         separator used. It can be an HTTP header (header:value),
         a data field to be used in the request body (field_name=value),
-        a raw JSON data field (field_name:=value),
+        a raw JSON data field (field_name:=value), 
+        a query parameter (name=:value),
         or a file field (field_name@/path/to/file).
         You can use a backslash to escape a colliding
         separator in the field name.

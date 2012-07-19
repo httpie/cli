@@ -341,6 +341,7 @@ class ItemParsingTest(BaseTestCase):
     def setUp(self):
         self.key_value_type = cliparse.KeyValueType(
             cliparse.SEP_HEADERS,
+            cliparse.SEP_QUERY,
             cliparse.SEP_DATA,
             cliparse.SEP_DATA_RAW_JSON,
             cliparse.SEP_FILES,
@@ -353,7 +354,7 @@ class ItemParsingTest(BaseTestCase):
                               lambda: self.key_value_type(item))
 
     def test_escape(self):
-        headers, data, files = cliparse.parse_items([
+        headers, data, files, queries = cliparse.parse_items([
             # headers
             self.key_value_type('foo\\:bar:baz'),
             self.key_value_type('jack\\@jill:hill'),
@@ -372,7 +373,7 @@ class ItemParsingTest(BaseTestCase):
         self.assertIn('bar@baz', files)
 
     def test_escape_longsep(self):
-        headers, data, files = cliparse.parse_items([
+        headers, data, files, queries = cliparse.parse_items([
             self.key_value_type('bob\\:==foo'),
         ])
         self.assertDictEqual(data, {
@@ -380,7 +381,7 @@ class ItemParsingTest(BaseTestCase):
         })
 
     def test_valid_items(self):
-        headers, data, files = cliparse.parse_items([
+        headers, data, files, queries = cliparse.parse_items([
             self.key_value_type('string=value'),
             self.key_value_type('header:value'),
             self.key_value_type('list:=["a", 1, {}, false]'),
@@ -389,6 +390,7 @@ class ItemParsingTest(BaseTestCase):
             self.key_value_type('ed='),
             self.key_value_type('bool:=true'),
             self.key_value_type('test-file@%s' % TEST_FILE_PATH),
+            self.key_value_type('query=:value'),
         ])
         self.assertDictEqual(headers, {
             'header': 'value',
@@ -401,7 +403,18 @@ class ItemParsingTest(BaseTestCase):
             "list": ["a", 1, {}, False],
             "obj": {"a": "b"}
         })
+        self.assertDictEqual(queries, {
+            'query': 'value',
+        })
         self.assertIn('test-file', files)
+
+    def test_query_string(self):
+        headers, data, files, queries = cliparse.parse_items([
+            self.key_value_type('query=:value'),
+        ])
+        self.assertDictEqual(queries, {
+            'query': 'value',
+        })
 
 
 class ArgumentParserTestCase(unittest.TestCase):
