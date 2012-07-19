@@ -1,6 +1,8 @@
 HTTPie: cURL for humans
 =======================
 
+`☞ README for stable version <https://github.com/jkbr/httpie/tree/0.2.5#readme>`_
+
 **HTTPie is a CLI HTTP utility** built out of frustration with existing tools.
 The goal is to make CLI interaction with HTTP-based services as
 human-friendly as possible.
@@ -278,6 +280,7 @@ Changelog
 ---------
 
 * `0.2.6dev <https://github.com/jkbr/httpie/compare/0.2.5...master>`_
+    * Added query string parameters (param=:value).
     * Added support for terminal colors under Windows.
 * `0.2.5 <https://github.com/jkbr/httpie/compare/0.2.2...0.2.5>`_ (2012-07-17)
     * Unicode characters in prettified JSON now don't get escaped for
