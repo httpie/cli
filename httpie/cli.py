@@ -203,6 +203,7 @@ parser.add_argument(
     metavar='ITEM',
     type=cliparse.KeyValueType(
         cliparse.SEP_COMMON,
+        cliparse.SEP_QUERY,
         cliparse.SEP_DATA,
         cliparse.SEP_DATA_RAW_JSON,
         cliparse.SEP_FILES
