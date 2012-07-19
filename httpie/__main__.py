@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 import sys
 import json
-import os
 
 import requests
 
 from requests.compat import str
-from colorama import init
+from requests.compat import is_windows
 
 from . import httpmessage
 from . import cliparse
@@ -126,8 +125,7 @@ def main(args=None,
     response = _get_response(args)
     output = _get_output(args, stdout_isatty, response)
     
-    if os.name == 'nt': # Windows
-        init()
+    if is_windows:
         print(output)
     else:
         output_bytes = output.encode('utf8')
