@@ -52,11 +52,12 @@ class Parser(argparse.ArgumentParser):
 
     def parse_args(self, args=None, namespace=None,
                    stdin=sys.stdin,
-                   stdin_isatty=sys.stdin.isatty()):
+                   stdin_isatty=sys.stdin.isatty(),
+                   stdout_isatty=sys.stdout.isatty()):
 
         args = super(Parser, self).parse_args(args, namespace)
 
-        self._validate_output_options(args)
+        self._process_output_options(args, stdout_isatty)
         self._validate_auth_options(args)
         self._guess_method(args, stdin_isatty)
         self._parse_items(args)
@@ -120,7 +121,8 @@ class Parser(argparse.ArgumentParser):
 
     def _parse_items(self, args):
         """
-        Parse `args.items` into `args.headers`, `args.data`, `args.queries`, and `args.files`.
+        Parse `args.items` into `args.headers`,
+        `args.data`, `args.queries`, and `args.files`.
 
         """
         args.headers = CaseInsensitiveDict()
@@ -129,8 +131,11 @@ class Parser(argparse.ArgumentParser):
         args.files = OrderedDict()
         args.queries = CaseInsensitiveDict()
         try:
-            parse_items(items=args.items, headers=args.headers,
-                        data=args.data, files=args.files, queries=args.queries)
+            parse_items(items=args.items,
+                        headers=args.headers,
+                        data=args.data,
+                        files=args.files,
+                        queries=args.queries)
         except ParseError as e:
             if args.traceback:
                 raise
@@ -157,7 +162,13 @@ class Parser(argparse.ArgumentParser):
                         content_type = '%s; charset=%s' % (mime, encoding)
                     args.headers['Content-Type'] = content_type
 
-    def _validate_output_options(self, args):
+    def _process_output_options(self, args, stdout_isatty):
+        if not args.output_options:
+            if stdout_isatty:
+                args.output_options = OUT_RESP_HEADERS + OUT_RESP_BODY
+            else:
+                args.output_options = OUT_RESP_BODY
+
         unknown = set(args.output_options) - set(OUTPUT_OPTIONS)
         if unknown:
             self.error(
@@ -270,7 +281,11 @@ class AuthCredentialsType(KeyValueType):
 
 
 def parse_items(items, data=None, headers=None, files=None, queries=None):
-    """Parse `KeyValueType` `items` into `data`, `headers`, `files`, and `queries`."""
+    """
+    Parse `KeyValueType` `items` into `data`, `headers`, `files`,
+    and `queries`.
+
+    """
     if headers is None:
         headers = {}
     if data is None:

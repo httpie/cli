@@ -117,11 +117,14 @@ def main(args=None,
          stdin=sys.stdin, stdin_isatty=sys.stdin.isatty(),
          stdout=sys.stdout, stdout_isatty=sys.stdout.isatty()):
     parser = cli.parser
+
     args = parser.parse_args(
         args=args if args is not None else sys.argv[1:],
         stdin=stdin,
-        stdin_isatty=stdin_isatty
+        stdin_isatty=stdin_isatty,
+        stdout_isatty=stdout_isatty,
     )
+
     response = _get_response(args)
     output = _get_output(args, stdout_isatty, response)
     output_bytes = output.encode('utf8')

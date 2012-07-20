@@ -72,15 +72,16 @@ prettify.add_argument(
 
 output_options = parser.add_mutually_exclusive_group(required=False)
 output_options.add_argument('--print', '-p', dest='output_options',
-    default=cliparse.OUT_RESP_HEADERS + cliparse.OUT_RESP_BODY,
     help=_('''
-        String specifying what should the output contain.
-        "{request_headers}" stands for the request headers and
+        String specifying what the output should contain:
+        "{request_headers}" stands for the request headers,  and
         "{request_body}" for the request body.
         "{response_headers}" stands for the response headers and
         "{response_body}" for response the body.
-        Defaults to "hb" which means that the whole response
-        (headers and body) is printed.
+        The default behaviour is "hb" (i.e., the response
+        headers and body is printed), if standard output is not redirected.
+        If the output is piped to another program or to a file,
+        then only the body is printed by default.
     '''.format(
         request_headers=cliparse.OUT_REQ_HEADERS,
         request_body=cliparse.OUT_REQ_BODY,
@@ -212,7 +213,7 @@ parser.add_argument(
         A key-value pair whose type is defined by the
         separator used. It can be an HTTP header (header:value),
         a data field to be used in the request body (field_name=value),
-        a raw JSON data field (field_name:=value), 
+        a raw JSON data field (field_name:=value),
         a query parameter (name=:value),
         or a file field (field_name@/path/to/file).
         You can use a backslash to escape a colliding

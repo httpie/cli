@@ -34,9 +34,19 @@ def http(*args, **kwargs):
     """
     http_kwargs = {
         'stdin_isatty': True,
-        'stdout_isatty': False
+        'stdout_isatty': True
     }
     http_kwargs.update(kwargs)
+
+    command_line = ' '.join(args)
+    if ('stdout_isatty' not in kwargs
+        and '--pretty' not in command_line
+        and '--ugly' not in command_line):
+        # Make ugly default for testing purposes unless we're
+        # being explicit about it. It's so that we can test for
+        # strings in the response without having to always pass --ugly.
+        args = ['--ugly'] + list(args)
+
     stdout = http_kwargs.setdefault('stdout', tempfile.TemporaryFile())
     __main__.main(args=args, **http_kwargs)
     stdout.seek(0)
@@ -168,6 +178,14 @@ class AutoContentTypeAndAcceptHeadersTest(BaseTestCase):
         self.assertIn('HTTP/1.1 200', r)
         self.assertIn('"Content-Type": "application/xml"', r)
 
+    def test_print_only_body_when_stdout_redirected_by_default(self):
+        r = http('GET', 'httpbin.org/get', stdout_isatty=False)
+        self.assertNotIn('HTTP/', r)
+
+    def test_print_overridable_when_stdout_redirected(self):
+        r = http('--print=h', 'GET', 'httpbin.org/get', stdout_isatty=False)
+        self.assertIn('HTTP/1.1 200', r)
+
 
 class ImplicitHTTPMethodTest(BaseTestCase):
 
@@ -203,7 +221,7 @@ class PrettyFlagTest(BaseTestCase):
         r = http('GET', 'http://httpbin.org/get', stdout_isatty=True)
         self.assertIn(TERMINAL_COLOR_PRESENCE_CHECK, r)
 
-    def test_pretty_enabled_by_default_unless_stdin_redirected(self):
+    def test_pretty_enabled_by_default_unless_stdout_redirected(self):
         r = http('GET', 'http://httpbin.org/get', stdout_isatty=False)
         self.assertNotIn(TERMINAL_COLOR_PRESENCE_CHECK, r)
 

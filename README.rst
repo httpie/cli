@@ -143,13 +143,13 @@ case it will be used with no further processing::
 That can be used for **piping services together**. The following example
 ``GET``-s JSON data from the Github API and ``POST``-s it to httpbin.org::
 
-    http -b GET https://api.github.com/repos/jkbr/httpie | http POST httpbin.org/post
+    http GET https://api.github.com/repos/jkbr/httpie | http POST httpbin.org/post
 
 The above can be further simplified by omitting ``GET`` and ``POST`` because
 they are both default here. The first command has no request data, whereas
 the second one does via ``stdin``::
 
-    http -b https://api.github.com/repos/jkbr/httpie | http httpbin.org/post
+    http https://api.github.com/repos/jkbr/httpie | http httpbin.org/post
 
 An alternative to ``stdin`` is to pass a file name whose content will be used
 as the request body. It has the advantage that the ``Content-Type`` header
@@ -284,6 +284,9 @@ Changelog
 ---------
 
 * `0.2.6dev <https://github.com/jkbr/httpie/compare/0.2.5...master>`_
+    * If the output is piped to another program or redirected to a file,
+      the new default behaviour is to only print the response body.
+      (It can still be overriden via the ``--print`` flag.)
     * Improved highlighing of HTTP headers.
     * Added query string parameters (param=:value).
     * Added support for terminal colors under Windows.
