@@ -184,7 +184,7 @@ See ``http -h`` for more details::
       ITEM                  A key-value pair whose type is defined by the
                             separator used. It can be an HTTP header
                             (header:value), a query parameter (name=:value),
-                            a data field to be used in the request body 
+                            a data field to be used in the request body
                             (field_name=value), a raw JSON data field
                             (field_name:=value), or a file field
                             (field_name@/path/to/file). You can use a backslash to
@@ -280,6 +280,7 @@ Changelog
 ---------
 
 * `0.2.6dev <https://github.com/jkbr/httpie/compare/0.2.5...master>`_
+    * Improved highlighing of HTTP headers.
     * Added query string parameters (param=:value).
     * Added support for terminal colors under Windows.
 * `0.2.5 <https://github.com/jkbr/httpie/compare/0.2.2...0.2.5>`_ (2012-07-17)
