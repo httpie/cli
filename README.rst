@@ -28,6 +28,9 @@ The latest **stable version** of HTTPie can always be installed
 
     pip install -U httpie
 
+You can also use `easy_install` (``pip`` is prefered, though)::
+
+    easy_install httpie
 
 Or, you can install the **development version** directly from GitHub:
 
@@ -41,8 +44,9 @@ Or, you can install the **development version** directly from GitHub:
 
 
 There are packages available for
-`Ubuntu <http://packages.ubuntu.com/quantal/httpie>`_ and
-`Debian <http://packages.debian.org/wheezy/httpie>`_.
+`Ubuntu <http://packages.ubuntu.com/httpie>`_,
+`Debian <http://packages.debian.org/httpie>`_ and
+other possibly other major distros as well.
 
 
 Usage
@@ -79,8 +83,8 @@ File fields (``field@/path/to/file``)
   ``screenshot@/path/to/file.png``. The presence of a file field results into
   a ``multipart/form-data`` request.
 
-Query String Parameters (``name=:value``)
-  Appends the given name/value pair as a query string to the URL.
+Query string parameters (``name=:value``)
+  Appends the given name/value pair as a query string  parameter to the URL.
 
 
 Examples
