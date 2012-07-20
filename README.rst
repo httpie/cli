@@ -187,12 +187,12 @@ See ``http -h`` for more details::
                             include one.
       ITEM                  A key-value pair whose type is defined by the
                             separator used. It can be an HTTP header
-                            (header:value), a query parameter (name=:value),
-                            a data field to be used in the request body
-                            (field_name=value), a raw JSON data field
-                            (field_name:=value), or a file field
-                            (field_name@/path/to/file). You can use a backslash to
-                            escape a colliding separator in the field name.
+                            (header:value), a data field to be used in the request
+                            body (field_name=value), a raw JSON data field
+                            (field_name:=value), a query parameter (name=:value),
+                            or a file field (field_name@/path/to/file). You can
+                            use a backslash to escape a colliding separator in the
+                            field name.
 
     optional arguments:
       -h, --help            show this help message and exit
@@ -213,11 +213,14 @@ See ``http -h`` for more details::
                             redirected.
       --ugly, -u            Do not prettify the response.
       --print OUTPUT_OPTIONS, -p OUTPUT_OPTIONS
-                            String specifying what should the output contain. "H"
-                            stands for the request headers and "B" for the request
-                            body. "h" stands for the response headers and "b" for
-                            response the body. Defaults to "hb" which means that
-                            the whole response (headers and body) is printed.
+                            String specifying what the output should contain: "H"
+                            stands for the request headers, and "B" for the
+                            request body. "h" stands for the response headers and
+                            "b" for response the body. The default behaviour is
+                            "hb" (i.e., the response headers and body is printed),
+                            if standard output is not redirected. If the output is
+                            piped to another program or to a file, then only the
+                            body is printed by default.
       --verbose, -v         Print the whole request as well as the response.
                             Shortcut for --print=HBhb.
       --headers, -t         Print only the response headers. Shortcut for
@@ -232,8 +235,8 @@ See ``http -h`` for more details::
                             make sure that the $TERM environment variable is set
                             to "xterm-256color" or similar (e.g., via `export TERM
                             =xterm-256color' in your ~/.bashrc).
-      --auth AUTH, -a AUTH  username:password. If the password is omitted (-a
-                            username), HTTPie will prompt for it.
+      --auth AUTH, -a AUTH  username:password. If only the username is provided
+                            (-a username), HTTPie will prompt for the password.
       --auth-type {basic,digest}
                             The authentication mechanism to be used. Defaults to
                             "basic".
