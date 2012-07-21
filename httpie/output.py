@@ -22,13 +22,6 @@ if is_windows:
     import colorama
     colorama.init()
     # 256 looks better on Windows
-    formatter_class = Terminal256Formatter
-else:
-    formatter_class = (
-        Terminal256Formatter
-        if '256color' in os.environ.get('TERM', '')
-        else TerminalFormatter
-    )
 
 
 class HTTPLexer(lexer.RegexLexer):
@@ -82,23 +75,96 @@ class HTTPLexer(lexer.RegexLexer):
     ]}
 
 
-class PrettyHttp(object):
-    """HTTP headers & body prettyfier."""
+class BaseProcessor(object):
 
-    def __init__(self, style_name):
+    enabled = True
+
+    def __init__(self, env, **kwargs):
+        self.env = env
+        self.kwargs = kwargs
+
+    def process_headers(self, headers):
+        return headers
+
+    def process_body(self, content, content_type):
+        return content
+
+
+class JSONProcessor(BaseProcessor):
+
+    def process_body(self, content, content_type):
+        if content_type == 'application/json':
+            try:
+                # Indent and sort the JSON data.
+                content = json.dumps(
+                    json.loads(content),
+                    sort_keys=True,
+                    ensure_ascii=False,
+                    indent=4,
+                )
+            except ValueError:
+                # Invalid JSON - we don't care.
+                pass
+        return content
+
+
+class PygmentsProcessor(BaseProcessor):
+
+    def __init__(self, *args, **kwargs):
+        super(PygmentsProcessor, self).__init__(*args, **kwargs)
+
+        if not self.env.colors:
+            self.enabled = False
+            return
+
         try:
-            style = get_style_by_name(style_name)
+            style = get_style_by_name(
+                self.kwargs.get('pygments_style', DEFAULT_STYLE))
         except ClassNotFound:
             style = solarized.SolarizedStyle
-        self.formatter = formatter_class(style=style)
 
-    def headers(self, content):
-        """Pygmentize HTTP headers."""
-        return pygments.highlight(content, HTTPLexer(), self.formatter)
+        if is_windows or self.env.colors == 256:
+            fmt_class = Terminal256Formatter
+        else:
+            fmt_class = TerminalFormatter
+        self.formatter = fmt_class(style=style)
 
-    def body(self, content, content_type):
-        """Pygmentize `content` based on `content_type`."""
+    def process_headers(self, headers):
+        return pygments.highlight(
+            headers, HTTPLexer(), self.formatter)
 
+    def process_body(self, content, content_type):
+        try:
+            lexer = get_lexer_for_mimetype(content_type)
+        except ClassNotFound:
+            pass
+        else:
+            content = pygments.highlight(content, lexer, self.formatter)
+        return content
+
+
+class OutputProcessor(object):
+    """."""
+
+    installed_processors = [
+        JSONProcessor,
+        PygmentsProcessor
+    ]
+
+    def __init__(self, env, **kwargs):
+        self.env = env
+        processors = [
+            cls(env, **kwargs)
+            for cls in self.installed_processors
+        ]
+        self.processors = [p for p in processors if p.enabled]
+
+    def process_headers(self, headers):
+        for processor in self.processors:
+         headers = processor.process_headers(headers)
+        return headers
+
+    def process_body(self, content, content_type):
         content_type = content_type.split(';')[0]
 
         application_match = re.match(
@@ -110,19 +176,7 @@ class PrettyHttp(object):
             vendor, extension = application_match.groups()
             content_type = content_type.replace(vendor, '')
 
-        try:
-            lexer = get_lexer_for_mimetype(content_type)
-        except ClassNotFound:
-            return content
+        for processor in self.processors:
+            content = processor.process_body(content, content_type)
 
-        if content_type == 'application/json':
-            try:
-                # Indent and sort the JSON data.
-                content = json.dumps(json.loads(content),
-                                     sort_keys=True, indent=4,
-                                     ensure_ascii=False)
-            except ValueError:
-                # Invalid JSON - we don't care.
-                pass
-
-        return pygments.highlight(content, lexer, self.formatter)
+        return content

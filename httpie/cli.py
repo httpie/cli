@@ -2,10 +2,10 @@
 CLI definition.
 
 """
-from . import pretty
 from . import __doc__
 from . import __version__
 from . import cliparse
+from .output import AVAILABLE_STYLES
 
 
 def _(text):
@@ -83,9 +83,9 @@ output_options.add_argument('--print', '-p', dest='output_options',
         If the output is piped to another program or to a file,
         then only the body is printed by default.
     '''.format(
-        request_headers=cliparse.OUT_REQ_HEADERS,
+        request_headers=cliparse.OUT_REQ_HEAD,
         request_body=cliparse.OUT_REQ_BODY,
-        response_headers=cliparse.OUT_RESP_HEADERS,
+        response_headers=cliparse.OUT_RESP_HEAD,
         response_body=cliparse.OUT_RESP_BODY,
     ))
 )
@@ -99,11 +99,11 @@ output_options.add_argument(
 )
 output_options.add_argument(
     '--headers', '-t', dest='output_options',
-    action='store_const', const=cliparse.OUT_RESP_HEADERS,
+    action='store_const', const=cliparse.OUT_RESP_HEAD,
     help=_('''
         Print only the response headers.
         Shortcut for --print={0}.
-    '''.format(cliparse.OUT_RESP_HEADERS))
+    '''.format(cliparse.OUT_RESP_HEAD))
 )
 output_options.add_argument(
     '--body', '-b', dest='output_options',
@@ -116,13 +116,13 @@ output_options.add_argument(
 
 parser.add_argument(
     '--style', '-s', dest='style', default='solarized', metavar='STYLE',
-    choices=pretty.AVAILABLE_STYLES,
+    choices=AVAILABLE_STYLES,
     help=_('''
         Output coloring style, one of %s. Defaults to solarized.
         For this option to work properly, please make sure that the
         $TERM environment variable is set to "xterm-256color" or similar
         (e.g., via `export TERM=xterm-256color' in your ~/.bashrc).
-    ''') % ', '.join(sorted(pretty.AVAILABLE_STYLES))
+    ''') % ', '.join(sorted(AVAILABLE_STYLES))
 )
 
 # ``requests.request`` keyword arguments.

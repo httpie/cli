@@ -1,4 +1,18 @@
-# -*- coding: utf-8 -*-
+""" -*- coding: utf-8 -*-
+Many of the test cases here use httpbin.org.
+
+To make it run faster and offline you can::
+
+    # Install `httpbin` locally
+    pip install httpbin
+
+    # Run it
+    httpbin
+
+    # Run the tests against it
+    HTTPBIN_URL=http://localhost:5000 python setup.py test
+
+"""
 import unittest
 import argparse
 import os
@@ -17,13 +31,22 @@ from requests import Response
 TESTS_ROOT = os.path.dirname(__file__)
 sys.path.insert(0, os.path.realpath(os.path.join(TESTS_ROOT, '..')))
 
-from httpie import __main__, cliparse
+from httpie import cliparse
+from httpie.models import Environment
+from httpie.core import main, get_output
 
+
+HTTPBIN_URL = os.environ.get('HTTPBIN_URL',
+                             'http://httpbin.org')
 
 TEST_FILE_PATH = os.path.join(TESTS_ROOT, 'file.txt')
 TEST_FILE2_PATH = os.path.join(TESTS_ROOT, 'file2.txt')
 TEST_FILE_CONTENT = open(TEST_FILE_PATH).read().strip()
 TERMINAL_COLOR_PRESENCE_CHECK = '\x1b['
+
+
+def httpbin(path):
+    return HTTPBIN_URL + path
 
 
 def http(*args, **kwargs):
@@ -32,23 +55,19 @@ def http(*args, **kwargs):
     and return a unicode response.
 
     """
-    http_kwargs = {
-        'stdin_isatty': True,
-        'stdout_isatty': True
-    }
-    http_kwargs.update(kwargs)
 
-    command_line = ' '.join(args)
-    if ('stdout_isatty' not in kwargs
-        and '--pretty' not in command_line
-        and '--ugly' not in command_line):
-        # Make ugly default for testing purposes unless we're
-        # being explicit about it. It's so that we can test for
-        # strings in the response without having to always pass --ugly.
-        args = ['--ugly'] + list(args)
+    if 'env' not in kwargs:
+        # Ensure that we have terminal by default
+        # (needed for Travis).
+        kwargs['env'] = Environment(
+            colors=0,
+            stdin_isatty=True,
+            stdout_isatty=True,
+        )
 
-    stdout = http_kwargs.setdefault('stdout', tempfile.TemporaryFile())
-    __main__.main(args=args, **http_kwargs)
+
+    stdout = kwargs['env'].stdout = tempfile.TemporaryFile()
+    main(args=args, **kwargs)
     stdout.seek(0)
     response = stdout.read().decode('utf8')
     stdout.close()
@@ -70,42 +89,77 @@ class BaseTestCase(unittest.TestCase):
 
 
 #################################################################
-# High-level tests using httpbin.org.
+# High-level tests using httpbin.
 #################################################################
 
 class HTTPieTest(BaseTestCase):
 
     def test_GET(self):
-        r = http('GET', 'http://httpbin.org/get')
+        r = http(
+            'GET',
+            httpbin('/get')
+        )
         self.assertIn('HTTP/1.1 200', r)
 
     def test_DELETE(self):
-        r = http('DELETE', 'http://httpbin.org/delete')
+        r = http(
+            'DELETE',
+            httpbin('/delete')
+        )
         self.assertIn('HTTP/1.1 200', r)
 
     def test_PUT(self):
-        r = http('PUT', 'http://httpbin.org/put', 'foo=bar')
+        r = http(
+            'PUT',
+            httpbin('/put'),
+            'foo=bar'
+        )
         self.assertIn('HTTP/1.1 200', r)
         self.assertIn('"foo": "bar"', r)
 
     def test_POST_JSON_data(self):
-        r = http('POST', 'http://httpbin.org/post', 'foo=bar')
+        r = http(
+            'POST',
+            httpbin('/post'),
+            'foo=bar'
+        )
+        print r
         self.assertIn('HTTP/1.1 200', r)
         self.assertIn('"foo": "bar"', r)
 
     def test_POST_form(self):
-        r = http('--form', 'POST', 'http://httpbin.org/post', 'foo=bar')
+        r = http(
+            '--form',
+            'POST',
+            httpbin('/post'),
+            'foo=bar'
+        )
         self.assertIn('HTTP/1.1 200', r)
         self.assertIn('"foo": "bar"', r)
 
     def test_POST_stdin(self):
-        r = http('--form', 'POST', 'http://httpbin.org/post',
-                 stdin=open(TEST_FILE_PATH), stdin_isatty=False)
+
+        env = Environment(
+            stdin=open(TEST_FILE_PATH),
+            stdin_isatty=False,
+            colors=0,
+        )
+
+        r = http(
+            '--form',
+            'POST',
+            httpbin('/post'),
+            env=env
+        )
         self.assertIn('HTTP/1.1 200', r)
         self.assertIn(TEST_FILE_CONTENT, r)
 
     def test_headers(self):
-        r = http('GET', 'http://httpbin.org/headers', 'Foo:bar')
+        r = http(
+            'GET',
+            httpbin('/headers'),
+            'Foo:bar'
+        )
         self.assertIn('HTTP/1.1 200', r)
         self.assertIn('"User-Agent": "HTTPie', r)
         self.assertIn('"Foo": "bar"', r)
@@ -120,51 +174,73 @@ class AutoContentTypeAndAcceptHeadersTest(BaseTestCase):
     """
     def test_GET_no_data_no_auto_headers(self):
         # https://github.com/jkbr/httpie/issues/62
-        r = http('GET', 'http://httpbin.org/headers')
+        r = http(
+            'GET',
+            httpbin('/headers')
+        )
         self.assertIn('HTTP/1.1 200', r)
         self.assertIn('"Accept": "*/*"', r)
-        # Although an empty header is present in the response from httpbin,
-        # it's not included in the request.
-        self.assertIn('"Content-Type": ""', r)
+        self.assertNotIn('"Content-Type": "application/json', r)
 
     def test_POST_no_data_no_auto_headers(self):
         # JSON headers shouldn't be automatically set for POST with no data.
-        r = http('POST', 'http://httpbin.org/post')
+        r = http(
+            'POST',
+            httpbin('/post')
+        )
         self.assertIn('HTTP/1.1 200', r)
         self.assertIn('"Accept": "*/*"', r)
-        # Although an empty header is present in the response from httpbin,
-        # it's not included in the request.
-        self.assertIn(' "Content-Type": ""', r)
+        self.assertNotIn('"Content-Type": "application/json', r)
 
     def test_POST_with_data_auto_JSON_headers(self):
-        r = http('POST', 'http://httpbin.org/post', 'a=b')
+        r = http(
+            'POST',
+            httpbin('/post'),
+            'a=b'
+        )
         self.assertIn('HTTP/1.1 200', r)
         self.assertIn('"Accept": "application/json"', r)
         self.assertIn('"Content-Type": "application/json; charset=utf-8', r)
 
     def test_GET_with_data_auto_JSON_headers(self):
         # JSON headers should automatically be set also for GET with data.
-        r = http('POST', 'http://httpbin.org/post', 'a=b')
+        r = http(
+            'POST',
+            httpbin('/post'),
+            'a=b'
+        )
         self.assertIn('HTTP/1.1 200', r)
         self.assertIn('"Accept": "application/json"', r)
         self.assertIn('"Content-Type": "application/json; charset=utf-8', r)
 
     def test_POST_explicit_JSON_auto_JSON_headers(self):
-        r = http('-j', 'POST', 'http://httpbin.org/post')
+        r = http(
+            '--json',
+            'POST',
+            httpbin('/post')
+        )
         self.assertIn('HTTP/1.1 200', r)
         self.assertIn('"Accept": "application/json"', r)
         self.assertIn('"Content-Type": "application/json; charset=utf-8', r)
 
     def test_GET_explicit_JSON_explicit_headers(self):
-        r = http('-j', 'GET', 'http://httpbin.org/headers',
-                'Accept:application/xml',
-                'Content-Type:application/xml')
+        r = http(
+            '--json',
+            'GET',
+            httpbin('/headers'),
+            'Accept:application/xml',
+            'Content-Type:application/xml'
+        )
         self.assertIn('HTTP/1.1 200', r)
         self.assertIn('"Accept": "application/xml"', r)
         self.assertIn('"Content-Type": "application/xml"', r)
 
     def test_POST_form_auto_Content_Type(self):
-        r = http('-f', 'POST', 'http://httpbin.org/post')
+        r = http(
+            '--form',
+            'POST',
+            httpbin('/post')
+        )
         self.assertIn('HTTP/1.1 200', r)
         self.assertIn(
             '"Content-Type":'
@@ -173,44 +249,77 @@ class AutoContentTypeAndAcceptHeadersTest(BaseTestCase):
         )
 
     def test_POST_form_Content_Type_override(self):
-        r = http('-f', 'POST', 'http://httpbin.org/post',
-            'Content-Type:application/xml')
+        r = http(
+            '--form',
+            'POST',
+            httpbin('/post'),
+            'Content-Type:application/xml'
+        )
         self.assertIn('HTTP/1.1 200', r)
         self.assertIn('"Content-Type": "application/xml"', r)
 
     def test_print_only_body_when_stdout_redirected_by_default(self):
-        r = http('GET', 'httpbin.org/get', stdout_isatty=False)
+
+        r = http(
+            'GET',
+            'httpbin.org/get',
+            env=Environment(stdout_isatty=False)
+        )
         self.assertNotIn('HTTP/', r)
 
     def test_print_overridable_when_stdout_redirected(self):
-        r = http('--print=h', 'GET', 'httpbin.org/get', stdout_isatty=False)
+
+        r = http(
+            '--print=h',
+            'GET',
+            'httpbin.org/get',
+            env=Environment(stdout_isatty=False)
+        )
         self.assertIn('HTTP/1.1 200', r)
 
 
 class ImplicitHTTPMethodTest(BaseTestCase):
 
     def test_implicit_GET(self):
-        r = http('http://httpbin.org/get')
+        r = http(httpbin('/get'))
         self.assertIn('HTTP/1.1 200', r)
 
     def test_implicit_GET_with_headers(self):
-        r = http('http://httpbin.org/headers', 'Foo:bar')
+        r = http(
+            httpbin('/headers'),
+            'Foo:bar'
+        )
         self.assertIn('HTTP/1.1 200', r)
         self.assertIn('"Foo": "bar"', r)
 
     def test_implicit_POST_json(self):
-        r = http('http://httpbin.org/post', 'hello=world')
+        r = http(
+            httpbin('/post'),
+            'hello=world'
+        )
         self.assertIn('HTTP/1.1 200', r)
         self.assertIn('"hello": "world"', r)
 
     def test_implicit_POST_form(self):
-        r = http('--form', 'http://httpbin.org/post', 'foo=bar')
+        r = http(
+            '--form',
+            httpbin('/post'),
+            'foo=bar'
+        )
         self.assertIn('HTTP/1.1 200', r)
         self.assertIn('"foo": "bar"', r)
 
     def test_implicit_POST_stdin(self):
-        r = http('--form', 'http://httpbin.org/post',
-                 stdin=open(TEST_FILE_PATH), stdin_isatty=False)
+        env = Environment(
+            stdin_isatty=False,
+            stdin=open(TEST_FILE_PATH),
+            colors=0,
+        )
+        r = http(
+            '--form',
+            httpbin('/post'),
+            env=env
+        )
         self.assertIn('HTTP/1.1 200', r)
 
 
@@ -218,19 +327,26 @@ class PrettyFlagTest(BaseTestCase):
     """Test the --pretty / --ugly flag handling."""
 
     def test_pretty_enabled_by_default(self):
-        r = http('GET', 'http://httpbin.org/get', stdout_isatty=True)
+        r = http(
+            'GET',
+            httpbin('/get'),
+            env=Environment(stdout_isatty=True),
+        )
         self.assertIn(TERMINAL_COLOR_PRESENCE_CHECK, r)
 
     def test_pretty_enabled_by_default_unless_stdout_redirected(self):
-        r = http('GET', 'http://httpbin.org/get', stdout_isatty=False)
+        r = http(
+            'GET',
+            httpbin('/get')
+        )
         self.assertNotIn(TERMINAL_COLOR_PRESENCE_CHECK, r)
 
     def test_force_pretty(self):
         r = http(
             '--pretty',
             'GET',
-            'http://httpbin.org/get',
-            stdout_isatty=False
+            httpbin('/get'),
+            env=Environment(stdout_isatty=False),
         )
         self.assertIn(TERMINAL_COLOR_PRESENCE_CHECK, r)
 
@@ -238,8 +354,7 @@ class PrettyFlagTest(BaseTestCase):
         r = http(
             '--ugly',
             'GET',
-            'http://httpbin.org/get',
-            stdout_isatty=True
+            httpbin('/get'),
         )
         self.assertNotIn(TERMINAL_COLOR_PRESENCE_CHECK, r)
 
@@ -250,7 +365,7 @@ class VerboseFlagTest(BaseTestCase):
         r = http(
             '--verbose',
             'GET',
-            'http://httpbin.org/get',
+            httpbin('/get'),
             'test-header:__test__'
         )
         self.assertIn('HTTP/1.1 200', r)
@@ -262,7 +377,7 @@ class VerboseFlagTest(BaseTestCase):
             '--verbose',
             '--form',
             'POST',
-            'http://httpbin.org/post',
+            httpbin('/post'),
             'foo=bar',
             'baz=bar'
         )
@@ -274,13 +389,21 @@ class MultipartFormDataFileUploadTest(BaseTestCase):
 
     def test_non_existent_file_raises_parse_error(self):
         self.assertRaises(cliparse.ParseError, http,
-            '--form', '--traceback',
-            'POST', 'http://httpbin.org/post',
-            'foo@/__does_not_exist__')
+            '--form',
+            '--traceback',
+            'POST',
+            httpbin('/post'),
+            'foo@/__does_not_exist__'
+        )
 
     def test_upload_ok(self):
-        r = http('--form', 'POST', 'http://httpbin.org/post',
-             'test-file@%s' % TEST_FILE_PATH, 'foo=bar')
+        r = http(
+            '--form',
+            'POST',
+            httpbin('/post'),
+            'test-file@%s' % TEST_FILE_PATH,
+            'foo=bar'
+        )
         self.assertIn('HTTP/1.1 200', r)
         self.assertIn('"test-file": "%s' % TEST_FILE_CONTENT, r)
         self.assertIn('"foo": "bar"', r)
@@ -292,7 +415,11 @@ class RequestBodyFromFilePathTest(BaseTestCase):
 
     """
     def test_request_body_from_file_by_path(self):
-        r = http('POST', 'http://httpbin.org/post', '@' + TEST_FILE_PATH)
+        r = http(
+            'POST',
+            httpbin('/post'),
+            '@' + TEST_FILE_PATH
+        )
         self.assertIn('HTTP/1.1 200', r)
         self.assertIn(TEST_FILE_CONTENT, r)
         self.assertIn('"Content-Type": "text/plain"', r)
@@ -300,7 +427,7 @@ class RequestBodyFromFilePathTest(BaseTestCase):
     def test_request_body_from_file_by_path_with_explicit_content_type(self):
         r = http(
             'POST',
-            'http://httpbin.org/post',
+            httpbin('/post'),
             '@' + TEST_FILE_PATH,
             'Content-Type:x-foo/bar'
         )
@@ -311,39 +438,55 @@ class RequestBodyFromFilePathTest(BaseTestCase):
     def test_request_body_from_file_by_path_only_one_file_allowed(self):
         self.assertRaises(SystemExit, lambda: http(
             'POST',
-                'http://httpbin.org/post',
-                '@' + TEST_FILE_PATH,
-                '@' + TEST_FILE2_PATH))
+            httpbin('/post'),
+            '@' + TEST_FILE_PATH,
+            '@' + TEST_FILE2_PATH)
+        )
 
     def test_request_body_from_file_by_path_no_data_items_allowed(self):
         self.assertRaises(SystemExit, lambda: http(
             'POST',
-                'http://httpbin.org/post',
-                '@' + TEST_FILE_PATH,
-                'foo=bar'))
+            httpbin('/post'),
+            '@' + TEST_FILE_PATH,
+            'foo=bar')
+        )
 
 
 class AuthTest(BaseTestCase):
 
     def test_basic_auth(self):
-        r = http('--auth', 'user:password',
-                 'GET', 'httpbin.org/basic-auth/user/password')
+        r = http(
+            '--auth',
+            'user:password',
+            'GET',
+            'httpbin.org/basic-auth/user/password'
+        )
         self.assertIn('HTTP/1.1 200', r)
         self.assertIn('"authenticated": true', r)
         self.assertIn('"user": "user"', r)
 
     def test_digest_auth(self):
-        r = http('--auth-type=digest', '--auth', 'user:password',
-                 'GET', 'httpbin.org/digest-auth/auth/user/password')
+        r = http(
+            '--auth-type=digest',
+            '--auth',
+            'user:password',
+            'GET',
+            'httpbin.org/digest-auth/auth/user/password'
+        )
         self.assertIn('HTTP/1.1 200', r)
         self.assertIn('"authenticated": true', r)
         self.assertIn('"user": "user"', r)
 
     def test_password_prompt(self):
+
         cliparse.AuthCredentials._getpass = lambda self, prompt: 'password'
 
-        r = http('--auth', 'user',
-                 'GET', 'httpbin.org/basic-auth/user/password')
+        r = http(
+            '--auth',
+            'user',
+            'GET',
+            'httpbin.org/basic-auth/user/password'
+        )
 
         self.assertIn('HTTP/1.1 200', r)
         self.assertIn('"authenticated": true', r)
@@ -446,7 +589,7 @@ class ArgumentParserTestCase(unittest.TestCase):
         args.url = 'http://example.com/'
         args.items = []
 
-        self.parser._guess_method(args)
+        self.parser._guess_method(args, Environment())
 
         self.assertEquals(args.method, 'GET')
         self.assertEquals(args.url, 'http://example.com/')
@@ -458,7 +601,7 @@ class ArgumentParserTestCase(unittest.TestCase):
         args.url = 'http://example.com/'
         args.items = []
 
-        self.parser._guess_method(args)
+        self.parser._guess_method(args, Environment())
 
         self.assertEquals(args.method, 'GET')
         self.assertEquals(args.url, 'http://example.com/')
@@ -470,7 +613,7 @@ class ArgumentParserTestCase(unittest.TestCase):
         args.url = 'data=field'
         args.items = []
 
-        self.parser._guess_method(args)
+        self.parser._guess_method(args, Environment())
 
         self.assertEquals(args.method, 'POST')
         self.assertEquals(args.url, 'http://example.com/')
@@ -485,7 +628,7 @@ class ArgumentParserTestCase(unittest.TestCase):
         args.url = 'test:header'
         args.items = []
 
-        self.parser._guess_method(args)
+        self.parser._guess_method(args, Environment())
 
         self.assertEquals(args.method, 'GET')
         self.assertEquals(args.url, 'http://example.com/')
@@ -503,7 +646,7 @@ class ArgumentParserTestCase(unittest.TestCase):
                 key='old_item', value='b', sep='=', orig='old_item=b')
         ]
 
-        self.parser._guess_method(args)
+        self.parser._guess_method(args, Environment())
 
         self.assertEquals(args.items, [
             cliparse.KeyValue(
@@ -557,7 +700,7 @@ class UnicodeOutputTestCase(BaseTestCase):
         args.style = 'default'
 
         # colorized output contains escape sequences
-        output = __main__._get_output(args, True, response)
+        output = get_output(args, Environment(), response)
 
         for key, value in response_dict.items():
             self.assertIn(key, output)
