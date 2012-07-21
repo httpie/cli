@@ -46,7 +46,7 @@ Or, you can install the **development version** directly from GitHub:
 There are packages available for
 `Ubuntu <http://packages.ubuntu.com/httpie>`_,
 `Debian <http://packages.debian.org/httpie>`_ and
-other possibly other major distros as well.
+possibly other major distros as well.
 
 
 Usage

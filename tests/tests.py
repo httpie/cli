@@ -15,14 +15,14 @@ To make it run faster and offline you can::
     HTTPBIN_URL=http://localhost:5000 python setup.py test
 
 """
-import unittest
-import argparse
 import os
 import sys
-import tempfile
 import json
-from requests.compat import is_py26, is_py3
+import tempfile
+import unittest
+import argparse
 from requests import Response
+from requests.compat import is_py26, is_py3
 
 
 #################################################################
@@ -263,7 +263,7 @@ class AutoContentTypeAndAcceptHeadersTest(BaseTestCase):
 
         r = http(
             'GET',
-            'httpbin.org/get',
+            httpbin('/get'),
             env=Environment(stdout_isatty=False)
         )
         self.assertNotIn('HTTP/', r)
@@ -273,7 +273,7 @@ class AutoContentTypeAndAcceptHeadersTest(BaseTestCase):
         r = http(
             '--print=h',
             'GET',
-            'httpbin.org/get',
+            httpbin('/get'),
             env=Environment(stdout_isatty=False)
         )
         self.assertIn('HTTP/1.1 200', r)
@@ -460,7 +460,7 @@ class AuthTest(BaseTestCase):
             '--auth',
             'user:password',
             'GET',
-            'httpbin.org/basic-auth/user/password'
+            httpbin('/basic-auth/user/password')
         )
         self.assertIn('HTTP/1.1 200', r)
         self.assertIn('"authenticated": true', r)
@@ -472,7 +472,7 @@ class AuthTest(BaseTestCase):
             '--auth',
             'user:password',
             'GET',
-            'httpbin.org/digest-auth/auth/user/password'
+            httpbin('/digest-auth/auth/user/password')
         )
         self.assertIn('HTTP/1.1 200', r)
         self.assertIn('"authenticated": true', r)
@@ -486,7 +486,7 @@ class AuthTest(BaseTestCase):
             '--auth',
             'user',
             'GET',
-            'httpbin.org/basic-auth/user/password'
+            httpbin('/basic-auth/user/password')
         )
 
         self.assertIn('HTTP/1.1 200', r)
