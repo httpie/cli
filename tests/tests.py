@@ -1,4 +1,6 @@
-""" -*- coding: utf-8 -*-
+# coding=utf8
+"""
+
 Many of the test cases here use httpbin.org.
 
 To make it run faster and offline you can::

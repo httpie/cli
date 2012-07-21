@@ -144,7 +144,6 @@ class PygmentsProcessor(BaseProcessor):
 
 
 class OutputProcessor(object):
-    """."""
 
     installed_processors = [
         JSONProcessor,
