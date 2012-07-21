@@ -125,7 +125,6 @@ class HTTPieTest(BaseTestCase):
             httpbin('/post'),
             'foo=bar'
         )
-        print r
         self.assertIn('HTTP/1.1 200', r)
         self.assertIn('"foo": "bar"', r)
 
