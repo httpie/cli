@@ -89,7 +89,7 @@ def get_output(args, env, response):
         prettifier = OutputProcessor(
             env, pygments_style=args.style)
 
-    output = []
+    buf = []
 
     if do_output_request:
         req = HTTPMessage.from_request(response.request).format(
@@ -97,10 +97,10 @@ def get_output(args, env, response):
             with_headers=cliparse.OUT_REQ_HEAD in args.output_options,
             with_body=cliparse.OUT_REQ_BODY in args.output_options
         )
-        output.append(req)
-        output.append('\n')
+        buf.append(req)
+        buf.append('\n')
         if do_output_response:
-            output.append('\n')
+            buf.append('\n')
 
     if do_output_response:
         resp = HTTPMessage.from_response(response).format(
@@ -108,15 +108,14 @@ def get_output(args, env, response):
             with_headers=cliparse.OUT_RESP_HEAD in args.output_options,
             with_body=cliparse.OUT_RESP_BODY in args.output_options
         )
-        output.append(resp)
-        output.append('\n')
+        buf.append(resp)
+        buf.append('\n')
 
-    return ''.join(output)
+    return ''.join(buf)
 
 
 def main(args=sys.argv[1:], env=Environment()):
-    parser = cli.parser
-    args = parser.parse_args(args=args, env=env)
+    args = cli.parser.parse_args(args=args, env=env)
     response = get_response(args)
     output = get_output(args, env, response)
     output_bytes = output.encode('utf8')

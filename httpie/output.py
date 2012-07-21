@@ -18,10 +18,6 @@ from . import solarized
 
 DEFAULT_STYLE = 'solarized'
 AVAILABLE_STYLES = [DEFAULT_STYLE] + list(STYLE_MAP.keys())
-if is_windows:
-    import colorama
-    colorama.init()
-    # 256 looks better on Windows
 
 
 class HTTPLexer(lexer.RegexLexer):

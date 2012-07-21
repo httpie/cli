@@ -1,13 +1,22 @@
 import os
 import sys
-from requests.compat import urlparse
+from requests.compat import urlparse, is_windows
 
 
 class Environment(object):
     stdin_isatty = sys.stdin.isatty()
     stdin = sys.stdin
+
+    if is_windows:
+        # `colorama` patches `sys.stdout` so its initialization
+        # needs to happen before the default environment is set.
+        import colorama
+        colorama.init()
+        del colorama
+
     stdout_isatty = sys.stdout.isatty()
     stdout = sys.stdout
+
     # Can be set to 0 to disable colors completely.
     colors = 256 if '256color' in os.environ.get('TERM', '') else 88
 
