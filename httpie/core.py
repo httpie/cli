@@ -2,6 +2,7 @@ import sys
 import json
 import requests
 from requests.compat import str
+from requests.compat import is_windows
 from .models import HTTPMessage, Environment
 from .output import OutputProcessor
 from . import cliparse
@@ -118,6 +119,10 @@ def main(args=sys.argv[1:], env=Environment()):
     args = cli.parser.parse_args(args=args, env=env)
     response = get_response(args)
     output = get_output(args, env, response)
-    output_bytes = output.encode('utf8')
-    f = getattr(env.stdout, 'buffer', env.stdout)
-    f.write(output_bytes)
+    encoding = 'cp850' if is_windows else 'utf8'
+    if sys.version_info[0] <= 2:
+        # Python 2 -> use unicode() function
+        print(unicode(output.encode(encoding, errors='replace'), encoding))
+    else:
+        # Python 3 -> use str() function
+        print(str(output.encode(encoding, errors='replace'), encoding))
