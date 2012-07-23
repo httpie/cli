@@ -125,6 +125,21 @@ parser.add_argument(
     ''') % ', '.join(sorted(AVAILABLE_STYLES))
 )
 
+parser.add_argument(
+    '--ignore-http-status', default=False, action='store_true',
+    help=_('''
+        This flag tells HTTP to ignore the HTTP status code
+        and exit with 0.
+
+        By default, HTTPie exits with 0 only if no errors occur
+        and the request is successful. When the server
+        replies with a 4xx (Client Error) or 5xx (Server Error)
+        status code, HTTPie exits with 4 or 5 respectively.
+        If the response is 3xx (Redirect) and --allow-redirects
+        isn't set, then the exit status is 3.
+    ''')
+)
+
 # ``requests.request`` keyword arguments.
 parser.add_argument(
     '--auth', '-a', type=cliparse.AuthCredentialsType(cliparse.SEP_COMMON),

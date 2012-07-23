@@ -170,9 +170,9 @@ See ``http -h`` for more details::
     usage: http [-h] [--version] [--json | --form] [--traceback]
                 [--pretty | --ugly]
                 [--print OUTPUT_OPTIONS | --verbose | --headers | --body]
-                [--style STYLE] [--auth AUTH] [--auth-type {basic,digest}]
-                [--verify VERIFY] [--proxy PROXY] [--allow-redirects]
-                [--timeout TIMEOUT]
+                [--style STYLE] [--ignore-http-status] [--auth AUTH]
+                [--auth-type {basic,digest}] [--verify VERIFY] [--proxy PROXY]
+                [--allow-redirects] [--timeout TIMEOUT]
                 [METHOD] URL [ITEM [ITEM ...]]
 
     HTTPie - cURL for humans. <http://httpie.org>
@@ -235,6 +235,14 @@ See ``http -h`` for more details::
                             make sure that the $TERM environment variable is set
                             to "xterm-256color" or similar (e.g., via `export TERM
                             =xterm-256color' in your ~/.bashrc).
+      --ignore-http-status  This flag tells HTTP to ignore the HTTP status code
+                            and exit with 0. By default, HTTPie exits with 0 only
+                            if no errors occur and the request is successful. When
+                            the server replies with a 4xx (Client Error) or 5xx
+                            (Server Error) status code, HTTPie exits with 4 or 5
+                            respectively. If the response is 3xx (Redirect) and
+                            --allow-redirects isn't set, then the exit status is
+                            3.
       --auth AUTH, -a AUTH  username:password. If only the username is provided
                             (-a username), HTTPie will prompt for the password.
       --auth-type {basic,digest}
@@ -287,6 +295,7 @@ Changelog
 ---------
 
 * `0.2.6dev <https://github.com/jkbr/httpie/compare/0.2.5...master>`_
+    * Added exit status codes for HTTP 3xx, 4xx and 5xx (3, 4, 5).
     * If the output is piped to another program or redirected to a file,
       the new default behaviour is to only print the response body.
       (It can still be overriden via the ``--print`` flag.)

@@ -114,10 +114,39 @@ def get_output(args, env, response):
     return ''.join(buf)
 
 
+def get_exist_status(code, allow_redirects=False):
+    """
+    Translate HTTP status code to exit status.
+
+    """
+    if 300 <= code <= 399 and not allow_redirects:
+        # Redirect
+        return 3
+    elif 400 <= code <= 499:
+        # Client Error
+        return 4
+    elif 500 <= code <= 599:
+        # Server Error
+        return 5
+    else:
+        return 0
+
+
 def main(args=sys.argv[1:], env=Environment()):
+    """
+    Run the main program and write the output to ``env.stdout``.
+
+    Return exit status.
+
+    """
     args = cli.parser.parse_args(args=args, env=env)
     response = get_response(args)
     output = get_output(args, env, response)
     output_bytes = output.encode('utf8')
     f = getattr(env.stdout, 'buffer', env.stdout)
     f.write(output_bytes)
+    if args.ignore_http_status:
+        return 0
+    else:
+        return get_exist_status(
+            response.status_code, args.allow_redirects)

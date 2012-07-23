@@ -21,8 +21,7 @@ import json
 import tempfile
 import unittest
 import argparse
-from requests import Response
-from requests.compat import is_py26, is_py3
+from requests.compat import is_py26, is_py3, str
 
 
 #################################################################
@@ -51,28 +50,40 @@ def httpbin(path):
     return HTTPBIN_URL + path
 
 
+class Response(str):
+    """
+    A unicode subclass holding the output of `main()` and the exit status.
+
+    """
+    exit_status = None
+
+
 def http(*args, **kwargs):
     """
-    Invoke `httpie.__main__.main` with `args` and `kwargs`,
+    Invoke `httpie.core.main()` with `args` and `kwargs`,
     and return a unicode response.
 
     """
 
     if 'env' not in kwargs:
-        # Ensure that we have terminal by default
-        # (needed for Travis).
+        # Ensure that we have terminal by default (needed for Travis).
         kwargs['env'] = Environment(
             colors=0,
             stdin_isatty=True,
             stdout_isatty=True,
         )
 
-
     stdout = kwargs['env'].stdout = tempfile.TemporaryFile()
-    main(args=args, **kwargs)
+
+    exit_status = main(args=args, **kwargs)
+
     stdout.seek(0)
-    response = stdout.read().decode('utf8')
+
+    response = Response(stdout.read().decode('utf8'))
+    response.exit_status = exit_status
+
     stdout.close()
+
     return response
 
 
@@ -492,6 +503,52 @@ class AuthTest(BaseTestCase):
         self.assertIn('HTTP/1.1 200', r)
         self.assertIn('"authenticated": true', r)
         self.assertIn('"user": "user"', r)
+
+
+class ExitStatusTest(BaseTestCase):
+
+    def test_3xx_exits_3(self):
+        r = http(
+            'GET',
+            httpbin('/status/301')
+        )
+        self.assertIn('HTTP/1.1 301', r)
+        self.assertEqual(r.exit_status, 3)
+
+    def test_3xx_redirects_allowed_exits_0(self):
+        r = http(
+            '--allow-redirects',
+            'GET',
+            httpbin('/status/301')
+        )
+        # The redirect will be followed so 200 is expected.
+        self.assertIn('HTTP/1.1 200 OK', r)
+        self.assertEqual(r.exit_status, 0)
+
+    def test_4xx_exits_4(self):
+        r = http(
+            'GET',
+            httpbin('/status/401')
+        )
+        self.assertIn('HTTP/1.1 401', r)
+        self.assertEqual(r.exit_status, 4)
+
+    def test_5xx_exits_5(self):
+        r = http(
+            'GET',
+            httpbin('/status/500')
+        )
+        self.assertIn('HTTP/1.1 500', r)
+        self.assertEqual(r.exit_status, 5)
+
+    def test_ignore_http_status_exits_0(self):
+        r = http(
+            '--ignore-http-status',
+            'GET',
+            httpbin('/status/500')
+        )
+        self.assertIn('HTTP/1.1 500', r)
+        self.assertEqual(r.exit_status, 0)
 
 
 #################################################################

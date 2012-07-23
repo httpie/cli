@@ -2,7 +2,6 @@
 Colorizing of HTTP messages and content processing.
 
 """
-import os
 import re
 import json
 import pygments
