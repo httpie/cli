@@ -173,7 +173,7 @@ respectivelly::
 
     #!/bin/bash
 
-    if http --check-status example.org/health &> /dev/null; then
+    if http --check-status HEAD example.org/health &> /dev/null; then
         echo 'OK!'
     else
         case $? in
@@ -327,7 +327,8 @@ Changelog
 ---------
 
 * `0.2.6dev <https://github.com/jkbr/httpie/compare/0.2.5...master>`_
-    * Added exit status codes for HTTP 3xx, 4xx and 5xx (3, 4, 5).
+    * Added ``--check-status`` to exit with an error for HTTP 3xx, 4xx and
+      5xx (3, 4, 5).
     * If the output is piped to another program or redirected to a file,
       the new default behaviour is to only print the response body.
       (It can still be overriden via the ``--print`` flag.)
