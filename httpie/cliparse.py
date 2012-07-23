@@ -25,6 +25,7 @@ SEP_HEADERS = SEP_COMMON
 SEP_DATA = '='
 SEP_DATA_RAW_JSON = ':='
 SEP_FILES = '@'
+SEP_QUERY = '=:'
 DATA_ITEM_SEPARATORS = [
     SEP_DATA,
     SEP_DATA_RAW_JSON,
@@ -32,13 +33,13 @@ DATA_ITEM_SEPARATORS = [
 ]
 
 
-OUT_REQ_HEADERS = 'H'
+OUT_REQ_HEAD = 'H'
 OUT_REQ_BODY = 'B'
-OUT_RESP_HEADERS = 'h'
+OUT_RESP_HEAD = 'h'
 OUT_RESP_BODY = 'b'
-OUTPUT_OPTIONS = [OUT_REQ_HEADERS,
+OUTPUT_OPTIONS = [OUT_REQ_HEAD,
                   OUT_REQ_BODY,
-                  OUT_RESP_HEADERS,
+                  OUT_RESP_HEAD,
                   OUT_RESP_BODY]
 
 
@@ -49,19 +50,17 @@ DEFAULT_UA = 'HTTPie/%s' % __version__
 
 class Parser(argparse.ArgumentParser):
 
-    def parse_args(self, args=None, namespace=None,
-                   stdin=sys.stdin,
-                   stdin_isatty=sys.stdin.isatty()):
+    def parse_args(self, env, args=None, namespace=None):
 
         args = super(Parser, self).parse_args(args, namespace)
 
-        self._validate_output_options(args)
+        self._process_output_options(args, env)
         self._validate_auth_options(args)
-        self._guess_method(args, stdin_isatty)
+        self._guess_method(args, env)
         self._parse_items(args)
 
-        if not stdin_isatty:
-            self._body_from_file(args, stdin)
+        if not env.stdin_isatty:
+            self._body_from_file(args, env.stdin)
 
         if args.auth and not args.auth.has_password():
             # stdin has already been read (if not a tty) so
@@ -76,7 +75,7 @@ class Parser(argparse.ArgumentParser):
                        'data (key=value) cannot be mixed.')
         args.data = f.read()
 
-    def _guess_method(self, args, stdin_isatty=sys.stdin.isatty()):
+    def _guess_method(self, args, env):
         """
         Set `args.method`, if not specified, to either POST or GET
         based on whether the request has data or not.
@@ -85,7 +84,7 @@ class Parser(argparse.ArgumentParser):
         if args.method is None:
             # Invoked as `http URL'.
             assert not args.items
-            if not stdin_isatty:
+            if not env.stdin_isatty:
                 args.method = 'POST'
             else:
                 args.method = 'GET'
@@ -102,6 +101,7 @@ class Parser(argparse.ArgumentParser):
 
             item = KeyValueType(
                 SEP_COMMON,
+                SEP_QUERY,
                 SEP_DATA,
                 SEP_DATA_RAW_JSON,
                 SEP_FILES).__call__(args.url)
@@ -109,7 +109,7 @@ class Parser(argparse.ArgumentParser):
             args.url = args.method
             args.items.insert(0, item)
 
-            has_data = not stdin_isatty or any(
+            has_data = not env.stdin_isatty or any(
                 item.sep in DATA_ITEM_SEPARATORS for item in args.items)
             if has_data:
                 args.method = 'POST'
@@ -118,16 +118,21 @@ class Parser(argparse.ArgumentParser):
 
     def _parse_items(self, args):
         """
-        Parse `args.items` into `args.headers`, `args.data` and `args.files`.
+        Parse `args.items` into `args.headers`,
+        `args.data`, `args.queries`, and `args.files`.
 
         """
         args.headers = CaseInsensitiveDict()
         args.headers['User-Agent'] = DEFAULT_UA
         args.data = OrderedDict()
         args.files = OrderedDict()
+        args.queries = CaseInsensitiveDict()
         try:
-            parse_items(items=args.items, headers=args.headers,
-                        data=args.data, files=args.files)
+            parse_items(items=args.items,
+                        headers=args.headers,
+                        data=args.data,
+                        files=args.files,
+                        queries=args.queries)
         except ParseError as e:
             if args.traceback:
                 raise
@@ -154,7 +159,13 @@ class Parser(argparse.ArgumentParser):
                         content_type = '%s; charset=%s' % (mime, encoding)
                     args.headers['Content-Type'] = content_type
 
-    def _validate_output_options(self, args):
+    def _process_output_options(self, args, env):
+        if not args.output_options:
+            if env.stdout_isatty:
+                args.output_options = OUT_RESP_HEAD + OUT_RESP_BODY
+            else:
+                args.output_options = OUT_RESP_BODY
+
         unknown = set(args.output_options) - set(OUTPUT_OPTIONS)
         if unknown:
             self.error(
@@ -207,6 +218,8 @@ class KeyValueType(object):
                     if start >= estart and end <= eend:
                         inside_escape = True
                         break
+                if start in found and len(found[start]) > len(sep):
+                    break
                 if not inside_escape:
                     found[start] = sep
 
@@ -264,19 +277,27 @@ class AuthCredentialsType(KeyValueType):
             )
 
 
-def parse_items(items, data=None, headers=None, files=None):
-    """Parse `KeyValueType` `items` into `data`, `headers` and `files`."""
+def parse_items(items, data=None, headers=None, files=None, queries=None):
+    """
+    Parse `KeyValueType` `items` into `data`, `headers`, `files`,
+    and `queries`.
+
+    """
     if headers is None:
         headers = {}
     if data is None:
         data = {}
     if files is None:
         files = {}
+    if queries is None:
+        queries = {}
     for item in items:
         value = item.value
         key = item.key
         if item.sep == SEP_HEADERS:
             target = headers
+        elif item.sep == SEP_QUERY:
+            target = queries
         elif item.sep == SEP_FILES:
             try:
                 value = open(os.path.expanduser(item.value), 'r')
@@ -301,4 +322,4 @@ def parse_items(items, data=None, headers=None, files=None):
 
         target[key] = value
 
-    return headers, data, files
+    return headers, data, files, queries

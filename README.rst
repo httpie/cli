@@ -1,6 +1,8 @@
 HTTPie: cURL for humans
 =======================
 
+`☞ README for stable version <https://github.com/jkbr/httpie/tree/0.2.5#readme>`_
+
 **HTTPie is a CLI HTTP utility** built out of frustration with existing tools.
 The goal is to make CLI interaction with HTTP-based services as
 human-friendly as possible.
@@ -26,6 +28,9 @@ The latest **stable version** of HTTPie can always be installed
 
     pip install -U httpie
 
+You can also use `easy_install` (``pip`` is prefered, though)::
+
+    easy_install httpie
 
 Or, you can install the **development version** directly from GitHub:
 
@@ -39,8 +44,9 @@ Or, you can install the **development version** directly from GitHub:
 
 
 There are packages available for
-`Ubuntu <http://packages.ubuntu.com/quantal/httpie>`_ and
-`Debian <http://packages.debian.org/wheezy/httpie>`_.
+`Ubuntu <http://packages.ubuntu.com/httpie>`_,
+`Debian <http://packages.debian.org/httpie>`_ and
+possibly other major distros as well.
 
 
 Usage
@@ -54,7 +60,7 @@ Synopsis::
 
     http [flags] [METHOD] URL [items]
 
-There are four types of key-value pair items available:
+There are five types of key-value pair items available:
 
 Headers (``Name:Value``)
    Arbitrary HTTP headers. The ``:`` character is used to separate a header's
@@ -76,6 +82,9 @@ File fields (``field@/path/to/file``)
   Only available with ``-f`` / ``--form``. Use ``@`` as the separator, e.g.,
   ``screenshot@/path/to/file.png``. The presence of a file field results into
   a ``multipart/form-data`` request.
+
+Query string parameters (``name=:value``)
+  Appends the given name/value pair as a query string  parameter to the URL.
 
 
 Examples
@@ -118,6 +127,12 @@ The above will send the same request as if the following HTML form were submitte
         <input type="file" name="cv" />
     </form>
 
+Query string parameters can be added to any request::
+
+    http GET example.com/ search=:donuts
+
+Will GET the URL "example.com/?search=donuts".
+
 A whole request body can be passed in via **``stdin``** instead, in which
 case it will be used with no further processing::
 
@@ -128,13 +143,13 @@ case it will be used with no further processing::
 That can be used for **piping services together**. The following example
 ``GET``-s JSON data from the Github API and ``POST``-s it to httpbin.org::
 
-    http -b GET https://api.github.com/repos/jkbr/httpie | http POST httpbin.org/post
+    http GET https://api.github.com/repos/jkbr/httpie | http POST httpbin.org/post
 
 The above can be further simplified by omitting ``GET`` and ``POST`` because
 they are both default here. The first command has no request data, whereas
 the second one does via ``stdin``::
 
-    http -b https://api.github.com/repos/jkbr/httpie | http httpbin.org/post
+    http https://api.github.com/repos/jkbr/httpie | http httpbin.org/post
 
 An alternative to ``stdin`` is to pass a file name whose content will be used
 as the request body. It has the advantage that the ``Content-Type`` header
@@ -174,9 +189,10 @@ See ``http -h`` for more details::
                             separator used. It can be an HTTP header
                             (header:value), a data field to be used in the request
                             body (field_name=value), a raw JSON data field
-                            (field_name:=value), or a file field
-                            (field_name@/path/to/file). You can use a backslash to
-                            escape a colliding separator in the field name.
+                            (field_name:=value), a query parameter (name=:value),
+                            or a file field (field_name@/path/to/file). You can
+                            use a backslash to escape a colliding separator in the
+                            field name.
 
     optional arguments:
       -h, --help            show this help message and exit
@@ -197,11 +213,14 @@ See ``http -h`` for more details::
                             redirected.
       --ugly, -u            Do not prettify the response.
       --print OUTPUT_OPTIONS, -p OUTPUT_OPTIONS
-                            String specifying what should the output contain. "H"
-                            stands for the request headers and "B" for the request
-                            body. "h" stands for the response headers and "b" for
-                            response the body. Defaults to "hb" which means that
-                            the whole response (headers and body) is printed.
+                            String specifying what the output should contain: "H"
+                            stands for the request headers, and "B" for the
+                            request body. "h" stands for the response headers and
+                            "b" for response the body. The default behaviour is
+                            "hb" (i.e., the response headers and body is printed),
+                            if standard output is not redirected. If the output is
+                            piped to another program or to a file, then only the
+                            body is printed by default.
       --verbose, -v         Print the whole request as well as the response.
                             Shortcut for --print=HBhb.
       --headers, -t         Print only the response headers. Shortcut for
@@ -216,8 +235,8 @@ See ``http -h`` for more details::
                             make sure that the $TERM environment variable is set
                             to "xterm-256color" or similar (e.g., via `export TERM
                             =xterm-256color' in your ~/.bashrc).
-      --auth AUTH, -a AUTH  username:password. If the password is omitted (-a
-                            username), HTTPie will prompt for it.
+      --auth AUTH, -a AUTH  username:password. If only the username is provided
+                            (-a username), HTTPie will prompt for the password.
       --auth-type {basic,digest}
                             The authentication mechanism to be used. Defaults to
                             "basic".
@@ -268,6 +287,11 @@ Changelog
 ---------
 
 * `0.2.6dev <https://github.com/jkbr/httpie/compare/0.2.5...master>`_
+    * If the output is piped to another program or redirected to a file,
+      the new default behaviour is to only print the response body.
+      (It can still be overriden via the ``--print`` flag.)
+    * Improved highlighing of HTTP headers.
+    * Added query string parameters (param=:value).
     * Added support for terminal colors under Windows.
 * `0.2.5 <https://github.com/jkbr/httpie/compare/0.2.2...0.2.5>`_ (2012-07-17)
     * Unicode characters in prettified JSON now don't get escaped for

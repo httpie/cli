@@ -2,10 +2,10 @@
 CLI definition.
 
 """
-from . import pretty
 from . import __doc__
 from . import __version__
 from . import cliparse
+from .output import AVAILABLE_STYLES
 
 
 def _(text):
@@ -72,19 +72,20 @@ prettify.add_argument(
 
 output_options = parser.add_mutually_exclusive_group(required=False)
 output_options.add_argument('--print', '-p', dest='output_options',
-    default=cliparse.OUT_RESP_HEADERS + cliparse.OUT_RESP_BODY,
     help=_('''
-        String specifying what should the output contain.
-        "{request_headers}" stands for the request headers and
+        String specifying what the output should contain:
+        "{request_headers}" stands for the request headers,  and
         "{request_body}" for the request body.
         "{response_headers}" stands for the response headers and
         "{response_body}" for response the body.
-        Defaults to "hb" which means that the whole response
-        (headers and body) is printed.
+        The default behaviour is "hb" (i.e., the response
+        headers and body is printed), if standard output is not redirected.
+        If the output is piped to another program or to a file,
+        then only the body is printed by default.
     '''.format(
-        request_headers=cliparse.OUT_REQ_HEADERS,
+        request_headers=cliparse.OUT_REQ_HEAD,
         request_body=cliparse.OUT_REQ_BODY,
-        response_headers=cliparse.OUT_RESP_HEADERS,
+        response_headers=cliparse.OUT_RESP_HEAD,
         response_body=cliparse.OUT_RESP_BODY,
     ))
 )
@@ -98,11 +99,11 @@ output_options.add_argument(
 )
 output_options.add_argument(
     '--headers', '-t', dest='output_options',
-    action='store_const', const=cliparse.OUT_RESP_HEADERS,
+    action='store_const', const=cliparse.OUT_RESP_HEAD,
     help=_('''
         Print only the response headers.
         Shortcut for --print={0}.
-    '''.format(cliparse.OUT_RESP_HEADERS))
+    '''.format(cliparse.OUT_RESP_HEAD))
 )
 output_options.add_argument(
     '--body', '-b', dest='output_options',
@@ -115,13 +116,13 @@ output_options.add_argument(
 
 parser.add_argument(
     '--style', '-s', dest='style', default='solarized', metavar='STYLE',
-    choices=pretty.AVAILABLE_STYLES,
+    choices=AVAILABLE_STYLES,
     help=_('''
         Output coloring style, one of %s. Defaults to solarized.
         For this option to work properly, please make sure that the
         $TERM environment variable is set to "xterm-256color" or similar
         (e.g., via `export TERM=xterm-256color' in your ~/.bashrc).
-    ''') % ', '.join(sorted(pretty.AVAILABLE_STYLES))
+    ''') % ', '.join(sorted(AVAILABLE_STYLES))
 )
 
 # ``requests.request`` keyword arguments.
@@ -203,6 +204,7 @@ parser.add_argument(
     metavar='ITEM',
     type=cliparse.KeyValueType(
         cliparse.SEP_COMMON,
+        cliparse.SEP_QUERY,
         cliparse.SEP_DATA,
         cliparse.SEP_DATA_RAW_JSON,
         cliparse.SEP_FILES
@@ -212,6 +214,7 @@ parser.add_argument(
         separator used. It can be an HTTP header (header:value),
         a data field to be used in the request body (field_name=value),
         a raw JSON data field (field_name:=value),
+        a query parameter (name=:value),
         or a file field (field_name@/path/to/file).
         You can use a backslash to escape a colliding
         separator in the field name.
