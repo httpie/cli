@@ -53,10 +53,12 @@ def httpbin(path):
 
 class Response(str):
     """
-    A unicode subclass holding the output of `main()` and the exit status.
+    A unicode subclass holding the output of `main()`, and also
+    the exit status and contents of ``stderr``.
 
     """
     exit_status = None
+    stderr = None
 
 
 def http(*args, **kwargs):
@@ -75,17 +77,21 @@ def http(*args, **kwargs):
         )
 
     stdout = kwargs['env'].stdout = tempfile.TemporaryFile()
+    stderr = kwargs['env'].stderr = tempfile.TemporaryFile()
 
     exit_status = main(args=args, **kwargs)
 
     stdout.seek(0)
+    stderr.seek(0)
 
-    response = Response(stdout.read().decode('utf8'))
-    response.exit_status = exit_status
+    r = Response(stdout.read().decode('utf8'))
+    r.stderr = stderr.read().decode('utf8')
+    r.exit_status = exit_status
 
     stdout.close()
+    stderr.close()
 
-    return response
+    return r
 
 
 class BaseTestCase(unittest.TestCase):
@@ -155,6 +161,7 @@ class HTTPieTest(BaseTestCase):
         env = Environment(
             stdin=open(TEST_FILE_PATH),
             stdin_isatty=False,
+            stdout_isatty=True,
             colors=0,
         )
 
@@ -276,7 +283,10 @@ class AutoContentTypeAndAcceptHeadersTest(BaseTestCase):
         r = http(
             'GET',
             httpbin('/get'),
-            env=Environment(stdout_isatty=False)
+            env=Environment(
+                stdin_isatty=True,
+                stdout_isatty=False
+            )
         )
         self.assertNotIn('HTTP/', r)
 
@@ -286,7 +296,10 @@ class AutoContentTypeAndAcceptHeadersTest(BaseTestCase):
             '--print=h',
             'GET',
             httpbin('/get'),
-            env=Environment(stdout_isatty=False)
+            env=Environment(
+                stdin_isatty=True,
+                stdout_isatty=False
+            )
         )
         self.assertIn('HTTP/1.1 200', r)
 
@@ -326,6 +339,7 @@ class ImplicitHTTPMethodTest(BaseTestCase):
         env = Environment(
             stdin_isatty=False,
             stdin=open(TEST_FILE_PATH),
+            stdout_isatty=True,
             colors=0,
         )
         r = http(
@@ -343,7 +357,10 @@ class PrettyFlagTest(BaseTestCase):
         r = http(
             'GET',
             httpbin('/get'),
-            env=Environment(stdout_isatty=True),
+            env=Environment(
+                stdin_isatty=True,
+                stdout_isatty=True,
+            ),
         )
         self.assertIn(TERMINAL_COLOR_PRESENCE_CHECK, r)
 
@@ -359,7 +376,10 @@ class PrettyFlagTest(BaseTestCase):
             '--pretty',
             'GET',
             httpbin('/get'),
-            env=Environment(stdout_isatty=False),
+            env=Environment(
+                stdin_isatty=True,
+                stdout_isatty=False
+            ),
         )
         self.assertIn(TERMINAL_COLOR_PRESENCE_CHECK, r)
 
@@ -508,16 +528,40 @@ class AuthTest(BaseTestCase):
 
 class ExitStatusTest(BaseTestCase):
 
-    def test_3xx_exits_3(self):
+    def test_ok_response_exits_0(self):
         r = http(
             'GET',
-            httpbin('/status/301')
+            httpbin('/status/200')
+        )
+        self.assertIn('HTTP/1.1 200', r)
+        self.assertEqual(r.exit_status, 0)
+
+    def test_error_response_exits_0_without_check_status(self):
+        r = http(
+            'GET',
+            httpbin('/status/500')
+        )
+        self.assertIn('HTTP/1.1 500', r)
+        self.assertEqual(r.exit_status, 0)
+
+    def test_3xx_check_status_exits_3_and_stderr_when_stdout_redirected(self):
+        r = http(
+            '--check-status',
+            '--headers',  # non-terminal, force headers
+            'GET',
+            httpbin('/status/301'),
+            env=Environment(
+                stdout_isatty=False,
+                stdin_isatty=True,
+            )
         )
         self.assertIn('HTTP/1.1 301', r)
         self.assertEqual(r.exit_status, 3)
+        self.assertIn('301 moved permanently', r.stderr.lower())
 
-    def test_3xx_redirects_allowed_exits_0(self):
+    def test_3xx_check_status_redirects_allowed_exits_0(self):
         r = http(
+            '--check-status',
             '--allow-redirects',
             'GET',
             httpbin('/status/301')
@@ -526,30 +570,25 @@ class ExitStatusTest(BaseTestCase):
         self.assertIn('HTTP/1.1 200 OK', r)
         self.assertEqual(r.exit_status, 0)
 
-    def test_4xx_exits_4(self):
+    def test_4xx_check_status_exits_4(self):
         r = http(
+            '--check-status',
             'GET',
             httpbin('/status/401')
         )
         self.assertIn('HTTP/1.1 401', r)
         self.assertEqual(r.exit_status, 4)
+        # Also stderr should be empty since stdout isn't redirected.
+        self.assert_(not r.stderr)
 
-    def test_5xx_exits_5(self):
+    def test_5xx_check_status_exits_5(self):
         r = http(
+            '--check-status',
             'GET',
             httpbin('/status/500')
         )
         self.assertIn('HTTP/1.1 500', r)
         self.assertEqual(r.exit_status, 5)
-
-    def test_ignore_http_status_exits_0(self):
-        r = http(
-            '--ignore-http-status',
-            'GET',
-            httpbin('/status/500')
-        )
-        self.assertIn('HTTP/1.1 500', r)
-        self.assertEqual(r.exit_status, 0)
 
 
 #################################################################
@@ -660,7 +699,10 @@ class ArgumentParserTestCase(unittest.TestCase):
         args.url = 'http://example.com/'
         args.items = []
 
-        self.parser._guess_method(args, Environment())
+        self.parser._guess_method(args, Environment(
+            stdin_isatty=True,
+            stdout_isatty=True,
+        ))
 
         self.assertEquals(args.method, 'GET')
         self.assertEquals(args.url, 'http://example.com/')
@@ -687,7 +729,10 @@ class ArgumentParserTestCase(unittest.TestCase):
         args.url = 'test:header'
         args.items = []
 
-        self.parser._guess_method(args, Environment())
+        self.parser._guess_method(args, Environment(
+            stdin_isatty=True,
+            stdout_isatty=True,
+        ))
 
         self.assertEquals(args.method, 'GET')
         self.assertEquals(args.url, 'http://example.com/')

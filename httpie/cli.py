@@ -126,17 +126,21 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    '--ignore-http-status', default=False, action='store_true',
+    '--check-status', default=False, action='store_true',
     help=_('''
-        This flag tells HTTP to ignore the HTTP status code
-        and exit with 0.
+        By default, HTTPie exits with 0 when no network or other fatal
+        errors occur.
 
-        By default, HTTPie exits with 0 only if no errors occur
-        and the request is successful. When the server
-        replies with a 4xx (Client Error) or 5xx (Server Error)
-        status code, HTTPie exits with 4 or 5 respectively.
-        If the response is 3xx (Redirect) and --allow-redirects
-        isn't set, then the exit status is 3.
+        This flag instructs HTTPie to also check the HTTP status code and
+        exit with an error if the status indicates one.
+
+        When the server replies with a 4xx (Client Error) or 5xx
+        (Server Error) status code, HTTPie exits with 4 or 5 respectively.
+        If the response is a 3xx (Redirect) and --allow-redirects
+        hasn't been set, then the exit status is 3.
+
+        Also an error message is written to stderr if stdout is redirected.
+
     ''')
 )
 

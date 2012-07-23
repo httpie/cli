@@ -141,12 +141,20 @@ def main(args=sys.argv[1:], env=Environment()):
     """
     args = cli.parser.parse_args(args=args, env=env)
     response = get_response(args)
+
+    status = 0
+
+    if args.check_status:
+        status = get_exist_status(response.status_code,
+                                  args.allow_redirects)
+        if status and not env.stdout_isatty:
+            err = 'http error: %s %s\n' % (
+                response.raw.status, response.raw.reason)
+            env.stderr.write(err.encode('utf8'))
+
     output = get_output(args, env, response)
     output_bytes = output.encode('utf8')
     f = getattr(env.stdout, 'buffer', env.stdout)
     f.write(output_bytes)
-    if args.ignore_http_status:
-        return 0
-    else:
-        return get_exist_status(
-            response.status_code, args.allow_redirects)
+
+    return status

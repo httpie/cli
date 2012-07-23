@@ -17,6 +17,8 @@ class Environment(object):
     stdout_isatty = sys.stdout.isatty()
     stdout = sys.stdout
 
+    stderr = sys.stderr
+
     # Can be set to 0 to disable colors completely.
     colors = 256 if '256color' in os.environ.get('TERM', '') else 88
 

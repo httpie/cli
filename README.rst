@@ -151,6 +151,11 @@ the second one does via ``stdin``::
 
     http https://api.github.com/repos/jkbr/httpie | http httpbin.org/post
 
+Note that when the output is redirected (like the examples above), HTTPie
+applies a different set of defaults then for console output. Namely colors
+aren't used (can be forced with ``--pretty``) and only the response body
+gets printed (can be overwritten with ``--print``).
+
 An alternative to ``stdin`` is to pass a file name whose content will be used
 as the request body. It has the advantage that the ``Content-Type`` header
 will automatically be set to the appropriate value based on the filename
@@ -159,6 +164,25 @@ request will send the verbatim contents of the file with
 ``Content-Type: application/xml``::
 
     http PUT httpbin.org/put @/data/file.xml
+
+When using HTTPie from shell scripts you might want to use the
+``--check-status`` flag. It instructs HTTPie to exit with an error if the
+HTTP status is one of ``3xx``, ``4xx``, or ``5xx``. The exit status will
+be ``3`` (unless ``--allow-redirects`` is set), ``4``, or ``5``
+respectivelly::
+
+    #!/bin/bash
+
+    if http --check-status example.org/health &> /dev/null; then
+        echo 'OK!'
+    else
+        case $? in
+            3) echo 'Unexpected 3xx Redirection!' ;;
+            4) echo '4xx Client Error!' ;;
+            5) echo '5xx Server Error!' ;;
+            *) echo 'Other Error!' ;;
+        esac
+    fi
 
 
 Flags
@@ -170,7 +194,7 @@ See ``http -h`` for more details::
     usage: http [-h] [--version] [--json | --form] [--traceback]
                 [--pretty | --ugly]
                 [--print OUTPUT_OPTIONS | --verbose | --headers | --body]
-                [--style STYLE] [--ignore-http-status] [--auth AUTH]
+                [--style STYLE] [--check-status] [--auth AUTH]
                 [--auth-type {basic,digest}] [--verify VERIFY] [--proxy PROXY]
                 [--allow-redirects] [--timeout TIMEOUT]
                 [METHOD] URL [ITEM [ITEM ...]]
@@ -235,14 +259,16 @@ See ``http -h`` for more details::
                             make sure that the $TERM environment variable is set
                             to "xterm-256color" or similar (e.g., via `export TERM
                             =xterm-256color' in your ~/.bashrc).
-      --ignore-http-status  This flag tells HTTP to ignore the HTTP status code
-                            and exit with 0. By default, HTTPie exits with 0 only
-                            if no errors occur and the request is successful. When
-                            the server replies with a 4xx (Client Error) or 5xx
-                            (Server Error) status code, HTTPie exits with 4 or 5
-                            respectively. If the response is 3xx (Redirect) and
-                            --allow-redirects isn't set, then the exit status is
-                            3.
+      --check-status        By default, HTTPie exits with 0 when no network or
+                            other fatal errors occur. This flag instructs HTTPie
+                            to also check the HTTP status code and exit with an
+                            error if the status indicates one. When the server
+                            replies with a 4xx (Client Error) or 5xx (Server
+                            Error) status code, HTTPie exits with 4 or 5
+                            respectively. If the response is a 3xx (Redirect) and
+                            --allow-redirects hasn't been set, then the exit
+                            status is 3. Also an error message is written to
+                            stderr if stdout is redirected.
       --auth AUTH, -a AUTH  username:password. If only the username is provided
                             (-a username), HTTPie will prompt for the password.
       --auth-type {basic,digest}
@@ -261,6 +287,7 @@ See ``http -h`` for more details::
                             socket.setdefaulttimeout() as fallback).
 
 
+
 Contribute
 -----------
 
@@ -276,8 +303,13 @@ to see if the feature/bug has previously been discussed. Then fork
 develop branch and submit a pull request. Note: Pull requests with tests and
 documentation are 53.6%  more awesome :)
 
-Before a pull requests is submitted, it's a good idea to run the existing
-suite of tests::
+To point the ``http`` command to your working copy you can install HTTPie in
+the editable mode::
+
+    pip install --editable .
+
+It's a good idea to run the existing suite of tests before a pull requests is
+submitted::
 
     python setup.py test
 
