@@ -21,6 +21,7 @@ import json
 import tempfile
 import unittest
 import argparse
+import requests
 from requests.compat import is_py26, is_py3, str
 
 
@@ -714,7 +715,7 @@ class ArgumentParserTestCase(unittest.TestCase):
         ])
 
 
-class FakeResponse(Response):
+class FakeResponse(requests.Response):
 
     class Mock(object):
 
