@@ -98,7 +98,7 @@ output_options.add_argument(
     '''.format(''.join(cliparse.OUTPUT_OPTIONS)))
 )
 output_options.add_argument(
-    '--headers', '-t', dest='output_options',
+    '--headers', '-h', dest='output_options',
     action='store_const', const=cliparse.OUT_RESP_HEAD,
     help=_('''
         Print only the response headers.

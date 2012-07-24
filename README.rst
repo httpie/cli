@@ -189,10 +189,10 @@ respectivelly::
 Flags
 ^^^^^
 Most of the flags mirror the arguments understood by ``requests.request``.
-See ``http -h`` for more details::
+See ``http --help`` for more details::
 
-    $ http --help
-    usage: http [-h] [--version] [--json | --form] [--traceback]
+    # http --help
+    usage: http [--help] [--version] [--json | --form] [--traceback]
                 [--pretty | --ugly]
                 [--print OUTPUT_OPTIONS | --verbose | --headers | --body]
                 [--style STYLE] [--check-status] [--auth AUTH]
@@ -214,13 +214,13 @@ See ``http -h`` for more details::
                             separator used. It can be an HTTP header
                             (header:value), a data field to be used in the request
                             body (field_name=value), a raw JSON data field
-                            (field_name:=value), a query parameter (name=value),
+                            (field_name:=value), a query parameter (name==value),
                             or a file field (field_name@/path/to/file). You can
                             use a backslash to escape a colliding separator in the
                             field name.
 
     optional arguments:
-      -h, --help            show this help message and exit
+      --help                show this help message and exit
       --version             show program's version number and exit
       --json, -j            (default) Data items from the command line are
                             serialized as a JSON object. The Content-Type and
@@ -248,7 +248,7 @@ See ``http -h`` for more details::
                             body is printed by default.
       --verbose, -v         Print the whole request as well as the response.
                             Shortcut for --print=HBhb.
-      --headers, -t         Print only the response headers. Shortcut for
+      --headers, -h         Print only the response headers. Shortcut for
                             --print=h.
       --body, -b            Print only the response body. Shortcut for --print=b.
       --style STYLE, -s STYLE
@@ -286,7 +286,6 @@ See ``http -h`` for more details::
                             POST-ing of data at new ``Location``)
       --timeout TIMEOUT     Float describes the timeout of the request (Use
                             socket.setdefaulttimeout() as fallback).
-
 
 
 Contribute
@@ -328,6 +327,8 @@ Changelog
 ---------
 
 * `0.2.6dev <https://github.com/jkbr/httpie/compare/0.2.5...master>`_
+    * Short option for ``--headers`` is now ``-h`` (``-t`` has been removed,
+      for usage use ``--help``).
     * Form data and URL params can now have mutiple fields with the same name
     (e.g.,``http -f url a=1 a=2``).
     * Added ``--check-status`` to exit with an error for HTTP 3xx, 4xx and
