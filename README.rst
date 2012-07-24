@@ -83,8 +83,8 @@ File fields (``field@/path/to/file``)
   ``screenshot@/path/to/file.png``. The presence of a file field results into
   a ``multipart/form-data`` request.
 
-Query string parameters (``name=:value``)
-  Appends the given name/value pair as a query string  parameter to the URL.
+Query string parameters (``name==value``)
+  Appends the given name/value pair as a query string parameter to the URL.
 
 
 Examples
@@ -127,11 +127,12 @@ The above will send the same request as if the following HTML form were submitte
         <input type="file" name="cv" />
     </form>
 
-Query string parameters can be added to any request::
+**Query string parameters** can be added to any request without having to quote
+the ``&`` characters::
 
-    http GET example.com/ search=:donuts
+    http GET example.com/ search==donuts in==fridge
 
-Will GET the URL "example.com/?search=donuts".
+Will ``GET` the URL ``http://example.com/?search=donuts&in=fridge``.
 
 A whole request body can be passed in via **``stdin``** instead, in which
 case it will be used with no further processing::
@@ -151,7 +152,7 @@ the second one does via ``stdin``::
 
     http https://api.github.com/repos/jkbr/httpie | http httpbin.org/post
 
-Note that when the output is redirected (like the examples above), HTTPie
+Note that when the **output is redirected** (like the examples above), HTTPie
 applies a different set of defaults then for console output. Namely colors
 aren't used (can be forced with ``--pretty``) and only the response body
 gets printed (can be overwritten with ``--print``).
@@ -165,7 +166,7 @@ request will send the verbatim contents of the file with
 
     http PUT httpbin.org/put @/data/file.xml
 
-When using HTTPie from shell scripts you might want to use the
+When using HTTPie from **shell scripts**, you might want to use the
 ``--check-status`` flag. It instructs HTTPie to exit with an error if the
 HTTP status is one of ``3xx``, ``4xx``, or ``5xx``. The exit status will
 be ``3`` (unless ``--allow-redirects`` is set), ``4``, or ``5``
@@ -213,7 +214,7 @@ See ``http -h`` for more details::
                             separator used. It can be an HTTP header
                             (header:value), a data field to be used in the request
                             body (field_name=value), a raw JSON data field
-                            (field_name:=value), a query parameter (name=:value),
+                            (field_name:=value), a query parameter (name=value),
                             or a file field (field_name@/path/to/file). You can
                             use a backslash to escape a colliding separator in the
                             field name.
@@ -333,7 +334,7 @@ Changelog
       the new default behaviour is to only print the response body.
       (It can still be overriden via the ``--print`` flag.)
     * Improved highlighing of HTTP headers.
-    * Added query string parameters (param=:value).
+    * Added query string parameters (param==value).
     * Added support for terminal colors under Windows.
 * `0.2.5 <https://github.com/jkbr/httpie/compare/0.2.2...0.2.5>`_ (2012-07-17)
     * Unicode characters in prettified JSON now don't get escaped for

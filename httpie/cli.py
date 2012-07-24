@@ -146,7 +146,7 @@ parser.add_argument(
 
 # ``requests.request`` keyword arguments.
 parser.add_argument(
-    '--auth', '-a', type=cliparse.AuthCredentialsType(cliparse.SEP_COMMON),
+    '--auth', '-a', type=cliparse.AuthCredentialsArgType(cliparse.SEP_COMMON),
     help=_('''
         username:password.
         If only the username is provided (-a username),
@@ -174,7 +174,7 @@ parser.add_argument(
 )
 parser.add_argument(
     '--proxy', default=[], action='append',
-    type=cliparse.KeyValueType(cliparse.SEP_COMMON),
+    type=cliparse.KeyValueArgType(cliparse.SEP_COMMON),
     help=_('''
         String mapping protocol to the URL of the proxy
         (e.g. http:foo.bar:3128).
@@ -221,7 +221,7 @@ parser.add_argument(
 parser.add_argument(
     'items', nargs='*',
     metavar='ITEM',
-    type=cliparse.KeyValueType(
+    type=cliparse.KeyValueArgType(
         cliparse.SEP_COMMON,
         cliparse.SEP_QUERY,
         cliparse.SEP_DATA,
@@ -233,7 +233,7 @@ parser.add_argument(
         separator used. It can be an HTTP header (header:value),
         a data field to be used in the request body (field_name=value),
         a raw JSON data field (field_name:=value),
-        a query parameter (name=:value),
+        a query parameter (name==value),
         or a file field (field_name@/path/to/file).
         You can use a backslash to escape a colliding
         separator in the field name.

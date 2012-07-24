@@ -16,6 +16,7 @@ except ImportError:
     OrderedDict = dict
 
 from requests.structures import CaseInsensitiveDict
+from requests.compat import str
 
 from . import __version__
 
@@ -25,7 +26,7 @@ SEP_HEADERS = SEP_COMMON
 SEP_DATA = '='
 SEP_DATA_RAW_JSON = ':='
 SEP_FILES = '@'
-SEP_QUERY = '=:'
+SEP_QUERY = '=='
 DATA_ITEM_SEPARATORS = [
     SEP_DATA,
     SEP_DATA_RAW_JSON,
@@ -61,7 +62,6 @@ class Parser(argparse.ArgumentParser):
 
         if not env.stdin_isatty:
             self._body_from_file(args, env.stdin)
-
         if args.auth and not args.auth.has_password():
             # stdin has already been read (if not a tty) so
             # it's save to prompt now.
@@ -99,7 +99,7 @@ class Parser(argparse.ArgumentParser):
             # - Set `args.url` correctly.
             # - Parse the first item and move it to `args.items[0]`.
 
-            item = KeyValueType(
+            item = KeyValueArgType(
                 SEP_COMMON,
                 SEP_QUERY,
                 SEP_DATA,
@@ -119,20 +119,20 @@ class Parser(argparse.ArgumentParser):
     def _parse_items(self, args):
         """
         Parse `args.items` into `args.headers`,
-        `args.data`, `args.queries`, and `args.files`.
+        `args.data`, `args.`, and `args.files`.
 
         """
         args.headers = CaseInsensitiveDict()
         args.headers['User-Agent'] = DEFAULT_UA
         args.data = OrderedDict()
         args.files = OrderedDict()
-        args.queries = CaseInsensitiveDict()
+        args.params = OrderedDict()
         try:
             parse_items(items=args.items,
                         headers=args.headers,
                         data=args.data,
                         files=args.files,
-                        queries=args.queries)
+                        params=args.params)
         except ParseError as e:
             if args.traceback:
                 raise
@@ -195,49 +195,91 @@ class KeyValue(object):
         return self.__dict__ == other.__dict__
 
 
-class KeyValueType(object):
-    """A type used with `argparse`."""
+class KeyValueArgType(object):
+    """
+    A key-value pair argument type used with `argparse`.
+
+    Parses a key-value arg and constructs a `KeyValue` instance.
+    Used for headers, form data, and other key-value pair types.
+
+    """
 
     key_value_class = KeyValue
 
     def __init__(self, *separators):
         self.separators = separators
-        self.escapes = ['\\\\' + sep for sep in separators]
 
     def __call__(self, string):
-        found = {}
-        found_escapes = []
-        for esc in self.escapes:
-            found_escapes += [m.span() for m in re.finditer(esc, string)]
-        for sep in self.separators:
-            matches = re.finditer(sep, string)
-            for match in matches:
-                start, end = match.span()
-                inside_escape = False
-                for estart, eend in found_escapes:
-                    if start >= estart and end <= eend:
-                        inside_escape = True
-                        break
-                if start in found and len(found[start]) > len(sep):
-                    break
-                if not inside_escape:
-                    found[start] = sep
+        """
+        Parse `string` and return `self.key_value_class()` instance.
 
-        if not found:
+        The best of `self.separators` is determined (first found, longest).
+        Back slash escaped characters aren't considered as separators
+        (or parts thereof). Literal back slash characters have to be escaped
+        as well (r'\\').
+
+        """
+
+        class Escaped(str):
+            pass
+
+        def tokenize(s):
+            """
+            r'foo\=bar\\baz'
+            => ['foo', Escaped('='), 'bar', Escaped('\'), 'baz']
+
+            """
+            tokens = ['']
+            esc = False
+            for c in s:
+                if esc:
+                    tokens.extend([Escaped(c), ''])
+                    esc = False
+                else:
+                    if c == '\\':
+                        esc = True
+                    else:
+                        tokens[-1] += c
+            return tokens
+
+        tokens = tokenize(string)
+
+        # Sorting by length ensures that the longest one will be
+        # chosen as it will overwrite any shorter ones starting
+        # at the same position in the `found` dictionary.
+        separators = sorted(self.separators, key=len)
+
+        for i, token in enumerate(tokens):
+
+            if isinstance(token, Escaped):
+                continue
+
+            found = {}
+            for sep in separators:
+                pos = token.find(sep)
+                if pos != -1:
+                    found[pos] = sep
+
+            if found:
+                # Starting first, longest separator found.
+                sep = found[min(found.keys())]
+
+                key, value = token.split(sep, 1)
+
+                # Any preceding tokens are part of the key.
+                key = ''.join(tokens[:i]) + key
+
+                # Any following tokens are part of the value.
+                value += ''.join(tokens[i + 1:])
+
+                break
+
+        else:
             raise argparse.ArgumentTypeError(
                 '"%s" is not a valid value' % string)
 
-        # split the string at the earliest non-escaped separator.
-        seploc = min(found.keys())
-        sep = found[seploc]
-        key = string[:seploc]
-        value = string[seploc + len(sep):]
-
-        # remove escape chars
-        for sepstr in self.separators:
-            key = key.replace('\\' + sepstr, sepstr)
-            value = value.replace('\\' + sepstr, sepstr)
-        return self.key_value_class(key=key, value=value, sep=sep, orig=string)
+        return self.key_value_class(
+            key=key, value=value, sep=sep, orig=string)
 
 
 class AuthCredentials(KeyValue):
@@ -260,13 +302,13 @@ class AuthCredentials(KeyValue):
             sys.exit(0)
 
 
-class AuthCredentialsType(KeyValueType):
+class AuthCredentialsArgType(KeyValueArgType):
 
     key_value_class = AuthCredentials
 
     def __call__(self, string):
         try:
-            return super(AuthCredentialsType, self).__call__(string)
+            return super(AuthCredentialsArgType, self).__call__(string)
         except argparse.ArgumentTypeError:
             # No password provided, will prompt for it later.
             return self.key_value_class(
@@ -277,10 +319,10 @@ class AuthCredentialsType(KeyValueType):
             )
 
 
-def parse_items(items, data=None, headers=None, files=None, queries=None):
+def parse_items(items, data=None, headers=None, files=None, params=None):
     """
-    Parse `KeyValueType` `items` into `data`, `headers`, `files`,
-    and `queries`.
+    Parse `KeyValue` `items` into `data`, `headers`, `files`,
+    and `params`.
 
     """
     if headers is None:
@@ -289,15 +331,15 @@ def parse_items(items, data=None, headers=None, files=None, queries=None):
         data = {}
     if files is None:
         files = {}
-    if queries is None:
-        queries = {}
+    if params is None:
+        params = {}
     for item in items:
         value = item.value
         key = item.key
         if item.sep == SEP_HEADERS:
             target = headers
         elif item.sep == SEP_QUERY:
-            target = queries
+            target = params
         elif item.sep == SEP_FILES:
             try:
                 value = open(os.path.expanduser(item.value), 'r')
@@ -322,4 +364,4 @@ def parse_items(items, data=None, headers=None, files=None, queries=None):
 
         target[key] = value
 
-    return headers, data, files, queries
+    return headers, data, files, params

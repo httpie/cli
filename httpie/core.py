@@ -53,7 +53,7 @@ def get_response(args):
             proxies=dict((p.key, p.value) for p in args.proxy),
             files=args.files,
             allow_redirects=args.allow_redirects,
-            params=args.queries,
+            params=args.params,
         )
 
     except (KeyboardInterrupt, SystemExit):
