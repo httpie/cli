@@ -132,7 +132,7 @@ the ``&`` characters::
 
     http GET example.com/ search==donuts in==fridge
 
-Will ``GET` the URL ``http://example.com/?search=donuts&in=fridge``.
+Will ``GET`` the URL ``http://example.com/?search=donuts&in=fridge``.
 
 A whole request body can be passed in via **``stdin``** instead, in which
 case it will be used with no further processing::
@@ -330,7 +330,7 @@ Changelog
     * Short option for ``--headers`` is now ``-h`` (``-t`` has been removed,
       for usage use ``--help``).
     * Form data and URL params can now have mutiple fields with the same name
-    (e.g.,``http -f url a=1 a=2``).
+      (e.g.,``http -f url a=1 a=2``).
     * Added ``--check-status`` to exit with an error for HTTP 3xx, 4xx and
       5xx (3, 4, 5).
     * If the output is piped to another program or redirected to a file,
