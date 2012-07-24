@@ -155,7 +155,7 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    '--auth-type', choices=['basic', 'digest'],
+    '--auth-type', choices=['basic', 'digest'], default='basic',
     help=_('''
         The authentication mechanism to be used.
         Defaults to "basic".

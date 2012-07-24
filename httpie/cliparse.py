@@ -56,7 +56,6 @@ class Parser(argparse.ArgumentParser):
         args = super(Parser, self).parse_args(args, namespace)
 
         self._process_output_options(args, env)
-        self._validate_auth_options(args)
         self._guess_method(args, env)
         self._parse_items(args)
 
@@ -124,9 +123,9 @@ class Parser(argparse.ArgumentParser):
         """
         args.headers = CaseInsensitiveDict()
         args.headers['User-Agent'] = DEFAULT_UA
-        args.data = OrderedDict()
+        args.data = ParamDict() if args.form else OrderedDict()
         args.files = OrderedDict()
-        args.params = OrderedDict()
+        args.params = ParamDict()
         try:
             parse_items(items=args.items,
                         headers=args.headers,
@@ -172,10 +171,6 @@ class Parser(argparse.ArgumentParser):
                 'Unknown output options: %s' %
                 ','.join(unknown)
             )
-
-    def _validate_auth_options(self, args):
-        if args.auth_type and not args.auth:
-            self.error('--auth-type can only be used with --auth')
 
 
 class ParseError(Exception):
@@ -319,6 +314,28 @@ class AuthCredentialsArgType(KeyValueArgType):
             )
 
 
+class ParamDict(OrderedDict):
+
+    def __setitem__(self, key, value):
+        """
+        If `key` is assigned more than once, `self[key]` holds a
+        `list` of all the values.
+
+        This allows having multiple fields with the same name in form
+        data and URL params.
+
+        """
+        # NOTE: Won't work when used for form data with multiple values
+        # for a field and a file field is present:
+        # https://github.com/kennethreitz/requests/issues/737
+        if key not in self:
+            super(ParamDict, self).__setitem__(key, value)
+        else:
+            if not isinstance(self[key], list):
+                super(ParamDict, self).__setitem__(key, [self[key]])
+            self[key].append(value)
+
+
 def parse_items(items, data=None, headers=None, files=None, params=None):
     """
     Parse `KeyValue` `items` into `data`, `headers`, `files`,
@@ -332,7 +349,7 @@ def parse_items(items, data=None, headers=None, files=None, params=None):
     if files is None:
         files = {}
     if params is None:
-        params = {}
+        params = ParamDict()
     for item in items:
         value = item.value
         key = item.key

@@ -7,13 +7,16 @@ Many of the test cases here use httpbin.org.
 To make it run faster and offline you can::
 
     # Install `httpbin` locally
-    pip install httpbin
+    pip install git+https://github.com/kennethreitz/httpbin.git
 
     # Run it
     httpbin
 
     # Run the tests against it
     HTTPBIN_URL=http://localhost:5000 python setup.py test
+
+    # Test all Python environments
+    HTTPBIN_URL=http://localhost:5000 tox
 
 """
 import os
@@ -55,11 +58,13 @@ def httpbin(path):
 class Response(str):
     """
     A unicode subclass holding the output of `main()`, and also
-    the exit status and contents of ``stderr``.
+    the exit status, the contents of ``stderr``, and de-serialized
+    JSON response (if possible).
 
     """
     exit_status = None
     stderr = None
+    json = None
 
 
 def http(*args, **kwargs):
@@ -80,7 +85,7 @@ def http(*args, **kwargs):
     stdout = kwargs['env'].stdout = tempfile.TemporaryFile()
     stderr = kwargs['env'].stderr = tempfile.TemporaryFile()
 
-    exit_status = main(args=args, **kwargs)
+    exit_status = main(args=['--traceback'] + list(args), **kwargs)
 
     stdout.seek(0)
     stderr.seek(0)
@@ -91,6 +96,19 @@ def http(*args, **kwargs):
 
     stdout.close()
     stderr.close()
+
+    if TERMINAL_COLOR_PRESENCE_CHECK not in r:
+        # De-serialize JSON body if possible.
+        if r.strip().startswith('{'):
+            r.json = json.loads(r)
+        elif r.count('Content-Type:') == 1 and 'application/json' in r:
+            try:
+                j = r.strip()[r.strip().rindex('\n\n'):]
+            except ValueError:
+                pass
+            else:
+                r.strip().index('\n')
+                r.json = json.loads(j)
 
     return r
 
@@ -156,6 +174,19 @@ class HTTPieTest(BaseTestCase):
         )
         self.assertIn('HTTP/1.1 200', r)
         self.assertIn('"foo": "bar"', r)
+
+    def test_POST_form_multiple_values(self):
+        r = http(
+            '--form',
+            'POST',
+            httpbin('/post'),
+            'foo=bar',
+            'foo=baz',
+        )
+        self.assertIn('HTTP/1.1 200', r)
+        self.assertDictEqual(r.json['form'], {
+            'foo': ['bar', 'baz']
+        })
 
     def test_POST_stdin(self):
 
@@ -490,8 +521,7 @@ class AuthTest(BaseTestCase):
 
     def test_basic_auth(self):
         r = http(
-            '--auth',
-            'user:password',
+            '--auth=user:password',
             'GET',
             httpbin('/basic-auth/user/password')
         )
@@ -502,8 +532,7 @@ class AuthTest(BaseTestCase):
     def test_digest_auth(self):
         r = http(
             '--auth-type=digest',
-            '--auth',
-            'user:password',
+            '--auth=user:password',
             'GET',
             httpbin('/digest-auth/auth/user/password')
         )

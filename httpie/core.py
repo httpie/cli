@@ -37,10 +37,10 @@ def get_response(args):
     try:
         credentials = None
         if args.auth:
-            auth_type = (requests.auth.HTTPDigestAuth
-                         if args.auth_type == 'digest'
-                         else requests.auth.HTTPBasicAuth)
-            credentials = auth_type(args.auth.key, args.auth.value)
+            credentials = {
+                'basic': requests.auth.HTTPBasicAuth,
+                'digest': requests.auth.HTTPDigestAuth,
+            }[args.auth_type](args.auth.key, args.auth.value)
 
         return requests.request(
             method=args.method.lower(),

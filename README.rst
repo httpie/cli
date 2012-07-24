@@ -328,6 +328,8 @@ Changelog
 ---------
 
 * `0.2.6dev <https://github.com/jkbr/httpie/compare/0.2.5...master>`_
+    * Form data and URL params can now have mutiple fields with the same name
+    (e.g.,``http -f url a=1 a=2``).
     * Added ``--check-status`` to exit with an error for HTTP 3xx, 4xx and
       5xx (3, 4, 5).
     * If the output is piped to another program or redirected to a file,
