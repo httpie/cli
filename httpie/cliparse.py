@@ -384,9 +384,6 @@ def parse_items(items, data=None, headers=None, files=None, params=None):
         else:
             raise ParseError('%s is not valid item' % item.orig)
 
-        if key in target:
-            ParseError('duplicate item %s (%s)' % (item.key, item.orig))
-
         target[key] = value
 
     return headers, data, files, params

@@ -63,36 +63,53 @@ class HTTPMessage(object):
     @staticmethod
     def from_request(request):
         """Make an `HTTPMessage` from `requests.models.Request`."""
-        url = urlparse(request.url)
-        request_headers = dict(request.headers)
-        if 'Host' not in request_headers:
-            request_headers['Host'] = url.netloc
 
+        url = urlparse(request.url)
+
+        # Querystring
+        qs = ''
+        if url.query or request.params:
+            qs = '?'
+            if url.query:
+                qs += url.query
+            # Requests doesn't make params part of ``request.url``.
+            if request.params:
+                if url.query:
+                    qs += '&'
+                qs += type(request)._encode_params(request.params)
+
+        # Request-Line
+        request_line = '{method} {path}{query} HTTP/1.1'.format(
+            method=request.method,
+            path=url.path or '/',
+            query=qs
+        )
+
+        # Headers
+        headers = dict(request.headers)
+        content_type = headers.get('Content-Type')
+        if 'Host' not in headers:
+            headers['Host'] = url.netloc
+        headers = '\n'.join(
+            str('%s: %s') % (name, value)
+            for name, value
+            in headers.items()
+        )
+
+        # Body
         try:
             body = request.data
         except AttributeError:
             # requests < 0.12.1
             body = request._enc_data
-
         if isinstance(body, dict):
-            # --form
-            body = request.__class__._encode_params(body)
+            body = type(request)._encode_params(body)
 
-        request_line = '{method} {path}{query} HTTP/1.1'.format(
-            method=request.method,
-            path=url.path or '/',
-            query='' if url.query is '' else '?' + url.query
-        )
-        headers = '\n'.join(
-            str('%s: %s') % (name, value)
-            for name, value
-            in request_headers.items()
-        )
         return HTTPMessage(
             line=request_line,
             headers=headers,
             body=body,
-            content_type=request_headers.get('Content-Type')
+            content_type=content_type
         )
 
     @classmethod

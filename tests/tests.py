@@ -107,8 +107,10 @@ def http(*args, **kwargs):
             except ValueError:
                 pass
             else:
-                r.strip().index('\n')
-                r.json = json.loads(j)
+                try:
+                    r.json = json.loads(j)
+                except ValueError:
+                    pass
 
     return r
 
@@ -215,6 +217,56 @@ class HTTPieTest(BaseTestCase):
         self.assertIn('HTTP/1.1 200', r)
         self.assertIn('"User-Agent": "HTTPie', r)
         self.assertIn('"Foo": "bar"', r)
+
+
+class QuerystringTest(BaseTestCase):
+
+    def test_query_string_params_in_url(self):
+        r = http(
+            '--print=Hhb',
+            'GET',
+            httpbin('/get?a=1&b=2')
+        )
+
+        path = '/get?a=1&b=2'
+        url = httpbin(path)
+
+        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn('GET %s HTTP/1.1' % path, r)
+        self.assertIn('"url": "%s"' % url, r)
+
+    def test_query_string_params_items(self):
+        r = http(
+            '--print=Hhb',
+            'GET',
+            httpbin('/get'),
+            'a==1',
+            'b==2'
+        )
+
+        path = '/get?a=1&b=2'
+        url = httpbin(path)
+
+        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn('GET %s HTTP/1.1' % path, r)
+        self.assertIn('"url": "%s"' % url, r)
+
+    def test_query_string_params_in_url_and_items_with_duplicates(self):
+        r = http(
+            '--print=Hhb',
+            'GET',
+            httpbin('/get?a=1&a=1'),
+            'a==1',
+            'a==1',
+            'b==2',
+        )
+
+        path = '/get?a=1&a=1&a=1&a=1&b=2'
+        url = httpbin(path)
+
+        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn('GET %s HTTP/1.1' % path, r)
+        self.assertIn('"url": "%s"' % url, r)
 
 
 class AutoContentTypeAndAcceptHeadersTest(BaseTestCase):
