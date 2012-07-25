@@ -76,6 +76,7 @@ class HTTPMessage(object):
             if request.params:
                 if url.query:
                     qs += '&'
+                #noinspection PyUnresolvedReferences
                 qs += type(request)._encode_params(request.params)
 
         # Request-Line
@@ -103,6 +104,7 @@ class HTTPMessage(object):
             # requests < 0.12.1
             body = request._enc_data
         if isinstance(body, dict):
+            #noinspection PyUnresolvedReferences
             body = type(request)._encode_params(body)
 
         return HTTPMessage(

@@ -55,5 +55,6 @@ setup(
         'Topic :: System :: Networking',
         'Topic :: Terminals',
         'Topic :: Text Processing',
+        'Topic :: Utilities'
     ],
 )

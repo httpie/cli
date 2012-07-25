@@ -4,6 +4,7 @@ Colorizing of HTTP messages and content processing.
 """
 import re
 import json
+
 import pygments
 from pygments import token, lexer
 from pygments.styles import get_style_by_name, STYLE_MAP
@@ -12,6 +13,7 @@ from pygments.formatters.terminal import TerminalFormatter
 from pygments.formatters.terminal256 import Terminal256Formatter
 from pygments.util import ClassNotFound
 from requests.compat import is_windows
+
 from . import solarized
 
 

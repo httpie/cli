@@ -1,7 +1,10 @@
 import sys
 import json
+
 import requests
+import requests.auth
 from requests.compat import str
+
 from .models import HTTPMessage, Environment
 from .output import OutputProcessor
 from . import cliparse
@@ -12,7 +15,7 @@ TYPE_FORM = 'application/x-www-form-urlencoded; charset=utf-8'
 TYPE_JSON = 'application/json; charset=utf-8'
 
 
-def get_response(args):
+def get_response(args, env):
 
     auto_json = args.data and not args.form
     if args.json or auto_json:
@@ -57,12 +60,12 @@ def get_response(args):
         )
 
     except (KeyboardInterrupt, SystemExit):
-        sys.stderr.write('\n')
+        env.stderr.write('\n')
         sys.exit(1)
     except Exception as e:
         if args.traceback:
             raise
-        sys.stderr.write(str(e.message) + '\n')
+        env.stderr.write(str(e.message) + '\n')
         sys.exit(1)
 
 
@@ -140,7 +143,7 @@ def main(args=sys.argv[1:], env=Environment()):
 
     """
     args = cli.parser.parse_args(args=args, env=env)
-    response = get_response(args)
+    response = get_response(args, env)
 
     status = 0
 

@@ -59,6 +59,7 @@ class Parser(argparse.ArgumentParser):
             action='help', default=argparse.SUPPRESS,
             help=argparse._('show this help message and exit'))
 
+    #noinspection PyMethodOverriding
     def parse_args(self, env, args=None, namespace=None):
 
         args = super(Parser, self).parse_args(args, namespace)
@@ -324,6 +325,7 @@ class AuthCredentialsArgType(KeyValueArgType):
 
 class ParamDict(OrderedDict):
 
+    #noinspection PyMethodOverriding
     def __setitem__(self, key, value):
         """
         If `key` is assigned more than once, `self[key]` holds a

@@ -170,7 +170,7 @@ When using HTTPie from **shell scripts**, you might want to use the
 ``--check-status`` flag. It instructs HTTPie to exit with an error if the
 HTTP status is one of ``3xx``, ``4xx``, or ``5xx``. The exit status will
 be ``3`` (unless ``--allow-redirects`` is set), ``4``, or ``5``
-respectivelly::
+respectively::
 
     #!/bin/bash
 
@@ -191,7 +191,8 @@ Flags
 Most of the flags mirror the arguments understood by ``requests.request``.
 See ``http --help`` for more details::
 
-    # http --help
+
+    $ http --help
     usage: http [--help] [--version] [--json | --form] [--traceback]
                 [--pretty | --ugly]
                 [--print OUTPUT_OPTIONS | --verbose | --headers | --body]
@@ -287,9 +288,8 @@ See ``http --help`` for more details::
       --timeout TIMEOUT     Float describes the timeout of the request (Use
                             socket.setdefaulttimeout() as fallback).
 
-
 Contribute
------------
+----------
 
 `View contributors on GitHub <https://github.com/jkbr/httpie/contributors>`_.
 
@@ -329,14 +329,14 @@ Changelog
 * `0.2.6dev <https://github.com/jkbr/httpie/compare/0.2.5...master>`_
     * Short option for ``--headers`` is now ``-h`` (``-t`` has been removed,
       for usage use ``--help``).
-    * Form data and URL params can now have mutiple fields with the same name
+    * Form data and URL params can now have multiple fields with the same name
       (e.g.,``http -f url a=1 a=2``).
     * Added ``--check-status`` to exit with an error for HTTP 3xx, 4xx and
       5xx (3, 4, 5).
     * If the output is piped to another program or redirected to a file,
       the new default behaviour is to only print the response body.
-      (It can still be overriden via the ``--print`` flag.)
-    * Improved highlighing of HTTP headers.
+      (It can still be overwritten via the ``--print`` flag.)
+    * Improved highlighting of HTTP headers.
     * Added query string parameters (param==value).
     * Added support for terminal colors under Windows.
 * `0.2.5 <https://github.com/jkbr/httpie/compare/0.2.2...0.2.5>`_ (2012-07-17)
@@ -345,7 +345,7 @@ Changelog
     * --auth now prompts for a password if only a username provided.
     * Added support for request payloads from a file path with automatic
       ``Content-Type`` (``http URL @/path``).
-    * Fixed missing query string when displaing the request headers via
+    * Fixed missing query string when displaying the request headers via
       ``--verbose``.
     * Fixed Content-Type for requests with no data.
 * `0.2.2 <https://github.com/jkbr/httpie/compare/0.2.1...0.2.2>`_ (2012-06-24)

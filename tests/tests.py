@@ -100,6 +100,7 @@ def http(*args, **kwargs):
     if TERMINAL_COLOR_PRESENCE_CHECK not in r:
         # De-serialize JSON body if possible.
         if r.strip().startswith('{'):
+            #noinspection PyTypeChecker
             r.json = json.loads(r)
         elif r.count('Content-Type:') == 1 and 'application/json' in r:
             try:
@@ -886,4 +887,5 @@ class UnicodeOutputTestCase(BaseTestCase):
 
 
 if __name__ == '__main__':
+    #noinspection PyCallingNonCallable
     unittest.main()
