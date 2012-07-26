@@ -21,31 +21,54 @@ from requests.compat import str
 from . import __version__
 
 
-SEP_COMMON = ':'
-SEP_HEADERS = SEP_COMMON
+HTTP_POST = 'POST'
+HTTP_GET = 'GET'
+
+
+# Various separators used in args
+SEP_HEADERS = ':'
+SEP_CREDENTIALS = ':'
+SEP_PROXY = ':'
 SEP_DATA = '='
 SEP_DATA_RAW_JSON = ':='
 SEP_FILES = '@'
 SEP_QUERY = '=='
-DATA_ITEM_SEPARATORS = [
+
+# Separators that become request data
+SEP_GROUP_DATA_ITEMS = frozenset([
     SEP_DATA,
     SEP_DATA_RAW_JSON,
     SEP_FILES
-]
+])
+
+# Separators allowed in ITEM arguments
+SEP_GROUP_ITEMS = frozenset([
+    SEP_HEADERS,
+    SEP_QUERY,
+    SEP_DATA,
+    SEP_DATA_RAW_JSON,
+    SEP_FILES
+])
 
 
+# Output options
 OUT_REQ_HEAD = 'H'
 OUT_REQ_BODY = 'B'
 OUT_RESP_HEAD = 'h'
 OUT_RESP_BODY = 'b'
-OUTPUT_OPTIONS = [OUT_REQ_HEAD,
-                  OUT_REQ_BODY,
-                  OUT_RESP_HEAD,
-                  OUT_RESP_BODY]
+
+OUTPUT_OPTIONS = frozenset([
+    OUT_REQ_HEAD,
+    OUT_REQ_BODY,
+    OUT_RESP_HEAD,
+    OUT_RESP_BODY
+])
 
 
+# Defaults
+OUTPUT_OPTIONS_DEFAULT = OUT_RESP_HEAD + OUT_RESP_BODY
+OUTPUT_OPTIONS_DEFAULT_STDOUT_REDIRECTED = OUT_RESP_BODY
 PRETTIFY_STDOUT_TTY_ONLY = object()
-
 DEFAULT_UA = 'HTTPie/%s' % __version__
 
 
@@ -70,9 +93,9 @@ class Parser(argparse.ArgumentParser):
 
         if not env.stdin_isatty:
             self._body_from_file(args, env.stdin)
+
         if args.auth and not args.auth.has_password():
-            # stdin has already been read (if not a tty) so
-            # it's save to prompt now.
+            # Stdin already read (if not a tty) so it's save to prompt.
             args.auth.prompt_password()
 
         return args
@@ -85,7 +108,7 @@ class Parser(argparse.ArgumentParser):
 
     def _guess_method(self, args, env):
         """
-        Set `args.method`, if not specified, to either POST or GET
+        Set `args.method` if not specified to either POST or GET
         based on whether the request has data or not.
 
         """
@@ -93,36 +116,31 @@ class Parser(argparse.ArgumentParser):
             # Invoked as `http URL'.
             assert not args.items
             if not env.stdin_isatty:
-                args.method = 'POST'
+                args.method = HTTP_POST
             else:
-                args.method = 'GET'
+                args.method = HTTP_GET
+
         # FIXME: False positive, e.g., "localhost" matches but is a valid URL.
         elif not re.match('^[a-zA-Z]+$', args.method):
-            # Invoked as `http URL item+':
-            # - The URL is now in `args.method`.
-            # - The first item is now in `args.url`.
-            #
-            # So we need to:
-            # - Guess the HTTP method.
-            # - Set `args.url` correctly.
-            # - Parse the first item and move it to `args.items[0]`.
+            # Invoked as `http URL item+'. The URL is now in `args.method`
+            # and the first ITEM is now incorrectly in `args.url`.
+            try:
+                # Parse the URL as an ITEM and store it as the first ITEM arg.
+                args.items.insert(
+                    0, KeyValueArgType(*SEP_GROUP_ITEMS).__call__(args.url))
 
-            item = KeyValueArgType(
-                SEP_COMMON,
-                SEP_QUERY,
-                SEP_DATA,
-                SEP_DATA_RAW_JSON,
-                SEP_FILES).__call__(args.url)
+            except argparse.ArgumentTypeError as e:
+                if args.traceback:
+                    raise
+                self.error(e.message)
 
-            args.url = args.method
-            args.items.insert(0, item)
-
-            has_data = not env.stdin_isatty or any(
-                item.sep in DATA_ITEM_SEPARATORS for item in args.items)
-            if has_data:
-                args.method = 'POST'
             else:
-                args.method = 'GET'
+                # Set the URL correctly
+                args.url = args.method
+                # Infer the method
+                has_data = not env.stdin_isatty or any(
+                    item.sep in SEP_GROUP_DATA_ITEMS for item in args.items)
+                args.method = HTTP_POST if has_data else HTTP_GET
 
     def _parse_items(self, args):
         """
@@ -135,6 +153,7 @@ class Parser(argparse.ArgumentParser):
         args.data = ParamDict() if args.form else OrderedDict()
         args.files = OrderedDict()
         args.params = ParamDict()
+
         try:
             parse_items(items=args.items,
                         headers=args.headers,
@@ -156,9 +175,13 @@ class Parser(argparse.ArgumentParser):
                     'Only one file can be specified unless'
                     ' --form is used. File fields: %s'
                     % ','.join(args.files.keys()))
+
             f = list(args.files.values())[0]
             self._body_from_file(args, f)
+
+            # Reset files
             args.files = {}
+
             if 'Content-Type' not in args.headers:
                 mime, encoding = mimetypes.guess_type(f.name, strict=False)
                 if mime:
@@ -169,17 +192,12 @@ class Parser(argparse.ArgumentParser):
 
     def _process_output_options(self, args, env):
         if not args.output_options:
-            if env.stdout_isatty:
-                args.output_options = OUT_RESP_HEAD + OUT_RESP_BODY
-            else:
-                args.output_options = OUT_RESP_BODY
+            args.output_options = (OUTPUT_OPTIONS_DEFAULT if env.stdout_isatty
+                                else OUTPUT_OPTIONS_DEFAULT_STDOUT_REDIRECTED)
 
-        unknown = set(args.output_options) - set(OUTPUT_OPTIONS)
+        unknown = set(args.output_options) - OUTPUT_OPTIONS
         if unknown:
-            self.error(
-                'Unknown output options: %s' %
-                ','.join(unknown)
-            )
+            self.error('Unknown output options: %s' % ','.join(unknown))
 
 
 class ParseError(Exception):
@@ -318,7 +336,7 @@ class AuthCredentialsArgType(KeyValueArgType):
             return self.key_value_class(
                 key=string,
                 value=None,
-                sep=SEP_COMMON,
+                sep=SEP_CREDENTIALS,
                 orig=string
             )
 
@@ -352,17 +370,21 @@ def parse_items(items, data=None, headers=None, files=None, params=None):
     and `params`.
 
     """
+
     if headers is None:
-        headers = {}
+        headers = CaseInsensitiveDict()
     if data is None:
-        data = {}
+        data = OrderedDict()
     if files is None:
-        files = {}
+        files = OrderedDict()
     if params is None:
         params = ParamDict()
+
     for item in items:
+
         value = item.value
         key = item.key
+
         if item.sep == SEP_HEADERS:
             target = headers
         elif item.sep == SEP_QUERY:
@@ -372,19 +394,21 @@ def parse_items(items, data=None, headers=None, files=None, params=None):
                 value = open(os.path.expanduser(item.value), 'r')
             except IOError as e:
                 raise ParseError(
-                    'Invalid argument %r. %s' % (item.orig, e))
+                    'Invalid argument "%s": %s' % (item.orig, e))
             if not key:
                 key = os.path.basename(value.name)
             target = files
+
         elif item.sep in [SEP_DATA, SEP_DATA_RAW_JSON]:
             if item.sep == SEP_DATA_RAW_JSON:
                 try:
                     value = json.loads(item.value)
                 except ValueError:
-                    raise ParseError('%s is not valid JSON' % item.orig)
+                    raise ParseError('"%s" is not valid JSON' % item.orig)
             target = data
+
         else:
-            raise ParseError('%s is not valid item' % item.orig)
+            raise TypeError(item)
 
         target[key] = value
 

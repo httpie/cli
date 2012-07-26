@@ -14,7 +14,9 @@ def _(text):
 
 
 desc = '%s <http://httpie.org>'
-parser = cliparse.Parser(description=desc % __doc__.strip(),)
+parser = cliparse.Parser(
+    description=desc % __doc__.strip(),
+)
 parser.add_argument('--version', action='version', version=__version__)
 
 
@@ -146,7 +148,8 @@ parser.add_argument(
 
 # ``requests.request`` keyword arguments.
 parser.add_argument(
-    '--auth', '-a', type=cliparse.AuthCredentialsArgType(cliparse.SEP_COMMON),
+    '--auth', '-a',
+    type=cliparse.AuthCredentialsArgType(cliparse.SEP_CREDENTIALS),
     help=_('''
         username:password.
         If only the username is provided (-a username),
@@ -174,7 +177,7 @@ parser.add_argument(
 )
 parser.add_argument(
     '--proxy', default=[], action='append',
-    type=cliparse.KeyValueArgType(cliparse.SEP_COMMON),
+    type=cliparse.KeyValueArgType(cliparse.SEP_PROXY),
     help=_('''
         String mapping protocol to the URL of the proxy
         (e.g. http:foo.bar:3128).
@@ -221,13 +224,7 @@ parser.add_argument(
 parser.add_argument(
     'items', nargs='*',
     metavar='ITEM',
-    type=cliparse.KeyValueArgType(
-        cliparse.SEP_COMMON,
-        cliparse.SEP_QUERY,
-        cliparse.SEP_DATA,
-        cliparse.SEP_DATA_RAW_JSON,
-        cliparse.SEP_FILES
-    ),
+    type=cliparse.KeyValueArgType(*cliparse.SEP_GROUP_ITEMS),
     help=_('''
         A key-value pair whose type is defined by the
         separator used. It can be an HTTP header (header:value),
