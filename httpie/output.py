@@ -1,5 +1,4 @@
-"""
-Colorizing of HTTP messages and content processing.
+"""Output processing and formatting.
 
 """
 import re
@@ -22,8 +21,7 @@ AVAILABLE_STYLES = [DEFAULT_STYLE] + list(STYLE_MAP.keys())
 
 
 class HTTPLexer(lexer.RegexLexer):
-    """
-    Simplified HTTP lexer for Pygments.
+    """Simplified HTTP lexer for Pygments.
 
     It only operates on headers and provides a stronger contrast between
     their names and values than the original one bundled with Pygments

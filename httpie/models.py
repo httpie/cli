@@ -4,6 +4,12 @@ from requests.compat import urlparse, is_windows
 
 
 class Environment(object):
+    """Holds information about the execution context.
+
+    Groups various aspects of the environment in a changeable object
+    and allows for mocking.
+
+    """
     stdin_isatty = sys.stdin.isatty()
     stdin = sys.stdin
 

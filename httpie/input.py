@@ -1,5 +1,4 @@
-"""
-CLI argument parsing logic.
+"""Parsing and processing of CLI input (args, auth credentials, files, stdin).
 
 """
 import os
@@ -73,6 +72,12 @@ DEFAULT_UA = 'HTTPie/%s' % __version__
 
 
 class Parser(argparse.ArgumentParser):
+    """Adds additional logic to `argparse.ArgumentParser`.
+
+    Handles all input (CLI args, file args, stdin), applies defaults,
+    and performs extra validation.
+
+    """
 
     def __init__(self, *args, **kwargs):
         kwargs['add_help'] = False
@@ -101,14 +106,18 @@ class Parser(argparse.ArgumentParser):
         return args
 
     def _body_from_file(self, args, f):
+        """Use the content of `f` as the `request.data`.
+
+        There can only be one source of request data.
+
+        """
         if args.data:
             self.error('Request body (from stdin or a file) and request '
                        'data (key=value) cannot be mixed.')
         args.data = f.read()
 
     def _guess_method(self, args, env):
-        """
-        Set `args.method` if not specified to either POST or GET
+        """Set `args.method` if not specified to either POST or GET
         based on whether the request has data or not.
 
         """
@@ -143,9 +152,8 @@ class Parser(argparse.ArgumentParser):
                 args.method = HTTP_POST if has_data else HTTP_GET
 
     def _parse_items(self, args):
-        """
-        Parse `args.items` into `args.headers`,
-        `args.data`, `args.`, and `args.files`.
+        """Parse `args.items` into `args.headers`, `args.data`,
+        `args.`, and `args.files`.
 
         """
         args.headers = CaseInsensitiveDict()
@@ -191,6 +199,11 @@ class Parser(argparse.ArgumentParser):
                     args.headers['Content-Type'] = content_type
 
     def _process_output_options(self, args, env):
+        """Apply defaults to output options or validate the provided ones.
+
+        The default output options are stdout-type-sensitive.
+
+        """
         if not args.output_options:
             args.output_options = (OUTPUT_OPTIONS_DEFAULT if env.stdout_isatty
                                 else OUTPUT_OPTIONS_DEFAULT_STDOUT_REDIRECTED)
@@ -218,8 +231,7 @@ class KeyValue(object):
 
 
 class KeyValueArgType(object):
-    """
-    A key-value pair argument type used with `argparse`.
+    """A key-value pair argument type used with `argparse`.
 
     Parses a key-value arg and constructs a `KeyValue` instance.
     Used for headers, form data, and other key-value pair types.
@@ -232,8 +244,7 @@ class KeyValueArgType(object):
         self.separators = separators
 
     def __call__(self, string):
-        """
-        Parse `string` and return `self.key_value_class()` instance.
+        """Parse `string` and return `self.key_value_class()` instance.
 
         The best of `self.separators` is determined (first found, longest).
         Back slash escaped characters aren't considered as separators
@@ -243,12 +254,14 @@ class KeyValueArgType(object):
         """
 
         class Escaped(str):
-            pass
+            """Represents an escaped character."""
 
         def tokenize(s):
-            """
-            r'foo\=bar\\baz'
-            => ['foo', Escaped('='), 'bar', Escaped('\'), 'baz']
+            """Tokenize `s`. There are only two token types - strings
+            and escaped characters:
+
+            >>> tokenize(r'foo\=bar\\baz')
+            ['foo', Escaped('='), 'bar', Escaped('\\'), 'baz']
 
             """
             tokens = ['']
@@ -305,10 +318,8 @@ class KeyValueArgType(object):
 
 
 class AuthCredentials(KeyValue):
-    """
-    Represents parsed credentials.
+    """Represents parsed credentials."""
 
-    """
     def _getpass(self, prompt):
         # To allow mocking.
         return getpass.getpass(prompt)
@@ -325,10 +336,16 @@ class AuthCredentials(KeyValue):
 
 
 class AuthCredentialsArgType(KeyValueArgType):
+    """A key-value arg type that parses credentials."""
 
     key_value_class = AuthCredentials
 
     def __call__(self, string):
+        """Parse credentials from `string`.
+
+        ("username" or "username:password").
+
+        """
         try:
             return super(AuthCredentialsArgType, self).__call__(string)
         except argparse.ArgumentTypeError:
@@ -342,11 +359,11 @@ class AuthCredentialsArgType(KeyValueArgType):
 
 
 class ParamDict(OrderedDict):
+    """Multi-value dict for URL parameters and form data."""
 
     #noinspection PyMethodOverriding
     def __setitem__(self, key, value):
-        """
-        If `key` is assigned more than once, `self[key]` holds a
+        """ If `key` is assigned more than once, `self[key]` holds a
         `list` of all the values.
 
         This allows having multiple fields with the same name in form
@@ -365,12 +382,10 @@ class ParamDict(OrderedDict):
 
 
 def parse_items(items, data=None, headers=None, files=None, params=None):
-    """
-    Parse `KeyValue` `items` into `data`, `headers`, `files`,
+    """Parse `KeyValue` `items` into `data`, `headers`, `files`,
     and `params`.
 
     """
-
     if headers is None:
         headers = CaseInsensitiveDict()
     if data is None:

@@ -76,7 +76,7 @@ Raw JSON fields (``field:=value``)
   This item type is needed when ``Content-Type`` is JSON and a field's value
   is a ``Boolean``, ``Number``,  nested ``Object`` or an ``Array``, because
   simple data items are always serialized as ``String``.
-  E.g. ``pies:=[1,2,3]``,or ``'meals=["ham", "spam"]'`` (mind the quotes).
+  E.g. ``pies:=[1,2,3]``, or ``'meals=["ham", "spam"]'`` (mind the quotes).
 
 File fields (``field@/path/to/file``)
   Only available with ``-f`` / ``--form``. Use ``@`` as the separator, e.g.,

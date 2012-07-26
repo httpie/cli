@@ -1,22 +1,24 @@
-"""
-CLI definition.
+"""CLI arguments definition.
+
+NOTE: the CLI interface may change before reaching v1.0.
 
 """
 from . import __doc__
 from . import __version__
-from . import cliparse
 from .output import AVAILABLE_STYLES
+from .input import (Parser, AuthCredentialsArgType, KeyValueArgType,
+                    PRETTIFY_STDOUT_TTY_ONLY,
+                    SEP_PROXY, SEP_CREDENTIALS, SEP_GROUP_ITEMS,
+                    OUT_REQ_HEAD, OUT_REQ_BODY, OUT_RESP_HEAD,
+                    OUT_RESP_BODY, OUTPUT_OPTIONS)
 
 
 def _(text):
-    """Normalize white space."""
+    """Normalize whitespace."""
     return ' '.join(text.strip().split())
 
 
-desc = '%s <http://httpie.org>'
-parser = cliparse.Parser(
-    description=desc % __doc__.strip(),
-)
+parser = Parser(description='%s <http://httpie.org>' % __doc__.strip())
 parser.add_argument('--version', action='version', version=__version__)
 
 
@@ -58,7 +60,7 @@ parser.add_argument(
 prettify = parser.add_mutually_exclusive_group(required=False)
 prettify.add_argument(
     '--pretty', dest='prettify', action='store_true',
-    default=cliparse.PRETTIFY_STDOUT_TTY_ONLY,
+    default=PRETTIFY_STDOUT_TTY_ONLY,
     help=_('''
         If stdout is a terminal, the response is prettified
         by default (colorized and indented if it is JSON).
@@ -85,35 +87,35 @@ output_options.add_argument('--print', '-p', dest='output_options',
         If the output is piped to another program or to a file,
         then only the body is printed by default.
     '''.format(
-        request_headers=cliparse.OUT_REQ_HEAD,
-        request_body=cliparse.OUT_REQ_BODY,
-        response_headers=cliparse.OUT_RESP_HEAD,
-        response_body=cliparse.OUT_RESP_BODY,
+        request_headers=OUT_REQ_HEAD,
+        request_body=OUT_REQ_BODY,
+        response_headers=OUT_RESP_HEAD,
+        response_body=OUT_RESP_BODY,
     ))
 )
 output_options.add_argument(
     '--verbose', '-v', dest='output_options',
-    action='store_const', const=''.join(cliparse.OUTPUT_OPTIONS),
+    action='store_const', const=''.join(OUTPUT_OPTIONS),
     help=_('''
         Print the whole request as well as the response.
         Shortcut for --print={0}.
-    '''.format(''.join(cliparse.OUTPUT_OPTIONS)))
+    '''.format(''.join(OUTPUT_OPTIONS)))
 )
 output_options.add_argument(
     '--headers', '-h', dest='output_options',
-    action='store_const', const=cliparse.OUT_RESP_HEAD,
+    action='store_const', const=OUT_RESP_HEAD,
     help=_('''
         Print only the response headers.
         Shortcut for --print={0}.
-    '''.format(cliparse.OUT_RESP_HEAD))
+    '''.format(OUT_RESP_HEAD))
 )
 output_options.add_argument(
     '--body', '-b', dest='output_options',
-    action='store_const', const=cliparse.OUT_RESP_BODY,
+    action='store_const', const=OUT_RESP_BODY,
     help=_('''
         Print only the response body.
         Shortcut for --print={0}.
-    '''.format(cliparse.OUT_RESP_BODY))
+    '''.format(OUT_RESP_BODY))
 )
 
 parser.add_argument(
@@ -149,7 +151,7 @@ parser.add_argument(
 # ``requests.request`` keyword arguments.
 parser.add_argument(
     '--auth', '-a',
-    type=cliparse.AuthCredentialsArgType(cliparse.SEP_CREDENTIALS),
+    type=AuthCredentialsArgType(SEP_CREDENTIALS),
     help=_('''
         username:password.
         If only the username is provided (-a username),
@@ -177,7 +179,7 @@ parser.add_argument(
 )
 parser.add_argument(
     '--proxy', default=[], action='append',
-    type=cliparse.KeyValueArgType(cliparse.SEP_PROXY),
+    type=KeyValueArgType(SEP_PROXY),
     help=_('''
         String mapping protocol to the URL of the proxy
         (e.g. http:foo.bar:3128).
@@ -224,7 +226,7 @@ parser.add_argument(
 parser.add_argument(
     'items', nargs='*',
     metavar='ITEM',
-    type=cliparse.KeyValueArgType(*cliparse.SEP_GROUP_ITEMS),
+    type=KeyValueArgType(*SEP_GROUP_ITEMS),
     help=_('''
         A key-value pair whose type is defined by the
         separator used. It can be an HTTP header (header:value),

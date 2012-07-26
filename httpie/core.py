@@ -1,3 +1,13 @@
+"""This module provides the main functionality of HTTPie.
+
+Invocation flow:
+
+    1. Read, validate and process the input (args, `stdin`).
+    2. Create a request and send it, get the response.
+    3. Process and format the requested parts of the request-response exchange.
+    4. Write to `stdout` and exit.
+
+"""
 import sys
 import json
 
@@ -7,8 +17,10 @@ from requests.compat import str
 
 from .models import HTTPMessage, Environment
 from .output import OutputProcessor
-from . import cliparse
-from . import cli
+from .input import (PRETTIFY_STDOUT_TTY_ONLY,
+                    OUT_REQ_BODY, OUT_REQ_HEAD,
+                    OUT_RESP_HEAD, OUT_RESP_BODY)
+from .cli import parser
 
 
 TYPE_FORM = 'application/x-www-form-urlencoded; charset=utf-8'
@@ -16,6 +28,7 @@ TYPE_JSON = 'application/json; charset=utf-8'
 
 
 def get_response(args, env):
+    """Send the request and return a `request.Response`."""
 
     auto_json = args.data and not args.form
     if args.json or auto_json:
@@ -69,23 +82,20 @@ def get_response(args, env):
         sys.exit(1)
 
 
-def get_output(args, env, response):
+def get_output(args, env, request, response):
+    """Format parts of the `request`-`response` exchange
+     according to `args` and `env` and return a `unicode`.
 
-    do_prettify = (
-        args.prettify is True or
-        (args.prettify == cliparse.PRETTIFY_STDOUT_TTY_ONLY
-        and env.stdout_isatty)
-    )
+    """
+    do_prettify = (args.prettify is True
+                   or (args.prettify == PRETTIFY_STDOUT_TTY_ONLY
+                       and env.stdout_isatty))
 
-    do_output_request = (
-        cliparse.OUT_REQ_HEAD in args.output_options
-        or cliparse.OUT_REQ_BODY in args.output_options
-    )
+    do_output_request = (OUT_REQ_HEAD in args.output_options
+                         or OUT_REQ_BODY in args.output_options)
 
-    do_output_response = (
-        cliparse.OUT_RESP_HEAD in args.output_options
-        or cliparse.OUT_RESP_BODY in args.output_options
-    )
+    do_output_response = (OUT_RESP_HEAD in args.output_options
+                          or OUT_RESP_BODY in args.output_options)
 
     prettifier = None
     if do_prettify:
@@ -95,10 +105,11 @@ def get_output(args, env, response):
     buf = []
 
     if do_output_request:
-        req = HTTPMessage.from_request(response.request).format(
+        req_msg = HTTPMessage.from_request(request)
+        req = req_msg.format(
             prettifier=prettifier,
-            with_headers=cliparse.OUT_REQ_HEAD in args.output_options,
-            with_body=cliparse.OUT_REQ_BODY in args.output_options
+            with_headers=OUT_REQ_HEAD in args.output_options,
+            with_body=OUT_REQ_BODY in args.output_options
         )
         buf.append(req)
         buf.append('\n')
@@ -106,10 +117,11 @@ def get_output(args, env, response):
             buf.append('\n')
 
     if do_output_response:
-        resp = HTTPMessage.from_response(response).format(
+        resp_msg = HTTPMessage.from_response(response)
+        resp = resp_msg.format(
             prettifier=prettifier,
-            with_headers=cliparse.OUT_RESP_HEAD in args.output_options,
-            with_body=cliparse.OUT_RESP_BODY in args.output_options
+            with_headers=OUT_RESP_HEAD in args.output_options,
+            with_body=OUT_RESP_BODY in args.output_options
         )
         buf.append(resp)
         buf.append('\n')
@@ -118,10 +130,7 @@ def get_output(args, env, response):
 
 
 def get_exist_status(code, allow_redirects=False):
-    """
-    Translate HTTP status code to exit status.
-
-    """
+    """Translate HTTP status code to exit status."""
     if 300 <= code <= 399 and not allow_redirects:
         # Redirect
         return 3
@@ -136,13 +145,12 @@ def get_exist_status(code, allow_redirects=False):
 
 
 def main(args=sys.argv[1:], env=Environment()):
-    """
-    Run the main program and write the output to ``env.stdout``.
+    """Run the main program and write the output to ``env.stdout``.
 
     Return exit status.
 
     """
-    args = cli.parser.parse_args(args=args, env=env)
+    args = parser.parse_args(args=args, env=env)
     response = get_response(args, env)
 
     status = 0
@@ -155,7 +163,7 @@ def main(args=sys.argv[1:], env=Environment()):
                 response.raw.status, response.raw.reason)
             env.stderr.write(err.encode('utf8'))
 
-    output = get_output(args, env, response)
+    output = get_output(args, env, response.request, response)
     output_bytes = output.encode('utf8')
     f = getattr(env.stdout, 'buffer', env.stdout)
     f.write(output_bytes)

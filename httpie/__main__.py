@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-"""
-The main entry point. Invoke as `http' or `python -m httpie'.
+"""The main entry point. Invoke as `http' or `python -m httpie'.
 
 """
 import sys

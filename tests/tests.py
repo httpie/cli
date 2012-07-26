@@ -37,7 +37,7 @@ from requests.compat import is_py26, is_py3, str
 TESTS_ROOT = os.path.dirname(__file__)
 sys.path.insert(0, os.path.realpath(os.path.join(TESTS_ROOT, '..')))
 
-from httpie import cliparse
+from httpie import input
 from httpie.models import Environment
 from httpie.core import main, get_output
 
@@ -506,7 +506,7 @@ class VerboseFlagTest(BaseTestCase):
 class MultipartFormDataFileUploadTest(BaseTestCase):
 
     def test_non_existent_file_raises_parse_error(self):
-        self.assertRaises(cliparse.ParseError, http,
+        self.assertRaises(input.ParseError, http,
             '--form',
             '--traceback',
             'POST',
@@ -595,7 +595,7 @@ class AuthTest(BaseTestCase):
 
     def test_password_prompt(self):
 
-        cliparse.AuthCredentials._getpass = lambda self, prompt: 'password'
+        input.AuthCredentials._getpass = lambda self, prompt: 'password'
 
         r = http(
             '--auth',
@@ -681,12 +681,12 @@ class ExitStatusTest(BaseTestCase):
 class ItemParsingTest(BaseTestCase):
 
     def setUp(self):
-        self.key_value_type = cliparse.KeyValueArgType(
-            cliparse.SEP_HEADERS,
-            cliparse.SEP_QUERY,
-            cliparse.SEP_DATA,
-            cliparse.SEP_DATA_RAW_JSON,
-            cliparse.SEP_FILES,
+        self.key_value_type = input.KeyValueArgType(
+            input.SEP_HEADERS,
+            input.SEP_QUERY,
+            input.SEP_DATA,
+            input.SEP_DATA_RAW_JSON,
+            input.SEP_FILES,
         )
 
     def test_invalid_items(self):
@@ -696,7 +696,7 @@ class ItemParsingTest(BaseTestCase):
                               lambda: self.key_value_type(item))
 
     def test_escape(self):
-        headers, data, files, params = cliparse.parse_items([
+        headers, data, files, params = input.parse_items([
             # headers
             self.key_value_type('foo\\:bar:baz'),
             self.key_value_type('jack\\@jill:hill'),
@@ -715,7 +715,7 @@ class ItemParsingTest(BaseTestCase):
         self.assertIn('bar@baz', files)
 
     def test_escape_longsep(self):
-        headers, data, files, params = cliparse.parse_items([
+        headers, data, files, params = input.parse_items([
             self.key_value_type('bob\\:==foo'),
         ])
         self.assertDictEqual(params, {
@@ -723,7 +723,7 @@ class ItemParsingTest(BaseTestCase):
         })
 
     def test_valid_items(self):
-        headers, data, files, params = cliparse.parse_items([
+        headers, data, files, params = input.parse_items([
             self.key_value_type('string=value'),
             self.key_value_type('header:value'),
             self.key_value_type('list:=["a", 1, {}, false]'),
@@ -754,7 +754,7 @@ class ItemParsingTest(BaseTestCase):
 class ArgumentParserTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.parser = cliparse.Parser()
+        self.parser = input.Parser()
 
     def test_guess_when_method_set_and_valid(self):
         args = argparse.Namespace()
@@ -795,7 +795,7 @@ class ArgumentParserTestCase(unittest.TestCase):
         self.assertEquals(args.url, 'http://example.com/')
         self.assertEquals(
             args.items,
-            [cliparse.KeyValue(
+            [input.KeyValue(
                 key='data', value='field', sep='=', orig='data=field')])
 
     def test_guess_when_method_set_but_invalid_and_header_field(self):
@@ -813,7 +813,7 @@ class ArgumentParserTestCase(unittest.TestCase):
         self.assertEquals(args.url, 'http://example.com/')
         self.assertEquals(
             args.items,
-            [cliparse.KeyValue(
+            [input.KeyValue(
                 key='test', value='header', sep=':', orig='test:header')])
 
     def test_guess_when_method_set_but_invalid_and_item_exists(self):
@@ -821,16 +821,16 @@ class ArgumentParserTestCase(unittest.TestCase):
         args.method = 'http://example.com/'
         args.url = 'new_item=a'
         args.items = [
-            cliparse.KeyValue(
+            input.KeyValue(
                 key='old_item', value='b', sep='=', orig='old_item=b')
         ]
 
         self.parser._guess_method(args, Environment())
 
         self.assertEquals(args.items, [
-            cliparse.KeyValue(
+            input.KeyValue(
                 key='new_item', value='a', sep='=', orig='new_item=a'),
-            cliparse.KeyValue(key
+            input.KeyValue(key
                 ='old_item', value='b', sep='=', orig='old_item=b'),
         ])
 
@@ -879,7 +879,7 @@ class UnicodeOutputTestCase(BaseTestCase):
         args.style = 'default'
 
         # colorized output contains escape sequences
-        output = get_output(args, Environment(), response)
+        output = get_output(args, Environment(), response.request, response)
 
         for key, value in response_dict.items():
             self.assertIn(key, output)
