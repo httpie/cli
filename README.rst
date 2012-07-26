@@ -1,36 +1,33 @@
+=======================
 HTTPie: cURL for humans
 =======================
 
-`☞ README for stable version <https://github.com/jkbr/httpie/tree/0.2.5#readme>`_
-
 **HTTPie is a CLI HTTP utility** built out of frustration with existing tools.
-The goal is to make CLI interaction with HTTP-based services as
-human-friendly as possible.
-
-HTTPie does so by providing an ``http`` command that allows for issuing
-arbitrary HTTP requests using a **simple and natural syntax** and displaying
-**colorized responses**:
+Its goal is to make CLI interaction with HTTP-based services as
+**human-friendly** as possible. HTTPie provides an ``http`` command that allows
+for issuing **arbitrary HTTP** requests using a **simple and natural syntax**,
+and displays **colorized responses**:
 
 .. image:: https://github.com/jkbr/httpie/raw/master/httpie.png
     :alt: HTTPie compared to cURL
 
-Under the hood, HTTPie uses the excellent
-`Requests <http://python-requests.org>`_ and
-`Pygments <http://pygments.org/>`_ Python libraries. Python 2.6+ is supported
-(including 3.x).
+HTTPie supports Python 2.6+ (including Python 3.x and PyPy) and has been tested
+under Mac OS X, Linux and Windows. It also has a
+comprehensive `suite of tests`_ with `continuous integration`_.
+
+Under the hood, the excellent `Requests`_ and `Pygments`_ Python libraries
+are used.
+
 
 Installation
-------------
+============
 
-The latest **stable version** of HTTPie can always be installed
-(or updated to) via
-`pip <http://www.pip-installer.org/en/latest/index.html>`_::
+The latest **stable version** of HTTPie can always be installed or updated
+to via `pip`_ (prefered)
+or ``easy_install``::
 
     pip install -U httpie
-
-You can also use `easy_install` (``pip`` is prefered, though)::
-
-    easy_install httpie
+    # easy_install pip
 
 Or, you can install the **development version** directly from GitHub:
 
@@ -42,15 +39,12 @@ Or, you can install the **development version** directly from GitHub:
 
     pip install -U https://github.com/jkbr/httpie/tarball/master
 
-
-There are packages available for
-`Ubuntu <http://packages.ubuntu.com/httpie>`_,
-`Debian <http://packages.debian.org/httpie>`_ and
-possibly other major distros as well.
+There are also packages available for `Ubuntu`_, `Debian`_ and possibly other
+distributions as well.
 
 
 Usage
------
+=====
 
 Hello world::
 
@@ -60,39 +54,52 @@ Synopsis::
 
     http [flags] [METHOD] URL [items]
 
-There are five types of key-value pair items available:
+There are five different types of key/value pair ``items`` available:
 
-Headers (``Name:Value``)
-   Arbitrary HTTP headers. The ``:`` character is used to separate a header's
-   name from its value, e.g., ``X-API-Token:123``.
++-----------------------+-----------------------------------------------------+
+| **Headers**           | Arbitrary HTTP headers. The ``:`` character is      |
+| ``Name:Value``        | used to separate a header's name from its value,    |
+|                       | e.g., ``X-API-Token:123``.                          |
++-----------------------+-----------------------------------------------------+
+| **Simple data         | Included in the request body and depending on the   |
+| fields**              | ``Content-Type`` they are automatically serialized  |
+| ``field=value``       | as a JSON ``Object`` (default) or                   |
+|                       | ``application/x-www-form-urlencoded``               |
+|                       | (``--form``/  ``-f``). Data items use ``=``         |
+|                       | as the separator, e.g., ``hello=world``.            |
++-----------------------+-----------------------------------------------------+
+| **Raw JSON fields**   | Useful when the ``Content-Type`` is JSON and one or |
+| ``field:=json``       | more fields need to be a ``Boolean``, ``Number``,   |
+|                       | nested ``Object``, or an ``Array``. It's because    |
+|                       | simple data items are always serialized as a        |
+|                       | ``String``. E.g., ``pies:=[1,2,3]``, or             |
+|                       | ``'meals:=["ham","spam"]'`` (note the quotes).      |
+|                       | It may be more convenient to pass the whole JSON    |
+|                       | body via ``stdin`` when it's more complex           |
+|                       | (see examples bellow).                              |
++-----------------------+-----------------------------------------------------+
+| **File fields**       | Only available with ``-f`` / ``--form``. Use ``@``  |
+| ``field@/dir/file``   | as the separator, e.g.,                             |
+|                       | ``screenshot@~/Pictures/img.png``.                  |
+|                       | The presence of a file field results                |
+|                       | into a ``multipart/form-data`` request.             |
++-----------------------+-----------------------------------------------------+
+| **Query string        | Appends the given name/value pair as a query        |
+| parameters**          | string parameter to the URL.                        |
+| ``name==value``       | The ``==`` separator is used                        |
++-----------------------+-----------------------------------------------------+
 
-Simple data fields (``field=value``)
-  Data items are included in the request body. Depending on the
-  ``Content-Type``, they are automatically serialized as a JSON ``Object``
-  (default) or ``application/x-www-form-urlencoded`` (the ``-f`` flag).
-  Data items use ``=`` as the separator, e.g., ``hello=world``.
 
-Raw JSON fields (``field:=value``)
-  This item type is needed when ``Content-Type`` is JSON and a field's value
-  is a ``Boolean``, ``Number``,  nested ``Object`` or an ``Array``, because
-  simple data items are always serialized as ``String``.
-  E.g. ``pies:=[1,2,3]``, or ``'meals=["ham", "spam"]'`` (mind the quotes).
-
-File fields (``field@/path/to/file``)
-  Only available with ``-f`` / ``--form``. Use ``@`` as the separator, e.g.,
-  ``screenshot@/path/to/file.png``. The presence of a file field results into
-  a ``multipart/form-data`` request.
-
-Query string parameters (``name==value``)
-  Appends the given name/value pair as a query string parameter to the URL.
+All ``items`` come after the URL, and, unlike ``flags``, they become part of
+the actual request being is sent. Their types are distinguished by the
+separator used.
 
 
 Examples
-^^^^^^^^
+--------
 ::
 
     http PATCH api.example.com/person/1 X-API-Token:123 name=John email=john@example.org age:=29
-
 
 The following request is issued::
 
@@ -102,7 +109,6 @@ The following request is issued::
     Content-Type: application/json; charset=utf-8
 
     {"name": "John", "email": "john@example.org", "age": 29}
-
 
 It can easily be changed to a **form** request using the ``-f``
 (or ``--form``) flag, which produces::
@@ -120,21 +126,21 @@ simulate a **file upload form** submission. It is done using the
 
     http -f POST example.com/jobs name=John cv@~/Documents/cv.pdf
 
-The above will send the same request as if the following HTML form were submitted::
+The above will send the same request as if the following HTML form were
+submitted::
 
     <form enctype="multipart/form-data" method="post" action="http://example.com/jobs">
         <input type="text" name="name" />
         <input type="file" name="cv" />
     </form>
 
-**Query string parameters** can be added to any request without having to quote
-the ``&`` characters::
+**Query string parameters** can be added to any request without having to
+escape the ``&`` characters. The following request will contain
+``?search=donuts&in=fridge`` as the query string part of the URL::
 
-    http GET example.com/ search==donuts in==fridge
+    http GET example.com search==donuts in==fridge
 
-Will ``GET`` the URL ``http://example.com/?search=donuts&in=fridge``.
-
-A whole request body can be passed in via **``stdin``** instead, in which
+The whole request body can also be passed in **via stdin,** in which
 case it will be used with no further processing::
 
     echo '{"name": "John"}' | http PATCH example.com/person/1 X-API-Token:123
@@ -147,29 +153,28 @@ That can be used for **piping services together**. The following example
     http GET https://api.github.com/repos/jkbr/httpie | http POST httpbin.org/post
 
 The above can be further simplified by omitting ``GET`` and ``POST`` because
-they are both default here. The first command has no request data, whereas
-the second one does via ``stdin``::
+they are both default here as the first command has no request data whereas
+the second one has via ``stdin``::
 
     http https://api.github.com/repos/jkbr/httpie | http httpbin.org/post
 
 Note that when the **output is redirected** (like the examples above), HTTPie
-applies a different set of defaults then for console output. Namely colors
-aren't used (can be forced with ``--pretty``) and only the response body
-gets printed (can be overwritten with ``--print``).
+applies a different set of defaults than for a console output. Namely, colors
+aren't used (unless ``--pretty`` is set) and only the response body
+is printed (unless ``--print`` options specified).
 
-An alternative to ``stdin`` is to pass a file name whose content will be used
+An alternative to ``stdin`` is to pass a filename whose content will be used
 as the request body. It has the advantage that the ``Content-Type`` header
 will automatically be set to the appropriate value based on the filename
-extension (using the ``mimetypes`` module). Therefore, the following will
-request will send the verbatim contents of the file with
-``Content-Type: application/xml``::
+extension. Thus, the following will request will send the verbatim contents
+of the file with ``Content-Type: application/xml``::
 
     http PUT httpbin.org/put @/data/file.xml
 
-When using HTTPie from **shell scripts**, you might want to use the
+When using HTTPie from **shell scripts** it can be useful to use the
 ``--check-status`` flag. It instructs HTTPie to exit with an error if the
 HTTP status is one of ``3xx``, ``4xx``, or ``5xx``. The exit status will
-be ``3`` (unless ``--allow-redirects`` is set), ``4``, or ``5``
+be ``3`` (unless ``--allow-redirects`` is set), ``4``, or ``5``,
 respectively::
 
     #!/bin/bash
@@ -187,12 +192,10 @@ respectively::
 
 
 Flags
-^^^^^
-Most of the flags mirror the arguments understood by ``requests.request``.
-See ``http --help`` for more details::
+-----
 
+``$ http --help``::
 
-    $ http --help
     usage: http [--help] [--version] [--json | --form] [--traceback]
                 [--pretty | --ugly]
                 [--print OUTPUT_OPTIONS | --verbose | --headers | --body]
@@ -288,34 +291,30 @@ See ``http --help`` for more details::
       --timeout TIMEOUT     Float describes the timeout of the request (Use
                             socket.setdefaulttimeout() as fallback).
 
+
 Contribute
-----------
+==========
 
-`View contributors on GitHub <https://github.com/jkbr/httpie/contributors>`_.
+Bug reports and code and documentation patches are greatly appretiated. You can
+also help by using the development version of HTTPie and reporting any bugs you
+might encounter.
 
-If you have found a bug or have a feature request, the
-`issue tracker <https://github.com/jkbr/httpie/issues?state=open>`_ is the
-place to start a discussion about it.
+Before working on a new feature or a bug, please browse the `existing issues`_
+to see whether it has been previously discussed.
 
-To contribute code or documentation, please first browse the existing issues
-to see if the feature/bug has previously been discussed. Then fork
-`the repository <https://github.com/jkbr/httpie>`_, make changes in your
-develop branch and submit a pull request. Note: Pull requests with tests and
-documentation are 53.6%  more awesome :)
+Then fork and clone `the repository`_.
 
-To point the ``http`` command to your working copy you can install HTTPie in
-the editable mode::
+To point the ``http`` command to your local branch during development you can
+install HTTPie in an editable mode::
 
     pip install --editable .
 
-It's a good idea to run the existing suite of tests before a pull requests is
-submitted::
+To run the existing suite of tests before a pull request is submitted::
 
     python setup.py test
 
-`Tox <http://tox.testrun.org/>`_ can used to conveniently run tests in all of
-the
-`supported Python environments <https://github.com/jkbr/httpie/blob/master/tox.ini>`_::
+`Tox`_ can also be used to conveniently run tests in all of the
+`supported Python environments`_::
 
     # Install tox
     pip install tox
@@ -323,23 +322,25 @@ the
     # Run tests
     tox
 
-Changelog
----------
 
-* `0.2.6dev <https://github.com/jkbr/httpie/compare/0.2.5...master>`_
-    * Short option for ``--headers`` is now ``-h`` (``-t`` has been removed,
-      for usage use ``--help``).
-    * Form data and URL params can now have multiple fields with the same name
+Changelog
+=========
+
+* `0.2.7dev`_
+* `0.2.6`_ (2012-07-26)
+    * The short option for ``--headers`` is now ``-h`` (``-t`` has been
+      removed, for usage use ``--help``).
+    * Form data and URL parameters can have multiple fields with the same name
       (e.g.,``http -f url a=1 a=2``).
-    * Added ``--check-status`` to exit with an error for HTTP 3xx, 4xx and
-      5xx (3, 4, 5).
+    * Added ``--check-status`` to exit with an error on HTTP 3xx, 4xx and
+      5xx (3, 4, and 5, respectively).
     * If the output is piped to another program or redirected to a file,
-      the new default behaviour is to only print the response body.
+      the default behaviour is to only print the response body.
       (It can still be overwritten via the ``--print`` flag.)
     * Improved highlighting of HTTP headers.
-    * Added query string parameters (param==value).
+    * Added query string parameters (``param==value``).
     * Added support for terminal colors under Windows.
-* `0.2.5 <https://github.com/jkbr/httpie/compare/0.2.2...0.2.5>`_ (2012-07-17)
+* `0.2.5`_ (2012-07-17)
     * Unicode characters in prettified JSON now don't get escaped for
       improved readability.
     * --auth now prompts for a password if only a username provided.
@@ -348,16 +349,16 @@ Changelog
     * Fixed missing query string when displaying the request headers via
       ``--verbose``.
     * Fixed Content-Type for requests with no data.
-* `0.2.2 <https://github.com/jkbr/httpie/compare/0.2.1...0.2.2>`_ (2012-06-24)
+* `0.2.2`_ (2012-06-24)
     * The ``METHOD`` positional argument can now be omitted (defaults to
       ``GET``, or to ``POST`` with data).
     * Fixed --verbose --form.
-    * Added support for `Tox <http://tox.testrun.org/>`_.
-* `0.2.1 <https://github.com/jkbr/httpie/compare/0.2.0...0.2.1>`_ (2012-06-13)
+    * Added support for `Tox`_.
+* `0.2.1`_ (2012-06-13)
     * Added compatibility with ``requests-0.12.1``.
     * Dropped custom JSON and HTTP lexers in favor of the ones newly included
       in ``pygments-1.5``.
-* `0.2.0 <https://github.com/jkbr/httpie/compare/0.1.6...0.2.0>`_ (2012-04-25)
+* `0.2.0`_ (2012-04-25)
     * Added Python 3 support.
     * Added the ability to print the HTTP request as well as the response
       (see ``--print`` and ``--verbose``).
@@ -367,4 +368,34 @@ Changelog
     * Improved syntax highlighting for JSON.
     * Added support for field name escaping.
     * Many bug fixes.
-* `0.1.6 <https://github.com/jkbr/httpie/compare/0.1.4...0.1.6>`_ (2012-03-04)
+* `0.1.6`_ (2012-03-04)
+
+
+Authors
+=======
+
+`Jakub Roztocil`_  (`@jkbrzt`_) created HTTPie and
+`these fine people <https://github.com/jkbr/httpie/contributors>`_
+have contributed.
+
+
+.. _suite of tests: https://github.com/jkbr/httpie/blob/master/tests/tests.py
+.. _continuous integration: http://travis-ci.org/#!/jkbr/httpie
+.. _Requests: http://python-requests.org
+.. _Pygments: http://pygments.org/
+.. _pip: http://www.pip-installer.org/en/latest/index.html
+.. _Tox: http://tox.testrun.org
+.. _supported Python environments: https://github.com/jkbr/httpie/blob/master/tox.ini
+.. _Ubuntu: http://packages.ubuntu.com/httpie
+.. _Debian: http://packages.debian.org/httpie
+.. _the repository: https://github.com/jkbr/httpie
+.. _Jakub Roztocil: http://roztocil.name
+.. _@jkbrzt: https://twitter.com/jkbrzt
+.. _existing issues: https://github.com/jkbr/httpie/issues?state=open
+.. _0.1.6: https://github.com/jkbr/httpie/compare/0.1.4...0.1.6
+.. _0.2.0: https://github.com/jkbr/httpie/compare/0.1.6...0.2.0
+.. _0.2.1: https://github.com/jkbr/httpie/compare/0.2.0...0.2.1
+.. _0.2.2: https://github.com/jkbr/httpie/compare/0.2.1...0.2.2
+.. _0.2.5: https://github.com/jkbr/httpie/compare/0.2.2...0.2.5
+.. _0.2.6: https://github.com/jkbr/httpie/compare/0.2.5...0.2.6
+.. _0.2.7dev: https://github.com/jkbr/httpie/compare/0.2.6...master
