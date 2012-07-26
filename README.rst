@@ -2,6 +2,8 @@
 HTTPie: cURL for humans
 =======================
 
+`☞ README for stable version`_
+
 **HTTPie is a CLI HTTP utility** built out of frustration with existing tools.
 Its goal is to make CLI interaction with HTTP-based services as
 **human-friendly** as possible. HTTPie provides an ``http`` command that allows
@@ -399,3 +401,4 @@ have contributed.
 .. _0.2.5: https://github.com/jkbr/httpie/compare/0.2.2...0.2.5
 .. _0.2.6: https://github.com/jkbr/httpie/compare/0.2.5...0.2.6
 .. _0.2.7dev: https://github.com/jkbr/httpie/compare/0.2.6...master
+.. _☞ README for stable version: https://github.com/jkbr/httpie/tree/0.2.6#readme
