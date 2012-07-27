@@ -8,6 +8,7 @@ Invocation flow:
     4. Write to `stdout` and exit.
 
 """
+import os
 import sys
 import json
 
@@ -23,8 +24,10 @@ from .input import (PRETTIFY_STDOUT_TTY_ONLY,
 from .cli import parser
 
 
-TYPE_FORM = 'application/x-www-form-urlencoded; charset=utf-8'
-TYPE_JSON = 'application/json; charset=utf-8'
+FORM = 'application/x-www-form-urlencoded; charset=utf-8'
+JSON = 'application/json; charset=utf-8'
+HTTP = 'http://'
+HTTPS = 'https://'
 
 
 def get_response(args, env):
@@ -33,7 +36,7 @@ def get_response(args, env):
     auto_json = args.data and not args.form
     if args.json or auto_json:
         if 'Content-Type' not in args.headers:
-            args.headers['Content-Type'] = TYPE_JSON
+            args.headers['Content-Type'] = JSON
 
         if 'Accept' not in args.headers:
             # Default Accept to JSON as well.
@@ -48,7 +51,7 @@ def get_response(args, env):
         if not args.files and 'Content-Type' not in args.headers:
             # If sending files, `requests` will set
             # the `Content-Type` for us.
-            args.headers['Content-Type'] = TYPE_FORM
+            args.headers['Content-Type'] = FORM
 
     try:
         credentials = None
@@ -58,9 +61,15 @@ def get_response(args, env):
                 'digest': requests.auth.HTTPDigestAuth,
             }[args.auth_type](args.auth.key, args.auth.value)
 
+        if not (args.url.startswith(HTTP) or args.url.startswith(HTTPS)):
+            scheme = HTTPS if env.progname == 'https' else HTTP
+            url = scheme + args.url
+        else:
+            url = args.url
+
         return requests.request(
             method=args.method.lower(),
-            url=args.url if '://' in args.url else 'http://%s' % args.url,
+            url=url,
             headers=args.headers,
             data=args.data,
             verify={'yes': True, 'no': False}.get(args.verify, args.verify),

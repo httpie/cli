@@ -10,6 +10,10 @@ class Environment(object):
     and allows for mocking.
 
     """
+    progname = os.path.basename(sys.argv[0])
+    if progname not in ['http', 'https']:
+        progname = 'http'
+
     stdin_isatty = sys.stdin.isatty()
     stdin = sys.stdin
 

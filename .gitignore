@@ -3,3 +3,4 @@ httpie.egg-info
 build
 *.pyc
 .tox
+README.html

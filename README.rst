@@ -29,7 +29,8 @@ to via `pip`_ (prefered)
 or ``easy_install``::
 
     pip install -U httpie
-    # easy_install pip
+
+    # easy_install httpie
 
 Or, you can install the **development version** directly from GitHub:
 
@@ -376,9 +377,8 @@ Changelog
 Authors
 =======
 
-`Jakub Roztocil`_  (`@jkbrzt`_) created HTTPie and
-`these fine people <https://github.com/jkbr/httpie/contributors>`_
-have contributed.
+`Jakub Roztocil`_  (`@jkbrzt`_) created HTTPie and `these fine people`_ have
+contributed.
 
 
 .. _suite of tests: https://github.com/jkbr/httpie/blob/master/tests/tests.py
@@ -391,6 +391,7 @@ have contributed.
 .. _Ubuntu: http://packages.ubuntu.com/httpie
 .. _Debian: http://packages.debian.org/httpie
 .. _the repository: https://github.com/jkbr/httpie
+.. _these fine people: https://github.com/jkbr/httpie/contributors
 .. _Jakub Roztocil: http://roztocil.name
 .. _@jkbrzt: https://twitter.com/jkbrzt
 .. _existing issues: https://github.com/jkbr/httpie/issues?state=open
