@@ -11,13 +11,88 @@ from pygments.lexers import get_lexer_for_mimetype
 from pygments.formatters.terminal import TerminalFormatter
 from pygments.formatters.terminal256 import Terminal256Formatter
 from pygments.util import ClassNotFound
-from requests.compat import is_windows
+from requests.compat import is_windows, bytes
 
 from . import solarized
+from .models import Environment
 
 
 DEFAULT_STYLE = 'solarized'
 AVAILABLE_STYLES = [DEFAULT_STYLE] + list(STYLE_MAP.keys())
+BINARY_SUPPRESSED_NOTICE = (
+    '+-----------------------------------------+\n'
+    '| NOTE: binary data not shown in terminal |\n'
+    '+-----------------------------------------+'
+)
+
+
+def format(msg, prettifier=None, with_headers=True, with_body=True,
+           env=Environment()):
+    """Return a UTF8-encoded representation of a `models.HTTPMessage`.
+
+    Sometimes it contains binary data so we always return `bytes`.
+
+    If `prettifier` is set or the output is terminal then a binary
+    body is not included in the output replaced with notice.
+
+    Generally, when the `stdout` is redirected, the output match the actual
+    message as match as possible. When we are `--pretty` set (or implied)
+    or when the output is a terminal, then we prefer readability over
+    precision.
+
+    """
+    chunks = []
+
+    if with_headers:
+        headers = '\n'.join([msg.line, msg.headers]).encode('utf8')
+
+        if prettifier:
+            # Prettifies work on unicode
+            headers = prettifier.process_headers(
+                headers.decode('utf8')).encode('utf8')
+
+        chunks.append(headers.strip())
+
+        if with_body and msg.body or env.stdout_isatty:
+            chunks.append(b'\n\n')
+
+    if with_body and msg.body:
+
+        body = msg.body
+        bin_suppressed = False
+
+        if prettifier or env.stdout_isatty:
+
+            # Convert body to UTF8.
+            try:
+                body = msg.body.decode(msg.encoding or 'utf8')
+            except UnicodeDecodeError:
+                # Assume binary. It could also be that `self.encoding`
+                # doesn't correspond to the actual encoding.
+                bin_suppressed = True
+                body = BINARY_SUPPRESSED_NOTICE.encode('utf8')
+                if not with_headers:
+                    body = b'\n' + body
+
+            else:
+                # Convert (possibly back) to UTF8.
+                body = body.encode('utf8')
+
+        if not bin_suppressed and prettifier and msg.content_type:
+            # Prettifies work on unicode.
+            body = (prettifier
+                    .process_body(body.decode('utf8'),
+                                  msg.content_type)
+                    .encode('utf8').strip())
+
+        chunks.append(body)
+
+        if env.stdout_isatty:
+            chunks.append(b'\n\n')
+
+    formatted = b''.join(chunks)
+
+    return formatted
 
 
 class HTTPLexer(lexer.RegexLexer):

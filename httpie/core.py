@@ -8,7 +8,6 @@ Invocation flow:
     4. Write to `stdout` and exit.
 
 """
-import os
 import sys
 import json
 
@@ -17,9 +16,8 @@ import requests.auth
 from requests.compat import str
 
 from .models import HTTPMessage, Environment
-from .output import OutputProcessor
-from .input import (PRETTIFY_STDOUT_TTY_ONLY,
-                    OUT_REQ_BODY, OUT_REQ_HEAD,
+from .output import OutputProcessor, format
+from .input import (OUT_REQ_BODY, OUT_REQ_HEAD,
                     OUT_RESP_HEAD, OUT_RESP_BODY)
 from .cli import parser
 
@@ -85,7 +83,7 @@ def get_response(args, env):
         env.stderr.write('\n')
         sys.exit(1)
     except Exception as e:
-        if args.traceback:
+        if args.debug:
             raise
         env.stderr.write(str(e.message) + '\n')
         sys.exit(1)
@@ -93,49 +91,35 @@ def get_response(args, env):
 
 def get_output(args, env, request, response):
     """Format parts of the `request`-`response` exchange
-     according to `args` and `env` and return a `unicode`.
+     according to `args` and `env` and return `bytes`.
 
     """
-    do_prettify = (args.prettify is True
-                   or (args.prettify == PRETTIFY_STDOUT_TTY_ONLY
-                       and env.stdout_isatty))
 
-    do_output_request = (OUT_REQ_HEAD in args.output_options
-                         or OUT_REQ_BODY in args.output_options)
+    exchange = []
+    prettifier = (OutputProcessor(env, pygments_style=args.style)
+                  if args.prettify else None)
 
-    do_output_response = (OUT_RESP_HEAD in args.output_options
-                          or OUT_RESP_BODY in args.output_options)
-
-    prettifier = None
-    if do_prettify:
-        prettifier = OutputProcessor(
-            env, pygments_style=args.style)
-
-    buf = []
-
-    if do_output_request:
-        req_msg = HTTPMessage.from_request(request)
-        req = req_msg.format(
+    if (OUT_REQ_HEAD in args.output_options
+        or OUT_REQ_BODY in args.output_options):
+        exchange.append(format(
+            HTTPMessage.from_request(request),
+            env=env,
             prettifier=prettifier,
             with_headers=OUT_REQ_HEAD in args.output_options,
             with_body=OUT_REQ_BODY in args.output_options
-        )
-        buf.append(req)
-        buf.append('\n')
-        if do_output_response:
-            buf.append('\n')
+        ))
 
-    if do_output_response:
-        resp_msg = HTTPMessage.from_response(response)
-        resp = resp_msg.format(
+    if (OUT_RESP_HEAD in args.output_options
+        or OUT_RESP_BODY in args.output_options):
+        exchange.append(format(
+            HTTPMessage.from_response(response),
+            env=env,
             prettifier=prettifier,
             with_headers=OUT_RESP_HEAD in args.output_options,
-            with_body=OUT_RESP_BODY in args.output_options
+            with_body=OUT_RESP_BODY in args.output_options)
         )
-        buf.append(resp)
-        buf.append('\n')
 
-    return ''.join(buf)
+    return b''.join(exchange)
 
 
 def get_exist_status(code, allow_redirects=False):
@@ -172,8 +156,9 @@ def main(args=sys.argv[1:], env=Environment()):
                 response.raw.status, response.raw.reason)
             env.stderr.write(err.encode('utf8'))
 
-    output = get_output(args, env, response.request, response)
-    output_bytes = output.encode('utf8')
+    output_bytes = get_output(args, env, response.request, response)
+
+    # output_bytes = output.encode('utf8')
     f = getattr(env.stdout, 'buffer', env.stdout)
     f.write(output_bytes)
 

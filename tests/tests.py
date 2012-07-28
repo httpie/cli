@@ -25,9 +25,13 @@ import json
 import tempfile
 import unittest
 import argparse
-import requests
-from requests.compat import is_py26, is_py3, str
+try:
+    from urllib.request import urlopen
+except ImportError:
+    from urllib2 import urlopen
 
+import requests
+from requests.compat import is_py26, is_py3, bytes, str
 
 #################################################################
 # Utils/setup
@@ -40,6 +44,7 @@ sys.path.insert(0, os.path.realpath(os.path.join(TESTS_ROOT, '..')))
 from httpie import input
 from httpie.models import Environment
 from httpie.core import main, get_output
+from httpie.output import BINARY_SUPPRESSED_NOTICE
 
 
 HTTPBIN_URL = os.environ.get('HTTPBIN_URL',
@@ -55,16 +60,21 @@ def httpbin(path):
     return HTTPBIN_URL + path
 
 
-class Response(str):
-    """
-    A unicode subclass holding the output of `main()`, and also
-    the exit status, the contents of ``stderr``, and de-serialized
-    JSON response (if possible).
+class BytesResponse(bytes):
 
-    """
     exit_status = None
     stderr = None
     json = None
+
+    def __eq__(self, other):
+        return super(BytesResponse, self).__eq__(other)
+
+class StrResponse(str):
+    exit_status = None
+    stderr = None
+    json = None
+    def __eq__(self, other):
+        return super(StrResponse, self).__eq__(other)
 
 
 def http(*args, **kwargs):
@@ -85,33 +95,39 @@ def http(*args, **kwargs):
     stdout = kwargs['env'].stdout = tempfile.TemporaryFile()
     stderr = kwargs['env'].stderr = tempfile.TemporaryFile()
 
-    exit_status = main(args=['--traceback'] + list(args), **kwargs)
+    exit_status = main(args=['--debug'] + list(args), **kwargs)
 
     stdout.seek(0)
     stderr.seek(0)
 
-    r = Response(stdout.read().decode('utf8'))
+    output = stdout.read()
+
+    try:
+        r = StrResponse(output.decode('utf8'))
+    except UnicodeDecodeError:
+        r = BytesResponse(output)
+    else:
+        if TERMINAL_COLOR_PRESENCE_CHECK not in r:
+            # De-serialize JSON body if possible.
+            if r.strip().startswith('{'):
+                #noinspection PyTypeChecker
+                r.json = json.loads(r)
+            elif r.count('Content-Type:') == 1 and 'application/json' in r:
+                try:
+                    j = r.strip()[r.strip().rindex('\n\n'):]
+                except ValueError:
+                    pass
+                else:
+                    try:
+                        r.json = json.loads(j)
+                    except ValueError:
+                        pass
+
     r.stderr = stderr.read().decode('utf8')
     r.exit_status = exit_status
 
     stdout.close()
     stderr.close()
-
-    if TERMINAL_COLOR_PRESENCE_CHECK not in r:
-        # De-serialize JSON body if possible.
-        if r.strip().startswith('{'):
-            #noinspection PyTypeChecker
-            r.json = json.loads(r)
-        elif r.count('Content-Type:') == 1 and 'application/json' in r:
-            try:
-                j = r.strip()[r.strip().rindex('\n\n'):]
-            except ValueError:
-                pass
-            else:
-                try:
-                    r.json = json.loads(j)
-                except ValueError:
-                    pass
 
     return r
 
@@ -506,7 +522,7 @@ class VerboseFlagTest(BaseTestCase):
 class MultipartFormDataFileUploadTest(BaseTestCase):
 
     def test_non_existent_file_raises_parse_error(self):
-        self.assertRaises(input.ParseError, http,
+        self.assertRaises(SystemExit, http,
             '--form',
             '--traceback',
             'POST',
@@ -517,14 +533,56 @@ class MultipartFormDataFileUploadTest(BaseTestCase):
     def test_upload_ok(self):
         r = http(
             '--form',
+            '--verbose',
             'POST',
             httpbin('/post'),
             'test-file@%s' % TEST_FILE_PATH,
             'foo=bar'
         )
+
         self.assertIn('HTTP/1.1 200', r)
-        self.assertIn('"test-file": "%s' % TEST_FILE_CONTENT, r)
+        self.assertIn('Content-Disposition: form-data; name="foo"', r)
+        self.assertIn('Content-Disposition: form-data; name="test-file";'
+                      ' filename="test-file"', r)
+        self.assertEqual(r.count(TEST_FILE_CONTENT), 2)
         self.assertIn('"foo": "bar"', r)
+
+
+class TestBinaryResponses(BaseTestCase):
+
+    url = 'http://www.google.com/favicon.ico'
+
+    @property
+    def bindata(self):
+        if not hasattr(self, '_bindata'):
+            self._bindata = urlopen(self.url).read()
+        return self._bindata
+
+    def test_binary_suppresses_when_terminal(self):
+        r = http(
+            'GET',
+            self.url
+        )
+        self.assertIn(BINARY_SUPPRESSED_NOTICE, r)
+
+    def test_binary_suppresses_when_not_terminal_but_pretty(self):
+        r = http(
+            '--pretty',
+            'GET',
+            self.url,
+            env=Environment(stdin_isatty=True,
+                            stdout_isatty=False)
+        )
+        self.assertIn(BINARY_SUPPRESSED_NOTICE, r)
+
+    def test_binary_included_and_correct_when_suitable(self):
+        r = http(
+            'GET',
+            self.url,
+            env=Environment(stdin_isatty=True,
+                            stdout_isatty=False)
+        )
+        self.assertEqual(r, self.bindata)
 
 
 class RequestBodyFromFilePathTest(BaseTestCase):
@@ -764,9 +822,9 @@ class ArgumentParserTestCase(unittest.TestCase):
 
         self.parser._guess_method(args, Environment())
 
-        self.assertEquals(args.method, 'GET')
-        self.assertEquals(args.url, 'http://example.com/')
-        self.assertEquals(args.items, [])
+        self.assertEqual(args.method, 'GET')
+        self.assertEqual(args.url, 'http://example.com/')
+        self.assertEqual(args.items, [])
 
     def test_guess_when_method_not_set(self):
         args = argparse.Namespace()
@@ -779,9 +837,9 @@ class ArgumentParserTestCase(unittest.TestCase):
             stdout_isatty=True,
         ))
 
-        self.assertEquals(args.method, 'GET')
-        self.assertEquals(args.url, 'http://example.com/')
-        self.assertEquals(args.items, [])
+        self.assertEqual(args.method, 'GET')
+        self.assertEqual(args.url, 'http://example.com/')
+        self.assertEqual(args.items, [])
 
     def test_guess_when_method_set_but_invalid_and_data_field(self):
         args = argparse.Namespace()
@@ -791,9 +849,9 @@ class ArgumentParserTestCase(unittest.TestCase):
 
         self.parser._guess_method(args, Environment())
 
-        self.assertEquals(args.method, 'POST')
-        self.assertEquals(args.url, 'http://example.com/')
-        self.assertEquals(
+        self.assertEqual(args.method, 'POST')
+        self.assertEqual(args.url, 'http://example.com/')
+        self.assertEqual(
             args.items,
             [input.KeyValue(
                 key='data', value='field', sep='=', orig='data=field')])
@@ -809,9 +867,9 @@ class ArgumentParserTestCase(unittest.TestCase):
             stdout_isatty=True,
         ))
 
-        self.assertEquals(args.method, 'GET')
-        self.assertEquals(args.url, 'http://example.com/')
-        self.assertEquals(
+        self.assertEqual(args.method, 'GET')
+        self.assertEqual(args.url, 'http://example.com/')
+        self.assertEqual(
             args.items,
             [input.KeyValue(
                 key='test', value='header', sep=':', orig='test:header')])
@@ -827,7 +885,7 @@ class ArgumentParserTestCase(unittest.TestCase):
 
         self.parser._guess_method(args, Environment())
 
-        self.assertEquals(args.items, [
+        self.assertEqual(args.items, [
             input.KeyValue(
                 key='new_item', value='a', sep='=', orig='new_item=a'),
             input.KeyValue(key
@@ -879,8 +937,7 @@ class UnicodeOutputTestCase(BaseTestCase):
         args.style = 'default'
 
         # colorized output contains escape sequences
-        output = get_output(args, Environment(), response.request, response)
-
+        output = get_output(args, Environment(), response.request, response).decode('utf8')
         for key, value in response_dict.items():
             self.assertIn(key, output)
             self.assertIn(value, output)

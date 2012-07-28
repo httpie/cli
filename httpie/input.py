@@ -103,9 +103,17 @@ class Parser(argparse.ArgumentParser):
             # Stdin already read (if not a tty) so it's save to prompt.
             args.auth.prompt_password()
 
+        if args.files:
+            # Will be read multiple times.
+            for name in args.files:
+                args.files[name] = args.files[name].read()
+
+        if args.prettify == PRETTIFY_STDOUT_TTY_ONLY:
+            args.prettify = env.stdout_isatty
+
         return args
 
-    def _body_from_file(self, args, f):
+    def _body_from_file(self, args, data):
         """Use the content of `f` as the `request.data`.
 
         There can only be one source of request data.
@@ -114,7 +122,7 @@ class Parser(argparse.ArgumentParser):
         if args.data:
             self.error('Request body (from stdin or a file) and request '
                        'data (key=value) cannot be mixed.')
-        args.data = f.read()
+        args.data = data
 
     def _guess_method(self, args, env):
         """Set `args.method` if not specified to either POST or GET
@@ -139,7 +147,7 @@ class Parser(argparse.ArgumentParser):
                     0, KeyValueArgType(*SEP_GROUP_ITEMS).__call__(args.url))
 
             except argparse.ArgumentTypeError as e:
-                if args.traceback:
+                if args.debug:
                     raise
                 self.error(e.message)
 
@@ -169,7 +177,7 @@ class Parser(argparse.ArgumentParser):
                         files=args.files,
                         params=args.params)
         except ParseError as e:
-            if args.traceback:
+            if args.debug:
                 raise
             self.error(e.message)
 
@@ -406,12 +414,12 @@ def parse_items(items, data=None, headers=None, files=None, params=None):
             target = params
         elif item.sep == SEP_FILES:
             try:
-                value = open(os.path.expanduser(item.value), 'r')
+                value = open(os.path.expanduser(value), 'r')
             except IOError as e:
                 raise ParseError(
                     'Invalid argument "%s": %s' % (item.orig, e))
             if not key:
-                key = os.path.basename(value.name)
+                key = os.path.basename(item.value)
             target = files
 
         elif item.sep in [SEP_DATA, SEP_DATA_RAW_JSON]:

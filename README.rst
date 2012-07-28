@@ -164,7 +164,11 @@ the second one has via ``stdin``::
 Note that when the **output is redirected** (like the examples above), HTTPie
 applies a different set of defaults than for a console output. Namely, colors
 aren't used (unless ``--pretty`` is set) and only the response body
-is printed (unless ``--print`` options specified).
+is printed (unless ``--print`` options specified). It is a convenience
+that allows for things like the one above or downloading (smallish) binary
+files without having to set any flags::
+
+    http www.google.com/favicon.ico > favicon.ico
 
 An alternative to ``stdin`` is to pass a filename whose content will be used
 as the request body. It has the advantage that the ``Content-Type`` header
@@ -330,6 +334,9 @@ Changelog
 =========
 
 * `0.2.7dev`_
+    * Proper handling of binary requests and responses.
+    * Fixed printing of ``multipart/form-data`` requests.
+    * Renamed ``--traceback`` to ``--debug``.
 * `0.2.6`_ (2012-07-26)
     * The short option for ``--headers`` is now ``-h`` (``-t`` has been
       removed, for usage use ``--help``).

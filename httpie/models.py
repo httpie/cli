@@ -1,6 +1,6 @@
 import os
 import sys
-from requests.compat import urlparse, is_windows
+from requests.compat import urlparse, is_windows, bytes, str
 
 
 class Environment(object):
@@ -39,39 +39,40 @@ class Environment(object):
 class HTTPMessage(object):
     """Model representing an HTTP message."""
 
-    def __init__(self, line, headers, body, content_type=None):
-        # {Request,Status}-Line
-        self.line = line
+    def __init__(self, line, headers, body, encoding=None, content_type=None):
+        """All args are a `str` except for `body` which is a `bytes`."""
+
+        assert isinstance(line, str)
+        assert content_type is None or isinstance(content_type, str)
+        assert isinstance(body, bytes)
+
+        self.line = line  # {Request,Status}-Line
         self.headers = headers
         self.body = body
+        self.encoding = encoding
         self.content_type = content_type
 
-    def format(self, prettifier=None, with_headers=True, with_body=True):
-        """Return a `unicode` representation of `self`. """
-        pretty = prettifier is not None
-        bits = []
+    @classmethod
+    def from_response(cls, response):
+        """Make an `HTTPMessage` from `requests.models.Response`."""
+        encoding = response.encoding or None
+        original = response.raw._original_response
+        response_headers = response.headers
+        status_line = str('HTTP/{version} {status} {reason}'.format(
+            version='.'.join(str(original.version)),
+            status=original.status,
+            reason=original.reason
+        ))
+        body = response.content
 
-        if with_headers:
-            bits.append(self.line)
-            bits.append(self.headers)
-            if pretty:
-                bits = [
-                    prettifier.process_headers('\n'.join(bits))
-                ]
-            if with_body and self.body:
-                bits.append('\n')
+        return cls(line=status_line,
+                   headers=str(original.msg),
+                   body=body,
+                   encoding=encoding,
+                   content_type=str(response_headers.get('Content-Type', '')))
 
-        if with_body and self.body:
-            if pretty and self.content_type:
-                bits.append(prettifier.process_body(
-                    self.body, self.content_type))
-            else:
-                bits.append(self.body)
-
-        return '\n'.join(bit.strip() for bit in bits)
-
-    @staticmethod
-    def from_request(request):
+    @classmethod
+    def from_request(cls, request):
         """Make an `HTTPMessage` from `requests.models.Request`."""
 
         url = urlparse(request.url)
@@ -90,54 +91,41 @@ class HTTPMessage(object):
                 qs += type(request)._encode_params(request.params)
 
         # Request-Line
-        request_line = '{method} {path}{query} HTTP/1.1'.format(
+        request_line = str('{method} {path}{query} HTTP/1.1'.format(
             method=request.method,
             path=url.path or '/',
             query=qs
-        )
+        ))
 
         # Headers
         headers = dict(request.headers)
         content_type = headers.get('Content-Type')
+
+        if isinstance(content_type, bytes):
+            # Happens when uploading files.
+            # TODO: submit a bug report for Requests
+            content_type = headers['Content-Type'] = content_type.decode('utf8')
+
         if 'Host' not in headers:
             headers['Host'] = url.netloc
-        headers = '\n'.join(
-            str('%s: %s') % (name, value)
-            for name, value
-            in headers.items()
-        )
+        headers = '\n'.join('%s: %s' % (name, value)
+                            for name, value in headers.items())
 
         # Body
-        try:
-            body = request.data
-        except AttributeError:
-            # requests < 0.12.1
-            body = request._enc_data
-        if isinstance(body, dict):
-            #noinspection PyUnresolvedReferences
-            body = type(request)._encode_params(body)
+        if request.files:
+            body, _ = request._encode_files(request.files)
+        else:
+            try:
+                body = request.data
+            except AttributeError:
+                # requests < 0.12.1
+                body = request._enc_data
+            if isinstance(body, dict):
+                #noinspection PyUnresolvedReferences
+                body = type(request)._encode_params(body)
+            body = body.encode('utf8')
 
-        return HTTPMessage(
-            line=request_line,
-            headers=headers,
-            body=body,
-            content_type=content_type
-        )
-
-    @classmethod
-    def from_response(cls, response):
-        """Make an `HTTPMessage` from `requests.models.Response`."""
-        encoding = response.encoding or 'ISO-8859-1'
-        original = response.raw._original_response
-        response_headers = response.headers
-        status_line = 'HTTP/{version} {status} {reason}'.format(
-            version='.'.join(str(original.version)),
-            status=original.status,
-            reason=original.reason
-        )
-        body = response.content.decode(encoding) if response.content else ''
-        return cls(
-            line=status_line,
-            headers=str(original.msg),
-            body=body,
-            content_type=response_headers.get('Content-Type'))
+        return cls(line=request_line,
+                   headers=headers,
+                   body=body,
+                   content_type=content_type)

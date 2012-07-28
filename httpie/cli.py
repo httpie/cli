@@ -51,9 +51,10 @@ group_type.add_argument(
 #############################################
 
 parser.add_argument(
-    '--traceback', action='store_true', default=False,
+    '--debug', action='store_true', default=False,
     help=_('''
-        Print exception traceback should one occur.
+        Prints exception traceback should one occur and other
+        information useful for debugging HTTPie itself.
     ''')
 )
 
