@@ -32,11 +32,11 @@ def format(msg, prettifier=None, with_headers=True, with_body=True,
 
     Sometimes it contains binary data so we always return `bytes`.
 
-    If `prettifier` is set or the output is terminal then a binary
-    body is not included in the output replaced with notice.
+    If `prettifier` is set or the output is a terminal then a binary
+    body is not included in the output and is replaced with notice.
 
-    Generally, when the `stdout` is redirected, the output match the actual
-    message as match as possible. When we are `--pretty` set (or implied)
+    Generally, when the `stdout` is redirected, the output matches the actual
+    message as much as possible. When `--pretty` set (or implied),
     or when the output is a terminal, then we prefer readability over
     precision.
 
