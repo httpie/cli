@@ -11,7 +11,7 @@ from pygments.lexers import get_lexer_for_mimetype
 from pygments.formatters.terminal import TerminalFormatter
 from pygments.formatters.terminal256 import Terminal256Formatter
 from pygments.util import ClassNotFound
-from requests.compat import is_windows, bytes
+from requests.compat import is_windows
 
 from . import solarized
 from .models import Environment

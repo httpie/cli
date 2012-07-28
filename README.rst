@@ -384,8 +384,8 @@ Changelog
 Authors
 =======
 
-`Jakub Roztocil`_  (`@jkbrzt`_) created HTTPie and `these fine people`_ have
-contributed.
+`Jakub Roztocil`_  (`@jakubroztocil`_) created HTTPie and `these fine people`_
+have contributed.
 
 
 .. _suite of tests: https://github.com/jkbr/httpie/blob/master/tests/tests.py
@@ -400,7 +400,7 @@ contributed.
 .. _the repository: https://github.com/jkbr/httpie
 .. _these fine people: https://github.com/jkbr/httpie/contributors
 .. _Jakub Roztocil: http://roztocil.name
-.. _@jkbrzt: https://twitter.com/jkbrzt
+.. _@jakubroztocil: https://twitter.com/jakubroztocil
 .. _existing issues: https://github.com/jkbr/httpie/issues?state=open
 .. _0.1.6: https://github.com/jkbr/httpie/compare/0.1.4...0.1.6
 .. _0.2.0: https://github.com/jkbr/httpie/compare/0.1.6...0.2.0

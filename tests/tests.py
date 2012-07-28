@@ -60,21 +60,18 @@ def httpbin(path):
     return HTTPBIN_URL + path
 
 
-class BytesResponse(bytes):
-
+class ResponseMixin(object):
     exit_status = None
     stderr = None
     json = None
 
-    def __eq__(self, other):
-        return super(BytesResponse, self).__eq__(other)
 
-class StrResponse(str):
-    exit_status = None
-    stderr = None
-    json = None
-    def __eq__(self, other):
-        return super(StrResponse, self).__eq__(other)
+class BytesResponse(bytes, ResponseMixin):
+    pass
+
+
+class StrResponse(str, ResponseMixin):
+    pass
 
 
 def http(*args, **kwargs):
@@ -543,7 +540,7 @@ class MultipartFormDataFileUploadTest(BaseTestCase):
         self.assertIn('HTTP/1.1 200', r)
         self.assertIn('Content-Disposition: form-data; name="foo"', r)
         self.assertIn('Content-Disposition: form-data; name="test-file";'
-                      ' filename="test-file"', r)
+                      ' filename="%s"' % os.path.basename(TEST_FILE_PATH), r)
         self.assertEqual(r.count(TEST_FILE_CONTENT), 2)
         self.assertIn('"foo": "bar"', r)
 

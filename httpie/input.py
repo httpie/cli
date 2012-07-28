@@ -97,16 +97,11 @@ class Parser(argparse.ArgumentParser):
         self._parse_items(args)
 
         if not env.stdin_isatty:
-            self._body_from_file(args, env.stdin)
+            self._body_from_file(args, env.stdin.read())
 
         if args.auth and not args.auth.has_password():
             # Stdin already read (if not a tty) so it's save to prompt.
             args.auth.prompt_password()
-
-        if args.files:
-            # Will be read multiple times.
-            for name in args.files:
-                args.files[name] = args.files[name].read()
 
         if args.prettify == PRETTIFY_STDOUT_TTY_ONLY:
             args.prettify = env.stdout_isatty
@@ -114,11 +109,7 @@ class Parser(argparse.ArgumentParser):
         return args
 
     def _body_from_file(self, args, data):
-        """Use the content of `f` as the `request.data`.
-
-        There can only be one source of request data.
-
-        """
+        """There can only be one source of request data."""
         if args.data:
             self.error('Request body (from stdin or a file) and request '
                        'data (key=value) cannot be mixed.')
@@ -192,14 +183,14 @@ class Parser(argparse.ArgumentParser):
                     ' --form is used. File fields: %s'
                     % ','.join(args.files.keys()))
 
-            f = list(args.files.values())[0]
-            self._body_from_file(args, f)
+            fn, data = list(args.files.values())[0]
+            self._body_from_file(args, data)
 
             # Reset files
             args.files = {}
 
             if 'Content-Type' not in args.headers:
-                mime, encoding = mimetypes.guess_type(f.name, strict=False)
+                mime, encoding = mimetypes.guess_type(fn, strict=False)
                 if mime:
                     content_type = mime
                     if encoding:
@@ -414,7 +405,8 @@ def parse_items(items, data=None, headers=None, files=None, params=None):
             target = params
         elif item.sep == SEP_FILES:
             try:
-                value = open(os.path.expanduser(value), 'r')
+                with open(os.path.expanduser(value), 'r') as f:
+                    value = (os.path.basename(f.name), f.read())
             except IOError as e:
                 raise ParseError(
                     'Invalid argument "%s": %s' % (item.orig, e))
