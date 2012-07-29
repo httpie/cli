@@ -173,27 +173,15 @@ class Parser(argparse.ArgumentParser):
 
         if args.files and not args.form:
             # `http url @/path/to/file`
-            # It's not --form so the file contents will be used as the
-            # body of the requests. Also, we try to detect the appropriate
-            # Content-Type.
-            if len(args.files) > 1:
+            file_fields = list(args.files.keys())
+            if file_fields != ['']:
                 self.error(
-                    'Only one file can be specified unless'
-                    ' --form is used. File fields: %s'
-                    % ','.join(args.files.keys()))
+                    'Invalid file fields (perhaps you meant --form?): %s'
+                    % ','.join(file_fields))
 
-            field_name = list(args.files.keys())[0]
-            fn, data = args.files[field_name]
-            if field_name:
-                # `http url name@/path' doesn't make sense here.
-                self.error(
-                    'file fields (name@/path) require --form / -f')
-
-            self._body_from_file(args, data)
-
-            # Reset files
+            fn, data = args.files['']
             args.files = {}
-
+            self._body_from_file(args, data)
             if 'Content-Type' not in args.headers:
                 mime, encoding = mimetypes.guess_type(fn, strict=False)
                 if mime:
@@ -415,8 +403,6 @@ def parse_items(items, data=None, headers=None, files=None, params=None):
             except IOError as e:
                 raise ParseError(
                     'Invalid argument "%s": %s' % (item.orig, e))
-            if not key:
-                key = os.path.basename(item.value)
             target = files
 
         elif item.sep in [SEP_DATA, SEP_DATA_RAW_JSON]:

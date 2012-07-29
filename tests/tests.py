@@ -619,12 +619,11 @@ class RequestBodyFromFilePathTest(BaseTestCase):
         self.assertIn(TEST_FILE_CONTENT, r)
         self.assertIn('"Content-Type": "x-foo/bar"', r)
 
-    def test_request_body_from_file_by_path_only_one_file_allowed(self):
+    def test_request_body_from_file_by_path_no_field_name_allowed(self):
         self.assertRaises(SystemExit, lambda: http(
             'POST',
             httpbin('/post'),
-            '@' + TEST_FILE_PATH,
-            '@' + TEST_FILE2_PATH)
+            'field-name@' + TEST_FILE_PATH)
         )
 
     def test_request_body_from_file_by_path_no_data_items_allowed(self):
