@@ -79,9 +79,6 @@ def format(msg, prettifier=None, with_headers=True, with_body=True,
 
         chunks.append(body)
 
-        if env.stdout_isatty:
-            chunks.append(b'\n\n')
-
     return b''.join(chunks)
 
 
@@ -211,7 +208,6 @@ class OutputProcessor(object):
     ]
 
     def __init__(self, env, **kwargs):
-        self.env = env
         processors = [
             cls(env, **kwargs)
             for cls in self.installed_processors

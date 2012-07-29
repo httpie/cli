@@ -119,7 +119,12 @@ def get_output(args, env, request, response):
             with_body=OUT_RESP_BODY in args.output_options)
         )
 
-    return b''.join(exchange)
+    output = b'\n\n\n'.join(exchange)
+
+    if env.stdout_isatty:
+        output += b'\n\n'
+
+    return output
 
 
 def get_exist_status(code, allow_redirects=False):
