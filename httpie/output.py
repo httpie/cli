@@ -30,7 +30,7 @@ def format(msg, prettifier=None, with_headers=True, with_body=True,
            env=Environment()):
     """Return a UTF8-encoded representation of a `models.HTTPMessage`.
 
-    Sometimes it contains binary data so we always return `bytes`.
+    Sometimes the body contains binary data so we always return `bytes`.
 
     If `prettifier` is set or the output is a terminal then a binary
     body is not included in the output and is replaced with notice.
@@ -44,14 +44,12 @@ def format(msg, prettifier=None, with_headers=True, with_body=True,
     chunks = []
 
     if with_headers:
-        headers = '\n'.join([msg.line, msg.headers]).encode('utf8')
+        headers = '\n'.join([msg.line, msg.headers])
 
         if prettifier:
-            # Prettifies work on unicode
-            headers = prettifier.process_headers(
-                headers.decode('utf8')).encode('utf8')
+            headers = prettifier.process_headers(headers)
 
-        chunks.append(headers.strip())
+        chunks.append(headers.strip().encode('utf8'))
 
         if with_body and msg.body or env.stdout_isatty:
             chunks.append(b'\n\n')
@@ -62,37 +60,29 @@ def format(msg, prettifier=None, with_headers=True, with_body=True,
         bin_suppressed = False
 
         if prettifier or env.stdout_isatty:
-
-            # Convert body to UTF8.
             try:
                 body = msg.body.decode(msg.encoding or 'utf8')
             except UnicodeDecodeError:
-                # Assume binary. It could also be that `self.encoding`
-                # doesn't correspond to the actual encoding.
+                # Assume binary
                 bin_suppressed = True
                 body = BINARY_SUPPRESSED_NOTICE.encode('utf8')
                 if not with_headers:
                     body = b'\n' + body
-
             else:
-                # Convert (possibly back) to UTF8.
                 body = body.encode('utf8')
 
         if not bin_suppressed and prettifier and msg.content_type:
-            # Prettifies work on unicode.
             body = (prettifier
-                    .process_body(body.decode('utf8'),
-                                  msg.content_type)
-                    .encode('utf8').strip())
+                        .process_body(body.decode('utf8'), msg.content_type)
+                        .strip()
+                        .encode('utf8'))
 
         chunks.append(body)
 
         if env.stdout_isatty:
             chunks.append(b'\n\n')
 
-    formatted = b''.join(chunks)
-
-    return formatted
+    return b''.join(chunks)
 
 
 class HTTPLexer(lexer.RegexLexer):
