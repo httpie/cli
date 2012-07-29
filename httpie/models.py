@@ -120,10 +120,13 @@ class HTTPMessage(object):
             except AttributeError:
                 # requests < 0.12.1
                 body = request._enc_data
+
             if isinstance(body, dict):
                 #noinspection PyUnresolvedReferences
                 body = type(request)._encode_params(body)
-            body = body.encode('utf8')
+
+            if isinstance(body, str):
+                body = body.encode('utf8')
 
         return cls(line=request_line,
                    headers=headers,

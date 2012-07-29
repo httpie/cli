@@ -515,6 +515,17 @@ class VerboseFlagTest(BaseTestCase):
         self.assertIn('HTTP/1.1 200', r)
         self.assertIn('foo=bar&baz=bar', r)
 
+    def test_verbose_json(self):
+        r = http(
+            '--verbose',
+            'POST',
+            httpbin('/post'),
+            'foo=bar',
+            'baz=bar'
+        )
+        self.assertIn('HTTP/1.1 200', r)
+        self.assertEqual(r.count('"baz": "bar"'), 2)
+
 
 class MultipartFormDataFileUploadTest(BaseTestCase):
 

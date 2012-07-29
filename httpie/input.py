@@ -89,7 +89,6 @@ class Parser(argparse.ArgumentParser):
 
     #noinspection PyMethodOverriding
     def parse_args(self, env, args=None, namespace=None):
-
         args = super(Parser, self).parse_args(args, namespace)
 
         self._process_output_options(args, env)
@@ -183,7 +182,13 @@ class Parser(argparse.ArgumentParser):
                     ' --form is used. File fields: %s'
                     % ','.join(args.files.keys()))
 
-            fn, data = list(args.files.values())[0]
+            field_name = list(args.files.keys())[0]
+            fn, data = args.files[field_name]
+            if field_name:
+                # `http url name@/path' doesn't make sense here.
+                self.error(
+                    'file fields (name@/path) require --form / -f')
+
             self._body_from_file(args, data)
 
             # Reset files
