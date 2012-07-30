@@ -336,16 +336,22 @@ to see whether it has been previously discussed.
 Then fork and clone `the repository`_.
 
 To point the ``http`` command to your local branch during development you can
-install HTTPie in an editable mode::
+install HTTPie in an editable mode:
+
+.. code-block:: shell
 
     pip install --editable .
 
-To run the existing suite of tests before a pull request is submitted::
+To run the existing suite of tests before a pull request is submitted:
+
+.. code-block:: shell
 
     python setup.py test
 
 `Tox`_ can also be used to conveniently run tests in all of the
-`supported Python environments`_::
+`supported Python environments`_:
+
+.. code-block:: shell
 
     # Install tox
     pip install tox
