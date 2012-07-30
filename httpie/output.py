@@ -41,7 +41,26 @@ def format(msg, prettifier=None, with_headers=True, with_body=True,
     precision.
 
     """
-    chunks = []
+
+    # Output encoding.
+    if env.stdout_isatty:
+        # Use encoding suitable for the terminal. Unsupported characters
+        # will be replaced in the output.
+        errors = 'replace'
+        output_encoding = getattr(env.stdout, 'encoding', None)
+    else:
+        # Preserve the message encoding.
+        errors = 'strict'
+        output_encoding = msg.encoding
+    if not output_encoding:
+        # Default to utf8
+        output_encoding = 'utf8'
+
+    if prettifier:
+        env.init_colors()
+
+    #noinspection PyArgumentList
+    output = bytearray()
 
     if with_headers:
         headers = '\n'.join([msg.line, msg.headers])
@@ -49,37 +68,37 @@ def format(msg, prettifier=None, with_headers=True, with_body=True,
         if prettifier:
             headers = prettifier.process_headers(headers)
 
-        chunks.append(headers.strip().encode('utf8'))
+        output.extend(
+            headers.encode(output_encoding, errors).strip())
 
-        if with_body and msg.body or env.stdout_isatty:
-            chunks.append(b'\n\n')
+        if with_body and msg.body:
+            output.extend(b'\n\n')
 
     if with_body and msg.body:
 
         body = msg.body
-        bin_suppressed = False
 
-        if prettifier or env.stdout_isatty:
+        if not (env.stdout_isatty or prettifier):
+            # Verbatim body even if it's binary.
+            pass
+        else:
             try:
-                body = msg.body.decode(msg.encoding or 'utf8')
+                body = body.decode(msg.encoding)
             except UnicodeDecodeError:
-                # Assume binary
-                bin_suppressed = True
-                body = BINARY_SUPPRESSED_NOTICE.encode('utf8')
+                # Suppress binary data.
+                body = BINARY_SUPPRESSED_NOTICE.encode(output_encoding)
                 if not with_headers:
-                    body = b'\n' + body
+                    output.extend(b'\n')
             else:
-                body = body.encode('utf8')
+                if prettifier and msg.content_type:
+                    body = prettifier.process_body(
+                        body, msg.content_type).strip()
 
-        if not bin_suppressed and prettifier and msg.content_type:
-            body = (prettifier
-                        .process_body(body.decode('utf8'), msg.content_type)
-                        .strip()
-                        .encode('utf8'))
+                body = body.encode(output_encoding, errors)
 
-        chunks.append(body)
+        output.extend(body)
 
-    return b''.join(chunks)
+    return bytes(output)
 
 
 class HTTPLexer(lexer.RegexLexer):

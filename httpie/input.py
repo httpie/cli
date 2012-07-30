@@ -89,7 +89,14 @@ class Parser(argparse.ArgumentParser):
 
     #noinspection PyMethodOverriding
     def parse_args(self, env, args=None, namespace=None):
+
+        self.env = env
+
         args = super(Parser, self).parse_args(args, namespace)
+
+        if args.output:
+            env.stdout = args.output
+            env.stdout_isatty = False
 
         self._process_output_options(args, env)
         self._guess_method(args, env)
@@ -104,8 +111,23 @@ class Parser(argparse.ArgumentParser):
 
         if args.prettify == PRETTIFY_STDOUT_TTY_ONLY:
             args.prettify = env.stdout_isatty
+        elif args.prettify and env.is_windows:
+            self.error('Only terminal output can be prettified on Windows.')
 
         return args
+
+    def _print_message(self, message, file=None):
+        # Sneak in our stderr/stdout.
+        file = {
+            sys.stdout: self.env.stdout,
+            sys.stderr: self.env.stderr,
+            None: self.env.stderr
+        }.get(file, file)
+
+        #if isinstance(message, str):
+        #    message = message.encode('utf8')
+
+        super(Parser, self)._print_message(message, file)
 
     def _body_from_file(self, args, data):
         """There can only be one source of request data."""
@@ -398,7 +420,7 @@ def parse_items(items, data=None, headers=None, files=None, params=None):
             target = params
         elif item.sep == SEP_FILES:
             try:
-                with open(os.path.expanduser(value), 'r') as f:
+                with open(os.path.expanduser(value)) as f:
                     value = (os.path.basename(f.name), f.read())
             except IOError as e:
                 raise ParseError(

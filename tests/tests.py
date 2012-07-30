@@ -45,6 +45,7 @@ from httpie import input
 from httpie.models import Environment
 from httpie.core import main, get_output
 from httpie.output import BINARY_SUPPRESSED_NOTICE
+from httpie.input import ParseError
 
 
 HTTPBIN_URL = os.environ.get('HTTPBIN_URL',
@@ -52,7 +53,8 @@ HTTPBIN_URL = os.environ.get('HTTPBIN_URL',
 
 TEST_FILE_PATH = os.path.join(TESTS_ROOT, 'file.txt')
 TEST_FILE2_PATH = os.path.join(TESTS_ROOT, 'file2.txt')
-TEST_FILE_CONTENT = open(TEST_FILE_PATH).read().strip()
+with open(TEST_FILE_PATH) as f:
+    TEST_FILE_CONTENT = f.read().strip()
 TERMINAL_COLOR_PRESENCE_CHECK = '\x1b['
 
 
@@ -89,8 +91,8 @@ def http(*args, **kwargs):
             stdout_isatty=True,
         )
 
-    stdout = kwargs['env'].stdout = tempfile.TemporaryFile()
-    stderr = kwargs['env'].stderr = tempfile.TemporaryFile()
+    stdout = kwargs['env'].stdout = tempfile.TemporaryFile('w+b')
+    stderr = kwargs['env'].stderr = tempfile.TemporaryFile('w+t')
 
     exit_status = main(args=['--debug'] + list(args), **kwargs)
 
@@ -100,8 +102,10 @@ def http(*args, **kwargs):
     output = stdout.read()
 
     try:
+        #noinspection PyArgumentList
         r = StrResponse(output.decode('utf8'))
     except UnicodeDecodeError:
+        #noinspection PyArgumentList
         r = BytesResponse(output)
     else:
         if TERMINAL_COLOR_PRESENCE_CHECK not in r:
@@ -120,7 +124,7 @@ def http(*args, **kwargs):
                     except ValueError:
                         pass
 
-    r.stderr = stderr.read().decode('utf8')
+    r.stderr = stderr.read()
     r.exit_status = exit_status
 
     stdout.close()
@@ -133,10 +137,10 @@ class BaseTestCase(unittest.TestCase):
 
     if is_py26:
         def assertIn(self, member, container, msg=None):
-            self.assert_(member in container, msg)
+            self.assertTrue(member in container, msg)
 
         def assertNotIn(self, member, container, msg=None):
-            self.assert_(member not in container, msg)
+            self.assertTrue(member not in container, msg)
 
         def assertDictEqual(self, d1, d2, msg=None):
             self.assertEqual(set(d1.keys()), set(d2.keys()), msg)
@@ -206,19 +210,20 @@ class HTTPieTest(BaseTestCase):
 
     def test_POST_stdin(self):
 
-        env = Environment(
-            stdin=open(TEST_FILE_PATH),
-            stdin_isatty=False,
-            stdout_isatty=True,
-            colors=0,
-        )
+        with open(TEST_FILE_PATH) as f:
+            env = Environment(
+                stdin=f,
+                stdin_isatty=False,
+                stdout_isatty=True,
+                colors=0,
+            )
 
-        r = http(
-            '--form',
-            'POST',
-            httpbin('/post'),
-            env=env
-        )
+            r = http(
+                '--form',
+                'POST',
+                httpbin('/post'),
+                env=env
+            )
         self.assertIn('HTTP/1.1 200', r)
         self.assertIn(TEST_FILE_CONTENT, r)
 
@@ -434,17 +439,18 @@ class ImplicitHTTPMethodTest(BaseTestCase):
         self.assertIn('"foo": "bar"', r)
 
     def test_implicit_POST_stdin(self):
-        env = Environment(
-            stdin_isatty=False,
-            stdin=open(TEST_FILE_PATH),
-            stdout_isatty=True,
-            colors=0,
-        )
-        r = http(
-            '--form',
-            httpbin('/post'),
-            env=env
-        )
+        with open(TEST_FILE_PATH) as f:
+            env = Environment(
+                stdin_isatty=False,
+                stdin=f,
+                stdout_isatty=True,
+                colors=0,
+            )
+            r = http(
+                '--form',
+                httpbin('/post'),
+                env=env
+            )
         self.assertIn('HTTP/1.1 200', r)
 
 
@@ -500,6 +506,7 @@ class VerboseFlagTest(BaseTestCase):
             'test-header:__test__'
         )
         self.assertIn('HTTP/1.1 200', r)
+        #noinspection PyUnresolvedReferences
         self.assertEqual(r.count('__test__'), 2)
 
     def test_verbose_form(self):
@@ -524,18 +531,18 @@ class VerboseFlagTest(BaseTestCase):
             'baz=bar'
         )
         self.assertIn('HTTP/1.1 200', r)
+        #noinspection PyUnresolvedReferences
         self.assertEqual(r.count('"baz": "bar"'), 2)
 
 
 class MultipartFormDataFileUploadTest(BaseTestCase):
 
     def test_non_existent_file_raises_parse_error(self):
-        self.assertRaises(SystemExit, http,
+        self.assertRaises(ParseError, http,
             '--form',
-            '--traceback',
             'POST',
             httpbin('/post'),
-            'foo@/__does_not_exist__'
+            'foo@/__does_not_exist__',
         )
 
     def test_upload_ok(self):
@@ -552,6 +559,7 @@ class MultipartFormDataFileUploadTest(BaseTestCase):
         self.assertIn('Content-Disposition: form-data; name="foo"', r)
         self.assertIn('Content-Disposition: form-data; name="test-file";'
                       ' filename="%s"' % os.path.basename(TEST_FILE_PATH), r)
+        #noinspection PyUnresolvedReferences
         self.assertEqual(r.count(TEST_FILE_CONTENT), 2)
         self.assertIn('"foo": "bar"', r)
 
@@ -620,19 +628,38 @@ class RequestBodyFromFilePathTest(BaseTestCase):
         self.assertIn('"Content-Type": "x-foo/bar"', r)
 
     def test_request_body_from_file_by_path_no_field_name_allowed(self):
-        self.assertRaises(SystemExit, lambda: http(
-            'POST',
-            httpbin('/post'),
-            'field-name@' + TEST_FILE_PATH)
-        )
+        env = Environment(stdin_isatty=True)
+        try:
+            http(
+                'POST',
+                httpbin('/post'),
+                'field-name@' + TEST_FILE_PATH,
+                env=env
+            )
+        except SystemExit:
+            env.stderr.seek(0)
+            stderr = env.stderr.read()
+            self.assertIn('perhaps you meant --form?', stderr)
+        else:
+            self.fail('validation did not work')
 
     def test_request_body_from_file_by_path_no_data_items_allowed(self):
-        self.assertRaises(SystemExit, lambda: http(
-            'POST',
-            httpbin('/post'),
-            '@' + TEST_FILE_PATH,
-            'foo=bar')
-        )
+        env = Environment(stdin_isatty=True)
+        try:
+            http(
+                'POST',
+                httpbin('/post'),
+                '@' + TEST_FILE_PATH,
+                'foo=bar',
+                env=env
+            )
+        except SystemExit:
+            env.stderr.seek(0)
+            self.assertIn(
+                'cannot be mixed',
+                env.stderr.read())
+        else:
+            self.fail('validation did not work')
 
 
 class AuthTest(BaseTestCase):
@@ -727,7 +754,7 @@ class ExitStatusTest(BaseTestCase):
         self.assertIn('HTTP/1.1 401', r)
         self.assertEqual(r.exit_status, 4)
         # Also stderr should be empty since stdout isn't redirected.
-        self.assert_(not r.stderr)
+        self.assertTrue(not r.stderr)
 
     def test_5xx_check_status_exits_5(self):
         r = http(
@@ -737,6 +764,41 @@ class ExitStatusTest(BaseTestCase):
         )
         self.assertIn('HTTP/1.1 500', r)
         self.assertEqual(r.exit_status, 5)
+
+
+class FakeWindowsTest(BaseTestCase):
+
+    def test_stdout_redirect_not_supported_on_windows(self):
+        env = Environment(is_windows=True, stdout_isatty=False)
+        r = http(
+            'GET',
+            httpbin('/get'),
+            env=env
+        )
+        self.assertNotEqual(r.exit_status, 0)
+        self.assertIn('Windows', r.stderr)
+        self.assertIn('--output', r.stderr)
+
+    def test_output_file_pretty_not_allowed_on_windows(self):
+        env = Environment(
+            is_windows=True, stdout_isatty=True, stdin_isatty=True)
+
+        try:
+            http(
+                '--output',
+                os.path.join(tempfile.gettempdir(), '__httpie_test_output__'),
+                '--pretty',
+                'GET',
+                httpbin('/get'),
+                env=env
+            )
+        except SystemExit:
+            env.stderr.seek(0)
+            err = env.stderr.read()
+            self.assertIn(
+                'Only terminal output can be prettified on Windows', err)
+        else:
+            self.fail('validation did not work')
 
 
 #################################################################

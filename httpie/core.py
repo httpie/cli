@@ -148,7 +148,15 @@ def main(args=sys.argv[1:], env=Environment()):
     Return exit status.
 
     """
+
+    if env.is_windows and not env.stdout_isatty:
+        env.stderr.write(
+            'http: error: Output redirection is not supported on Windows.'
+            ' Please use `--output FILE\' instead.\n')
+        return 1
+
     args = parser.parse_args(args=args, env=env)
+
     response = get_response(args, env)
 
     status = 0
@@ -159,12 +167,13 @@ def main(args=sys.argv[1:], env=Environment()):
         if status and not env.stdout_isatty:
             err = 'http error: %s %s\n' % (
                 response.raw.status, response.raw.reason)
-            env.stderr.write(err.encode('utf8'))
+            env.stderr.write(err)
 
-    output_bytes = get_output(args, env, response.request, response)
+    output = get_output(args, env, response.request, response)
 
-    # output_bytes = output.encode('utf8')
-    f = getattr(env.stdout, 'buffer', env.stdout)
-    f.write(output_bytes)
+    try:
+        env.stdout.buffer.write(output)
+    except AttributeError:
+        env.stdout.write(output)
 
     return status

@@ -10,23 +10,18 @@ class Environment(object):
     and allows for mocking.
 
     """
+
+    #noinspection PyUnresolvedReferences
+    is_windows = is_windows
+
     progname = os.path.basename(sys.argv[0])
     if progname not in ['http', 'https']:
         progname = 'http'
 
     stdin_isatty = sys.stdin.isatty()
     stdin = sys.stdin
-
-    if is_windows:
-        # `colorama` patches `sys.stdout` so its initialization
-        # needs to happen before the default environment is set.
-        import colorama
-        colorama.init()
-        del colorama
-
     stdout_isatty = sys.stdout.isatty()
     stdout = sys.stdout
-
     stderr = sys.stderr
 
     # Can be set to 0 to disable colors completely.
@@ -34,6 +29,18 @@ class Environment(object):
 
     def __init__(self, **kwargs):
         self.__dict__.update(**kwargs)
+
+    def init_colors(self):
+        # We check for real Window here, not self.is_windows as
+        # it could be mocked.
+        if (is_windows and not self.__colors_initialized
+            and self.stdout == sys.stdout):
+            import colorama.initialise
+            self.stdout = colorama.initialise.wrap_stream(
+                self.stdout, autoreset=False,
+                convert=None, strip=None, wrap=True)
+            self.__colors_initialized = True
+    __colors_initialized = False
 
 
 class HTTPMessage(object):
@@ -49,7 +56,7 @@ class HTTPMessage(object):
         self.line = line  # {Request,Status}-Line
         self.headers = headers
         self.body = body
-        self.encoding = encoding
+        self.encoding = encoding or 'utf8'
         self.content_type = content_type
 
     @classmethod

@@ -3,6 +3,10 @@
 NOTE: the CLI interface may change before reaching v1.0.
 
 """
+import argparse
+
+from requests.compat import is_windows
+
 from . import __doc__
 from . import __version__
 from .output import AVAILABLE_STYLES
@@ -50,12 +54,19 @@ group_type.add_argument(
 # Output options.
 #############################################
 
+
 parser.add_argument(
-    '--debug', action='store_true', default=False,
-    help=_('''
-        Prints exception traceback should one occur and other
-        information useful for debugging HTTPie itself.
-    ''')
+    '--output', '-o', type=argparse.FileType('wb'),
+    metavar='FILE',
+    help= argparse.SUPPRESS if not is_windows else _(
+        '''
+        Save output to FILE.
+        This option is a replacement for piping output to FILE,
+        which would on Windows result into corrupted data
+        being saved.
+
+        '''
+    )
 )
 
 prettify = parser.add_mutually_exclusive_group(required=False)
@@ -198,6 +209,13 @@ parser.add_argument(
     help=_('''
         Float describes the timeout of the request
         (Use socket.setdefaulttimeout() as fallback).
+    ''')
+)
+parser.add_argument(
+    '--debug', action='store_true', default=False,
+    help=_('''
+        Prints exception traceback should one occur and other
+        information useful for debugging HTTPie itself.
     ''')
 )
 

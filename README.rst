@@ -334,6 +334,8 @@ Changelog
 =========
 
 * `0.2.7dev`_
+    * Windows: Added ``--output FILE`` to store output into a file
+      (piping results into corrupted data on Windows).
     * Proper handling of binary requests and responses.
     * Fixed printing of ``multipart/form-data`` requests.
     * Renamed ``--traceback`` to ``--debug``.
