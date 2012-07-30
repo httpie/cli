@@ -329,6 +329,8 @@ To run the existing suite of tests before a pull request is submitted::
     # Run tests
     tox
 
+Don't forget to add yourself to `AUTHORS`_.
+
 
 Changelog
 =========
@@ -412,3 +414,4 @@ have contributed.
 .. _0.2.6: https://github.com/jkbr/httpie/compare/0.2.5...0.2.6
 .. _0.2.7dev: https://github.com/jkbr/httpie/compare/0.2.6...master
 .. _☞ README for stable version: https://github.com/jkbr/httpie/tree/0.2.6#readme
+.. _AUTHORS: https://github.com/jkbr/httpie/blob/master/AUTHORS.rst
