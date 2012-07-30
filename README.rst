@@ -2,7 +2,7 @@
 HTTPie: cURL for humans
 =======================
 
-`☞ README for stable version`_
+☞ `README for stable version`_
 
 **HTTPie is a CLI HTTP utility** built out of frustration with existing tools.
 Its goal is to make CLI interaction with HTTP-based services as
@@ -26,11 +26,14 @@ Installation
 
 The latest **stable version** of HTTPie can always be installed or updated
 to via `pip`_ (prefered)
-or ``easy_install``::
+or ``easy_install``:
+
+.. code-block:: shell
 
     pip install -U httpie
 
     # easy_install httpie
+
 
 Or, you can install the **development version** directly from GitHub:
 
@@ -38,7 +41,7 @@ Or, you can install the **development version** directly from GitHub:
     :target: http://travis-ci.org/jkbr/httpie
     :alt: Build Status of the master branch
 
-::
+.. code-block:: shell
 
     pip install -U https://github.com/jkbr/httpie/tarball/master
 
@@ -100,11 +103,14 @@ separator used.
 
 Examples
 --------
-::
+
+.. code-block:: shell
 
     http PATCH api.example.com/person/1 X-API-Token:123 name=John email=john@example.org age:=29
 
-The following request is issued::
+The following request is issued:
+
+.. code-block:: javascript
 
     PATCH /person/1 HTTP/1.1
     User-Agent: HTTPie/0.1
@@ -125,12 +131,16 @@ It can easily be changed to a **form** request using the ``-f``
 
 It is also possible to send ``multipart/form-data`` requests, i.e., to
 simulate a **file upload form** submission. It is done using the
-``--form`` / ``-f`` flag and passing one or more file fields::
+``--form`` / ``-f`` flag and passing one or more file fields:
+
+.. code-block:: shell
 
     http -f POST example.com/jobs name=John cv@~/Documents/cv.pdf
 
 The above will send the same request as if the following HTML form were
-submitted::
+submitted:
+
+.. code-block:: html
 
     <form enctype="multipart/form-data" method="post" action="http://example.com/jobs">
         <input type="text" name="name" />
@@ -139,25 +149,33 @@ submitted::
 
 **Query string parameters** can be added to any request without having to
 escape the ``&`` characters. The following request will contain
-``?search=donuts&in=fridge`` as the query string part of the URL::
+``?search=donuts&in=fridge`` as the query string part of the URL:
+
+.. code-block:: shell
 
     http GET example.com search==donuts in==fridge
 
 The whole request body can also be passed in **via stdin,** in which
-case it will be used with no further processing::
+case it will be used with no further processing:
+
+.. code-block:: shell
 
     echo '{"name": "John"}' | http PATCH example.com/person/1 X-API-Token:123
     # Or:
     http POST example.com/person/1 X-API-Token:123 < person.json
 
 That can be used for **piping services together**. The following example
-``GET``-s JSON data from the Github API and ``POST``-s it to httpbin.org::
+``GET``-s JSON data from the Github API and ``POST``-s it to httpbin.org:
+
+.. code-block:: shell
 
     http GET https://api.github.com/repos/jkbr/httpie | http POST httpbin.org/post
 
 The above can be further simplified by omitting ``GET`` and ``POST`` because
 they are both default here as the first command has no request data whereas
-the second one has via ``stdin``::
+the second one has via ``stdin``:
+
+.. code-block:: shell
 
     http https://api.github.com/repos/jkbr/httpie | http httpbin.org/post
 
@@ -166,7 +184,9 @@ applies a different set of defaults than for a console output. Namely, colors
 aren't used (unless ``--pretty`` is set) and only the response body
 is printed (unless ``--print`` options specified). It is a convenience
 that allows for things like the one above or downloading (smallish) binary
-files without having to set any flags::
+files without having to set any flags:
+
+.. code-block:: shell
 
     http www.google.com/favicon.ico > favicon.ico
 
@@ -174,7 +194,9 @@ An alternative to ``stdin`` is to pass a filename whose content will be used
 as the request body. It has the advantage that the ``Content-Type`` header
 will automatically be set to the appropriate value based on the filename
 extension. Thus, the following will request will send the verbatim contents
-of the file with ``Content-Type: application/xml``::
+of the file with ``Content-Type: application/xml``:
+
+.. code-block:: shell
 
     http PUT httpbin.org/put @/data/file.xml
 
@@ -182,7 +204,9 @@ When using HTTPie from **shell scripts** it can be useful to use the
 ``--check-status`` flag. It instructs HTTPie to exit with an error if the
 HTTP status is one of ``3xx``, ``4xx``, or ``5xx``. The exit status will
 be ``3`` (unless ``--allow-redirects`` is set), ``4``, or ``5``,
-respectively::
+respectively:
+
+.. code-block:: shell
 
     #!/bin/bash
 
@@ -332,6 +356,13 @@ To run the existing suite of tests before a pull request is submitted::
 Don't forget to add yourself to `AUTHORS`_.
 
 
+Authors
+=======
+
+`Jakub Roztocil`_  (`@jakubroztocil`_) created HTTPie and `these fine people`_
+have contributed.
+
+
 Changelog
 =========
 
@@ -385,13 +416,6 @@ Changelog
 * `0.1.6`_ (2012-03-04)
 
 
-Authors
-=======
-
-`Jakub Roztocil`_  (`@jakubroztocil`_) created HTTPie and `these fine people`_
-have contributed.
-
-
 .. _suite of tests: https://github.com/jkbr/httpie/blob/master/tests/tests.py
 .. _continuous integration: http://travis-ci.org/#!/jkbr/httpie
 .. _Requests: http://python-requests.org
@@ -413,5 +437,5 @@ have contributed.
 .. _0.2.5: https://github.com/jkbr/httpie/compare/0.2.2...0.2.5
 .. _0.2.6: https://github.com/jkbr/httpie/compare/0.2.5...0.2.6
 .. _0.2.7dev: https://github.com/jkbr/httpie/compare/0.2.6...master
-.. _☞ README for stable version: https://github.com/jkbr/httpie/tree/0.2.6#readme
+.. _README for stable version: https://github.com/jkbr/httpie/tree/0.2.6#readme
 .. _AUTHORS: https://github.com/jkbr/httpie/blob/master/AUTHORS.rst
