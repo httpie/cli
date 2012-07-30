@@ -1,74 +1,57 @@
-"""
-A Pygments_ style based on the dark background variant of Solarized_.
-
-.. _Pygments: http://pygments.org/
-.. _Solarized: http://ethanschoonover.com/solarized
-
-Copyright (c) 2011 Hank Gay
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-
+# -*- coding: utf-8 -*-
 
 """
+    solarized256
+    ------------
+
+    A Pygments style inspired by Solarized's 256 color mode.
+
+    :copyright: (c) 2011 by Hank Gay, (c) 2012 by John Mastro.
+    :license: BSD, see LICENSE for more details.
+"""
+
 from pygments.style import Style
-from pygments.token import (Token, Comment, Name, Keyword, Generic, Number,
-                            Operator, String)
+from pygments.token import Token, Comment, Name, Keyword, Generic, Number, \
+    Operator, String
+
+BASE03  = "#1c1c1c"
+BASE02  = "#262626"
+BASE01  = "#4e4e4e"
+BASE00  = "#585858"
+BASE0   = "#808080"
+BASE1   = "#8a8a8a"
+BASE2   = "#d7d7af"
+BASE3   = "#ffffd7"
+YELLOW  = "#af8700"
+ORANGE  = "#d75f00"
+RED     = "#af0000"
+MAGENTA = "#af005f"
+VIOLET  = "#5f5faf"
+BLUE    = "#0087ff"
+CYAN    = "#00afaf"
+GREEN   = "#5f8700"
 
 
-BASE03 = '#002B36'
-BASE02 = '#073642'
-BASE01 = '#586E75'
-BASE00 = '#657B83'
-BASE0 = '#839496'
-BASE1 = '#93A1A1'
-BASE2 = '#EEE8D5'
-BASE3 = '#FDF6E3'
-YELLOW = '#B58900'
-ORANGE = '#CB4B16'
-RED = '#DC322F'
-MAGENTA = '#D33682'
-VIOLET = '#6C71C4'
-BLUE = '#268BD2'
-CYAN = '#2AA198'
-GREEN = '#859900'
-
-
-class SolarizedStyle(Style):
+class Solarized256Style(Style):
     background_color = BASE03
     styles = {
         Keyword: GREEN,
         Keyword.Constant: ORANGE,
         Keyword.Declaration: BLUE,
-        #Keyword.Namespace
+        Keyword.Namespace: ORANGE,
         #Keyword.Pseudo
         Keyword.Reserved: BLUE,
         Keyword.Type: RED,
 
         #Name
         Name.Attribute: BASE1,
-        Name.Builtin: YELLOW,
+        Name.Builtin: BLUE,
         Name.Builtin.Pseudo: BLUE,
         Name.Class: BLUE,
         Name.Constant: ORANGE,
         Name.Decorator: BLUE,
         Name.Entity: ORANGE,
-        Name.Exception: ORANGE,
+        Name.Exception: YELLOW,
         Name.Function: BLUE,
         #Name.Label
         #Name.Namespace
@@ -84,10 +67,10 @@ class SolarizedStyle(Style):
         String: CYAN,
         String.Backtick: BASE01,
         String.Char: CYAN,
-        String.Doc: BASE1,
+        String.Doc: CYAN,
         #String.Double
-        String.Escape: ORANGE,
-        String.Heredoc: BASE1,
+        String.Escape: RED,
+        String.Heredoc: CYAN,
         #String.Interpol
         #String.Other
         String.Regex: RED,
@@ -100,8 +83,8 @@ class SolarizedStyle(Style):
         #Number.Integer.Long
         #Number.Oct
 
-        Operator: GREEN,
-        #Operator.Word
+        Operator: BASE1,
+        Operator.Word: GREEN,
 
         #Punctuation: ORANGE,
 

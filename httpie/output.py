@@ -13,7 +13,7 @@ from pygments.formatters.terminal256 import Terminal256Formatter
 from pygments.util import ClassNotFound
 from requests.compat import is_windows
 
-from . import solarized
+from .solarized import Solarized256Style
 from .models import Environment
 
 
@@ -197,7 +197,7 @@ class PygmentsProcessor(BaseProcessor):
             style = get_style_by_name(
                 self.kwargs.get('pygments_style', DEFAULT_STYLE))
         except ClassNotFound:
-            style = solarized.SolarizedStyle
+            style = Solarized256Style
 
         if is_windows or self.env.colors == 256:
             fmt_class = Terminal256Formatter
