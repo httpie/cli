@@ -373,6 +373,7 @@ Changelog
 =========
 
 * `0.2.7dev`_
+    * Updated Solarized color scheme.
     * Windows: Added ``--output FILE`` to store output into a file
       (piping results into corrupted data on Windows).
     * Proper handling of binary requests and responses.

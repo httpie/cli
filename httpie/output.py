@@ -28,7 +28,7 @@ BINARY_SUPPRESSED_NOTICE = (
 
 def format(msg, prettifier=None, with_headers=True, with_body=True,
            env=Environment()):
-    """Return a UTF8-encoded representation of a `models.HTTPMessage`.
+    """Return `bytes` representation of a `models.HTTPMessage`.
 
     Sometimes the body contains binary data so we always return `bytes`.
 
@@ -36,9 +36,9 @@ def format(msg, prettifier=None, with_headers=True, with_body=True,
     body is not included in the output and is replaced with notice.
 
     Generally, when the `stdout` is redirected, the output matches the actual
-    message as much as possible. When `--pretty` set (or implied),
-    or when the output is a terminal, then we prefer readability over
-    precision.
+    message as much as possible (formatting and character encoding-wise).
+    When `--pretty` is set (or implied),  or when the output is a terminal,
+    then we prefer readability over precision.
 
     """
 
