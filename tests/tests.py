@@ -51,10 +51,16 @@ from httpie.input import ParseError
 HTTPBIN_URL = os.environ.get('HTTPBIN_URL',
                              'http://httpbin.org')
 
-TEST_FILE_PATH = os.path.join(TESTS_ROOT, 'file.txt')
-TEST_FILE2_PATH = os.path.join(TESTS_ROOT, 'file2.txt')
+TEST_FILE_PATH = os.path.join(TESTS_ROOT, 'fixtures', 'file.txt')
+TEST_FILE2_PATH = os.path.join(TESTS_ROOT, 'fixtures', 'file2.txt')
+
 with open(TEST_FILE_PATH) as f:
     TEST_FILE_CONTENT = f.read().strip()
+
+TEST_BIN_FILE_PATH = os.path.join(TESTS_ROOT, 'fixtures', 'file.bin')
+with open(TEST_BIN_FILE_PATH, 'rb') as f:
+    TEST_BIN_FILE_CONTENT = f.read()
+
 TERMINAL_COLOR_PRESENCE_CHECK = '\x1b['
 
 
@@ -82,7 +88,6 @@ def http(*args, **kwargs):
     and return a unicode response.
 
     """
-
     if 'env' not in kwargs:
         # Ensure that we have terminal by default (needed for Travis).
         kwargs['env'] = Environment(
@@ -94,7 +99,11 @@ def http(*args, **kwargs):
     stdout = kwargs['env'].stdout = tempfile.TemporaryFile('w+b')
     stderr = kwargs['env'].stderr = tempfile.TemporaryFile('w+t')
 
-    exit_status = main(args=['--debug'] + list(args), **kwargs)
+    try:
+        exit_status = main(args=['--debug'] + list(args), **kwargs)
+    except (Exception, SystemExit) as e:
+        sys.stderr.write(stderr.read())
+        raise
 
     stdout.seek(0)
     stderr.seek(0)
@@ -564,7 +573,54 @@ class MultipartFormDataFileUploadTest(BaseTestCase):
         self.assertIn('"foo": "bar"', r)
 
 
-class TestBinaryResponses(BaseTestCase):
+class BinaryRequestDataTest(BaseTestCase):
+
+    def test_binary_stdin(self):
+        env = Environment(
+            stdin=open(TEST_BIN_FILE_PATH, 'rb'),
+            stdin_isatty=False,
+            stdout_isatty=False
+        )
+        r = http(
+            '--print=B',
+            'POST',
+            httpbin('/post'),
+            env=env,
+        )
+        self.assertEqual(r, TEST_BIN_FILE_CONTENT)
+
+    def test_binary_file_path(self):
+        env = Environment(
+            stdin_isatty=True,
+            stdout_isatty=False
+        )
+        r = http(
+            '--print=B',
+            'POST',
+            httpbin('/post'),
+            '@' + TEST_BIN_FILE_PATH,
+            env=env,
+        )
+
+        self.assertEqual(r, TEST_BIN_FILE_CONTENT)
+
+    def test_binary_file_form(self):
+        env = Environment(
+            stdin_isatty=True,
+            stdout_isatty=False
+        )
+        r = http(
+            '--print=B',
+            '--form',
+            'POST',
+            httpbin('/post'),
+            'test@' + TEST_BIN_FILE_PATH,
+            env=env,
+        )
+        self.assertIn(bytes(TEST_BIN_FILE_CONTENT), bytes(r))
+
+
+class BinaryResponseDataTest(BaseTestCase):
 
     url = 'http://www.google.com/favicon.ico'
 

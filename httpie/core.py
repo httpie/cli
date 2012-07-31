@@ -85,7 +85,7 @@ def get_response(args, env):
     except Exception as e:
         if args.debug:
             raise
-        env.stderr.write(str(e.message) + '\n')
+        env.stderr.write(str(repr(e) + '\n'))
         sys.exit(1)
 
 

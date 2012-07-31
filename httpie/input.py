@@ -103,7 +103,7 @@ class Parser(argparse.ArgumentParser):
         self._parse_items(args)
 
         if not env.stdin_isatty:
-            self._body_from_file(args, env.stdin.read())
+            self._body_from_file(args, env.stdin)
 
         if args.auth and not args.auth.has_password():
             # Stdin already read (if not a tty) so it's save to prompt.
@@ -129,12 +129,16 @@ class Parser(argparse.ArgumentParser):
 
         super(Parser, self)._print_message(message, file)
 
-    def _body_from_file(self, args, data):
-        """There can only be one source of request data."""
+    def _body_from_file(self, args, fd):
+        """There can only be one source of request data.
+
+        Bytes are always read.
+
+        """
         if args.data:
             self.error('Request body (from stdin or a file) and request '
                        'data (key=value) cannot be mixed.')
-        args.data = data
+        args.data = getattr(fd, 'buffer', fd).read()
 
     def _guess_method(self, args, env):
         """Set `args.method` if not specified to either POST or GET
@@ -201,9 +205,9 @@ class Parser(argparse.ArgumentParser):
                     'Invalid file fields (perhaps you meant --form?): %s'
                     % ','.join(file_fields))
 
-            fn, data = args.files['']
+            fn, fd = args.files['']
             args.files = {}
-            self._body_from_file(args, data)
+            self._body_from_file(args, fd)
             if 'Content-Type' not in args.headers:
                 mime, encoding = mimetypes.guess_type(fn, strict=False)
                 if mime:
@@ -420,8 +424,8 @@ def parse_items(items, data=None, headers=None, files=None, params=None):
             target = params
         elif item.sep == SEP_FILES:
             try:
-                with open(os.path.expanduser(value)) as f:
-                    value = (os.path.basename(f.name), f.read())
+                value = (os.path.basename(value),
+                         open(os.path.expanduser(value), 'rb'))
             except IOError as e:
                 raise ParseError(
                     'Invalid argument "%s": %s' % (item.orig, e))

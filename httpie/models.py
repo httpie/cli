@@ -120,6 +120,10 @@ class HTTPMessage(object):
 
         # Body
         if request.files:
+            # TODO: would be nice if we didn't need to encode the files again
+            for fn, fd in request.files.values():
+                # Rewind the files as they have already been read before.
+                fd.seek(0)
             body, _ = request._encode_files(request.files)
         else:
             try:
