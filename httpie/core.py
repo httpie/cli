@@ -85,7 +85,6 @@ def output_stream(args, env, request, response):
 
     """
 
-    exchange = []
     prettifier = (OutputProcessor(env, pygments_style=args.style)
                   if args.prettify else None)
 
@@ -105,8 +104,8 @@ def output_stream(args, env, request, response):
         for chunk in request_iter:
             yield chunk
 
-        if with_response:
-            yield b'\n\n\n'
+    if with_request and with_response:
+        yield b'\n\n\n'
 
     if with_response:
         response_iter = formatted_stream(

@@ -375,6 +375,7 @@ Changelog
 * `0.2.7dev`_
     * Support for efficient large file downloads.
     * Response body is fetched only when needed (e.g., not with ``--headers``).
+    * Improved content type matching.
     * Updated Solarized color scheme.
     * Windows: Added ``--output FILE`` to store output into a file
       (piping results into corrupted data on Windows).

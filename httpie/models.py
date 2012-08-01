@@ -58,7 +58,7 @@ class HTTPResponse(HTTPMessage):
     """A `requests.models.Response` wrapper."""
 
     def __iter__(self):
-        mb = 1024 * 1000
+        mb = 1024 * 1024
         return self._orig.iter_content(chunk_size=2 * mb)
 
     @property
