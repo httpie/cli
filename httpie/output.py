@@ -26,11 +26,12 @@ BINARY_SUPPRESSED_NOTICE = (
 )
 
 
-def format(msg, prettifier=None, with_headers=True, with_body=True,
-           env=Environment()):
-    """Return `bytes` representation of a `models.HTTPMessage`.
+def formatted_stream(msg, prettifier=None, with_headers=True, with_body=True,
+                     env=Environment()):
+    """Return an iterator yielding `bytes` representing `msg`
+    (a `models.HTTPMessage` subclass).
 
-    Sometimes the body contains binary data so we always return `bytes`.
+    The body can be binary so we always yield `bytes`.
 
     If `prettifier` is set or the output is a terminal then a binary
     body is not included in the output and is replaced with notice.
@@ -41,7 +42,6 @@ def format(msg, prettifier=None, with_headers=True, with_body=True,
     then we prefer readability over precision.
 
     """
-
     # Output encoding.
     if env.stdout_isatty:
         # Use encoding suitable for the terminal. Unsupported characters
@@ -59,46 +59,42 @@ def format(msg, prettifier=None, with_headers=True, with_body=True,
     if prettifier:
         env.init_colors()
 
-    #noinspection PyArgumentList
-    output = bytearray()
-
     if with_headers:
         headers = '\n'.join([msg.line, msg.headers])
 
         if prettifier:
             headers = prettifier.process_headers(headers)
 
-        output.extend(
-            headers.encode(output_encoding, errors).strip())
+        yield headers.encode(output_encoding, errors).strip()
 
-        if with_body and msg.body:
-            output.extend(b'\n\n')
+    if with_body:
 
-    if with_body and msg.body:
-
-        body = msg.body
+        prefix = b'\n\n' if with_headers else None
 
         if not (env.stdout_isatty or prettifier):
             # Verbatim body even if it's binary.
-            pass
-        else:
+            for body_chunk in msg:
+                if prefix:
+                    yield prefix
+                    prefix = None
+                yield body_chunk
+        elif msg.body:
             try:
-                body = body.decode(msg.encoding)
+                body = msg.body.decode(msg.encoding)
             except UnicodeDecodeError:
                 # Suppress binary data.
                 body = BINARY_SUPPRESSED_NOTICE.encode(output_encoding)
                 if not with_headers:
-                    output.extend(b'\n')
+                    yield b'\n'
             else:
                 if prettifier and msg.content_type:
                     body = prettifier.process_body(
                         body, msg.content_type).strip()
 
                 body = body.encode(output_encoding, errors)
-
-        output.extend(body)
-
-    return bytes(output)
+            if prefix:
+                yield prefix
+            yield body
 
 
 class HTTPLexer(lexer.RegexLexer):

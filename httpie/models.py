@@ -57,6 +57,10 @@ class HTTPMessage(object):
 class HTTPResponse(HTTPMessage):
     """A `requests.models.Response` wrapper."""
 
+    def __iter__(self):
+        mb = 1024 * 1000
+        return self._orig.iter_content(chunk_size=2 * mb)
+
     @property
     def line(self):
         """Return Status-Line"""
@@ -84,6 +88,9 @@ class HTTPResponse(HTTPMessage):
 
 class HTTPRequest(HTTPMessage):
     """A `requests.models.Request` wrapper."""
+
+    def __iter__(self):
+        yield self.body
 
     @property
     def line(self):

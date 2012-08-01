@@ -22,9 +22,9 @@ To make it run faster and offline you can::
 import os
 import sys
 import json
-import tempfile
 import unittest
 import argparse
+import tempfile
 try:
     from urllib.request import urlopen
 except ImportError:
@@ -43,7 +43,7 @@ sys.path.insert(0, os.path.realpath(os.path.join(TESTS_ROOT, '..')))
 
 from httpie import input
 from httpie.models import Environment
-from httpie.core import main, get_output
+from httpie.core import main, output_stream
 from httpie.output import BINARY_SUPPRESSED_NOTICE
 from httpie.input import ParseError
 
@@ -104,42 +104,43 @@ def http(*args, **kwargs):
     except (Exception, SystemExit) as e:
         sys.stderr.write(stderr.read())
         raise
-
-    stdout.seek(0)
-    stderr.seek(0)
-
-    output = stdout.read()
-
-    try:
-        #noinspection PyArgumentList
-        r = StrResponse(output.decode('utf8'))
-    except UnicodeDecodeError:
-        #noinspection PyArgumentList
-        r = BytesResponse(output)
     else:
-        if TERMINAL_COLOR_PRESENCE_CHECK not in r:
-            # De-serialize JSON body if possible.
-            if r.strip().startswith('{'):
-                #noinspection PyTypeChecker
-                r.json = json.loads(r)
-            elif r.count('Content-Type:') == 1 and 'application/json' in r:
-                try:
-                    j = r.strip()[r.strip().rindex('\n\n'):]
-                except ValueError:
-                    pass
-                else:
+        stdout.seek(0)
+        stderr.seek(0)
+
+        output = stdout.read()
+
+        try:
+            #noinspection PyArgumentList
+            r = StrResponse(output.decode('utf8'))
+        except UnicodeDecodeError:
+            #noinspection PyArgumentList
+            r = BytesResponse(output)
+        else:
+            if TERMINAL_COLOR_PRESENCE_CHECK not in r:
+                # De-serialize JSON body if possible.
+                if r.strip().startswith('{'):
+                    #noinspection PyTypeChecker
+                    r.json = json.loads(r)
+                elif r.count('Content-Type:') == 1 and 'application/json' in r:
                     try:
-                        r.json = json.loads(j)
+                        j = r.strip()[r.strip().rindex('\n\n'):]
                     except ValueError:
                         pass
+                    else:
+                        try:
+                            r.json = json.loads(j)
+                        except ValueError:
+                            pass
 
-    r.stderr = stderr.read()
-    r.exit_status = exit_status
+        r.stderr = stderr.read()
+        r.exit_status = exit_status
+        return r
+    finally:
+        stdout.close()
+        stderr.close()
 
-    stdout.close()
-    stderr.close()
 
-    return r
 
 
 class BaseTestCase(unittest.TestCase):
@@ -591,18 +592,19 @@ class MultipartFormDataFileUploadTest(BaseTestCase):
 class BinaryRequestDataTest(BaseTestCase):
 
     def test_binary_stdin(self):
-        env = Environment(
-            stdin=open(TEST_BIN_FILE_PATH, 'rb'),
-            stdin_isatty=False,
-            stdout_isatty=False
-        )
-        r = http(
-            '--print=B',
-            'POST',
-            httpbin('/post'),
-            env=env,
-        )
-        self.assertEqual(r, TEST_BIN_FILE_CONTENT)
+        with open(TEST_BIN_FILE_PATH, 'rb') as stdin:
+            env = Environment(
+                stdin=stdin,
+                stdin_isatty=False,
+                stdout_isatty=False
+            )
+            r = http(
+                '--print=B',
+                'POST',
+                httpbin('/post'),
+                env=env,
+            )
+            self.assertEqual(r, TEST_BIN_FILE_CONTENT)
 
     def test_binary_file_path(self):
         env = Environment(
@@ -700,37 +702,24 @@ class RequestBodyFromFilePathTest(BaseTestCase):
 
     def test_request_body_from_file_by_path_no_field_name_allowed(self):
         env = Environment(stdin_isatty=True)
-        try:
-            http(
-                'POST',
-                httpbin('/post'),
-                'field-name@' + TEST_FILE_PATH,
-                env=env
-            )
-        except SystemExit:
-            env.stderr.seek(0)
-            stderr = env.stderr.read()
-            self.assertIn('perhaps you meant --form?', stderr)
-        else:
-            self.fail('validation did not work')
+        r = http(
+            'POST',
+            httpbin('/post'),
+            'field-name@' + TEST_FILE_PATH,
+            env=env
+        )
+        self.assertIn('perhaps you meant --form?', r.stderr)
 
     def test_request_body_from_file_by_path_no_data_items_allowed(self):
         env = Environment(stdin_isatty=True)
-        try:
-            http(
-                'POST',
-                httpbin('/post'),
-                '@' + TEST_FILE_PATH,
-                'foo=bar',
-                env=env
-            )
-        except SystemExit:
-            env.stderr.seek(0)
-            self.assertIn(
-                'cannot be mixed',
-                env.stderr.read())
-        else:
-            self.fail('validation did not work')
+        r = http(
+            'POST',
+            httpbin('/post'),
+            '@' + TEST_FILE_PATH,
+            'foo=bar',
+            env=env
+        )
+        self.assertIn('cannot be mixed', r.stderr)
 
 
 class AuthTest(BaseTestCase):
@@ -852,24 +841,21 @@ class FakeWindowsTest(BaseTestCase):
 
     def test_output_file_pretty_not_allowed_on_windows(self):
         env = Environment(
-            is_windows=True, stdout_isatty=True, stdin_isatty=True)
+            is_windows=True,
+            stdout_isatty=True,
+            stdin_isatty=True
+        )
 
-        try:
-            http(
-                '--output',
-                os.path.join(tempfile.gettempdir(), '__httpie_test_output__'),
-                '--pretty',
-                'GET',
-                httpbin('/get'),
-                env=env
-            )
-        except SystemExit:
-            env.stderr.seek(0)
-            err = env.stderr.read()
-            self.assertIn(
-                'Only terminal output can be prettified on Windows', err)
-        else:
-            self.fail('validation did not work')
+        r = http(
+            '--output',
+            os.path.join(tempfile.gettempdir(), '__httpie_test_output__'),
+            '--pretty',
+            'GET',
+            httpbin('/get'),
+            env=env
+        )
+        self.assertIn(
+            'Only terminal output can be prettified on Windows', r.stderr)
 
 
 #################################################################
@@ -1077,7 +1063,8 @@ class UnicodeOutputTestCase(BaseTestCase):
         args.style = 'default'
 
         # colorized output contains escape sequences
-        output = get_output(args, Environment(), response.request, response).decode('utf8')
+        output = output_stream(args, Environment(), response.request, response)
+        output = b''.join(output).decode('utf8')
         for key, value in response_dict.items():
             self.assertIn(key, output)
             self.assertIn(value, output)

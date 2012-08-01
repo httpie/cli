@@ -8,6 +8,7 @@ import json
 import argparse
 import mimetypes
 import getpass
+from io import BytesIO
 
 try:
     from collections import OrderedDict
@@ -424,8 +425,9 @@ def parse_items(items, data=None, headers=None, files=None, params=None):
             target = params
         elif item.sep == SEP_FILES:
             try:
-                value = (os.path.basename(value),
-                         open(os.path.expanduser(value), 'rb'))
+                with open(os.path.expanduser(value), 'rb') as f:
+                    value = (os.path.basename(value),
+                             BytesIO(f.read()))
             except IOError as e:
                 raise ParseError(
                     'Invalid argument "%s": %s' % (item.orig, e))

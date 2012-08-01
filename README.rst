@@ -183,7 +183,7 @@ Note that when the **output is redirected** (like the examples above), HTTPie
 applies a different set of defaults than for a console output. Namely, colors
 aren't used (unless ``--pretty`` is set) and only the response body
 is printed (unless ``--print`` options specified). It is a convenience
-that allows for things like the one above or downloading (smallish) binary
+that allows for things like the one above or downloading binary
 files without having to set any flags:
 
 .. code-block:: shell
@@ -373,6 +373,7 @@ Changelog
 =========
 
 * `0.2.7dev`_
+    * Support for efficient large file downloads.
     * Response body is fetched only when needed (e.g., not with ``--headers``).
     * Updated Solarized color scheme.
     * Windows: Added ``--output FILE`` to store output into a file
