@@ -373,6 +373,7 @@ Changelog
 =========
 
 * `0.2.7dev`_
+    * Response body is fetched only when needed (e.g., not with ``--headers``).
     * Updated Solarized color scheme.
     * Windows: Added ``--output FILE`` to store output into a file
       (piping results into corrupted data on Windows).

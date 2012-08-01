@@ -46,100 +46,112 @@ class Environment(object):
 class HTTPMessage(object):
     """Model representing an HTTP message."""
 
-    def __init__(self, line, headers, body, encoding=None, content_type=None):
-        """All args are a `str` except for `body` which is a `bytes`."""
+    def __init__(self, orig):
+        self._orig = orig
 
-        assert isinstance(line, str)
-        assert content_type is None or isinstance(content_type, str)
-        assert isinstance(body, bytes)
+    @property
+    def content_type(self):
+        return str(self._orig.headers.get('Content-Type', ''))
 
-        self.line = line  # {Request,Status}-Line
-        self.headers = headers
-        self.body = body
-        self.encoding = encoding or 'utf8'
-        self.content_type = content_type
 
-    @classmethod
-    def from_response(cls, response):
-        """Make an `HTTPMessage` from `requests.models.Response`."""
-        encoding = response.encoding or None
-        original = response.raw._original_response
-        response_headers = response.headers
-        status_line = str('HTTP/{version} {status} {reason}'.format(
-            version='.'.join(str(original.version)),
-            status=original.status,
-            reason=original.reason
-        ))
-        body = response.content
+class HTTPResponse(HTTPMessage):
+    """A `requests.models.Response` wrapper."""
 
-        return cls(line=status_line,
-                   headers=str(original.msg),
-                   body=body,
-                   encoding=encoding,
-                   content_type=str(response_headers.get('Content-Type', '')))
+    @property
+    def line(self):
+        """Return Status-Line"""
+        original = self._orig.raw._original_response
+        return str('HTTP/{version} {status} {reason}'.format(
+             version='.'.join(str(original.version)),
+             status=original.status,
+             reason=original.reason
+         ))
 
-    @classmethod
-    def from_request(cls, request):
-        """Make an `HTTPMessage` from `requests.models.Request`."""
+    @property
+    def headers(self):
+        return str(self._orig.raw._original_response.msg)
 
-        url = urlparse(request.url)
+    @property
+    def encoding(self):
+        return self._orig.encoding or 'utf8'
+
+    @property
+    def body(self):
+        # Only now the response body is fetched.
+        # Shouldn't be touched unless the body is actually needed.
+        return self._orig.content
+
+
+class HTTPRequest(HTTPMessage):
+    """A `requests.models.Request` wrapper."""
+
+    @property
+    def line(self):
+        """Return Request-Line"""
+        url = urlparse(self._orig.url)
 
         # Querystring
         qs = ''
-        if url.query or request.params:
+        if url.query or self._orig.params:
             qs = '?'
             if url.query:
                 qs += url.query
             # Requests doesn't make params part of ``request.url``.
-            if request.params:
+            if self._orig.params:
                 if url.query:
                     qs += '&'
                 #noinspection PyUnresolvedReferences
-                qs += type(request)._encode_params(request.params)
+                qs += type(self._orig)._encode_params(self._orig.params)
 
         # Request-Line
-        request_line = str('{method} {path}{query} HTTP/1.1'.format(
-            method=request.method,
+        return str('{method} {path}{query} HTTP/1.1'.format(
+            method=self._orig.method,
             path=url.path or '/',
             query=qs
         ))
 
-        # Headers
-        headers = dict(request.headers)
+    @property
+    def headers(self):
+        headers = dict(self._orig.headers)
         content_type = headers.get('Content-Type')
 
         if isinstance(content_type, bytes):
             # Happens when uploading files.
             # TODO: submit a bug report for Requests
-            content_type = headers['Content-Type'] = content_type.decode('utf8')
+            headers['Content-Type'] = str(content_type)
 
         if 'Host' not in headers:
-            headers['Host'] = url.netloc
-        headers = '\n'.join('%s: %s' % (name, value)
-                            for name, value in headers.items())
+            headers['Host'] = urlparse(self._orig.url).netloc
 
-        # Body
-        if request.files:
+        return '\n'.join('%s: %s' % (name, value)
+                         for name, value in headers.items())
+
+    @property
+    def encoding(self):
+        return 'utf8'
+
+    @property
+    def body(self):
+        """Reconstruct and return the original request body bytes."""
+        if self._orig.files:
             # TODO: would be nice if we didn't need to encode the files again
-            for fn, fd in request.files.values():
+            # FIXME: Also the boundary header doesn't match the one used.
+            for fn, fd in self._orig.files.values():
                 # Rewind the files as they have already been read before.
                 fd.seek(0)
-            body, _ = request._encode_files(request.files)
+            body, _ = self._orig._encode_files(self._orig.files)
         else:
             try:
-                body = request.data
+                body = self._orig.data
             except AttributeError:
                 # requests < 0.12.1
-                body = request._enc_data
+                body = self._orig._enc_data
 
             if isinstance(body, dict):
                 #noinspection PyUnresolvedReferences
-                body = type(request)._encode_params(body)
+                body = type(self._orig)._encode_params(body)
 
             if isinstance(body, str):
                 body = body.encode('utf8')
 
-        return cls(line=request_line,
-                   headers=headers,
-                   body=body,
-                   content_type=content_type)
+        return body

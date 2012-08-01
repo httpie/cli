@@ -15,7 +15,7 @@ import requests
 import requests.auth
 from requests.compat import str
 
-from .models import HTTPMessage, Environment
+from .models import HTTPRequest, HTTPResponse, Environment
 from .output import OutputProcessor, format
 from .input import (OUT_REQ_BODY, OUT_REQ_HEAD,
                     OUT_RESP_HEAD, OUT_RESP_BODY)
@@ -102,7 +102,7 @@ def get_output(args, env, request, response):
     if (OUT_REQ_HEAD in args.output_options
         or OUT_REQ_BODY in args.output_options):
         exchange.append(format(
-            HTTPMessage.from_request(request),
+            msg=HTTPRequest(request),
             env=env,
             prettifier=prettifier,
             with_headers=OUT_REQ_HEAD in args.output_options,
@@ -112,7 +112,7 @@ def get_output(args, env, request, response):
     if (OUT_RESP_HEAD in args.output_options
         or OUT_RESP_BODY in args.output_options):
         exchange.append(format(
-            HTTPMessage.from_response(response),
+            msg=HTTPResponse(response),
             env=env,
             prettifier=prettifier,
             with_headers=OUT_RESP_HEAD in args.output_options,
