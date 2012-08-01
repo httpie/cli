@@ -504,6 +504,21 @@ class PrettyFlagTest(BaseTestCase):
         )
         self.assertNotIn(TERMINAL_COLOR_PRESENCE_CHECK, r)
 
+    def test_subtype_based_pygments_lexer_match(self):
+        """Test that media subtype is used if type/subtype doesn't
+        match any lexer.
+
+        """
+        r = http(
+            '--print=B',
+            '--pretty',
+            httpbin('/post'),
+            'Content-Type:text/foo+json',
+            'a=b',
+            env=Environment()
+        )
+        self.assertIn(TERMINAL_COLOR_PRESENCE_CHECK, r)
+
 
 class VerboseFlagTest(BaseTestCase):
 

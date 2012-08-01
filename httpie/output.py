@@ -7,7 +7,7 @@ import json
 import pygments
 from pygments import token, lexer
 from pygments.styles import get_style_by_name, STYLE_MAP
-from pygments.lexers import get_lexer_for_mimetype
+from pygments.lexers import get_lexer_for_mimetype, get_lexer_by_name
 from pygments.formatters.terminal import TerminalFormatter
 from pygments.formatters.terminal256 import Terminal256Formatter
 from pygments.util import ClassNotFound
@@ -162,24 +162,30 @@ class BaseProcessor(object):
     def process_headers(self, headers):
         return headers
 
-    def process_body(self, content, content_type):
+    def process_body(self, content, content_type, subtype):
+        """Return processed `content`.
+
+        :param content: `str`
+        :param content_type: full content type, e.g., 'application/atom+xml'
+        :param subtype: e.g., 'xml'
+
+        """
         return content
 
 
 class JSONProcessor(BaseProcessor):
 
-    def process_body(self, content, content_type):
-        if content_type == 'application/json':
+    def process_body(self, content, content_type, subtype):
+        if subtype == 'json':
             try:
-                # Indent and sort the JSON data.
-                content = json.dumps(
-                    json.loads(content),
-                    sort_keys=True,
-                    ensure_ascii=False,
-                    indent=4,
-                )
+                # Indent the JSON data, sort keys by name, and
+                # avoid unicode escapes to improve readability.
+                content = json.dumps(json.loads(content),
+                                     sort_keys=True,
+                                     ensure_ascii=False,
+                                     indent=4)
             except ValueError:
-                # Invalid JSON - we don't care.
+                # Invalid JSON but we don't care.
                 pass
         return content
 
@@ -209,9 +215,12 @@ class PygmentsProcessor(BaseProcessor):
         return pygments.highlight(
             headers, HTTPLexer(), self.formatter)
 
-    def process_body(self, content, content_type):
+    def process_body(self, content, content_type, subtype):
         try:
-            lexer = get_lexer_for_mimetype(content_type)
+            try:
+                lexer = get_lexer_for_mimetype(content_type)
+            except ClassNotFound:
+                lexer = get_lexer_by_name(subtype)
         except ClassNotFound:
             pass
         else:
@@ -235,22 +244,16 @@ class OutputProcessor(object):
 
     def process_headers(self, headers):
         for processor in self.processors:
-         headers = processor.process_headers(headers)
+            headers = processor.process_headers(headers)
         return headers
 
     def process_body(self, content, content_type):
+        # e.g., 'application/atom+xml'
         content_type = content_type.split(';')[0]
-
-        application_match = re.match(
-            r'application/(.+\+)(json|xml)$',
-            content_type
-        )
-        if application_match:
-            # Strip vendor and extensions from Content-Type
-            vendor, extension = application_match.groups()
-            content_type = content_type.replace(vendor, '')
+        # e.g., 'xml'
+        subtype = content_type.split('/')[-1].split('+')[-1]
 
         for processor in self.processors:
-            content = processor.process_body(content, content_type)
+            content = processor.process_body(content, content_type, subtype)
 
         return content
