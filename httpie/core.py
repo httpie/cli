@@ -143,6 +143,7 @@ def main(args=sys.argv[1:], env=Environment()):
     Return exit status.
 
     """
+    debug = '--debug' in args
 
     if env.is_windows and not env.stdout_isatty:
         env.stderr.write(
@@ -178,9 +179,9 @@ def main(args=sys.argv[1:], env=Environment()):
         env.stderr.write('\n')
         return 1
     except Exception as e:
-        if '--debug' in args:
+        if debug:
             raise
-        env.stderr.write(str(repr(e) + '\n'))
+        env.stderr.write(str(e.message) + '\n')
         return 1
 
     return status
