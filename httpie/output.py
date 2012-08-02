@@ -224,10 +224,23 @@ class PygmentsProcessor(BaseProcessor):
         return content
 
 
+class HeadersProcessor(BaseProcessor):
+    """
+    Sorts headers by name retaining relative order of multiple headers
+    with the same name.
+
+    """
+    def process_headers(self, headers):
+        lines = headers.splitlines()
+        headers = sorted(lines[1:], key=lambda h: h.split(':')[0])
+        return '\n'.join(lines[:1] + headers)
+
+
 class OutputProcessor(object):
 
     installed_processors = [
         JSONProcessor,
+        HeadersProcessor,
         PygmentsProcessor
     ]
 
