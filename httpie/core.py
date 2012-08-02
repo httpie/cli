@@ -3,20 +3,27 @@
 Invocation flow:
 
     1. Read, validate and process the input (args, `stdin`).
-    2. Create a request and send it, get the response.
-    3. Process and format the requested parts of the request-response exchange.
-    4. Write to `stdout` and exit.
+    2. Create and send a request.
+    3. Stream, and possibly process and format, the requested parts
+       of the request-response exchange.
+    4. Simultaneously write to `stdout`
+    5. Exit.
 
 """
 import sys
 import json
+import errno
+from itertools import chain
+from functools import partial
 
 import requests
 import requests.auth
 from requests.compat import str
 
 from .models import HTTPRequest, HTTPResponse, Environment
-from .output import OutputProcessor, formatted_stream
+from .output import (OutputProcessor, RawStream, PrettyStream,
+                     BufferedPrettyStream, EncodedStream)
+
 from .input import (OUT_REQ_BODY, OUT_REQ_HEAD,
                     OUT_RESP_HEAD, OUT_RESP_BODY)
 from .cli import parser
@@ -85,41 +92,50 @@ def output_stream(args, env, request, response):
 
     """
 
-    prettifier = (OutputProcessor(env, pygments_style=args.style)
-                  if args.prettify else None)
+    # Pick the right stream type for this exchange based on `env` and `args`.
+    if not env.stdout_isatty and not args.prettify:
+        Stream = partial(
+            RawStream,
+            chunk_size=RawStream.CHUNK_SIZE_BY_LINE
+                       if args.stream
+                       else RawStream.CHUNK_SIZE)
+    elif args.prettify:
+        Stream = partial(
+            PrettyStream if args.stream else BufferedPrettyStream,
+            processor=OutputProcessor(env, pygments_style=args.style),
+            env=env)
+    else:
+        Stream = partial(EncodedStream, env=env)
 
-    with_request = (OUT_REQ_HEAD in args.output_options
-                    or OUT_REQ_BODY in args.output_options)
-    with_response = (OUT_RESP_HEAD in args.output_options
-                     or OUT_RESP_BODY in args.output_options)
+    req_h = OUT_REQ_HEAD in args.output_options
+    req_b = OUT_REQ_BODY in args.output_options
+    resp_h = OUT_RESP_HEAD in args.output_options
+    resp_b = OUT_RESP_BODY  in args.output_options
 
-    if with_request:
-        request_iter = formatted_stream(
+    req = req_h or req_b
+    resp = resp_h or resp_b
+
+    output = []
+
+    if req:
+        output.append(Stream(
             msg=HTTPRequest(request),
-            env=env,
-            prettifier=prettifier,
-            with_headers=OUT_REQ_HEAD in args.output_options,
-            with_body=OUT_REQ_BODY in args.output_options)
+            with_headers=req_h,
+            with_body=req_b))
 
-        for chunk in request_iter:
-            yield chunk
+    if req and resp:
+        output.append([b'\n\n\n'])
 
-    if with_request and with_response:
-        yield b'\n\n\n'
-
-    if with_response:
-        response_iter = formatted_stream(
+    if resp:
+        output.append(Stream(
             msg=HTTPResponse(response),
-            env=env,
-            prettifier=prettifier,
-            with_headers=OUT_RESP_HEAD in args.output_options,
-            with_body=OUT_RESP_BODY in args.output_options)
-
-        for chunk in response_iter:
-            yield chunk
+            with_headers=resp_h,
+            with_body=resp_b))
 
     if env.stdout_isatty:
-        yield b'\n\n'
+        output.append([b'\n\n'])
+
+    return chain(*output)
 
 
 def get_exist_status(code, allow_redirects=False):
@@ -170,18 +186,30 @@ def main(args=sys.argv[1:], env=Environment()):
         except AttributeError:
             buffer = env.stdout
 
-        for chunk in output_stream(args, env, response.request, response):
-            buffer.write(chunk)
-            if env.stdout_isatty:
-                env.stdout.flush()
+        try:
+            for chunk in output_stream(args, env, response.request, response):
+                buffer.write(chunk)
+                if env.stdout_isatty or args.stream:
+                    env.stdout.flush()
+
+        except IOError as e:
+            if debug:
+                raise
+            if e.errno == errno.EPIPE:
+                env.stderr.write('\n')
+            else:
+                env.stderr.write(str(e) + '\n')
+            return 1
 
     except (KeyboardInterrupt, SystemExit):
+        if debug:
+            raise
         env.stderr.write('\n')
         return 1
     except Exception as e:
         if debug:
             raise
-        env.stderr.write(str(e.message) + '\n')
+        env.stderr.write(str(e) + '\n')
         return 1
 
     return status

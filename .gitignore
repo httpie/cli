@@ -4,3 +4,6 @@ build
 *.pyc
 .tox
 README.html
+.coverage
+htmlcov
+

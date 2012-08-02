@@ -79,7 +79,7 @@ There are five different types of key/value pair ``items`` available:
 |                       | nested ``Object``, or an ``Array``. It's because    |
 |                       | simple data items are always serialized as a        |
 |                       | ``String``. E.g., ``pies:=[1,2,3]``, or             |
-|                       | ``'meals:=["ham","spam"]'`` (note the quotes).      |
+|                       | ``meals:='["ham","spam"]'`` (note the quotes).      |
 |                       | It may be more convenient to pass the whole JSON    |
 |                       | body via ``stdin`` when it's more complex           |
 |                       | (see examples bellow).                              |
@@ -221,18 +221,31 @@ respectively:
         esac
     fi
 
+**The output is always streamed** unless ``--pretty`` is set or implied. You
+can use ``--stream`` / ``-S`` to enable streaming even with ``--pretty``, in
+which case every line of the output will processed and flushed as soon as it's
+avaialbe (as opossed to buffering the whole response which wouldn't work for
+long-lived requests). You can test it with the Twitter streaming API:
+
+.. code-block:: shell
+
+    http -Sfa <your-twitter-username> https://stream.twitter.com/1/statuses/filter.json track='Justin Bieber'
+    #     \/
+    # The short options for --stream, --form and --auth.
+
+``--stream`` can also be used regardless of ``--pretty`` to ensure a more
+frequent output flushing (sort of like ``tail -f``).
 
 Flags
 -----
 
 ``$ http --help``::
 
-    usage: http [--help] [--version] [--json | --form] [--traceback]
-                [--pretty | --ugly]
+    usage: http [--help] [--version] [--json | --form] [--pretty | --ugly]
                 [--print OUTPUT_OPTIONS | --verbose | --headers | --body]
-                [--style STYLE] [--check-status] [--auth AUTH]
+                [--style STYLE] [--stream] [--check-status] [--auth AUTH]
                 [--auth-type {basic,digest}] [--verify VERIFY] [--proxy PROXY]
-                [--allow-redirects] [--timeout TIMEOUT]
+                [--allow-redirects] [--timeout TIMEOUT] [--debug]
                 [METHOD] URL [ITEM [ITEM ...]]
 
     HTTPie - cURL for humans. <http://httpie.org>
@@ -266,7 +279,6 @@ Flags
                             -www-form-urlencoded (if not specified). The presence
                             of any file fields results into a multipart/form-data
                             request.
-      --traceback           Print exception traceback should one occur.
       --pretty              If stdout is a terminal, the response is prettified by
                             default (colorized and indented if it is JSON). This
                             flag ensures prettifying even when stdout is
@@ -282,7 +294,7 @@ Flags
                             piped to another program or to a file, then only the
                             body is printed by default.
       --verbose, -v         Print the whole request as well as the response.
-                            Shortcut for --print=HBhb.
+                            Shortcut for --print=HBbh.
       --headers, -h         Print only the response headers. Shortcut for
                             --print=h.
       --body, -b            Print only the response body. Shortcut for --print=b.
@@ -291,10 +303,19 @@ Flags
                             colorful, default, emacs, friendly, fruity, manni,
                             monokai, murphy, native, pastie, perldoc, rrt,
                             solarized, tango, trac, vim, vs. Defaults to
-                            solarized. For this option to work properly, please
+                            "solarized". For this option to work properly, please
                             make sure that the $TERM environment variable is set
                             to "xterm-256color" or similar (e.g., via `export TERM
                             =xterm-256color' in your ~/.bashrc).
+      --stream, -S          Always stream the output by line, i.e., behave like
+                            `tail -f'. Without --stream and with --pretty (either
+                            set or implied), HTTPie fetches the whole response
+                            before it outputs the processed data. Set this option
+                            when you want to continuously display a prettified
+                            long-lived response, such as one from the Twitter
+                            streaming API. It is useful also without --pretty: It
+                            ensures that the output is flushed more often and in
+                            smaller chunks.
       --check-status        By default, HTTPie exits with 0 when no network or
                             other fatal errors occur. This flag instructs HTTPie
                             to also check the HTTP status code and exit with an
@@ -321,6 +342,9 @@ Flags
                             POST-ing of data at new ``Location``)
       --timeout TIMEOUT     Float describes the timeout of the request (Use
                             socket.setdefaulttimeout() as fallback).
+      --debug               Prints exception traceback should one occur and other
+                            information useful for debugging HTTPie itself.
+
 
 
 Contribute
@@ -373,6 +397,9 @@ Changelog
 =========
 
 * `0.2.7dev`_
+    * Streamed terminal output. ``--stream`` / ``-S`` can be used to enable
+      streaming also with ``--pretty`` and to ensure a more frequent output
+      flushing.
     * Support for efficient large file downloads.
     * Response body is fetched only when needed (e.g., not with ``--headers``).
     * Improved content type matching.

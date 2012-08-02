@@ -22,64 +22,94 @@ To make it run faster and offline you can::
 import os
 import sys
 import json
-import unittest
 import argparse
 import tempfile
+import unittest
+try:
+    from unittest import skipIf
+except ImportError:
+    def skipIf(cond, test_method):
+        if cond:
+            return test_method
+        return lambda self: None
 try:
     from urllib.request import urlopen
 except ImportError:
     from urllib2 import urlopen
 
-import requests
-from requests.compat import is_py26, is_py3, bytes, str
+from requests.compat import is_windows, is_py26, bytes, str
+
 
 #################################################################
 # Utils/setup
 #################################################################
 
 # HACK: Prepend ../ to PYTHONPATH so that we can import httpie form there.
-TESTS_ROOT = os.path.dirname(__file__)
+TESTS_ROOT = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, os.path.realpath(os.path.join(TESTS_ROOT, '..')))
 
 from httpie import input
 from httpie.models import Environment
-from httpie.core import main, output_stream
+from httpie.core import main
 from httpie.output import BINARY_SUPPRESSED_NOTICE
 from httpie.input import ParseError
 
 
 HTTPBIN_URL = os.environ.get('HTTPBIN_URL',
-                             'http://httpbin.org')
+                             'http://httpbin.org').rstrip('/')
 
-TEST_FILE_PATH = os.path.join(TESTS_ROOT, 'fixtures', 'file.txt')
-TEST_FILE2_PATH = os.path.join(TESTS_ROOT, 'fixtures', 'file2.txt')
 
-with open(TEST_FILE_PATH) as f:
-    TEST_FILE_CONTENT = f.read().strip()
+OK = 'HTTP/1.1 200'
+OK_COLOR = (
+    'HTTP\x1b[39m\x1b[38;5;245m/\x1b[39m\x1b'
+    '[38;5;37m1.1\x1b[39m\x1b[38;5;245m \x1b[39m\x1b[38;5;37m200'
+    '\x1b[39m\x1b[38;5;245m \x1b[39m\x1b[38;5;136mOK'
+)
+COLOR = '\x1b['
 
-TEST_BIN_FILE_PATH = os.path.join(TESTS_ROOT, 'fixtures', 'file.bin')
-with open(TEST_BIN_FILE_PATH, 'rb') as f:
-    TEST_BIN_FILE_CONTENT = f.read()
 
-TERMINAL_COLOR_PRESENCE_CHECK = '\x1b['
+def patharg(path):
+    """Back slashes need to be escaped in ITEM args, even in Windows paths."""
+    return path.replace('\\', '\\\\\\')
+
+# Test files
+FILE_PATH = os.path.join(TESTS_ROOT, 'fixtures', 'file.txt')
+FILE2_PATH = os.path.join(TESTS_ROOT, 'fixtures', 'file2.txt')
+BIN_FILE_PATH = os.path.join(TESTS_ROOT, 'fixtures', 'file.bin')
+
+FILE_PATH_ARG = patharg(FILE_PATH)
+FILE2_PATH_ARG = patharg(FILE2_PATH)
+BIN_FILE_PATH_ARG = patharg(BIN_FILE_PATH)
+
+with open(FILE_PATH) as f:
+    FILE_CONTENT = f.read().strip()
+with open(BIN_FILE_PATH, 'rb') as f:
+    BIN_FILE_CONTENT = f.read()
 
 
 def httpbin(path):
     return HTTPBIN_URL + path
 
 
-class ResponseMixin(object):
-    exit_status = None
-    stderr = None
-    json = None
+class TestEnvironment(Environment):
+    colors = 0
+    stdin_isatty = True,
+    stdout_isatty = True
+    is_windows = False
+
+    def __init__(self, **kwargs):
+
+        if 'stdout' not in kwargs:
+            kwargs['stdout'] = tempfile.TemporaryFile('w+b')
+
+        if 'stderr' not in kwargs:
+            kwargs['stderr'] = tempfile.TemporaryFile('w+t')
+
+        super(TestEnvironment, self).__init__(**kwargs)
 
 
-class BytesResponse(bytes, ResponseMixin):
-    pass
-
-
-class StrResponse(str, ResponseMixin):
-    pass
+class BytesResponse(bytes): pass
+class StrResponse(str): pass
 
 
 def http(*args, **kwargs):
@@ -87,37 +117,41 @@ def http(*args, **kwargs):
     Invoke `httpie.core.main()` with `args` and `kwargs`,
     and return a unicode response.
 
-    """
-    if 'env' not in kwargs:
-        # Ensure that we have terminal by default (needed for Travis).
-        kwargs['env'] = Environment(
-            colors=0,
-            stdin_isatty=True,
-            stdout_isatty=True,
-        )
+    Return a `StrResponse`, or `BytesResponse` if unable to decode the output.
+    The response has the following attributes:
 
-    stdout = kwargs['env'].stdout = tempfile.TemporaryFile('w+b')
-    stderr = kwargs['env'].stderr = tempfile.TemporaryFile('w+t')
+        `stderr`: text written to stderr
+        `exit_status`: the exit status
+        `json`: decoded JSON (if possible) or `None`
+
+    Exceptions are propagated except for SystemExit.
+
+    """
+    env = kwargs.get('env')
+    if not env:
+        env = kwargs['env'] = TestEnvironment()
 
     try:
-        exit_status = main(args=['--debug'] + list(args), **kwargs)
-    except (Exception, SystemExit) as e:
-        sys.stderr.write(stderr.read())
-        raise
-    else:
-        stdout.seek(0)
-        stderr.seek(0)
-
-        output = stdout.read()
 
         try:
-            #noinspection PyArgumentList
+            exit_status = main(args=['--debug'] + list(args), **kwargs)
+        except Exception:
+            sys.stderr.write(env.stderr.read())
+            raise
+        except SystemExit:
+            exit_status = 1
+
+        env.stdout.seek(0)
+        env.stderr.seek(0)
+
+        output = env.stdout.read()
+
+        try:
             r = StrResponse(output.decode('utf8'))
         except UnicodeDecodeError:
-            #noinspection PyArgumentList
             r = BytesResponse(output)
         else:
-            if TERMINAL_COLOR_PRESENCE_CHECK not in r:
+            if COLOR not in r:
                 # De-serialize JSON body if possible.
                 if r.strip().startswith('{'):
                     #noinspection PyTypeChecker
@@ -133,14 +167,14 @@ def http(*args, **kwargs):
                         except ValueError:
                             pass
 
-        r.stderr = stderr.read()
+        r.stderr = env.stderr.read()
         r.exit_status = exit_status
+
         return r
+
     finally:
-        stdout.close()
-        stderr.close()
-
-
+        env.stdout.close()
+        env.stderr.close()
 
 
 class BaseTestCase(unittest.TestCase):
@@ -168,14 +202,14 @@ class HTTPieTest(BaseTestCase):
             'GET',
             httpbin('/get')
         )
-        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn(OK, r)
 
     def test_DELETE(self):
         r = http(
             'DELETE',
             httpbin('/delete')
         )
-        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn(OK, r)
 
     def test_PUT(self):
         r = http(
@@ -183,7 +217,7 @@ class HTTPieTest(BaseTestCase):
             httpbin('/put'),
             'foo=bar'
         )
-        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn(OK, r)
         self.assertIn('"foo": "bar"', r)
 
     def test_POST_JSON_data(self):
@@ -192,7 +226,7 @@ class HTTPieTest(BaseTestCase):
             httpbin('/post'),
             'foo=bar'
         )
-        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn(OK, r)
         self.assertIn('"foo": "bar"', r)
 
     def test_POST_form(self):
@@ -202,7 +236,7 @@ class HTTPieTest(BaseTestCase):
             httpbin('/post'),
             'foo=bar'
         )
-        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn(OK, r)
         self.assertIn('"foo": "bar"', r)
 
     def test_POST_form_multiple_values(self):
@@ -213,19 +247,17 @@ class HTTPieTest(BaseTestCase):
             'foo=bar',
             'foo=baz',
         )
-        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn(OK, r)
         self.assertDictEqual(r.json['form'], {
             'foo': ['bar', 'baz']
         })
 
     def test_POST_stdin(self):
 
-        with open(TEST_FILE_PATH) as f:
-            env = Environment(
+        with open(FILE_PATH) as f:
+            env = TestEnvironment(
                 stdin=f,
                 stdin_isatty=False,
-                stdout_isatty=True,
-                colors=0,
             )
 
             r = http(
@@ -234,8 +266,8 @@ class HTTPieTest(BaseTestCase):
                 httpbin('/post'),
                 env=env
             )
-        self.assertIn('HTTP/1.1 200', r)
-        self.assertIn(TEST_FILE_CONTENT, r)
+        self.assertIn(OK, r)
+        self.assertIn(FILE_CONTENT, r)
 
     def test_headers(self):
         r = http(
@@ -243,7 +275,7 @@ class HTTPieTest(BaseTestCase):
             httpbin('/headers'),
             'Foo:bar'
         )
-        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn(OK, r)
         self.assertIn('"User-Agent": "HTTPie', r)
         self.assertIn('"Foo": "bar"', r)
 
@@ -260,7 +292,7 @@ class QuerystringTest(BaseTestCase):
         path = '/get?a=1&b=2'
         url = httpbin(path)
 
-        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn(OK, r)
         self.assertIn('GET %s HTTP/1.1' % path, r)
         self.assertIn('"url": "%s"' % url, r)
 
@@ -276,7 +308,7 @@ class QuerystringTest(BaseTestCase):
         path = '/get?a=1&b=2'
         url = httpbin(path)
 
-        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn(OK, r)
         self.assertIn('GET %s HTTP/1.1' % path, r)
         self.assertIn('"url": "%s"' % url, r)
 
@@ -293,7 +325,7 @@ class QuerystringTest(BaseTestCase):
         path = '/get?a=1&a=1&a=1&a=1&b=2'
         url = httpbin(path)
 
-        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn(OK, r)
         self.assertIn('GET %s HTTP/1.1' % path, r)
         self.assertIn('"url": "%s"' % url, r)
 
@@ -311,7 +343,7 @@ class AutoContentTypeAndAcceptHeadersTest(BaseTestCase):
             'GET',
             httpbin('/headers')
         )
-        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn(OK, r)
         self.assertIn('"Accept": "*/*"', r)
         self.assertNotIn('"Content-Type": "application/json', r)
 
@@ -321,7 +353,7 @@ class AutoContentTypeAndAcceptHeadersTest(BaseTestCase):
             'POST',
             httpbin('/post')
         )
-        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn(OK, r)
         self.assertIn('"Accept": "*/*"', r)
         self.assertNotIn('"Content-Type": "application/json', r)
 
@@ -331,7 +363,7 @@ class AutoContentTypeAndAcceptHeadersTest(BaseTestCase):
             httpbin('/post'),
             'a=b'
         )
-        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn(OK, r)
         self.assertIn('"Accept": "application/json"', r)
         self.assertIn('"Content-Type": "application/json; charset=utf-8', r)
 
@@ -342,7 +374,7 @@ class AutoContentTypeAndAcceptHeadersTest(BaseTestCase):
             httpbin('/post'),
             'a=b'
         )
-        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn(OK, r)
         self.assertIn('"Accept": "application/json"', r)
         self.assertIn('"Content-Type": "application/json; charset=utf-8', r)
 
@@ -352,7 +384,7 @@ class AutoContentTypeAndAcceptHeadersTest(BaseTestCase):
             'POST',
             httpbin('/post')
         )
-        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn(OK, r)
         self.assertIn('"Accept": "application/json"', r)
         self.assertIn('"Content-Type": "application/json; charset=utf-8', r)
 
@@ -364,7 +396,7 @@ class AutoContentTypeAndAcceptHeadersTest(BaseTestCase):
             'Accept:application/xml',
             'Content-Type:application/xml'
         )
-        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn(OK, r)
         self.assertIn('"Accept": "application/xml"', r)
         self.assertIn('"Content-Type": "application/xml"', r)
 
@@ -374,7 +406,7 @@ class AutoContentTypeAndAcceptHeadersTest(BaseTestCase):
             'POST',
             httpbin('/post')
         )
-        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn(OK, r)
         self.assertIn(
             '"Content-Type":'
             ' "application/x-www-form-urlencoded; charset=utf-8"',
@@ -388,7 +420,7 @@ class AutoContentTypeAndAcceptHeadersTest(BaseTestCase):
             httpbin('/post'),
             'Content-Type:application/xml'
         )
-        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn(OK, r)
         self.assertIn('"Content-Type": "application/xml"', r)
 
     def test_print_only_body_when_stdout_redirected_by_default(self):
@@ -396,7 +428,7 @@ class AutoContentTypeAndAcceptHeadersTest(BaseTestCase):
         r = http(
             'GET',
             httpbin('/get'),
-            env=Environment(
+            env=TestEnvironment(
                 stdin_isatty=True,
                 stdout_isatty=False
             )
@@ -409,26 +441,26 @@ class AutoContentTypeAndAcceptHeadersTest(BaseTestCase):
             '--print=h',
             'GET',
             httpbin('/get'),
-            env=Environment(
+            env=TestEnvironment(
                 stdin_isatty=True,
                 stdout_isatty=False
             )
         )
-        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn(OK, r)
 
 
 class ImplicitHTTPMethodTest(BaseTestCase):
 
     def test_implicit_GET(self):
         r = http(httpbin('/get'))
-        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn(OK, r)
 
     def test_implicit_GET_with_headers(self):
         r = http(
             httpbin('/headers'),
             'Foo:bar'
         )
-        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn(OK, r)
         self.assertIn('"Foo": "bar"', r)
 
     def test_implicit_POST_json(self):
@@ -436,7 +468,7 @@ class ImplicitHTTPMethodTest(BaseTestCase):
             httpbin('/post'),
             'hello=world'
         )
-        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn(OK, r)
         self.assertIn('"hello": "world"', r)
 
     def test_implicit_POST_form(self):
@@ -445,23 +477,21 @@ class ImplicitHTTPMethodTest(BaseTestCase):
             httpbin('/post'),
             'foo=bar'
         )
-        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn(OK, r)
         self.assertIn('"foo": "bar"', r)
 
     def test_implicit_POST_stdin(self):
-        with open(TEST_FILE_PATH) as f:
-            env = Environment(
+        with open(FILE_PATH) as f:
+            env = TestEnvironment(
                 stdin_isatty=False,
                 stdin=f,
-                stdout_isatty=True,
-                colors=0,
             )
             r = http(
                 '--form',
                 httpbin('/post'),
                 env=env
             )
-        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn(OK, r)
 
 
 class PrettyFlagTest(BaseTestCase):
@@ -471,31 +501,25 @@ class PrettyFlagTest(BaseTestCase):
         r = http(
             'GET',
             httpbin('/get'),
-            env=Environment(
-                stdin_isatty=True,
-                stdout_isatty=True,
-            ),
+            env=TestEnvironment(colors=256),
         )
-        self.assertIn(TERMINAL_COLOR_PRESENCE_CHECK, r)
+        self.assertIn(COLOR, r)
 
     def test_pretty_enabled_by_default_unless_stdout_redirected(self):
         r = http(
             'GET',
             httpbin('/get')
         )
-        self.assertNotIn(TERMINAL_COLOR_PRESENCE_CHECK, r)
+        self.assertNotIn(COLOR, r)
 
     def test_force_pretty(self):
         r = http(
             '--pretty',
             'GET',
             httpbin('/get'),
-            env=Environment(
-                stdin_isatty=True,
-                stdout_isatty=False
-            ),
+            env=TestEnvironment(stdout_isatty=False, colors=256),
         )
-        self.assertIn(TERMINAL_COLOR_PRESENCE_CHECK, r)
+        self.assertIn(COLOR, r)
 
     def test_force_ugly(self):
         r = http(
@@ -503,7 +527,7 @@ class PrettyFlagTest(BaseTestCase):
             'GET',
             httpbin('/get'),
         )
-        self.assertNotIn(TERMINAL_COLOR_PRESENCE_CHECK, r)
+        self.assertNotIn(COLOR, r)
 
     def test_subtype_based_pygments_lexer_match(self):
         """Test that media subtype is used if type/subtype doesn't
@@ -516,9 +540,9 @@ class PrettyFlagTest(BaseTestCase):
             httpbin('/post'),
             'Content-Type:text/foo+json',
             'a=b',
-            env=Environment()
+            env=TestEnvironment(colors=256)
         )
-        self.assertIn(TERMINAL_COLOR_PRESENCE_CHECK, r)
+        self.assertIn(COLOR, r)
 
 
 class VerboseFlagTest(BaseTestCase):
@@ -530,7 +554,7 @@ class VerboseFlagTest(BaseTestCase):
             httpbin('/get'),
             'test-header:__test__'
         )
-        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn(OK, r)
         #noinspection PyUnresolvedReferences
         self.assertEqual(r.count('__test__'), 2)
 
@@ -544,7 +568,7 @@ class VerboseFlagTest(BaseTestCase):
             'foo=bar',
             'baz=bar'
         )
-        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn(OK, r)
         self.assertIn('foo=bar&baz=bar', r)
 
     def test_verbose_json(self):
@@ -555,7 +579,7 @@ class VerboseFlagTest(BaseTestCase):
             'foo=bar',
             'baz=bar'
         )
-        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn(OK, r)
         #noinspection PyUnresolvedReferences
         self.assertEqual(r.count('"baz": "bar"'), 2)
 
@@ -576,24 +600,24 @@ class MultipartFormDataFileUploadTest(BaseTestCase):
             '--verbose',
             'POST',
             httpbin('/post'),
-            'test-file@%s' % TEST_FILE_PATH,
+            'test-file@%s' % FILE_PATH_ARG,
             'foo=bar'
         )
 
-        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn(OK, r)
         self.assertIn('Content-Disposition: form-data; name="foo"', r)
         self.assertIn('Content-Disposition: form-data; name="test-file";'
-                      ' filename="%s"' % os.path.basename(TEST_FILE_PATH), r)
+                      ' filename="%s"' % os.path.basename(FILE_PATH), r)
         #noinspection PyUnresolvedReferences
-        self.assertEqual(r.count(TEST_FILE_CONTENT), 2)
+        self.assertEqual(r.count(FILE_CONTENT), 2)
         self.assertIn('"foo": "bar"', r)
 
 
 class BinaryRequestDataTest(BaseTestCase):
 
     def test_binary_stdin(self):
-        with open(TEST_BIN_FILE_PATH, 'rb') as stdin:
-            env = Environment(
+        with open(BIN_FILE_PATH, 'rb') as stdin:
+            env = TestEnvironment(
                 stdin=stdin,
                 stdin_isatty=False,
                 stdout_isatty=False
@@ -604,10 +628,10 @@ class BinaryRequestDataTest(BaseTestCase):
                 httpbin('/post'),
                 env=env,
             )
-            self.assertEqual(r, TEST_BIN_FILE_CONTENT)
+            self.assertEqual(r, BIN_FILE_CONTENT)
 
     def test_binary_file_path(self):
-        env = Environment(
+        env = TestEnvironment(
             stdin_isatty=True,
             stdout_isatty=False
         )
@@ -615,14 +639,14 @@ class BinaryRequestDataTest(BaseTestCase):
             '--print=B',
             'POST',
             httpbin('/post'),
-            '@' + TEST_BIN_FILE_PATH,
+            '@' + BIN_FILE_PATH_ARG,
             env=env,
         )
 
-        self.assertEqual(r, TEST_BIN_FILE_CONTENT)
+        self.assertEqual(r, BIN_FILE_CONTENT)
 
     def test_binary_file_form(self):
-        env = Environment(
+        env = TestEnvironment(
             stdin_isatty=True,
             stdout_isatty=False
         )
@@ -631,10 +655,10 @@ class BinaryRequestDataTest(BaseTestCase):
             '--form',
             'POST',
             httpbin('/post'),
-            'test@' + TEST_BIN_FILE_PATH,
+            'test@' + BIN_FILE_PATH_ARG,
             env=env,
         )
-        self.assertIn(bytes(TEST_BIN_FILE_CONTENT), bytes(r))
+        self.assertIn(bytes(BIN_FILE_CONTENT), bytes(r))
 
 
 class BinaryResponseDataTest(BaseTestCase):
@@ -652,23 +676,23 @@ class BinaryResponseDataTest(BaseTestCase):
             'GET',
             self.url
         )
-        self.assertIn(BINARY_SUPPRESSED_NOTICE, r)
+        self.assertIn(BINARY_SUPPRESSED_NOTICE.decode(), r)
 
     def test_binary_suppresses_when_not_terminal_but_pretty(self):
         r = http(
             '--pretty',
             'GET',
             self.url,
-            env=Environment(stdin_isatty=True,
+            env=TestEnvironment(stdin_isatty=True,
                             stdout_isatty=False)
         )
-        self.assertIn(BINARY_SUPPRESSED_NOTICE, r)
+        self.assertIn(BINARY_SUPPRESSED_NOTICE.decode(), r)
 
     def test_binary_included_and_correct_when_suitable(self):
         r = http(
             'GET',
             self.url,
-            env=Environment(stdin_isatty=True,
+            env=TestEnvironment(stdin_isatty=True,
                             stdout_isatty=False)
         )
         self.assertEqual(r, self.bindata)
@@ -683,41 +707,40 @@ class RequestBodyFromFilePathTest(BaseTestCase):
         r = http(
             'POST',
             httpbin('/post'),
-            '@' + TEST_FILE_PATH
+            '@' + FILE_PATH_ARG
         )
-        self.assertIn('HTTP/1.1 200', r)
-        self.assertIn(TEST_FILE_CONTENT, r)
+        self.assertIn(OK, r)
+        self.assertIn(FILE_CONTENT, r)
         self.assertIn('"Content-Type": "text/plain"', r)
 
     def test_request_body_from_file_by_path_with_explicit_content_type(self):
         r = http(
             'POST',
             httpbin('/post'),
-            '@' + TEST_FILE_PATH,
+            '@' + FILE_PATH_ARG,
             'Content-Type:x-foo/bar'
         )
-        self.assertIn('HTTP/1.1 200', r)
-        self.assertIn(TEST_FILE_CONTENT, r)
+        self.assertIn(OK, r)
+        self.assertIn(FILE_CONTENT, r)
         self.assertIn('"Content-Type": "x-foo/bar"', r)
 
     def test_request_body_from_file_by_path_no_field_name_allowed(self):
-        env = Environment(stdin_isatty=True)
+        env = TestEnvironment(stdin_isatty=True)
         r = http(
             'POST',
             httpbin('/post'),
-            'field-name@' + TEST_FILE_PATH,
+            'field-name@' + FILE_PATH_ARG,
             env=env
         )
         self.assertIn('perhaps you meant --form?', r.stderr)
 
     def test_request_body_from_file_by_path_no_data_items_allowed(self):
-        env = Environment(stdin_isatty=True)
         r = http(
             'POST',
             httpbin('/post'),
-            '@' + TEST_FILE_PATH,
+            '@' + FILE_PATH_ARG,
             'foo=bar',
-            env=env
+            env=TestEnvironment(stdin_isatty=False)
         )
         self.assertIn('cannot be mixed', r.stderr)
 
@@ -730,7 +753,7 @@ class AuthTest(BaseTestCase):
             'GET',
             httpbin('/basic-auth/user/password')
         )
-        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn(OK, r)
         self.assertIn('"authenticated": true', r)
         self.assertIn('"user": "user"', r)
 
@@ -741,7 +764,7 @@ class AuthTest(BaseTestCase):
             'GET',
             httpbin('/digest-auth/auth/user/password')
         )
-        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn(OK, r)
         self.assertIn('"authenticated": true', r)
         self.assertIn('"user": "user"', r)
 
@@ -756,7 +779,7 @@ class AuthTest(BaseTestCase):
             httpbin('/basic-auth/user/password')
         )
 
-        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn(OK, r)
         self.assertIn('"authenticated": true', r)
         self.assertIn('"user": "user"', r)
 
@@ -768,7 +791,7 @@ class ExitStatusTest(BaseTestCase):
             'GET',
             httpbin('/status/200')
         )
-        self.assertIn('HTTP/1.1 200', r)
+        self.assertIn(OK, r)
         self.assertEqual(r.exit_status, 0)
 
     def test_error_response_exits_0_without_check_status(self):
@@ -785,10 +808,7 @@ class ExitStatusTest(BaseTestCase):
             '--headers',  # non-terminal, force headers
             'GET',
             httpbin('/status/301'),
-            env=Environment(
-                stdout_isatty=False,
-                stdin_isatty=True,
-            )
+            env=TestEnvironment(stdout_isatty=False,)
         )
         self.assertIn('HTTP/1.1 301', r)
         self.assertEqual(r.exit_status, 3)
@@ -829,7 +849,7 @@ class ExitStatusTest(BaseTestCase):
 class FakeWindowsTest(BaseTestCase):
 
     def test_stdout_redirect_not_supported_on_windows(self):
-        env = Environment(is_windows=True, stdout_isatty=False)
+        env = TestEnvironment(is_windows=True, stdout_isatty=False)
         r = http(
             'GET',
             httpbin('/get'),
@@ -840,11 +860,6 @@ class FakeWindowsTest(BaseTestCase):
         self.assertIn('--output', r.stderr)
 
     def test_output_file_pretty_not_allowed_on_windows(self):
-        env = Environment(
-            is_windows=True,
-            stdout_isatty=True,
-            stdin_isatty=True
-        )
 
         r = http(
             '--output',
@@ -852,10 +867,69 @@ class FakeWindowsTest(BaseTestCase):
             '--pretty',
             'GET',
             httpbin('/get'),
-            env=env
+            env=TestEnvironment(is_windows=True)
         )
         self.assertIn(
             'Only terminal output can be prettified on Windows', r.stderr)
+
+
+class StreamTest(BaseTestCase):
+    # GET because httpbin 500s with binary POST body.
+
+    @skipIf(is_windows, 'Pretty redirect not supported under Windows')
+    def test_pretty_redirected_stream(self):
+        """Test that --stream works with prettified redirected output."""
+        with open(BIN_FILE_PATH, 'rb') as f:
+            r = http(
+                '--verbose',
+                '--pretty',
+                '--stream',
+                'GET',
+                httpbin('/get'),
+                env=TestEnvironment(
+                    colors=256,
+                    stdin=f,
+                    stdin_isatty=False,
+                    stdout_isatty=False,
+                )
+            )
+        self.assertIn(BINARY_SUPPRESSED_NOTICE.decode(), r)
+        self.assertIn(OK_COLOR, r)
+
+    def test_encoded_stream(self):
+        """Test that --stream works with non-prettified redirected terminal output."""
+        with open(BIN_FILE_PATH, 'rb') as f:
+            r = http(
+                '--ugly',
+                '--stream',
+                '--verbose',
+                'GET',
+                httpbin('/get'),
+                env=TestEnvironment(
+                    stdin=f,
+                    stdin_isatty=False
+                ),
+            )
+        self.assertIn(BINARY_SUPPRESSED_NOTICE.decode(), r)
+        self.assertIn(OK, r)
+
+    def test_redirected_stream(self):
+        """Test that --stream works with non-prettified redirected terminal output."""
+        with open(BIN_FILE_PATH, 'rb') as f:
+            r = http(
+                '--ugly',
+                '--stream',
+                '--verbose',
+                'GET',
+                httpbin('/get'),
+                env=TestEnvironment(
+                    stdout_isatty=False,
+                    stdin=f,
+                    stdin_isatty=False
+                )
+            )
+        self.assertIn(OK.encode(), r)
+        self.assertIn(BIN_FILE_CONTENT, r)
 
 
 #################################################################
@@ -887,7 +961,7 @@ class ItemParsingTest(BaseTestCase):
             # data
             self.key_value_type('baz\\=bar=foo'),
             # files
-            self.key_value_type('bar\\@baz@%s' % TEST_FILE_PATH)
+            self.key_value_type('bar\\@baz@%s' % FILE_PATH_ARG)
         ])
         self.assertDictEqual(headers, {
             'foo:bar': 'baz',
@@ -915,7 +989,7 @@ class ItemParsingTest(BaseTestCase):
             self.key_value_type('eh:'),
             self.key_value_type('ed='),
             self.key_value_type('bool:=true'),
-            self.key_value_type('test-file@%s' % TEST_FILE_PATH),
+            self.key_value_type('test-file@%s' % FILE_PATH_ARG),
             self.key_value_type('query==value'),
         ])
         self.assertDictEqual(headers, {
@@ -946,7 +1020,7 @@ class ArgumentParserTestCase(unittest.TestCase):
         args.url = 'http://example.com/'
         args.items = []
 
-        self.parser._guess_method(args, Environment())
+        self.parser._guess_method(args, TestEnvironment())
 
         self.assertEqual(args.method, 'GET')
         self.assertEqual(args.url, 'http://example.com/')
@@ -958,10 +1032,7 @@ class ArgumentParserTestCase(unittest.TestCase):
         args.url = 'http://example.com/'
         args.items = []
 
-        self.parser._guess_method(args, Environment(
-            stdin_isatty=True,
-            stdout_isatty=True,
-        ))
+        self.parser._guess_method(args, TestEnvironment())
 
         self.assertEqual(args.method, 'GET')
         self.assertEqual(args.url, 'http://example.com/')
@@ -973,7 +1044,7 @@ class ArgumentParserTestCase(unittest.TestCase):
         args.url = 'data=field'
         args.items = []
 
-        self.parser._guess_method(args, Environment())
+        self.parser._guess_method(args, TestEnvironment())
 
         self.assertEqual(args.method, 'POST')
         self.assertEqual(args.url, 'http://example.com/')
@@ -988,10 +1059,7 @@ class ArgumentParserTestCase(unittest.TestCase):
         args.url = 'test:header'
         args.items = []
 
-        self.parser._guess_method(args, Environment(
-            stdin_isatty=True,
-            stdout_isatty=True,
-        ))
+        self.parser._guess_method(args, TestEnvironment())
 
         self.assertEqual(args.method, 'GET')
         self.assertEqual(args.url, 'http://example.com/')
@@ -1009,7 +1077,7 @@ class ArgumentParserTestCase(unittest.TestCase):
                 key='old_item', value='b', sep='=', orig='old_item=b')
         ]
 
-        self.parser._guess_method(args, Environment())
+        self.parser._guess_method(args, TestEnvironment())
 
         self.assertEqual(args.items, [
             input.KeyValue(
@@ -1017,57 +1085,6 @@ class ArgumentParserTestCase(unittest.TestCase):
             input.KeyValue(key
                 ='old_item', value='b', sep='=', orig='old_item=b'),
         ])
-
-
-class FakeResponse(requests.Response):
-
-    class Mock(object):
-
-        def __getattr__(self, item):
-            return self
-
-        def __repr__(self):
-            return 'Mock string'
-
-        def __unicode__(self):
-            return self.__repr__()
-
-    def __init__(self, content=None, encoding='utf-8'):
-        super(FakeResponse, self).__init__()
-        self.headers['Content-Type'] = 'application/json'
-        self.encoding = encoding
-        self._content = content.encode(encoding)
-        self.raw = self.Mock()
-
-
-class UnicodeOutputTestCase(BaseTestCase):
-
-    def test_unicode_output(self):
-        # some cyrillic and simplified chinese symbols
-        response_dict = {'Привет': 'Мир!',
-                         'Hello': '世界'}
-        if not is_py3:
-            response_dict = dict(
-                (k.decode('utf8'), v.decode('utf8'))
-                for k, v in response_dict.items()
-            )
-        response_body = json.dumps(response_dict)
-        # emulate response
-        response = FakeResponse(response_body)
-
-        # emulate cli arguments
-        args = argparse.Namespace()
-        args.prettify = True
-        args.output_options = 'b'
-        args.forced_content_type = None
-        args.style = 'default'
-
-        # colorized output contains escape sequences
-        output = output_stream(args, Environment(), response.request, response)
-        output = b''.join(output).decode('utf8')
-        for key, value in response_dict.items():
-            self.assertIn(key, output)
-            self.assertIn(value, output)
 
 
 if __name__ == '__main__':

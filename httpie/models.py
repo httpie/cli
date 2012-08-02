@@ -18,6 +18,10 @@ class Environment(object):
     if progname not in ['http', 'https']:
         progname = 'http'
 
+    if is_windows:
+        import colorama.initialise
+        colorama.initialise.init()
+
     stdin_isatty = sys.stdin.isatty()
     stdin = sys.stdin
     stdout_isatty = sys.stdout.isatty()
@@ -30,50 +34,65 @@ class Environment(object):
     def __init__(self, **kwargs):
         self.__dict__.update(**kwargs)
 
-    def init_colors(self):
-        # We check for real Window here, not self.is_windows as
-        # it could be mocked.
-        if (is_windows and not self.__colors_initialized
-            and self.stdout == sys.stdout):
-            import colorama.initialise
-            self.stdout = colorama.initialise.wrap_stream(
-                self.stdout, autoreset=False,
-                convert=None, strip=None, wrap=True)
-            self.__colors_initialized = True
-    __colors_initialized = False
-
 
 class HTTPMessage(object):
-    """Model representing an HTTP message."""
+    """Abstract class for HTTP messages."""
 
     def __init__(self, orig):
         self._orig = orig
 
+    def iter_body(self, chunk_size):
+        """Return an iterator over the body."""
+        raise NotImplementedError()
+
+    def iter_lines(self, chunk_size):
+        """Return an iterator over the body yielding (`line`, `line_feed`)."""
+        raise NotImplementedError()
+
+    @property
+    def headers(self):
+        """Return a `str` with the message's headers."""
+        raise NotImplementedError()
+
+    @property
+    def encoding(self):
+        """Return a `str` with the message's encoding, if known."""
+        raise NotImplementedError()
+
+    @property
+    def body(self):
+        """Return a `bytes` with the message's body."""
+        raise NotImplementedError()
+
     @property
     def content_type(self):
-        return str(self._orig.headers.get('Content-Type', ''))
+        """Return the message content type."""
+        ct = self._orig.headers.get('Content-Type', '')
+        if isinstance(ct, bytes):
+            ct = ct.decode()
+        return ct
 
 
 class HTTPResponse(HTTPMessage):
     """A `requests.models.Response` wrapper."""
 
-    def __iter__(self):
-        mb = 1024 * 1024
-        return self._orig.iter_content(chunk_size=2 * mb)
+    def iter_body(self, chunk_size=1):
+        return self._orig.iter_content(chunk_size=chunk_size)
 
-    @property
-    def line(self):
-        """Return Status-Line"""
-        original = self._orig.raw._original_response
-        return str('HTTP/{version} {status} {reason}'.format(
-             version='.'.join(str(original.version)),
-             status=original.status,
-             reason=original.reason
-         ))
+    def iter_lines(self, chunk_size):
+        for line in self._orig.iter_lines(chunk_size):
+            yield line, b'\n'
 
     @property
     def headers(self):
-        return str(self._orig.raw._original_response.msg)
+        original = self._orig.raw._original_response
+        status_line = 'HTTP/{version} {status} {reason}'.format(
+             version='.'.join(str(original.version)),
+             status=original.status,
+             reason=original.reason
+         )
+        headers = str(original.msg)
+        return '\n'.join([status_line, headers]).strip()
 
     @property
     def encoding(self):
@@ -89,11 +108,14 @@ class HTTPResponse(HTTPMessage):
 class HTTPRequest(HTTPMessage):
     """A `requests.models.Request` wrapper."""
 
-    def __iter__(self):
+    def iter_body(self, chunk_size):
         yield self.body
 
+    def iter_lines(self, chunk_size):
+        yield self.body, b''
+
     @property
-    def line(self):
+    def headers(self):
         """Return Request-Line"""
         url = urlparse(self._orig.url)
 
@@ -111,27 +133,23 @@ class HTTPRequest(HTTPMessage):
                 qs += type(self._orig)._encode_params(self._orig.params)
 
         # Request-Line
-        return str('{method} {path}{query} HTTP/1.1'.format(
+        request_line = '{method} {path}{query} HTTP/1.1'.format(
             method=self._orig.method,
             path=url.path or '/',
             query=qs
-        ))
+        )
 
-    @property
-    def headers(self):
         headers = dict(self._orig.headers)
-        content_type = headers.get('Content-Type')
-
-        if isinstance(content_type, bytes):
-            # Happens when uploading files.
-            # TODO: submit a bug report for Requests
-            headers['Content-Type'] = str(content_type)
 
         if 'Host' not in headers:
             headers['Host'] = urlparse(self._orig.url).netloc
 
-        return '\n'.join('%s: %s' % (name, value)
-                         for name, value in headers.items())
+        headers = ['%s: %s' % (name, value)
+                   for name, value in headers.items()]
+
+        headers.insert(0, request_line)
+
+        return '\n'.join(headers).strip()
 
     @property
     def encoding(self):

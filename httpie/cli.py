@@ -9,7 +9,7 @@ from requests.compat import is_windows
 
 from . import __doc__
 from . import __version__
-from .output import AVAILABLE_STYLES
+from .output import AVAILABLE_STYLES, DEFAULT_STYLE
 from .input import (Parser, AuthCredentialsArgType, KeyValueArgType,
                     PRETTIFY_STDOUT_TTY_ONLY,
                     SEP_PROXY, SEP_CREDENTIALS, SEP_GROUP_ITEMS,
@@ -56,7 +56,7 @@ group_type.add_argument(
 
 
 parser.add_argument(
-    '--output', '-o', type=argparse.FileType('wb'),
+    '--output', '-o', type=argparse.FileType('w+b'),
     metavar='FILE',
     help= argparse.SUPPRESS if not is_windows else _(
         '''
@@ -131,16 +131,31 @@ output_options.add_argument(
 )
 
 parser.add_argument(
-    '--style', '-s', dest='style', default='solarized', metavar='STYLE',
+    '--style', '-s', dest='style', default=DEFAULT_STYLE, metavar='STYLE',
     choices=AVAILABLE_STYLES,
     help=_('''
-        Output coloring style, one of %s. Defaults to solarized.
+        Output coloring style, one of %s. Defaults to "%s".
         For this option to work properly, please make sure that the
         $TERM environment variable is set to "xterm-256color" or similar
         (e.g., via `export TERM=xterm-256color' in your ~/.bashrc).
-    ''') % ', '.join(sorted(AVAILABLE_STYLES))
+    ''') % (', '.join(sorted(AVAILABLE_STYLES)), DEFAULT_STYLE)
 )
 
+parser.add_argument('--stream', '-S', action='store_true', default=False, help=_(
+    '''
+    Always stream the output by line, i.e., behave like `tail -f'.
+
+    Without --stream and with --pretty (either set or implied),
+    HTTPie fetches the whole response before it outputs the processed data.
+
+    Set this option when you want to continuously display a prettified
+    long-lived response, such as one from the Twitter streaming API.
+
+    It is useful also without --pretty: It ensures that the output is flushed
+    more often and in smaller chunks.
+
+    '''
+))
 parser.add_argument(
     '--check-status', default=False, action='store_true',
     help=_('''

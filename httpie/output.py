@@ -1,7 +1,6 @@
-"""Output processing and formatting.
+"""Output streaming, processing and formatting.
 
 """
-import re
 import json
 
 import pygments
@@ -17,92 +16,193 @@ from .solarized import Solarized256Style
 from .models import Environment
 
 
-DEFAULT_STYLE = 'solarized'
-AVAILABLE_STYLES = [DEFAULT_STYLE] + list(STYLE_MAP.keys())
+# Colors on Windows via colorama aren't that great and fruity
+# seems to give the best result there.
+DEFAULT_STYLE = 'solarized' if not is_windows else 'fruity'
+
+#noinspection PySetFunctionToLiteral
+AVAILABLE_STYLES = set([DEFAULT_STYLE]) | set(STYLE_MAP.keys())
+
+
 BINARY_SUPPRESSED_NOTICE = (
-    '+-----------------------------------------+\n'
-    '| NOTE: binary data not shown in terminal |\n'
-    '+-----------------------------------------+'
+    b'\n'
+    b'+-----------------------------------------+\n'
+    b'| NOTE: binary data not shown in terminal |\n'
+    b'+-----------------------------------------+'
 )
 
 
-def formatted_stream(msg, prettifier=None, with_headers=True, with_body=True,
-                     env=Environment()):
-    """Return an iterator yielding `bytes` representing `msg`
-    (a `models.HTTPMessage` subclass).
+class BinarySuppressedError(Exception):
+    """An error indicating that the body is binary and won't be written,
+     e.g., for terminal output)."""
 
-    The body can be binary so we always yield `bytes`.
+    message = BINARY_SUPPRESSED_NOTICE
 
-    If `prettifier` is set or the output is a terminal then a binary
-    body is not included in the output and is replaced with notice.
 
-    Generally, when the `stdout` is redirected, the output matches the actual
-    message as much as possible (formatting and character encoding-wise).
-    When `--pretty` is set (or implied),  or when the output is a terminal,
-    then we prefer readability over precision.
+###############################################################################
+# Output Streams
+###############################################################################
+
+class BaseStream(object):
+    """Base HTTP message stream class."""
+
+    def __init__(self, msg, with_headers=True, with_body=True):
+        """
+        :param msg: a :class:`models.HTTPMessage` subclass
+        :param with_headers: if `True`, headers will be included
+        :param with_body: if `True`, body will be included
+
+        """
+        self.msg = msg
+        self.with_headers = with_headers
+        self.with_body = with_body
+
+    def _headers(self):
+        """Return the headers' bytes."""
+        return self.msg.headers.encode('ascii')
+
+    def _body(self):
+        """Return an iterator over the message body."""
+        raise NotImplementedError()
+
+    def __iter__(self):
+        """Return an iterator over `self.msg`."""
+        if self.with_headers:
+            yield self._headers()
+
+        if self.with_body:
+            it = self._body()
+
+            try:
+                if self.with_headers:
+                    # Yield the headers/body separator only if needed.
+                    chunk = next(it)
+                    if chunk:
+                        yield b'\n\n'
+                        yield chunk
+
+                for chunk in it:
+                    yield chunk
+
+            except BinarySuppressedError as e:
+                yield e.message
+
+
+class RawStream(BaseStream):
+    """The message is streamed in chunks with no processing."""
+
+    CHUNK_SIZE = 1024 * 100
+    CHUNK_SIZE_BY_LINE = 1024 * 5
+
+    def __init__(self, chunk_size=CHUNK_SIZE, **kwargs):
+        super(RawStream, self).__init__(**kwargs)
+        self.chunk_size = chunk_size
+
+    def _body(self):
+        return self.msg.iter_body(self.chunk_size)
+
+
+class EncodedStream(BaseStream):
+    """Encoded HTTP message stream.
+
+    The message bytes are converted to an encoding suitable for
+    `self.env.stdout`. Unicode errors are replaced and binary data
+    is suppressed. The body is always streamed by line.
 
     """
-    # Output encoding.
-    if env.stdout_isatty:
-        # Use encoding suitable for the terminal. Unsupported characters
-        # will be replaced in the output.
-        errors = 'replace'
-        output_encoding = getattr(env.stdout, 'encoding', None)
-    else:
-        # Preserve the message encoding.
-        errors = 'strict'
-        output_encoding = msg.encoding
-    if not output_encoding:
-        # Default to utf8
-        output_encoding = 'utf8'
+    CHUNK_SIZE = 1024 * 5
+    def __init__(self, env=Environment(), **kwargs):
 
-    if prettifier:
-        env.init_colors()
+        super(EncodedStream, self).__init__(**kwargs)
 
-    if with_headers:
-        headers = '\n'.join([msg.line, msg.headers])
+        if env.stdout_isatty:
+            # Use the encoding supported by the terminal.
+            output_encoding = getattr(env.stdout, 'encoding', None)
+        else:
+            # Preserve the message encoding.
+            output_encoding = self.msg.encoding
 
-        if prettifier:
-            headers = prettifier.process_headers(headers)
+        # Default to utf8 when unsure.
+        self.output_encoding = output_encoding or 'utf8'
 
-        yield headers.encode(output_encoding, errors).strip()
+    def _body(self):
 
-    if with_body:
+        for line, lf in self.msg.iter_lines(self.CHUNK_SIZE):
 
-        prefix = b'\n\n' if with_headers else None
+            if b'\0' in line:
+                raise BinarySuppressedError()
 
-        if not (env.stdout_isatty or prettifier):
-            # Verbatim body even if it's binary.
-            for body_chunk in msg:
-                if prefix:
-                    yield prefix
-                    prefix = None
-                yield body_chunk
-        elif msg.body:
-            try:
-                body = msg.body.decode(msg.encoding)
-            except UnicodeDecodeError:
-                # Suppress binary data.
-                body = BINARY_SUPPRESSED_NOTICE.encode(output_encoding)
-                if not with_headers:
-                    yield b'\n'
-            else:
-                if prettifier and msg.content_type:
-                    body = prettifier.process_body(
-                        body, msg.content_type).strip()
+            yield line.decode(self.msg.encoding)\
+                      .encode(self.output_encoding, 'replace') + lf
 
-                body = body.encode(output_encoding, errors)
-            if prefix:
-                yield prefix
-            yield body
 
+class PrettyStream(EncodedStream):
+    """In addition to :class:`EncodedStream` behaviour, this stream applies
+    content processing.
+
+    Useful for long-lived HTTP responses that stream by lines
+    such as the Twitter streaming API.
+
+    """
+
+    CHUNK_SIZE = 1024 * 5
+
+    def __init__(self, processor, **kwargs):
+        super(PrettyStream, self).__init__(**kwargs)
+        self.processor = processor
+
+    def _headers(self):
+        return self.processor.process_headers(
+            self.msg.headers).encode(self.output_encoding)
+
+    def _body(self):
+        for line, lf in self.msg.iter_lines(self.CHUNK_SIZE):
+            if b'\0' in line:
+                raise BinarySuppressedError()
+            yield self._process_body(line) + lf
+
+    def _process_body(self, chunk):
+        return (self.processor
+                    .process_body(
+                        chunk.decode(self.msg.encoding, 'replace'),
+                        self.msg.content_type)
+                    .encode(self.output_encoding, 'replace'))
+
+
+class BufferedPrettyStream(PrettyStream):
+    """The same as :class:`PrettyStream` except that the body is fully
+    fetched before it's processed.
+
+    Suitable regular HTTP responses.
+
+    """
+
+    CHUNK_SIZE = 1024 * 10
+
+    def _body(self):
+
+        #noinspection PyArgumentList
+        # Read the whole body before prettifying it,
+        # but bail out immediately if the body is binary.
+        body = bytearray()
+        for chunk in self.msg.iter_body(self.CHUNK_SIZE):
+            if b'\0' in chunk:
+                raise BinarySuppressedError()
+            body.extend(chunk)
+
+        yield self._process_body(body)
+
+
+###############################################################################
+# Processing
+###############################################################################
 
 class HTTPLexer(lexer.RegexLexer):
     """Simplified HTTP lexer for Pygments.
 
     It only operates on headers and provides a stronger contrast between
     their names and values than the original one bundled with Pygments
-    (`pygments.lexers.text import HttpLexer`), especially when
+    (:class:`pygments.lexers.text import HttpLexer`), especially when
     Solarized color scheme is used.
 
     """
@@ -111,7 +211,6 @@ class HTTPLexer(lexer.RegexLexer):
     filenames = ['*.http']
     tokens = {
         'root': [
-
             # Request-Line
             (r'([A-Z]+)( +)([^ ]+)( +)(HTTP)(/)(\d+\.\d+)',
              lexer.bygroups(
@@ -123,7 +222,6 @@ class HTTPLexer(lexer.RegexLexer):
                 token.Operator,
                 token.Number
              )),
-
             # Response Status-Line
             (r'(HTTP)(/)(\d+\.\d+)( +)(\d{3})( +)(.+)',
              lexer.bygroups(
@@ -135,7 +233,6 @@ class HTTPLexer(lexer.RegexLexer):
                  token.Text,
                  token.Name.Exception,  # Reason
              )),
-
             # Header
             (r'(.*?)( *)(:)( *)(.+)', lexer.bygroups(
                 token.Name.Attribute, # Name
@@ -148,28 +245,48 @@ class HTTPLexer(lexer.RegexLexer):
 
 
 class BaseProcessor(object):
+    """Base, noop output processor class."""
 
     enabled = True
 
     def __init__(self, env, **kwargs):
+        """
+        :param env:
+            an class:`Environment` instance
+        :param kwargs:
+            additional keyword argument that some processor might require.
+
+        """
         self.env = env
         self.kwargs = kwargs
 
     def process_headers(self, headers):
+        """Return processed `headers`
+
+        :param headers:
+            The headers as text.
+
+        """
         return headers
 
     def process_body(self, content, content_type, subtype):
         """Return processed `content`.
 
-        :param content: `str`
-        :param content_type: full content type, e.g., 'application/atom+xml'
-        :param subtype: e.g., 'xml'
+        :param content:
+            The body content as text
+
+        :param content_type:
+            Full content type, e.g., 'application/atom+xml'.
+
+        :param subtype:
+            E.g. 'xml'.
 
         """
         return content
 
 
 class JSONProcessor(BaseProcessor):
+    """JSON body processor."""
 
     def process_body(self, content, content_type, subtype):
         if subtype == 'json':
@@ -187,21 +304,26 @@ class JSONProcessor(BaseProcessor):
 
 
 class PygmentsProcessor(BaseProcessor):
+    """A processor that applies syntax-highlighting using Pygments
+    to the headers, and to the body as well if its content type is recognized.
 
+    """
     def __init__(self, *args, **kwargs):
         super(PygmentsProcessor, self).__init__(*args, **kwargs)
+
+        # Cache that speeds up when we process streamed body by line.
+        self.lexers_by_type = {}
 
         if not self.env.colors:
             self.enabled = False
             return
 
         try:
-            style = get_style_by_name(
-                self.kwargs.get('pygments_style', DEFAULT_STYLE))
+            style = get_style_by_name(self.kwargs['pygments_style'])
         except ClassNotFound:
             style = Solarized256Style
 
-        if is_windows or self.env.colors == 256:
+        if self.env.is_windows or self.env.colors == 256:
             fmt_class = Terminal256Formatter
         else:
             fmt_class = TerminalFormatter
@@ -209,24 +331,26 @@ class PygmentsProcessor(BaseProcessor):
 
     def process_headers(self, headers):
         return pygments.highlight(
-            headers, HTTPLexer(), self.formatter)
+            headers, HTTPLexer(), self.formatter).strip()
 
     def process_body(self, content, content_type, subtype):
         try:
-            try:
-                lexer = get_lexer_for_mimetype(content_type)
-            except ClassNotFound:
-                lexer = get_lexer_by_name(subtype)
+            lexer = self.lexers_by_type.get(content_type)
+            if not lexer:
+                try:
+                    lexer = get_lexer_for_mimetype(content_type)
+                except ClassNotFound:
+                    lexer = get_lexer_by_name(subtype)
+                self.lexers_by_type[content_type] = lexer
         except ClassNotFound:
             pass
         else:
             content = pygments.highlight(content, lexer, self.formatter)
-        return content
+        return content.strip()
 
 
 class HeadersProcessor(BaseProcessor):
-    """
-    Sorts headers by name retaining relative order of multiple headers
+    """Sorts headers by name retaining relative order of multiple headers
     with the same name.
 
     """
@@ -237,6 +361,7 @@ class HeadersProcessor(BaseProcessor):
 
 
 class OutputProcessor(object):
+    """A delegate class that invokes the actual processors."""
 
     installed_processors = [
         JSONProcessor,
