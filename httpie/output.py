@@ -2,6 +2,8 @@
 
 """
 import json
+from functools import partial
+from itertools import chain
 
 import pygments
 from pygments import token, lexer
@@ -13,7 +15,9 @@ from pygments.util import ClassNotFound
 from requests.compat import is_windows
 
 from .solarized import Solarized256Style
-from .models import Environment
+from .models import HTTPRequest, HTTPResponse, Environment
+from .input import (OUT_REQ_BODY, OUT_REQ_HEAD,
+                    OUT_RESP_HEAD, OUT_RESP_BODY)
 
 
 # Colors on Windows via colorama aren't that great and fruity
@@ -42,6 +46,82 @@ class BinarySuppressedError(Exception):
 ###############################################################################
 # Output Streams
 ###############################################################################
+
+
+def write(stream, outfile, flush):
+    """Write the output stream."""
+    try:
+        # Writing bytes so we use the buffer interface (Python 3).
+        buf = outfile.buffer
+    except AttributeError:
+        buf = outfile
+
+    for chunk in stream:
+        buf.write(chunk)
+        if flush:
+            outfile.flush()
+
+
+def output_stream(args, env, request, response):
+    """Build and return a chain of iterators over the `request`-`response`
+    exchange each of which yields `bytes` chunks.
+
+    """
+
+    Stream = make_stream(env, args)
+
+    req_h = OUT_REQ_HEAD in args.output_options
+    req_b = OUT_REQ_BODY in args.output_options
+    resp_h = OUT_RESP_HEAD in args.output_options
+    resp_b = OUT_RESP_BODY  in args.output_options
+
+    req = req_h or req_b
+    resp = resp_h or resp_b
+
+    output = []
+
+    if req:
+        output.append(Stream(
+            msg=HTTPRequest(request),
+            with_headers=req_h,
+            with_body=req_b))
+
+    if req and resp:
+        output.append([b'\n\n\n'])
+
+    if resp:
+        output.append(Stream(
+            msg=HTTPResponse(response),
+            with_headers=resp_h,
+            with_body=resp_b))
+
+    if env.stdout_isatty:
+        output.append([b'\n\n'])
+
+    return chain(*output)
+
+
+def make_stream(env, args):
+    """Pick the right stream type for based on `env` and `args`.
+    and wrap it with a partial with the type-specific args.
+
+    """
+    if not env.stdout_isatty and not args.prettify:
+        Stream = partial(
+            RawStream,
+            chunk_size=RawStream.CHUNK_SIZE_BY_LINE
+                       if args.stream
+                       else RawStream.CHUNK_SIZE)
+    elif args.prettify:
+        Stream = partial(
+            PrettyStream if args.stream else BufferedPrettyStream,
+            processor=OutputProcessor(env, pygments_style=args.style),
+            env=env)
+    else:
+        Stream = partial(EncodedStream, env=env)
+
+    return Stream
+
 
 class BaseStream(object):
     """Base HTTP message stream class."""

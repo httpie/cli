@@ -95,6 +95,10 @@ class Parser(argparse.ArgumentParser):
 
         self.env = env
 
+        if env.is_windows and not env.stdout_isatty:
+            self.error('Output redirection is not supported on Windows.'
+                  ' Please use `--output FILE\' instead.')
+
         args = super(Parser, self).parse_args(args, namespace)
 
         if args.output:
@@ -130,9 +134,6 @@ class Parser(argparse.ArgumentParser):
             sys.stderr: self.env.stderr,
             None: self.env.stderr
         }.get(file, file)
-
-        #if isinstance(message, str):
-        #    message = message.encode('utf8')
 
         super(Parser, self)._print_message(message, file)
 
