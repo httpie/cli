@@ -16,13 +16,15 @@ except ImportError:
     OrderedDict = dict
 
 from requests.structures import CaseInsensitiveDict
-from requests.compat import str
+from requests.compat import str, urlparse
 
 from . import __version__
 
 
 HTTP_POST = 'POST'
 HTTP_GET = 'GET'
+HTTP = 'http://'
+HTTPS = 'https://'
 
 
 # Various separators used in args
@@ -106,9 +108,13 @@ class Parser(argparse.ArgumentParser):
         if not env.stdin_isatty:
             self._body_from_file(args, env.stdin)
 
+        if not (args.url.startswith(HTTP) or args.url.startswith(HTTPS)):
+            scheme = HTTPS if env.progname == 'https' else HTTP
+            args.url = scheme + args.url
+
         if args.auth and not args.auth.has_password():
             # Stdin already read (if not a tty) so it's save to prompt.
-            args.auth.prompt_password()
+            args.auth.prompt_password(urlparse(args.url).netloc)
 
         if args.prettify == PRETTIFY_STDOUT_TTY_ONLY:
             args.prettify = env.stdout_isatty
@@ -346,9 +352,10 @@ class AuthCredentials(KeyValue):
     def has_password(self):
         return self.value is not None
 
-    def prompt_password(self):
+    def prompt_password(self, host):
         try:
-            self.value = self._getpass("Password for user '%s': " % self.key)
+            self.value = self._getpass(
+                'http: password for %s@%s: ' % (self.key, host))
         except (EOFError, KeyboardInterrupt):
             sys.stderr.write('\n')
             sys.exit(0)

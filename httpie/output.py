@@ -85,6 +85,8 @@ class BaseStream(object):
                     yield chunk
 
             except BinarySuppressedError as e:
+                if self.with_headers:
+                    yield b'\n'
                 yield e.message
 
 

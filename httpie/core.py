@@ -31,8 +31,6 @@ from .cli import parser
 
 FORM = 'application/x-www-form-urlencoded; charset=utf-8'
 JSON = 'application/json; charset=utf-8'
-HTTP = 'http://'
-HTTPS = 'https://'
 
 
 def get_response(args, env):
@@ -65,15 +63,9 @@ def get_response(args, env):
             'digest': requests.auth.HTTPDigestAuth,
         }[args.auth_type](args.auth.key, args.auth.value)
 
-    if not (args.url.startswith(HTTP) or args.url.startswith(HTTPS)):
-        scheme = HTTPS if env.progname == 'https' else HTTP
-        url = scheme + args.url
-    else:
-        url = args.url
-
     return requests.request(
         method=args.method.lower(),
-        url=url,
+        url=args.url,
         headers=args.headers,
         data=args.data,
         verify={'yes': True, 'no': False}.get(args.verify, args.verify),
