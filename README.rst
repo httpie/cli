@@ -224,7 +224,7 @@ respectively:
 **The output is always streamed** unless ``--pretty`` is set or implied. You
 can use ``--stream`` / ``-S`` to enable streaming even with ``--pretty``, in
 which case every line of the output will processed and flushed as soon as it's
-avaialbe (as opossed to buffering the whole response which wouldn't work for
+available (as opposed to buffering the whole response which wouldn't work for
 long-lived requests). You can test it with the Twitter streaming API:
 
 .. code-block:: shell
@@ -346,7 +346,6 @@ Flags
                             information useful for debugging HTTPie itself.
 
 
-
 Contribute
 ==========
 
@@ -401,6 +400,7 @@ Changelog
       streaming also with ``--pretty`` and to ensure a more frequent output
       flushing.
     * Support for efficient large file downloads.
+    * Sort headers by name (unless ``--ugly``).
     * Response body is fetched only when needed (e.g., not with ``--headers``).
     * Improved content type matching.
     * Updated Solarized color scheme.
