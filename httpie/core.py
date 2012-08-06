@@ -33,7 +33,7 @@ def get_response(args):
 
     auto_json = args.data and not args.form
     if args.json or auto_json:
-        if 'Content-Type' not in args.headers:
+        if 'Content-Type' not in args.headers and args.data:
             args.headers['Content-Type'] = JSON
 
         if 'Accept' not in args.headers:

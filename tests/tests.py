@@ -386,15 +386,15 @@ class AutoContentTypeAndAcceptHeadersTest(BaseTestCase):
         self.assertIn('"Accept": "application/json"', r)
         self.assertIn('"Content-Type": "application/json; charset=utf-8', r)
 
-    def test_POST_explicit_JSON_auto_JSON_headers(self):
+    def test_POST_explicit_JSON_auto_JSON_accept(self):
         r = http(
             '--json',
             'POST',
             httpbin('/post')
         )
         self.assertIn(OK, r)
-        self.assertIn('"Accept": "application/json"', r)
-        self.assertIn('"Content-Type": "application/json; charset=utf-8', r)
+        self.assertEqual(r.json['headers']['Accept'], 'application/json')
+        self.assertNotIn('Content-Type', r.json['headers'])
 
     def test_GET_explicit_JSON_explicit_headers(self):
         r = http(

@@ -32,6 +32,8 @@ class Environment(object):
     colors = 256 if '256color' in os.environ.get('TERM', '') else 88
 
     def __init__(self, **kwargs):
+        assert all(hasattr(type(self), attr)
+                   for attr in kwargs.keys())
         self.__dict__.update(**kwargs)
 
 
@@ -74,7 +76,7 @@ class HTTPMessage(object):
 
 
 class HTTPResponse(HTTPMessage):
-    """A `requests.models.Response` wrapper."""
+    """A :class:`requests.models.Response` wrapper."""
 
     def iter_body(self, chunk_size=1):
         return self._orig.iter_content(chunk_size=chunk_size)
@@ -106,7 +108,7 @@ class HTTPResponse(HTTPMessage):
 
 
 class HTTPRequest(HTTPMessage):
-    """A `requests.models.Request` wrapper."""
+    """A :class:`requests.models.Request` wrapper."""
 
     def iter_body(self, chunk_size):
         yield self.body

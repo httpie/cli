@@ -102,8 +102,9 @@ def output_stream(args, env, request, response):
 
 
 def make_stream(env, args):
-    """Pick the right stream type for based on `env` and `args`.
-    and wrap it with a partial with the type-specific args.
+    """Pick the right stream type based on `env` and `args`.
+    Wrap it in a partial with the type-specific args so that
+    we don't need to think what stream we are dealing with.
 
     """
     if not env.stdout_isatty and not args.prettify:
