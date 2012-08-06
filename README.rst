@@ -2,7 +2,9 @@
 HTTPie: cURL for Humans
 ***********************
 
-v0.2.7
+v0.2.8dev
+
+☞ `README for stable version`_
 
 HTTPie is a **command line HTTP client** whose goal is to make CLI interaction
 with HTTP-based services as **human-friendly** as possible. It provides a
@@ -981,6 +983,6 @@ Changelog
 .. _0.2.6: https://github.com/jkbr/httpie/compare/0.2.5...0.2.6
 .. _0.2.7: https://github.com/jkbr/httpie/compare/0.2.5...0.2.7
 .. _0.2.8dev: https://github.com/jkbr/httpie/compare/0.2.7...master
-.. _README for stable version: https://github.com/jkbr/httpie/tree/0.2.6#readme
+.. _README for stable version: https://github.com/jkbr/httpie/tree/0.2.7#readme
 .. _AUTHORS: https://github.com/jkbr/httpie/blob/master/AUTHORS.rst
 .. _LICENSE: https://github.com/jkbr/httpie/blob/master/LICENSE
