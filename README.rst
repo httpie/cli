@@ -903,6 +903,7 @@ Changelog
 =========
 
 * `0.2.7dev`_
+    * Compatibility with Requests 0.13.6.
     * Streamed terminal output. ``--stream`` / ``-S`` can be used to enable
       streaming also with ``--pretty`` and to ensure a more frequent output
       flushing.

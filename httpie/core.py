@@ -59,6 +59,7 @@ def get_response(args):
         }[args.auth_type](args.auth.key, args.auth.value)
 
     return requests.request(
+        prefetch=False,
         method=args.method.lower(),
         url=args.url,
         headers=args.headers,
@@ -97,7 +98,7 @@ def main(args=sys.argv[1:], env=Environment()):
 
     def error(msg, *args):
         msg = msg % args
-        env.stderr.write('http: error: %s\n' % msg)
+        env.stderr.write('\nhttp: error: %s\n' % msg)
 
     debug = '--debug' in args
     status = EXIT.OK
