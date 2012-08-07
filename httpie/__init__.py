@@ -10,7 +10,9 @@ __licence__ = 'BSD'
 class EXIT:
     OK = 0
     ERROR = 1
-    # Used only when requested:
+    ERROR_TIMEOUT = 2
+
+    # Used only when requested with --check-status:
     ERROR_HTTP_3XX = 3
     ERROR_HTTP_4XX = 4
     ERROR_HTTP_5XX = 5

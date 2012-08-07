@@ -860,6 +860,15 @@ class ExitStatusTest(BaseTestCase):
         )
         self.assertIn('HTTP/1.1 500', r)
         self.assertEqual(r.exit_status, EXIT.OK)
+        self.assertTrue(not r.stderr)
+
+    def test_timeout_exit_status(self):
+        r = http(
+            '--timeout=0.5',
+            'GET',
+            httpbin('/delay/1')
+        )
+        self.assertEqual(r.exit_status, EXIT.ERROR_TIMEOUT)
 
     def test_3xx_check_status_exits_3_and_stderr_when_stdout_redirected(self):
         r = http(

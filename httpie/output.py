@@ -20,10 +20,9 @@ from .input import (OUT_REQ_BODY, OUT_REQ_HEAD,
                     OUT_RESP_HEAD, OUT_RESP_BODY)
 
 
-# Colors on Windows via colorama aren't that great and fruity
-# seems to give the best result there.
+# Colors on Windows via colorama don't look that
+# great and fruity seems to give the best result there.
 DEFAULT_STYLE = 'solarized' if not is_windows else 'fruity'
-
 #noinspection PySetFunctionToLiteral
 AVAILABLE_STYLES = set([DEFAULT_STYLE]) | set(STYLE_MAP.keys())
 
@@ -335,10 +334,9 @@ class BaseProcessor(object):
 
     def __init__(self, env, **kwargs):
         """
-        :param env:
-            an class:`Environment` instance
-        :param kwargs:
-            additional keyword argument that some processor might require.
+        :param env: an class:`Environment` instance
+        :param kwargs: additional keyword argument that some
+                       processor might require.
 
         """
         self.env = env
@@ -347,8 +345,7 @@ class BaseProcessor(object):
     def process_headers(self, headers):
         """Return processed `headers`
 
-        :param headers:
-            The headers as text.
+        :param headers: The headers as text.
 
         """
         return headers
@@ -356,14 +353,9 @@ class BaseProcessor(object):
     def process_body(self, content, content_type, subtype):
         """Return processed `content`.
 
-        :param content:
-            The body content as text
-
-        :param content_type:
-            Full content type, e.g., 'application/atom+xml'.
-
-        :param subtype:
-            E.g. 'xml'.
+        :param content: The body content as text
+        :param content_type: Full content type, e.g., 'application/atom+xml'.
+        :param subtype: E.g. 'xml'.
 
         """
         return content
@@ -458,13 +450,18 @@ class OutputProcessor(object):
     }
 
     def __init__(self, env, groups, **kwargs):
+        """
+        :param env: a :class:`models.Environment` instance
+        :param groups: the groups of processors to be applied
+        :param kwargs: additional keyword arguments for processors
 
-        processors = []
+        """
+        self.processors = []
         for group in groups:
             for cls in self.installed_processors[group]:
-                processors.append(cls(env, **kwargs))
-
-        self.processors = [p for p in processors if p.enabled]
+                processor = cls(env, **kwargs)
+                if processor.enable:
+                    self.processors.append(processor)
 
     def process_headers(self, headers):
         for processor in self.processors:

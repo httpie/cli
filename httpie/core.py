@@ -10,6 +10,7 @@ Invocation flow:
     5. Exit.
 
 """
+from _socket import gaierror
 import sys
 import json
 import errno
@@ -143,7 +144,7 @@ def main(args=sys.argv[1:], env=Environment()):
 
         except IOError as e:
             if not traceback and e.errno == errno.EPIPE:
-                # Ignore broken pipes unless --debug.
+                # Ignore broken pipes unless --traceback.
                 env.stderr.write('\n')
             else:
                 raise
@@ -153,7 +154,9 @@ def main(args=sys.argv[1:], env=Environment()):
             raise
         env.stderr.write('\n')
         status = EXIT.ERROR
-
+    except requests.Timeout:
+        status = EXIT.ERROR_TIMEOUT
+        error('Request timed out (%ss).', args.timeout)
     except Exception as e:
         # TODO: distinguish between expected and unexpected errors.
         #       network errors vs. bugs, etc.

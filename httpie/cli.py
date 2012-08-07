@@ -11,13 +11,11 @@ from . import __doc__
 from . import __version__
 from .output import AVAILABLE_STYLES, DEFAULT_STYLE
 from .input import (Parser, AuthCredentialsArgType, KeyValueArgType,
-                    PRETTY_STDOUT_TTY_ONLY,
                     SEP_PROXY, SEP_CREDENTIALS, SEP_GROUP_ITEMS,
                     OUT_REQ_HEAD, OUT_REQ_BODY, OUT_RESP_HEAD,
                     OUT_RESP_BODY, OUTPUT_OPTIONS,
                     PRETTY_STDOUT_TTY_ONLY, PRETTY_ALL,
-                    PRETTY_FORMAT,
-                    PRETTY_COLORS)
+                    PRETTY_FORMAT, PRETTY_COLORS)
 
 
 def _(text):
@@ -49,14 +47,13 @@ group_type.add_argument(
         The Content-Type is set to application/x-www-form-urlencoded
         (if not specified).
         The presence of any file fields results
-        into a multipart/form-data request.
+        in a multipart/form-data request.
      ''')
 )
 
 
 # Output options.
 #############################################
-
 
 parser.add_argument(
     '--output', '-o', type=argparse.FileType('w+b'),
@@ -65,7 +62,7 @@ parser.add_argument(
         '''
         Save output to FILE.
         This option is a replacement for piping output to FILE,
-        which would on Windows result into corrupted data
+        which would on Windows result in corrupted data
         being saved.
 
         '''
@@ -151,8 +148,8 @@ parser.add_argument(
     ''') % (', '.join(sorted(AVAILABLE_STYLES)), DEFAULT_STYLE)
 )
 
-parser.add_argument('--stream', '-S', action='store_true', default=False, help=_(
-    '''
+parser.add_argument('--stream', '-S', action='store_true', default=False,
+    help=_('''
     Always stream the output by line, i.e., behave like `tail -f'.
 
     Without --stream and with --pretty (either set or implied),
@@ -187,7 +184,7 @@ parser.add_argument(
 
 # ``requests.request`` keyword arguments.
 parser.add_argument(
-    '--auth', '-a',
+    '--auth', '-a', metavar='USER:PASS',
     type=AuthCredentialsArgType(SEP_CREDENTIALS),
     help=_('''
         username:password.
@@ -230,10 +227,10 @@ parser.add_argument(
     ''')
 )
 parser.add_argument(
-    '--timeout', type=float, default=30,
+    '--timeout', type=float, default=30, metavar='SECONDS',
     help=_('''
-        The timeout of the request in seconds. The default value is 30
-        seconds.
+        The connection timeout of the request in seconds.
+        The default value is 30 seconds.
     ''')
 )
 parser.add_argument(

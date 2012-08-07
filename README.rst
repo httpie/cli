@@ -7,7 +7,7 @@ v0.2.8dev
 ☞ `README for stable version`_
 
 HTTPie is a **command line HTTP client** whose goal is to make CLI interaction
-with HTTP-based services as **human-friendly** as possible. It provides a
+with web services as **human-friendly** as possible. It provides a
 simple ``http`` command that allows for sending arbitrary HTTP requests with a
 simple and natural syntax, and displays colorized responses. HTTPie can be used
 for **testing, debugging**, and generally **interacting** with HTTP servers.
@@ -82,7 +82,8 @@ Or, you can install the **development version** directly from GitHub:
 
 
 There are also packages available for `Ubuntu`_, `Debian`_, and possibly other
-Linux distributions as well.
+Linux distributions as well. However, they may be a significant delay between
+releases and package updates.
 
 
 =====
@@ -809,16 +810,18 @@ When using HTTPie from **shell scripts**, it can be handy to set the
 ``--check-status`` flag. It instructs HTTPie to exit with an error if the
 HTTP status is one of ``3xx``, ``4xx``, or ``5xx``. The exit status will
 be ``3`` (unless ``--allow-redirects`` is set), ``4``, or ``5``,
-respectively:
+respectively. Also, the ``--timeout`` option allows to overwrite the default
+30s timeout:
 
 .. code-block:: bash
 
     #!/bin/bash
 
-    if http --check-status HEAD example.org/health &> /dev/null; then
+    if http --timeout=2.5 --check-status HEAD example.org/health &> /dev/null; then
         echo 'OK!'
     else
         case $? in
+            2) echo 'Request timed out!' ;;
             3) echo 'Unexpected HTTP 3xx Redirection!' ;;
             4) echo 'HTTP 4xx Client Error!' ;;
             5) echo 'HTTP 5xx Server Error!' ;;
@@ -933,6 +936,7 @@ Changelog
 =========
 
 * `0.2.8dev`_
+    * Added exit status code ``2`` for timed-out requests.
     * Added ``--colors`` and ``--format`` in addition to ``--pretty``, to
       be able to separate colorizing and formatting.
 * `0.2.7`_ (2012-08-07)
