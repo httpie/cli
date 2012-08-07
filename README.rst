@@ -471,7 +471,7 @@ With Basic authentication:
 
 You can also configure proxies by environment variables ``HTTP_PROXY`` and
 ``HTTPS_PROXY``, and the underlying Requests library will pick them up as well.
-If you want disable proxies configured through the environment variables for
+If you want to disable proxies configured through the environment variables for
 certain hosts, you can specify them in ``NO_PROXY``.
 
 In your ``~/.bash_profile``:
