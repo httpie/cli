@@ -483,6 +483,15 @@ In your ``~/.bash_profile``:
  export NO_PROXY=localhost,example.com
 
 
+=====
+HTTPS
+=====
+
+To skip the host's SSL certificate verification, you can pass ``--verify=no``.
+You can also specify a custom CA bundle path using the same option. The same
+can also be done via the environment variable ``REQUESTS_CA_BUNDLE``.
+
+
 ==============
 Output Options
 ==============
