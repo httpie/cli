@@ -13,10 +13,14 @@ Invocation flow:
 import sys
 import json
 import errno
+from pprint import pformat
 
 import requests
 import requests.auth
 from requests.compat import str
+from httpie import __version__ as httpie_version
+from requests import __version__ as requests_version
+from pygments import __version__ as pygments_version
 
 from .cli import parser
 from .models import Environment
@@ -28,7 +32,7 @@ FORM = 'application/x-www-form-urlencoded; charset=utf-8'
 JSON = 'application/json; charset=utf-8'
 
 
-def get_response(args):
+def get_requests_kwargs(args):
     """Send the request and return a `request.Response`."""
 
     auto_json = args.data and not args.form
@@ -58,20 +62,25 @@ def get_response(args):
             'digest': requests.auth.HTTPDigestAuth,
         }[args.auth_type](args.auth.key, args.auth.value)
 
-    return requests.request(
-        prefetch=False,
-        method=args.method.lower(),
-        url=args.url,
-        headers=args.headers,
-        data=args.data,
-        verify={'yes': True, 'no': False}.get(args.verify, args.verify),
-        timeout=args.timeout,
-        auth=credentials,
-        proxies=dict((p.key, p.value) for p in args.proxy),
-        files=args.files,
-        allow_redirects=args.allow_redirects,
-        params=args.params,
-    )
+    kwargs = {
+        'prefetch': False,
+        'method': args.method.lower(),
+        'url': args.url,
+        'headers': args.headers,
+        'data': args.data,
+        'verify': {
+            'yes': True,
+            'no': False
+        }.get(args.verify,args.verify),
+        'timeout': args.timeout,
+        'auth': credentials,
+        'proxies': dict((p.key, p.value) for p in args.proxy),
+        'files': args.files,
+        'allow_redirects': args.allow_redirects,
+        'params': args.params
+    }
+
+    return kwargs
 
 
 def get_exist_status(code, allow_redirects=False):
@@ -101,11 +110,23 @@ def main(args=sys.argv[1:], env=Environment()):
         env.stderr.write('\nhttp: error: %s\n' % msg)
 
     debug = '--debug' in args
+    traceback = debug or '--traceback' in args
     status = EXIT.OK
+
+    if debug:
+        sys.stderr.write('HTTPie version: %s\n' % httpie_version)
+        sys.stderr.write('Requests version: %s\n' % requests_version)
+        sys.stderr.write('Pygments version: %s\n' % pygments_version)
 
     try:
         args = parser.parse_args(args=args, env=env)
-        response = get_response(args)
+        kwargs = get_requests_kwargs(args)
+
+        if args.debug:
+            sys.stderr.write(
+                '\n>>> requests.request(%s)\n\n' % pformat(kwargs))
+
+        response = requests.request(**kwargs)
 
         if args.check_status:
             status = get_exist_status(response.status_code,
@@ -121,14 +142,14 @@ def main(args=sys.argv[1:], env=Environment()):
                   flush=env.stdout_isatty or args.stream)
 
         except IOError as e:
-            if not debug and e.errno == errno.EPIPE:
+            if not traceback and e.errno == errno.EPIPE:
                 # Ignore broken pipes unless --debug.
                 env.stderr.write('\n')
             else:
                 raise
 
     except (KeyboardInterrupt, SystemExit):
-        if debug:
+        if traceback:
             raise
         env.stderr.write('\n')
         status = EXIT.ERROR
@@ -136,7 +157,7 @@ def main(args=sys.argv[1:], env=Environment()):
     except Exception as e:
         # TODO: distinguish between expected and unexpected errors.
         #       network errors vs. bugs, etc.
-        if debug:
+        if traceback:
             raise
         error('%s: %s', type(e).__name__, str(e))
         status = EXIT.ERROR

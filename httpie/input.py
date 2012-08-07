@@ -101,6 +101,9 @@ class Parser(argparse.ArgumentParser):
 
         args = super(Parser, self).parse_args(args, namespace)
 
+        if args.debug:
+            args.traceback = True
+
         if args.output:
             env.stdout = args.output
             env.stdout_isatty = False
@@ -171,7 +174,7 @@ class Parser(argparse.ArgumentParser):
                     0, KeyValueArgType(*SEP_GROUP_ITEMS).__call__(args.url))
 
             except argparse.ArgumentTypeError as e:
-                if args.debug:
+                if args.traceback:
                     raise
                 self.error(e.message)
 
@@ -201,7 +204,7 @@ class Parser(argparse.ArgumentParser):
                         files=args.files,
                         params=args.params)
         except ParseError as e:
-            if args.debug:
+            if args.traceback:
                 raise
             self.error(e.message)
 

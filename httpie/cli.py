@@ -220,17 +220,23 @@ parser.add_argument(
     ''')
 )
 parser.add_argument(
-    '--timeout', type=float,
+    '--timeout', type=float, default=30,
     help=_('''
-        Float describes the timeout of the request
-        (Use socket.setdefaulttimeout() as fallback).
+        The timeout of the request in seconds. The default value is 30
+        seconds.
+    ''')
+)
+parser.add_argument(
+    '--traceback', action='store_true', default=False,
+    help=_('''
+        Prints exception traceback should one occur.
     ''')
 )
 parser.add_argument(
     '--debug', action='store_true', default=False,
     help=_('''
-        Prints exception traceback should one occur and other
-        information useful for debugging HTTPie itself.
+        Prints exception traceback should one occur, and also other
+        information useful for debugging HTTPie itself and bug reports.
     ''')
 )
 

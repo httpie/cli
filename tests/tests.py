@@ -142,7 +142,7 @@ def http(*args, **kwargs):
     try:
 
         try:
-            exit_status = main(args=['--debug'] + list(args), **kwargs)
+            exit_status = main(args=['--traceback'] + list(args), **kwargs)
         except Exception:
             sys.stderr.write(env.stderr.read())
             raise
