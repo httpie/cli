@@ -20,7 +20,7 @@ for **testing, debugging**, and generally **interacting** with HTTP servers.
 
 
 HTTPie is written in Python, and under the hood it uses the excellent
-`Requests`_ and `Pygments`_ libraries.
+`Requests`_ for HTTP and `Pygments`_ for colorizing.
 
 
 **Table of Contents**
@@ -41,7 +41,7 @@ Main Features
 * Formatted and colorized terminal output
 * Built-in JSON support
 * Forms and file uploads
-* HTTPS and authorization
+* HTTPS, proxies, and authentication
 * Arbitrary request data
 * Custom headers
 * Python 2.6 and Python 3 support
@@ -85,9 +85,9 @@ There are also packages available for `Ubuntu`_, `Debian`_, and possibly other
 Linux distributions as well.
 
 
-===========
-Quick Start
-===========
+=====
+Usage
+=====
 
 
 Hello World:
@@ -179,29 +179,7 @@ It makes the command look similar to the actual ``Request-Line`` that is sent:
 
 
 When the ``METHOD`` argument is **omitted** from the command, HTTPie defaults to
-either ``GET`` or ``POST``. This depends on whether you are sending
-some data:
-
-.. code-block:: bash
-
-    $ http example.org/todos text='Check out HTTPie'
-
-
-.. code-block:: http
-
-    POST /todos HTTP/1.1
-
-
-, or no data at all:
-
-.. code-block:: bash
-
-    $ http example.org/todos
-
-
-.. code-block:: http
-
-    GET /todos HTTP/1.1
+either ``GET`` (with no request data) or ``POST`` (with request data).
 
 
 ===========
@@ -430,12 +408,12 @@ be overwritten:
     Host: <taken-from-URL>
 
 
-====
-Auth
-====
+==============
+Authentication
+==============
 
-The currently supported authorization schemes are Basic and Digest (more to
-come). There are two flags that control authorization:
+The currently supported authentication schemes are Basic and Digest (more to
+come). There are two flags that control authentication:
 
 ===================     ======================================================
 ``--auth, -a``          Pass a ``username:password`` pair as
@@ -449,6 +427,7 @@ come). There are two flags that control authorization:
                         ``basic`` so it can often be omitted.
 ===================     ======================================================
 
+Authorization information from ``.netrc`` is respected as well.
 
 Basic auth:
 
@@ -471,6 +450,37 @@ With password prompt:
 .. code-block:: bash
 
     $ http -a username example.org
+
+
+=======
+Proxies
+=======
+
+You can specify proxies to be used through the ``--proxy`` argument:
+
+.. code-block:: bash
+
+    http --proxy=http:10.10.1.10:3128 --https:10.10.1.10:1080 example.org
+
+
+With Basic authentication:
+
+.. code-block:: bash
+
+    http --proxy=http:http://user:pass@10.10.1.10:3128 example.org
+
+You can also configure proxies by environment variables ``HTTP_PROXY`` and
+``HTTPS_PROXY``, and the underlying Requests library will pick them up as well.
+If you want disable proxies configured through the environment variables for
+certain hosts, you can specify them in ``NO_PROXY``.
+
+In your ``~/.bash_profile``:
+
+.. code-block:: bash
+
+ export HTTP_PROXY=10.10.1.10:3128
+ export HTTPS_PROXY=10.10.1.10:1080
+ export NO_PROXY=localhost,example.com
 
 
 ==============
@@ -871,7 +881,7 @@ Please run the existing suite of tests before a pull request is submitted:
 `Tox`_ can also be used to conveniently run tests in all of the
 `supported Python environments`_:
 
-.. code-b®lock:: bash
+.. code-block:: bash
 
     # Install tox
     pip install tox
