@@ -677,14 +677,24 @@ Colors and Formatting
 ---------------------
 
 Syntax highlighting is applied to HTTP headers and bodies (where it makes
-sense). Also, the following formatting is used:
+sense). You can choose your prefered color scheme via the ``--style`` option
+if you don't like the default onw (see ``$ http --help`` for the possible
+values).
+
+Also, the following formatting is applied:
 
 * HTTP headers are sorted by name.
 * JSON data is indented, sorted by keys, and unicode escapes are converted
   to the characters they represent.
 
-Colorizing and formatting can be disabled with ``--ugly, -u``.
+One of these options can be used to control output processing:
 
+===============  ==============================================================
+``--pretty``     Apply both colors and formatting. Default for terminal output.
+``--colors``     Apply colors.
+``--format``     Apply formatting.
+``--ugly, -u``   Disables output processing. Default for redirected output.
+===============  ==============================================================
 
 -----------
 Binary data
@@ -722,7 +732,8 @@ Redirected Output
 HTTPie uses **different defaults** for redirected output than for
 `terminal output`_:
 
-* Formatting and colors aren't applied (unless ``--pretty`` is set).
+* Formatting and colors aren't applied (unless ``--pretty``, ``--format``,
+  or ``--colors``, is set).
 * Only the response body is printed (unless one of the `output options`_ is set).
 * Also, binary data isn't suppressed.
 
@@ -852,7 +863,7 @@ and that only a small portion of the command is used to control HTTPie and
 doesn't directly correspond to any part of the request (here it's only ``-f``
 asking HTTPie to send a form request).
 
-The two modes, ``--pretty, -p`` (default for terminal) and ``--ugly, -u``
+The two modes, ``--pretty`` (default for terminal) and ``--ugly, -u``
 (default for redirected output), allow for both user-friendly interactive use
 and usage from scripts, where HTTPie serves as a generic HTTP client.
 
@@ -922,6 +933,8 @@ Changelog
 =========
 
 * `0.2.8dev`_
+    * Added ``--colors`` and ``--format`` in addition to ``--pretty``, to
+      be able to separate colorizing and formatting.
 * `0.2.7`_ (2012-08-07)
     * Compatibility with Requests 0.13.6.
     * Streamed terminal output. ``--stream`` / ``-S`` can be used to enable

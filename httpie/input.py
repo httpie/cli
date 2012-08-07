@@ -66,11 +66,16 @@ OUTPUT_OPTIONS = frozenset([
     OUT_RESP_BODY
 ])
 
+# Pretty
+PRETTY_ALL = ['format', 'colors']
+PRETTY_FORMAT = ['format']
+PRETTY_COLORS = ['colors']
+PRETTY_STDOUT_TTY_ONLY = object()
+
 
 # Defaults
 OUTPUT_OPTIONS_DEFAULT = OUT_RESP_HEAD + OUT_RESP_BODY
 OUTPUT_OPTIONS_DEFAULT_STDOUT_REDIRECTED = OUT_RESP_BODY
-PRETTIFY_STDOUT_TTY_ONLY = object()
 DEFAULT_UA = 'HTTPie/%s' % __version__
 
 
@@ -123,8 +128,8 @@ class Parser(argparse.ArgumentParser):
             # Stdin already read (if not a tty) so it's save to prompt.
             args.auth.prompt_password(urlparse(args.url).netloc)
 
-        if args.prettify == PRETTIFY_STDOUT_TTY_ONLY:
-            args.prettify = env.stdout_isatty
+        if args.prettify == PRETTY_STDOUT_TTY_ONLY:
+            args.prettify = PRETTY_ALL if env.stdout_isatty else []
         elif args.prettify and env.is_windows:
             self.error('Only terminal output can be prettified on Windows.')
 

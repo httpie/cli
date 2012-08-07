@@ -11,10 +11,13 @@ from . import __doc__
 from . import __version__
 from .output import AVAILABLE_STYLES, DEFAULT_STYLE
 from .input import (Parser, AuthCredentialsArgType, KeyValueArgType,
-                    PRETTIFY_STDOUT_TTY_ONLY,
+                    PRETTY_STDOUT_TTY_ONLY,
                     SEP_PROXY, SEP_CREDENTIALS, SEP_GROUP_ITEMS,
                     OUT_REQ_HEAD, OUT_REQ_BODY, OUT_RESP_HEAD,
-                    OUT_RESP_BODY, OUTPUT_OPTIONS)
+                    OUT_RESP_BODY, OUTPUT_OPTIONS,
+                    PRETTY_STDOUT_TTY_ONLY, PRETTY_ALL,
+                    PRETTY_FORMAT,
+                    PRETTY_COLORS)
 
 
 def _(text):
@@ -71,19 +74,26 @@ parser.add_argument(
 
 prettify = parser.add_mutually_exclusive_group(required=False)
 prettify.add_argument(
-    '--pretty', dest='prettify', action='store_true',
-    default=PRETTIFY_STDOUT_TTY_ONLY,
+    '--pretty', dest='prettify', action='store_const', const=PRETTY_ALL,
+    default=PRETTY_STDOUT_TTY_ONLY,
     help=_('''
-        If stdout is a terminal, the response is prettified
-        by default (colorized and indented if it is JSON).
-        This flag ensures prettifying even when stdout is redirected.
+        Apply both colors and formatting. Default for terminal output.
     ''')
+)
+prettify.add_argument(
+    '--colors', dest='prettify', action='store_const', const=PRETTY_COLORS,
+    help=_('''Apply colors to the output.''')
+)
+prettify.add_argument(
+    '--format', dest='prettify', action='store_const', const=PRETTY_FORMAT,
+    help=_('''Apply formatting to the output.''')
 )
 prettify.add_argument(
     '--ugly', '-u', dest='prettify', action='store_false',
     help=_('''
-        Do not prettify the response.
-    ''')
+     Disables output processing.
+     Default for redirected output.
+     ''')
 )
 
 output_options = parser.add_mutually_exclusive_group(required=False)

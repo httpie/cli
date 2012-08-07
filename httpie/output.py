@@ -116,7 +116,8 @@ def make_stream(env, args):
     elif args.prettify:
         Stream = partial(
             PrettyStream if args.stream else BufferedPrettyStream,
-            processor=OutputProcessor(env, pygments_style=args.style),
+            processor=OutputProcessor(env, groups=args.prettify,
+                                      pygments_style=args.style),
             env=env)
     else:
         Stream = partial(EncodedStream, env=env)
@@ -446,17 +447,23 @@ class HeadersProcessor(BaseProcessor):
 class OutputProcessor(object):
     """A delegate class that invokes the actual processors."""
 
-    installed_processors = [
-        JSONProcessor,
-        HeadersProcessor,
-        PygmentsProcessor
-    ]
-
-    def __init__(self, env, **kwargs):
-        processors = [
-            cls(env, **kwargs)
-            for cls in self.installed_processors
+    installed_processors = {
+        'format': [
+            HeadersProcessor,
+            JSONProcessor
+        ],
+        'colors': [
+            PygmentsProcessor
         ]
+    }
+
+    def __init__(self, env, groups, **kwargs):
+
+        processors = []
+        for group in groups:
+            for cls in self.installed_processors[group]:
+                processors.append(cls(env, **kwargs))
+
         self.processors = [p for p in processors if p.enabled]
 
     def process_headers(self, headers):

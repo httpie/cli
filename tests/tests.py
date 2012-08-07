@@ -503,7 +503,7 @@ class ImplicitHTTPMethodTest(BaseTestCase):
         self.assertIn(OK, r)
 
 
-class PrettyFlagTest(BaseTestCase):
+class PrettyOptionsTest(BaseTestCase):
     """Test the --pretty / --ugly flag handling."""
 
     def test_pretty_enabled_by_default(self):
@@ -552,6 +552,34 @@ class PrettyFlagTest(BaseTestCase):
             env=TestEnvironment(colors=256)
         )
         self.assertIn(COLOR, r)
+
+    def test_colors_option(self):
+        r = http(
+            '--print=B',
+            '--colors',
+            'GET',
+            httpbin('/get'),
+            'a=b',
+            env=TestEnvironment(colors=256),
+        )
+        #noinspection PyUnresolvedReferences
+        # Tests that the JSON data isn't formatted.
+        self.assertEqual(r.strip().count('\n'), 0)
+        self.assertIn(COLOR, r)
+
+    def test_format_option(self):
+        r = http(
+            '--print=B',
+            '--format',
+            'GET',
+            httpbin('/get'),
+            'a=b',
+            env=TestEnvironment(colors=256),
+        )
+        #noinspection PyUnresolvedReferences
+        # Tests that the JSON data is formatted.
+        self.assertEqual(r.strip().count('\n'), 2)
+        self.assertNotIn(COLOR, r)
 
 
 class VerboseFlagTest(BaseTestCase):
