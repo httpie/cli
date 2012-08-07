@@ -1,5 +1,6 @@
 import os
 import sys
+import re
 from setuptools import setup
 import httpie
 
@@ -22,11 +23,20 @@ if 'win32' in str(sys.platform).lower():
     requirements.append('colorama>=0.2.4')
 
 
+def long_description():
+    """Pre-process the README so that PyPi can render it properly."""
+    with open('README.rst') as f:
+        rst = f.read()
+    code_block = '(:\n\n)?\.\. code-block::.*'
+    rst = re.sub(code_block, '::', rst)
+    return rst
+
+
 setup(
     name='httpie',
     version=httpie.__version__,
     description=httpie.__doc__.strip(),
-    long_description=open('README.rst').read(),
+    long_description=long_description(),
     url='http://httpie.org/',
     download_url='https://github.com/jkbr/httpie',
     author=httpie.__author__,
