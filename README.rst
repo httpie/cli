@@ -910,7 +910,7 @@ Please run the existing suite of tests before a pull request is submitted:
     tox
 
 
-Don't forget to add yourself to `AUTHORS`_.
+Don't forget to add yourself to `AUTHORS.rst`_.
 
 
 =======
@@ -1016,5 +1016,5 @@ Changelog
 .. _0.2.7: https://github.com/jkbr/httpie/compare/0.2.5...0.2.7
 .. _0.2.8dev: https://github.com/jkbr/httpie/compare/0.2.7...master
 .. _README for stable version: https://github.com/jkbr/httpie/tree/0.2.7#readme
-.. _AUTHORS: https://github.com/jkbr/httpie/blob/master/AUTHORS.rst
+.. _AUTHORS.rst: https://github.com/jkbr/httpie/blob/master/AUTHORS.rst
 .. _LICENSE: https://github.com/jkbr/httpie/blob/master/LICENSE

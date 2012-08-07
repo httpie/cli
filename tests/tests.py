@@ -19,13 +19,13 @@ To make it run faster and offline you can::
     HTTPBIN_URL=http://localhost:5000 tox
 
 """
+import subprocess
 import os
 import sys
 import json
 import argparse
 import tempfile
 import unittest
-from requests import __version__ as requests_version
 try:
     from urllib.request import urlopen
 except ImportError:
@@ -41,7 +41,7 @@ except ImportError:
             return test_method
         return decorator
 
-
+from requests import __version__ as requests_version
 from requests.compat import is_windows, is_py26, bytes, str
 
 
@@ -113,6 +113,26 @@ class TestEnvironment(Environment):
             kwargs['stderr'] = tempfile.TemporaryFile('w+t')
 
         super(TestEnvironment, self).__init__(**kwargs)
+
+
+def has_docutils():
+    try:
+        #noinspection PyUnresolvedReferences
+        import docutils
+        return True
+    except ImportError:
+        return False
+
+def get_readme_errors():
+    p = subprocess.Popen([
+        'rst2pseudoxml.py',
+        '--report=1',
+        '--exit-status=1',
+        os.path.join(TESTS_ROOT, '..', 'README.rst')
+    ], stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+    err = p.communicate()[1]
+    if p.returncode:
+        return err
 
 
 class BytesResponse(bytes):
@@ -1129,6 +1149,15 @@ class ArgumentParserTestCase(unittest.TestCase):
             input.KeyValue(key
                 ='old_item', value='b', sep='=', orig='old_item=b'),
         ])
+
+
+
+class READMETest(BaseTestCase):
+
+    @skipIf(not has_docutils(), 'docutils not installed')
+    def test_README_reStructuredText_valid(self):
+        errors = get_readme_errors()
+        self.assertFalse(errors, msg=errors)
 
 
 if __name__ == '__main__':
