@@ -25,6 +25,7 @@ import json
 import argparse
 import tempfile
 import unittest
+from requests import __version__ as requests_version
 try:
     from urllib.request import urlopen
 except ImportError:
@@ -765,6 +766,8 @@ class AuthTest(BaseTestCase):
         self.assertIn('"authenticated": true', r)
         self.assertIn('"user": "user"', r)
 
+    @skipIf(requests_version == '0.13.6',
+            'Redirects with prefetch=False are broken in Requests 0.13.6')
     def test_digest_auth(self):
         r = http(
             '--auth-type=digest',
@@ -822,6 +825,8 @@ class ExitStatusTest(BaseTestCase):
         self.assertEqual(r.exit_status, EXIT.ERROR_HTTP_3XX)
         self.assertIn('301 moved permanently', r.stderr.lower())
 
+    @skipIf(requests_version == '0.13.6',
+            'Redirects with prefetch=False are broken in Requests 0.13.6')
     def test_3xx_check_status_redirects_allowed_exits_0(self):
         r = http(
             '--check-status',
