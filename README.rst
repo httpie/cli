@@ -114,52 +114,53 @@ Examples
 --------
 
 
-Send a ``HEAD`` request:
+Custom `HTTP method`_, `HTTP headers`_ and `JSON`_ data:
 
 .. code-block:: bash
 
-    $ http HEAD example.org
+    $ http PUT example.org X-API-Token:123 name=John
 
 
-Submit a form:
-
-.. code-block:: bash
-
-    $ http --form POST example.org hello=World
-
-
-Send a ``PUT`` request with a custom header and some JSON data:
+Submitting `forms`_:
 
 .. code-block:: bash
 
-    $ http PUT example.org X-API-Token:123 name='David Bowie'
+    $ http -f POST example.org hello=World
 
-See the request that is being sent:
+
+See the request that is being sent using on of the `output options`_:
 
 .. code-block:: bash
 
-    $ http --verbose example.org
+    $ http -v example.org
 
 
-Use `Github API`_ to post a comment on an issue:
+Use `Github API`_ to post a comment on an issue with `authentication`_:
 
 .. code-block:: bash
 
     $ http -a USERNAME POST https://api.github.com/repos/jkbr/httpie/issues/83/comments body='HTTPie is awesome!'
 
 
-Upload a file:
+Upload a file using `redirected input`_:
 
 .. code-block:: bash
 
     $ http example.org < file.json
 
 
-Download a file:
+Download a file and save it via `redirected output`_:
 
 .. code-block:: bash
 
     $ http example.org/file > file
+
+
+--------
+
+*What follows is a detailed documentation. It covers the command syntax,
+advances usage, and also features additional examples.*
+
 
 ============
 HTTP Method
@@ -172,7 +173,7 @@ The name of the HTTP method comes right before the URL argument:
     $ http DELETE example.org/todos/7
 
 
-It makes the command look similar to the actual ``Request-Line`` that is sent:
+Which looks similar to the actual ``Request-Line`` that is sent:
 
 .. code-block:: http
 
@@ -250,7 +251,7 @@ You can use ``\`` to escape characters that shouldn't be used as separators
 (or parts thereof). e.g., ``foo\==bar`` will become a data key/value
 pair (``foo=`` and ``bar``) instead of a URL parameter.
 
-No that data fields aren't the only way to specify request data,
+Note that data fields aren't the only way to specify request data,
 `redirected input`_ allows passing arbitrary data to be sent with the request.
 
 
@@ -271,7 +272,7 @@ both of which can be overwritten:
 ================    =======================================
 
 You can use ``--json`` / ``-j`` to set ``Accept`` to ``application/json``
-regardless of whether you are sending data (it's a shortcut for using setting
+regardless of whether you are sending data (it's a shortcut for setting
 the header via the usual header notation –
 ``http url Accept:application/json``).
 
@@ -323,6 +324,12 @@ into the resulting object:
     }
 
 
+Send JSON data stored in a file (see `redirected input`_ for more examples):
+
+.. code-block:: bash
+
+    $ http POST api.example.com/person/1 < person.json
+
 
 =====
 Forms
@@ -330,8 +337,9 @@ Forms
 
 Submitting forms is very similar to sending `JSON`_ requests. Often the only
 difference is in adding the ``--form`` / ``-f`` option, which ensures that
-data fields are serialized and ``Content-Type`` is set to
+data fields are serialized as, and ``Content-Type`` is set to,
 ``application/x-www-form-urlencoded; charset=utf-8``.
+
 
 -------------
 Regular Forms
@@ -355,7 +363,7 @@ Regular Forms
 File Upload Forms
 -----------------
 
-When one or more file fields are present, the content type is
+If one or more file fields is present, the serialization and content type is
 ``multipart/form-data``:
 
 .. code-block:: bash
@@ -397,8 +405,7 @@ To set custom headers you can use the ``Header:Value`` notation:
     X-Foo: Bar
 
 
-There are a couple of default headers that HTTPie sets, but they can easily
-be overwritten:
+There are a couple of default headers that HTTPie sets:
 
 .. code-block:: http
 
@@ -407,6 +414,9 @@ be overwritten:
     Accept-Encoding: identity, deflate, compress, gzip
     User-Agent: HTTPie/<version>
     Host: <taken-from-URL>
+
+
+Any of the default headers can be overwritten.
 
 
 ==============
@@ -488,9 +498,10 @@ In your ``~/.bash_profile``:
 HTTPS
 =====
 
-To skip the host's SSL certificate verification, you can pass ``--verify=no``.
-You can also specify a custom CA bundle path using the same option. The same
-can also be done via the environment variable ``REQUESTS_CA_BUNDLE``.
+To skip the host's SSL certificate verification, you can pass ``--verify=no``
+(default is ``yes``). You can also use ``--verify`` to set a custom CA bundle
+path. The path can also be configured via the environment variable
+``REQUESTS_CA_BUNDLE``.
 
 
 ==============
@@ -552,7 +563,7 @@ Character   Stands for
 ``b``       Response body.
 ==========  ==================
 
-Print both the request and response headers:
+Print request and response headers:
 
 .. code-block:: bash
 
@@ -569,14 +580,14 @@ request, except that it applies to any HTTP method you use.
 
 Let's say that there is an API that returns the whole resource when it is
 updated, but you are only interested in the response headers to see the
-status code after the update:
+status code after an update:
 
 .. code-block:: bash
 
     $ http --headers PATCH example.org/Really-Huge-Resource name='New Name'
 
 
-Since we are only printing the HTTP headers here, the connection to server
+Since we are only printing the HTTP headers here, the connection to the server
 is closed as soon as all the response headers have been received.
 Therefore, bandwidth and time isn't wasted downloading the body
 which you don't care about.
@@ -657,7 +668,7 @@ Body Data From a Filename
 ``@/path/to/file``) whose content is used as if it came from ``stdin``.
 
 It has the advantage that **the** ``Content-Type``
-**header will automatically be set** to the appropriate value based on the
+**header is automatically set** to the appropriate value based on the
 filename extension. For example, the following request sends the
 verbatim contents of that XML file with ``Content-Type: application/xml``:
 
@@ -670,7 +681,8 @@ verbatim contents of that XML file with ``Content-Type: application/xml``:
 Terminal Output
 =================
 
-HTTPie does several things by default to make its terminal output easy to read.
+HTTPie does several things by default in order to make its terminal output
+easy to read.
 
 
 ---------------------
@@ -679,7 +691,7 @@ Colors and Formatting
 
 Syntax highlighting is applied to HTTP headers and bodies (where it makes
 sense). You can choose your prefered color scheme via the ``--style`` option
-if you don't like the default onw (see ``$ http --help`` for the possible
+if you don't like the default one (see ``$ http --help`` for the possible
 values).
 
 Also, the following formatting is applied:
@@ -702,16 +714,16 @@ Binary data
 -----------
 
 Binary data is suppressed for terminal output, which makes it safe to perform
-requests to URLs send back binary data. Binary data is suppressed also in
+requests to URLs that send back binary data. Binary data is suppressed also in
 redirected, but prettified output. The connection is closed as soon as we know
 that the response body is binary,
 
 .. code-block:: bash
 
-    http example.org/File.mov
+    http example.org/Movie.mov
 
 
-You will immediately see something like this:
+You will nearly instantly see something like this:
 
 .. code-block:: http
 
@@ -734,7 +746,7 @@ HTTPie uses **different defaults** for redirected output than for
 `terminal output`_:
 
 * Formatting and colors aren't applied (unless ``--pretty``, ``--format``,
-  or ``--colors``, is set).
+  or ``--colors`` is set).
 * Only the response body is printed (unless one of the `output options`_ is set).
 * Also, binary data isn't suppressed.
 
@@ -756,12 +768,16 @@ Download an image of Octocat, resize it using ImageMagick, upload it elsewhere:
     $ http octodex.github.com/images/original.jpg | convert - -resize 25% -  | http example.org/Octocats
 
 
-Force colorizing and formatting, and show both the request and response in
+Force colorizing and formatting, and show both the request and the response in
 ``less`` pager:
 
 .. code-block:: bash
 
     $ http --pretty --verbose example.org | less -R
+
+
+The ``-R`` flag tells ``less`` to interpret color escape sequences included
+HTTPie`s output.
 
 
 ==================
@@ -770,7 +786,7 @@ Streamed Responses
 
 Responses are downloaded and printed in chunks, which allows for streaming
 and large file downloads without using too much RAM. However, when
-`colors and formatting`_ are applied, the whole response is buffered and only
+`colors and formatting`_ is applied, the whole response is buffered and only
 then processed at once.
 
 
@@ -781,7 +797,7 @@ You can use the ``--stream, -S`` flag to make two things happen:
 
 2. Streaming becomes enabled even when the output is prettified: It will be
    applied to **each line** of the response and flushed immediately. This makes
-   it possible to have a nice output of long-lived requests, such as one
+   it possible to have a nice output for long-lived requests, such as one
    to the Twitter streaming API.
 
 
@@ -792,7 +808,7 @@ Prettified streamed response:
     $ http --stream -f -a YOUR-TWITTER-NAME https://stream.twitter.com/1/statuses/filter.json track='Justin Bieber'
 
 
-Streamed output by small chunks:
+Streamed output by small chunks alá ``tail -f``:
 
 .. code-block:: bash
 
@@ -870,6 +886,11 @@ The two modes, ``--pretty`` (default for terminal) and ``--ugly, -u``
 (default for redirected output), allow for both user-friendly interactive use
 and usage from scripts, where HTTPie serves as a generic HTTP client.
 
+As HTTPie is still under heavy development, the existing command line
+syntax and some of the ``--OPTIONS`` may change slightly before
+HTTPie reaches its final version ``1.0``. All changes are recorded in the
+`changelog`_.
+
 
 ==========
 Contribute
@@ -934,6 +955,8 @@ Please see `LICENSE`_.
 =========
 Changelog
 =========
+
+*You can click a version name to see a diff with the previous one.*
 
 * `0.2.8dev`_
     * Added exit status code ``2`` for timed-out requests.
