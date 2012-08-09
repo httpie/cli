@@ -82,8 +82,7 @@ class HTTPResponse(HTTPMessage):
         return self._orig.iter_content(chunk_size=chunk_size)
 
     def iter_lines(self, chunk_size):
-        for line in self._orig.iter_lines(chunk_size):
-            yield line, b'\n'
+        return ((line, b'\n') for line in self._orig.iter_lines(chunk_size))
 
     @property
     def headers(self):
@@ -92,9 +91,19 @@ class HTTPResponse(HTTPMessage):
              version='.'.join(str(original.version)),
              status=original.status,
              reason=original.reason
-         )
-        headers = str(original.msg)
-        return '\n'.join([status_line, headers]).strip()
+        )
+        headers = [status_line]
+        try:
+            # `original.msg` is a `http.client.HTTPMessage` on Python 3
+            # `_headers` is a 2-tuple
+            headers.extend(
+                '%s: %s' % header for header in original.msg._headers)
+        except AttributeError:
+            # and a `httplib.HTTPMessage` on Python 2.x
+            # `headers` is a list of `name: val<CRLF>`.
+            headers.extend(h.strip() for h in original.msg.headers)
+
+        return '\r\n'.join(headers)
 
     @property
     def encoding(self):
@@ -151,7 +160,7 @@ class HTTPRequest(HTTPMessage):
 
         headers.insert(0, request_line)
 
-        return '\n'.join(headers).strip()
+        return '\r\n'.join(headers).strip()
 
     @property
     def encoding(self):

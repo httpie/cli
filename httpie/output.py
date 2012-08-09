@@ -85,8 +85,9 @@ def output_stream(args, env, request, response):
             with_headers=req_h,
             with_body=req_b))
 
-    if req and resp:
-        output.append([b'\n\n\n'])
+    if req_b and resp:
+        # Request/Response separator.
+        output.append([b'\n\n'])
 
     if resp:
         output.append(Stream(
@@ -94,7 +95,9 @@ def output_stream(args, env, request, response):
             with_headers=resp_h,
             with_body=resp_b))
 
-    if env.stdout_isatty:
+    if env.stdout_isatty and resp_b:
+        # Ensure a blank line after the response body.
+        # For terminal output only.
         output.append([b'\n\n'])
 
     return chain(*output)
@@ -150,21 +153,12 @@ class BaseStream(object):
         """Return an iterator over `self.msg`."""
         if self.with_headers:
             yield self._headers()
+            yield b'\r\n\r\n'
 
         if self.with_body:
-            it = self._body()
-
             try:
-                if self.with_headers:
-                    # Yield the headers/body separator only if needed.
-                    chunk = next(it)
-                    if chunk:
-                        yield b'\n\n'
-                        yield chunk
-
-                for chunk in it:
+                for chunk in self._body():
                     yield chunk
-
             except BinarySuppressedError as e:
                 if self.with_headers:
                     yield b'\n'
@@ -433,7 +427,7 @@ class HeadersProcessor(BaseProcessor):
     def process_headers(self, headers):
         lines = headers.splitlines()
         headers = sorted(lines[1:], key=lambda h: h.split(':')[0])
-        return '\n'.join(lines[:1] + headers)
+        return '\r\n'.join(lines[:1] + headers)
 
 
 class OutputProcessor(object):
@@ -460,7 +454,7 @@ class OutputProcessor(object):
         for group in groups:
             for cls in self.installed_processors[group]:
                 processor = cls(env, **kwargs)
-                if processor.enable:
+                if processor.enabled:
                     self.processors.append(processor)
 
     def process_headers(self, headers):

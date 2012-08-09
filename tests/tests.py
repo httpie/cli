@@ -26,6 +26,8 @@ import json
 import argparse
 import tempfile
 import unittest
+
+CRLF = '\r\n'
 try:
     from urllib.request import urlopen
 except ImportError:
@@ -174,7 +176,6 @@ def http(*args, **kwargs):
         env.stderr.seek(0)
 
         output = env.stdout.read()
-
         try:
             r = StrResponse(output.decode('utf8'))
         except UnicodeDecodeError:
@@ -187,7 +188,7 @@ def http(*args, **kwargs):
                     r.json = json.loads(r)
                 elif r.count('Content-Type:') == 1 and 'application/json' in r:
                     try:
-                        j = r.strip()[r.strip().rindex('\n\n'):]
+                        j = r.strip()[r.strip().rindex('\r\n\r\n'):]
                     except ValueError:
                         pass
                     else:
@@ -1003,6 +1004,68 @@ class StreamTest(BaseTestCase):
         # We get 'Bad Request' but it's okay.
         #self.assertIn(OK.encode(), r)
         self.assertIn(BIN_FILE_CONTENT, r)
+
+
+class LineEndingsTest(BaseTestCase):
+    """Test that CRLF is properly used in headers and
+    as the headers/body separator."""
+
+    def _validate_crlf(self, msg):
+        #noinspection PyUnresolvedReferences
+        lines = iter(msg.splitlines(True))
+        for header in lines:
+            if header == CRLF:
+                break
+            self.assertTrue(header.endswith(CRLF), repr(header))
+        else:
+            self.fail('CRLF between headers and body not found in %r' % msg)
+        body = ''.join(lines)
+        self.assertNotIn(CRLF, body)
+        return body
+
+    def test_CRLF_headers_only(self):
+        r = http(
+            '--headers',
+            'GET',
+            httpbin('/get')
+        )
+        body = self._validate_crlf(r)
+        self.assertFalse(body, 'Garbage after headers: %r' % r)
+
+    def test_CRLF_ugly_response(self):
+        r = http(
+            '--ugly',
+            'GET',
+            httpbin('/get')
+        )
+        self._validate_crlf(r)
+
+    def test_CRLF_formatted_response(self):
+        r = http(
+            '--format',
+            'GET',
+            httpbin('/get')
+        )
+        self.assertEqual(r.exit_status,0)
+        self._validate_crlf(r)
+
+    def test_CRLF_ugly_request(self):
+        r = http(
+            '--ugly',
+            '--print=HB',
+            'GET',
+            httpbin('/get')
+        )
+        self._validate_crlf(r)
+
+    def test_CRLF_formatted_request(self):
+        r = http(
+            '--format',
+            '--print=HB',
+            'GET',
+            httpbin('/get')
+        )
+        self._validate_crlf(r)
 
 
 #################################################################
