@@ -959,6 +959,7 @@ Changelog
 *You can click a version name to see a diff with the previous one.*
 
 * `0.2.8dev`_
+    * CRLF HTTP header field separation in the output.
     * Added exit status code ``2`` for timed-out requests.
     * Added ``--colors`` and ``--format`` in addition to ``--pretty``, to
       be able to separate colorizing and formatting.
