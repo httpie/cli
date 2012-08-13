@@ -262,10 +262,10 @@ class BufferedPrettyStream(PrettyStream):
         # Read the whole body before prettifying it,
         # but bail out immediately if the body is binary.
         body = bytearray()
-        for chunk in self.msg.iter_body(self.CHUNK_SIZE):
+        for chunk, lf in self.msg.iter_lines(self.CHUNK_SIZE):
             if b'\0' in chunk:
                 raise BinarySuppressedError()
-            body.extend(chunk)
+            body.extend(chunk + lf)
 
         yield self._process_body(body)
 
