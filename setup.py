@@ -1,6 +1,7 @@
 import os
 import sys
 import re
+import codecs
 from setuptools import setup
 import httpie
 
@@ -25,7 +26,7 @@ if 'win32' in str(sys.platform).lower():
 
 def long_description():
     """Pre-process the README so that PyPi can render it properly."""
-    with open('README.rst') as f:
+    with codecs.open('README.rst', encoding='utf8') as f:
         rst = f.read()
     code_block = '(:\n\n)?\.\. code-block::.*'
     rst = re.sub(code_block, '::', rst)
