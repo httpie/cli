@@ -2,9 +2,7 @@
 HTTPie: cURL for Humans
 ***********************
 
-v0.2.8dev
-
-☞ `README for stable version`_
+v0.2.8dev (`stable version`_)
 
 HTTPie is a **command line HTTP client** whose goal is to make CLI interaction
 with web services as **human-friendly** as possible. It provides a
@@ -636,14 +634,14 @@ You can use ``cat`` to enter multiline data on the terminal:
 
 .. code-block:: bash
 
-    $ cat | http POST example.com⏎
+    $ cat | http POST example.com
     <paste>
     ^D
 
 
 .. code-block:: bash
 
-    $ cat | http POST example.com/todos Content-Type:text/plain⏎
+    $ cat | http POST example.com/todos Content-Type:text/plain
     - buy milk
     - call parents
     ^D
@@ -1043,6 +1041,6 @@ Changelog
 .. _0.2.6: https://github.com/jkbr/httpie/compare/0.2.5...0.2.6
 .. _0.2.7: https://github.com/jkbr/httpie/compare/0.2.5...0.2.7
 .. _0.2.8dev: https://github.com/jkbr/httpie/compare/0.2.7...master
-.. _README for stable version: https://github.com/jkbr/httpie/tree/0.2.7#readme
+.. _stable version: https://github.com/jkbr/httpie/tree/0.2.7#readme
 .. _AUTHORS.rst: https://github.com/jkbr/httpie/blob/master/AUTHORS.rst
 .. _LICENSE: https://github.com/jkbr/httpie/blob/master/LICENSE
