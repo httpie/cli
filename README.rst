@@ -2,7 +2,7 @@
 HTTPie: cURL for Humans
 ***********************
 
-v0.2.8dev (`stable version`_)
+v0.2.8-alpha (`stable version`_)
 
 HTTPie is a **command line HTTP client** whose goal is to make CLI interaction
 with web services as **human-friendly** as possible. It provides a
@@ -507,24 +507,31 @@ Sessions
 ========
 
 HTTPie supports named sessions, where several options and cookies sent
-by the server persists between requests:
+by the server persist between requests:
 
 .. code-block:: bash
 
     http --session=user1 --auth=user1:password example.org
 
+
 Now you can always refer to the session by passing ``--session=user1``,
 and the credentials and cookies will be reused:
 
+.. code-block:: bash
+
     http --session=user1 GET example.org
+
 
 Since sessions are named, you can switch between multiple sessions:
 
+.. code-block:: bash
+
     http --session=user2 --auth=user2:password example.org
 
-Note that session cookies respect domain and path.
 
+Note that session cookies respect domain and path.
 Session data are store in ``~/httpie/sessions/<name>.pickle``.
+
 
 ==============
 Output Options
