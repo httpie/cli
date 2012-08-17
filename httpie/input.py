@@ -67,9 +67,12 @@ OUTPUT_OPTIONS = frozenset([
 ])
 
 # Pretty
-PRETTY_ALL = ['format', 'colors']
-PRETTY_FORMAT = ['format']
-PRETTY_COLORS = ['colors']
+PRETTY_MAP = {
+    'all': ['format', 'colors'],
+    'colors': ['colors'],
+    'format': ['format'],
+    'none': []
+}
 PRETTY_STDOUT_TTY_ONLY = object()
 
 
@@ -114,6 +117,7 @@ class Parser(argparse.ArgumentParser):
             env.stdout_isatty = False
 
         self._process_output_options(args, env)
+        self._process_pretty_options(args, env)
         self._guess_method(args, env)
         self._parse_items(args)
 
@@ -128,10 +132,6 @@ class Parser(argparse.ArgumentParser):
             # Stdin already read (if not a tty) so it's save to prompt.
             args.auth.prompt_password(urlparse(args.url).netloc)
 
-        if args.prettify == PRETTY_STDOUT_TTY_ONLY:
-            args.prettify = PRETTY_ALL if env.stdout_isatty else []
-        elif args.prettify and env.is_windows:
-            self.error('Only terminal output can be prettified on Windows.')
 
         return args
 
@@ -245,6 +245,14 @@ class Parser(argparse.ArgumentParser):
         unknown = set(args.output_options) - OUTPUT_OPTIONS
         if unknown:
             self.error('Unknown output options: %s' % ','.join(unknown))
+
+    def _process_pretty_options(self, args, env):
+        if args.prettify == PRETTY_STDOUT_TTY_ONLY:
+            args.prettify = PRETTY_MAP['all' if env.stdout_isatty else 'none']
+        elif args.prettify and env.is_windows:
+            self.error('Only terminal output can be prettified on Windows.')
+        else:
+            args.prettify = PRETTY_MAP[args.prettify]
 
 
 class ParseError(Exception):

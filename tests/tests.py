@@ -525,7 +525,7 @@ class ImplicitHTTPMethodTest(BaseTestCase):
 
 
 class PrettyOptionsTest(BaseTestCase):
-    """Test the --pretty / --ugly flag handling."""
+    """Test the --pretty flag handling."""
 
     def test_pretty_enabled_by_default(self):
         r = http(
@@ -544,7 +544,7 @@ class PrettyOptionsTest(BaseTestCase):
 
     def test_force_pretty(self):
         r = http(
-            '--pretty',
+            '--pretty=all',
             'GET',
             httpbin('/get'),
             env=TestEnvironment(stdout_isatty=False, colors=256),
@@ -553,7 +553,7 @@ class PrettyOptionsTest(BaseTestCase):
 
     def test_force_ugly(self):
         r = http(
-            '--ugly',
+            '--pretty=none',
             'GET',
             httpbin('/get'),
         )
@@ -566,7 +566,7 @@ class PrettyOptionsTest(BaseTestCase):
         """
         r = http(
             '--print=B',
-            '--pretty',
+            '--pretty=all',
             httpbin('/post'),
             'Content-Type:text/foo+json',
             'a=b',
@@ -577,7 +577,7 @@ class PrettyOptionsTest(BaseTestCase):
     def test_colors_option(self):
         r = http(
             '--print=B',
-            '--colors',
+            '--pretty=colors',
             'GET',
             httpbin('/get'),
             'a=b',
@@ -591,7 +591,7 @@ class PrettyOptionsTest(BaseTestCase):
     def test_format_option(self):
         r = http(
             '--print=B',
-            '--format',
+            '--pretty=format',
             'GET',
             httpbin('/get'),
             'a=b',
@@ -738,7 +738,7 @@ class BinaryResponseDataTest(BaseTestCase):
 
     def test_binary_suppresses_when_not_terminal_but_pretty(self):
         r = http(
-            '--pretty',
+            '--pretty=all',
             'GET',
             self.url,
             env=TestEnvironment(stdin_isatty=True,
@@ -935,7 +935,7 @@ class FakeWindowsTest(BaseTestCase):
         r = http(
             '--output',
             os.path.join(tempfile.gettempdir(), '__httpie_test_output__'),
-            '--pretty',
+            '--pretty=all',
             'GET',
             httpbin('/get'),
             env=TestEnvironment(is_windows=True)
@@ -953,7 +953,7 @@ class StreamTest(BaseTestCase):
         with open(BIN_FILE_PATH, 'rb') as f:
             r = http(
                 '--verbose',
-                '--pretty',
+                '--pretty=all',
                 '--stream',
                 'GET',
                 httpbin('/get'),
@@ -972,7 +972,7 @@ class StreamTest(BaseTestCase):
         """Test that --stream works with non-prettified redirected terminal output."""
         with open(BIN_FILE_PATH, 'rb') as f:
             r = http(
-                '--ugly',
+                '--pretty=none',
                 '--stream',
                 '--verbose',
                 'GET',
@@ -990,7 +990,7 @@ class StreamTest(BaseTestCase):
         """Test that --stream works with non-prettified redirected terminal output."""
         with open(BIN_FILE_PATH, 'rb') as f:
             r = http(
-                '--ugly',
+                '--pretty=none',
                 '--stream',
                 '--verbose',
                 'GET',
@@ -1034,7 +1034,7 @@ class LineEndingsTest(BaseTestCase):
 
     def test_CRLF_ugly_response(self):
         r = http(
-            '--ugly',
+            '--pretty=none',
             'GET',
             httpbin('/get')
         )
@@ -1042,7 +1042,7 @@ class LineEndingsTest(BaseTestCase):
 
     def test_CRLF_formatted_response(self):
         r = http(
-            '--format',
+            '--pretty=format',
             'GET',
             httpbin('/get')
         )
@@ -1051,7 +1051,7 @@ class LineEndingsTest(BaseTestCase):
 
     def test_CRLF_ugly_request(self):
         r = http(
-            '--ugly',
+            '--pretty=none',
             '--print=HB',
             'GET',
             httpbin('/get')
@@ -1060,7 +1060,7 @@ class LineEndingsTest(BaseTestCase):
 
     def test_CRLF_formatted_request(self):
         r = http(
-            '--format',
+            '--pretty=format',
             '--print=HB',
             'GET',
             httpbin('/get')

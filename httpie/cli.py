@@ -14,8 +14,7 @@ from .input import (Parser, AuthCredentialsArgType, KeyValueArgType,
                     SEP_PROXY, SEP_CREDENTIALS, SEP_GROUP_ITEMS,
                     OUT_REQ_HEAD, OUT_REQ_BODY, OUT_RESP_HEAD,
                     OUT_RESP_BODY, OUTPUT_OPTIONS,
-                    PRETTY_STDOUT_TTY_ONLY, PRETTY_ALL,
-                    PRETTY_FORMAT, PRETTY_COLORS)
+                    PRETTY_MAP, PRETTY_STDOUT_TTY_ONLY)
 
 
 def _(text):
@@ -69,28 +68,16 @@ parser.add_argument(
     )
 )
 
-prettify = parser.add_mutually_exclusive_group(required=False)
-prettify.add_argument(
-    '--pretty', dest='prettify', action='store_const', const=PRETTY_ALL,
-    default=PRETTY_STDOUT_TTY_ONLY,
+
+parser.add_argument(
+    '--pretty', dest='prettify', default=PRETTY_STDOUT_TTY_ONLY,
+    choices=sorted(PRETTY_MAP.keys()),
     help=_('''
-        Apply both colors and formatting. Default for terminal output.
+        Controls output processing. The value can be "none" to not prettify
+        the output (default for redirected output), "all" to apply both colors
+        and formatting
+        (default for terminal output), "colors", or "format".
     ''')
-)
-prettify.add_argument(
-    '--colors', dest='prettify', action='store_const', const=PRETTY_COLORS,
-    help=_('''Apply colors to the output.''')
-)
-prettify.add_argument(
-    '--format', dest='prettify', action='store_const', const=PRETTY_FORMAT,
-    help=_('''Apply formatting to the output.''')
-)
-prettify.add_argument(
-    '--ugly', '-u', dest='prettify', action='store_false',
-    help=_('''
-     Disables output processing.
-     Default for redirected output.
-     ''')
 )
 
 output_options = parser.add_mutually_exclusive_group(required=False)
@@ -184,7 +171,7 @@ parser.add_argument(
 
 # ``requests.request`` keyword arguments.
 parser.add_argument(
-    '--auth', '-a', metavar='USER:PASS',
+    '--auth', '-a', metavar='USER[:PASS]',
     type=AuthCredentialsArgType(SEP_CREDENTIALS),
     help=_('''
         username:password.
