@@ -529,8 +529,8 @@ Since sessions are named, you can switch between multiple sessions:
     http --session=user2 --auth=user2:password example.org
 
 
-Note that session cookies respect domain and path.
-Session data are store in ``~/.httpie/sessions/<name>.pickle``.
+Note that session cookies respect the cookie domain and path.
+Session data are stored in ``~/.httpie/sessions/<name>.pickle``.
 
 
 ==============
