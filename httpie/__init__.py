@@ -3,7 +3,7 @@ HTTPie - cURL for humans.
 
 """
 __author__ = 'Jakub Roztocil'
-__version__ = '0.2.8dev'
+__version__ = '0.2.8-alpha'
 __licence__ = 'BSD'
 
 

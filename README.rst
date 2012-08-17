@@ -502,6 +502,30 @@ path. The path can also be configured via the environment variable
 ``REQUESTS_CA_BUNDLE``.
 
 
+========
+Sessions
+========
+
+HTTPie supports named sessions, where several options and cookies sent
+by the server persists between requests:
+
+.. code-block:: bash
+
+    http --session=user1 --auth=user1:password example.org
+
+Now you can always refer to the session by passing ``--session=user1``,
+and the credentials and cookies will be reused:
+
+    http --session=user1 GET example.org
+
+Since sessions are named, you can switch between multiple sessions:
+
+    http --session=user2 --auth=user2:password example.org
+
+Note that session cookies respect domain and path.
+
+Session data are store in ``~/httpie/sessions/<name>.pickle``.
+
 ==============
 Output Options
 ==============
@@ -700,12 +724,14 @@ Also, the following formatting is applied:
 
 One of these options can be used to control output processing:
 
-===============  ==============================================================
-``--pretty``     Apply both colors and formatting. Default for terminal output.
-``--colors``     Apply colors.
-``--format``     Apply formatting.
-``--ugly, -u``   Disables output processing. Default for redirected output.
-===============  ==============================================================
+====================   ========================================================
+``--pretty=all``       Apply both colors and formatting.
+                       Default for terminal output.
+``--pretty=colors``    Apply colors.
+``--pretty=format``    Apply formatting.
+``--pretty=none``      Disables output processing.
+                       Default for redirected output.
+====================   ========================================================
 
 -----------
 Binary data
@@ -743,8 +769,7 @@ Redirected Output
 HTTPie uses **different defaults** for redirected output than for
 `terminal output`_:
 
-* Formatting and colors aren't applied (unless ``--pretty``, ``--format``,
-  or ``--colors`` is set).
+* Formatting and colors aren't applied (unless ``--pretty`` is specified).
 * Only the response body is printed (unless one of the `output options`_ is set).
 * Also, binary data isn't suppressed.
 
@@ -771,7 +796,7 @@ Force colorizing and formatting, and show both the request and the response in
 
 .. code-block:: bash
 
-    $ http --pretty --verbose example.org | less -R
+    $ http --pretty=all --verbose example.org | less -R
 
 
 The ``-R`` flag tells ``less`` to interpret color escape sequences included
@@ -880,7 +905,7 @@ and that only a small portion of the command is used to control HTTPie and
 doesn't directly correspond to any part of the request (here it's only ``-f``
 asking HTTPie to send a form request).
 
-The two modes, ``--pretty`` (default for terminal) and ``--ugly, -u``
+The two modes, ``--pretty=all`` (default for terminal) and ``--pretty=none``
 (default for redirected output), allow for both user-friendly interactive use
 and usage from scripts, where HTTPie serves as a generic HTTP client.
 
@@ -956,20 +981,22 @@ Changelog
 
 *You can click a version name to see a diff with the previous one.*
 
-* `0.2.8dev`_
-    * Fixed colorized output on Windows with Python 3.
+* `0.2.8-alpha`_
+    * Added persistent session support.
     * Fixed installation on Windows with Python 3.
+    * Fixed colorized output on Windows with Python 3.
     * CRLF HTTP header field separation in the output.
     * Added exit status code ``2`` for timed-out requests.
-    * Added ``--colors`` and ``--format`` in addition to ``--pretty``, to
-      be able to separate colorizing and formatting.
+    * Added the option to separate colorizing and formatting
+      (``--pretty=all``, ``--pretty=colors`` and ``--pretty=format``).
+      ``--ugly`` has bee removed in favor of ``--pretty=none``.
 * `0.2.7`_ (2012-08-07)
     * Compatibility with Requests 0.13.6.
     * Streamed terminal output. ``--stream`` / ``-S`` can be used to enable
       streaming also with ``--pretty`` and to ensure a more frequent output
       flushing.
     * Support for efficient large file downloads.
-    * Sort headers by name (unless ``--ugly``).
+    * Sort headers by name (unless ``--pretty=none``).
     * Response body is fetched only when needed (e.g., not with ``--headers``).
     * Improved content type matching.
     * Updated Solarized color scheme.
@@ -1042,7 +1069,7 @@ Changelog
 .. _0.2.5: https://github.com/jkbr/httpie/compare/0.2.2...0.2.5
 .. _0.2.6: https://github.com/jkbr/httpie/compare/0.2.5...0.2.6
 .. _0.2.7: https://github.com/jkbr/httpie/compare/0.2.5...0.2.7
-.. _0.2.8dev: https://github.com/jkbr/httpie/compare/0.2.7...master
+.. _0.2.8-alpha: https://github.com/jkbr/httpie/compare/0.2.7...master
 .. _stable version: https://github.com/jkbr/httpie/tree/0.2.7#readme
 .. _AUTHORS.rst: https://github.com/jkbr/httpie/blob/master/AUTHORS.rst
 .. _LICENSE: https://github.com/jkbr/httpie/blob/master/LICENSE
