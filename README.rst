@@ -957,7 +957,7 @@ Changelog
 
 *You can click a version name to see a diff with the previous one.*
 
-* `0.2.8dev`_
+* `0.2.8-alpha`_
     * CRLF HTTP header field separation in the output.
     * Added exit status code ``2`` for timed-out requests.
     * Added the option to separate colorizing and formatting
@@ -1042,7 +1042,7 @@ Changelog
 .. _0.2.5: https://github.com/jkbr/httpie/compare/0.2.2...0.2.5
 .. _0.2.6: https://github.com/jkbr/httpie/compare/0.2.5...0.2.6
 .. _0.2.7: https://github.com/jkbr/httpie/compare/0.2.5...0.2.7
-.. _0.2.8dev: https://github.com/jkbr/httpie/compare/0.2.7...master
+.. _0.2.8-alpha: https://github.com/jkbr/httpie/compare/0.2.7...master
 .. _stable version: https://github.com/jkbr/httpie/tree/0.2.7#readme
 .. _AUTHORS.rst: https://github.com/jkbr/httpie/blob/master/AUTHORS.rst
 .. _LICENSE: https://github.com/jkbr/httpie/blob/master/LICENSE
