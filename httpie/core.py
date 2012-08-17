@@ -10,7 +10,6 @@ Invocation flow:
     5. Exit.
 
 """
-from _socket import gaierror
 import sys
 import json
 import errno
@@ -18,14 +17,14 @@ from pprint import pformat
 
 import requests
 import requests.auth
-from requests.compat import str
+from requests.compat import str, is_py3
 from httpie import __version__ as httpie_version
 from requests import __version__ as requests_version
 from pygments import __version__ as pygments_version
 
 from .cli import parser
 from .models import Environment
-from .output import output_stream, write
+from .output import output_stream, write, write_with_colors_win_p3k
 from . import EXIT
 
 
@@ -115,19 +114,20 @@ def main(args=sys.argv[1:], env=Environment()):
     status = EXIT.OK
 
     if debug:
-        sys.stderr.write('HTTPie version: %s\n' % httpie_version)
-        sys.stderr.write('Requests version: %s\n' % requests_version)
-        sys.stderr.write('Pygments version: %s\n' % pygments_version)
+        sys.stderr.write('HTTPie %s\n' % httpie_version)
+        sys.stderr.write('Requests %s\n' % requests_version)
+        sys.stderr.write('Pygments %s\n' % pygments_version)
+        sys.stderr.write('Python %s %s\n' % (sys.version, sys.platform))
 
     try:
         args = parser.parse_args(args=args, env=env)
-        kwargs = get_requests_kwargs(args)
+        requests_kwargs = get_requests_kwargs(args)
 
         if args.debug:
             sys.stderr.write(
-                '\n>>> requests.request(%s)\n\n' % pformat(kwargs))
+                '\n>>> requests.request(%s)\n\n' % pformat(requests_kwargs))
 
-        response = requests.request(**kwargs)
+        response = requests.request(**requests_kwargs)
 
         if args.check_status:
             status = get_exist_status(response.status_code,
@@ -137,10 +137,16 @@ def main(args=sys.argv[1:], env=Environment()):
 
         stream = output_stream(args, env, response.request, response)
 
+        write_kwargs = {
+            'stream': stream,
+            'outfile': env.stdout,
+            'flush': env.stdout_isatty or args.stream
+        }
         try:
-            write(stream=stream,
-                  outfile=env.stdout,
-                  flush=env.stdout_isatty or args.stream)
+            if env.is_windows and is_py3 and 'colors' in args.prettify:
+                write_with_colors_win_p3k(**write_kwargs)
+            else:
+                write(**write_kwargs)
 
         except IOError as e:
             if not traceback and e.errno == errno.EPIPE:

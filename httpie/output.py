@@ -61,6 +61,23 @@ def write(stream, outfile, flush):
             outfile.flush()
 
 
+def write_with_colors_win_p3k(stream, outfile, flush):
+    """Like `write`, but colorized chunks are written as text
+    directly to `outfile` to ensure it gets processed by colorama.
+    Applies only to Windows with Python 3 and colorized terminal output.
+
+    """
+    color = b'\x1b['
+    encoding = outfile.encoding
+    for chunk in stream:
+        if color in chunk:
+            outfile.write(chunk.decode(encoding))
+        else:
+            outfile.buffer.write(chunk)
+        if flush:
+            outfile.flush()
+
+
 def output_stream(args, env, request, response):
     """Build and return a chain of iterators over the `request`-`response`
     exchange each of which yields `bytes` chunks.

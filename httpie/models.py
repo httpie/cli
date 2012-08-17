@@ -18,14 +18,16 @@ class Environment(object):
     if progname not in ['http', 'https']:
         progname = 'http'
 
-    if is_windows:
-        import colorama.initialise
-        colorama.initialise.init()
-
     stdin_isatty = sys.stdin.isatty()
     stdin = sys.stdin
     stdout_isatty = sys.stdout.isatty()
-    stdout = sys.stdout
+
+    if stdout_isatty and is_windows:
+        from colorama.initialise import wrap_stream
+        stdout = wrap_stream(sys.stdout, convert=None,
+                             strip=None, autoreset=True, wrap=True)
+    else:
+        stdout = sys.stdout
     stderr = sys.stderr
 
     # Can be set to 0 to disable colors completely.

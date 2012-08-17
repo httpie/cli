@@ -957,6 +957,8 @@ Changelog
 *You can click a version name to see a diff with the previous one.*
 
 * `0.2.8dev`_
+    * Fixed colorized output on Windows with Python 3.
+    * Fixed installation on Windows with Python 3.
     * CRLF HTTP header field separation in the output.
     * Added exit status code ``2`` for timed-out requests.
     * Added ``--colors`` and ``--format`` in addition to ``--pretty``, to
