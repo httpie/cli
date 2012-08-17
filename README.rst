@@ -530,7 +530,7 @@ Since sessions are named, you can switch between multiple sessions:
 
 
 Note that session cookies respect domain and path.
-Session data are store in ``~/httpie/sessions/<name>.pickle``.
+Session data are store in ``~/.httpie/sessions/<name>.pickle``.
 
 
 ==============
