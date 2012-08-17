@@ -502,6 +502,30 @@ path. The path can also be configured via the environment variable
 ``REQUESTS_CA_BUNDLE``.
 
 
+========
+Sessions
+========
+
+HTTPie supports named sessions, where several options and cookies sent
+by the server persists between requests:
+
+.. code-block:: bash
+
+    http --session=user1 --auth=user1:password example.org
+
+Now you can always refer to the session by passing ``--session=user1``,
+and the credentials and cookies will be reused:
+
+    http --session=user1 GET example.org
+
+Since sessions are named, you can switch between multiple sessions:
+
+    http --session=user2 --auth=user2:password example.org
+
+Note that session cookies respect domain and path.
+
+Session data are store in ``~/httpie/sessions/<name>.pickle``.
+
 ==============
 Output Options
 ==============
@@ -958,6 +982,7 @@ Changelog
 *You can click a version name to see a diff with the previous one.*
 
 * `0.2.8-alpha`_
+    * Added session support.
     * CRLF HTTP header field separation in the output.
     * Added exit status code ``2`` for timed-out requests.
     * Added the option to separate colorizing and formatting

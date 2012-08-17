@@ -10,78 +10,21 @@ Invocation flow:
     5. Exit.
 
 """
-from _socket import gaierror
 import sys
-import json
 import errno
-from pprint import pformat
 
 import requests
-import requests.auth
 from requests.compat import str
 from httpie import __version__ as httpie_version
 from requests import __version__ as requests_version
 from pygments import __version__ as pygments_version
 
 from .cli import parser
+from .client import get_response
 from .models import Environment
 from .output import output_stream, write
 from . import EXIT
 
-
-FORM = 'application/x-www-form-urlencoded; charset=utf-8'
-JSON = 'application/json; charset=utf-8'
-
-
-def get_requests_kwargs(args):
-    """Send the request and return a `request.Response`."""
-
-    auto_json = args.data and not args.form
-    if args.json or auto_json:
-        if 'Content-Type' not in args.headers and args.data:
-            args.headers['Content-Type'] = JSON
-
-        if 'Accept' not in args.headers:
-            # Default Accept to JSON as well.
-            args.headers['Accept'] = 'application/json'
-
-        if isinstance(args.data, dict):
-            # If not empty, serialize the data `dict` parsed from arguments.
-            # Otherwise set it to `None` avoid sending "{}".
-            args.data = json.dumps(args.data) if args.data else None
-
-    elif args.form:
-        if not args.files and 'Content-Type' not in args.headers:
-            # If sending files, `requests` will set
-            # the `Content-Type` for us.
-            args.headers['Content-Type'] = FORM
-
-    credentials = None
-    if args.auth:
-        credentials = {
-            'basic': requests.auth.HTTPBasicAuth,
-            'digest': requests.auth.HTTPDigestAuth,
-        }[args.auth_type](args.auth.key, args.auth.value)
-
-    kwargs = {
-        'prefetch': False,
-        'method': args.method.lower(),
-        'url': args.url,
-        'headers': args.headers,
-        'data': args.data,
-        'verify': {
-            'yes': True,
-            'no': False
-        }.get(args.verify,args.verify),
-        'timeout': args.timeout,
-        'auth': credentials,
-        'proxies': dict((p.key, p.value) for p in args.proxy),
-        'files': args.files,
-        'allow_redirects': args.allow_redirects,
-        'params': args.params
-    }
-
-    return kwargs
 
 
 def get_exist_status(code, allow_redirects=False):
@@ -121,13 +64,7 @@ def main(args=sys.argv[1:], env=Environment()):
 
     try:
         args = parser.parse_args(args=args, env=env)
-        kwargs = get_requests_kwargs(args)
-
-        if args.debug:
-            sys.stderr.write(
-                '\n>>> requests.request(%s)\n\n' % pformat(kwargs))
-
-        response = requests.request(**kwargs)
+        response = get_response(args)
 
         if args.check_status:
             status = get_exist_status(response.status_code,

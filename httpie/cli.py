@@ -169,6 +169,16 @@ parser.add_argument(
     ''')
 )
 
+parser.add_argument(
+    '--session', metavar='NAME',
+    help=_('''
+    Create or reuse a session.
+    Withing a session, values of --auth, --timeout,
+    --verify, --proxies are persistent, as well as any
+    cookies sent by the server.
+    ''')
+)
+
 # ``requests.request`` keyword arguments.
 parser.add_argument(
     '--auth', '-a', metavar='USER[:PASS]',
