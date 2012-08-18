@@ -23,8 +23,8 @@ from .cli import parser
 from .client import get_response
 from .models import Environment
 from .output import output_stream, write, write_with_colors_win_p3k
+from .config import CONFIG_DIR
 from . import EXIT
-
 
 
 def get_exist_status(code, allow_redirects=False):
@@ -40,6 +40,16 @@ def get_exist_status(code, allow_redirects=False):
         return EXIT.ERROR_HTTP_5XX
     else:
         return EXIT.OK
+
+
+def print_debug_info():
+    sys.stderr.writelines([
+        'HTTPie %s\n' % httpie_version,
+        'HTTPie data: %s\n' % CONFIG_DIR,
+        'Requests %s\n' % requests_version,
+        'Pygments %s\n' % pygments_version,
+        'Python %s %s\n' % (sys.version, sys.platform)
+    ])
 
 
 def main(args=sys.argv[1:], env=Environment()):
@@ -58,10 +68,9 @@ def main(args=sys.argv[1:], env=Environment()):
     status = EXIT.OK
 
     if debug:
-        sys.stderr.write('HTTPie %s\n' % httpie_version)
-        sys.stderr.write('Requests %s\n' % requests_version)
-        sys.stderr.write('Pygments %s\n' % pygments_version)
-        sys.stderr.write('Python %s %s\n' % (sys.version, sys.platform))
+        print_debug_info()
+        if args == ['--debug']:
+            sys.exit(EXIT.OK)
 
     try:
         args = parser.parse_args(args=args, env=env)

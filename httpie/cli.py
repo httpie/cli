@@ -240,7 +240,8 @@ parser.add_argument(
     '--debug', action='store_true', default=False,
     help=_('''
         Prints exception traceback should one occur, and also other
-        information useful for debugging HTTPie itself and bug reports.
+        information that is useful for debugging HTTPie itself and
+        for bug reports.
     ''')
 )
 
