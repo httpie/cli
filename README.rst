@@ -508,25 +508,25 @@ Sessions
 
 *This is an experimental feature.*
 
-HTTPie supports named sessions, where several options and cookies sent
-by the server persist between requests:
+HTTPie supports named sessions, where custom headers, authorization,
+and cookies sent by the server persist between requests:
 
 .. code-block:: bash
 
     http --session=user1 --auth=user1:password example.org X-Foo:Bar
 
 
-Now you can always refer to the session by passing ``--session=user1``,
-and the credentials, custom headers and cookies will be reused:
+Now you can always refer to the session by passing ``--session=user1``:
 
 .. code-block:: bash
 
     http --session=user1 example.org
 
 
-Note that session cookies respect the cookie domain and path.
+Note that cookies respect the cookie domain and path.
 
-Session data are stored in ``~/.httpie/sessions/<name>.json``.
+Session data are stored in ``~/.httpie/sessions/<name>.json``
+(``%APPDATA%\httpie\sessions`` on Windows).
 
 You can view and manipulate existing sessions via the ``httpie`` management
 command, see ``httpie --help``.
