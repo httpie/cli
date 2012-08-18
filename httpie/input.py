@@ -18,8 +18,6 @@ except ImportError:
 from requests.structures import CaseInsensitiveDict
 from requests.compat import str, urlparse
 
-from . import __version__
-
 
 HTTP_POST = 'POST'
 HTTP_GET = 'GET'
@@ -79,7 +77,6 @@ PRETTY_STDOUT_TTY_ONLY = object()
 # Defaults
 OUTPUT_OPTIONS_DEFAULT = OUT_RESP_HEAD + OUT_RESP_BODY
 OUTPUT_OPTIONS_DEFAULT_STDOUT_REDIRECTED = OUT_RESP_BODY
-DEFAULT_UA = 'HTTPie/%s' % __version__
 
 
 class Parser(argparse.ArgumentParser):
@@ -193,7 +190,6 @@ class Parser(argparse.ArgumentParser):
 
         """
         args.headers = CaseInsensitiveDict()
-        args.headers['User-Agent'] = DEFAULT_UA
         args.data = ParamDict() if args.form else OrderedDict()
         args.files = OrderedDict()
         args.params = ParamDict()

@@ -224,11 +224,10 @@ misc.add_argument(
     '--session', metavar='SESSION_NAME',
     help=_('''
     Create or reuse a session.
-    Withing a session, values of --auth, --timeout,
-    --verify, --proxies, headers, as well as any
-    cookies sent by the server are persistent between requests.
+    Withing a session, custom headers, auth credential, as well as any
+    cookies sent by the server persist between requests.
     You can use the `httpie' management command to manipulate
-    and inspect existing sessions. See `httpie session'.
+    and inspect existing sessions. See `httpie --help'.
     ''')
 )
 

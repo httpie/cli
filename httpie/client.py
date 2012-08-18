@@ -4,12 +4,15 @@ from pprint import pformat
 
 import requests
 import requests.auth
+from requests.defaults import defaults
 
-from .import sessions
+from . import sessions
+from . import __version__
 
 
 FORM = 'application/x-www-form-urlencoded; charset=utf-8'
 JSON = 'application/json; charset=utf-8'
+DEFAULT_UA = 'HTTPie/%s' % __version__
 
 
 def get_response(args):
@@ -29,25 +32,24 @@ def get_response(args):
 def get_requests_kwargs(args):
     """Send the request and return a `request.Response`."""
 
+    base_headers = defaults['base_headers'].copy()
+    base_headers['User-Agent'] = DEFAULT_UA
+
     auto_json = args.data and not args.form
     if args.json or auto_json:
-        if 'Content-Type' not in args.headers and args.data:
-            args.headers['Content-Type'] = JSON
-
-        if 'Accept' not in args.headers:
-            # Default Accept to JSON as well.
-            args.headers['Accept'] = 'application/json'
+        base_headers['Accept'] = 'application/json'
+        if args.data:
+            base_headers['Content-Type'] = JSON
 
         if isinstance(args.data, dict):
             # If not empty, serialize the data `dict` parsed from arguments.
             # Otherwise set it to `None` avoid sending "{}".
             args.data = json.dumps(args.data) if args.data else None
 
-    elif args.form:
-        if not args.files and 'Content-Type' not in args.headers:
+    elif args.form and not args.files:
             # If sending files, `requests` will set
             # the `Content-Type` for us.
-            args.headers['Content-Type'] = FORM
+            base_headers['Content-Type'] = FORM
 
     credentials = None
     if args.auth:
@@ -71,7 +73,10 @@ def get_requests_kwargs(args):
         'proxies': dict((p.key, p.value) for p in args.proxy),
         'files': args.files,
         'allow_redirects': args.allow_redirects,
-        'params': args.params
+        'params': args.params,
+        'config': {
+            'base_headers': base_headers
+        }
     }
 
     return kwargs

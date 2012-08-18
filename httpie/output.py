@@ -135,7 +135,7 @@ def make_stream(env, args):
     elif args.prettify:
         Stream = partial(
             PrettyStream if args.stream else BufferedPrettyStream,
-            processor=OutputProcessor(env, groups=args.prettify,
+            processor=OutputProcessor(env=env, groups=args.prettify,
                                       pygments_style=args.style),
             env=env)
     else:
@@ -343,7 +343,7 @@ class BaseProcessor(object):
 
     enabled = True
 
-    def __init__(self, env, **kwargs):
+    def __init__(self, env=Environment(), **kwargs):
         """
         :param env: an class:`Environment` instance
         :param kwargs: additional keyword argument that some
@@ -406,7 +406,8 @@ class PygmentsProcessor(BaseProcessor):
             return
 
         try:
-            style = get_style_by_name(self.kwargs['pygments_style'])
+            style = get_style_by_name(
+                self.kwargs.get('pygments_style', DEFAULT_STYLE))
         except ClassNotFound:
             style = Solarized256Style
 
@@ -460,7 +461,7 @@ class OutputProcessor(object):
         ]
     }
 
-    def __init__(self, env, groups, **kwargs):
+    def __init__(self, groups, env=Environment(), **kwargs):
         """
         :param env: a :class:`models.Environment` instance
         :param groups: the groups of processors to be applied

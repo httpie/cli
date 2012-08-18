@@ -506,31 +506,30 @@ path. The path can also be configured via the environment variable
 Sessions
 ========
 
+*This is an experimental feature.*
+
 HTTPie supports named sessions, where several options and cookies sent
 by the server persist between requests:
 
 .. code-block:: bash
 
-    http --session=user1 --auth=user1:password example.org
+    http --session=user1 --auth=user1:password example.org X-Foo:Bar
 
 
 Now you can always refer to the session by passing ``--session=user1``,
-and the credentials and cookies will be reused:
+and the credentials, custom headers and cookies will be reused:
 
 .. code-block:: bash
 
-    http --session=user1 GET example.org
-
-
-Since sessions are named, you can switch between multiple sessions:
-
-.. code-block:: bash
-
-    http --session=user2 --auth=user2:password example.org
+    http --session=user1 example.org
 
 
 Note that session cookies respect the cookie domain and path.
-Session data are stored in ``~/.httpie/sessions/<name>.pickle``.
+
+Session data are stored in ``~/.httpie/sessions/<name>.json``.
+
+You can view and manipulate existing sessions via the ``httpie`` management
+command, see ``httpie --help``.
 
 
 ==============
