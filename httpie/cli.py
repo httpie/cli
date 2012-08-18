@@ -22,15 +22,71 @@ def _(text):
     return ' '.join(text.strip().split())
 
 
-parser = Parser(description='%s <http://httpie.org>' % __doc__.strip())
-parser.add_argument('--version', action='version', version=__version__)
+parser = Parser(
+    description='%s <http://httpie.org>' % __doc__.strip(),
+    epilog=_('''
+        Suggestions and bugs reports are appreciated:
+        https://github.com/jkbr/httpie/issues
+    ''')
+)
 
 
+
+###############################################################################
+# Positional arguments.
+###############################################################################
+
+positional = parser.add_argument_group(
+    title='Positional arguments',
+    description=_('''
+        These arguments come after any flags and in the
+        order they are listed here. Only URL is required.'''
+    )
+)
+positional.add_argument(
+    'method', metavar='METHOD',
+    nargs='?',
+    default=None,
+    help=_('''
+        The HTTP method to be used for the request
+        (GET, POST, PUT, DELETE, PATCH, ...).
+        If this argument is omitted, then HTTPie
+        will guess the HTTP method. If there is some
+        data to be sent, then it will be POST, otherwise GET.
+    ''')
+)
+positional.add_argument(
+    'url', metavar='URL',
+    help=_('''
+        The protocol defaults to http:// if the
+        URL does not include one.
+    ''')
+)
+positional.add_argument(
+    'items', nargs='*',
+    metavar='REQUEST ITEM',
+    type=KeyValueArgType(*SEP_GROUP_ITEMS),
+    help=_('''
+        A key-value pair whose type is defined by the
+        separator used. It can be an HTTP header (header:value),
+        a data field to be used in the request body (field_name=value),
+        a raw JSON data field (field_name:=value),
+        a query parameter (name==value),
+        or a file field (field_name@/path/to/file).
+        You can use a backslash to escape a colliding
+        separator in the field name.
+    ''')
+)
+
+
+###############################################################################
 # Content type.
-#############################################
+###############################################################################
 
-group_type = parser.add_mutually_exclusive_group(required=False)
-group_type.add_argument(
+content_type = parser.add_argument_group(
+    title='Predefined content types',
+    description=None).add_mutually_exclusive_group(required=False)
+content_type.add_argument(
     '--json', '-j', action='store_true',
     help=_('''
         (default) Data items from the command
@@ -39,7 +95,7 @@ group_type.add_argument(
         are set to application/json (if not specified).
     ''')
 )
-group_type.add_argument(
+content_type.add_argument(
     '--form', '-f', action='store_true',
     help=_('''
         Data items from the command line are serialized as form fields.
@@ -51,10 +107,13 @@ group_type.add_argument(
 )
 
 
-# Output options.
-#############################################
+###############################################################################
+# Output processing
+###############################################################################
 
-parser.add_argument(
+output_processing = parser.add_argument_group(title='Output processing')
+
+output_processing.add_argument(
     '--output', '-o', type=argparse.FileType('w+b'),
     metavar='FILE',
     help= argparse.SUPPRESS if not is_windows else _(
@@ -67,9 +126,7 @@ parser.add_argument(
         '''
     )
 )
-
-
-parser.add_argument(
+output_processing.add_argument(
     '--pretty', dest='prettify', default=PRETTY_STDOUT_TTY_ONLY,
     choices=sorted(PRETTY_MAP.keys()),
     help=_('''
@@ -79,9 +136,27 @@ parser.add_argument(
         (default for terminal output), "colors", or "format".
     ''')
 )
+output_processing.add_argument(
+    '--style', '-s', dest='style', default=DEFAULT_STYLE, metavar='STYLE',
+    choices=AVAILABLE_STYLES,
+    help=_('''
+        Output coloring style. One of %s. Defaults to "%s".
+        For this option to work properly, please make sure that the
+        $TERM environment variable is set to "xterm-256color" or similar
+        (e.g., via `export TERM=xterm-256color' in your ~/.bashrc).
+    ''') % (', '.join(sorted(AVAILABLE_STYLES)), DEFAULT_STYLE)
+)
 
-output_options = parser.add_mutually_exclusive_group(required=False)
-output_options.add_argument('--print', '-p', dest='output_options',
+
+
+###############################################################################
+# Output options
+###############################################################################
+output_options = parser.add_argument_group(title='Output options')
+
+output_print = output_options.add_mutually_exclusive_group(required=False)
+output_print.add_argument('--print', '-p', dest='output_options',
+    metavar='WHAT',
     help=_('''
         String specifying what the output should contain:
         "{request_headers}" stands for the request headers,  and
@@ -99,7 +174,7 @@ output_options.add_argument('--print', '-p', dest='output_options',
         response_body=OUT_RESP_BODY,
     ))
 )
-output_options.add_argument(
+output_print.add_argument(
     '--verbose', '-v', dest='output_options',
     action='store_const', const=''.join(OUTPUT_OPTIONS),
     help=_('''
@@ -107,7 +182,7 @@ output_options.add_argument(
         Shortcut for --print={0}.
     '''.format(''.join(OUTPUT_OPTIONS)))
 )
-output_options.add_argument(
+output_print.add_argument(
     '--headers', '-h', dest='output_options',
     action='store_const', const=OUT_RESP_HEAD,
     help=_('''
@@ -115,7 +190,7 @@ output_options.add_argument(
         Shortcut for --print={0}.
     '''.format(OUT_RESP_HEAD))
 )
-output_options.add_argument(
+output_print.add_argument(
     '--body', '-b', dest='output_options',
     action='store_const', const=OUT_RESP_BODY,
     help=_('''
@@ -124,18 +199,7 @@ output_options.add_argument(
     '''.format(OUT_RESP_BODY))
 )
 
-parser.add_argument(
-    '--style', '-s', dest='style', default=DEFAULT_STYLE, metavar='STYLE',
-    choices=AVAILABLE_STYLES,
-    help=_('''
-        Output coloring style, one of %s. Defaults to "%s".
-        For this option to work properly, please make sure that the
-        $TERM environment variable is set to "xterm-256color" or similar
-        (e.g., via `export TERM=xterm-256color' in your ~/.bashrc).
-    ''') % (', '.join(sorted(AVAILABLE_STYLES)), DEFAULT_STYLE)
-)
-
-parser.add_argument('--stream', '-S', action='store_true', default=False,
+output_options.add_argument('--stream', '-S', action='store_true', default=False,
     help=_('''
     Always stream the output by line, i.e., behave like `tail -f'.
 
@@ -150,7 +214,89 @@ parser.add_argument('--stream', '-S', action='store_true', default=False,
 
     '''
 ))
-parser.add_argument(
+
+
+###############################################################################
+# Misc
+###############################################################################
+misc = parser.add_argument_group(title='Sessions')
+misc.add_argument(
+    '--session', metavar='SESSION_NAME',
+    help=_('''
+    Create or reuse a session.
+    Withing a session, values of --auth, --timeout,
+    --verify, --proxies, headers, as well as any
+    cookies sent by the server are persistent between requests.
+    You can use the `httpie' management command to manipulate
+    and inspect existing sessions. See `httpie session'.
+    ''')
+)
+
+
+###############################################################################
+# Authentication
+###############################################################################
+# ``requests.request`` keyword arguments.
+auth = parser.add_argument_group(title='Authentication')
+auth.add_argument(
+    '--auth', '-a', metavar='USER[:PASS]',
+    type=AuthCredentialsArgType(SEP_CREDENTIALS),
+    help=_('''
+        If only the username is provided (-a username),
+        HTTPie will prompt for the password.
+    '''),
+)
+
+auth.add_argument(
+    '--auth-type', choices=['basic', 'digest'], default='basic',
+    help=_('''
+        The authentication mechanism to be used.
+        Defaults to "basic".
+    ''')
+)
+
+
+
+# Network
+#############################################
+
+network = parser.add_argument_group(title='Network')
+
+network.add_argument(
+    '--proxy', default=[], action='append', metavar='PROTOCOL:HOST',
+    type=KeyValueArgType(SEP_PROXY),
+    help=_('''
+        String mapping protocol to the URL of the proxy
+        (e.g. http:foo.bar:3128). You can specify multiple
+        proxies with different protocols.
+    ''')
+)
+network.add_argument(
+    '--allow-redirects', default=False, action='store_true',
+    help=_('''
+        Set this flag if full redirects are allowed
+        (e.g. re-POST-ing of data at new ``Location``)
+    ''')
+)
+network.add_argument(
+    '--verify', default='yes',
+    help=_('''
+        Set to "no" to skip checking the host\'s SSL certificate.
+        You can also pass the  path to a CA_BUNDLE
+        file for private certs. You can also set
+        the REQUESTS_CA_BUNDLE  environment variable.
+        Defaults to "yes".
+    ''')
+)
+
+network.add_argument(
+    '--timeout', type=float, default=30, metavar='SECONDS',
+    help=_('''
+        The connection timeout of the request in seconds.
+        The default value is 30 seconds.
+    ''')
+)
+network.add_argument(
     '--check-status', default=False, action='store_true',
     help=_('''
         By default, HTTPie exits with 0 when no network or other fatal
@@ -169,117 +315,29 @@ parser.add_argument(
     ''')
 )
 
-parser.add_argument(
-    '--session', metavar='NAME',
-    help=_('''
-    Create or reuse a session.
-    Withing a session, values of --auth, --timeout,
-    --verify, --proxies are persistent, as well as any
-    cookies sent by the server.
-    ''')
-)
 
-# ``requests.request`` keyword arguments.
-parser.add_argument(
-    '--auth', '-a', metavar='USER[:PASS]',
-    type=AuthCredentialsArgType(SEP_CREDENTIALS),
-    help=_('''
-        username:password.
-        If only the username is provided (-a username),
-        HTTPie will prompt for the password.
-    '''),
-)
+###############################################################################
+# Troubleshooting
+###############################################################################
 
-parser.add_argument(
-    '--auth-type', choices=['basic', 'digest'], default='basic',
-    help=_('''
-        The authentication mechanism to be used.
-        Defaults to "basic".
-    ''')
+troubleshooting = parser.add_argument_group(title='Troubleshooting')
+troubleshooting.add_argument(
+    '--help',
+    action='help', default=argparse.SUPPRESS,
+    help=argparse._('Show this help message and exit')
 )
-
-parser.add_argument(
-    '--verify', default='yes',
-    help=_('''
-        Set to "no" to skip checking the host\'s SSL certificate.
-        You can also pass the  path to a CA_BUNDLE
-        file for private certs. You can also set
-        the REQUESTS_CA_BUNDLE  environment variable.
-        Defaults to "yes".
-    ''')
-)
-parser.add_argument(
-    '--proxy', default=[], action='append',
-    type=KeyValueArgType(SEP_PROXY),
-    help=_('''
-        String mapping protocol to the URL of the proxy
-        (e.g. http:foo.bar:3128).
-    ''')
-)
-parser.add_argument(
-    '--allow-redirects', default=False, action='store_true',
-    help=_('''
-        Set this flag if full redirects are allowed
-        (e.g. re-POST-ing of data at new ``Location``)
-    ''')
-)
-parser.add_argument(
-    '--timeout', type=float, default=30, metavar='SECONDS',
-    help=_('''
-        The connection timeout of the request in seconds.
-        The default value is 30 seconds.
-    ''')
-)
-parser.add_argument(
+troubleshooting.add_argument('--version', action='version', version=__version__)
+troubleshooting.add_argument(
     '--traceback', action='store_true', default=False,
     help=_('''
         Prints exception traceback should one occur.
     ''')
 )
-parser.add_argument(
+troubleshooting.add_argument(
     '--debug', action='store_true', default=False,
     help=_('''
         Prints exception traceback should one occur, and also other
         information that is useful for debugging HTTPie itself and
         for bug reports.
-    ''')
-)
-
-
-# Positional arguments.
-#############################################
-
-parser.add_argument(
-    'method', metavar='METHOD',
-    nargs='?',
-    default=None,
-    help=_('''
-        The HTTP method to be used for the request
-        (GET, POST, PUT, DELETE, PATCH, ...).
-        If this argument is omitted, then HTTPie
-        will guess the HTTP method. If there is some
-        data to be sent, then it will be POST, otherwise GET.
-    ''')
-)
-parser.add_argument(
-    'url', metavar='URL',
-    help=_('''
-        The protocol defaults to http:// if the
-        URL does not include one.
-    ''')
-)
-parser.add_argument(
-    'items', nargs='*',
-    metavar='ITEM',
-    type=KeyValueArgType(*SEP_GROUP_ITEMS),
-    help=_('''
-        A key-value pair whose type is defined by the
-        separator used. It can be an HTTP header (header:value),
-        a data field to be used in the request body (field_name=value),
-        a raw JSON data field (field_name:=value),
-        a query parameter (name==value),
-        or a file field (field_name@/path/to/file).
-        You can use a backslash to escape a colliding
-        separator in the field name.
     ''')
 )

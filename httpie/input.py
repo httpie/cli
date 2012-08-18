@@ -93,10 +93,6 @@ class Parser(argparse.ArgumentParser):
     def __init__(self, *args, **kwargs):
         kwargs['add_help'] = False
         super(Parser, self).__init__(*args, **kwargs)
-        # Help only as --help (-h is used for --headers).
-        self.add_argument('--help',
-            action='help', default=argparse.SUPPRESS,
-            help=argparse._('show this help message and exit'))
 
     #noinspection PyMethodOverriding
     def parse_args(self, env, args=None, namespace=None):

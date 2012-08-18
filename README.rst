@@ -42,7 +42,7 @@ Main Features
 * HTTPS, proxies, and authentication
 * Arbitrary request data
 * Custom headers
-* Python 2.6 and Python 3 support
+* Python 2.6, 2.7 and 3.x support
 * Linux, Mac OS X and Windows support
 * Documentation
 * Test coverage
@@ -990,6 +990,7 @@ Changelog
 
 * `0.2.8-alpha`_
     * Added persistent session support.
+    * Improved the usability of ``http --help``.
     * Fixed installation on Windows with Python 3.
     * Fixed colorized output on Windows with Python 3.
     * CRLF HTTP header field separation in the output.
