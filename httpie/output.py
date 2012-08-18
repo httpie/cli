@@ -22,9 +22,9 @@ from .input import (OUT_REQ_BODY, OUT_REQ_HEAD,
 
 # Colors on Windows via colorama don't look that
 # great and fruity seems to give the best result there.
+AVAILABLE_STYLES = set(STYLE_MAP.keys())
+AVAILABLE_STYLES.add('solarized')
 DEFAULT_STYLE = 'solarized' if not is_windows else 'fruity'
-#noinspection PySetFunctionToLiteral
-AVAILABLE_STYLES = set([DEFAULT_STYLE]) | set(STYLE_MAP.keys())
 
 
 BINARY_SUPPRESSED_NOTICE = (
