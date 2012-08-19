@@ -1,6 +1,7 @@
 """Persistent, JSON-serialized sessions.
 
 """
+import shutil
 import os
 import sys
 import json
@@ -9,6 +10,7 @@ import errno
 import codecs
 import subprocess
 
+from requests.compat import urlparse
 from requests import Session as RSession
 from requests.cookies import RequestsCookieJar, create_cookie
 from requests.auth import HTTPBasicAuth, HTTPDigestAuth
@@ -23,20 +25,22 @@ SESSIONS_DIR = os.path.join(CONFIG_DIR, 'sessions')
 
 def get_response(name, request_kwargs):
 
-    session = Session.load(name)
+    host = Host(request_kwargs['headers'].get('Host', None)
+                or urlparse(request_kwargs['url']).netloc.split('@')[-1])
+
+    session = Session(host, name)
+    session.load()
 
     # Update session headers with the request headers.
     session['headers'].update(request_kwargs.get('headers', {}))
+    # Use the merged headers for the request
+    request_kwargs['headers'] = session['headers']
 
     auth = request_kwargs.get('auth', None)
     if auth:
         session.auth = auth
     elif session.auth:
         request_kwargs['auth'] = session.auth
-
-
-    # Use the merged headers for the request
-    request_kwargs['headers'] = session['headers']
 
     rsession = RSession(cookies=session.cookies)
     try:
@@ -49,17 +53,73 @@ def get_response(name, request_kwargs):
         return response
 
 
-class Session(dict):
+class Host(object):
 
-    def __init__(self, name, *args, **kwargs):
-        super(Session, self).__init__(*args, **kwargs)
+    def __init__(self, name):
         self.name = name
-        self.setdefault('cookies', {})
-        self.setdefault('headers', {})
+
+    def __iter__(self):
+        for fn in sorted(glob.glob1(self.path, '*.json')):
+            yield os.path.splitext(fn)[0], os.path.join(self.path, fn)
+
+    def delete(self):
+        shutil.rmtree(self.path)
 
     @property
     def path(self):
-        return type(self).get_path(self.name)
+        path = os.path.join(SESSIONS_DIR, self.name)
+        try:
+            os.makedirs(path, mode=0o700)
+        except OSError as e:
+            if e.errno != errno.EEXIST:
+               raise
+        return path
+
+    @classmethod
+    def all(cls):
+        for name in sorted(glob.glob1(SESSIONS_DIR, '*')):
+            if os.path.isdir(os.path.join(SESSIONS_DIR, name)):
+                yield Host(name)
+
+
+class Session(dict):
+
+    def __init__(self, host, name, *args, **kwargs):
+        super(Session, self).__init__(*args, **kwargs)
+        self.host = host
+        self.name = name
+        self['headers'] = {}
+        self['cookies'] = {}
+
+    @property
+    def path(self):
+        return os.path.join(self.host.path, self.name + '.json')
+
+    def load(self):
+        try:
+            with open(self.path, 'rt') as f:
+                try:
+                    data = json.load(f)
+                except ValueError as e:
+                    raise ValueError('Invalid session: %s [%s]' %
+                                     (e.message, self.path))
+                self.update(data)
+        except IOError as e:
+            if e.errno != errno.ENOENT:
+                raise
+
+    def save(self):
+        self['__version__'] = __version__
+        with open(self.path, 'wb') as f:
+            json.dump(self, f, indent=4, sort_keys=True, ensure_ascii=True)
+            f.write(b'\n')
+
+    def delete(self):
+        try:
+            os.unlink(self.path)
+        except OSError as e:
+            if e.errno != errno.ENOENT:
+                raise
 
     @property
     def cookies(self):
@@ -73,10 +133,10 @@ class Session(dict):
 
     @cookies.setter
     def cookies(self, jar):
-        exclude = [
+        excluded = [
             '_rest', 'name', 'port_specified',
             'domain_specified', 'domain_initial_dot',
-            'path_specified'
+            'path_specified', 'comment', 'comment_url'
         ]
         self['cookies'] = {}
         for host in jar._cookies.values():
@@ -84,7 +144,7 @@ class Session(dict):
                 for name, cookie in path.items():
                     cookie_dict = {}
                     for k, v in cookie.__dict__.items():
-                        if k not in exclude:
+                        if k not in excluded:
                             cookie_dict[k] = v
                     self['cookies'][name] = cookie_dict
 
@@ -97,7 +157,6 @@ class Session(dict):
                 'digest': HTTPDigestAuth}[auth['type']]
         return Auth(auth['username'], auth['password'])
 
-
     @auth.setter
     def auth(self, cred):
         self['auth'] = {
@@ -107,46 +166,20 @@ class Session(dict):
             'password': cred.password,
         }
 
-    def save(self):
-        self['__version__'] = __version__
-        with open(self.path, 'wb') as f:
-            json.dump(self, f, indent=4, sort_keys=True, ensure_ascii=True)
-            f.write(b'\n')
 
-    @classmethod
-    def load(cls, name):
-        try:
-            with open(cls.get_path(name), 'rt') as f:
-                try:
-                    data = json.load(f)
-                except ValueError as e:
-                    raise ValueError('Invalid session: %s [%s]' %
-                                     (e.message, f.name))
-
-                return cls(name, data)
-        except IOError as e:
-            if e.errno != errno.ENOENT:
-                raise
-            return cls(name)
-
-    @classmethod
-    def get_path(cls, name):
-       try:
-           os.makedirs(SESSIONS_DIR, mode=0o700)
-       except OSError as e:
-           if e.errno != errno.EEXIST:
-               raise
-
-       return os.path.join(SESSIONS_DIR, name + '.json')
+def list_command(args):
+    if args.host:
+        for name, path in Host(args.host):
+            print(name + ' [' + path + ']')
+    else:
+        for host in Host.all():
+            print(host.name)
+            for name, path in host:
+                print(' ' + name + ' [' + path + ']')
 
 
-def show_action(args):
-    if not args.name:
-        for fn in sorted(glob.glob1(SESSIONS_DIR, '*.json')):
-            print(os.path.splitext(fn)[0])
-        return
-
-    path = Session.get_path(args.name)
+def show_command(args):
+    path = Session(Host(args.host), args.name).path
     if not os.path.exists(path):
         sys.stderr.write('Session "%s" does not exist [%s].\n'
                           % (args.name, path))
@@ -154,58 +187,59 @@ def show_action(args):
 
     with codecs.open(path, encoding='utf8') as f:
         print(path + ':\n')
-        print(PygmentsProcessor().process_body(
-                f.read(), 'application/json', 'json'))
+        proc = PygmentsProcessor()
+        print(proc.process_body(f.read(), 'application/json', 'json'))
         print('')
 
 
-def delete_action(args):
+def delete_command(args):
+    host = Host(args.host)
     if not args.name:
-        for path in glob.glob(os.path.join(SESSIONS_DIR, '*.json')):
-            os.unlink(path)
-        return
-    path = Session.get_path(args.name)
-    if not os.path.exists(path):
-        sys.stderr.write('Session "%s" does not exist [%s].\n'
-                          % (args.name, path))
-        sys.exit(1)
+        host.delete()
     else:
-        os.unlink(path)
+        session = Session(host, args.name)
+        try:
+            session.delete()
+        except OSError as e:
+            if e.errno != errno.ENOENT:
+                raise
 
 
-def edit_action(args):
+def edit_command(args):
     editor = os.environ.get('EDITOR', None)
     if not editor:
         sys.stderr.write(
             'You need to configure the environment variable EDITOR.\n')
         sys.exit(1)
     command = editor.split()
-    command.append(Session.get_path(args.name))
+    command.append(Session(Host(args.host), args.name).path)
     subprocess.call(command)
 
 
-def add_actions(subparsers):
+def add_commands(subparsers):
+
+    # List
+    list_ = subparsers.add_parser('session-list', help='list sessions')
+    list_.set_defaults(command=list_command)
+    list_.add_argument('host', nargs='?')
 
     # Show
     show = subparsers.add_parser('session-show', help='list or show sessions')
-    show.set_defaults(action=show_action)
-    show.add_argument('name', nargs='?',
-        help='When omitted, HTTPie prints a list of existing sessions.'
-             ' When specified, the session data is printed.')
+    show.set_defaults(command=show_command)
+    show.add_argument('host')
+    show.add_argument('name')
 
     # Edit
-    edit = subparsers.add_parser('session-edit', help='edit a session in $EDITOR')
-    edit.set_defaults(action=edit_action)
+    edit = subparsers.add_parser(
+        'session-edit', help='edit a session in $EDITOR')
+    edit.set_defaults(command=edit_command)
+    edit.add_argument('host')
     edit.add_argument('name')
 
     # Delete
     delete = subparsers.add_parser('session-delete', help='delete a session')
-    delete.set_defaults(action=delete_action)
-    delete_group = delete.add_mutually_exclusive_group(required=True)
-    delete_group.add_argument(
-        '--all', action='store_true',
-        help='Delete all sessions from %s' % SESSIONS_DIR)
-    delete_group.add_argument(
-        'name', nargs='?',
-        help='The name of the session to be deleted. ' \
-             'To see a list existing sessions, run `httpie sessions show\'.')
+    delete.set_defaults(command=delete_command)
+    delete.add_argument('host')
+    delete.add_argument('name', nargs='?',
+        help='The name of the session to be deleted.'
+             ' If not specified, all host sessions are deleted.')

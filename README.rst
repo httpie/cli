@@ -506,30 +506,34 @@ path. The path can also be configured via the environment variable
 Sessions
 ========
 
-*This is an experimental feature.*
+*NOTE: This is an experimental feature. Feedback appretiated.*
 
-HTTPie supports named sessions, where custom headers, authorization,
+HTTPie supports named, per-host sessions, where custom headers, authorization,
 and cookies sent by the server persist between requests:
 
 .. code-block:: bash
 
-    http --session=user1 --auth=user1:password example.org X-Foo:Bar
+    $ http --session user1 -a user1:password example.org X-Foo:Bar
 
 
-Now you can always refer to the session by passing ``--session=user1``:
+Now you can refer to the session by its name:
 
 .. code-block:: bash
 
-    http --session=user1 example.org
+    $ http --session user1 example.org
 
 
-Note that cookies respect the cookie domain and path.
+To switch to another session simple pass a different name:
 
-Session data are stored in ``~/.httpie/sessions/<name>.json``
-(``%APPDATA%\httpie\sessions`` on Windows).
+.. code-block:: bash
+
+    $ http --session user2 -a user2:password example.org X-Bar:Foo
 
 You can view and manipulate existing sessions via the ``httpie`` management
 command, see ``httpie --help``.
+
+Sessions are stored as JSON in ``~/.httpie/sessions/<host>/<name>.json``
+(``%APPDATA%\httpie\sessions\<host>\<name>.json`` on Windows).
 
 
 ==============

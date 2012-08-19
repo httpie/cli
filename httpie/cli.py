@@ -25,7 +25,7 @@ def _(text):
 parser = Parser(
     description='%s <http://httpie.org>' % __doc__.strip(),
     epilog=_('''
-        Suggestions and bugs reports are appreciated:
+        Suggestions and bug reports are greatly appreciated:
         https://github.com/jkbr/httpie/issues
     ''')
 )

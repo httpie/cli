@@ -18,12 +18,12 @@ subparsers = parser.add_subparsers()
 
 
 # Only sessions as of now.
-sessions.add_actions(subparsers)
+sessions.add_commands(subparsers)
 
 
 def main():
     args = parser.parse_args()
-    args.action(args)
+    args.command(args)
 
 
 if __name__ == '__main__':
