@@ -3,7 +3,7 @@
 NOTE: the CLI interface may change before reaching v1.0.
 
 """
-import argparse
+from argparse import FileType, OPTIONAL, SUPPRESS
 
 from requests.compat import is_windows
 
@@ -45,7 +45,7 @@ positional = parser.add_argument_group(
 )
 positional.add_argument(
     'method', metavar='METHOD',
-    nargs='?',
+    nargs=OPTIONAL,
     default=None,
     help=_('''
         The HTTP method to be used for the request
@@ -114,9 +114,9 @@ content_type.add_argument(
 output_processing = parser.add_argument_group(title='Output processing')
 
 output_processing.add_argument(
-    '--output', '-o', type=argparse.FileType('w+b'),
+    '--output', '-o', type=FileType('w+b'),
     metavar='FILE',
-    help= argparse.SUPPRESS if not is_windows else _(
+    help= SUPPRESS if not is_windows else _(
         '''
         Save output to FILE.
         This option is a replacement for piping output to FILE,
@@ -322,15 +322,13 @@ network.add_argument(
 troubleshooting = parser.add_argument_group(title='Troubleshooting')
 troubleshooting.add_argument(
     '--help',
-    action='help', default=argparse.SUPPRESS,
-    help=argparse._('Show this help message and exit')
+    action='help', default=SUPPRESS,
+    help='Show this help message and exit'
 )
 troubleshooting.add_argument('--version', action='version', version=__version__)
 troubleshooting.add_argument(
     '--traceback', action='store_true', default=False,
-    help=_('''
-        Prints exception traceback should one occur.
-    ''')
+    help='Prints exception traceback should one occur.'
 )
 troubleshooting.add_argument(
     '--debug', action='store_true', default=False,

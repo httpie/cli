@@ -67,7 +67,7 @@ def get_requests_kwargs(args):
         'verify': {
             'yes': True,
             'no': False
-        }.get(args.verify,args.verify),
+        }.get(args.verify, args.verify),
         'timeout': args.timeout,
         'auth': credentials,
         'proxies': dict((p.key, p.value) for p in args.proxy),

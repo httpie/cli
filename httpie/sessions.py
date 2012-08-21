@@ -1,13 +1,13 @@
 """Persistent, JSON-serialized sessions.
 
 """
-import shutil
 import os
 import sys
 import json
 import glob
 import errno
 import codecs
+import shutil
 import subprocess
 
 from requests.compat import urlparse
@@ -15,18 +15,17 @@ from requests import Session as RSession
 from requests.cookies import RequestsCookieJar, create_cookie
 from requests.auth import HTTPBasicAuth, HTTPDigestAuth
 
-from . import __version__
-from .config import CONFIG_DIR
-from .output import PygmentsProcessor
+from.import __version__
+from.config import CONFIG_DIR
+from.output import PygmentsProcessor
 
 
 SESSIONS_DIR = os.path.join(CONFIG_DIR, 'sessions')
 
 
 def get_response(name, request_kwargs):
-
     host = Host(request_kwargs['headers'].get('Host', None)
-                or urlparse(request_kwargs['url']).netloc.split('@')[-1])
+    or urlparse(request_kwargs['url']).netloc.split('@')[-1])
 
     session = Session(host, name)
     session.load()
@@ -54,7 +53,6 @@ def get_response(name, request_kwargs):
 
 
 class Host(object):
-
     def __init__(self, name):
         self.name = name
 
@@ -75,7 +73,7 @@ class Host(object):
             os.makedirs(path, mode=0o700)
         except OSError as e:
             if e.errno != errno.EEXIST:
-               raise
+                raise
         return path
 
     @classmethod
@@ -86,7 +84,6 @@ class Host(object):
 
 
 class Session(dict):
-
     def __init__(self, host, name, *args, **kwargs):
         super(Session, self).__init__(*args, **kwargs)
         self.host = host
@@ -128,9 +125,8 @@ class Session(dict):
     def cookies(self):
         jar = RequestsCookieJar()
         for name, cookie_dict in self['cookies'].items():
-            cookie = create_cookie(
-                name, cookie_dict.pop('value'), **cookie_dict)
-            jar.set_cookie(cookie)
+            jar.set_cookie(create_cookie(
+                name, cookie_dict.pop('value'), **cookie_dict))
         jar.clear_expired_cookies()
         return jar
 
@@ -167,7 +163,7 @@ class Session(dict):
                      HTTPDigestAuth: 'digest'}[type(cred)],
             'username': cred.username,
             'password': cred.password,
-        }
+            }
 
 
 def list_command(args):
@@ -185,7 +181,7 @@ def show_command(args):
     path = Session(Host(args.host), args.name).path
     if not os.path.exists(path):
         sys.stderr.write('Session "%s" does not exist [%s].\n'
-                          % (args.name, path))
+        % (args.name, path))
         sys.exit(1)
 
     with codecs.open(path, encoding='utf8') as f:
@@ -200,12 +196,7 @@ def delete_command(args):
     if not args.name:
         host.delete()
     else:
-        session = Session(host, args.name)
-        try:
-            session.delete()
-        except OSError as e:
-            if e.errno != errno.ENOENT:
-                raise
+        Session(host, args.name).delete()
 
 
 def edit_command(args):
@@ -220,7 +211,6 @@ def edit_command(args):
 
 
 def add_commands(subparsers):
-
     # List
     list_ = subparsers.add_parser('session-list', help='list sessions')
     list_.set_defaults(command=list_command)

@@ -89,7 +89,7 @@ def output_stream(args, env, request, response):
     req_h = OUT_REQ_HEAD in args.output_options
     req_b = OUT_REQ_BODY in args.output_options
     resp_h = OUT_RESP_HEAD in args.output_options
-    resp_b = OUT_RESP_BODY  in args.output_options
+    resp_b = OUT_RESP_BODY in args.output_options
 
     req = req_h or req_b
     resp = resp_h or resp_b
@@ -131,13 +131,15 @@ def make_stream(env, args):
             RawStream,
             chunk_size=RawStream.CHUNK_SIZE_BY_LINE
                        if args.stream
-                       else RawStream.CHUNK_SIZE)
+                       else RawStream.CHUNK_SIZE
+        )
     elif args.prettify:
         Stream = partial(
             PrettyStream if args.stream else BufferedPrettyStream,
-            processor=OutputProcessor(env=env, groups=args.prettify,
-                                      pygments_style=args.style),
-            env=env)
+            env=env,
+            processor=OutputProcessor(
+                env=env, groups=args.prettify, pygments_style=args.style),
+        )
     else:
         Stream = partial(EncodedStream, env=env)
 
@@ -205,6 +207,7 @@ class EncodedStream(BaseStream):
 
     """
     CHUNK_SIZE = 1024 * 5
+
     def __init__(self, env=Environment(), **kwargs):
 
         super(EncodedStream, self).__init__(**kwargs)
@@ -308,13 +311,13 @@ class HTTPLexer(lexer.RegexLexer):
             # Request-Line
             (r'([A-Z]+)( +)([^ ]+)( +)(HTTP)(/)(\d+\.\d+)',
              lexer.bygroups(
-                token.Name.Function,
-                token.Text,
-                token.Name.Namespace,
-                token.Text,
-                token.Keyword.Reserved,
-                token.Operator,
-                token.Number
+                 token.Name.Function,
+                 token.Text,
+                 token.Name.Namespace,
+                 token.Text,
+                 token.Keyword.Reserved,
+                 token.Operator,
+                 token.Number
              )),
             # Response Status-Line
             (r'(HTTP)(/)(\d+\.\d+)( +)(\d{3})( +)(.+)',
@@ -329,13 +332,14 @@ class HTTPLexer(lexer.RegexLexer):
              )),
             # Header
             (r'(.*?)( *)(:)( *)(.+)', lexer.bygroups(
-                token.Name.Attribute, # Name
+                token.Name.Attribute,  # Name
                 token.Text,
                 token.Operator,  # Colon
                 token.Text,
                 token.String  # Value
             ))
-    ]}
+        ]
+    }
 
 
 class BaseProcessor(object):

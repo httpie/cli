@@ -90,9 +90,9 @@ class HTTPResponse(HTTPMessage):
     def headers(self):
         original = self._orig.raw._original_response
         status_line = 'HTTP/{version} {status} {reason}'.format(
-             version='.'.join(str(original.version)),
-             status=original.status,
-             reason=original.reason
+            version='.'.join(str(original.version)),
+            status=original.status,
+            reason=original.reason
         )
         headers = [status_line]
         try:

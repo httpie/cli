@@ -5,10 +5,10 @@ import os
 import sys
 import re
 import json
-import argparse
 import mimetypes
 import getpass
 from io import BytesIO
+from argparse import ArgumentParser, ArgumentTypeError
 
 try:
     from collections import OrderedDict
@@ -79,7 +79,7 @@ OUTPUT_OPTIONS_DEFAULT = OUT_RESP_HEAD + OUT_RESP_BODY
 OUTPUT_OPTIONS_DEFAULT_STDOUT_REDIRECTED = OUT_RESP_BODY
 
 
-class Parser(argparse.ArgumentParser):
+class Parser(ArgumentParser):
     """Adds additional logic to `argparse.ArgumentParser`.
 
     Handles all input (CLI args, file args, stdin), applies defaults,
@@ -124,7 +124,6 @@ class Parser(argparse.ArgumentParser):
         if args.auth and not args.auth.has_password():
             # Stdin already read (if not a tty) so it's save to prompt.
             args.auth.prompt_password(urlparse(args.url).netloc)
-
 
         return args
 
@@ -171,7 +170,7 @@ class Parser(argparse.ArgumentParser):
                 args.items.insert(
                     0, KeyValueArgType(*SEP_GROUP_ITEMS).__call__(args.url))
 
-            except argparse.ArgumentTypeError as e:
+            except ArgumentTypeError as e:
                 if args.traceback:
                     raise
                 self.error(e.message)
@@ -344,7 +343,7 @@ class KeyValueArgType(object):
                 break
 
         else:
-            raise argparse.ArgumentTypeError(
+            raise ArgumentTypeError(
                 '"%s" is not a valid value' % string)
 
         return self.key_value_class(
@@ -383,7 +382,7 @@ class AuthCredentialsArgType(KeyValueArgType):
         """
         try:
             return super(AuthCredentialsArgType, self).__call__(string)
-        except argparse.ArgumentTypeError:
+        except ArgumentTypeError:
             # No password provided, will prompt for it later.
             return self.key_value_class(
                 key=string,
