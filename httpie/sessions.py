@@ -67,7 +67,10 @@ class Host(object):
 
     @property
     def path(self):
-        path = os.path.join(SESSIONS_DIR, self.name)
+        # Name will include ':' if a port is specified, which is invalid
+        # on windows. DNS does not allow '_' in a domain, or for it to end
+        # in a number (I think?)
+        path = os.path.join(SESSIONS_DIR, self.name.replace(':', '_'))
         try:
             os.makedirs(path, mode=0o700)
         except OSError as e:
@@ -110,9 +113,9 @@ class Session(dict):
 
     def save(self):
         self['__version__'] = __version__
-        with open(self.path, 'wb') as f:
+        with open(self.path, 'w') as f:
             json.dump(self, f, indent=4, sort_keys=True, ensure_ascii=True)
-            f.write(b'\n')
+            f.write('\n')
 
     def delete(self):
         try:
