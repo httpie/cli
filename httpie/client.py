@@ -52,9 +52,9 @@ def get_requests_kwargs(args):
             args.data = json.dumps(args.data) if args.data else None
 
     elif args.form and not args.files:
-            # If sending files, `requests` will set
-            # the `Content-Type` for us.
-            base_headers['Content-Type'] = FORM
+        # If sending files, `requests` will set
+        # the `Content-Type` for us.
+        base_headers['Content-Type'] = FORM
 
     credentials = None
     if args.auth:

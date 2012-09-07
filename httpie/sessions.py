@@ -30,7 +30,7 @@ def get_response(name, request_kwargs, read_only=False):
 
     """
     host = Host(request_kwargs['headers'].get('Host', None)
-    or urlparse(request_kwargs['url']).netloc.split('@')[-1])
+                or urlparse(request_kwargs['url']).netloc.split('@')[-1])
 
     session = Session(host, name)
     session.load()
@@ -52,7 +52,8 @@ def get_response(name, request_kwargs, read_only=False):
     except Exception:
         raise
     else:
-        if not read_only or session.is_new:
+        # Existing sessions with `read_only=True` don't get updated.
+        if session.is_new or not read_only:
             session.cookies = rsession.cookies
             session.save()
         return response
