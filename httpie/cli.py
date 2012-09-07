@@ -219,18 +219,24 @@ output_options.add_argument('--stream', '-S', action='store_true', default=False
 
 
 ###############################################################################
-# Misc
+# Sessions
 ###############################################################################
-misc = parser.add_argument_group(title='Sessions')
-misc.add_argument(
+sessions = parser.add_argument_group(title='Sessions')\
+                 .add_mutually_exclusive_group(required=False)
+
+sessions.add_argument(
     '--session', metavar='SESSION_NAME',
     help=_('''
-    Create or reuse a session.
+    Create, or reuse and update a session.
     Withing a session, custom headers, auth credential, as well as any
     cookies sent by the server persist between requests.
     You can use the `httpie' management command to manipulate
     and inspect existing sessions. See `httpie --help'.
     ''')
+)
+sessions.add_argument(
+    '--session-read', metavar='SESSION_NAME',
+    help=_('''Create or reuse a session, but do not update it once saved.''')
 )
 
 

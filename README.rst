@@ -509,12 +509,11 @@ Sessions
 *NOTE: This is an experimental feature. Feedback appretiated.*
 
 HTTPie supports named, per-host sessions, where custom headers, authorization,
-and cookies sent by the server persist between requests:
+and cookies (manually specified or sent by the server) persist between requests:
 
 .. code-block:: bash
 
     $ http --session user1 -a user1:password example.org X-Foo:Bar
-
 
 Now you can refer to the session by its name:
 
@@ -528,6 +527,9 @@ To switch to another session simple pass a different name:
 .. code-block:: bash
 
     $ http --session user2 -a user2:password example.org X-Bar:Foo
+
+To use an existing session without updating it from the request/response
+exchange, specify the session via ``--session-read=SESSION_NAME`` instead.
 
 You can view and manipulate existing sessions via the ``httpie`` management
 command, see ``httpie --help``.

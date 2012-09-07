@@ -16,6 +16,7 @@ DEFAULT_UA = 'HTTPie/%s' % __version__
 
 
 def get_response(args):
+    """Send the request and return a `request.Response`."""
 
     requests_kwargs = get_requests_kwargs(args)
 
@@ -23,14 +24,18 @@ def get_response(args):
         sys.stderr.write(
             '\n>>> requests.request(%s)\n\n' % pformat(requests_kwargs))
 
-    if args.session:
-        return sessions.get_response(args.session, requests_kwargs)
-    else:
+    if not args.session and not args.session_read:
         return requests.request(**requests_kwargs)
+    else:
+        return sessions.get_response(
+            name=args.session or args.session_read,
+            request_kwargs=requests_kwargs,
+            read_only=bool(args.session_read),
+        )
 
 
 def get_requests_kwargs(args):
-    """Send the request and return a `request.Response`."""
+    """Translate our `args` into `requests.request` keyword arguments."""
 
     base_headers = defaults['base_headers'].copy()
     base_headers['User-Agent'] = DEFAULT_UA

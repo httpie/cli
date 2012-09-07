@@ -10,10 +10,11 @@ import codecs
 import shutil
 import subprocess
 
+import requests
 from requests.compat import urlparse
-from requests import Session as RSession
 from requests.cookies import RequestsCookieJar, create_cookie
 from requests.auth import HTTPBasicAuth, HTTPDigestAuth
+from argparse import OPTIONAL
 
 from.import __version__
 from.config import CONFIG_DIR
@@ -23,7 +24,11 @@ from.output import PygmentsProcessor
 SESSIONS_DIR = os.path.join(CONFIG_DIR, 'sessions')
 
 
-def get_response(name, request_kwargs):
+def get_response(name, request_kwargs, read_only=False):
+    """Like `client.get_response`, but applies permanent
+    aspects of the session to the request.
+
+    """
     host = Host(request_kwargs['headers'].get('Host', None)
     or urlparse(request_kwargs['url']).netloc.split('@')[-1])
 
@@ -41,22 +46,26 @@ def get_response(name, request_kwargs):
     elif session.auth:
         request_kwargs['auth'] = session.auth
 
-    rsession = RSession(cookies=session.cookies)
+    rsession = requests.Session(cookies=session.cookies)
     try:
         response = rsession.request(**request_kwargs)
     except Exception:
         raise
     else:
-        session.cookies = rsession.cookies
-        session.save()
+        if not read_only or session.is_new:
+            session.cookies = rsession.cookies
+            session.save()
         return response
 
 
 class Host(object):
+    """A host is a per-host directory on the disk containing sessions files."""
+
     def __init__(self, name):
         self.name = name
 
     def __iter__(self):
+        """Return a iterator yielding `(session_name, session_path)`."""
         for fn in sorted(glob.glob1(self.path, '*.json')):
             yield os.path.splitext(fn)[0], os.path.join(self.path, fn)
 
@@ -78,22 +87,21 @@ class Host(object):
 
     @classmethod
     def all(cls):
+        """Return a generator yielding a host at a time."""
         for name in sorted(glob.glob1(SESSIONS_DIR, '*')):
             if os.path.isdir(os.path.join(SESSIONS_DIR, name)):
                 yield Host(name)
 
 
 class Session(dict):
+    """"""
+
     def __init__(self, host, name, *args, **kwargs):
         super(Session, self).__init__(*args, **kwargs)
         self.host = host
         self.name = name
         self['headers'] = {}
         self['cookies'] = {}
-
-    @property
-    def path(self):
-        return os.path.join(self.host.path, self.name + '.json')
 
     def load(self):
         try:
@@ -120,6 +128,14 @@ class Session(dict):
         except OSError as e:
             if e.errno != errno.ENOENT:
                 raise
+
+    @property
+    def path(self):
+        return os.path.join(self.host.path, self.name + '.json')
+
+    @property
+    def is_new(self):
+        return not os.path.exists(self.path)
 
     @property
     def cookies(self):
@@ -163,7 +179,7 @@ class Session(dict):
                      HTTPDigestAuth: 'digest'}[type(cred)],
             'username': cred.username,
             'password': cred.password,
-            }
+        }
 
 
 def list_command(args):
@@ -211,13 +227,14 @@ def edit_command(args):
 
 
 def add_commands(subparsers):
+
     # List
     list_ = subparsers.add_parser('session-list', help='list sessions')
     list_.set_defaults(command=list_command)
-    list_.add_argument('host', nargs='?')
+    list_.add_argument('host', nargs=OPTIONAL)
 
     # Show
-    show = subparsers.add_parser('session-show', help='list or show sessions')
+    show = subparsers.add_parser('session-show', help='show a session')
     show.set_defaults(command=show_command)
     show.add_argument('host')
     show.add_argument('name')
@@ -233,6 +250,6 @@ def add_commands(subparsers):
     delete = subparsers.add_parser('session-delete', help='delete a session')
     delete.set_defaults(command=delete_command)
     delete.add_argument('host')
-    delete.add_argument('name', nargs='?',
+    delete.add_argument('name', nargs=OPTIONAL,
         help='The name of the session to be deleted.'
              ' If not specified, all host sessions are deleted.')
