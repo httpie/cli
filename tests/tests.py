@@ -888,7 +888,7 @@ class ExitStatusTest(BaseTestCase):
     def test_3xx_check_status_redirects_allowed_exits_0(self):
         r = http(
             '--check-status',
-            '--allow-redirects',
+            '--follow',
             'GET',
             httpbin('/status/301')
         )

@@ -858,7 +858,7 @@ Scripting
 When using HTTPie from **shell scripts**, it can be handy to set the
 ``--check-status`` flag. It instructs HTTPie to exit with an error if the
 HTTP status is one of ``3xx``, ``4xx``, or ``5xx``. The exit status will
-be ``3`` (unless ``--allow-redirects`` is set), ``4``, or ``5``,
+be ``3`` (unless ``--follow`` is set), ``4``, or ``5``,
 respectively. Also, the ``--timeout`` option allows to overwrite the default
 30s timeout:
 
@@ -993,6 +993,7 @@ Changelog
 
 * `0.2.8-alpha`_
     * Added persistent session support.
+    * Renamed ``--allow-redirects`` to ``--follow``.
     * Improved the usability of ``http --help``.
     * Fixed installation on Windows with Python 3.
     * Fixed colorized output on Windows with Python 3.

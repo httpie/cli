@@ -72,7 +72,7 @@ def get_requests_kwargs(args):
         'auth': credentials,
         'proxies': dict((p.key, p.value) for p in args.proxy),
         'files': args.files,
-        'allow_redirects': args.allow_redirects,
+        'allow_redirects': args.follow,
         'params': args.params,
         'config': {
             'base_headers': base_headers

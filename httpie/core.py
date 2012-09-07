@@ -27,9 +27,9 @@ from .config import CONFIG_DIR
 from . import EXIT
 
 
-def get_exist_status(code, allow_redirects=False):
+def get_exist_status(code, follow=False):
     """Translate HTTP status code to exit status."""
-    if 300 <= code <= 399 and not allow_redirects:
+    if 300 <= code <= 399 and not follow:
         # Redirect
         return EXIT.ERROR_HTTP_3XX
     elif 400 <= code <= 499:
@@ -78,7 +78,7 @@ def main(args=sys.argv[1:], env=Environment()):
 
         if args.check_status:
             status = get_exist_status(response.status_code,
-                                      args.allow_redirects)
+                                      args.follow)
             if status and not env.stdout_isatty:
                 error('%s %s', response.raw.status, response.raw.reason)
 

@@ -3,7 +3,7 @@
 NOTE: the CLI interface may change before reaching v1.0.
 
 """
-from argparse import FileType, OPTIONAL, SUPPRESS
+from argparse import FileType, OPTIONAL, ZERO_OR_MORE, SUPPRESS
 
 from requests.compat import is_windows
 
@@ -63,8 +63,8 @@ positional.add_argument(
     ''')
 )
 positional.add_argument(
-    'items', nargs='*',
-    metavar='REQUEST ITEM',
+    'items', metavar='REQUEST ITEM',
+    nargs=ZERO_OR_MORE,
     type=KeyValueArgType(*SEP_GROUP_ITEMS),
     help=_('''
         A key-value pair whose type is defined by the
@@ -85,7 +85,9 @@ positional.add_argument(
 
 content_type = parser.add_argument_group(
     title='Predefined content types',
-    description=None).add_mutually_exclusive_group(required=False)
+    description=None
+).add_mutually_exclusive_group(required=False)
+
 content_type.add_argument(
     '--json', '-j', action='store_true',
     help=_('''
@@ -271,7 +273,7 @@ network.add_argument(
     ''')
 )
 network.add_argument(
-    '--allow-redirects', default=False, action='store_true',
+    '--follow', default=False, action='store_true',
     help=_('''
         Set this flag if full redirects are allowed
         (e.g. re-POST-ing of data at new ``Location``)
@@ -306,7 +308,7 @@ network.add_argument(
 
         When the server replies with a 4xx (Client Error) or 5xx
         (Server Error) status code, HTTPie exits with 4 or 5 respectively.
-        If the response is a 3xx (Redirect) and --allow-redirects
+        If the response is a 3xx (Redirect) and --follow
         hasn't been set, then the exit status is 3.
 
         Also an error message is written to stderr if stdout is redirected.
