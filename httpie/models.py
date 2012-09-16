@@ -2,6 +2,8 @@ import os
 import sys
 from requests.compat import urlparse, is_windows, bytes, str
 
+from .config import DEFAULT_CONFIG_DIR, Config
+
 
 class Environment(object):
     """Holds information about the execution context.
@@ -22,6 +24,8 @@ class Environment(object):
     stdin = sys.stdin
     stdout_isatty = sys.stdout.isatty()
 
+    config_dir = DEFAULT_CONFIG_DIR
+
     if stdout_isatty and is_windows:
         from colorama.initialise import wrap_stream
         stdout = wrap_stream(sys.stdout, convert=None,
@@ -37,6 +41,17 @@ class Environment(object):
         assert all(hasattr(type(self), attr)
                    for attr in kwargs.keys())
         self.__dict__.update(**kwargs)
+
+    @property
+    def config(self):
+        if not hasattr(self, '_config'):
+            self._config = Config()
+            self._config.directory = self.config_dir
+            if self._config.is_new:
+                self._config.save()
+            else:
+                self._config.load()
+        return self._config
 
 
 class HTTPMessage(object):

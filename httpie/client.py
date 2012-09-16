@@ -24,7 +24,7 @@ def get_response(args):
         sys.stderr.write(
             '\n>>> requests.request(%s)\n\n' % pformat(requests_kwargs))
 
-    if not args.session and not args.session_read:
+    if not args.session and not args.session_read_only:
         return requests.request(**requests_kwargs)
     else:
         return sessions.get_response(

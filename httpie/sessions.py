@@ -3,7 +3,6 @@
 """
 import os
 import sys
-import json
 import glob
 import errno
 import codecs
@@ -16,12 +15,11 @@ from requests.cookies import RequestsCookieJar, create_cookie
 from requests.auth import HTTPBasicAuth, HTTPDigestAuth
 from argparse import OPTIONAL
 
-from.import __version__
-from.config import CONFIG_DIR
-from.output import PygmentsProcessor
+from .config import DEFAULT_CONFIG_DIR, BaseConfigDict
+from .output import PygmentsProcessor
 
 
-SESSIONS_DIR = os.path.join(CONFIG_DIR, 'sessions')
+SESSIONS_DIR = os.path.join(DEFAULT_CONFIG_DIR, 'sessions')
 
 
 def get_response(name, request_kwargs, read_only=False):
@@ -94,7 +92,7 @@ class Host(object):
                 yield Host(name)
 
 
-class Session(dict):
+class Session(BaseConfigDict):
     """"""
 
     def __init__(self, host, name, *args, **kwargs):
@@ -104,39 +102,9 @@ class Session(dict):
         self['headers'] = {}
         self['cookies'] = {}
 
-    def load(self):
-        try:
-            with open(self.path, 'rt') as f:
-                try:
-                    data = json.load(f)
-                except ValueError as e:
-                    raise ValueError('Invalid session: %s [%s]' %
-                                     (e.message, self.path))
-                self.update(data)
-        except IOError as e:
-            if e.errno != errno.ENOENT:
-                raise
-
-    def save(self):
-        self['__version__'] = __version__
-        with open(self.path, 'w') as f:
-            json.dump(self, f, indent=4, sort_keys=True, ensure_ascii=True)
-            f.write('\n')
-
-    def delete(self):
-        try:
-            os.unlink(self.path)
-        except OSError as e:
-            if e.errno != errno.ENOENT:
-                raise
-
     @property
-    def path(self):
-        return os.path.join(self.host.path, self.name + '.json')
-
-    @property
-    def is_new(self):
-        return not os.path.exists(self.path)
+    def directory(self):
+        return self.host.path
 
     @property
     def cookies(self):
