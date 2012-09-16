@@ -528,8 +528,9 @@ To switch to another session simple pass a different name:
 
     $ http --session user2 -a user2:password example.org X-Bar:Foo
 
-To use an existing session without updating it from the request/response
-exchange, specify the session via ``--session-read=SESSION_NAME`` instead.
+To use a session without updating it from the request/response exchange
+once it is created, specify the session name via
+``--session-read-only=SESSION_NAME`` instead.
 
 You can view and manipulate existing sessions via the ``httpie`` management
 command, see ``httpie --help``.

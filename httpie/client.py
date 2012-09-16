@@ -28,9 +28,9 @@ def get_response(args):
         return requests.request(**requests_kwargs)
     else:
         return sessions.get_response(
-            name=args.session or args.session_read,
+            name=args.session or args.session_read_only,
             request_kwargs=requests_kwargs,
-            read_only=bool(args.session_read),
+            read_only=bool(args.session_read_only),
         )
 
 

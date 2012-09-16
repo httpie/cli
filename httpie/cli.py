@@ -235,8 +235,10 @@ sessions.add_argument(
     ''')
 )
 sessions.add_argument(
-    '--session-read', metavar='SESSION_NAME',
-    help=_('''Create or reuse a session, but do not update it once saved.''')
+    '--session-read-only', metavar='SESSION_NAME',
+    help=_('''
+        Create or reuse a session, but do not update it once saved.
+    ''')
 )
 
 
