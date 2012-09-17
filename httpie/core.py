@@ -58,6 +58,8 @@ def main(args=sys.argv[1:], env=Environment()):
     Return exit status.
 
     """
+    if env.config.default_options:
+        args = env.config.default_options + args
 
     def error(msg, *args):
         msg = msg % args
@@ -74,7 +76,8 @@ def main(args=sys.argv[1:], env=Environment()):
 
     try:
         args = parser.parse_args(args=args, env=env)
-        response = get_response(args)
+
+        response = get_response(args, config_dir=env.config.directory)
 
         if args.check_status:
             status = get_exist_status(response.status_code,

@@ -17,10 +17,12 @@ class BaseConfigDict(dict):
 
     name = None
     help = None
+    directory=DEFAULT_CONFIG_DIR
 
-    def __init__(self, directory=DEFAULT_CONFIG_DIR, seq=None, **kwargs):
-        super(BaseConfigDict, self).__init__(seq or [], **kwargs)
-        self.directory = directory
+    def __init__(self, directory=None, *args, **kwargs):
+        super(BaseConfigDict, self).__init__(*args, **kwargs)
+        if directory:
+            self.directory = directory
 
     def __getattr__(self, item):
         return self[item]
@@ -73,8 +75,9 @@ class Config(BaseConfigDict):
 
     DEFAULTS = {
         'default_content_type': 'json',
+        'default_options': []
     }
 
-    def __init__(self, seq=None, **kwargs):
-        super(Config, self).__init__(seq or [], **kwargs)
+    def __init__(self, *args, **kwargs):
+        super(Config, self).__init__(*args, **kwargs)
         self.update(self.DEFAULTS)

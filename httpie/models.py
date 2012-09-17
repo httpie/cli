@@ -45,8 +45,7 @@ class Environment(object):
     @property
     def config(self):
         if not hasattr(self, '_config'):
-            self._config = Config()
-            self._config.directory = self.config_dir
+            self._config = Config(directory=self.config_dir)
             if self._config.is_new:
                 self._config.save()
             else:

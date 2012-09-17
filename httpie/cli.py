@@ -9,6 +9,7 @@ from requests.compat import is_windows
 
 from . import __doc__
 from . import __version__
+from .config import DEFAULT_CONFIG_DIR
 from .output import AVAILABLE_STYLES, DEFAULT_STYLE
 from .input import (Parser, AuthCredentialsArgType, KeyValueArgType,
                     SEP_PROXY, SEP_CREDENTIALS, SEP_GROUP_ITEMS,
@@ -330,6 +331,7 @@ network.add_argument(
 ###############################################################################
 
 troubleshooting = parser.add_argument_group(title='Troubleshooting')
+
 troubleshooting.add_argument(
     '--help',
     action='help', default=SUPPRESS,

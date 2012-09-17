@@ -15,7 +15,7 @@ JSON = 'application/json; charset=utf-8'
 DEFAULT_UA = 'HTTPie/%s' % __version__
 
 
-def get_response(args):
+def get_response(args, config_dir):
     """Send the request and return a `request.Response`."""
 
     requests_kwargs = get_requests_kwargs(args)
@@ -28,6 +28,7 @@ def get_response(args):
         return requests.request(**requests_kwargs)
     else:
         return sessions.get_response(
+            config_dir=config_dir,
             name=args.session or args.session_read_only,
             request_kwargs=requests_kwargs,
             read_only=bool(args.session_read_only),

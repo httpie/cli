@@ -15,20 +15,24 @@ from requests.cookies import RequestsCookieJar, create_cookie
 from requests.auth import HTTPBasicAuth, HTTPDigestAuth
 from argparse import OPTIONAL
 
-from .config import DEFAULT_CONFIG_DIR, BaseConfigDict
+from .config import BaseConfigDict, DEFAULT_CONFIG_DIR
 from .output import PygmentsProcessor
 
 
-SESSIONS_DIR = os.path.join(DEFAULT_CONFIG_DIR, 'sessions')
+SESSIONS_DIR_NAME = 'sessions'
 
 
-def get_response(name, request_kwargs, read_only=False):
+def get_response(name, request_kwargs, config_dir, read_only=False):
     """Like `client.get_response`, but applies permanent
     aspects of the session to the request.
 
     """
-    host = Host(request_kwargs['headers'].get('Host', None)
-                or urlparse(request_kwargs['url']).netloc.split('@')[-1])
+    sessions_dir = os.path.join(config_dir, SESSIONS_DIR_NAME)
+    host = Host(
+        root_dir=sessions_dir,
+        name=request_kwargs['headers'].get('Host', None)
+             or urlparse(request_kwargs['url']).netloc.split('@')[-1]
+    )
 
     session = Session(host, name)
     session.load()
@@ -60,8 +64,9 @@ def get_response(name, request_kwargs, read_only=False):
 class Host(object):
     """A host is a per-host directory on the disk containing sessions files."""
 
-    def __init__(self, name):
+    def __init__(self, name, root_dir=DEFAULT_CONFIG_DIR):
         self.name = name
+        self.root_dir = root_dir
 
     def __iter__(self):
         """Return a iterator yielding `(session_name, session_path)`."""
@@ -76,7 +81,7 @@ class Host(object):
         # Name will include ':' if a port is specified, which is invalid
         # on windows. DNS does not allow '_' in a domain, or for it to end
         # in a number (I think?)
-        path = os.path.join(SESSIONS_DIR, self.name.replace(':', '_'))
+        path = os.path.join(self.root_dir, self.name.replace(':', '_'))
         try:
             os.makedirs(path, mode=0o700)
         except OSError as e:

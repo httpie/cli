@@ -26,8 +26,8 @@ import json
 import argparse
 import tempfile
 import unittest
+import shutil
 
-CRLF = '\r\n'
 try:
     from urllib.request import urlopen
 except ImportError:
@@ -63,6 +63,7 @@ from httpie.output import BINARY_SUPPRESSED_NOTICE
 from httpie.input import ParseError
 
 
+CRLF = '\r\n'
 HTTPBIN_URL = os.environ.get('HTTPBIN_URL',
                              'http://httpbin.org').rstrip('/')
 
@@ -99,6 +100,10 @@ def httpbin(path):
     return HTTPBIN_URL + path
 
 
+def mk_config_dir():
+    return tempfile.mkdtemp(prefix='httpie_test_config_dir_')
+
+
 class TestEnvironment(Environment):
     colors = 0
     stdin_isatty = True,
@@ -113,8 +118,16 @@ class TestEnvironment(Environment):
         if 'stderr' not in kwargs:
             kwargs['stderr'] = tempfile.TemporaryFile('w+t')
 
+        self.delete_config_dir = False
+        if 'config_dir' not in kwargs:
+            kwargs['config_dir'] = mk_config_dir()
+            self.delete_config_dir = True
+
         super(TestEnvironment, self).__init__(**kwargs)
 
+    def __del__(self):
+        if self.delete_config_dir:
+            shutil.rmtree(self.config_dir)
 
 def has_docutils():
     try:
@@ -862,7 +875,6 @@ class ExitStatusTest(BaseTestCase):
         self.assertEqual(r.exit_status, EXIT.OK)
         self.assertTrue(not r.stderr)
 
-    @skip('httpbin.org always returns 500')
     def test_timeout_exit_status(self):
         r = http(
             '--timeout=0.5',
@@ -1232,13 +1244,122 @@ class ArgumentParserTestCase(unittest.TestCase):
         ])
 
 
-
 class READMETest(BaseTestCase):
 
     @skipIf(not has_docutils(), 'docutils not installed')
     def test_README_reStructuredText_valid(self):
         errors = get_readme_errors()
         self.assertFalse(errors, msg=errors)
+
+
+class SessionTest(BaseTestCase):
+
+    @property
+    def env(self):
+        return TestEnvironment(config_dir=self.config_dir)
+
+    def setUp(self):
+        # Start a full-blown session with a custom request header,
+        # authorization, and response cookies.
+        self.config_dir = mk_config_dir()
+        r = http(
+            '--follow',
+            '--session=test',
+            '--auth=username:password',
+            'GET',
+            httpbin('/cookies/set?hello=world'),
+            'Hello:World',
+            env=self.env
+        )
+        self.assertIn(OK, r)
+
+    def tearDown(self):
+        shutil.rmtree(self.config_dir)
+
+    def test_session_create(self):
+        # Verify that the has been created
+        r = http(
+            '--session=test',
+            'GET',
+            httpbin('/get'),
+            env=self.env
+        )
+        self.assertIn(OK, r)
+
+        self.assertEqual(r.json['headers']['Hello'], 'World')
+        self.assertEqual(r.json['headers']['Cookie'], 'hello=world')
+        self.assertIn('Basic ', r.json['headers']['Authorization'])
+
+    def test_session_update(self):
+        # Get a response to a request from the original session.
+        r1 = http(
+            '--session=test',
+            'GET',
+            httpbin('/get'),
+            env=self.env
+        )
+        self.assertIn(OK, r1)
+
+        # Make a request modifying the session data.
+        r2 = http(
+            '--follow',
+            '--session=test',
+            '--auth=username:password2',
+            'GET',
+            httpbin('/cookies/set?hello=world2'),
+            'Hello:World2',
+            env=self.env
+        )
+        self.assertIn(OK, r2)
+
+        # Get a response to a request from the updated session.
+        r3 = http(
+            '--session=test',
+            'GET',
+            httpbin('/get'),
+            env=self.env
+        )
+        self.assertIn(OK, r3)
+
+        self.assertEqual(r3.json['headers']['Hello'], 'World2')
+        self.assertEqual(r3.json['headers']['Cookie'], 'hello=world2')
+        self.assertNotEqual(r1.json['headers']['Authorization'],
+                            r3.json['headers']['Authorization'])
+
+    def test_session_only(self):
+        # Get a response from the original session.
+        r1 = http(
+            '--session=test',
+            'GET',
+            httpbin('/get'),
+            env=self.env
+        )
+        self.assertIn(OK, r1)
+
+        # Make a request modifying the session data but
+        # with --session-read-only.
+        r2 = http(
+            '--follow',
+            '--session-read-only=test',
+            '--auth=username:password2',
+            'GET',
+            httpbin('/cookies/set?hello=world2'),
+            'Hello:World2',
+            env=self.env
+        )
+        self.assertIn(OK, r2)
+
+        # Get a response from the updated session.
+        r3 = http(
+            '--session=test',
+            'GET',
+            httpbin('/get'),
+            env=self.env
+        )
+        self.assertIn(OK, r3)
+
+        # Should be the same as before r2.
+        self.assertDictEqual(r1.json, r3.json)
 
 
 if __name__ == '__main__':
