@@ -23,7 +23,6 @@ from .cli import parser
 from .client import get_response
 from .models import Environment
 from .output import output_stream, write, write_with_colors_win_p3k
-from .config import DEFAULT_CONFIG_DIR, Config
 from . import EXIT
 
 

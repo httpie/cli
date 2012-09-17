@@ -109,6 +109,7 @@ class TestEnvironment(Environment):
     stdin_isatty = True,
     stdout_isatty = True
     is_windows = False
+    _shutil = shutil  # we need it in __del__ (would get gc'd)
 
     def __init__(self, **kwargs):
 
@@ -127,7 +128,7 @@ class TestEnvironment(Environment):
 
     def __del__(self):
         if self.delete_config_dir:
-            shutil.rmtree(self.config_dir)
+            self._shutil.rmtree(self.config_dir)
 
 def has_docutils():
     try:

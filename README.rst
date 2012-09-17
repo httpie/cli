@@ -258,7 +258,7 @@ JSON
 ====
 
 JSON is the *lingua franca* of modern web services and it is also the
-**default content type** HTTPie uses:
+**implicit content type** HTTPie by default uses:
 
 If your command includes some data items, they are serialized as a JSON
 object by default. HTTPie also automatically sets the following headers,
@@ -269,9 +269,9 @@ both of which can be overwritten:
 ``Accept``          ``application/json``
 ================    =======================================
 
-You can use ``--json`` / ``-j`` to set ``Accept`` to ``application/json``
-regardless of whether you are sending data (it's a shortcut for setting
-the header via the usual header notation –
+You can use ``--json`` / ``-j`` to explicitly set ``Accept``
+to ``application/json`` regardless of whether you are sending data
+(it's a shortcut for setting the header via the usual header notation –
 ``http url Accept:application/json``).
 
 Simple example:
@@ -337,6 +337,9 @@ Submitting forms is very similar to sending `JSON`_ requests. Often the only
 difference is in adding the ``--form`` / ``-f`` option, which ensures that
 data fields are serialized as, and ``Content-Type`` is set to,
 ``application/x-www-form-urlencoded; charset=utf-8``.
+
+It is possible to make form data the implicit content type via the `config`_
+file.
 
 
 -------------
@@ -500,43 +503,6 @@ To skip the host's SSL certificate verification, you can pass ``--verify=no``
 (default is ``yes``). You can also use ``--verify`` to set a custom CA bundle
 path. The path can also be configured via the environment variable
 ``REQUESTS_CA_BUNDLE``.
-
-
-========
-Sessions
-========
-
-*NOTE: This is an experimental feature. Feedback appretiated.*
-
-HTTPie supports named, per-host sessions, where custom headers, authorization,
-and cookies (manually specified or sent by the server) persist between requests:
-
-.. code-block:: bash
-
-    $ http --session user1 -a user1:password example.org X-Foo:Bar
-
-Now you can refer to the session by its name:
-
-.. code-block:: bash
-
-    $ http --session user1 example.org
-
-
-To switch to another session simple pass a different name:
-
-.. code-block:: bash
-
-    $ http --session user2 -a user2:password example.org X-Bar:Foo
-
-To use a session without updating it from the request/response exchange
-once it is created, specify the session name via
-``--session-read-only=SESSION_NAME`` instead.
-
-You can view and manipulate existing sessions via the ``httpie`` management
-command, see ``httpie --help``.
-
-Sessions are stored as JSON in ``~/.httpie/sessions/<host>/<name>.json``
-(``%APPDATA%\httpie\sessions\<host>\<name>.json`` on Windows).
 
 
 ==============
@@ -854,6 +820,71 @@ Streamed output by small chunks alá ``tail -f``:
     | while read tweet; do echo "$tweet" | http POST example.org/tweets ; done
 
 
+
+========
+Sessions
+========
+
+HTTPie supports named, per-host sessions, where custom headers, authorization,
+and cookies (manually specified or sent by the server) persist between requests:
+
+.. code-block:: bash
+
+    $ http --session user1 -a user1:password example.org X-Foo:Bar
+
+Now you can refer to the session by its name:
+
+.. code-block:: bash
+
+    $ http --session user1 example.org
+
+
+To switch to another session simple pass a different name:
+
+.. code-block:: bash
+
+    $ http --session user2 -a user2:password example.org X-Bar:Foo
+
+To use a session without updating it from the request/response exchange
+once it is created, specify the session name via
+``--session-read-only=SESSION_NAME`` instead.
+
+You can view and manipulate existing sessions via the ``httpie`` management
+command, see ``httpie --help``.
+
+Sessions are stored as JSON in ``~/.httpie/sessions/<host>/<name>.json``
+(``%APPDATA%\httpie\sessions\<host>\<name>.json`` on Windows).
+
+See also `config`_.
+
+
+======
+Config
+======
+
+HTTPie provides a simple configuration file containing a JSON
+object with the following keys:
+
+=========================     =================================================
+``__version__``               HTTPie automatically sets this to its version.
+                              Do not change.
+
+``implicit_content_type``     A ``String`` specifying the implicit content type
+                              for request data. The default value for this
+                              option is ``json`` and can be changed to
+                              ``form``.
+
+``default_options``           An ``Array`` (by default empty) of options
+                              that should be applied to every request.
+=========================     =================================================
+
+The default location is ``~/.httpie/config.json``
+(``%APPDATA%\httpie\config.json`` on Windows).
+
+The config directory location can be changed by setting the
+``HTTPIE_CONFIG_DIR`` environment variable.
+
+
 =========
 Scripting
 =========
@@ -995,6 +1026,7 @@ Changelog
 *You can click a version name to see a diff with the previous one.*
 
 * `0.2.8-alpha`_
+    * Added config file.
     * Added persistent session support.
     * Renamed ``--allow-redirects`` to ``--follow``.
     * Improved the usability of ``http --help``.

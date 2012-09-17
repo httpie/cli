@@ -102,7 +102,7 @@ class Parser(ArgumentParser):
 
         args = super(Parser, self).parse_args(args, namespace)
 
-        if not args.json and env.config.default_content_type == 'form':
+        if not args.json and env.config.implicit_content_type == 'form':
             args.form = True
 
         if args.debug:

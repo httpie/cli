@@ -74,7 +74,7 @@ class Config(BaseConfigDict):
     name = 'config'
 
     DEFAULTS = {
-        'default_content_type': 'json',
+        'implicit_content_type': 'json',
         'default_options': []
     }
 
