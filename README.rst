@@ -1,8 +1,8 @@
-***********************
-HTTPie: cURL for Humans
-***********************
+****************************************
+HTTPie: a CLI, cURL-like tool for humans
+****************************************
 
-v0.2.8-alpha (`stable version`_)
+v0.3.0
 
 HTTPie is a **command line HTTP client** whose goal is to make CLI interaction
 with web services as **human-friendly** as possible. It provides a
@@ -42,6 +42,7 @@ Main Features
 * HTTPS, proxies, and authentication
 * Arbitrary request data
 * Custom headers
+* Persistent sessions
 * Python 2.6, 2.7 and 3.x support
 * Linux, Mac OS X and Windows support
 * Documentation
@@ -825,34 +826,35 @@ Streamed output by small chunks alá ``tail -f``:
 Sessions
 ========
 
-HTTPie supports named, per-host sessions, where custom headers, authorization,
-and cookies (manually specified or sent by the server) persist between requests:
+By default, every request is completely independent of the previous ones.
+
+HTTPie supports persistent sessions, where custom headers, authorization,
+and cookies (manually specified or sent by the server) persist between
+requests. Sessions are named and host-bound.
+
+Create a new session named ``user1``:
 
 .. code-block:: bash
 
-    $ http --session user1 -a user1:password example.org X-Foo:Bar
+    $ http --session=user1 -a user1:password example.org X-Foo:Bar
 
 Now you can refer to the session by its name:
 
 .. code-block:: bash
 
-    $ http --session user1 example.org
+    $ http --session=user1 example.org
 
-
-To switch to another session simple pass a different name:
+To create or reuse a different session, simple specify a different name:
 
 .. code-block:: bash
 
-    $ http --session user2 -a user2:password example.org X-Bar:Foo
+    $ http --session=user2 -a user2:password example.org X-Bar:Foo
 
 To use a session without updating it from the request/response exchange
 once it is created, specify the session name via
 ``--session-read-only=SESSION_NAME`` instead.
 
-You can view and manipulate existing sessions via the ``httpie`` management
-command, see ``httpie --help``.
-
-Sessions are stored as JSON in ``~/.httpie/sessions/<host>/<name>.json``
+Sessions are stored as JSON files in ``~/.httpie/sessions/<host>/<name>.json``
 (``%APPDATA%\httpie\sessions\<host>\<name>.json`` on Windows).
 
 See also `config`_.
@@ -862,8 +864,8 @@ See also `config`_.
 Config
 ======
 
-HTTPie provides a simple configuration file containing a JSON
-object with the following keys:
+HTTPie uses a simple configuration file that contains a JSON object with the
+following keys:
 
 =========================     =================================================
 ``__version__``               HTTPie automatically sets this to its version.
@@ -1025,9 +1027,9 @@ Changelog
 
 *You can click a version name to see a diff with the previous one.*
 
-* `0.2.8-alpha`_
+* `0.3.0`_ (2012-09-21)
     * Allow output redirection on Windows.
-    * Added config file.
+    * Added configuration file.
     * Added persistent session support.
     * Renamed ``--allow-redirects`` to ``--follow``.
     * Improved the usability of ``http --help``.
@@ -1117,7 +1119,7 @@ Changelog
 .. _0.2.5: https://github.com/jkbr/httpie/compare/0.2.2...0.2.5
 .. _0.2.6: https://github.com/jkbr/httpie/compare/0.2.5...0.2.6
 .. _0.2.7: https://github.com/jkbr/httpie/compare/0.2.5...0.2.7
-.. _0.2.8-alpha: https://github.com/jkbr/httpie/compare/0.2.7...master
-.. _stable version: https://github.com/jkbr/httpie/tree/0.2.7#readme
+.. _0.3.0: https://github.com/jkbr/httpie/compare/0.2.7...0.3.0
+.. _stable version: https://github.com/jkbr/httpie/tree/0.3.0#readme
 .. _AUTHORS.rst: https://github.com/jkbr/httpie/blob/master/AUTHORS.rst
 .. _LICENSE: https://github.com/jkbr/httpie/blob/master/LICENSE

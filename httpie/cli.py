@@ -1,6 +1,8 @@
 """CLI arguments definition.
 
 NOTE: the CLI interface may change before reaching v1.0.
+TODO: make the options config friendly, i.e., no mutually exclusive groups to
+      allow options overwriting.
 
 """
 from argparse import FileType, OPTIONAL, ZERO_OR_MORE, SUPPRESS
@@ -9,7 +11,7 @@ from requests.compat import is_windows
 
 from . import __doc__
 from . import __version__
-from .config import DEFAULT_CONFIG_DIR
+from .sessions import DEFAULT_SESSIONS_DIR
 from .output import AVAILABLE_STYLES, DEFAULT_STYLE
 from .input import (Parser, AuthCredentialsArgType, KeyValueArgType,
                     SEP_PROXY, SEP_CREDENTIALS, SEP_GROUP_ITEMS,
@@ -231,14 +233,14 @@ sessions.add_argument(
     Create, or reuse and update a session.
     Withing a session, custom headers, auth credential, as well as any
     cookies sent by the server persist between requests.
-    You can use the `httpie' management command to manipulate
-    and inspect existing sessions. See `httpie --help'.
-    ''')
+    Session files are stored in %s/<HOST>/<SESSION_NAME>.json.
+    ''' % DEFAULT_SESSIONS_DIR)
 )
 sessions.add_argument(
     '--session-read-only', metavar='SESSION_NAME',
     help=_('''
-        Create or reuse a session, but do not update it once saved.
+        Create or read a session without updating it form the
+        request/response exchange.
     ''')
 )
 

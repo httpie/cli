@@ -1,13 +1,13 @@
 """
-HTTPie - cURL for humans.
+HTTPie - a CLI, cURL-like tool for humans.
 
 """
 __author__ = 'Jakub Roztocil'
-__version__ = '0.2.8-alpha'
+__version__ = '0.3.0'
 __licence__ = 'BSD'
 
 
-class EXIT:
+class exit:
     OK = 0
     ERROR = 1
     ERROR_TIMEOUT = 2
