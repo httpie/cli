@@ -96,10 +96,6 @@ class Parser(ArgumentParser):
 
         self.env = env
 
-        if env.is_windows and not env.stdout_isatty:
-            self.error('Output redirection is not supported on Windows.'
-                  ' Please use `--output FILE\' instead.')
-
         args = super(Parser, self).parse_args(args, namespace)
 
         if not args.json and env.config.implicit_content_type == 'form':
@@ -244,7 +240,7 @@ class Parser(ArgumentParser):
         if args.prettify == PRETTY_STDOUT_TTY_ONLY:
             args.prettify = PRETTY_MAP['all' if env.stdout_isatty else 'none']
         elif args.prettify and env.is_windows:
-            self.error('Only terminal output can be prettified on Windows.')
+            self.error('Only terminal output can be colorized on Windows.')
         else:
             args.prettify = PRETTY_MAP[args.prettify]
 

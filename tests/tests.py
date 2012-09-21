@@ -941,17 +941,6 @@ class WindowsOnlyTests(BaseTestCase):
 
 class FakeWindowsTest(BaseTestCase):
 
-    def test_stdout_redirect_not_supported_on_windows(self):
-        env = TestEnvironment(is_windows=True, stdout_isatty=False)
-        r = http(
-            'GET',
-            httpbin('/get'),
-            env=env
-        )
-        self.assertNotEqual(r.exit_status, EXIT.OK)
-        self.assertIn('Windows', r.stderr)
-        self.assertIn('--output', r.stderr)
-
     def test_output_file_pretty_not_allowed_on_windows(self):
 
         r = http(
@@ -963,7 +952,7 @@ class FakeWindowsTest(BaseTestCase):
             env=TestEnvironment(is_windows=True)
         )
         self.assertIn(
-            'Only terminal output can be prettified on Windows', r.stderr)
+            'Only terminal output can be colorized on Windows', r.stderr)
 
 
 class StreamTest(BaseTestCase):

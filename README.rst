@@ -1026,6 +1026,7 @@ Changelog
 *You can click a version name to see a diff with the previous one.*
 
 * `0.2.8-alpha`_
+    * Allow output redirection on Windows.
     * Added config file.
     * Added persistent session support.
     * Renamed ``--allow-redirects`` to ``--follow``.
