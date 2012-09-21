@@ -19,6 +19,7 @@ To make it run faster and offline you can::
     HTTPBIN_URL=http://localhost:5000 tox
 
 """
+from functools import partial
 import subprocess
 import os
 import sys
@@ -28,6 +29,7 @@ import tempfile
 import unittest
 import shutil
 
+from requests.compat import urlparse
 try:
     from urllib.request import urlopen
 except ImportError:
@@ -55,7 +57,7 @@ from requests.compat import is_windows, is_py26, bytes, str
 TESTS_ROOT = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, os.path.realpath(os.path.join(TESTS_ROOT, '..')))
 
-from httpie import EXIT
+from httpie import exit
 from httpie import input
 from httpie.models import Environment
 from httpie.core import main
@@ -183,7 +185,7 @@ def http(*args, **kwargs):
             sys.stderr.write(env.stderr.read())
             raise
         except SystemExit:
-            exit_status = EXIT.ERROR
+            exit_status = exit.ERROR
 
         env.stdout.seek(0)
         env.stderr.seek(0)
@@ -865,7 +867,7 @@ class ExitStatusTest(BaseTestCase):
             httpbin('/status/200')
         )
         self.assertIn(OK, r)
-        self.assertEqual(r.exit_status, EXIT.OK)
+        self.assertEqual(r.exit_status, exit.OK)
 
     def test_error_response_exits_0_without_check_status(self):
         r = http(
@@ -873,7 +875,7 @@ class ExitStatusTest(BaseTestCase):
             httpbin('/status/500')
         )
         self.assertIn('HTTP/1.1 500', r)
-        self.assertEqual(r.exit_status, EXIT.OK)
+        self.assertEqual(r.exit_status, exit.OK)
         self.assertTrue(not r.stderr)
 
     def test_timeout_exit_status(self):
@@ -882,7 +884,7 @@ class ExitStatusTest(BaseTestCase):
             'GET',
             httpbin('/delay/1')
         )
-        self.assertEqual(r.exit_status, EXIT.ERROR_TIMEOUT)
+        self.assertEqual(r.exit_status, exit.ERROR_TIMEOUT)
 
     def test_3xx_check_status_exits_3_and_stderr_when_stdout_redirected(self):
         r = http(
@@ -893,7 +895,7 @@ class ExitStatusTest(BaseTestCase):
             env=TestEnvironment(stdout_isatty=False,)
         )
         self.assertIn('HTTP/1.1 301', r)
-        self.assertEqual(r.exit_status, EXIT.ERROR_HTTP_3XX)
+        self.assertEqual(r.exit_status, exit.ERROR_HTTP_3XX)
         self.assertIn('301 moved permanently', r.stderr.lower())
 
     @skipIf(requests_version == '0.13.6',
@@ -907,7 +909,7 @@ class ExitStatusTest(BaseTestCase):
         )
         # The redirect will be followed so 200 is expected.
         self.assertIn('HTTP/1.1 200 OK', r)
-        self.assertEqual(r.exit_status, EXIT.OK)
+        self.assertEqual(r.exit_status, exit.OK)
 
     def test_4xx_check_status_exits_4(self):
         r = http(
@@ -916,7 +918,7 @@ class ExitStatusTest(BaseTestCase):
             httpbin('/status/401')
         )
         self.assertIn('HTTP/1.1 401', r)
-        self.assertEqual(r.exit_status, EXIT.ERROR_HTTP_4XX)
+        self.assertEqual(r.exit_status, exit.ERROR_HTTP_4XX)
         # Also stderr should be empty since stdout isn't redirected.
         self.assertTrue(not r.stderr)
 
@@ -927,7 +929,7 @@ class ExitStatusTest(BaseTestCase):
             httpbin('/status/500')
         )
         self.assertIn('HTTP/1.1 500', r)
-        self.assertEqual(r.exit_status, EXIT.ERROR_HTTP_5XX)
+        self.assertEqual(r.exit_status, exit.ERROR_HTTP_5XX)
 
 
 class WindowsOnlyTests(BaseTestCase):
@@ -1267,7 +1269,7 @@ class SessionTest(BaseTestCase):
         shutil.rmtree(self.config_dir)
 
     def test_session_create(self):
-        # Verify that the has been created
+        # Verify that the session has been created.
         r = http(
             '--session=test',
             'GET',
@@ -1316,7 +1318,7 @@ class SessionTest(BaseTestCase):
         self.assertNotEqual(r1.json['headers']['Authorization'],
                             r3.json['headers']['Authorization'])
 
-    def test_session_only(self):
+    def test_session_read_only(self):
         # Get a response from the original session.
         r1 = http(
             '--session=test',

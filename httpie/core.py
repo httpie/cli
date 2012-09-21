@@ -23,22 +23,22 @@ from .cli import parser
 from .client import get_response
 from .models import Environment
 from .output import output_stream, write, write_with_colors_win_p3k
-from . import EXIT
+from . import exit
 
 
 def get_exist_status(code, follow=False):
     """Translate HTTP status code to exit status."""
     if 300 <= code <= 399 and not follow:
         # Redirect
-        return EXIT.ERROR_HTTP_3XX
+        return exit.ERROR_HTTP_3XX
     elif 400 <= code <= 499:
         # Client Error
-        return EXIT.ERROR_HTTP_4XX
+        return exit.ERROR_HTTP_4XX
     elif 500 <= code <= 599:
         # Server Error
-        return EXIT.ERROR_HTTP_5XX
+        return exit.ERROR_HTTP_5XX
     else:
-        return EXIT.OK
+        return exit.OK
 
 
 def print_debug_info(env):
@@ -66,12 +66,12 @@ def main(args=sys.argv[1:], env=Environment()):
 
     debug = '--debug' in args
     traceback = debug or '--traceback' in args
-    status = EXIT.OK
+    status = exit.OK
 
     if debug:
         print_debug_info(env)
         if args == ['--debug']:
-            sys.exit(EXIT.OK)
+            sys.exit(exit.OK)
 
     try:
         args = parser.parse_args(args=args, env=env)
@@ -108,9 +108,9 @@ def main(args=sys.argv[1:], env=Environment()):
         if traceback:
             raise
         env.stderr.write('\n')
-        status = EXIT.ERROR
+        status = exit.ERROR
     except requests.Timeout:
-        status = EXIT.ERROR_TIMEOUT
+        status = exit.ERROR_TIMEOUT
         error('Request timed out (%ss).', args.timeout)
     except Exception as e:
         # TODO: distinguish between expected and unexpected errors.
@@ -118,6 +118,6 @@ def main(args=sys.argv[1:], env=Environment()):
         if traceback:
             raise
         error('%s: %s', type(e).__name__, str(e))
-        status = EXIT.ERROR
+        status = exit.ERROR
 
     return status

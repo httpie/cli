@@ -20,6 +20,7 @@ from .output import PygmentsProcessor
 
 
 SESSIONS_DIR_NAME = 'sessions'
+DEFAULT_SESSIONS_DIR = os.path.join(DEFAULT_CONFIG_DIR, SESSIONS_DIR_NAME)
 
 
 def get_response(name, request_kwargs, config_dir, read_only=False):
@@ -92,8 +93,8 @@ class Host(object):
     @classmethod
     def all(cls):
         """Return a generator yielding a host at a time."""
-        for name in sorted(glob.glob1(SESSIONS_DIR, '*')):
-            if os.path.isdir(os.path.join(SESSIONS_DIR, name)):
+        for name in sorted(glob.glob1(DEFAULT_SESSIONS_DIR, '*')):
+            if os.path.isdir(os.path.join(DEFAULT_SESSIONS_DIR, name)):
                 yield Host(name)
 
 
@@ -155,6 +156,9 @@ class Session(BaseConfigDict):
             'password': cred.password,
         }
 
+
+# The commands are disabled for now.
+# TODO: write tests for the commands.
 
 def list_command(args):
     if args.host:
