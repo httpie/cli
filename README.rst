@@ -4,9 +4,9 @@ HTTPie: a CLI, cURL-like tool for humans
 
 v0.3.0
 
-HTTPie is a **command line HTTP client** whose goal is to make CLI interaction
+HTTPie is a **command line HTTP client**. Its goal is to make CLI interaction
 with web services as **human-friendly** as possible. It provides a
-simple ``http`` command that allows for sending arbitrary HTTP requests with a
+simple ``http`` command that allows for sending arbitrary HTTP requests using a
 simple and natural syntax, and displays colorized responses. HTTPie can be used
 for **testing, debugging**, and generally **interacting** with HTTP servers.
 
@@ -18,7 +18,7 @@ for **testing, debugging**, and generally **interacting** with HTTP servers.
 
 
 HTTPie is written in Python, and under the hood it uses the excellent
-`Requests`_ for HTTP and `Pygments`_ for colorizing.
+`Requests`_ and `Pygments`_ libraries.
 
 
 **Table of Contents**
@@ -59,8 +59,10 @@ or ``easy_install``:
 
 .. code-block:: bash
 
-    $ pip install -U httpie
+    $ pip install --upgrade httpie
 
+
+Alternatively:
 
 .. code-block:: bash
 
@@ -77,12 +79,12 @@ Or, you can install the **development version** directly from GitHub:
 
 .. code-block:: bash
 
-    $ pip install -U https://github.com/jkbr/httpie/tarball/master
+    $ pip install --upgrade https://github.com/jkbr/httpie/tarball/master
 
 
 There are also packages available for `Ubuntu`_, `Debian`_, and possibly other
-Linux distributions as well. However, they may be a significant delay between
-releases and package updates.
+Linux distributions as well. However, there may be a significant delay between
+official HTTPie releases and package updates.
 
 
 =====
@@ -127,7 +129,7 @@ Submitting `forms`_:
     $ http -f POST example.org hello=World
 
 
-See the request that is being sent using on of the `output options`_:
+See the request that is being sent using one of the `output options`_:
 
 .. code-block:: bash
 
@@ -154,11 +156,21 @@ Download a file and save it via `redirected output`_:
 
     $ http example.org/file > file
 
+Use named `sessions`_ to make certain aspects or the communication persistent
+between requests to the same host:
+
+.. code-block:: bash
+
+    $ http --session=logged-in -a username:password httpbin.org/get API-Key:123
+
+    $ http --session=logged-in httpbin.org/headers
+
+..
 
 --------
 
 *What follows is a detailed documentation. It covers the command syntax,
-advances usage, and also features additional examples.*
+advanced usage, and also features additional examples.*
 
 
 ============
@@ -247,11 +259,12 @@ their type is distinguished only by the separator used:
 +-----------------------+-----------------------------------------------------+
 
 You can use ``\`` to escape characters that shouldn't be used as separators
-(or parts thereof). e.g., ``foo\==bar`` will become a data key/value
+(or parts thereof). For instance, ``foo\==bar`` will become a data key/value
 pair (``foo=`` and ``bar``) instead of a URL parameter.
 
-Note that data fields aren't the only way to specify request data,
-`redirected input`_ allows passing arbitrary data to be sent with the request.
+Note that data fields aren't the only way to specify request data:
+`Redirected input`_ allows for passing arbitrary data to be sent with the
+request.
 
 
 ====
@@ -339,8 +352,8 @@ difference is in adding the ``--form`` / ``-f`` option, which ensures that
 data fields are serialized as, and ``Content-Type`` is set to,
 ``application/x-www-form-urlencoded; charset=utf-8``.
 
-It is possible to make form data the implicit content type via the `config`_
-file.
+It is possible to make form data the implicit content type instead of JSON
+via the `config`_ file.
 
 
 -------------
@@ -440,7 +453,7 @@ come). There are two flags that control authentication:
                         ``basic`` so it can often be omitted.
 ===================     ======================================================
 
-Authorization information from ``.netrc`` is respected as well.
+Authorization information from ``.netrc`` is honored as well.
 
 Basic auth:
 
@@ -473,14 +486,14 @@ You can specify proxies to be used through the ``--proxy`` argument:
 
 .. code-block:: bash
 
-    http --proxy=http:10.10.1.10:3128 --https:10.10.1.10:1080 example.org
+    $ http --proxy=http:10.10.1.10:3128 --https:10.10.1.10:1080 example.org
 
 
 With Basic authentication:
 
 .. code-block:: bash
 
-    http --proxy=http:http://user:pass@10.10.1.10:3128 example.org
+    $ http --proxy=http:http://user:pass@10.10.1.10:3128 example.org
 
 You can also configure proxies by environment variables ``HTTP_PROXY`` and
 ``HTTPS_PROXY``, and the underlying Requests library will pick them up as well.
@@ -724,7 +737,7 @@ that the response body is binary,
 
 .. code-block:: bash
 
-    http example.org/Movie.mov
+    $ http example.org/Movie.mov
 
 
 You will nearly instantly see something like this:
@@ -830,7 +843,7 @@ By default, every request is completely independent of the previous ones.
 
 HTTPie supports persistent sessions, where custom headers, authorization,
 and cookies (manually specified or sent by the server) persist between
-requests. Sessions are named and host-bound.
+requests to the same host.
 
 Create a new session named ``user1``:
 
@@ -838,7 +851,8 @@ Create a new session named ``user1``:
 
     $ http --session=user1 -a user1:password example.org X-Foo:Bar
 
-Now you can refer to the session by its name:
+Now you can refer to the session by its name, and the previously used
+authorization and HTTP headers will automatically be set:
 
 .. code-block:: bash
 
@@ -878,6 +892,9 @@ following keys:
 
 ``default_options``           An ``Array`` (by default empty) of options
                               that should be applied to every request.
+                              For instance, you can use this option to change
+                              the default style and output options:
+                              ``"default_options": ["--style=fruity", "--body"]``
 =========================     =================================================
 
 The default location is ``~/.httpie/config.json``
