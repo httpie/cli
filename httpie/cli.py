@@ -27,10 +27,12 @@ def _(text):
 
 parser = Parser(
     description='%s <http://httpie.org>' % __doc__.strip(),
-    epilog=_('''
-        Suggestions and bug reports are greatly appreciated:
-        https://github.com/jkbr/httpie/issues
-    ''')
+    epilog=
+        'For every --option there is a --no-option that reverts the option\n'
+        'to its default value.'
+        '\n\n'
+        'Suggestions and bug reports are greatly appreciated:\n'
+        'https://github.com/jkbr/httpie/issues'
 )
 
 
@@ -89,7 +91,7 @@ positional.add_argument(
 content_type = parser.add_argument_group(
     title='Predefined content types',
     description=None
-).add_mutually_exclusive_group(required=False)
+)
 
 content_type.add_argument(
     '--json', '-j', action='store_true',
@@ -159,8 +161,7 @@ output_processing.add_argument(
 ###############################################################################
 output_options = parser.add_argument_group(title='Output options')
 
-output_print = output_options.add_mutually_exclusive_group(required=False)
-output_print.add_argument('--print', '-p', dest='output_options',
+output_options.add_argument('--print', '-p', dest='output_options',
     metavar='WHAT',
     help=_('''
         String specifying what the output should contain:
@@ -179,7 +180,7 @@ output_print.add_argument('--print', '-p', dest='output_options',
         response_body=OUT_RESP_BODY,
     ))
 )
-output_print.add_argument(
+output_options.add_argument(
     '--verbose', '-v', dest='output_options',
     action='store_const', const=''.join(OUTPUT_OPTIONS),
     help=_('''
@@ -187,7 +188,7 @@ output_print.add_argument(
         Shortcut for --print={0}.
     '''.format(''.join(OUTPUT_OPTIONS)))
 )
-output_print.add_argument(
+output_options.add_argument(
     '--headers', '-h', dest='output_options',
     action='store_const', const=OUT_RESP_HEAD,
     help=_('''
@@ -195,7 +196,7 @@ output_print.add_argument(
         Shortcut for --print={0}.
     '''.format(OUT_RESP_HEAD))
 )
-output_print.add_argument(
+output_options.add_argument(
     '--body', '-b', dest='output_options',
     action='store_const', const=OUT_RESP_BODY,
     help=_('''

@@ -2,7 +2,7 @@
 HTTPie: a CLI, cURL-like tool for humans
 ****************************************
 
-v0.3.0
+v0.4.0dev (`stable version`_)
 
 HTTPie is a **command line HTTP client**. Its goal is to make CLI interaction
 with web services as **human-friendly** as possible. It provides a
@@ -895,6 +895,11 @@ following keys:
                               For instance, you can use this option to change
                               the default style and output options:
                               ``"default_options": ["--style=fruity", "--body"]``
+                              Default options from config file can be unset
+                              via ``--no-OPTION`` arguments passed on the
+                              command line (e.g., ``--no-style`` would unset
+                              ``fruity`` as the default style for the
+                              particular invocation).
 =========================     =================================================
 
 The default location is ``~/.httpie/config.json``
@@ -1044,6 +1049,11 @@ Changelog
 
 *You can click a version name to see a diff with the previous one.*
 
+* `0.4.0dev`_
+    * Added ``--no-option`` for every ``--option`` to be config-friendly.
+    * Mutually exclusive arguments can be specified multiple times. The
+      last value is used.
+
 * `0.3.0`_ (2012-09-21)
     * Allow output redirection on Windows.
     * Added configuration file.
@@ -1137,6 +1147,7 @@ Changelog
 .. _0.2.6: https://github.com/jkbr/httpie/compare/0.2.5...0.2.6
 .. _0.2.7: https://github.com/jkbr/httpie/compare/0.2.5...0.2.7
 .. _0.3.0: https://github.com/jkbr/httpie/compare/0.2.7...0.3.0
+.. _0.4.0dev: https://github.com/jkbr/httpie/compare/0.3.0...master
 .. _stable version: https://github.com/jkbr/httpie/tree/0.3.0#readme
 .. _AUTHORS.rst: https://github.com/jkbr/httpie/blob/master/AUTHORS.rst
 .. _LICENSE: https://github.com/jkbr/httpie/blob/master/LICENSE

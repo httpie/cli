@@ -96,7 +96,10 @@ class Parser(ArgumentParser):
 
         self.env = env
 
-        args = super(Parser, self).parse_args(args, namespace)
+        args, no_options = super(Parser, self).parse_known_args(args, namespace)
+        #args = super(Parser, self).parse_args(args, namespace)
+
+        self._apply_no_options(args, no_options)
 
         if not args.json and env.config.implicit_content_type == 'form':
             args.form = True
@@ -125,6 +128,33 @@ class Parser(ArgumentParser):
             args.auth.prompt_password(urlparse(args.url).netloc)
 
         return args
+
+    def _apply_no_options(self, args, no_options):
+        """For every `--no-OPTION` in `no_options`, set `args.OPTION` to
+        its default value. This allows for un-setting of options, e.g.,
+        specified in config.
+
+        """
+        invalid = []
+
+        for option in no_options:
+            if not option.startswith('--no-'):
+                invalid.append(option)
+                continue
+
+            # --no-option => --option
+            inverted = '--' + option[5:]
+            for action in self._actions:
+                if inverted in action.option_strings:
+                    setattr(args, action.dest, action.default)
+                    break
+            else:
+                invalid.append(option)
+
+        if invalid:
+            msg = 'unrecognized arguments: %s'
+            self.error(msg % ' '.join(invalid))
+
 
     def _print_message(self, message, file=None):
         # Sneak in our stderr/stdout.

@@ -1236,6 +1236,28 @@ class ArgumentParserTestCase(unittest.TestCase):
         ])
 
 
+class TestNoOptions(BaseTestCase):
+
+    def test_valid_no_options(self):
+        r = http(
+            '--verbose',
+            '--no-verbose',
+            'GET',
+            httpbin('/get')
+        )
+        self.assertNotIn('GET /get HTTP/1.1', r)
+
+    def test_invalid_no_options(self):
+        r = http(
+            '--no-war',
+            'GET',
+            httpbin('/get')
+        )
+        self.assertEqual(r.exit_status, 1)
+        self.assertIn('unrecognized arguments: --no-war', r.stderr)
+        self.assertNotIn('GET /get HTTP/1.1', r)
+
+
 class READMETest(BaseTestCase):
 
     @skipIf(not has_docutils(), 'docutils not installed')
