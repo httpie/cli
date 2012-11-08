@@ -858,6 +858,31 @@ class AuthTest(BaseTestCase):
         self.assertIn('"authenticated": true', r)
         self.assertIn('"user": "user"', r)
 
+    def test_credentials_in_url(self):
+        url = httpbin('/basic-auth/user/password')
+        url = 'http://user:password@' + url.split('http://', 1)[1]
+        r = http(
+            'GET',
+            url
+        )
+        self.assertIn(OK, r)
+        self.assertIn('"authenticated": true', r)
+        self.assertIn('"user": "user"', r)
+
+    def test_credentials_in_url_auth_flag_has_priority(self):
+        """When credentials are passed in URL and via -a at the same time,
+         then the ones from -a are used."""
+        url = httpbin('/basic-auth/user/password')
+        url = 'http://user:wrong_password@' + url.split('http://', 1)[1]
+        r = http(
+            '--auth=user:password',
+            'GET',
+            url
+        )
+        self.assertIn(OK, r)
+        self.assertIn('"authenticated": true', r)
+        self.assertIn('"user": "user"', r)
+
 
 class ExitStatusTest(BaseTestCase):
 

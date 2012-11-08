@@ -123,11 +123,27 @@ class Parser(ArgumentParser):
             scheme = HTTPS if env.progname == 'https' else HTTP
             args.url = scheme + args.url
 
-        if args.auth and not args.auth.has_password():
-            # Stdin already read (if not a tty) so it's save to prompt.
-            args.auth.prompt_password(urlparse(args.url).netloc)
+        self._process_auth(args)
 
         return args
+
+    def _process_auth(self, args):
+        url = urlparse(args.url)
+
+        if args.auth:
+            if not args.auth.has_password():
+                # Stdin already read (if not a tty) so it's save to prompt.
+                args.auth.prompt_password(url.netloc)
+
+        elif url.username is not None:
+            # Handle http://username:password@hostname/
+            username, password = url.username, url.password
+            args.auth = AuthCredentials(
+                key=username,
+                value=password,
+                sep=SEP_CREDENTIALS,
+                orig=SEP_CREDENTIALS.join([username, password])
+            )
 
     def _apply_no_options(self, args, no_options):
         """For every `--no-OPTION` in `no_options`, set `args.OPTION` to

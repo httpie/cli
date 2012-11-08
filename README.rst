@@ -447,6 +447,9 @@ come). There are two flags that control authentication:
                         (``-a username``), you'll be prompted for
                         the password before the request is sent.
                         To send a an empty password, pass ``username:``.
+                        The ``username:password@hostname`` URL syntax is
+                        supported as well (but credentials passed via ``-a``
+                        have higher priority).
 
 ``--auth-type``         Specify the auth mechanism. Possible values are
                         ``basic`` and ``digest``. The default value is
