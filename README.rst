@@ -1053,6 +1053,7 @@ Changelog
 *You can click a version name to see a diff with the previous one.*
 
 * `0.4.0dev`_
+    * Added support for credentials in URL.
     * Added ``--no-option`` for every ``--option`` to be config-friendly.
     * Mutually exclusive arguments can be specified multiple times. The
       last value is used.
