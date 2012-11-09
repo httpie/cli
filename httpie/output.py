@@ -160,23 +160,23 @@ class BaseStream(object):
         self.with_headers = with_headers
         self.with_body = with_body
 
-    def _headers(self):
+    def _get_headers(self):
         """Return the headers' bytes."""
         return self.msg.headers.encode('ascii')
 
-    def _body(self):
+    def _iter_body(self):
         """Return an iterator over the message body."""
         raise NotImplementedError()
 
     def __iter__(self):
         """Return an iterator over `self.msg`."""
         if self.with_headers:
-            yield self._headers()
+            yield self._get_headers()
             yield b'\r\n\r\n'
 
         if self.with_body:
             try:
-                for chunk in self._body():
+                for chunk in self._iter_body():
                     yield chunk
             except BinarySuppressedError as e:
                 if self.with_headers:
@@ -194,7 +194,7 @@ class RawStream(BaseStream):
         super(RawStream, self).__init__(**kwargs)
         self.chunk_size = chunk_size
 
-    def _body(self):
+    def _iter_body(self):
         return self.msg.iter_body(self.chunk_size)
 
 
@@ -222,7 +222,7 @@ class EncodedStream(BaseStream):
         # Default to utf8 when unsure.
         self.output_encoding = output_encoding or 'utf8'
 
-    def _body(self):
+    def _iter_body(self):
 
         for line, lf in self.msg.iter_lines(self.CHUNK_SIZE):
 
@@ -248,11 +248,11 @@ class PrettyStream(EncodedStream):
         super(PrettyStream, self).__init__(**kwargs)
         self.processor = processor
 
-    def _headers(self):
+    def _get_headers(self):
         return self.processor.process_headers(
             self.msg.headers).encode(self.output_encoding)
 
-    def _body(self):
+    def _iter_body(self):
         for line, lf in self.msg.iter_lines(self.CHUNK_SIZE):
             if b'\0' in line:
                 raise BinarySuppressedError()
@@ -276,7 +276,7 @@ class BufferedPrettyStream(PrettyStream):
 
     CHUNK_SIZE = 1024 * 10
 
-    def _body(self):
+    def _iter_body(self):
 
         #noinspection PyArgumentList
         # Read the whole body before prettifying it,
