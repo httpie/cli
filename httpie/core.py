@@ -96,6 +96,9 @@ def main(args=sys.argv[1:], env=Environment()):
                 write_with_colors_win_p3k(**write_kwargs)
             else:
                 write(**write_kwargs)
+                if env.stdout_isatty:
+                    from subprocess import Popen, PIPE
+                    Popen(env.pager, shell=True, stdin=PIPE).communicate(input=env.stdout.getvalue())
 
         except IOError as e:
             if not traceback and e.errno == errno.EPIPE:
