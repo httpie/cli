@@ -22,6 +22,7 @@ class Environment(object):
     stdin_isatty = sys.stdin.isatty()
     stdin = sys.stdin
     stdout_isatty = sys.stdout.isatty()
+    pager = os.environ.get('PAGER') or 'less'
 
     config_dir = DEFAULT_CONFIG_DIR
 
