@@ -30,6 +30,9 @@ class Environment(object):
         from colorama.initialise import wrap_stream
         stdout = wrap_stream(sys.stdout, convert=None,
                              strip=None, autoreset=True, wrap=True)
+    elif stdout_isatty:
+        from cStringIO import StringIO
+        stdout = StringIO()
     else:
         stdout = sys.stdout
     stderr = sys.stderr
