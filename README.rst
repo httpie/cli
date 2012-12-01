@@ -931,10 +931,10 @@ HTTP requests. The ``httpie`` command, on the other hand, is a utility for
 managing your configuration. The currently supported actions are:
 
 
-``httpie session list [hostname [session-name]]``
-``httpie session edit hostname session-name``
-``httpie session show hostname session-name``
-``httpie session delete hostname [session-name]``
+* ``httpie session list [hostname [session-name]]``
+* ``httpie session edit hostname session-name``
+* ``httpie session show hostname session-name``
+* ``httpie session delete hostname [session-name]``
 
 
 =========
