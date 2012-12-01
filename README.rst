@@ -799,7 +799,7 @@ The ``-R`` flag tells ``less`` to interpret color escape sequences included
 HTTPie`s output.
 
 You can create a shortcut for invoking HTTPie with colorized and paged output
-by adding the following to your `~/.bash_profile`:
+by adding the following to your ``~/.bash_profile``:
 
 .. code-block:: bash
 
