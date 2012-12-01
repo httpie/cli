@@ -25,14 +25,17 @@ def get_response(args, config_dir):
             '\n>>> requests.request(%s)\n\n' % pformat(requests_kwargs))
 
     if not args.session and not args.session_read_only:
-        return requests.request(**requests_kwargs)
+        response = requests.request(**requests_kwargs)
     else:
-        return sessions.get_response(
+        response = sessions.get_response(
             config_dir=config_dir,
             name=args.session or args.session_read_only,
             request_kwargs=requests_kwargs,
             read_only=bool(args.session_read_only),
         )
+
+
+    return response
 
 
 def get_requests_kwargs(args):
@@ -48,9 +51,12 @@ def get_requests_kwargs(args):
             base_headers['Content-Type'] = JSON
 
         if isinstance(args.data, dict):
-            # If not empty, serialize the data `dict` parsed from arguments.
-            # Otherwise set it to `None` avoid sending "{}".
-            args.data = json.dumps(args.data) if args.data else None
+            if args.data:
+                args.data = json.dumps(args.data)
+            else:
+                # We need to set data to an empty string to prevent requests
+                # from assigning an empty list to `response.request.data`.
+                args.data = ''
 
     elif args.form and not args.files:
         # If sending files, `requests` will set
