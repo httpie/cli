@@ -843,8 +843,7 @@ Sessions
 ========
 
 By default, every request is completely independent of the previous ones.
-
-HTTPie supports persistent sessions, where custom headers, authorization,
+HTTPie also supports persistent sessions, where custom headers, authorization,
 and cookies (manually specified or sent by the server) persist between
 requests to the same host.
 
@@ -895,6 +894,7 @@ following keys:
 
 ``default_options``           An ``Array`` (by default empty) of options
                               that should be applied to every request.
+
                               For instance, you can use this option to change
                               the default style and output options:
                               ``"default_options": ["--style=fruity", "--body"]``

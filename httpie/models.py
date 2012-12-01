@@ -13,7 +13,6 @@ class Environment(object):
 
     """
 
-    #noinspection PyUnresolvedReferences
     is_windows = is_windows
 
     progname = os.path.basename(sys.argv[0])
