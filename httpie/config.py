@@ -17,7 +17,9 @@ class BaseConfigDict(dict):
 
     name = None
     help = None
-    directory=DEFAULT_CONFIG_DIR
+    about = None
+
+    directory = DEFAULT_CONFIG_DIR
 
     def __init__(self, directory=None, *args, **kwargs):
         super(BaseConfigDict, self).__init__(*args, **kwargs)
@@ -56,7 +58,15 @@ class BaseConfigDict(dict):
                 raise
 
     def save(self):
-        self['__version__'] = __version__
+        self['__meta__'] = {
+            'httpie': __version__
+        }
+        if self.help:
+            self['__meta__']['help'] = self.help
+
+        if self.about:
+            self['__meta__']['about'] = self.about
+
         with open(self.path, 'w') as f:
             json.dump(self, f, indent=4, sort_keys=True, ensure_ascii=True)
             f.write('\n')
@@ -72,6 +82,8 @@ class BaseConfigDict(dict):
 class Config(BaseConfigDict):
 
     name = 'config'
+    help = 'https://github.com/jkbr/httpie#config'
+    about = 'HTTPie configuration file'
 
     DEFAULTS = {
         'implicit_content_type': 'json',

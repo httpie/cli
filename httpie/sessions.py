@@ -1,6 +1,7 @@
 """Persistent, JSON-serialized sessions.
 
 """
+import re
 import os
 import sys
 import glob
@@ -13,7 +14,6 @@ import requests
 from requests.compat import urlparse
 from requests.cookies import RequestsCookieJar, create_cookie
 from requests.auth import HTTPBasicAuth, HTTPDigestAuth
-from argparse import OPTIONAL
 
 from .config import BaseConfigDict, DEFAULT_CONFIG_DIR
 from .output import PygmentsProcessor
@@ -65,14 +65,19 @@ def get_response(name, request_kwargs, config_dir, read_only=False):
 class Host(object):
     """A host is a per-host directory on the disk containing sessions files."""
 
-    def __init__(self, name, root_dir=DEFAULT_CONFIG_DIR):
+    def __init__(self, name, root_dir=DEFAULT_SESSIONS_DIR):
         self.name = name
         self.root_dir = root_dir
 
     def __iter__(self):
-        """Return a iterator yielding `(session_name, session_path)`."""
+        """Return a iterator yielding `Session` instances."""
         for fn in sorted(glob.glob1(self.path, '*.json')):
-            yield os.path.splitext(fn)[0], os.path.join(self.path, fn)
+            session_name = os.path.splitext(fn)[0]
+            yield Session(host=self, name=session_name)
+
+    @property
+    def verbose_name(self):
+        return u'%s %s' % (self.name, self.path)
 
     def delete(self):
         shutil.rmtree(self.path)
@@ -91,15 +96,20 @@ class Host(object):
         return path
 
     @classmethod
-    def all(cls):
+    def all(cls, root_dir=DEFAULT_SESSIONS_DIR):
         """Return a generator yielding a host at a time."""
-        for name in sorted(glob.glob1(DEFAULT_SESSIONS_DIR, '*')):
-            if os.path.isdir(os.path.join(DEFAULT_SESSIONS_DIR, name)):
-                yield Host(name)
+        for name in sorted(glob.glob1(root_dir, '*')):
+            if os.path.isdir(os.path.join(root_dir, name)):
+                # host_port => host:port
+                real_name = re.sub(r'_(\d+)$', r':\1', name)
+                yield Host(real_name, root_dir=root_dir)
 
 
 class Session(BaseConfigDict):
     """"""
+
+    help = 'https://github.com/jkbr/httpie#sessions'
+    about = 'HTTPie session file'
 
     def __init__(self, host, name, *args, **kwargs):
         super(Session, self).__init__(*args, **kwargs)
@@ -107,10 +117,19 @@ class Session(BaseConfigDict):
         self.name = name
         self['headers'] = {}
         self['cookies'] = {}
+        self['auth'] = {
+            'type': None,
+            'username': '',
+            'password': ''
+        }
 
     @property
     def directory(self):
         return self.host.path
+
+    @property
+    def verbose_name(self):
+        return u'%s %s %s' % (self.host.name, self.name, self.path)
 
     @property
     def cookies(self):
@@ -141,7 +160,7 @@ class Session(BaseConfigDict):
     @property
     def auth(self):
         auth = self.get('auth', None)
-        if not auth:
+        if not auth or not auth['type']:
             return None
         Auth = {'basic': HTTPBasicAuth,
                 'digest': HTTPDigestAuth}[auth['type']]
@@ -157,77 +176,69 @@ class Session(BaseConfigDict):
         }
 
 
-# The commands are disabled for now.
-# TODO: write tests for the commands.
 
-def list_command(args):
+
+##################################################################
+# Session management commands
+# TODO: write tests
+##################################################################
+
+
+def command_session_list(args):
+    """Print a list of all sessions or only
+    the ones from `args.host`, if provided.
+
+    """
     if args.host:
-        for name, path in Host(args.host):
-            print(name + ' [' + path + ']')
+        for session in Host(args.host):
+            print(session.verbose_name)
     else:
         for host in Host.all():
-            print(host.name)
-            for name, path in host:
-                print(' ' + name + ' [' + path + ']')
+            for session in host:
+                print(session.verbose_name)
 
 
-def show_command(args):
-    path = Session(Host(args.host), args.name).path
+def command_session_show(args):
+    """Print session JSON data for `args.host` and `args.name`."""
+    session = Session(Host(args.host), args.name)
+    path = session.path
     if not os.path.exists(path):
-        sys.stderr.write('Session "%s" does not exist [%s].\n'
-        % (args.name, path))
+        sys.stderr.write('Session does not exist: %s\n'
+                         % session.verbose_name)
         sys.exit(1)
 
     with codecs.open(path, encoding='utf8') as f:
-        print(path + ':\n')
+        print(session.verbose_name + ':\n')
         proc = PygmentsProcessor()
         print(proc.process_body(f.read(), 'application/json', 'json'))
         print('')
 
 
-def delete_command(args):
+def command_session_delete(args):
+    """Delete a session by host and name, or delete all the
+    host's session if name not provided.
+
+    """
     host = Host(args.host)
     if not args.name:
         host.delete()
     else:
-        Session(host, args.name).delete()
+        session = Session(host, args.name)
+        session.delete()
 
 
-def edit_command(args):
+def command_session_edit(args):
+    """Open a session file in EDITOR."""
     editor = os.environ.get('EDITOR', None)
     if not editor:
         sys.stderr.write(
             'You need to configure the environment variable EDITOR.\n')
         sys.exit(1)
+
+    session = Session(Host(args.host), args.name)
+    if session.is_new:
+        session.save()
+
     command = editor.split()
-    command.append(Session(Host(args.host), args.name).path)
+    command.append(session.path)
     subprocess.call(command)
-
-
-def add_commands(subparsers):
-
-    # List
-    list_ = subparsers.add_parser('session-list', help='list sessions')
-    list_.set_defaults(command=list_command)
-    list_.add_argument('host', nargs=OPTIONAL)
-
-    # Show
-    show = subparsers.add_parser('session-show', help='show a session')
-    show.set_defaults(command=show_command)
-    show.add_argument('host')
-    show.add_argument('name')
-
-    # Edit
-    edit = subparsers.add_parser(
-        'session-edit', help='edit a session in $EDITOR')
-    edit.set_defaults(command=edit_command)
-    edit.add_argument('host')
-    edit.add_argument('name')
-
-    # Delete
-    delete = subparsers.add_parser('session-delete', help='delete a session')
-    delete.set_defaults(command=delete_command)
-    delete.add_argument('host')
-    delete.add_argument('name', nargs=OPTIONAL,
-        help='The name of the session to be deleted.'
-             ' If not specified, all host sessions are deleted.')

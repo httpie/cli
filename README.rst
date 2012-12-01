@@ -2,7 +2,7 @@
 HTTPie: a CLI, cURL-like tool for humans
 ****************************************
 
-v0.4.0dev (`stable version`_)
+v0.4.0-alpha (`stable version`_)
 
 HTTPie is a **command line HTTP client**. Its goal is to make CLI interaction
 with web services as **human-friendly** as possible. It provides a
@@ -1062,7 +1062,7 @@ Changelog
 
 *You can click a version name to see a diff with the previous one.*
 
-* `0.4.0dev`_
+* `0.4.0-alpha`_
     * Added support for credentials in URL.
     * Added ``--no-option`` for every ``--option`` to be config-friendly.
     * Mutually exclusive arguments can be specified multiple times. The
@@ -1161,7 +1161,7 @@ Changelog
 .. _0.2.6: https://github.com/jkbr/httpie/compare/0.2.5...0.2.6
 .. _0.2.7: https://github.com/jkbr/httpie/compare/0.2.5...0.2.7
 .. _0.3.0: https://github.com/jkbr/httpie/compare/0.2.7...0.3.0
-.. _0.4.0dev: https://github.com/jkbr/httpie/compare/0.3.0...master
+.. _0.4.0-alpha: https://github.com/jkbr/httpie/compare/0.3.0...master
 .. _stable version: https://github.com/jkbr/httpie/tree/0.3.0#readme
 .. _AUTHORS.rst: https://github.com/jkbr/httpie/blob/master/AUTHORS.rst
 .. _LICENSE: https://github.com/jkbr/httpie/blob/master/LICENSE
