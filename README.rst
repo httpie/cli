@@ -883,7 +883,7 @@ once it is created, specify the session name via
 Sessions are stored as JSON files in ``~/.httpie/sessions/<host>/<name>.json``
 (``%APPDATA%\httpie\sessions\<host>\<name>.json`` on Windows).
 
-See also `config`_.
+See also `management tool`_ and `config`_.
 
 
 ======
@@ -894,7 +894,7 @@ HTTPie uses a simple configuration file that contains a JSON object with the
 following keys:
 
 =========================     =================================================
-``__version__``               HTTPie automatically sets this to its version.
+``__meta__``                  HTTPie automatically stores some metadata here.
                               Do not change.
 
 ``implicit_content_type``     A ``String`` specifying the implicit content type
@@ -920,6 +920,21 @@ The default location is ``~/.httpie/config.json``
 
 The config directory location can be changed by setting the
 ``HTTPIE_CONFIG_DIR`` environment variable.
+
+
+===============
+Management Tool
+===============
+
+The main executable HTTPie comes with is ``http``, which is used for making
+HTTP requests. The ``httpie`` command, on the other hand, is a utility for
+managing your configuration. The currently supported actions are:
+
+
+``httpie session list [hostname [session-name]]``
+``httpie session edit hostname session-name``
+``httpie session show hostname session-name``
+``httpie session delete hostname [session-name]``
 
 
 =========
