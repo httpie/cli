@@ -880,10 +880,21 @@ To use a session without updating it from the request/response exchange
 once it is created, specify the session name via
 ``--session-read-only=SESSION_NAME`` instead.
 
-Sessions are stored as JSON files in ``~/.httpie/sessions/<host>/<name>.json``
+Session data are stored in JSON files in the directory
+``~/.httpie/sessions/<host>/<name>.json``
 (``%APPDATA%\httpie\sessions\<host>\<name>.json`` on Windows).
+**Warning:** All session data, including credentials, cookie data,
+and custom headers are stored in plain text.
 
-See also `management tool`_ and `config`_.
+Another way to create or update a session is to use the `management tool`_
+and then edit the raw JSON manually:
+
+.. code-block:: bash
+
+    $ httpie session edit example.org user1
+
+
+See also `Management Tool`_ and `Config`_.
 
 
 ======
@@ -1078,11 +1089,11 @@ Changelog
 *You can click a version name to see a diff with the previous one.*
 
 * `0.4.0-alpha`_
+    * Added `httpie` management command.
     * Added support for credentials in URL.
     * Added ``--no-option`` for every ``--option`` to be config-friendly.
     * Mutually exclusive arguments can be specified multiple times. The
       last value is used.
-
 * `0.3.0`_ (2012-09-21)
     * Allow output redirection on Windows.
     * Added configuration file.
