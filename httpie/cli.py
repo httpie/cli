@@ -232,7 +232,7 @@ sessions.add_argument(
     '--session', metavar='SESSION_NAME',
     help=_('''
     Create, or reuse and update a session.
-    Withing a session, custom headers, auth credential, as well as any
+    Within a session, custom headers, auth credential, as well as any
     cookies sent by the server persist between requests.
     Session files are stored in %s/<HOST>/<SESSION_NAME>.json.
     ''' % DEFAULT_SESSIONS_DIR)
