@@ -60,9 +60,10 @@ def main(args=sys.argv[1:], env=Environment()):
     if env.config.default_options:
         args = env.config.default_options + args
 
-    def error(msg, *args):
+    def error(msg, *args, **kwargs):
         msg = msg % args
-        env.stderr.write('\nhttp: error: %s\n' % msg)
+        level = kwargs.get('level', 'error')
+        env.stderr.write('http: %s: %s\n' % (level, msg))
 
     debug = '--debug' in args
     traceback = debug or '--traceback' in args
@@ -81,8 +82,12 @@ def main(args=sys.argv[1:], env=Environment()):
         if args.check_status:
             exit_status_code = get_exist_status_code(response.status_code,
                                                      args.follow)
-            if exit_status_code != ExitStatus.OK and not env.stdout_isatty:
-                error('%s %s', response.raw.status, response.raw.reason)
+
+            if not env.stdout_isatty and exit_status_code != ExitStatus.OK:
+                error('HTTP %s %s',
+                      response.raw.status,
+                      response.raw.reason,
+                      level='warning')
 
         write_kwargs = {
             'stream': build_output_stream(
