@@ -22,23 +22,23 @@ from pygments import __version__ as pygments_version
 from .cli import parser
 from .client import get_response
 from .models import Environment
-from .output import output_stream, write, write_with_colors_win_p3k
-from . import exit
+from .output import build_output_stream, write, write_with_colors_win_p3k
+from . import ExitStatus
 
 
-def get_exist_status(code, follow=False):
-    """Translate HTTP status code to exit status."""
+def get_exist_status_code(code, follow=False):
+    """Translate HTTP status code to exit status code."""
     if 300 <= code <= 399 and not follow:
         # Redirect
-        return exit.ERROR_HTTP_3XX
+        return ExitStatus.ERROR_HTTP_3XX
     elif 400 <= code <= 499:
         # Client Error
-        return exit.ERROR_HTTP_4XX
+        return ExitStatus.ERROR_HTTP_4XX
     elif 500 <= code <= 599:
         # Server Error
-        return exit.ERROR_HTTP_5XX
+        return ExitStatus.ERROR_HTTP_5XX
     else:
-        return exit.OK
+        return ExitStatus.OK
 
 
 def print_debug_info(env):
@@ -54,7 +54,7 @@ def print_debug_info(env):
 def main(args=sys.argv[1:], env=Environment()):
     """Run the main program and write the output to ``env.stdout``.
 
-    Return exit status.
+    Return exit status code.
 
     """
     if env.config.default_options:
@@ -66,12 +66,12 @@ def main(args=sys.argv[1:], env=Environment()):
 
     debug = '--debug' in args
     traceback = debug or '--traceback' in args
-    status = exit.OK
+    exit_status_code = ExitStatus.OK
 
     if debug:
         print_debug_info(env)
         if args == ['--debug']:
-            sys.exit(exit.OK)
+            return exit_status_code
 
     try:
         args = parser.parse_args(args=args, env=env)
@@ -79,15 +79,14 @@ def main(args=sys.argv[1:], env=Environment()):
         response = get_response(args, config_dir=env.config.directory)
 
         if args.check_status:
-            status = get_exist_status(response.status_code,
-                                      args.follow)
-            if status and not env.stdout_isatty:
+            exit_status_code = get_exist_status_code(response.status_code,
+                                                     args.follow)
+            if exit_status_code != ExitStatus.OK and not env.stdout_isatty:
                 error('%s %s', response.raw.status, response.raw.reason)
 
-        stream = output_stream(args, env, response.request, response)
-
         write_kwargs = {
-            'stream': stream,
+            'stream': build_output_stream(
+                args, env, response.request, response),
             'outfile': env.stdout,
             'flush': env.stdout_isatty or args.stream
         }
@@ -108,16 +107,18 @@ def main(args=sys.argv[1:], env=Environment()):
         if traceback:
             raise
         env.stderr.write('\n')
-        status = exit.ERROR
+        exit_status_code = ExitStatus.ERROR
+
     except requests.Timeout:
-        status = exit.ERROR_TIMEOUT
+        exit_status_code = ExitStatus.ERROR_TIMEOUT
         error('Request timed out (%ss).', args.timeout)
+
     except Exception as e:
-        # TODO: distinguish between expected and unexpected errors.
-        #       network errors vs. bugs, etc.
+        # TODO: Better distinction between expected and unexpected errors.
+        #       Network errors vs. bugs, etc.
         if traceback:
             raise
         error('%s: %s', type(e).__name__, str(e))
-        status = exit.ERROR
+        exit_status_code = ExitStatus.ERROR
 
-    return status
+    return exit_status_code

@@ -7,7 +7,8 @@ __version__ = '0.4.0-alpha'
 __licence__ = 'BSD'
 
 
-class exit:
+class ExitStatus:
+    """Exit status code constants."""
     OK = 0
     ERROR = 1
     ERROR_TIMEOUT = 2

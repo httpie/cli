@@ -56,7 +56,7 @@ from requests.compat import is_windows, is_py26, bytes, str
 TESTS_ROOT = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, os.path.realpath(os.path.join(TESTS_ROOT, '..')))
 
-from httpie import exit
+from httpie import ExitStatus
 from httpie import input
 from httpie.models import Environment
 from httpie.core import main
@@ -188,7 +188,7 @@ def http(*args, **kwargs):
             sys.stderr.write(env.stderr.read())
             raise
         except SystemExit:
-            exit_status = exit.ERROR
+            exit_status = ExitStatus.ERROR
 
         env.stdout.seek(0)
         env.stderr.seek(0)
@@ -895,7 +895,7 @@ class ExitStatusTest(BaseTestCase):
             httpbin('/status/200')
         )
         self.assertIn(OK, r)
-        self.assertEqual(r.exit_status, exit.OK)
+        self.assertEqual(r.exit_status, ExitStatus.OK)
 
     def test_error_response_exits_0_without_check_status(self):
         r = http(
@@ -903,7 +903,7 @@ class ExitStatusTest(BaseTestCase):
             httpbin('/status/500')
         )
         self.assertIn('HTTP/1.1 500', r)
-        self.assertEqual(r.exit_status, exit.OK)
+        self.assertEqual(r.exit_status, ExitStatus.OK)
         self.assertTrue(not r.stderr)
 
     def test_timeout_exit_status(self):
@@ -912,7 +912,7 @@ class ExitStatusTest(BaseTestCase):
             'GET',
             httpbin('/delay/1')
         )
-        self.assertEqual(r.exit_status, exit.ERROR_TIMEOUT)
+        self.assertEqual(r.exit_status, ExitStatus.ERROR_TIMEOUT)
 
     def test_3xx_check_status_exits_3_and_stderr_when_stdout_redirected(self):
         r = http(
@@ -923,7 +923,7 @@ class ExitStatusTest(BaseTestCase):
             env=TestEnvironment(stdout_isatty=False,)
         )
         self.assertIn('HTTP/1.1 301', r)
-        self.assertEqual(r.exit_status, exit.ERROR_HTTP_3XX)
+        self.assertEqual(r.exit_status, ExitStatus.ERROR_HTTP_3XX)
         self.assertIn('301 moved permanently', r.stderr.lower())
 
     @skipIf(requests_version == '0.13.6',
@@ -937,7 +937,7 @@ class ExitStatusTest(BaseTestCase):
         )
         # The redirect will be followed so 200 is expected.
         self.assertIn('HTTP/1.1 200 OK', r)
-        self.assertEqual(r.exit_status, exit.OK)
+        self.assertEqual(r.exit_status, ExitStatus.OK)
 
     def test_4xx_check_status_exits_4(self):
         r = http(
@@ -946,7 +946,7 @@ class ExitStatusTest(BaseTestCase):
             httpbin('/status/401')
         )
         self.assertIn('HTTP/1.1 401', r)
-        self.assertEqual(r.exit_status, exit.ERROR_HTTP_4XX)
+        self.assertEqual(r.exit_status, ExitStatus.ERROR_HTTP_4XX)
         # Also stderr should be empty since stdout isn't redirected.
         self.assertTrue(not r.stderr)
 
@@ -957,7 +957,7 @@ class ExitStatusTest(BaseTestCase):
             httpbin('/status/500')
         )
         self.assertIn('HTTP/1.1 500', r)
-        self.assertEqual(r.exit_status, exit.ERROR_HTTP_5XX)
+        self.assertEqual(r.exit_status, ExitStatus.ERROR_HTTP_5XX)
 
 
 class WindowsOnlyTests(BaseTestCase):

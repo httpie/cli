@@ -78,23 +78,21 @@ def write_with_colors_win_p3k(stream, outfile, flush):
             outfile.flush()
 
 
-def output_stream(args, env, request, response):
+def build_output_stream(args, env, request, response):
     """Build and return a chain of iterators over the `request`-`response`
     exchange each of which yields `bytes` chunks.
 
     """
 
-    Stream = make_stream(env, args)
-
     req_h = OUT_REQ_HEAD in args.output_options
     req_b = OUT_REQ_BODY in args.output_options
     resp_h = OUT_RESP_HEAD in args.output_options
     resp_b = OUT_RESP_BODY in args.output_options
-
     req = req_h or req_b
     resp = resp_h or resp_b
 
     output = []
+    Stream = get_stream_type(env, args)
 
     if req:
         output.append(Stream(
@@ -120,7 +118,7 @@ def output_stream(args, env, request, response):
     return chain(*output)
 
 
-def make_stream(env, args):
+def get_stream_type(env, args):
     """Pick the right stream type based on `env` and `args`.
     Wrap it in a partial with the type-specific args so that
     we don't need to think what stream we are dealing with.
@@ -147,7 +145,7 @@ def make_stream(env, args):
 
 
 class BaseStream(object):
-    """Base HTTP message stream class."""
+    """Base HTTP message output stream class."""
 
     def __init__(self, msg, with_headers=True, with_body=True):
         """
