@@ -13,7 +13,8 @@ from . import __doc__
 from . import __version__
 from .sessions import DEFAULT_SESSIONS_DIR
 from .output import AVAILABLE_STYLES, DEFAULT_STYLE
-from .input import (Parser, AuthCredentialsArgType, KeyValueArgType,
+from .input import (Parser, AuthCredentialsArgType,
+                    KeyValueArgType, SessionNameArgType,
                     SEP_PROXY, SEP_CREDENTIALS, SEP_GROUP_ITEMS,
                     OUT_REQ_HEAD, OUT_REQ_BODY, OUT_RESP_HEAD,
                     OUT_RESP_BODY, OUTPUT_OPTIONS,
@@ -27,14 +28,11 @@ def _(text):
 
 parser = Parser(
     description='%s <http://httpie.org>' % __doc__.strip(),
-    epilog=
-        'For every --option there is a --no-option that reverts the option\n'
-        'to its default value.'
-        '\n\n'
-        'Suggestions and bug reports are greatly appreciated:\n'
-        'https://github.com/jkbr/httpie/issues'
+    epilog='For every --option there is a --no-option'
+           ' that reverts the option to its default value.\n\n'
+           'Suggestions and bug reports are greatly appreciated:\n'
+           'https://github.com/jkbr/httpie/issues'
 )
-
 
 
 ###############################################################################
@@ -45,8 +43,8 @@ positional = parser.add_argument_group(
     title='Positional arguments',
     description=_('''
         These arguments come after any flags and in the
-        order they are listed here. Only URL is required.'''
-    )
+        order they are listed here. Only URL is required.
+    ''')
 )
 positional.add_argument(
     'method', metavar='METHOD',
@@ -123,7 +121,7 @@ output_processing = parser.add_argument_group(title='Output processing')
 output_processing.add_argument(
     '--output', '-o', type=FileType('w+b'),
     metavar='FILE',
-    help= SUPPRESS if not is_windows else _(
+    help=SUPPRESS if not is_windows else _(
         '''
         Save output to FILE.
         This option is a replacement for piping output to FILE,
@@ -155,14 +153,13 @@ output_processing.add_argument(
 )
 
 
-
 ###############################################################################
 # Output options
 ###############################################################################
 output_options = parser.add_argument_group(title='Output options')
 
-output_options.add_argument('--print', '-p', dest='output_options',
-    metavar='WHAT',
+output_options.add_argument(
+    '--print', '-p', dest='output_options', metavar='WHAT',
     help=_('''
         String specifying what the output should contain:
         "{request_headers}" stands for the request headers,  and
@@ -173,12 +170,10 @@ output_options.add_argument('--print', '-p', dest='output_options',
         headers and body is printed), if standard output is not redirected.
         If the output is piped to another program or to a file,
         then only the body is printed by default.
-    '''.format(
-        request_headers=OUT_REQ_HEAD,
-        request_body=OUT_REQ_BODY,
-        response_headers=OUT_RESP_HEAD,
-        response_body=OUT_RESP_BODY,
-    ))
+        '''.format(request_headers=OUT_REQ_HEAD,
+                   request_body=OUT_REQ_BODY,
+                   response_headers=OUT_RESP_HEAD,
+                   response_body=OUT_RESP_BODY,))
 )
 output_options.add_argument(
     '--verbose', '-v', dest='output_options',
@@ -205,7 +200,8 @@ output_options.add_argument(
     '''.format(OUT_RESP_BODY))
 )
 
-output_options.add_argument('--stream', '-S', action='store_true', default=False,
+output_options.add_argument(
+    '--stream', '-S', action='store_true', default=False,
     help=_('''
     Always stream the output by line, i.e., behave like `tail -f'.
 
@@ -218,8 +214,8 @@ output_options.add_argument('--stream', '-S', action='store_true', default=False
     It is useful also without --pretty: It ensures that the output is flushed
     more often and in smaller chunks.
 
-    '''
-))
+    ''')
+)
 
 
 ###############################################################################
@@ -229,7 +225,7 @@ sessions = parser.add_argument_group(title='Sessions')\
                  .add_mutually_exclusive_group(required=False)
 
 sessions.add_argument(
-    '--session', metavar='SESSION_NAME',
+    '--session', metavar='SESSION_NAME', type=SessionNameArgType(),
     help=_('''
     Create, or reuse and update a session.
     Within a session, custom headers, auth credential, as well as any
@@ -267,7 +263,6 @@ auth.add_argument(
         Defaults to "basic".
     ''')
 )
-
 
 
 # Network
@@ -340,7 +335,8 @@ troubleshooting.add_argument(
     action='help', default=SUPPRESS,
     help='Show this help message and exit'
 )
-troubleshooting.add_argument('--version', action='version', version=__version__)
+troubleshooting.add_argument(
+    '--version', action='version', version=__version__)
 troubleshooting.add_argument(
     '--traceback', action='store_true', default=False,
     help='Prints exception traceback should one occur.'

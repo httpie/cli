@@ -21,8 +21,8 @@ def get_response(args, config_dir):
     requests_kwargs = get_requests_kwargs(args)
 
     if args.debug:
-        sys.stderr.write(
-            '\n>>> requests.request(%s)\n\n' % pformat(requests_kwargs))
+        sys.stderr.write('\n>>> requests.request(%s)\n\n'
+                         % pformat(requests_kwargs))
 
     if not args.session and not args.session_read_only:
         response = requests.request(**requests_kwargs)
@@ -33,7 +33,6 @@ def get_response(args, config_dir):
             request_kwargs=requests_kwargs,
             read_only=bool(args.session_read_only),
         )
-
 
     return response
 

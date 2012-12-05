@@ -155,7 +155,6 @@ class HTTPRequest(HTTPMessage):
             if self._orig.params:
                 if url.query:
                     qs += '&'
-                #noinspection PyUnresolvedReferences
                 qs += type(self._orig)._encode_params(self._orig.params)
 
         # Request-Line
@@ -173,6 +172,7 @@ class HTTPRequest(HTTPMessage):
         headers = ['%s: %s' % (name, value)
                    for name, value in headers.items()]
 
+        #noinspection PyTypeChecker
         headers.insert(0, request_line)
 
         return '\r\n'.join(headers).strip()
@@ -199,7 +199,6 @@ class HTTPRequest(HTTPMessage):
                 body = self._orig._enc_data
 
             if isinstance(body, dict):
-                #noinspection PyUnresolvedReferences
                 body = type(self._orig)._encode_params(body)
 
             if isinstance(body, str):

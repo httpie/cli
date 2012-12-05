@@ -278,7 +278,6 @@ class BufferedPrettyStream(PrettyStream):
 
     def _iter_body(self):
 
-        #noinspection PyArgumentList
         # Read the whole body before prettifying it,
         # but bail out immediately if the body is binary.
         body = bytearray()

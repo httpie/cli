@@ -96,8 +96,8 @@ class Parser(ArgumentParser):
 
         self.env = env
 
-        args, no_options = super(Parser, self).parse_known_args(args, namespace)
-        #args = super(Parser, self).parse_args(args, namespace)
+        args, no_options = super(Parser, self).parse_known_args(args,
+                                                                namespace)
 
         self._apply_no_options(args, no_options)
 

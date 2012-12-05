@@ -19,7 +19,6 @@ To make it run faster and offline you can::
     HTTPBIN_URL=http://localhost:5000 tox
 
 """
-from functools import partial
 import subprocess
 import os
 import sys
@@ -29,7 +28,6 @@ import tempfile
 import unittest
 import shutil
 
-from requests.compat import urlparse
 try:
     from urllib.request import urlopen
 except ImportError:
@@ -38,6 +36,7 @@ try:
     from unittest import skipIf, skip
 except ImportError:
     skip = lambda msg: lambda self: None
+
     def skipIf(cond, reason):
         def decorator(test_method):
             if cond:
@@ -132,6 +131,7 @@ class TestEnvironment(Environment):
         if self.delete_config_dir:
             self._shutil.rmtree(self.config_dir)
 
+
 def has_docutils():
     try:
         #noinspection PyUnresolvedReferences
@@ -139,6 +139,7 @@ def has_docutils():
         return True
     except ImportError:
         return False
+
 
 def get_readme_errors():
     p = subprocess.Popen([
@@ -154,6 +155,8 @@ def get_readme_errors():
 
 class BytesResponse(bytes):
     stderr = json = exit_status = None
+
+
 class StrResponse(str):
     stderr = json = exit_status = None
 
@@ -1007,7 +1010,8 @@ class StreamTest(BaseTestCase):
         #self.assertIn(OK_COLOR, r)
 
     def test_encoded_stream(self):
-        """Test that --stream works with non-prettified redirected terminal output."""
+        """Test that --stream works with non-prettified
+        redirected terminal output."""
         with open(BIN_FILE_PATH, 'rb') as f:
             r = http(
                 '--pretty=none',
@@ -1025,7 +1029,8 @@ class StreamTest(BaseTestCase):
         #self.assertIn(OK, r)
 
     def test_redirected_stream(self):
-        """Test that --stream works with non-prettified redirected terminal output."""
+        """Test that --stream works with non-prettified
+        redirected terminal output."""
         with open(BIN_FILE_PATH, 'rb') as f:
             r = http(
                 '--pretty=none',
@@ -1049,7 +1054,6 @@ class LineEndingsTest(BaseTestCase):
     as the headers/body separator."""
 
     def _validate_crlf(self, msg):
-        #noinspection PyUnresolvedReferences
         lines = iter(msg.splitlines(True))
         for header in lines:
             if header == CRLF:
@@ -1084,7 +1088,7 @@ class LineEndingsTest(BaseTestCase):
             'GET',
             httpbin('/get')
         )
-        self.assertEqual(r.exit_status,0)
+        self.assertEqual(r.exit_status, 0)
         self._validate_crlf(r)
 
     def test_CRLF_ugly_request(self):
@@ -1256,8 +1260,8 @@ class ArgumentParserTestCase(unittest.TestCase):
         self.assertEqual(args.items, [
             input.KeyValue(
                 key='new_item', value='a', sep='=', orig='new_item=a'),
-            input.KeyValue(key
-                ='old_item', value='b', sep='=', orig='old_item=b'),
+            input.KeyValue(
+                key='old_item', value='b', sep='=', orig='old_item=b'),
         ])
 
 
@@ -1402,5 +1406,4 @@ class SessionTest(BaseTestCase):
 
 
 if __name__ == '__main__':
-    #noinspection PyCallingNonCallable
     unittest.main()
