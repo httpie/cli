@@ -154,6 +154,7 @@ class BaseStream(object):
         :param with_body: if `True`, body will be included
 
         """
+        assert with_headers or with_body
         self.msg = msg
         self.with_headers = with_headers
         self.with_body = with_body

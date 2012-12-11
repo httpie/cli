@@ -65,19 +65,22 @@ def get_response(name, request_kwargs, config_dir, read_only=False):
 class Host(object):
     """A host is a per-host directory on the disk containing sessions files."""
 
+    VALID_NAME_PATTERN = re.compile('^[a-zA-Z0-9_.:-]+$')
+
     def __init__(self, name, root_dir=DEFAULT_SESSIONS_DIR):
+        assert self.VALID_NAME_PATTERN.match(name)
         self.name = name
         self.root_dir = root_dir
 
     def __iter__(self):
-        """Return a iterator yielding `Session` instances."""
+        """Return an iterator yielding `Session` instances."""
         for fn in sorted(glob.glob1(self.path, '*.json')):
             session_name = os.path.splitext(fn)[0]
             yield Session(host=self, name=session_name)
 
     @property
     def verbose_name(self):
-        return u'%s %s' % (self.name, self.path)
+        return '%s %s' % (self.name, self.path)
 
     def delete(self):
         shutil.rmtree(self.path)
@@ -111,7 +114,10 @@ class Session(BaseConfigDict):
     help = 'https://github.com/jkbr/httpie#sessions'
     about = 'HTTPie session file'
 
+    VALID_NAME_PATTERN = re.compile('^[a-zA-Z0-9_.-]+$')
+
     def __init__(self, host, name, *args, **kwargs):
+        assert self.VALID_NAME_PATTERN.match(name)
         super(Session, self).__init__(*args, **kwargs)
         self.host = host
         self.name = name
@@ -119,8 +125,8 @@ class Session(BaseConfigDict):
         self['cookies'] = {}
         self['auth'] = {
             'type': None,
-            'username': '',
-            'password': ''
+            'username': None,
+            'password': None
         }
 
     @property
@@ -129,7 +135,7 @@ class Session(BaseConfigDict):
 
     @property
     def verbose_name(self):
-        return u'%s %s %s' % (self.host.name, self.name, self.path)
+        return '%s %s %s' % (self.host.name, self.name, self.path)
 
     @property
     def cookies(self):
@@ -161,7 +167,7 @@ class Session(BaseConfigDict):
     def auth(self):
         auth = self.get('auth', None)
         if not auth or not auth['type']:
-            return None
+            return
         Auth = {'basic': HTTPBasicAuth,
                 'digest': HTTPDigestAuth}[auth['type']]
         return Auth(auth['username'], auth['password'])
@@ -176,21 +182,19 @@ class Session(BaseConfigDict):
         }
 
 
-
-
 ##################################################################
 # Session management commands
 # TODO: write tests
 ##################################################################
 
 
-def command_session_list(args):
+def command_session_list(hostname=None):
     """Print a list of all sessions or only
     the ones from `args.host`, if provided.
 
     """
-    if args.host:
-        for session in Host(args.host):
+    if hostname:
+        for session in Host(hostname):
             print(session.verbose_name)
     else:
         for host in Host.all():
@@ -198,9 +202,9 @@ def command_session_list(args):
                 print(session.verbose_name)
 
 
-def command_session_show(args):
-    """Print session JSON data for `args.host` and `args.name`."""
-    session = Session(Host(args.host), args.name)
+def command_session_show(hostname, session_name):
+    """Print JSON data for a session."""
+    session = Session(Host(hostname), session_name)
     path = session.path
     if not os.path.exists(path):
         sys.stderr.write('Session does not exist: %s\n'
@@ -214,20 +218,19 @@ def command_session_show(args):
         print('')
 
 
-def command_session_delete(args):
+def command_session_delete(hostname, session_name=None):
     """Delete a session by host and name, or delete all the
     host's session if name not provided.
 
     """
-    host = Host(args.host)
-    if not args.name:
+    host = Host(hostname)
+    if not session_name:
         host.delete()
-    else:
-        session = Session(host, args.name)
+        session = Session(host, session_name)
         session.delete()
 
 
-def command_session_edit(args):
+def command_session_edit(hostname, session_name):
     """Open a session file in EDITOR."""
     editor = os.environ.get('EDITOR', None)
     if not editor:
@@ -235,7 +238,7 @@ def command_session_edit(args):
             'You need to configure the environment variable EDITOR.\n')
         sys.exit(1)
 
-    session = Session(Host(args.host), args.name)
+    session = Session(Host(hostname), session_name)
     if session.is_new:
         session.save()
 

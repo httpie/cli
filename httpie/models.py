@@ -142,7 +142,6 @@ class HTTPRequest(HTTPMessage):
 
     @property
     def headers(self):
-        """Return Request-Line"""
         url = urlparse(self._orig.url)
 
         # Querystring
@@ -172,7 +171,6 @@ class HTTPRequest(HTTPMessage):
         headers = ['%s: %s' % (name, value)
                    for name, value in headers.items()]
 
-        #noinspection PyTypeChecker
         headers.insert(0, request_line)
 
         return '\r\n'.join(headers).strip()

@@ -12,9 +12,9 @@ from requests.compat import is_windows
 from . import __doc__
 from . import __version__
 from .sessions import DEFAULT_SESSIONS_DIR
+from .manage import session_name_validator
 from .output import AVAILABLE_STYLES, DEFAULT_STYLE
-from .input import (Parser, AuthCredentialsArgType,
-                    KeyValueArgType, SessionNameArgType,
+from .input import (Parser, AuthCredentialsArgType, KeyValueArgType,
                     SEP_PROXY, SEP_CREDENTIALS, SEP_GROUP_ITEMS,
                     OUT_REQ_HEAD, OUT_REQ_BODY, OUT_RESP_HEAD,
                     OUT_RESP_BODY, OUTPUT_OPTIONS,
@@ -225,7 +225,7 @@ sessions = parser.add_argument_group(title='Sessions')\
                  .add_mutually_exclusive_group(required=False)
 
 sessions.add_argument(
-    '--session', metavar='SESSION_NAME', type=SessionNameArgType(),
+    '--session', metavar='SESSION_NAME', type=session_name_validator,
     help=_('''
     Create, or reuse and update a session.
     Within a session, custom headers, auth credential, as well as any

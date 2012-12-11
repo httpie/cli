@@ -4,11 +4,14 @@ Provides the `httpie' management command.
 Note that the main `http' command points to `httpie.__main__.main()`.
 
 """
+import inspect
 import argparse
-from argparse import OPTIONAL
+import functools
 
 from . import __version__
-from .sessions import (command_session_list,
+from .input import RegexValidator
+from .sessions import (Session, Host,
+                       command_session_list,
                        command_session_edit,
                        command_session_show,
                        command_session_delete)
@@ -25,34 +28,78 @@ subparsers = parser.add_subparsers()
 # Session commands
 #################################################################
 
+hostname_validator = RegexValidator(
+    Host.VALID_NAME_PATTERN,
+    'Hostname contains invalid characters.'
+)
+session_name_validator = RegexValidator(
+    Session.VALID_NAME_PATTERN,
+    'Session name contains invalid characters.'
+)
+
+
+def make_command(func):
+    @functools.wraps(func)
+    def wrapper(parsed_args):
+        """Convert parsed args to function kwargs."""
+        kwargs = dict((name, getattr(parsed_args, name, None))
+                      for name in inspect.getargspec(func).args)
+        return func(**kwargs)
+    return wrapper
+
+
+def add_hostname_arg(parser, *args, **kwargs):
+    parser.add_argument(
+        'hostname', metavar='HOSTNAME',
+        type=hostname_validator,
+        *args, **kwargs
+    )
+
+
+def add_session_name_arg(parser, *args, **kwargs):
+    parser.add_argument(
+        'session_name', metavar='SESSION_NAME',
+        type=session_name_validator,
+        *args, **kwargs
+    )
+
+
 session = subparsers.add_parser('session',
     help='manipulate and inspect sessions').add_subparsers()
 
 # List
-list_ = session.add_parser('list', help='list sessions')
-list_.set_defaults(command=command_session_list)
-list_.add_argument('host', nargs=OPTIONAL)
+session_list_parser = session.add_parser('list', help='list sessions')
+session_list_parser.set_defaults(command=make_command(command_session_list))
+add_hostname_arg(session_list_parser, nargs=argparse.OPTIONAL)
+
 
 # Show
-show = session.add_parser('show', help='show a session')
-show.set_defaults(command=command_session_show)
-show.add_argument('host')
-show.add_argument('name')
+session_show_parser = session.add_parser('show', help='show a session')
+session_show_parser.set_defaults(command=make_command(command_session_show))
+add_hostname_arg(session_show_parser)
+add_session_name_arg(session_show_parser)
+
 
 # Edit
-edit = session.add_parser(
+session_edit_parser = session.add_parser(
     'edit', help='edit a session in $EDITOR')
-edit.set_defaults(command=command_session_edit)
-edit.add_argument('host')
-edit.add_argument('name')
+session_edit_parser.set_defaults(command=make_command(command_session_edit))
+add_hostname_arg(session_edit_parser)
+add_session_name_arg(session_edit_parser)
 
 # Delete
-delete = session.add_parser('delete', help='delete a session')
-delete.set_defaults(command=command_session_delete)
-delete.add_argument('host')
-delete.add_argument('name', nargs=OPTIONAL,
+session_delete_parser = session.add_parser('delete', help='delete a session')
+session_delete_parser.set_defaults(
+    command=make_command(command_session_delete))
+add_hostname_arg(session_delete_parser)
+add_session_name_arg(session_delete_parser, nargs=argparse.OPTIONAL,
     help='The name of the session to be deleted.'
-         ' If not specified, all host sessions are deleted.')
+         ' If not specified, all of the host\'s')
+
+
+#################################################################
+# Main
+#################################################################
 
 
 def main():

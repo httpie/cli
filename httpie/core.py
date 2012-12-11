@@ -26,15 +26,15 @@ from .output import build_output_stream, write, write_with_colors_win_p3k
 from . import ExitStatus
 
 
-def get_exist_status_code(code, follow=False):
+def get_exit_status(http_status, follow=False):
     """Translate HTTP status code to exit status code."""
-    if 300 <= code <= 399 and not follow:
+    if 300 <= http_status <= 399 and not follow:
         # Redirect
         return ExitStatus.ERROR_HTTP_3XX
-    elif 400 <= code <= 499:
+    elif 400 <= http_status <= 499:
         # Client Error
         return ExitStatus.ERROR_HTTP_4XX
-    elif 500 <= code <= 599:
+    elif 500 <= http_status <= 599:
         # Server Error
         return ExitStatus.ERROR_HTTP_5XX
     else:
@@ -67,12 +67,12 @@ def main(args=sys.argv[1:], env=Environment()):
 
     debug = '--debug' in args
     traceback = debug or '--traceback' in args
-    exit_status_code = ExitStatus.OK
+    exit_status = ExitStatus.OK
 
     if debug:
         print_debug_info(env)
         if args == ['--debug']:
-            return exit_status_code
+            return exit_status
 
     try:
         args = parser.parse_args(args=args, env=env)
@@ -80,18 +80,18 @@ def main(args=sys.argv[1:], env=Environment()):
         response = get_response(args, config_dir=env.config.directory)
 
         if args.check_status:
-            exit_status_code = get_exist_status_code(response.status_code,
-                                                     args.follow)
+            exit_status = get_exit_status(response.status_code, args.follow)
 
-            if not env.stdout_isatty and exit_status_code != ExitStatus.OK:
+            if not env.stdout_isatty and exit_status != ExitStatus.OK:
                 error('HTTP %s %s',
                       response.raw.status,
                       response.raw.reason,
                       level='warning')
 
         write_kwargs = {
-            'stream': build_output_stream(
-                args, env, response.request, response),
+            'stream': build_output_stream(args, env,
+                                          response.request,
+                                          response),
             'outfile': env.stdout,
             'flush': env.stdout_isatty or args.stream
         }
@@ -112,10 +112,10 @@ def main(args=sys.argv[1:], env=Environment()):
         if traceback:
             raise
         env.stderr.write('\n')
-        exit_status_code = ExitStatus.ERROR
+        exit_status = ExitStatus.ERROR
 
     except requests.Timeout:
-        exit_status_code = ExitStatus.ERROR_TIMEOUT
+        exit_status = ExitStatus.ERROR_TIMEOUT
         error('Request timed out (%ss).', args.timeout)
 
     except Exception as e:
@@ -124,6 +124,6 @@ def main(args=sys.argv[1:], env=Environment()):
         if traceback:
             raise
         error('%s: %s', type(e).__name__, str(e))
-        exit_status_code = ExitStatus.ERROR
+        exit_status = ExitStatus.ERROR
 
-    return exit_status_code
+    return exit_status

@@ -919,15 +919,20 @@ following keys:
                               For instance, you can use this option to change
                               the default style and output options:
                               ``"default_options": ["--style=fruity", "--body"]``
+
+                              Another useful default option is
+                              ``"--session=default"`` to make HTTPie always
+                              use `sessions`_.
+
                               Default options from config file can be unset
-                              via ``--no-OPTION`` arguments passed on the
-                              command line (e.g., ``--no-style`` would unset
-                              ``fruity`` as the default style for the
-                              particular invocation).
+                              for a particular invocation via
+                              ``--no-OPTION`` arguments passed on the
+                              command line (e.g., ``--no-style``
+                              or ``--no-session``).
 =========================     =================================================
 
-The default location is ``~/.httpie/config.json``
-(``%APPDATA%\httpie\config.json`` on Windows).
+The default location of the configuration file is ``~/.httpie/config.json``
+(or ``%APPDATA%\httpie\config.json`` on Windows).
 
 The config directory location can be changed by setting the
 ``HTTPIE_CONFIG_DIR`` environment variable.
@@ -942,10 +947,17 @@ HTTP requests. The ``httpie`` command, on the other hand, is a utility for
 managing your configuration. The currently supported actions are:
 
 
-* ``httpie session list [hostname]``
-* ``httpie session edit hostname session-name``
-* ``httpie session show hostname session-name``
-* ``httpie session delete hostname [session-name]``
+``httpie session list [hostname]``:
+    List all existing sessions, or a host's sessions only.
+
+``httpie session edit hostname session-name``:
+    Create and/or edit a session file in $EDITOR.
+
+``httpie session show hostname session-name``:
+    Print a session data to the console.
+
+``httpie session delete hostname [session-name]``
+    Delete all host's sessions or a specific one by name.
 
 
 =========

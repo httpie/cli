@@ -8,7 +8,7 @@ import json
 import mimetypes
 import getpass
 from io import BytesIO
-from argparse import ArgumentParser, ArgumentTypeError
+from argparse import ArgumentParser, ArgumentTypeError, ArgumentError
 
 try:
     from collections import OrderedDict
@@ -171,7 +171,6 @@ class Parser(ArgumentParser):
             msg = 'unrecognized arguments: %s'
             self.error(msg % ' '.join(invalid))
 
-
     def _print_message(self, message, file=None):
         # Sneak in our stderr/stdout.
         file = {
@@ -306,6 +305,38 @@ class KeyValue(object):
 
     def __eq__(self, other):
         return self.__dict__ == other.__dict__
+
+
+def session_name_arg_type(name):
+    from .sessions import Session
+    if not Session.is_valid_name(name):
+        raise ArgumentTypeError(
+            'special characters and spaces are not'
+            ' allowed in session names: "%s"'
+            % name)
+    return name
+
+
+def host_name_arg_type(name):
+    from .sessions import Host
+    if not Host.is_valid_name(name):
+        raise ArgumentTypeError(
+            'special characters and spaces are not'
+            ' allowed in host names: "%s"'
+            % name)
+    return name
+
+
+class RegexValidator(object):
+
+    def __init__(self, pattern, error_message):
+        self.pattern = re.compile(pattern)
+        self.error_message = error_message
+
+    def __call__(self, value):
+        if not self.pattern.search(value):
+            raise ArgumentError(None, self.error_message)
+        return value
 
 
 class KeyValueArgType(object):
