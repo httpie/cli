@@ -1203,3 +1203,4 @@ Changelog
 .. _stable version: https://github.com/jkbr/httpie/tree/0.3.0#readme
 .. _AUTHORS.rst: https://github.com/jkbr/httpie/blob/master/AUTHORS.rst
 .. _LICENSE: https://github.com/jkbr/httpie/blob/master/LICENSE
+
