@@ -49,9 +49,9 @@ def get_response(name, request_kwargs, config_dir, read_only=False):
     elif session.auth:
         request_kwargs['auth'] = session.auth
 
-    rsession = requests.Session(cookies=session.cookies)
+    rsession = requests.Session()
     try:
-        response = rsession.request(**request_kwargs)
+        response = rsession.request(cookies=session.cookies, **request_kwargs)
     except Exception:
         raise
     else:

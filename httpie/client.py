@@ -4,7 +4,6 @@ from pprint import pformat
 
 import requests
 import requests.auth
-from requests.utils import default_headers
 
 from . import sessions
 from . import __version__
