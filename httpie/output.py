@@ -2,6 +2,7 @@
 
 """
 import json
+import xml.dom.minidom
 from functools import partial
 from itertools import chain
 
@@ -19,6 +20,9 @@ from .models import HTTPRequest, HTTPResponse, Environment
 from .input import (OUT_REQ_BODY, OUT_REQ_HEAD,
                     OUT_RESP_HEAD, OUT_RESP_BODY)
 
+
+# The default number of spaces to indent when pretty printing
+DEFAULT_INDENT = 4
 
 # Colors on Windows via colorama don't look that
 # great and fruity seems to give the best result there.
@@ -385,9 +389,24 @@ class JSONProcessor(BaseProcessor):
                 content = json.dumps(json.loads(content),
                                      sort_keys=True,
                                      ensure_ascii=False,
-                                     indent=4)
+                                     indent=DEFAULT_INDENT)
             except ValueError:
                 # Invalid JSON but we don't care.
+                pass
+        return content
+
+
+class XMLProcessor(BaseProcessor):
+    """XML body processor."""
+
+    def process_body(self, content, content_type, subtype):
+        if subtype == 'xml':
+            try:
+                # Pretty print the XML
+                doc = xml.dom.minidom.parseString(content)
+                content = doc.toprettyxml(indent=' '*DEFAULT_INDENT)
+            except xml.parsers.expat.ExpatError:
+                # Ignore invalid XML errors (skips attempting to pretty print)
                 pass
         return content
 
@@ -456,7 +475,8 @@ class OutputProcessor(object):
     installed_processors = {
         'format': [
             HeadersProcessor,
-            JSONProcessor
+            JSONProcessor,
+            XMLProcessor
         ],
         'colors': [
             PygmentsProcessor
