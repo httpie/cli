@@ -4,7 +4,7 @@ from pprint import pformat
 
 import requests
 import requests.auth
-from requests.defaults import defaults
+from requests.utils import default_headers
 
 from . import sessions
 from . import __version__
@@ -40,14 +40,15 @@ def get_response(args, config_dir):
 def get_requests_kwargs(args):
     """Translate our `args` into `requests.request` keyword arguments."""
 
-    base_headers = defaults['base_headers'].copy()
-    base_headers['User-Agent'] = DEFAULT_UA
+    implicit_headers = {
+        'User-Agent': DEFAULT_UA
+    }
 
     auto_json = args.data and not args.form
     if args.json or auto_json:
-        base_headers['Accept'] = 'application/json'
+        implicit_headers['Accept'] = 'application/json'
         if args.data:
-            base_headers['Content-Type'] = JSON
+            implicit_headers['Content-Type'] = JSON
 
         if isinstance(args.data, dict):
             if args.data:
@@ -60,7 +61,11 @@ def get_requests_kwargs(args):
     elif args.form and not args.files:
         # If sending files, `requests` will set
         # the `Content-Type` for us.
-        base_headers['Content-Type'] = FORM
+        implicit_headers['Content-Type'] = FORM
+
+    for name, value in implicit_headers.items():
+        if name not in args.headers:
+            args.headers[name] = value
 
     credentials = None
     if args.auth:
@@ -70,7 +75,7 @@ def get_requests_kwargs(args):
         }[args.auth_type](args.auth.key, args.auth.value)
 
     kwargs = {
-        'prefetch': False,
+        'stream': True,
         'method': args.method.lower(),
         'url': args.url,
         'headers': args.headers,
@@ -85,9 +90,6 @@ def get_requests_kwargs(args):
         'files': args.files,
         'allow_redirects': args.follow,
         'params': args.params,
-        'config': {
-            'base_headers': base_headers
-        }
     }
 
     return kwargs
