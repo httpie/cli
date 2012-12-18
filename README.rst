@@ -1027,6 +1027,8 @@ Changelog
 
 *You can click a version name to see a diff with the previous one.*
 
+* `0.3.1`_ (2012-12-18)
+    * Require Requests < v1.0 due to unsolved compatibility issues.
 * `0.3.0`_ (2012-09-21)
     * Allow output redirection on Windows.
     * Added configuration file.
@@ -1120,6 +1122,7 @@ Changelog
 .. _0.2.6: https://github.com/jkbr/httpie/compare/0.2.5...0.2.6
 .. _0.2.7: https://github.com/jkbr/httpie/compare/0.2.5...0.2.7
 .. _0.3.0: https://github.com/jkbr/httpie/compare/0.2.7...0.3.0
+.. _0.3.1: https://github.com/jkbr/httpie/compare/0.2.7...0.3.1
 .. _stable version: https://github.com/jkbr/httpie/tree/0.3.0#readme
 .. _AUTHORS.rst: https://github.com/jkbr/httpie/blob/master/AUTHORS.rst
 .. _LICENSE: https://github.com/jkbr/httpie/blob/master/LICENSE
