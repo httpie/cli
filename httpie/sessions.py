@@ -148,10 +148,11 @@ class Session(BaseConfigDict):
 
     @cookies.setter
     def cookies(self, jar):
+        # http://docs.python.org/2/library/cookielib.html#cookie-objects
         excluded = [
             '_rest', 'name', 'port_specified',
             'domain_specified', 'domain_initial_dot',
-            'path_specified', 'comment', 'comment_url'
+            'path_specified', 'comment', 'comment_url',
         ]
         self['cookies'] = {}
         for host in jar._cookies.values():

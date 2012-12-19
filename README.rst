@@ -1101,6 +1101,7 @@ Changelog
 *You can click a version name to see a diff with the previous one.*
 
 * `0.4.0-alpha`_
+    * Requests v1.0.3.
     * Added `httpie` management command.
     * Added support for credentials in URL.
     * Added ``--no-option`` for every ``--option`` to be config-friendly.
