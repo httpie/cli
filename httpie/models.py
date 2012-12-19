@@ -181,25 +181,4 @@ class HTTPRequest(HTTPMessage):
 
     @property
     def body(self):
-        """Reconstruct and return the original request body bytes."""
-        if self._orig.files:
-            # TODO: would be nice if we didn't need to encode the files again
-            # FIXME: Also the boundary header doesn't match the one used.
-            for fn, fd in self._orig.files.values():
-                # Rewind the files as they have already been read before.
-                fd.seek(0)
-            body, _ = self._orig._encode_files(self._orig.files)
-        else:
-            try:
-                body = self._orig.data
-            except AttributeError:
-                # requests < 0.12.1
-                body = self._orig._enc_data
-
-            if isinstance(body, dict):
-                body = type(self._orig)._encode_params(body)
-
-            if isinstance(body, str):
-                body = body.encode('utf8')
-
-        return body
+        return self._orig.body or b''
