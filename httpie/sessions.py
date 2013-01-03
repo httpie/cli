@@ -34,7 +34,6 @@ def get_response(name, request_kwargs, config_dir, read_only=False):
         name=request_kwargs['headers'].get('Host', None)
              or urlparse(request_kwargs['url']).netloc.split('@')[-1]
     )
-
     session = Session(host, name)
     session.load()
 
@@ -49,15 +48,17 @@ def get_response(name, request_kwargs, config_dir, read_only=False):
     elif session.auth:
         request_kwargs['auth'] = session.auth
 
-    rsession = requests.Session()
+    requests_session = requests.Session()
+
     try:
-        response = rsession.request(cookies=session.cookies, **request_kwargs)
+        response = requests_session.request(cookies=session.cookies,
+                                            **request_kwargs)
     except Exception:
         raise
     else:
         # Existing sessions with `read_only=True` don't get updated.
         if session.is_new or not read_only:
-            session.cookies = rsession.cookies
+            session.cookies = requests_session.cookies
             session.save()
         return response
 

@@ -1102,7 +1102,7 @@ Changelog
 
 * `0.4.0-alpha`_
     * Requests v1.0.3.
-    * Added `httpie` management command.
+    * Added ``httpie`` management command.
     * Added support for credentials in URL.
     * Added ``--no-option`` for every ``--option`` to be config-friendly.
     * Mutually exclusive arguments can be specified multiple times. The

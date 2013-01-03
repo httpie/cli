@@ -12,7 +12,6 @@ if sys.argv[-1] == 'test':
 
 
 requirements = [
-    # Debian has only requests==0.10.1 and httpie.deb depends on that.
     'requests>=1.0.3',
     'Pygments>=1.5'
 ]
