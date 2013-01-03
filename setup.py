@@ -12,7 +12,7 @@ if sys.argv[-1] == 'test':
 
 
 requirements = [
-    'requests>=1.0.3',
+    'requests>=1.0.4',
     'Pygments>=1.5'
 ]
 if sys.version_info[:2] in ((2, 6), (3, 1)):

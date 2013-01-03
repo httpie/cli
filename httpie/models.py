@@ -1,8 +1,8 @@
 import os
 import sys
-from .compat import urlsplit, is_windows, bytes, str
 
 from .config import DEFAULT_CONFIG_DIR, Config
+from .compat import urlsplit, is_windows, bytes, str
 
 
 class Environment(object):
@@ -144,29 +144,16 @@ class HTTPRequest(HTTPMessage):
     def headers(self):
         url = urlsplit(self._orig.url)
 
-        # Querystring
-        qs = ''
-        if url.query or self._orig.params:
-            qs = '?'
-            if url.query:
-                qs += url.query
-            # Requests doesn't make params part of ``request.url``.
-            if self._orig.params:
-                if url.query:
-                    qs += '&'
-                qs += type(self._orig)._encode_params(self._orig.params)
-
-        # Request-Line
         request_line = '{method} {path}{query} HTTP/1.1'.format(
             method=self._orig.method,
             path=url.path or '/',
-            query=qs
+            query='?' + url.query if url.query else ''
         )
 
         headers = dict(self._orig.headers)
 
         if 'Host' not in headers:
-            headers['Host'] = urlsplit(self._orig.url).netloc
+            headers['Host'] = url.netloc
 
         headers = ['%s: %s' % (name, value)
                    for name, value in headers.items()]
