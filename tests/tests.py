@@ -45,7 +45,6 @@ except ImportError:
         return decorator
 
 from requests import __version__ as requests_version
-from requests.compat import is_windows, is_py26, bytes, str
 
 
 #################################################################
@@ -62,6 +61,7 @@ from httpie.models import Environment
 from httpie.core import main
 from httpie.output import BINARY_SUPPRESSED_NOTICE
 from httpie.input import ParseError
+from httpie.compat import is_windows, is_py26, bytes, str
 
 
 CRLF = '\r\n'

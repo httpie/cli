@@ -7,10 +7,9 @@ TODO: make the options config friendly, i.e., no mutually exclusive groups to
 """
 from argparse import FileType, OPTIONAL, ZERO_OR_MORE, SUPPRESS
 
-from requests.compat import is_windows
-
 from . import __doc__
 from . import __version__
+from .compat import is_windows
 from .sessions import DEFAULT_SESSIONS_DIR
 from .manage import session_name_validator
 from .output import AVAILABLE_STYLES, DEFAULT_STYLE

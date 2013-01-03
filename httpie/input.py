@@ -16,7 +16,8 @@ except ImportError:
     OrderedDict = dict
 
 from requests.structures import CaseInsensitiveDict
-from requests.compat import str, urlparse
+
+from .compat import urlsplit, str
 
 
 HTTP_POST = 'POST'
@@ -128,7 +129,7 @@ class Parser(ArgumentParser):
         return args
 
     def _process_auth(self, args):
-        url = urlparse(args.url)
+        url = urlsplit(args.url)
 
         if args.auth:
             if not args.auth.has_password():

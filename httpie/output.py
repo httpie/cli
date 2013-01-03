@@ -12,8 +12,8 @@ from pygments.lexers import get_lexer_for_mimetype, get_lexer_by_name
 from pygments.formatters.terminal import TerminalFormatter
 from pygments.formatters.terminal256 import Terminal256Formatter
 from pygments.util import ClassNotFound
-from requests.compat import is_windows
 
+from .compat import is_windows
 from .solarized import Solarized256Style
 from .models import HTTPRequest, HTTPResponse, Environment
 from .input import (OUT_REQ_BODY, OUT_REQ_HEAD,

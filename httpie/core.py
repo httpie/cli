@@ -14,12 +14,12 @@ import sys
 import errno
 
 import requests
-from requests.compat import str, is_py3
 from httpie import __version__ as httpie_version
 from requests import __version__ as requests_version
 from pygments import __version__ as pygments_version
 
 from .cli import parser
+from .compat import str, is_py3
 from .client import get_response
 from .models import Environment
 from .output import build_output_stream, write, write_with_colors_win_p3k

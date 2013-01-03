@@ -1,6 +1,6 @@
 import os
 import sys
-from requests.compat import urlparse, is_windows, bytes, str
+from .compat import urlsplit, is_windows, bytes, str
 
 from .config import DEFAULT_CONFIG_DIR, Config
 
@@ -142,7 +142,7 @@ class HTTPRequest(HTTPMessage):
 
     @property
     def headers(self):
-        url = urlparse(self._orig.url)
+        url = urlsplit(self._orig.url)
 
         # Querystring
         qs = ''
@@ -166,7 +166,7 @@ class HTTPRequest(HTTPMessage):
         headers = dict(self._orig.headers)
 
         if 'Host' not in headers:
-            headers['Host'] = urlparse(self._orig.url).netloc
+            headers['Host'] = urlsplit(self._orig.url).netloc
 
         headers = ['%s: %s' % (name, value)
                    for name, value in headers.items()]

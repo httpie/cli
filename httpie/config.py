@@ -3,7 +3,7 @@ import json
 import errno
 
 from . import __version__
-from requests.compat import is_windows
+from .compat import is_windows
 
 
 DEFAULT_CONFIG_DIR = os.environ.get(

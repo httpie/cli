@@ -11,10 +11,10 @@ import shutil
 import subprocess
 
 import requests
-from requests.compat import urlparse
 from requests.cookies import RequestsCookieJar, create_cookie
 from requests.auth import HTTPBasicAuth, HTTPDigestAuth
 
+from .compat import urlsplit
 from .config import BaseConfigDict, DEFAULT_CONFIG_DIR
 from .output import PygmentsProcessor
 
@@ -32,7 +32,7 @@ def get_response(name, request_kwargs, config_dir, read_only=False):
     host = Host(
         root_dir=sessions_dir,
         name=request_kwargs['headers'].get('Host', None)
-             or urlparse(request_kwargs['url']).netloc.split('@')[-1]
+             or urlsplit(request_kwargs['url']).netloc.split('@')[-1]
     )
     session = Session(host, name)
     session.load()
