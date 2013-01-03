@@ -168,4 +168,8 @@ class HTTPRequest(HTTPMessage):
 
     @property
     def body(self):
-        return self._orig.body or b''
+        body = self._orig.body
+        if isinstance(body, str):
+            # Happens with JSON/form request data parsed from the command line.
+            body = body.encode('utf8')
+        return body or b''

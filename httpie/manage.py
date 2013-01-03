@@ -8,7 +8,6 @@ import inspect
 import argparse
 import functools
 
-from . import __version__
 from .input import RegexValidator
 from .sessions import (Session, Host,
                        command_session_list,
@@ -18,8 +17,7 @@ from .sessions import (Session, Host,
 
 
 parser = argparse.ArgumentParser(
-    description='The HTTPie management command.',
-    version=__version__
+    description='The HTTPie management command.'
 )
 subparsers = parser.add_subparsers()
 
