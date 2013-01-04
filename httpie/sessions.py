@@ -37,7 +37,6 @@ def get_response(name, request_kwargs, config_dir, read_only=False):
     session = Session(host, name)
     session.load()
 
-
     # Update session headers with the request headers.
     session['headers'].update(request_kwargs.get('headers', {}))
     # Use the merged headers for the request

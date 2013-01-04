@@ -1403,6 +1403,9 @@ class SessionTest(BaseTestCase):
         )
         self.assertIn(OK, r3)
 
+        # Origin can differ on Travis.
+        del r1.json['headers']['origin'], r2.json['headers']['origin']
+
         # Should be the same as before r2.
         self.assertDictEqual(r1.json, r3.json)
 
