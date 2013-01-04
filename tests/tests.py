@@ -227,6 +227,8 @@ def http(*args, **kwargs):
 
 class BaseTestCase(unittest.TestCase):
 
+    maxDiff = 100000
+
     if is_py26:
         def assertIn(self, member, container, msg=None):
             self.assertTrue(member in container, msg)
