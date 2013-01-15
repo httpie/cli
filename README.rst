@@ -673,6 +673,8 @@ On OS X, you can send the contents of the clipboard with ``pbpaste``:
 
     $ pbpaste | http PUT example.com
 
+You can install and use ``xsel`` on operating systems that use Xorg.
+
 
 Passing data through ``stdin`` cannot be combined with data fields specified
 on the command line.
