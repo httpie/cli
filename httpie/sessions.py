@@ -154,20 +154,15 @@ class Session(BaseConfigDict):
     @cookies.setter
     def cookies(self, jar):
         # http://docs.python.org/2/library/cookielib.html#cookie-objects
-        excluded = [
-            '_rest', 'name', 'port_specified',
-            'domain_specified', 'domain_initial_dot',
-            'path_specified', 'comment', 'comment_url',
-        ]
+        stored_attrs = ['value', 'path', 'secure', 'expires']
         self['cookies'] = {}
         for host in jar._cookies.values():
             for path in host.values():
                 for name, cookie in path.items():
-                    cookie_dict = {}
-                    for k, v in cookie.__dict__.items():
-                        if k not in excluded:
-                            cookie_dict[k] = v
-                    self['cookies'][name] = cookie_dict
+                    self['cookies'][name] = dict(
+                        (attname, getattr(cookie, attname))
+                        for attname in stored_attrs
+                    )
 
     @property
     def auth(self):
