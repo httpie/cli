@@ -951,7 +951,7 @@ managing your configuration. The currently supported actions are:
     List all existing sessions, or a host's sessions only.
 
 ``httpie session edit hostname session-name``:
-    Create and/or edit a session file in $EDITOR.
+    Create and/or edit a session file in ``$EDITOR``.
 
 ``httpie session show hostname session-name``:
     Print a session data to the console.

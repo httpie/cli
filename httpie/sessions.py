@@ -79,6 +79,23 @@ class Host(object):
             session_name = os.path.splitext(fn)[0]
             yield Session(host=self, name=session_name)
 
+    @staticmethod
+    def _quote_name(name):
+        """host:port => host_port"""
+        return name.replace(':', '_')
+
+    @staticmethod
+    def _unquote_name(name):
+        """host_port => host:port"""
+        return re.sub(r'_(\d+)$', r':\1', name)
+
+    @classmethod
+    def all(cls, root_dir=DEFAULT_SESSIONS_DIR):
+        """Return a generator yielding a host at a time."""
+        for name in sorted(glob.glob1(root_dir, '*')):
+            if os.path.isdir(os.path.join(root_dir, name)):
+                yield Host(cls._unquote_name(name), root_dir=root_dir)
+
     @property
     def verbose_name(self):
         return '%s %s' % (self.name, self.path)
@@ -88,10 +105,7 @@ class Host(object):
 
     @property
     def path(self):
-        # Name will include ':' if a port is specified, which is invalid
-        # on windows. DNS does not allow '_' in a domain, or for it to end
-        # in a number (I think?)
-        path = os.path.join(self.root_dir, self.name.replace(':', '_'))
+        path = os.path.join(self.root_dir, self._quote_name(self.name))
         try:
             os.makedirs(path, mode=0o700)
         except OSError as e:
@@ -99,18 +113,8 @@ class Host(object):
                 raise
         return path
 
-    @classmethod
-    def all(cls, root_dir=DEFAULT_SESSIONS_DIR):
-        """Return a generator yielding a host at a time."""
-        for name in sorted(glob.glob1(root_dir, '*')):
-            if os.path.isdir(os.path.join(root_dir, name)):
-                # host_port => host:port
-                real_name = re.sub(r'_(\d+)$', r':\1', name)
-                yield Host(real_name, root_dir=root_dir)
-
 
 class Session(BaseConfigDict):
-    """"""
 
     help = 'https://github.com/jkbr/httpie#sessions'
     about = 'HTTPie session file'
@@ -186,7 +190,6 @@ class Session(BaseConfigDict):
 
 ##################################################################
 # Session management commands
-# TODO: write tests
 ##################################################################
 
 
