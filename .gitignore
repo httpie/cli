@@ -6,4 +6,7 @@ build
 README.html
 .coverage
 htmlcov
-
+tags
+TAGS
+.*.swp
+.*.*.swp

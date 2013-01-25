@@ -2,6 +2,7 @@
 
 """
 import json
+import sys
 from functools import partial
 from itertools import chain
 
@@ -77,6 +78,14 @@ def write_with_colors_win_p3k(stream, outfile, flush):
         if flush:
             outfile.flush()
 
+def flush_response_body_to_file(filename, response):
+    try:
+        fd = open(filename, 'w')
+        fd.write(response.content)
+        fd.flush()
+        fd.close()
+    except IOError as e:
+        sys.stderr.write(e)
 
 def build_output_stream(args, env, request, response):
     """Build and return a chain of iterators over the `request`-`response`
@@ -87,9 +96,15 @@ def build_output_stream(args, env, request, response):
     req_h = OUT_REQ_HEAD in args.output_options
     req_b = OUT_REQ_BODY in args.output_options
     resp_h = OUT_RESP_HEAD in args.output_options
-    resp_b = OUT_RESP_BODY in args.output_options
+    resp_b = OUT_RESP_BODY in args.output_options and not args.download
     req = req_h or req_b
     resp = resp_h or resp_b
+
+    if args.download:
+        file_name = args.output_file
+        if not file_name:
+            file_name = "index.html"
+        flush_response_body_to_file(file_name, response)
 
     output = []
     Stream = get_stream_type(env, args)

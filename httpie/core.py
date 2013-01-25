@@ -6,7 +6,8 @@ Invocation flow:
     2. Create and send a request.
     3. Stream, and possibly process and format, the requested parts
        of the request-response exchange.
-    4. Simultaneously write to `stdout`
+    4. Simultaneously write to `stdout` or a file if --download is passed as an
+       argument
     5. Exit.
 
 """
@@ -88,6 +89,10 @@ def main(args=sys.argv[1:], env=Environment()):
                       response.raw.reason,
                       level='warning')
 
+        if args.output_file and not args.download:
+            sys.stderr.write("Can't have an output file without passing the --download flag as well\n")
+            return ExitStatus.ERROR
+
         write_kwargs = {
             'stream': build_output_stream(args, env,
                                           response.request,
@@ -95,6 +100,7 @@ def main(args=sys.argv[1:], env=Environment()):
             'outfile': env.stdout,
             'flush': env.stdout_isatty or args.stream
         }
+        
         try:
             if env.is_windows and is_py3 and 'colors' in args.prettify:
                 write_with_colors_win_p3k(**write_kwargs)
