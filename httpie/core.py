@@ -6,7 +6,8 @@ Invocation flow:
     2. Create and send a request.
     3. Stream, and possibly process and format, the requested parts
        of the request-response exchange.
-    4. Simultaneously write to `stdout`
+    4. Simultaneously write to `stdout` or a file if --download is passed as an
+       argument
     5. Exit.
 
 """

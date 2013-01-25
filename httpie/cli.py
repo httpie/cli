@@ -216,6 +216,25 @@ output_options.add_argument(
     ''')
 )
 
+output_options.add_argument(
+    '--download', '-d', action='store_true', default=False,
+    help=_('''
+    Do not print the response body to stdout. Rather, download it and store it
+    in a file. The filename is guessed unless specified with --output-file
+    [filename]. This action is similar to the default behaviour of wget
+
+    ''')
+)
+
+output_options.add_argument(
+    '--output-file', '-out', action='store', metavar="OUTPUT_FILE", default=False,
+    help=_('''
+    Specifies the name of the file do be downloaded will be. Used with the
+    --download option
+
+    ''')
+)
+
 
 ###############################################################################
 # Sessions
