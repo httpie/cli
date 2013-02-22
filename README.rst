@@ -2,11 +2,6 @@
 HTTPie: a CLI, cURL-like tool for humans
 ****************************************
 
-.. image:: https://raw.github.com/claudiatd/httpie-artwork/master/images/httpie_logo_simple.png
-    :alt: HTTPie logo
-    :width: 469
-    :height: 331
-    :align: center
 
 HTTPie is a **command line HTTP client**. Its goal is to make CLI interaction
 with web services as **human-friendly** as possible. It provides a
@@ -21,6 +16,9 @@ for **testing, debugging**, and generally **interacting** with HTTP servers.
     :height: 835
     :align: center
 
+.. image:: https://raw.github.com/claudiatd/httpie-artwork/master/images/httpie_logo_simple.png
+    :alt: HTTPie logo
+    :align: center
 
 HTTPie is written in Python, and under the hood it uses the excellent
 `Requests`_ and `Pygments`_ libraries.
