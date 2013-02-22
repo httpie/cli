@@ -10,14 +10,13 @@ from argparse import FileType, OPTIONAL, ZERO_OR_MORE, SUPPRESS
 from . import __doc__
 from . import __version__
 from .compat import is_windows
-from .sessions import DEFAULT_SESSIONS_DIR
-from .manage import session_name_validator
+from .sessions import DEFAULT_SESSIONS_DIR, Session
 from .output import AVAILABLE_STYLES, DEFAULT_STYLE
 from .input import (Parser, AuthCredentialsArgType, KeyValueArgType,
                     SEP_PROXY, SEP_CREDENTIALS, SEP_GROUP_ITEMS,
                     OUT_REQ_HEAD, OUT_REQ_BODY, OUT_RESP_HEAD,
                     OUT_RESP_BODY, OUTPUT_OPTIONS,
-                    PRETTY_MAP, PRETTY_STDOUT_TTY_ONLY)
+                    PRETTY_MAP, PRETTY_STDOUT_TTY_ONLY, RegexValidator)
 
 
 def _(text):
@@ -224,7 +223,10 @@ sessions = parser.add_argument_group(title='Sessions')\
                  .add_mutually_exclusive_group(required=False)
 
 sessions.add_argument(
-    '--session', metavar='SESSION_NAME', type=session_name_validator,
+    '--session', metavar='SESSION_NAME', type=RegexValidator(
+        Session.VALID_NAME_PATTERN,
+        'Session name contains invalid characters.'
+    ),
     help=_('''
     Create, or reuse and update a session.
     Within a session, custom headers, auth credential, as well as any

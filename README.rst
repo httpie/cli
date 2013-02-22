@@ -886,15 +886,14 @@ Session data are stored in JSON files in the directory
 **Warning:** All session data, including credentials, cookie data,
 and custom headers are stored in plain text.
 
-Another way to create or update a session is to use the `management tool`_
-and then edit the raw JSON manually:
+Session files can also be created or edited with a text editor.
 
 .. code-block:: bash
 
     $ httpie session edit example.org user1
 
 
-See also `Management Tool`_ and `Config`_.
+See also `Config`_.
 
 
 ======
@@ -936,28 +935,6 @@ The default location of the configuration file is ``~/.httpie/config.json``
 
 The config directory location can be changed by setting the
 ``HTTPIE_CONFIG_DIR`` environment variable.
-
-
-===============
-Management Tool
-===============
-
-The main executable HTTPie comes with is ``http``, which is used for making
-HTTP requests. The ``httpie`` command, on the other hand, is a utility for
-managing your configuration. The currently supported actions are:
-
-
-``httpie session list [hostname]``:
-    List all existing sessions, or a host's sessions only.
-
-``httpie session edit hostname session-name``:
-    Create and/or edit a session file in ``$EDITOR``.
-
-``httpie session show hostname session-name``:
-    Print a session data to the console.
-
-``httpie session delete hostname [session-name]``
-    Delete all host's sessions or a specific one by name.
 
 
 =========
@@ -1103,7 +1080,6 @@ Changelog
 * `0.4.0-alpha`_
     * Python 3.3 compatibility.
     * Requests v1.0.4 compatibility.
-    * Added ``httpie`` management command.
     * Added support for credentials in URL.
     * Added ``--no-option`` for every ``--option`` to be config-friendly.
     * Mutually exclusive arguments can be specified multiple times. The

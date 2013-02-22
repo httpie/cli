@@ -3,12 +3,9 @@
 """
 import re
 import os
-import sys
 import glob
 import errno
-import codecs
 import shutil
-import subprocess
 
 import requests
 from requests.cookies import RequestsCookieJar, create_cookie
@@ -16,7 +13,6 @@ from requests.auth import HTTPBasicAuth, HTTPDigestAuth
 
 from .compat import urlsplit
 from .config import BaseConfigDict, DEFAULT_CONFIG_DIR
-from .output import PygmentsProcessor
 
 
 SESSIONS_DIR_NAME = 'sessions'
@@ -181,67 +177,3 @@ class Session(BaseConfigDict):
             'username': cred.username,
             'password': cred.password,
         }
-
-
-##################################################################
-# Session management commands
-##################################################################
-
-
-def command_session_list(hostname=None):
-    """Print a list of all sessions or only
-    the ones from `args.host`, if provided.
-
-    """
-    if hostname:
-        for session in Host(hostname):
-            print(session.verbose_name)
-    else:
-        for host in Host.all():
-            for session in host:
-                print(session.verbose_name)
-
-
-def command_session_show(hostname, session_name):
-    """Print JSON data for a session."""
-    session = Session(Host(hostname), session_name)
-    path = session.path
-    if not os.path.exists(path):
-        sys.stderr.write('Session does not exist: %s\n'
-                         % session.verbose_name)
-        sys.exit(1)
-
-    with codecs.open(path, encoding='utf8') as f:
-        print(session.verbose_name + ':\n')
-        proc = PygmentsProcessor()
-        print(proc.process_body(f.read(), 'application/json', 'json'))
-        print('')
-
-
-def command_session_delete(hostname, session_name=None):
-    """Delete a session by host and name, or delete all the
-    host's session if name not provided.
-
-    """
-    host = Host(hostname)
-    if not session_name:
-        host.delete()
-        session = Session(host, session_name)
-        session.delete()
-
-
-def command_session_edit(hostname, session_name):
-    """Open a session file in EDITOR."""
-    editor = os.environ.get('EDITOR', None)
-    if not editor:
-        sys.stderr.write(
-            'You need to configure the environment variable EDITOR.\n')
-        sys.exit(1)
-
-    session = Session(Host(hostname), session_name)
-    if session.is_new:
-        session.save()
-
-    command = editor.split()
-    command.append(session.path)
-    subprocess.call(command)
