@@ -15,6 +15,8 @@ try:
 except ImportError:
     OrderedDict = dict
 
+# TODO: Use MultiDict for headers once added to `requests`.
+# https://github.com/jkbr/httpie/issues/130
 from requests.structures import CaseInsensitiveDict
 
 from .compat import urlsplit, str
@@ -481,9 +483,6 @@ class ParamDict(OrderedDict):
         data and URL params.
 
         """
-        # NOTE: Won't work when used for form data with multiple values
-        # for a field and a file field is present:
-        # https://github.com/kennethreitz/requests/issues/737
         if key not in self:
             super(ParamDict, self).__setitem__(key, value)
         else:
