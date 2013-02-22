@@ -8,6 +8,7 @@ HTTPie authors
 Patches and ideas
 -----------------
 
+* `Cláudia T. Delgado <https://github.com/claudiatd>`_ (logo)
 * `Hank Gay <https://github.com/gthank>`_
 * `Jake Basile <https://github.com/jakebasile>`_
 * `Vladimir Berkutov <https://github.com/dair-targ>`_

@@ -2,6 +2,12 @@
 HTTPie: a CLI, cURL-like tool for humans
 ****************************************
 
+.. image:: https://raw.github.com/claudiatd/httpie-artwork/master/images/httpie_logo_simple.png
+    :alt: HTTPie logo
+    :width: 469
+    :height: 331
+    :align: center
+
 v0.4.0-alpha (`stable version`_)
 
 HTTPie is a **command line HTTP client**. Its goal is to make CLI interaction
@@ -15,6 +21,7 @@ for **testing, debugging**, and generally **interacting** with HTTP servers.
     :alt: HTTPie compared to cURL
     :width: 835
     :height: 835
+    :align: center
 
 
 HTTPie is written in Python, and under the hood it uses the excellent
@@ -1055,6 +1062,11 @@ Please run the existing suite of tests before a pull request is submitted:
 
 Don't forget to add yourself to `AUTHORS.rst`_.
 
+=======
+Logo
+=======
+
+See `claudiatd/httpie-artwork`_
 
 =======
 Authors
@@ -1169,6 +1181,7 @@ Changelog
 .. _Jakub Roztocil: http://roztocil.name
 .. _@jakubroztocil: https://twitter.com/jakubroztocil
 .. _existing issues: https://github.com/jkbr/httpie/issues?state=open
+.. _claudiatd/httpie-artwork: https://github.com/claudiatd/httpie-artwork
 .. _0.1.6: https://github.com/jkbr/httpie/compare/0.1.4...0.1.6
 .. _0.2.0: https://github.com/jkbr/httpie/compare/0.1.6...0.2.0
 .. _0.2.1: https://github.com/jkbr/httpie/compare/0.2.0...0.2.1
