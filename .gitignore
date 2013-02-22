@@ -6,4 +6,5 @@ build
 README.html
 .coverage
 htmlcov
-
+.idea
+.DS_Store
