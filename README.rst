@@ -8,8 +8,6 @@ HTTPie: a CLI, cURL-like tool for humans
     :height: 331
     :align: center
 
-v0.4.0-alpha (`stable version`_)
-
 HTTPie is a **command line HTTP client**. Its goal is to make CLI interaction
 with web services as **human-friendly** as possible. It provides a
 simple ``http`` command that allows for sending arbitrary HTTP requests using a
@@ -1075,7 +1073,6 @@ Authors
 `Jakub Roztocil`_  (`@jakubroztocil`_) created HTTPie and `these fine people`_
 have contributed.
 
-
 =======
 Licence
 =======
@@ -1089,9 +1086,10 @@ Changelog
 
 *You can click a version name to see a diff with the previous one.*
 
-* `0.4.0-alpha`_
+* `0.5.0-alpha`_
+* `0.4.0`_
     * Python 3.3 compatibility.
-    * Requests v1.0.4 compatibility.
+    * Requests >= v1.0.4 compatibility.
     * Added support for credentials in URL.
     * Added ``--no-option`` for every ``--option`` to be config-friendly.
     * Mutually exclusive arguments can be specified multiple times. The
@@ -1190,7 +1188,8 @@ Changelog
 .. _0.2.6: https://github.com/jkbr/httpie/compare/0.2.5...0.2.6
 .. _0.2.7: https://github.com/jkbr/httpie/compare/0.2.5...0.2.7
 .. _0.3.0: https://github.com/jkbr/httpie/compare/0.2.7...0.3.0
-.. _0.4.0-alpha: https://github.com/jkbr/httpie/compare/0.3.0...master
+.. _0.4.0: https://github.com/jkbr/httpie/compare/0.3.0...0.4.0
+.. _0.5.0-alpha: https://github.com/jkbr/httpie/compare/0.4.0...master
 .. _stable version: https://github.com/jkbr/httpie/tree/0.3.0#readme
 .. _AUTHORS.rst: https://github.com/jkbr/httpie/blob/master/AUTHORS.rst
 .. _LICENSE: https://github.com/jkbr/httpie/blob/master/LICENSE
