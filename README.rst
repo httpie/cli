@@ -33,7 +33,6 @@ HTTPie is written in Python, and under the hood it uses the excellent
     :backlinks: none
 
 
-
 =============
 Main Features
 =============
@@ -849,8 +848,6 @@ Streamed output by small chunks alá ``tail -f``:
     $ http --stream -f -a YOUR-TWITTER-NAME https://stream.twitter.com/1/statuses/filter.json track=Apple \
     | while read tweet; do echo "$tweet" | http POST example.org/tweets ; done
 
-
-
 ========
 Sessions
 ========
@@ -1084,8 +1081,9 @@ Changelog
 
 *You can click a version name to see a diff with the previous one.*
 
-* `0.5.0-alpha`_
-* `0.4.0`_
+* `0.4.1`_ (2013-02-26)
+    * Fixed ``setup.py``.
+* `0.4.0`_ (2013-02-22)
     * Python 3.3 compatibility.
     * Requests >= v1.0.4 compatibility.
     * Added support for credentials in URL.
@@ -1187,8 +1185,8 @@ Changelog
 .. _0.2.7: https://github.com/jkbr/httpie/compare/0.2.5...0.2.7
 .. _0.3.0: https://github.com/jkbr/httpie/compare/0.2.7...0.3.0
 .. _0.4.0: https://github.com/jkbr/httpie/compare/0.3.0...0.4.0
+.. _0.4.1: https://github.com/jkbr/httpie/compare/0.4.0...0.4.1
 .. _0.5.0-alpha: https://github.com/jkbr/httpie/compare/0.4.0...master
 .. _stable version: https://github.com/jkbr/httpie/tree/0.3.0#readme
 .. _AUTHORS.rst: https://github.com/jkbr/httpie/blob/master/AUTHORS.rst
 .. _LICENSE: https://github.com/jkbr/httpie/blob/master/LICENSE
-
