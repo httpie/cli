@@ -19,22 +19,25 @@ class Environment(object):
     if progname not in ['http', 'https']:
         progname = 'http'
 
-    stdin_isatty = sys.stdin.isatty()
-    stdin = sys.stdin
-    stdout_isatty = sys.stdout.isatty()
-
     config_dir = DEFAULT_CONFIG_DIR
 
+    # Can be set to 0 to disable colors completely.
+    colors = 256 if '256color' in os.environ.get('TERM', '') else 88
+
+    stdin = sys.stdin
+    stdin_isatty = sys.stdin.isatty()
+
+    stdout_isatty = sys.stdout.isatty()
     if stdout_isatty and is_windows:
+        # noinspection PyUnresolvedReferences
         from colorama.initialise import wrap_stream
         stdout = wrap_stream(sys.stdout, convert=None,
                              strip=None, autoreset=True, wrap=True)
     else:
         stdout = sys.stdout
-    stderr = sys.stderr
 
-    # Can be set to 0 to disable colors completely.
-    colors = 256 if '256color' in os.environ.get('TERM', '') else 88
+    stderr = sys.stderr
+    stderr_isatty = sys.stderr.isatty()
 
     def __init__(self, **kwargs):
         assert all(hasattr(type(self), attr)

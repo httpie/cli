@@ -61,7 +61,7 @@ def write(stream, outfile, flush):
             outfile.flush()
 
 
-def write_with_colors_win_p3k(stream, outfile, flush):
+def write_with_colors_win_py3(stream, outfile, flush):
     """Like `write`, but colorized chunks are written as text
     directly to `outfile` to ensure it gets processed by colorama.
     Applies only to Windows with Python 3 and colorized terminal output.
@@ -147,7 +147,8 @@ def get_stream_type(env, args):
 class BaseStream(object):
     """Base HTTP message output stream class."""
 
-    def __init__(self, msg, with_headers=True, with_body=True):
+    def __init__(self, msg, with_headers=True, with_body=True,
+                 on_body_chunk_downloaded=None):
         """
         :param msg: a :class:`models.HTTPMessage` subclass
         :param with_headers: if `True`, headers will be included
@@ -158,6 +159,7 @@ class BaseStream(object):
         self.msg = msg
         self.with_headers = with_headers
         self.with_body = with_body
+        self.on_body_chunk_downloaded = on_body_chunk_downloaded
 
     def _get_headers(self):
         """Return the headers' bytes."""
@@ -177,6 +179,8 @@ class BaseStream(object):
             try:
                 for chunk in self._iter_body():
                     yield chunk
+                    if self.on_body_chunk_downloaded:
+                        self.on_body_chunk_downloaded(chunk)
             except BinarySuppressedError as e:
                 if self.with_headers:
                     yield b'\n'

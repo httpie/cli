@@ -268,7 +268,7 @@ class HTTPieTest(BaseTestCase):
             'foo=bar'
         )
         self.assertIn(OK, r)
-        self.assertIn('"foo": "bar"', r)
+        self.assertIn(r'\"foo\": \"bar\"', r)
 
     def test_POST_JSON_data(self):
         r = http(
@@ -277,7 +277,7 @@ class HTTPieTest(BaseTestCase):
             'foo=bar'
         )
         self.assertIn(OK, r)
-        self.assertIn('"foo": "bar"', r)
+        self.assertIn(r'\"foo\": \"bar\"', r)
 
     def test_POST_form(self):
         r = http(
@@ -519,7 +519,7 @@ class ImplicitHTTPMethodTest(BaseTestCase):
             'hello=world'
         )
         self.assertIn(OK, r)
-        self.assertIn('"hello": "world"', r)
+        self.assertIn(r'\"hello\": \"world\"', r)
 
     def test_implicit_POST_form(self):
         r = http(
@@ -658,8 +658,8 @@ class VerboseFlagTest(BaseTestCase):
             'baz=bar'
         )
         self.assertIn(OK, r)
-        #noinspection PyUnresolvedReferences
-        self.assertEqual(r.count('"baz": "bar"'), 2)
+        self.assertIn('"baz": "bar"', r)  # request
+        self.assertIn(r'\"baz\": \"bar\"', r)  # response
 
 
 class MultipartFormDataFileUploadTest(BaseTestCase):
@@ -845,8 +845,8 @@ class AuthTest(BaseTestCase):
             httpbin('/digest-auth/auth/user/password')
         )
         self.assertIn(OK, r)
-        self.assertIn('"authenticated": true', r)
-        self.assertIn('"user": "user"', r)
+        self.assertIn(r'"authenticated": true', r)
+        self.assertIn(r'"user": "user"', r)
 
     def test_password_prompt(self):
 
@@ -1195,71 +1195,79 @@ class ArgumentParserTestCase(unittest.TestCase):
         self.parser = input.Parser()
 
     def test_guess_when_method_set_and_valid(self):
-        args = argparse.Namespace()
-        args.method = 'GET'
-        args.url = 'http://example.com/'
-        args.items = []
+        self.parser.args = argparse.Namespace()
+        self.parser.args.method = 'GET'
+        self.parser.args.url = 'http://example.com/'
+        self.parser.args.items = []
 
-        self.parser._guess_method(args, TestEnvironment())
+        self.parser.env = TestEnvironment()
 
-        self.assertEqual(args.method, 'GET')
-        self.assertEqual(args.url, 'http://example.com/')
-        self.assertEqual(args.items, [])
+        self.parser._guess_method()
+
+        self.assertEqual(self.parser.args.method, 'GET')
+        self.assertEqual(self.parser.args.url, 'http://example.com/')
+        self.assertEqual(self.parser.args.items, [])
 
     def test_guess_when_method_not_set(self):
-        args = argparse.Namespace()
-        args.method = None
-        args.url = 'http://example.com/'
-        args.items = []
 
-        self.parser._guess_method(args, TestEnvironment())
+        self.parser.args = argparse.Namespace()
+        self.parser.args.method = None
+        self.parser.args.url = 'http://example.com/'
+        self.parser.args.items = []
+        self.parser.env = TestEnvironment()
 
-        self.assertEqual(args.method, 'GET')
-        self.assertEqual(args.url, 'http://example.com/')
-        self.assertEqual(args.items, [])
+        self.parser._guess_method()
+
+        self.assertEqual(self.parser.args.method, 'GET')
+        self.assertEqual(self.parser.args.url, 'http://example.com/')
+        self.assertEqual(self.parser.args.items, [])
 
     def test_guess_when_method_set_but_invalid_and_data_field(self):
-        args = argparse.Namespace()
-        args.method = 'http://example.com/'
-        args.url = 'data=field'
-        args.items = []
+        self.parser.args = argparse.Namespace()
+        self.parser.args.method = 'http://example.com/'
+        self.parser.args.url = 'data=field'
+        self.parser.args.items = []
+        self.parser.env = TestEnvironment()
+        self.parser._guess_method()
 
-        self.parser._guess_method(args, TestEnvironment())
-
-        self.assertEqual(args.method, 'POST')
-        self.assertEqual(args.url, 'http://example.com/')
+        self.assertEqual(self.parser.args.method, 'POST')
+        self.assertEqual(self.parser.args.url, 'http://example.com/')
         self.assertEqual(
-            args.items,
+            self.parser.args.items,
             [input.KeyValue(
                 key='data', value='field', sep='=', orig='data=field')])
 
     def test_guess_when_method_set_but_invalid_and_header_field(self):
-        args = argparse.Namespace()
-        args.method = 'http://example.com/'
-        args.url = 'test:header'
-        args.items = []
+        self.parser.args = argparse.Namespace()
+        self.parser.args.method = 'http://example.com/'
+        self.parser.args.url = 'test:header'
+        self.parser.args.items = []
 
-        self.parser._guess_method(args, TestEnvironment())
+        self.parser.env = TestEnvironment()
 
-        self.assertEqual(args.method, 'GET')
-        self.assertEqual(args.url, 'http://example.com/')
+        self.parser._guess_method()
+
+        self.assertEqual(self.parser.args.method, 'GET')
+        self.assertEqual(self.parser.args.url, 'http://example.com/')
         self.assertEqual(
-            args.items,
+            self.parser.args.items,
             [input.KeyValue(
                 key='test', value='header', sep=':', orig='test:header')])
 
     def test_guess_when_method_set_but_invalid_and_item_exists(self):
-        args = argparse.Namespace()
-        args.method = 'http://example.com/'
-        args.url = 'new_item=a'
-        args.items = [
+        self.parser.args = argparse.Namespace()
+        self.parser.args.method = 'http://example.com/'
+        self.parser.args.url = 'new_item=a'
+        self.parser.args.items = [
             input.KeyValue(
                 key='old_item', value='b', sep='=', orig='old_item=b')
         ]
 
-        self.parser._guess_method(args, TestEnvironment())
+        self.parser.env = TestEnvironment()
 
-        self.assertEqual(args.items, [
+        self.parser._guess_method()
+
+        self.assertEqual(self.parser.args.items, [
             input.KeyValue(
                 key='new_item', value='a', sep='=', orig='new_item=a'),
             input.KeyValue(
@@ -1408,6 +1416,11 @@ class SessionTest(BaseTestCase):
 
         # Should be the same as before r2.
         self.assertDictEqual(r1.json, r3.json)
+
+
+class DownloadsTest(BaseTestCase):
+    # TODO: tests for downloads
+    pass
 
 
 if __name__ == '__main__':

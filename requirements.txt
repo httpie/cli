@@ -1,1 +1,2 @@
 #
+git://github.com/kennethreitz/httpbin.git

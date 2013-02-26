@@ -98,57 +98,94 @@ class Parser(ArgumentParser):
     def parse_args(self, env, args=None, namespace=None):
 
         self.env = env
+        self.args, no_options = super(Parser, self)\
+            .parse_known_args(args, namespace)
 
-        args, no_options = super(Parser, self).parse_known_args(args,
-                                                                namespace)
+        if self.args.debug:
+            self.args.traceback = True
 
-        self._apply_no_options(args, no_options)
-
-        if not args.json and env.config.implicit_content_type == 'form':
-            args.form = True
-
-        if args.debug:
-            args.traceback = True
-
-        if args.output:
-            env.stdout = args.output
-            env.stdout_isatty = False
-
-        self._process_output_options(args, env)
-        self._process_pretty_options(args, env)
-        self._guess_method(args, env)
-        self._parse_items(args)
-
+        # Arguments processing and environment setup.
+        self._apply_no_options(no_options)
+        self._apply_config()
+        self._setup_standard_streams()
+        self._validate_download_options()
+        self._process_output_options()
+        self._process_pretty_options()
+        self._guess_method()
+        self._parse_items()
         if not env.stdin_isatty:
-            self._body_from_file(args, env.stdin)
+            self._body_from_file(self.env.stdin)
+        if not (self.args.url.startswith(HTTP)
+                or self.args.url.startswith(HTTPS)):
+            # Default to 'https://' if invoked as `https args`.
+            scheme = HTTPS if self.env.progname == 'https' else HTTP
+            self.args.url = scheme + self.args.url
+        self._process_auth()
 
-        if not (args.url.startswith(HTTP) or args.url.startswith(HTTPS)):
-            scheme = HTTPS if env.progname == 'https' else HTTP
-            args.url = scheme + args.url
+        return self.args
 
-        self._process_auth(args)
+    # noinspection PyShadowingBuiltins
+    def _print_message(self, message, file=None):
+        # Sneak in our stderr/stdout.
+        file = {
+            sys.stdout: self.env.stdout,
+            sys.stderr: self.env.stderr,
+            None: self.env.stderr
+        }.get(file, file)
 
-        return args
+        super(Parser, self)._print_message(message, file)
 
-    def _process_auth(self, args):
-        url = urlsplit(args.url)
+    def _setup_standard_streams(self):
+        """
+        Modify `env.stdout` and `env.stdout_isatty` based on args, if needed.
 
-        if args.auth:
-            if not args.auth.has_password():
+        """
+        if self.args.download:
+            # With `--download`, we write everything that would normally go to
+            # `stdout` to `stderr` instead. Let's replace the stream so that
+            # we don't have to use many `if`s throughout the codebase.
+            # The response body will be treated separately.
+            self.env.stdout = self.env.stderr
+            self.env.stdout_isatty = self.env.stderr_isatty
+        elif self.args.output_file:
+            # When not `--download`ing, then `--output` simply replaces
+            # `stdout`. The file is opened for appending, which isn't what
+            # we want in this case.
+            self.args.output_file.seek(0)
+            self.args.output_file.truncate()
+
+            self.env.stdout = self.args.output_file
+            self.env.stdout_isatty = False
+
+    def _apply_config(self):
+        if (not self.args.json
+                and self.env.config.implicit_content_type == 'form'):
+            self.args.form = True
+
+    def _process_auth(self):
+        """
+        If only a username provided via --auth, then ask for a password.
+        Or, take credentials from the URL, if provided.
+
+        """
+        url = urlsplit(self.args.url)
+
+        if self.args.auth:
+            if not self.args.auth.has_password():
                 # Stdin already read (if not a tty) so it's save to prompt.
-                args.auth.prompt_password(url.netloc)
+                self.args.auth.prompt_password(url.netloc)
 
         elif url.username is not None:
             # Handle http://username:password@hostname/
             username, password = url.username, url.password
-            args.auth = AuthCredentials(
+            self.args.auth = AuthCredentials(
                 key=username,
                 value=password,
                 sep=SEP_CREDENTIALS,
                 orig=SEP_CREDENTIALS.join([username, password])
             )
 
-    def _apply_no_options(self, args, no_options):
+    def _apply_no_options(self, no_options):
         """For every `--no-OPTION` in `no_options`, set `args.OPTION` to
         its default value. This allows for un-setting of options, e.g.,
         specified in config.
@@ -165,7 +202,7 @@ class Parser(ArgumentParser):
             inverted = '--' + option[5:]
             for action in self._actions:
                 if inverted in action.option_strings:
-                    setattr(args, action.dest, action.default)
+                    setattr(self.args, action.dest, action.default)
                     break
             else:
                 invalid.append(option)
@@ -174,123 +211,140 @@ class Parser(ArgumentParser):
             msg = 'unrecognized arguments: %s'
             self.error(msg % ' '.join(invalid))
 
-    def _print_message(self, message, file=None):
-        # Sneak in our stderr/stdout.
-        file = {
-            sys.stdout: self.env.stdout,
-            sys.stderr: self.env.stderr,
-            None: self.env.stderr
-        }.get(file, file)
-
-        super(Parser, self)._print_message(message, file)
-
-    def _body_from_file(self, args, fd):
+    def _body_from_file(self, fd):
         """There can only be one source of request data.
 
         Bytes are always read.
 
         """
-        if args.data:
+        if self.args.data:
             self.error('Request body (from stdin or a file) and request '
                        'data (key=value) cannot be mixed.')
-        args.data = getattr(fd, 'buffer', fd).read()
+        self.args.data = getattr(fd, 'buffer', fd).read()
 
-    def _guess_method(self, args, env):
+    def _guess_method(self):
         """Set `args.method` if not specified to either POST or GET
         based on whether the request has data or not.
 
         """
-        if args.method is None:
+        if self.args.method is None:
             # Invoked as `http URL'.
-            assert not args.items
-            if not env.stdin_isatty:
-                args.method = HTTP_POST
+            assert not self.args.items
+            if not self.env.stdin_isatty:
+                self.args.method = HTTP_POST
             else:
-                args.method = HTTP_GET
+                self.args.method = HTTP_GET
 
         # FIXME: False positive, e.g., "localhost" matches but is a valid URL.
-        elif not re.match('^[a-zA-Z]+$', args.method):
+        elif not re.match('^[a-zA-Z]+$', self.args.method):
             # Invoked as `http URL item+'. The URL is now in `args.method`
             # and the first ITEM is now incorrectly in `args.url`.
             try:
                 # Parse the URL as an ITEM and store it as the first ITEM arg.
-                args.items.insert(
-                    0, KeyValueArgType(*SEP_GROUP_ITEMS).__call__(args.url))
+                self.args.items.insert(
+                    0,
+                    KeyValueArgType(*SEP_GROUP_ITEMS).__call__(self.args.url)
+                )
 
             except ArgumentTypeError as e:
-                if args.traceback:
+                if self.args.traceback:
                     raise
                 self.error(e.message)
 
             else:
                 # Set the URL correctly
-                args.url = args.method
+                self.args.url = self.args.method
                 # Infer the method
-                has_data = not env.stdin_isatty or any(
-                    item.sep in SEP_GROUP_DATA_ITEMS for item in args.items)
-                args.method = HTTP_POST if has_data else HTTP_GET
+                has_data = not self.env.stdin_isatty or any(
+                    item.sep in SEP_GROUP_DATA_ITEMS
+                    for item in self.args.items
+                )
+                self.args.method = HTTP_POST if has_data else HTTP_GET
 
-    def _parse_items(self, args):
-        """Parse `args.items` into `args.headers`, `args.data`,
-        `args.`, and `args.files`.
+    def _parse_items(self):
+        """Parse `args.items` into `args.headers`, `args.data`, `args.params`,
+         and `args.files`.
 
         """
-        args.headers = CaseInsensitiveDict()
-        args.data = ParamDict() if args.form else OrderedDict()
-        args.files = OrderedDict()
-        args.params = ParamDict()
+        self.args.headers = CaseInsensitiveDict()
+        self.args.data = ParamDict() if self.args.form else OrderedDict()
+        self.args.files = OrderedDict()
+        self.args.params = ParamDict()
 
         try:
-            parse_items(items=args.items,
-                        headers=args.headers,
-                        data=args.data,
-                        files=args.files,
-                        params=args.params)
+            parse_items(items=self.args.items,
+                        headers=self.args.headers,
+                        data=self.args.data,
+                        files=self.args.files,
+                        params=self.args.params)
         except ParseError as e:
-            if args.traceback:
+            if self.args.traceback:
                 raise
             self.error(e.message)
 
-        if args.files and not args.form:
+        if self.args.files and not self.args.form:
             # `http url @/path/to/file`
-            file_fields = list(args.files.keys())
+            file_fields = list(self.args.files.keys())
             if file_fields != ['']:
                 self.error(
                     'Invalid file fields (perhaps you meant --form?): %s'
                     % ','.join(file_fields))
 
-            fn, fd = args.files['']
-            args.files = {}
-            self._body_from_file(args, fd)
-            if 'Content-Type' not in args.headers:
+            fn, fd = self.args.files['']
+            self.args.files = {}
+
+            self._body_from_file(fd)
+
+            if 'Content-Type' not in self.args.headers:
                 mime, encoding = mimetypes.guess_type(fn, strict=False)
                 if mime:
                     content_type = mime
                     if encoding:
                         content_type = '%s; charset=%s' % (mime, encoding)
-                    args.headers['Content-Type'] = content_type
+                    self.args.headers['Content-Type'] = content_type
 
-    def _process_output_options(self, args, env):
-        """Apply defaults to output options or validate the provided ones.
+    def _process_output_options(self):
+        """Apply defaults to output options, or validate the provided ones.
 
         The default output options are stdout-type-sensitive.
 
         """
-        if not args.output_options:
-            args.output_options = (OUTPUT_OPTIONS_DEFAULT if env.stdout_isatty
-                                else OUTPUT_OPTIONS_DEFAULT_STDOUT_REDIRECTED)
+        if not self.args.output_options:
+            self.args.output_options = (
+                OUTPUT_OPTIONS_DEFAULT
+                if self.env.stdout_isatty
+                else OUTPUT_OPTIONS_DEFAULT_STDOUT_REDIRECTED
+            )
 
-        unknown = set(args.output_options) - OUTPUT_OPTIONS
-        if unknown:
-            self.error('Unknown output options: %s' % ','.join(unknown))
+        unknown_output_options = set(self.args.output_options) - OUTPUT_OPTIONS
+        if unknown_output_options:
+            self.error(
+                'Unknown output options: %s' % ','.join(unknown_output_options)
+            )
 
-    def _process_pretty_options(self, args, env):
-        if args.prettify == PRETTY_STDOUT_TTY_ONLY:
-            args.prettify = PRETTY_MAP['all' if env.stdout_isatty else 'none']
-        elif args.prettify and env.is_windows:
+        if self.args.download and OUT_RESP_BODY in self.args.output_options:
+            # Response body is always downloaded with --download and it goes
+            # through a different routine, so we remove it.
+            self.args.output_options = str(
+                set(self.args.output_options) - set(OUT_RESP_BODY))
+
+    def _process_pretty_options(self):
+        if self.args.prettify == PRETTY_STDOUT_TTY_ONLY:
+            self.args.prettify = PRETTY_MAP[
+                'all' if self.env.stdout_isatty else 'none']
+        elif self.args.prettify and self.env.is_windows:
             self.error('Only terminal output can be colorized on Windows.')
         else:
-            args.prettify = PRETTY_MAP[args.prettify]
+            # noinspection PyTypeChecker
+            self.args.prettify = PRETTY_MAP[self.args.prettify]
+
+    def _validate_download_options(self):
+        if not self.args.download:
+            if self.args.download_resume:
+                self.error('--continue only works with --download')
+        if self.args.download_resume and not (
+                self.args.download and self.args.output_file):
+            self.error('--continue requires --output to be specified')
 
 
 class ParseError(Exception):
@@ -316,16 +370,6 @@ def session_name_arg_type(name):
         raise ArgumentTypeError(
             'special characters and spaces are not'
             ' allowed in session names: "%s"'
-            % name)
-    return name
-
-
-def host_name_arg_type(name):
-    from .sessions import Host
-    if not Host.is_valid_name(name):
-        raise ArgumentTypeError(
-            'special characters and spaces are not'
-            ' allowed in host names: "%s"'
             % name)
     return name
 

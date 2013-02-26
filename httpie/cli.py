@@ -1,15 +1,12 @@
 """CLI arguments definition.
 
 NOTE: the CLI interface may change before reaching v1.0.
-TODO: make the options config friendly, i.e., no mutually exclusive groups to
-      allow options overwriting.
 
 """
 from argparse import FileType, OPTIONAL, ZERO_OR_MORE, SUPPRESS
 
 from . import __doc__
 from . import __version__
-from .compat import is_windows
 from .sessions import DEFAULT_SESSIONS_DIR, Session
 from .output import AVAILABLE_STYLES, DEFAULT_STYLE
 from .input import (Parser, AuthCredentialsArgType, KeyValueArgType,
@@ -45,7 +42,8 @@ positional = parser.add_argument_group(
     ''')
 )
 positional.add_argument(
-    'method', metavar='METHOD',
+    'method',
+    metavar='METHOD',
     nargs=OPTIONAL,
     default=None,
     help=_('''
@@ -57,14 +55,16 @@ positional.add_argument(
     ''')
 )
 positional.add_argument(
-    'url', metavar='URL',
+    'url',
+    metavar='URL',
     help=_('''
         The protocol defaults to http:// if the
         URL does not include one.
     ''')
 )
 positional.add_argument(
-    'items', metavar='REQUEST ITEM',
+    'items',
+    metavar='REQUEST ITEM',
     nargs=ZERO_OR_MORE,
     type=KeyValueArgType(*SEP_GROUP_ITEMS),
     help=_('''
@@ -90,7 +90,8 @@ content_type = parser.add_argument_group(
 )
 
 content_type.add_argument(
-    '--json', '-j', action='store_true',
+    '--json', '-j',
+    action='store_true',
     help=_('''
         (default) Data items from the command
         line are serialized as a JSON object.
@@ -99,7 +100,8 @@ content_type.add_argument(
     ''')
 )
 content_type.add_argument(
-    '--form', '-f', action='store_true',
+    '--form', '-f',
+    action='store_true',
     help=_('''
         Data items from the command line are serialized as form fields.
         The Content-Type is set to application/x-www-form-urlencoded
@@ -117,20 +119,9 @@ content_type.add_argument(
 output_processing = parser.add_argument_group(title='Output processing')
 
 output_processing.add_argument(
-    '--output', '-o', type=FileType('w+b'),
-    metavar='FILE',
-    help=SUPPRESS if not is_windows else _(
-        '''
-        Save output to FILE.
-        This option is a replacement for piping output to FILE,
-        which would on Windows result in corrupted data
-        being saved.
-
-        '''
-    )
-)
-output_processing.add_argument(
-    '--pretty', dest='prettify', default=PRETTY_STDOUT_TTY_ONLY,
+    '--pretty',
+    dest='prettify',
+    default=PRETTY_STDOUT_TTY_ONLY,
     choices=sorted(PRETTY_MAP.keys()),
     help=_('''
         Controls output processing. The value can be "none" to not prettify
@@ -140,7 +131,10 @@ output_processing.add_argument(
     ''')
 )
 output_processing.add_argument(
-    '--style', '-s', dest='style', default=DEFAULT_STYLE, metavar='STYLE',
+    '--style', '-s',
+    dest='style',
+    metavar='STYLE',
+    default=DEFAULT_STYLE,
     choices=AVAILABLE_STYLES,
     help=_('''
         Output coloring style. One of %s. Defaults to "%s".
@@ -157,7 +151,9 @@ output_processing.add_argument(
 output_options = parser.add_argument_group(title='Output options')
 
 output_options.add_argument(
-    '--print', '-p', dest='output_options', metavar='WHAT',
+    '--print', '-p',
+    dest='output_options',
+    metavar='WHAT',
     help=_('''
         String specifying what the output should contain:
         "{request_headers}" stands for the request headers,  and
@@ -174,24 +170,30 @@ output_options.add_argument(
                    response_body=OUT_RESP_BODY,))
 )
 output_options.add_argument(
-    '--verbose', '-v', dest='output_options',
-    action='store_const', const=''.join(OUTPUT_OPTIONS),
+    '--verbose', '-v',
+    dest='output_options',
+    action='store_const',
+    const=''.join(OUTPUT_OPTIONS),
     help=_('''
         Print the whole request as well as the response.
         Shortcut for --print={0}.
     '''.format(''.join(OUTPUT_OPTIONS)))
 )
 output_options.add_argument(
-    '--headers', '-h', dest='output_options',
-    action='store_const', const=OUT_RESP_HEAD,
+    '--headers', '-h',
+    dest='output_options',
+    action='store_const',
+    const=OUT_RESP_HEAD,
     help=_('''
         Print only the response headers.
         Shortcut for --print={0}.
     '''.format(OUT_RESP_HEAD))
 )
 output_options.add_argument(
-    '--body', '-b', dest='output_options',
-    action='store_const', const=OUT_RESP_BODY,
+    '--body', '-b',
+    dest='output_options',
+    action='store_const',
+    const=OUT_RESP_BODY,
     help=_('''
         Print only the response body.
         Shortcut for --print={0}.
@@ -199,7 +201,9 @@ output_options.add_argument(
 )
 
 output_options.add_argument(
-    '--stream', '-S', action='store_true', default=False,
+    '--stream', '-S',
+    action='store_true',
+    default=False,
     help=_('''
     Always stream the output by line, i.e., behave like `tail -f'.
 
@@ -214,7 +218,43 @@ output_options.add_argument(
 
     ''')
 )
+output_processing.add_argument(
+    '--output', '-o',
+    type=FileType('a+b'),
+    dest='output_file',
+    metavar='FILE',
+    help=_(
+        '''
+        Save output to FILE. If --download is set, then only the response
+        body is saved to the file. Other parts of the HTTP exchange are
+        printed to stderr.
 
+        '''
+    )
+)
+
+output_options.add_argument(
+    '--download', '-d',
+    action='store_true',
+    default=False,
+    help=_('''
+    Do not print the response body to stdout. Rather, download it and store it
+    in a file. The filename is guessed unless specified with --output
+    [filename]. This action is similar to the default behaviour of wget.
+
+    ''')
+)
+
+output_options.add_argument(
+    '--continue', '-c',
+    dest='download_resume',
+    action='store_true',
+    default=False,
+    help=_('''
+    Resume an interrupted download.
+    The --output option needs to be specified as well.
+    ''')
+)
 
 ###############################################################################
 # Sessions
@@ -223,7 +263,9 @@ sessions = parser.add_argument_group(title='Sessions')\
                  .add_mutually_exclusive_group(required=False)
 
 sessions.add_argument(
-    '--session', metavar='SESSION_NAME', type=RegexValidator(
+    '--session',
+    metavar='SESSION_NAME',
+    type=RegexValidator(
         Session.VALID_NAME_PATTERN,
         'Session name contains invalid characters.'
     ),
@@ -235,7 +277,8 @@ sessions.add_argument(
     ''' % DEFAULT_SESSIONS_DIR)
 )
 sessions.add_argument(
-    '--session-read-only', metavar='SESSION_NAME',
+    '--session-read-only',
+    metavar='SESSION_NAME',
     help=_('''
         Create or read a session without updating it form the
         request/response exchange.
@@ -249,7 +292,8 @@ sessions.add_argument(
 # ``requests.request`` keyword arguments.
 auth = parser.add_argument_group(title='Authentication')
 auth.add_argument(
-    '--auth', '-a', metavar='USER[:PASS]',
+    '--auth', '-a',
+    metavar='USER[:PASS]',
     type=AuthCredentialsArgType(SEP_CREDENTIALS),
     help=_('''
         If only the username is provided (-a username),
@@ -258,7 +302,9 @@ auth.add_argument(
 )
 
 auth.add_argument(
-    '--auth-type', choices=['basic', 'digest'], default='basic',
+    '--auth-type',
+    choices=['basic', 'digest'],
+    default='basic',
     help=_('''
         The authentication mechanism to be used.
         Defaults to "basic".
@@ -272,7 +318,10 @@ auth.add_argument(
 network = parser.add_argument_group(title='Network')
 
 network.add_argument(
-    '--proxy', default=[], action='append', metavar='PROTOCOL:HOST',
+    '--proxy',
+    default=[],
+    action='append',
+    metavar='PROTOCOL:HOST',
     type=KeyValueArgType(SEP_PROXY),
     help=_('''
         String mapping protocol to the URL of the proxy
@@ -281,14 +330,17 @@ network.add_argument(
     ''')
 )
 network.add_argument(
-    '--follow', default=False, action='store_true',
+    '--follow',
+    default=False,
+    action='store_true',
     help=_('''
         Set this flag if full redirects are allowed
         (e.g. re-POST-ing of data at new ``Location``)
     ''')
 )
 network.add_argument(
-    '--verify', default='yes',
+    '--verify',
+    default='yes',
     help=_('''
         Set to "no" to skip checking the host\'s SSL certificate.
         You can also pass the  path to a CA_BUNDLE
@@ -299,14 +351,19 @@ network.add_argument(
 )
 
 network.add_argument(
-    '--timeout', type=float, default=30, metavar='SECONDS',
+    '--timeout',
+    type=float,
+    default=30,
+    metavar='SECONDS',
     help=_('''
         The connection timeout of the request in seconds.
         The default value is 30 seconds.
     ''')
 )
 network.add_argument(
-    '--check-status', default=False, action='store_true',
+    '--check-status',
+    default=False,
+    action='store_true',
     help=_('''
         By default, HTTPie exits with 0 when no network or other fatal
         errors occur.
@@ -333,17 +390,25 @@ troubleshooting = parser.add_argument_group(title='Troubleshooting')
 
 troubleshooting.add_argument(
     '--help',
-    action='help', default=SUPPRESS,
+    action='help',
+    default=SUPPRESS,
     help='Show this help message and exit'
 )
 troubleshooting.add_argument(
-    '--version', action='version', version=__version__)
+    '--version',
+    action='version',
+    version=__version__
+)
 troubleshooting.add_argument(
-    '--traceback', action='store_true', default=False,
+    '--traceback',
+    action='store_true',
+    default=False,
     help='Prints exception traceback should one occur.'
 )
 troubleshooting.add_argument(
-    '--debug', action='store_true', default=False,
+    '--debug',
+    action='store_true',
+    default=False,
     help=_('''
         Prints exception traceback should one occur, and also other
         information that is useful for debugging HTTPie itself and

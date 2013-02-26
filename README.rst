@@ -16,6 +16,10 @@ for **testing, debugging**, and generally **interacting** with HTTP servers.
     :height: 835
     :align: center
 
+
+------
+
+
 .. image:: https://raw.github.com/claudiatd/httpie-artwork/master/images/httpie_logo_simple.png
     :alt: HTTPie logo
     :align: center
@@ -157,6 +161,13 @@ Download a file and save it via `redirected output`_:
 .. code-block:: bash
 
     $ http example.org/file > file
+
+
+Download a file ``wget`` style:
+
+.. code-block:: bash
+
+    $ http --download example.org/file
 
 Use named `sessions`_ to make certain aspects or the communication persistent
 between requests to the same host:
@@ -811,6 +822,15 @@ by adding the following to your ``~/.bash_profile``:
     }
 
 
+=============
+Download Mode
+=============
+
+HTTPie features a download mode, in which a download progress bar is shown,
+and the response body is saved to a file. You can enable this mode
+with the ``--download`` flag.
+
+
 ==================
 Streamed Responses
 ==================
@@ -1081,6 +1101,8 @@ Changelog
 
 *You can click a version name to see a diff with the previous one.*
 
+* `0.5.0-alpha`_
+    * Added ``--download`` mode.
 * `0.4.1`_ (2013-02-26)
     * Fixed ``setup.py``.
 * `0.4.0`_ (2013-02-22)

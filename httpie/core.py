@@ -21,8 +21,9 @@ from pygments import __version__ as pygments_version
 from .cli import parser
 from .compat import str, is_py3
 from .client import get_response
+from .downloads import Download
 from .models import Environment
-from .output import build_output_stream, write, write_with_colors_win_p3k
+from .output import build_output_stream, write, write_with_colors_win_py3
 from . import ExitStatus
 
 
@@ -77,6 +78,16 @@ def main(args=sys.argv[1:], env=Environment()):
     try:
         args = parser.parse_args(args=args, env=env)
 
+        download = None
+        if args.download:
+            args.follow = True
+            download = Download(
+                output_file=args.output_file,
+                progress_file=env.stderr,
+                resume=args.download_resume
+            )
+            download.alter_request_headers(args.headers)
+
         response = get_response(args, config_dir=env.config.directory)
 
         if args.check_status:
@@ -89,17 +100,30 @@ def main(args=sys.argv[1:], env=Environment()):
                       level='warning')
 
         write_kwargs = {
-            'stream': build_output_stream(args, env,
-                                          response.request,
-                                          response),
+            'stream': build_output_stream(
+                args, env, response.request, response),
+
+            # This will in fact be `stderr` with `--download`
             'outfile': env.stdout,
+
             'flush': env.stdout_isatty or args.stream
         }
+
         try:
+
             if env.is_windows and is_py3 and 'colors' in args.prettify:
-                write_with_colors_win_p3k(**write_kwargs)
+                write_with_colors_win_py3(**write_kwargs)
             else:
                 write(**write_kwargs)
+
+            if download:
+                # Response body download.
+                download_stream, download_to = download.start(response)
+                write(
+                    stream=download_stream,
+                    outfile=download_to,
+                    flush=False,
+                )
 
         except IOError as e:
             if not traceback and e.errno == errno.EPIPE:
