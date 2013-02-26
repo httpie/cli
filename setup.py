@@ -46,7 +46,6 @@ setup(
     entry_points={
         'console_scripts': [
             'http = httpie.__main__:main',
-            'httpie = httpie.manage:main',
         ],
     },
     install_requires=requirements,
