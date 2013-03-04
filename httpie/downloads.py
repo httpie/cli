@@ -63,6 +63,7 @@ class Download(object):
             else:
                 self.bytes_resumed_from = self.bytes_downloaded = bytes_have
                 # Set ``Range`` header to resume the download
+                # TODO: detect Range support first?
                 headers['Range'] = '%d-' % bytes_have
 
     def start(self, response):
@@ -132,18 +133,18 @@ class Download(object):
 
     def _get_output_filename(self, url, content_type, suffix=None):
 
+        suffix = '' if not suffix else '-' + str(suffix)
+
         fn = urlsplit(url).path.rstrip('/')
         fn = os.path.basename(fn) if fn else 'index'
 
-        if suffix:
-            fn += '-' + str(suffix)
+        if '.' in fn:
+            base, ext = os.path.splitext(fn)
+        else:
+            base = fn
+            ext = mimetypes.guess_extension(content_type.split(';')[0]) or ''
 
-        if '.' not in fn:
-            ext = mimetypes.guess_extension(content_type.split(';')[0])
-            if ext:
-                fn += ext
-
-        return fn
+        return base + suffix + ext
 
     def _on_progress(self, chunk):
         """

@@ -7,7 +7,7 @@ URL: http://code.activestate.com/recipes/577081/
 import doctest
 
 
-def humanize_bytes(n, precision=1):
+def humanize_bytes(n, precision=2):
     """Return a humanized string representation of a number of bytes.
 
     Assumes `from __future__ import division`.
