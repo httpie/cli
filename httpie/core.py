@@ -124,6 +124,7 @@ def main(args=sys.argv[1:], env=Environment()):
                     outfile=download_to,
                     flush=False,
                 )
+                download.finished()
 
         except IOError as e:
             if not traceback and e.errno == errno.EPIPE:

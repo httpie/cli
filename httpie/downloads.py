@@ -14,10 +14,11 @@ from .models import HTTPResponse
 from .humanize import humanize_bytes
 from .compat import urlsplit
 
-CLEAR_LINE = '\r\033[K'
 
-PROGRESS_TPL = '{percentage:0.2f} % ({downloaded}) of {total} ({speed}/s)'
-FINISHED_TPL = '{downloaded} of {total} in {time}s ({speed}/s)'
+CLEAR_LINE = '\r\033[K'
+TPL_PROGRESS = '{percentage:0.2f} % ({downloaded}) of {total} ({speed}/s)'
+TPL_PROGRESS_NO_CONTENT_LENGTH = '{downloaded} ({speed}/s)'
+TPL_SUMMARY = '{downloaded} of {total} in {time:0.5f}s ({speed}/s)\n'
 
 
 class Download(object):
@@ -42,7 +43,7 @@ class Download(object):
         self.resume = resume
 
         self.bytes_resumed_from = 0
-        self.bytes_total = 0
+        self.content_length = None
         self.bytes_downloaded = 0
         self.bytes_downloaded_prev = 0
         self.bytes_total_humanized = ''
@@ -96,8 +97,12 @@ class Download(object):
                 mode='a+b'
             )
 
-        self.bytes_total = int(response.headers.get('Content-Length'), 0)
-        self.bytes_total_humanized = humanize_bytes(self.bytes_total)
+        self.content_length = response.headers.get('Content-Length')
+        if self.content_length:
+            self.content_length = int(self.content_length)
+
+        self.bytes_total_humanized = (humanize_bytes(self.content_length)
+                                      if self.content_length else '?')
 
         self.time_started = time()
         self.time_prev = self.time_started
@@ -106,30 +111,78 @@ class Download(object):
             msg=HTTPResponse(response),
             with_headers=False,
             with_body=True,
-            on_body_chunk_downloaded=self._on_progress
+            on_body_chunk_downloaded=self._on_progress,
+            # FIXME: large chunks & chunked response freezes
+            chunk_size=1
         )
 
         self.progress_file.write('Saving to %s\n' % self.output_file.name)
-        self._report_status()
+        self.report_status()
 
         return stream, self.output_file
 
-    def has_finished(self):
-        return self.bytes_downloaded == self.bytes_total
+    def report_status(self, interval=.6):
+        now = time()
+
+        # Update the reported speed on the first chunk and once in a while.
+        if self.bytes_downloaded_prev and now - self.time_prev < interval:
+            return
+
+        self.speed = (
+            (self.bytes_downloaded - self.bytes_downloaded_prev)
+            / (now - self.time_prev)
+        )
+        self.time_prev = now
+        self.bytes_downloaded_prev = self.bytes_downloaded
+
+        if self.content_length:
+            template = TPL_PROGRESS
+            percentage = self.bytes_downloaded / self.content_length * 100
+        else:
+            template = TPL_PROGRESS_NO_CONTENT_LENGTH
+            percentage = None
+
+        self.progress_file.write(CLEAR_LINE + template.format(
+            percentage=percentage,
+            downloaded=humanize_bytes(self.bytes_downloaded),
+            total=self.bytes_total_humanized,
+            speed=humanize_bytes(self.speed)
+        ))
+
+        self.progress_file.flush()
+
+    def finished(self):
+        self.output_file.close()
+
+        bytes_downloaded = self.bytes_downloaded - self.bytes_resumed_from
+        time_taken = time() - self.time_started
+        self.progress_file.write(CLEAR_LINE + TPL_SUMMARY.format(
+            downloaded=humanize_bytes(bytes_downloaded),
+            total=humanize_bytes(self.bytes_downloaded),
+            speed=humanize_bytes(bytes_downloaded / time_taken),
+            time=time_taken,
+        ))
+        self.progress_file.flush()
+
+    def _on_progress(self, chunk):
+        """
+        A download progress callback.
+
+        :param chunk: A chunk of response body data that has just
+                      been downloaded and written to the output.
+        :type chunk: bytes
+
+        """
+        self.bytes_downloaded += len(chunk)
+        self.report_status()
 
     def _get_unique_output_filename(self, url, content_type):
         suffix = 0
-        fn = None
         while True:
-            fn = self._get_output_filename(
-                url=url,
-                content_type=content_type,
-                suffix=suffix
-            )
+            fn = self._get_output_filename(url, content_type, suffix)
             if not os.path.exists(fn):
-                break
+                return fn
             suffix += 1
-        return fn
 
     def _get_output_filename(self, url, content_type, suffix=None):
 
@@ -145,51 +198,3 @@ class Download(object):
             ext = mimetypes.guess_extension(content_type.split(';')[0]) or ''
 
         return base + suffix + ext
-
-    def _on_progress(self, chunk):
-        """
-        A download progress callback.
-
-        :param chunk: A chunk of response body data that has just
-                      been downloaded and written to the output.
-        :type chunk: bytes
-
-        """
-        self.bytes_downloaded += len(chunk)
-        self._report_status()
-
-    def _report_status(self):
-        now = time()
-
-        # Update the reported speed on the first chunk and once in a while.
-        if not self.bytes_downloaded_prev or now - self.time_prev >= .6:
-            self.speed = (
-                (self.bytes_downloaded - self.bytes_downloaded_prev)
-                / (now - self.time_prev)
-            )
-            self.time_prev = now
-            self.bytes_downloaded_prev = self.bytes_downloaded
-
-            self.progress_file.write(CLEAR_LINE)
-            self.progress_file.write(PROGRESS_TPL.format(
-                percentage=self.bytes_downloaded / self.bytes_total * 100,
-                downloaded=humanize_bytes(self.bytes_downloaded),
-                total=self.bytes_total_humanized,
-                speed=humanize_bytes(self.speed)
-            ))
-
-        # Report avg. speed and total time when finished.
-        if self.has_finished():
-            bytes_downloaded = self.bytes_downloaded - self.bytes_resumed_from
-            time_taken = time() - self.time_started
-            self.progress_file.write(CLEAR_LINE)
-            self.progress_file.write(FINISHED_TPL.format(
-                downloaded=humanize_bytes(bytes_downloaded),
-                total=humanize_bytes(self.bytes_total),
-                speed=humanize_bytes(bytes_downloaded / time_taken),
-                time=time_taken,
-            ))
-            self.progress_file.write('\n')
-            self.output_file.close()
-
-        self.progress_file.flush()
