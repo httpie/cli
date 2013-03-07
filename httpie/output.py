@@ -191,7 +191,7 @@ class RawStream(BaseStream):
     """The message is streamed in chunks with no processing."""
 
     CHUNK_SIZE = 1024 * 100
-    CHUNK_SIZE_BY_LINE = 1024 * 5
+    CHUNK_SIZE_BY_LINE = 1
 
     def __init__(self, chunk_size=CHUNK_SIZE, **kwargs):
         super(RawStream, self).__init__(**kwargs)
@@ -209,7 +209,7 @@ class EncodedStream(BaseStream):
     is suppressed. The body is always streamed by line.
 
     """
-    CHUNK_SIZE = 1024 * 5
+    CHUNK_SIZE = 1
 
     def __init__(self, env=Environment(), **kwargs):
 
@@ -245,7 +245,7 @@ class PrettyStream(EncodedStream):
 
     """
 
-    CHUNK_SIZE = 1024 * 5
+    CHUNK_SIZE = 1
 
     def __init__(self, processor, **kwargs):
         super(PrettyStream, self).__init__(**kwargs)
