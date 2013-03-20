@@ -154,9 +154,9 @@ class Session(BaseConfigDict):
         self['cookies'] = {}
         for cookie in jar:
             self['cookies'][cookie.name] = dict(
-                        (attname, getattr(cookie, attname))
-                        for attname in stored_attrs
-                    )
+                (attname, getattr(cookie, attname))
+                for attname in stored_attrs
+            )
 
     @property
     def auth(self):
