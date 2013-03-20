@@ -152,10 +152,8 @@ class Session(BaseConfigDict):
         # http://docs.python.org/2/library/cookielib.html#cookie-objects
         stored_attrs = ['value', 'path', 'secure', 'expires']
         self['cookies'] = {}
-        for host in jar._cookies.values():
-            for path in host.values():
-                for name, cookie in path.items():
-                    self['cookies'][name] = dict(
+        for cookie in jar:
+            self['cookies'][cookie.name] = dict(
                         (attname, getattr(cookie, attname))
                         for attname in stored_attrs
                     )
