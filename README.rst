@@ -906,11 +906,7 @@ Session data are stored in JSON files in the directory
 **Warning:** All session data, including credentials, cookie data,
 and custom headers are stored in plain text.
 
-Session files can also be created or edited with a text editor.
-
-.. code-block:: bash
-
-    $ httpie session edit example.org user1
+Session files can also be created and edited manually in a text editor.
 
 
 See also `Config`_.
