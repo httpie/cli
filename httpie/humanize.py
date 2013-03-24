@@ -4,6 +4,7 @@ Licence: MIT
 URL: http://code.activestate.com/recipes/577081/
 
 """
+from __future__ import division
 import doctest
 
 

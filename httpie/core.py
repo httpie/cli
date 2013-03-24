@@ -80,18 +80,22 @@ def main(args=sys.argv[1:], env=Environment()):
 
         download = None
         if args.download:
-            args.follow = True
+            args.follow = True  # --download implies --follow.
             download = Download(
                 output_file=args.output_file,
                 progress_file=env.stderr,
                 resume=args.download_resume
             )
-            download.alter_request_headers(args.headers)
+            download.pre_request(args.headers)
 
         response = get_response(args, config_dir=env.config.directory)
 
-        if args.check_status:
-            exit_status = get_exit_status(response.status_code, args.follow)
+        if args.check_status or download:
+
+            exit_status = get_exit_status(
+                http_status=response.status_code,
+                follow=args.follow
+            )
 
             if not env.stdout_isatty and exit_status != ExitStatus.OK:
                 error('HTTP %s %s',
@@ -116,7 +120,7 @@ def main(args=sys.argv[1:], env=Environment()):
             else:
                 write(**write_kwargs)
 
-            if download:
+            if download and exit_status == ExitStatus.OK:
                 # Response body download.
                 download_stream, download_to = download.start(response)
                 write(
@@ -124,7 +128,9 @@ def main(args=sys.argv[1:], env=Environment()):
                     outfile=download_to,
                     flush=False,
                 )
-                download.finished()
+                download.finish()
+                if download.interrupted:
+                    exit_status = ExitStatus.ERROR
 
         except IOError as e:
             if not traceback and e.errno == errno.EPIPE:
