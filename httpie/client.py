@@ -46,7 +46,7 @@ def get_requests_kwargs(args):
     auto_json = args.data and not args.form
     if args.json or auto_json:
         implicit_headers['Accept'] = 'application/json'
-        if args.data:
+        if args.json or (auto_json and args.data):
             implicit_headers['Content-Type'] = JSON
 
         if isinstance(args.data, dict):

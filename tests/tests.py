@@ -436,7 +436,9 @@ class AutoContentTypeAndAcceptHeadersTest(BaseTestCase):
         )
         self.assertIn(OK, r)
         self.assertEqual(r.json['headers']['Accept'], 'application/json')
-        self.assertFalse(r.json['headers'].get('Content-Type'))
+        # Make sure Content-Type gets set even with no data.
+        # https://github.com/jkbr/httpie/issues/137
+        self.assertIn('application/json', r.json['headers']['Content-Type'])
 
     def test_GET_explicit_JSON_explicit_headers(self):
         r = http(
