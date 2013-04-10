@@ -1,14 +1,10 @@
-"""
-Author: Doug Latornell
-Licence: MIT
-URL: http://code.activestate.com/recipes/577081/
-
-"""
 from __future__ import division
-import doctest
 
 
 def humanize_bytes(n, precision=2):
+    # Author: Doug Latornell
+    # Licence: MIT
+    # URL: http://code.activestate.com/recipes/577081/
     """Return a humanized string representation of a number of bytes.
 
     Assumes `from __future__ import division`.
@@ -48,7 +44,3 @@ def humanize_bytes(n, precision=2):
             break
 
     return '%.*f %s' % (precision, n / factor, suffix)
-
-
-if __name__ == '__main__':
-    doctest.testmod()

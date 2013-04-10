@@ -11,7 +11,7 @@ from time import time
 
 from .output import RawStream
 from .models import HTTPResponse
-from .humanize import humanize_bytes
+from .utils import humanize_bytes
 from .compat import urlsplit
 
 
@@ -56,7 +56,7 @@ class Download(object):
             else:
                 self._resumed_from = bytes_have
                 # Set ``Range`` header to resume the download
-                # TODO: detect Range support first?
+                # TODO: What if Range isn't supported by the server?
                 headers['Range'] = '%d-' % bytes_have
 
     def start(self, response):
@@ -81,7 +81,7 @@ class Download(object):
                 self._output_file.seek(0)
                 self._output_file.truncate()
         else:
-            # TODO: should we take the filename from response.history[0].url?
+            # TODO: Should the filename be taken from response.history[0].url?
             # Output file not specified. Pick a name that doesn't exist yet.
             content_type = response.headers.get('Content-Type', '')
             self._output_file = open(
@@ -92,7 +92,7 @@ class Download(object):
                 mode='a+b'
             )
 
-        self._progress.start(
+        self._progress.started(
             resumed_from=self._resumed_from,
             content_length=content_length
         )
@@ -102,11 +102,12 @@ class Download(object):
             with_headers=False,
             with_body=True,
             on_body_chunk_downloaded=self._on_progress,
-            # FIXME: large chunks & chunked response => freezes
+            # FIXME: Large chunks & chunked response => freezes (requests bug?)
             chunk_size=1
         )
 
-        self._progress.output.write('Saving to %s\n' % self._output_file.name)
+        self._progress.output.write(
+            'Saving to "%s"\n' % self._output_file.name)
         self._progress.report()
 
         return stream, self._output_file
@@ -179,10 +180,11 @@ class Progress(object):
         self._downloaded_prev = 0
         self._content_length_humanized = '?'
         self._time_started = None
+        self._time_finished = None
         self._time_prev = None
         self._speed = 0
 
-    def start(self, resumed_from=0, content_length=None):
+    def started(self, resumed_from=0, content_length=None):
         assert self._time_started is None
         if content_length is not None:
             self._content_length_humanized = humanize_bytes(content_length)
@@ -197,7 +199,7 @@ class Progress(object):
     def report(self, interval=.6):
         now = time()
 
-        # Update the reported speed on the first chunk and once in a while.
+        # Update the reported speed on the first chunk and then once in a while
         if self._downloaded_prev and now - self._time_prev < interval:
             return
 
@@ -225,8 +227,11 @@ class Progress(object):
         self.output.flush()
 
     def finished(self):
+        assert self._time_started is not None
+        assert self._time_finished is None
         downloaded = self.downloaded - self._resumed_from
-        time_taken = time() - self._time_started
+        self._time_finished = time()
+        time_taken = self._time_finished - self._time_started
         self.output.write(self.CLEAR_LINE + self.SUMMARY.format(
             downloaded=humanize_bytes(downloaded),
             total=humanize_bytes(self.downloaded),
