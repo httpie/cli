@@ -164,7 +164,7 @@ class Download(object):
 class Progress(object):
 
     CLEAR_LINE = '\r\033[K'
-    PROGRESS = '{percentage:0.2f} % ({downloaded}) of {total} ({speed}/s)'
+    PROGRESS = '{percentage:0.2f}% ({downloaded}) of {total} ({speed}/s)'
     PROGRESS_NO_CONTENT_LENGTH = '{downloaded} ({speed}/s)'
     SUMMARY = '{downloaded} of {total} in {time:0.5f}s ({speed}/s)\n'
 
