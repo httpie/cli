@@ -1,3 +1,4 @@
+# coding=utf-8
 """
 Download mode implementation.
 
@@ -9,6 +10,7 @@ import sys
 import errno
 import mimetypes
 from time import time
+import threading
 
 from .output import RawStream
 from .models import HTTPResponse
@@ -17,6 +19,13 @@ from .compat import urlsplit
 
 
 PARTIAL_CONTENT = 206
+
+
+CLEAR_LINE = '\r\033[K'
+PROGRESS = '{spinner} {percentage: 6.2f}% ({downloaded}) of {total} ({speed}/s)'
+PROGRESS_NO_CONTENT_LENGTH = '{spinner} {downloaded} ({speed}/s)'
+SUMMARY = 'Done. {downloaded} of {total} in {time:0.5f}s ({speed}/s)\n'
+SPINNER = '|/-\\'
 
 
 class ContentRangeError(ValueError):
@@ -98,8 +107,13 @@ class Download(object):
         """
         self._output_file = output_file
         self._resume = resume
-        self._progress = Progress(output=progress_file)
         self._resumed_from = 0
+
+        self._progress = Progress()
+        self._progress_reporter = ProgressReporter(
+            progress=self._progress,
+            output=progress_file
+        )
 
     def pre_request(self, request_headers):
         """Called just before the HTTP request is sent.
@@ -134,7 +148,7 @@ class Download(object):
         :return: RawStream, output_file
 
         """
-        assert not self._progress._time_started
+        assert not self._progress.time_started
 
         try:
             total_size = int(response.headers['Content-Length'])
@@ -174,13 +188,14 @@ class Download(object):
             with_headers=False,
             with_body=True,
             on_body_chunk_downloaded=self._on_progress,
-            # FIXME: Large chunks & chunked response => freezes (requests bug?)
-            chunk_size=1
+            # TODO: Find the optimal chunk size.
+            # The smaller it is the slower it gets, but gives better feedback.
+            chunk_size=10
         )
 
-        self._progress.output.write(
+        self._progress_reporter.output.write(
             'Saving to "%s"\n' % self._output_file.name)
-        self._progress.report()
+        self._progress_reporter.report()
 
         return stream, self._output_file
 
@@ -207,7 +222,6 @@ class Download(object):
 
         """
         self._progress.chunk_downloaded(len(chunk))
-        self._progress.report()
 
     def _get_unique_output_filename(self, url, content_type):
         suffix = 0
@@ -235,78 +249,107 @@ class Download(object):
 
 class Progress(object):
 
-    CLEAR_LINE = '\r\033[K'
-    PROGRESS = '{percentage:0.2f}% ({downloaded}) of {total} ({speed}/s)'
-    PROGRESS_NO_CONTENT_LENGTH = '{downloaded} ({speed}/s)'
-    SUMMARY = 'Done. {downloaded} of {total} in {time:0.5f}s ({speed}/s)\n'
-
-    def __init__(self, output):
-        """
-        :type output: file
-
-        """
-        self.output = output
+    def __init__(self):
         self.downloaded = 0
         self.total_size = None
-        self._resumed_from = 0
-        self._downloaded_prev = 0
-        self._total_size_humanized = '?'
-        self._time_started = None
-        self._time_finished = None
-        self._time_prev = None
-        self._speed = 0
+        self.resumed_from = 0
+        self.total_size_humanized = '?'
+        self.time_started = None
+        self.time_finished = None
 
     def started(self, resumed_from=0, total_size=None):
-        assert self._time_started is None
+        assert self.time_started is None
         if total_size is not None:
-            self._total_size_humanized = humanize_bytes(total_size)
+            self.total_size_humanized = humanize_bytes(total_size)
             self.total_size = total_size
-        self.downloaded = self._resumed_from = resumed_from
-        self._time_started = time()
-        self._time_prev = self._time_started
+        self.downloaded = self.resumed_from = resumed_from
+        self.time_started = time()
 
     def chunk_downloaded(self, size):
+        assert self.time_finished is None
         self.downloaded += size
 
-    def report(self, interval=.6):
-        now = time()
-
-        # Update the reported speed on the first chunk and then once in a while
-        if self._downloaded_prev and now - self._time_prev < interval:
-            return
-
-        self._speed = (
-            (self.downloaded - self._downloaded_prev)
-            / (now - self._time_prev)
-        )
-        self._time_prev = now
-        self._downloaded_prev = self.downloaded
-
-        if self.total_size:
-            template = self.PROGRESS
-            percentage = self.downloaded / self.total_size * 100
-        else:
-            template = self.PROGRESS_NO_CONTENT_LENGTH
-            percentage = None
-
-        self.output.write(self.CLEAR_LINE + template.format(
-            percentage=percentage,
-            downloaded=humanize_bytes(self.downloaded),
-            total=self._total_size_humanized,
-            speed=humanize_bytes(self._speed)
-        ))
-
-        self.output.flush()
+    @property
+    def has_finished(self):
+        return self.time_finished is not None
 
     def finished(self):
-        assert self._time_started is not None
-        assert self._time_finished is None
-        downloaded = self.downloaded - self._resumed_from
-        self._time_finished = time()
-        time_taken = self._time_finished - self._time_started
-        self.output.write(self.CLEAR_LINE + self.SUMMARY.format(
+        assert self.time_started is not None
+        assert self.time_finished is None
+        self.time_finished = time()
+
+
+class ProgressReporter(object):
+
+    def __init__(self, progress, output, interval=.1, speed_interval=.7):
+        """
+
+        :type progress: Progress
+        :type output: file
+        """
+        self.progress = progress
+        self.output = output
+        self._prev_bytes = 0
+        self._prev_time = time()
+        self._speed = 0
+        self._spinner_pos = 0
+        self._interval = interval
+        self._speed_interval = speed_interval
+        super(ProgressReporter, self).__init__()
+
+    def report(self):
+        if self.progress.has_finished:
+            self.sum_up()
+        else:
+            self.report_speed()
+            # TODO: quit on KeyboardInterrupt
+            threading.Timer(self._interval, self.report).start()
+
+    def report_speed(self):
+
+        downloaded = self.progress.downloaded
+        now = time()
+
+        if self.progress.total_size:
+            template = PROGRESS
+            percentage = (
+                downloaded / self.progress.total_size * 100)
+        else:
+            template = PROGRESS_NO_CONTENT_LENGTH
+            percentage = None
+
+        if now - self._prev_time >= self._speed_interval:
+            # Update reported speed
+            self._speed = (
+                (downloaded - self._prev_bytes) / (now - self._prev_time))
+            self._prev_time = now
+            self._prev_bytes = downloaded
+
+        self.output.write(CLEAR_LINE)
+        self.output.write(template.format(
+            spinner=SPINNER[self._spinner_pos],
+            percentage=percentage,
             downloaded=humanize_bytes(downloaded),
-            total=humanize_bytes(self.downloaded),
-            speed=humanize_bytes(downloaded / time_taken),
+            total=self.progress.total_size_humanized,
+            speed=humanize_bytes(self._speed)
+        ))
+        self.output.flush()
+
+        if downloaded > self._prev_bytes:
+            self._spinner_pos += 1
+            if self._spinner_pos == len(SPINNER):
+                self._spinner_pos = 0
+
+    def sum_up(self):
+        actually_downloaded = (
+            self.progress.downloaded - self.progress.resumed_from)
+        time_taken = self.progress.time_finished - self.progress.time_started
+
+        self.output.write(CLEAR_LINE)
+        self.output.write(SUMMARY.format(
+            downloaded=humanize_bytes(actually_downloaded),
+            total=humanize_bytes(self.progress.downloaded),
+            speed=humanize_bytes(actually_downloaded / time_taken),
             time=time_taken,
         ))
+        self.output.flush()
