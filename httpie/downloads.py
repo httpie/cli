@@ -59,18 +59,21 @@ def _parse_content_range(content_range, resumed_from):
     # last-byte-pos value, is invalid. The recipient of an invalid
     # byte-content-range- spec MUST ignore it and any content
     # transferred along with it."
-    if (first_byte_pos <= last_byte_pos
-        and (instance_length is None
-             or instance_length <= last_byte_pos)):
+    if (first_byte_pos >= last_byte_pos
+            or (instance_length is not None
+                and instance_length <= last_byte_pos)):
         raise ContentRangeError(
             'Invalid Content-Range returned: %r' % content_range)
 
     if (first_byte_pos != resumed_from
-        or (instance_length is None
-            or last_byte_pos + 1 != instance_length)):
+        or (instance_length is not None
+            and last_byte_pos + 1 != instance_length)):
         # Not what we asked for.
         raise ContentRangeError(
-            'Unexpected Content-Range returned: %r' % content_range)
+            'Unexpected Content-Range returned (%r)'
+            ' for the requested Range ("bytes=%d")'
+            % (content_range, resumed_from)
+        )
 
     return last_byte_pos + 1
 

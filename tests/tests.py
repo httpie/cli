@@ -62,7 +62,7 @@ from httpie.core import main
 from httpie.output import BINARY_SUPPRESSED_NOTICE
 from httpie.input import ParseError
 from httpie.compat import is_windows, is_py26, bytes, str
-
+from httpie.downloads import _parse_content_range, ContentRangeError
 
 CRLF = '\r\n'
 HTTPBIN_URL = os.environ.get('HTTPBIN_URL',
@@ -1421,9 +1421,32 @@ class SessionTest(BaseTestCase):
 
 
 class DownloadsTest(BaseTestCase):
-    # TODO: tests for downloads
-    pass
 
+    # TODO: Download tests
+
+    def test_Content_Range_parsing(self):
+        self.assertEqual(_parse_content_range('bytes 100-199/200', 100), 200)
+        self.assertEqual(_parse_content_range('bytes 100-199/*', 100), 200)
+
+        with self.assertRaises(ContentRangeError):
+            # syntax error
+            _parse_content_range('beers 100-199/*', 100)
+
+        with self.assertRaises(ContentRangeError):
+            # unexpected range
+            _parse_content_range('bytes 100-199/*', 99)
+
+        with self.assertRaises(ContentRangeError):
+            # invalid instance-length
+            _parse_content_range('bytes 100-199/199', 100)
+
+        with self.assertRaises(ContentRangeError):
+            # invalid byte-range-resp-spec
+            _parse_content_range('bytes 100-99/199', 100)
+
+        with self.assertRaises(ContentRangeError):
+            # invalid byte-range-resp-spec
+            _parse_content_range('bytes 100-100/*', 100)
 
 if __name__ == '__main__':
     unittest.main()
