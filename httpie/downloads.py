@@ -15,6 +15,7 @@ from .models import HTTPResponse
 from .utils import humanize_bytes
 from .compat import urlsplit
 
+
 PARTIAL_CONTENT = 206
 
 
@@ -71,7 +72,7 @@ def _parse_content_range(content_range, resumed_from):
         # Not what we asked for.
         raise ContentRangeError(
             'Unexpected Content-Range returned (%r)'
-            ' for the requested Range ("bytes=%d")'
+            ' for the requested Range ("bytes=%d-")'
             % (content_range, resumed_from)
         )
 

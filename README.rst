@@ -142,7 +142,9 @@ See the request that is being sent using one of the `output options`_:
     $ http -v example.org
 
 
-Use `Github API`_ to post a comment on an issue with `authentication`_:
+Use `Github API`_ to post a comment on an
+`issue <https://github.com/jkbr/httpie/issues/83>`_
+with `authentication`_:
 
 .. code-block:: bash
 
@@ -256,8 +258,8 @@ their type is distinguished only by the separator used:
 |                       | The ``==`` separator is used                        |
 +-----------------------+-----------------------------------------------------+
 | Data Fields           | Request data fields to be serialized as a JSON      |
-| ``field=value``       | object (default), or to be form encoded (``--form`` |
-|                       | / ``-f``).                                          |
+| ``field=value``       | object (default), or to be form encoded             |
+|                       | (``--form, -f``).                                   |
 +-----------------------+-----------------------------------------------------+
 | Raw JSON fields       | Useful when sending JSON and one or                 |
 | ``field:=json``       | more fields need to be a ``Boolean``, ``Number``,   |
@@ -265,7 +267,7 @@ their type is distinguished only by the separator used:
 |                       | ``meals:='["ham","spam"]'`` or ``pies:=[1,2,3]``    |
 |                       | (note the quotes).                                  |
 +-----------------------+-----------------------------------------------------+
-| Files                 | Only available with ``-f`` / ``--form``.            |
+| Files                 | Only available with ``--form, -f``.                 |
 | ``field@/dir/file``   | For example ``screenshot@~/Pictures/img.png``.      |
 |                       | The presence of a file field results                |
 |                       | in a ``multipart/form-data`` request.               |
@@ -296,7 +298,7 @@ both of which can be overwritten:
 ``Accept``          ``application/json``
 ================    =======================================
 
-You can use ``--json`` / ``-j`` to explicitly set ``Accept``
+You can use ``--json, -j`` to explicitly set ``Accept``
 to ``application/json`` regardless of whether you are sending data
 (it's a shortcut for setting the header via the usual header notation –
 ``http url Accept:application/json``).
@@ -314,7 +316,6 @@ Simple example:
     Accept-Encoding: identity, deflate, compress, gzip
     Content-Type: application/json; charset=utf-8
     Host: example.org
-    User-Agent: HTTPie/0.2.7dev
 
     {
         "name": "John",
@@ -336,7 +337,6 @@ into the resulting object:
     Accept: application/json
     Content-Type: application/json; charset=utf-8
     Host: api.example.com
-    User-Agent: HTTPie/0.2.7dev
 
     {
         "age": 29,
@@ -361,7 +361,7 @@ Forms
 =====
 
 Submitting forms is very similar to sending `JSON`_ requests. Often the only
-difference is in adding the ``--form`` / ``-f`` option, which ensures that
+difference is in adding the ``--form, -f`` option, which ensures that
 data fields are serialized as, and ``Content-Type`` is set to,
 ``application/x-www-form-urlencoded; charset=utf-8``.
 
@@ -381,7 +381,6 @@ Regular Forms
 .. code-block:: http
 
     POST /person/1 HTTP/1.1
-    User-Agent: HTTPie/0.2.7dev
     Content-Type: application/x-www-form-urlencoded; charset=utf-8
 
     name=John+Smith&email=john%40example.org
@@ -498,11 +497,12 @@ With password prompt:
 Proxies
 =======
 
-You can specify proxies to be used through the ``--proxy`` argument:
+You can specify proxies to be used through the ``--proxy`` argument for each
+protocol (which is included in the value in case of redirects across protocols):
 
 .. code-block:: bash
 
-    $ http --proxy=http:10.10.1.10:3128 --https:10.10.1.10:1080 example.org
+    $ http --proxy=http:10.10.1.10:3128 --proxy=https:10.10.1.10:1080 example.org
 
 
 With Basic authentication:
@@ -581,7 +581,7 @@ documentation examples:
     }
 
 
-All the other options are just a shortcut for ``--print`` / ``-p``.
+All the other options are just a shortcut for ``--print, -p``.
 It accepts a string of characters each of which represents a specific part of
 the HTTP exchange:
 
@@ -1123,7 +1123,7 @@ Changelog
       ``--ugly`` has bee removed in favor of ``--pretty=none``.
 * `0.2.7`_ (2012-08-07)
     * Compatibility with Requests 0.13.6.
-    * Streamed terminal output. ``--stream`` / ``-S`` can be used to enable
+    * Streamed terminal output. ``--stream, -S`` can be used to enable
       streaming also with ``--pretty`` and to ensure a more frequent output
       flushing.
     * Support for efficient large file downloads.

@@ -64,6 +64,7 @@ from httpie.input import ParseError
 from httpie.compat import is_windows, is_py26, bytes, str
 from httpie.downloads import _parse_content_range, ContentRangeError
 
+
 CRLF = '\r\n'
 HTTPBIN_URL = os.environ.get('HTTPBIN_URL',
                              'http://httpbin.org').rstrip('/')
