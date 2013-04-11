@@ -18,6 +18,63 @@ from .compat import urlsplit
 PARTIAL_CONTENT = 206
 
 
+class ContentRangeError(ValueError):
+    pass
+
+
+def _parse_content_range(content_range, resumed_from):
+    """
+    Parse and validate Content-Range header.
+
+    <http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html>
+
+    :param content_range: the value of a Content-Range response header
+                          eg. "bytes 21010-47021/47022"
+    :param resumed_from: first byte pos. from the Range request header
+    :return: total size of the response body when fully downloaded.
+
+    """
+    pattern = (
+        '^bytes (?P<first_byte_pos>\d+)-(?P<last_byte_pos>\d+)'
+        '/(\*|(?P<instance_length>\d+))$'
+    )
+    match = re.match(pattern, content_range)
+
+    if not match:
+        raise ContentRangeError(
+            'Invalid Content-Range format %r' % content_range)
+
+    content_range_dict = match.groupdict()
+    first_byte_pos = int(content_range_dict['first_byte_pos'])
+    last_byte_pos = int(content_range_dict['last_byte_pos'])
+    instance_length = (
+        int(content_range_dict['instance_length'])
+        if content_range_dict['instance_length']
+        else None
+    )
+
+    # "A byte-content-range-spec with a byte-range-resp-spec whose
+    # last- byte-pos value is less than its first-byte-pos value,
+    # or whose instance-length value is less than or equal to its
+    # last-byte-pos value, is invalid. The recipient of an invalid
+    # byte-content-range- spec MUST ignore it and any content
+    # transferred along with it."
+    if (first_byte_pos <= last_byte_pos
+        and (instance_length is None
+             or instance_length <= last_byte_pos)):
+        raise ContentRangeError(
+            'Invalid Content-Range returned: %r' % content_range)
+
+    if (first_byte_pos != resumed_from
+        or (instance_length is None
+            or last_byte_pos + 1 != instance_length)):
+        # Not what we asked for.
+        raise ContentRangeError(
+            'Unexpected Content-Range returned: %r' % content_range)
+
+    return last_byte_pos + 1
+
+
 class Download(object):
 
     def __init__(self, output_file=None,
@@ -80,17 +137,11 @@ class Download(object):
 
         if self._output_file:
             if self._resume and response.status_code == PARTIAL_CONTENT:
-                # "Content-Range: bytes 21010-47021/47022"
-                content_range = response.headers.get('Content-Range', '')
-                pattern = '^bytes {have:d}-\d+/(\*|\d+)$'.format(
-                    have=self._resumed_from)
-                match = re.match(pattern, content_range)
-                if not match:
-                    raise ValueError(
-                        'The server returned invalid Content-Range: %s'
-                        % content_range
-                    )
-                total_size += self._resumed_from
+                content_range = response.headers.get('Content-Range')
+                if content_range:
+                    total_size = _parse_content_range(
+                        content_range, self._resumed_from)
+
             else:
                 self._resumed_from = 0
                 self._output_file.seek(0)
