@@ -110,7 +110,7 @@ class Download(object):
 
         """
         # Disable content encoding so that we can resume, etc.
-        request_headers['Accept-Encoding'] = ''
+        request_headers['Accept-Encoding'] = None
         if self._resume:
             try:
                 bytes_have = os.path.getsize(self._output_file.name)
@@ -118,16 +118,17 @@ class Download(object):
                 if e.errno != errno.ENOENT:
                     raise
             else:
-                self._resumed_from = bytes_have
                 # Set ``Range`` header to resume the download
+                # TODO: Use "If-Range: mtime" to make sure it's fresh?
                 request_headers['Range'] = 'bytes=%d-' % bytes_have
+                self._resumed_from = bytes_have
 
     def start(self, response):
         """
         Initiate and return a stream for `response` body  with progress
         callback attached. Can be called only once.
 
-        :param response: Initiated response object.
+        :param response: Initiated response object with headers already fetched
         :type response: requests.models.Response
 
         :return: RawStream, output_file
@@ -135,9 +136,10 @@ class Download(object):
         """
         assert not self._progress._time_started
 
-        total_size = response.headers.get('Content-Length')
-        if total_size:
-            total_size = int(total_size)
+        try:
+            total_size = int(response.headers['Content-Length'])
+        except (KeyError, ValueError):
+            total_size = None
 
         if self._output_file:
             if self._resume and response.status_code == PARTIAL_CONTENT:
@@ -236,7 +238,7 @@ class Progress(object):
     CLEAR_LINE = '\r\033[K'
     PROGRESS = '{percentage:0.2f}% ({downloaded}) of {total} ({speed}/s)'
     PROGRESS_NO_CONTENT_LENGTH = '{downloaded} ({speed}/s)'
-    SUMMARY = '{downloaded} of {total} in {time:0.5f}s ({speed}/s)\n'
+    SUMMARY = 'Done. {downloaded} of {total} in {time:0.5f}s ({speed}/s)\n'
 
     def __init__(self, output):
         """
@@ -248,7 +250,7 @@ class Progress(object):
         self.total_size = None
         self._resumed_from = 0
         self._downloaded_prev = 0
-        self._content_length_humanized = '?'
+        self._total_size_humanized = '?'
         self._time_started = None
         self._time_finished = None
         self._time_prev = None
@@ -257,7 +259,7 @@ class Progress(object):
     def started(self, resumed_from=0, total_size=None):
         assert self._time_started is None
         if total_size is not None:
-            self._content_length_humanized = humanize_bytes(total_size)
+            self._total_size_humanized = humanize_bytes(total_size)
             self.total_size = total_size
         self.downloaded = self._resumed_from = resumed_from
         self._time_started = time()
@@ -290,7 +292,7 @@ class Progress(object):
         self.output.write(self.CLEAR_LINE + template.format(
             percentage=percentage,
             downloaded=humanize_bytes(self.downloaded),
-            total=self._content_length_humanized,
+            total=self._total_size_humanized,
             speed=humanize_bytes(self._speed)
         ))
 

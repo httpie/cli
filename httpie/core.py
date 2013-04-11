@@ -64,7 +64,7 @@ def main(args=sys.argv[1:], env=Environment()):
     def error(msg, *args, **kwargs):
         msg = msg % args
         level = kwargs.get('level', 'error')
-        env.stderr.write('http: %s: %s\n' % (level, msg))
+        env.stderr.write('\nhttp: %s: %s\n' % (level, msg))
 
     debug = '--debug' in args
     traceback = debug or '--traceback' in args
