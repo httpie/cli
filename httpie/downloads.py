@@ -116,6 +116,9 @@ def filename_from_url(url, content_type):
         else:
             ext = mimetypes.guess_extension(content_type)
 
+        if ext == '.htm':  # Python 3
+            ext = '.html'
+
         if ext:
             fn += ext
 
