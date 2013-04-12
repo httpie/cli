@@ -62,7 +62,13 @@ from httpie.core import main
 from httpie.output import BINARY_SUPPRESSED_NOTICE
 from httpie.input import ParseError
 from httpie.compat import is_windows, is_py26, bytes, str
-from httpie.downloads import _parse_content_range, ContentRangeError
+from httpie.downloads import (
+    parse_content_range,
+    filename_from_content_disposition,
+    filename_from_url,
+    get_unique_filename,
+    ContentRangeError
+)
 
 
 CRLF = '\r\n'
@@ -1423,31 +1429,87 @@ class SessionTest(BaseTestCase):
 
 class DownloadsTest(BaseTestCase):
 
-    # TODO: Download tests
+    # TODO: Actual download tests
 
     def test_Content_Range_parsing(self):
-        self.assertEqual(_parse_content_range('bytes 100-199/200', 100), 200)
-        self.assertEqual(_parse_content_range('bytes 100-199/*', 100), 200)
+
+        parse = parse_content_range
+
+        self.assertEqual(parse('bytes 100-199/200', 100), 200)
+        self.assertEqual(parse('bytes 100-199/*', 100), 200)
 
         with self.assertRaises(ContentRangeError):
             # syntax error
-            _parse_content_range('beers 100-199/*', 100)
+            parse('beers 100-199/*', 100)
 
         with self.assertRaises(ContentRangeError):
             # unexpected range
-            _parse_content_range('bytes 100-199/*', 99)
+            parse('bytes 100-199/*', 99)
 
         with self.assertRaises(ContentRangeError):
             # invalid instance-length
-            _parse_content_range('bytes 100-199/199', 100)
+            parse('bytes 100-199/199', 100)
 
         with self.assertRaises(ContentRangeError):
             # invalid byte-range-resp-spec
-            _parse_content_range('bytes 100-99/199', 100)
+            parse('bytes 100-99/199', 100)
 
         with self.assertRaises(ContentRangeError):
             # invalid byte-range-resp-spec
-            _parse_content_range('bytes 100-100/*', 100)
+            parse('bytes 100-100/*', 100)
+
+    def test_Content_Disposition_parsing(self):
+        parse = filename_from_content_disposition
+        self.assertEqual(
+            parse('attachment; filename=hello-WORLD_123.txt'),
+            'hello-WORLD_123.txt'
+        )
+        self.assertEqual(
+            parse('attachment; filename=.hello-WORLD_123.txt'),
+            'hello-WORLD_123.txt'
+        )
+        self.assertIsNone(parse('attachment; filename='))
+        self.assertIsNone(parse('attachment; filename=/etc/hosts'))
+        self.assertIsNone(parse('attachment; filename=hello@world'))
+
+    def test_filename_from_url(self):
+        self.assertEqual(filename_from_url(
+            url='http://example.org/foo',
+            content_type='text/plain'
+        ), 'foo.txt')
+        self.assertEqual(filename_from_url(
+            url='http://example.org/foo',
+            content_type=None
+        ), 'foo')
+        self.assertEqual(filename_from_url(
+            url='http://example.org/foo',
+            content_type='x-foo/bar'
+        ), 'foo')
+
+    def test_unique_filename(self):
+
+        def make_exists(unique_on_attempt=0):
+            # noinspection PyUnresolvedReferences
+            def exists(filename):
+                if exists.attempt == unique_on_attempt:
+                    return False
+                exists.attempt += 1
+                return True
+            exists.attempt = 0
+            return exists
+
+        self.assertEqual(
+            get_unique_filename('foo.bar', exists=make_exists()),
+            'foo.bar'
+        )
+        self.assertEqual(
+            get_unique_filename('foo.bar', exists=make_exists(1)),
+            'foo.bar-1'
+        )
+        self.assertEqual(
+            get_unique_filename('foo.bar', exists=make_exists(10)),
+            'foo.bar-10'
+        )
 
 
 if __name__ == '__main__':
