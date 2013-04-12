@@ -107,8 +107,8 @@ class Parser(ArgumentParser):
         # Arguments processing and environment setup.
         self._apply_no_options(no_options)
         self._apply_config()
-        self._setup_standard_streams()
         self._validate_download_options()
+        self._setup_standard_streams()
         self._process_output_options()
         self._process_pretty_options()
         self._guess_method()
