@@ -44,6 +44,7 @@ def get_requests_kwargs(args):
     }
 
     auto_json = args.data and not args.form
+    # FIXME: Accept is set to JSON with `http url @./file.txt`.
     if args.json or auto_json:
         implicit_headers['Accept'] = 'application/json'
         if args.json or (auto_json and args.data):

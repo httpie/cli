@@ -793,6 +793,8 @@ class RequestBodyFromFilePathTest(BaseTestCase):
 
     """
     def test_request_body_from_file_by_path(self):
+        # FIXME: *sometimes* fails on py33, the content-type is form.
+        # https://github.com/jkbr/httpie/issues/140
         r = http(
             'POST',
             httpbin('/post'),
@@ -803,6 +805,8 @@ class RequestBodyFromFilePathTest(BaseTestCase):
         self.assertIn('"Content-Type": "text/plain"', r)
 
     def test_request_body_from_file_by_path_with_explicit_content_type(self):
+        # FIXME: *sometimes* fails on py33, the content-type is form.
+        # https://github.com/jkbr/httpie/issues/140
         r = http(
             'POST',
             httpbin('/post'),
