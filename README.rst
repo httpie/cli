@@ -826,9 +826,60 @@ by adding the following to your ``~/.bash_profile``:
 Download Mode
 =============
 
-HTTPie features a download mode, in which a download progress bar is shown,
-and the response body is saved to a file. You can enable this mode
-with the ``--download`` flag.
+HTTPie features a download mode in which it acts similarly to ``wget``.
+
+When enabled using the ``--download, -d`` flag, response headers are printed to
+the terminal (``stderr``), and a progress bar is shown while the response body
+is being saved to a file.
+
+.. code-block:: bash
+
+    $ http --download https://github.com/jkbr/httpie/tarball/master
+
+.. code-block:: http
+
+    HTTP/1.1 200 OK
+    Connection: keep-alive
+    Content-Disposition: attachment; filename=jkbr-httpie-0.4.1-20-g40bd8f6.tar.gz
+    Content-Length: 505530
+    Content-Type: application/x-gzip
+    Server: GitHub.com
+    Vary: Accept-Encoding
+
+    Saving to "jkbr-httpie-0.4.1-20-g40bd8f6.tar.gz"
+    /  37.27% (184.00 kB) of 493.68 kB (181.69 kB/s) ETA 0:00:01
+
+
+If not provided via ``--output, -o``, the output filename will be determined
+from ``Content-Disposition`` (if available), or from the URL and
+``Content-Type``. If the guessed filename already exists, HTTPie adds a unique
+suffix to it.
+
+You can also redirect the response body to another program while the response
+headers and progress are still shown in the terminal:
+
+.. code-block:: bash
+
+    $ http -d https://github.com/jkbr/httpie/tarball/master |  tar zxf -
+
+
+If ``--output, -o`` is specified, you can resume a partial download using the
+``--continue, -c`` option. This only works with servers that support
+``Range`` requests and ``206 Partial Content`` responses. If the server doesn't
+support that, the whole file will simply be downloaded:
+
+.. code-block:: bash
+
+    $ httpie -dco file.zip example.org/file
+
+Other notes:
+
+* The ``--download`` option only changes how the response body is treated.
+* You can still set custom headers, use ``--verbose, -v``, etc.
+* ``--download`` always implies ``--follow`` (redirects are followed).
+* HTTPie exists with status code ``1`` (error) if the body hasn't been fully
+  downloaded.
+* ``Accept-Encoding`` cannot be set with ``--download``.
 
 
 ==================
