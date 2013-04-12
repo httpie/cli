@@ -9,8 +9,9 @@ import re
 import sys
 import errno
 import mimetypes
-from time import time
 import threading
+from time import time
+from datetime import timedelta
 
 from .output import RawStream
 from .models import HTTPResponse
@@ -22,8 +23,9 @@ PARTIAL_CONTENT = 206
 
 
 CLEAR_LINE = '\r\033[K'
-PROGRESS = '{spinner} {percentage: 6.2f}% ({downloaded}) of {total} ({speed}/s)'
-PROGRESS_NO_CONTENT_LENGTH = '{spinner} {downloaded} ({speed}/s)'
+PROGRESS = ('{percentage: 6.2f}% ({downloaded})'
+            ' of {total} ({speed}/s) ETA {eta}')
+PROGRESS_NO_CONTENT_LENGTH = '{downloaded} ({speed}/s) ETA {eta}'
 SUMMARY = 'Done. {downloaded} of {total} in {time:0.5f}s ({speed}/s)\n'
 SPINNER = '|/-\\'
 
@@ -190,7 +192,7 @@ class Download(object):
             on_body_chunk_downloaded=self._on_progress,
             # TODO: Find the optimal chunk size.
             # The smaller it is the slower it gets, but gives better feedback.
-            chunk_size=10
+            chunk_size=1024 * 8
         )
 
         self._progress_reporter.output.write(
@@ -281,7 +283,7 @@ class Progress(object):
 
 class ProgressReporter(object):
 
-    def __init__(self, progress, output, interval=.1, speed_interval=.7):
+    def __init__(self, progress, output, tick=.1, update_interval=1):
         """
 
         :type progress: Progress
@@ -293,8 +295,9 @@ class ProgressReporter(object):
         self._prev_time = time()
         self._speed = 0
         self._spinner_pos = 0
-        self._interval = interval
-        self._speed_interval = speed_interval
+        self._tick = tick
+        self._update_interval = update_interval
+        self._status_line = ''
         super(ProgressReporter, self).__init__()
 
     def report(self):
@@ -303,42 +306,58 @@ class ProgressReporter(object):
         else:
             self.report_speed()
             # TODO: quit on KeyboardInterrupt
-            threading.Timer(self._interval, self.report).start()
+            threading.Timer(self._tick, self.report).start()
 
     def report_speed(self):
 
-        downloaded = self.progress.downloaded
         now = time()
 
-        if self.progress.total_size:
-            template = PROGRESS
-            percentage = (
-                downloaded / self.progress.total_size * 100)
-        else:
-            template = PROGRESS_NO_CONTENT_LENGTH
-            percentage = None
+        if now - self._prev_time >= self._update_interval:
 
-        if now - self._prev_time >= self._speed_interval:
-            # Update reported speed
-            self._speed = (
-                (downloaded - self._prev_bytes) / (now - self._prev_time))
+            downloaded = self.progress.downloaded
+
+            if self.progress.total_size:
+                template = PROGRESS
+                percentage = (
+                    downloaded / self.progress.total_size * 100)
+            else:
+                template = PROGRESS_NO_CONTENT_LENGTH
+                percentage = None
+
+            try:
+                # TODO: Use a longer interval for the speed/eta calculation?
+                speed = ((downloaded - self._prev_bytes)
+                         / (now - self._prev_time))
+                eta = int((self.progress.total_size - downloaded) / speed)
+                eta = str(timedelta(seconds=eta))
+            except ZeroDivisionError:
+                speed = 0
+                eta = '?'
+
+            self._status_line = template.format(
+                percentage=percentage,
+                downloaded=humanize_bytes(downloaded),
+                total=self.progress.total_size_humanized,
+                speed=humanize_bytes(speed),
+                eta=eta,
+            )
+
             self._prev_time = now
             self._prev_bytes = downloaded
 
-        self.output.write(CLEAR_LINE)
-        self.output.write(template.format(
-            spinner=SPINNER[self._spinner_pos],
-            percentage=percentage,
-            downloaded=humanize_bytes(downloaded),
-            total=self.progress.total_size_humanized,
-            speed=humanize_bytes(self._speed)
-        ))
+        self.output.write(
+            CLEAR_LINE
+            + SPINNER[self._spinner_pos]
+            + ' '
+            + self._status_line
+        )
         self.output.flush()
 
-        if downloaded > self._prev_bytes:
-            self._spinner_pos += 1
-            if self._spinner_pos == len(SPINNER):
-                self._spinner_pos = 0
+        self._spinner_pos = (
+            self._spinner_pos + 1
+            if self._spinner_pos + 1 != len(SPINNER)
+            else 0
+        )
 
     def sum_up(self):
         actually_downloaded = (
