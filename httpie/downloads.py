@@ -7,7 +7,6 @@ from __future__ import division
 import os
 import re
 import sys
-import errno
 import mimetypes
 import threading
 from time import time
@@ -313,7 +312,6 @@ class ProgressReporter(object):
         self.output = output
         self._prev_bytes = 0
         self._prev_time = time()
-        self._speed = 0
         self._spinner_pos = 0
         self._tick = tick
         self._update_interval = update_interval
