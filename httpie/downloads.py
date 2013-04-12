@@ -34,7 +34,7 @@ class ContentRangeError(ValueError):
     pass
 
 
-def _parse_content_range(content_range, resumed_from):
+def parse_content_range(content_range, resumed_from):
     """
     Parse and validate Content-Range header.
 
@@ -88,6 +88,48 @@ def _parse_content_range(content_range, resumed_from):
         )
 
     return last_byte_pos + 1
+
+
+def filename_from_content_disposition(content_disposition):
+    """
+    Extract and validate filename from a Content-Disposition header.
+
+    :param content_disposition: Content-Disposition value
+    :return: the filename if present and valid, otherwise `None`
+
+    """
+    # attachment; filename=jkbr-httpie-0.4.1-20-g40bd8f6.tar.gz
+    match = re.search('filename=(\S+)', content_disposition)
+    if match and match.group(1):
+        fn = match.group(1).lstrip('.')
+        if re.match('^[a-zA-Z0-9._-]+$', fn):
+            return fn
+
+
+def filename_from_url(url, content_type):
+    fn = urlsplit(url).path.rstrip('/')
+    fn = os.path.basename(fn) if fn else 'index'
+    if '.' not in fn and content_type:
+        content_type = content_type.split(';')[0]
+        if content_type == 'text/plain':
+            # mimetypes returns '.ksh'
+            ext = '.txt'
+        else:
+            ext = mimetypes.guess_extension(content_type)
+
+        if ext:
+            fn += ext
+
+    return fn
+
+
+def get_unique_filename(fn, exists=os.path.exists):
+    attempt = 0
+    while True:
+        suffix = '-' + str(attempt) if attempt > 0 else ''
+        if not exists(fn + suffix):
+            return fn + suffix
+        attempt += 1
 
 
 class Download(object):
@@ -161,7 +203,7 @@ class Download(object):
             if self._resume and response.status_code == PARTIAL_CONTENT:
                 content_range = response.headers.get('Content-Range')
                 if content_range:
-                    total_size = _parse_content_range(
+                    total_size = parse_content_range(
                         content_range, self._resumed_from)
 
             else:
@@ -171,14 +213,16 @@ class Download(object):
         else:
             # TODO: Should the filename be taken from response.history[0].url?
             # Output file not specified. Pick a name that doesn't exist yet.
-            content_type = response.headers.get('Content-Type', '')
-            self._output_file = open(
-                self._get_unique_output_filename(
+            fn = None
+            if 'Content-Disposition' in response.headers:
+                fn = filename_from_content_disposition(
+                    response.headers['Content-Disposition'])
+            if not fn:
+                fn = filename_from_url(
                     url=response.url,
-                    content_type=content_type,
-                ),
-                mode='a+b'
-            )
+                    content_type=response.headers.get('Content-Type'),
+                )
+            self._output_file = open(get_unique_filename(fn), mode='a+b')
 
         self._progress.started(
             resumed_from=self._resumed_from,
@@ -224,29 +268,6 @@ class Download(object):
 
         """
         self._progress.chunk_downloaded(len(chunk))
-
-    def _get_unique_output_filename(self, url, content_type):
-        suffix = 0
-        while True:
-            fn = self._get_output_filename(url, content_type, suffix)
-            if not os.path.exists(fn):
-                return fn
-            suffix += 1
-
-    def _get_output_filename(self, url, content_type, suffix=None):
-
-        suffix = '' if not suffix else '-' + str(suffix)
-
-        fn = urlsplit(url).path.rstrip('/')
-        fn = os.path.basename(fn) if fn else 'index'
-
-        if '.' in fn:
-            base, ext = os.path.splitext(fn)
-        else:
-            base = fn
-            ext = mimetypes.guess_extension(content_type.split(';')[0]) or ''
-
-        return base + suffix + ext
 
 
 class Progress(object):
