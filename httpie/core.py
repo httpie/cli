@@ -75,10 +75,11 @@ def main(args=sys.argv[1:], env=Environment()):
         if args == ['--debug']:
             return exit_status
 
+    download = None
+
     try:
         args = parser.parse_args(args=args, env=env)
 
-        download = None
         if args.download:
             args.follow = True  # --download implies --follow.
             download = Download(
@@ -140,6 +141,8 @@ def main(args=sys.argv[1:], env=Environment()):
                 raise
 
     except (KeyboardInterrupt, SystemExit):
+        if download:
+            download.finish()
         if traceback:
             raise
         env.stderr.write('\n')

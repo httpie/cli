@@ -305,7 +305,6 @@ class ProgressReporter(object):
             self.sum_up()
         else:
             self.report_speed()
-            # TODO: quit on KeyboardInterrupt
             threading.Timer(self._tick, self.report).start()
 
     def report_speed(self):
@@ -367,7 +366,7 @@ class ProgressReporter(object):
         self.output.write(CLEAR_LINE)
         self.output.write(SUMMARY.format(
             downloaded=humanize_bytes(actually_downloaded),
-            total=humanize_bytes(self.progress.downloaded),
+            total=humanize_bytes(self.progress.total_size),
             speed=humanize_bytes(actually_downloaded / time_taken),
             time=time_taken,
         ))
