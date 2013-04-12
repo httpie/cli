@@ -877,7 +877,7 @@ Other notes:
 * The ``--download`` option only changes how the response body is treated.
 * You can still set custom headers, use ``--verbose, -v``, etc.
 * ``--download`` always implies ``--follow`` (redirects are followed).
-* HTTPie exists with status code ``1`` (error) if the body hasn't been fully
+* HTTPie exits with status code ``1`` (error) if the body hasn't been fully
   downloaded.
 * ``Accept-Encoding`` cannot be set with ``--download``.
 

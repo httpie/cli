@@ -149,7 +149,6 @@ class Download(object):
         :type progress_file: file
 
         """
-        assert output_file, output_file
         self._output_file = output_file
         self._resume = resume
         self._resumed_from = 0
