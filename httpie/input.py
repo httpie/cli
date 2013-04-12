@@ -140,13 +140,23 @@ class Parser(ArgumentParser):
         Modify `env.stdout` and `env.stdout_isatty` based on args, if needed.
 
         """
+        if not self.env.stdout_isatty and self.args.output_file:
+            self.error('Cannot use --output, -o with redirected output.')
+
+        # FIXME: Come up with a cleaner solution.
         if self.args.download:
+
+            if not self.env.stdout_isatty:
+                # Use stdout as tge download output file.
+                self.args.output_file = self.env.stdout
+
             # With `--download`, we write everything that would normally go to
             # `stdout` to `stderr` instead. Let's replace the stream so that
             # we don't have to use many `if`s throughout the codebase.
             # The response body will be treated separately.
             self.env.stdout = self.env.stderr
             self.env.stdout_isatty = self.env.stderr_isatty
+
         elif self.args.output_file:
             # When not `--download`ing, then `--output` simply replaces
             # `stdout`. The file is opened for appending, which isn't what

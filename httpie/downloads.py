@@ -149,6 +149,7 @@ class Download(object):
         :type progress_file: file
 
         """
+        assert output_file, output_file
         self._output_file = output_file
         self._resume = resume
         self._resumed_from = 0
@@ -208,8 +209,11 @@ class Download(object):
 
             else:
                 self._resumed_from = 0
-                self._output_file.seek(0)
-                self._output_file.truncate()
+                try:
+                    self._output_file.seek(0)
+                    self._output_file.truncate()
+                except IOError:
+                    pass  # stdout
         else:
             # TODO: Should the filename be taken from response.history[0].url?
             # Output file not specified. Pick a name that doesn't exist yet.
