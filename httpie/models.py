@@ -28,16 +28,17 @@ class Environment(object):
     stdin_isatty = sys.stdin.isatty()
 
     stdout_isatty = sys.stdout.isatty()
-    if stdout_isatty and is_windows:
+    stderr_isatty = sys.stderr.isatty()
+    if is_windows:
         # noinspection PyUnresolvedReferences
         from colorama.initialise import wrap_stream
         stdout = wrap_stream(sys.stdout, convert=None,
                              strip=None, autoreset=True, wrap=True)
+        stderr = wrap_stream(sys.stderr, convert=None,
+                             strip=None, autoreset=True, wrap=True)
     else:
         stdout = sys.stdout
-
-    stderr = sys.stderr
-    stderr_isatty = sys.stderr.isatty()
+        stderr = sys.stderr
 
     def __init__(self, **kwargs):
         assert all(hasattr(type(self), attr)
