@@ -170,12 +170,8 @@ class Download(object):
         # Disable content encoding so that we can resume, etc.
         request_headers['Accept-Encoding'] = None
         if self._resume:
-            try:
-                bytes_have = os.path.getsize(self._output_file.name)
-            except OSError as e:
-                if e.errno != errno.ENOENT:
-                    raise
-            else:
+            bytes_have = os.path.getsize(self._output_file.name)
+            if bytes_have:
                 # Set ``Range`` header to resume the download
                 # TODO: Use "If-Range: mtime" to make sure it's fresh?
                 request_headers['Range'] = 'bytes=%d-' % bytes_have
