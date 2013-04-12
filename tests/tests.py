@@ -247,6 +247,8 @@ class BaseTestCase(unittest.TestCase):
             self.assertEqual(set(d1.keys()), set(d2.keys()), msg)
             self.assertEqual(sorted(d1.values()), sorted(d2.values()), msg)
 
+    def assertIsNone(self, obj, msg=None):
+        self.assertEqual(obj, None, msg=msg)
 
 #################################################################
 # High-level tests using httpbin.
@@ -1438,25 +1440,20 @@ class DownloadsTest(BaseTestCase):
         self.assertEqual(parse('bytes 100-199/200', 100), 200)
         self.assertEqual(parse('bytes 100-199/*', 100), 200)
 
-        with self.assertRaises(ContentRangeError):
-            # syntax error
-            parse('beers 100-199/*', 100)
+        # syntax error
+        self.assertRaises(ContentRangeError, parse, 'beers 100-199/*', 100)
 
-        with self.assertRaises(ContentRangeError):
-            # unexpected range
-            parse('bytes 100-199/*', 99)
+        # unexpected range
+        self.assertRaises(ContentRangeError, parse, 'bytes 100-199/*', 99)
 
-        with self.assertRaises(ContentRangeError):
-            # invalid instance-length
-            parse('bytes 100-199/199', 100)
+        # invalid instance-length
+        self.assertRaises(ContentRangeError, parse, 'bytes 100-199/199', 100)
 
-        with self.assertRaises(ContentRangeError):
-            # invalid byte-range-resp-spec
-            parse('bytes 100-99/199', 100)
+        # invalid byte-range-resp-spec
+        self.assertRaises(ContentRangeError, parse, 'bytes 100-99/199', 100)
 
-        with self.assertRaises(ContentRangeError):
-            # invalid byte-range-resp-spec
-            parse('bytes 100-100/*', 100)
+        # invalid byte-range-resp-spec
+        self.assertRaises(ContentRangeError, parse, 'bytes 100-100/*', 100)
 
     def test_Content_Disposition_parsing(self):
         parse = filename_from_content_disposition
@@ -1477,6 +1474,10 @@ class DownloadsTest(BaseTestCase):
             url='http://example.org/foo',
             content_type='text/plain'
         ), 'foo.txt')
+        self.assertEqual(filename_from_url(
+            url='http://example.org/foo',
+            content_type='text/html; charset=utf8'
+        ), 'foo.html')
         self.assertEqual(filename_from_url(
             url='http://example.org/foo',
             content_type=None
