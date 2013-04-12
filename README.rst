@@ -870,7 +870,7 @@ support that, the whole file will simply be downloaded:
 
 .. code-block:: bash
 
-    $ httpie -dco file.zip example.org/file
+    $ http -dco file.zip example.org/file
 
 Other notes:
 
