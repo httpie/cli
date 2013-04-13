@@ -244,8 +244,10 @@ class Download(object):
         )
 
         self._progress_reporter.output.write(
-            'Downloading %s to "%s"\n' % (
-                self._progress.total_size_humanized,
+            'Downloading %sto "%s"\n' % (
+                (humanize_bytes(total_size) + ' '
+                 if total_size is not None
+                 else ''),
                 self._output_file.name
             )
         )
@@ -284,14 +286,12 @@ class Progress(object):
         self.downloaded = 0
         self.total_size = None
         self.resumed_from = 0
-        self.total_size_humanized = '?'
         self.time_started = None
         self.time_finished = None
 
     def started(self, resumed_from=0, total_size=None):
         assert self.time_started is None
         if total_size is not None:
-            self.total_size_humanized = humanize_bytes(total_size)
             self.total_size = total_size
         self.downloaded = self.resumed_from = resumed_from
         self.time_started = time()
@@ -367,7 +367,6 @@ class ProgressReporter(object):
             self._status_line = template.format(
                 percentage=percentage,
                 downloaded=humanize_bytes(downloaded),
-                total=self.progress.total_size_humanized,
                 speed=humanize_bytes(speed),
                 eta=eta,
             )

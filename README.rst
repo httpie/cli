@@ -840,7 +840,7 @@ is being saved to a file.
 
     HTTP/1.1 200 OK
     Connection: keep-alive
-    Content-Disposition: attachment; filename=jkbr-httpie-0.4.1-20-g40bd8f6.tar.gz
+    Content-Disposition: attachment; filename=jkbr-httpie-0.4.1-33-gfc4f70a.tar.gz
     Content-Length: 505530
     Content-Type: application/x-gzip
     Server: GitHub.com
