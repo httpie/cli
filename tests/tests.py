@@ -27,6 +27,7 @@ import argparse
 import tempfile
 import unittest
 import shutil
+import time
 
 try:
     from urllib.request import urlopen
@@ -69,7 +70,7 @@ from httpie.downloads import (
     filename_from_content_disposition,
     filename_from_url,
     get_unique_filename,
-    ContentRangeError
+    ContentRangeError,
 )
 
 
@@ -189,20 +190,25 @@ def http(*args, **kwargs):
     if not env:
         env = kwargs['env'] = TestEnvironment()
 
+    stdout = env.stdout
+    stderr = env.stderr
     try:
 
         try:
             exit_status = main(args=['--traceback'] + list(args), **kwargs)
+            if '--download' in args:
+                # Let the progress reporter thread finish.
+                time.sleep(.5)
         except Exception:
-            sys.stderr.write(env.stderr.read())
+            sys.stderr.write(stderr.read())
             raise
         except SystemExit:
             exit_status = ExitStatus.ERROR
 
-        env.stdout.seek(0)
-        env.stderr.seek(0)
+        stdout.seek(0)
+        stderr.seek(0)
 
-        output = env.stdout.read()
+        output = stdout.read()
         try:
             r = StrResponse(output.decode('utf8'))
         except UnicodeDecodeError:
@@ -224,14 +230,14 @@ def http(*args, **kwargs):
                         except ValueError:
                             pass
 
-        r.stderr = env.stderr.read()
+        r.stderr = stderr.read()
         r.exit_status = exit_status
 
         return r
 
     finally:
-        env.stdout.close()
-        env.stderr.close()
+        stdout.close()
+        stderr.close()
 
 
 class BaseTestCase(unittest.TestCase):
@@ -1521,7 +1527,22 @@ class DownloadUtilsTest(BaseTestCase):
 
 class DownloadTest(BaseTestCase):
     # TODO: Download tests.
-    pass
+
+    def test_download(self):
+        url = httpbin('/robots.txt')
+        body = urlopen(url).read().decode()
+        r = http(
+            '--download',
+            url,
+            env=TestEnvironment(
+                stdin_isatty=True,
+                stdout_isatty=False
+            )
+        )
+        self.assertIn('Downloading', r.stderr)
+        self.assertIn('[K', r.stderr)
+        self.assertIn('Done', r.stderr)
+        self.assertEqual(body, r)
 
 
 if __name__ == '__main__':

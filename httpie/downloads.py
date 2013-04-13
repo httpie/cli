@@ -157,6 +157,7 @@ class Download(object):
         self._output_file = output_file
         self._resume = resume
         self._resumed_from = 0
+        self._finished = False
 
         self._progress = Progress()
         self._progress_reporter = ProgressReporter(
@@ -256,8 +257,8 @@ class Download(object):
         return stream, self._output_file
 
     def finish(self):
-        assert not self._output_file.closed
-        self._output_file.close()
+        assert not self._finished
+        self._finished = True
         self._progress.finished()
 
     @property
@@ -351,12 +352,16 @@ class ProgressReporter(object):
                 speed = 0
 
             if not self.progress.total_size:
-                template = PROGRESS_NO_CONTENT_LENGTH
-                percentage = None
-                eta = None
+                self._status_line = PROGRESS_NO_CONTENT_LENGTH.format(
+                    downloaded=humanize_bytes(downloaded),
+                    speed=humanize_bytes(speed),
+                )
             else:
-                template = PROGRESS
-                percentage = downloaded / self.progress.total_size * 100
+                try:
+                    percentage = downloaded / self.progress.total_size * 100
+                except ZeroDivisionError:
+                    percentage = 0
+
                 if not speed:
                     eta = '-:--:--'
                 else:
@@ -365,12 +370,12 @@ class ProgressReporter(object):
                     m, s = divmod(s, 60)
                     eta = '{}:{:0>2}:{:0>2}'.format(h, m, s)
 
-            self._status_line = template.format(
-                percentage=percentage,
-                downloaded=humanize_bytes(downloaded),
-                speed=humanize_bytes(speed),
-                eta=eta,
-            )
+                self._status_line = PROGRESS.format(
+                    percentage=percentage,
+                    downloaded=humanize_bytes(downloaded),
+                    speed=humanize_bytes(speed),
+                    eta=eta,
+                )
 
             self._prev_time = now
             self._prev_bytes = downloaded
