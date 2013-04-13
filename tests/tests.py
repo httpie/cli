@@ -38,6 +38,7 @@ try:
 except ImportError:
     skip = lambda msg: lambda self: None
 
+    # noinspection PyUnusedLocal
     def skipIf(cond, reason):
         def decorator(test_method):
             if cond:
@@ -251,9 +252,11 @@ class BaseTestCase(unittest.TestCase):
     def assertIsNone(self, obj, msg=None):
         self.assertEqual(obj, None, msg=msg)
 
+
 #################################################################
 # High-level tests using httpbin.
 #################################################################
+
 
 class HTTPieTest(BaseTestCase):
 
@@ -1465,7 +1468,7 @@ class DownloadUtilsTest(BaseTestCase):
             'hello-WORLD_123.txt'
         )
         self.assertEqual(
-            parse('attachment; filename=.hello-WORLD_123.txt'),
+            parse('attachment; filename=".hello-WORLD_123.txt"'),
             'hello-WORLD_123.txt'
         )
         self.assertIsNone(parse('attachment; filename='))
@@ -1493,7 +1496,7 @@ class DownloadUtilsTest(BaseTestCase):
     def test_unique_filename(self):
 
         def make_exists(unique_on_attempt=0):
-            # noinspection PyUnresolvedReferences
+            # noinspection PyUnresolvedReferences,PyUnusedLocal
             def exists(filename):
                 if exists.attempt == unique_on_attempt:
                     return False

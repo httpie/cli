@@ -49,6 +49,7 @@ Main Features
 * Arbitrary request data
 * Custom headers
 * Persistent sessions
+* Wget-like downloads
 * Python 2.6, 2.7 and 3.x support
 * Linux, Mac OS X and Windows support
 * Documentation

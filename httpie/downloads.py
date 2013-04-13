@@ -22,8 +22,8 @@ PARTIAL_CONTENT = 206
 
 CLEAR_LINE = '\r\033[K'
 PROGRESS = (
-    '{downloaded: >9}'
-    ' {percentage: 5.2f}%'
+    '{downloaded: >10}'
+    ' {percentage: 6.2f}%'
     ' {speed: >10}/s'
     ' {eta: >8} ETA'
 )
@@ -103,7 +103,7 @@ def filename_from_content_disposition(content_disposition):
     # attachment; filename=jkbr-httpie-0.4.1-20-g40bd8f6.tar.gz
     match = re.search('filename=(\S+)', content_disposition)
     if match and match.group(1):
-        fn = match.group(1).lstrip('.')
+        fn = match.group(1).strip('."')
         if re.match('^[a-zA-Z0-9._-]+$', fn):
             return fn
 
@@ -197,7 +197,7 @@ class Download(object):
 
         try:
             total_size = int(response.headers['Content-Length'])
-        except (KeyError, ValueError):
+        except (KeyError, ValueError, TypeError):
             total_size = None
 
         if self._output_file:
@@ -343,26 +343,27 @@ class ProgressReporter(object):
 
             downloaded = self.progress.downloaded
 
-            if self.progress.total_size:
-                template = PROGRESS
-                percentage = (
-                    downloaded / self.progress.total_size * 100)
-            else:
-                template = PROGRESS_NO_CONTENT_LENGTH
-                percentage = None
-
             try:
                 # TODO: Use a longer interval for the speed/eta calculation?
                 speed = ((downloaded - self._prev_bytes)
                          / (now - self._prev_time))
-                s = int((self.progress.total_size - downloaded) / speed)
             except ZeroDivisionError:
                 speed = 0
-                eta = '-:--:--'
+
+            if not self.progress.total_size:
+                template = PROGRESS_NO_CONTENT_LENGTH
+                percentage = None
+                eta = None
             else:
-                h, s = divmod(s, 60 * 60)
-                m, s = divmod(s, 60)
-                eta = '{}:{:0>2}:{:0>2}'.format(h, m, s)
+                template = PROGRESS
+                percentage = downloaded / self.progress.total_size * 100
+                if not speed:
+                    eta = '-:--:--'
+                else:
+                    s = int((self.progress.total_size - downloaded) / speed)
+                    h, s = divmod(s, 60 * 60)
+                    m, s = divmod(s, 60)
+                    eta = '{}:{:0>2}:{:0>2}'.format(h, m, s)
 
             self._status_line = template.format(
                 percentage=percentage,
@@ -397,7 +398,8 @@ class ProgressReporter(object):
         self.output.write(CLEAR_LINE)
         self.output.write(SUMMARY.format(
             downloaded=humanize_bytes(actually_downloaded),
-            total=humanize_bytes(self.progress.total_size),
+            total=(self.progress.total_size
+                   and humanize_bytes(self.progress.total_size)),
             speed=humanize_bytes(actually_downloaded / time_taken),
             time=time_taken,
         ))
