@@ -10,7 +10,6 @@ import sys
 import mimetypes
 import threading
 from time import time
-from datetime import timedelta
 
 from .output import RawStream
 from .models import HTTPResponse
@@ -22,10 +21,14 @@ PARTIAL_CONTENT = 206
 
 
 CLEAR_LINE = '\r\033[K'
-PROGRESS = ('{percentage: 6.2f}% ({downloaded})'
-            ' of {total} ({speed}/s) ETA {eta}')
-PROGRESS_NO_CONTENT_LENGTH = '{downloaded} ({speed}/s) ETA {eta}'
-SUMMARY = 'Done. {downloaded} of {total} in {time:0.5f}s ({speed}/s)\n'
+PROGRESS = (
+    '{downloaded: >9}'
+    ' {percentage: 5.2f}%'
+    ' {speed: >10}/s'
+    ' {eta: >8} ETA'
+)
+PROGRESS_NO_CONTENT_LENGTH = '{downloaded: >10} {speed: >10}/s'
+SUMMARY = 'Done. {downloaded} in {time:0.5f}s ({speed}/s)\n'
 SPINNER = '|/-\\'
 
 
@@ -241,7 +244,11 @@ class Download(object):
         )
 
         self._progress_reporter.output.write(
-            'Saving to "%s"\n' % self._output_file.name)
+            'Downloading %s to "%s"\n' % (
+                self._progress.total_size_humanized,
+                self._output_file.name
+            )
+        )
         self._progress_reporter.report()
 
         return stream, self._output_file
@@ -348,11 +355,14 @@ class ProgressReporter(object):
                 # TODO: Use a longer interval for the speed/eta calculation?
                 speed = ((downloaded - self._prev_bytes)
                          / (now - self._prev_time))
-                eta = int((self.progress.total_size - downloaded) / speed)
-                eta = str(timedelta(seconds=eta))
+                s = int((self.progress.total_size - downloaded) / speed)
             except ZeroDivisionError:
                 speed = 0
-                eta = '?'
+                eta = '-:--:--'
+            else:
+                h, s = divmod(s, 60 * 60)
+                m, s = divmod(s, 60)
+                eta = '{}:{:0>2}:{:0>2}'.format(h, m, s)
 
             self._status_line = template.format(
                 percentage=percentage,
@@ -367,6 +377,7 @@ class ProgressReporter(object):
 
         self.output.write(
             CLEAR_LINE
+            + ' '
             + SPINNER[self._spinner_pos]
             + ' '
             + self._status_line

@@ -33,7 +33,7 @@ def humanize_bytes(n, precision=2):
         (1 << 30, 'GB'),
         (1 << 20, 'MB'),
         (1 << 10, 'kB'),
-        (1, 'bytes')
+        (1, 'B')
     ]
 
     if n == 1:

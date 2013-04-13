@@ -31,6 +31,7 @@ import shutil
 try:
     from urllib.request import urlopen
 except ImportError:
+    # noinspection PyUnresolvedReferences
     from urllib2 import urlopen
 try:
     from unittest import skipIf, skip
@@ -1433,9 +1434,7 @@ class SessionTest(BaseTestCase):
         self.assertDictEqual(r1.json, r3.json)
 
 
-class DownloadsTest(BaseTestCase):
-
-    # TODO: Actual download tests
+class DownloadUtilsTest(BaseTestCase):
 
     def test_Content_Range_parsing(self):
 
@@ -1515,6 +1514,11 @@ class DownloadsTest(BaseTestCase):
             get_unique_filename('foo.bar', exists=make_exists(10)),
             'foo.bar-10'
         )
+
+
+class DownloadTest(BaseTestCase):
+    # TODO: Download tests.
+    pass
 
 
 if __name__ == '__main__':

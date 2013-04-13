@@ -846,8 +846,8 @@ is being saved to a file.
     Server: GitHub.com
     Vary: Accept-Encoding
 
-    Saving to "jkbr-httpie-0.4.1-20-g40bd8f6.tar.gz"
-    /  37.27% (184.00 kB) of 493.68 kB (181.69 kB/s) ETA 0:00:01
+    Downloading 494.89 kB to "jkbr-httpie-0.4.1-33-gfc4f70a.tar.gz"
+    / 104.00 kB  21.01%   47.55 kB/s  0:00:08 ETA
 
 
 If not provided via ``--output, -o``, the output filename will be determined
