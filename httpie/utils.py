@@ -37,7 +37,7 @@ def humanize_bytes(n, precision=2):
     ]
 
     if n == 1:
-        return '1 byte'
+        return '1 B'
 
     for factor, suffix in abbrevs:
         if n >= factor:

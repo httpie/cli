@@ -22,8 +22,8 @@ PARTIAL_CONTENT = 206
 
 CLEAR_LINE = '\r\033[K'
 PROGRESS = (
-    '{downloaded: >10}'
-    ' {percentage: 6.2f}%'
+    '{percentage: 6.2f}%'
+    ' {downloaded: >10}'
     ' {speed: >10}/s'
     ' {eta: >8} ETA'
 )
@@ -48,6 +48,9 @@ def parse_content_range(content_range, resumed_from):
     :return: total size of the response body when fully downloaded.
 
     """
+    if content_range is None:
+        raise ContentRangeError('Missing Content-Range')
+
     pattern = (
         '^bytes (?P<first_byte_pos>\d+)-(?P<last_byte_pos>\d+)'
         '/(\*|(?P<instance_length>\d+))$'
@@ -203,10 +206,10 @@ class Download(object):
 
         if self._output_file:
             if self._resume and response.status_code == PARTIAL_CONTENT:
-                content_range = response.headers.get('Content-Range')
-                if content_range:
-                    total_size = parse_content_range(
-                        content_range, self._resumed_from)
+                total_size = parse_content_range(
+                    response.headers.get('Content-Range'),
+                    self._resumed_from
+                )
 
             else:
                 self._resumed_from = 0
@@ -264,7 +267,7 @@ class Download(object):
     @property
     def interrupted(self):
         return (
-            self._output_file.closed
+            self._finished
             and self._progress.total_size
             and self._progress.total_size != self._progress.downloaded
         )
@@ -321,13 +324,12 @@ class ProgressReporter(object):
         """
         self.progress = progress
         self.output = output
-        self._prev_bytes = 0
-        self._prev_time = time()
-        self._spinner_pos = 0
         self._tick = tick
         self._update_interval = update_interval
+        self._spinner_pos = 0
         self._status_line = ''
-        super(ProgressReporter, self).__init__()
+        self._prev_bytes = 0
+        self._prev_time = time()
 
     def report(self):
         if self.progress.has_finished:
@@ -389,15 +391,13 @@ class ProgressReporter(object):
         )
         self.output.flush()
 
-        self._spinner_pos = (
-            self._spinner_pos + 1
-            if self._spinner_pos + 1 != len(SPINNER)
-            else 0
-        )
+        self._spinner_pos = (self._spinner_pos + 1
+                             if self._spinner_pos + 1 != len(SPINNER)
+                             else 0)
 
     def sum_up(self):
-        actually_downloaded = (
-            self.progress.downloaded - self.progress.resumed_from)
+        actually_downloaded = (self.progress.downloaded
+                               - self.progress.resumed_from)
         time_taken = self.progress.time_finished - self.progress.time_started
 
         self.output.write(CLEAR_LINE)

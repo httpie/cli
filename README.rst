@@ -848,7 +848,7 @@ is being saved to a file.
     Vary: Accept-Encoding
 
     Downloading 494.89 kB to "jkbr-httpie-0.4.1-33-gfc4f70a.tar.gz"
-    / 104.00 kB  21.01%   47.55 kB/s  0:00:08 ETA
+    /  21.01% 104.00 kB   47.55 kB/s  0:00:08 ETA
 
 
 If not provided via ``--output, -o``, the output filename will be determined
@@ -1257,6 +1257,5 @@ Changelog
 .. _0.4.0: https://github.com/jkbr/httpie/compare/0.3.0...0.4.0
 .. _0.4.1: https://github.com/jkbr/httpie/compare/0.4.0...0.4.1
 .. _0.5.0-alpha: https://github.com/jkbr/httpie/compare/0.4.0...master
-.. _stable version: https://github.com/jkbr/httpie/tree/0.3.0#readme
 .. _AUTHORS.rst: https://github.com/jkbr/httpie/blob/master/AUTHORS.rst
 .. _LICENSE: https://github.com/jkbr/httpie/blob/master/LICENSE

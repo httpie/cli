@@ -19,6 +19,7 @@ To make it run faster and offline you can::
     HTTPBIN_URL=http://localhost:5000 tox
 
 """
+from io import BytesIO
 import subprocess
 import os
 import sys
@@ -28,6 +29,7 @@ import tempfile
 import unittest
 import shutil
 import time
+from requests.structures import CaseInsensitiveDict
 
 try:
     from urllib.request import urlopen
@@ -71,6 +73,7 @@ from httpie.downloads import (
     filename_from_url,
     get_unique_filename,
     ContentRangeError,
+    Download,
 )
 
 
@@ -1452,6 +1455,9 @@ class DownloadUtilsTest(BaseTestCase):
         self.assertEqual(parse('bytes 100-199/200', 100), 200)
         self.assertEqual(parse('bytes 100-199/*', 100), 200)
 
+        # missing
+        self.assertRaises(ContentRangeError, parse, None, 100)
+
         # syntax error
         self.assertRaises(ContentRangeError, parse, 'beers 100-199/*', 100)
 
@@ -1525,10 +1531,19 @@ class DownloadUtilsTest(BaseTestCase):
         )
 
 
+class Response(object):
+
+    # noinspection PyDefaultArgument
+    def __init__(self, url, headers={}, status_code=200):
+        self.url = url
+        self.headers = CaseInsensitiveDict(headers)
+        self.status_code = status_code
+
+
 class DownloadTest(BaseTestCase):
     # TODO: Download tests.
 
-    def test_download(self):
+    def test_actual_download(self):
         url = httpbin('/robots.txt')
         body = urlopen(url).read().decode()
         r = http(
@@ -1543,6 +1558,37 @@ class DownloadTest(BaseTestCase):
         self.assertIn('[K', r.stderr)
         self.assertIn('Done', r.stderr)
         self.assertEqual(body, r)
+
+    def test_download_no_Content_Length(self):
+        download = Download(output_file=open(os.devnull, 'w'))
+        download.start(Response(url=httpbin('/')))
+        download._on_progress(b'12345')
+        download.finish()
+        self.assertFalse(download.interrupted)
+
+    def test_download_with_Content_Length(self):
+        download = Download(
+            output_file=open(os.devnull, 'w'),
+            progress_file=BytesIO(),
+        )
+        download.start(Response(
+            url=httpbin('/'),
+            headers={'Content-Length': 5}
+        ))
+        download._on_progress(b'12345')
+        time.sleep(1.5)
+        download.finish()
+        self.assertFalse(download.interrupted)
+
+    def test_download_interrupted(self):
+        download = Download(output_file=open(os.devnull, 'w'))
+        download.start(Response(
+            url=httpbin('/'),
+            headers={'Content-Length': 5}
+        ))
+        download._on_progress(b'1234')
+        download.finish()
+        self.assertTrue(download.interrupted)
 
 
 if __name__ == '__main__':
