@@ -22,7 +22,7 @@ PARTIAL_CONTENT = 206
 
 CLEAR_LINE = '\r\033[K'
 PROGRESS = (
-    '{percentage: 6.2f}%'
+    '{percentage: 6.2f} %'
     ' {downloaded: >10}'
     ' {speed: >10}/s'
     ' {eta: >8} ETA'
@@ -160,11 +160,11 @@ class Download(object):
         self._output_file = output_file
         self._resume = resume
         self._resumed_from = 0
-        self._finished = False
+        self.finished = False
 
-        self._progress = Progress()
+        self._status = Status()
         self._progress_reporter = ProgressReporter(
-            progress=self._progress,
+            status=self._status,
             output=progress_file
         )
 
@@ -197,7 +197,7 @@ class Download(object):
         :return: RawStream, output_file
 
         """
-        assert not self._progress.time_started
+        assert not self._status.time_started
 
         try:
             total_size = int(response.headers['Content-Length'])
@@ -232,7 +232,7 @@ class Download(object):
                 )
             self._output_file = open(get_unique_filename(fn), mode='a+b')
 
-        self._progress.started(
+        self._status.started(
             resumed_from=self._resumed_from,
             total_size=total_size
         )
@@ -241,9 +241,7 @@ class Download(object):
             msg=HTTPResponse(response),
             with_headers=False,
             with_body=True,
-            on_body_chunk_downloaded=self._on_progress,
-            # TODO: Find the optimal chunk size.
-            # The smaller it is the slower it gets, but gives better feedback.
+            on_body_chunk_downloaded=self._chunk_downloaded,
             chunk_size=1024 * 8
         )
 
@@ -260,19 +258,23 @@ class Download(object):
         return stream, self._output_file
 
     def finish(self):
-        assert not self._finished
-        self._finished = True
-        self._progress.finished()
+        assert not self.finished
+        self.finished = True
+        self._status.finished()
+
+    def failed(self):
+        self.finish()
+        self._progress_reporter.stop()
 
     @property
     def interrupted(self):
         return (
-            self._finished
-            and self._progress.total_size
-            and self._progress.total_size != self._progress.downloaded
+            self.finished
+            and self._status.total_size
+            and self._status.total_size != self._status.downloaded
         )
 
-    def _on_progress(self, chunk):
+    def _chunk_downloaded(self, chunk):
         """
         A download progress callback.
 
@@ -281,10 +283,11 @@ class Download(object):
         :type chunk: bytes
 
         """
-        self._progress.chunk_downloaded(len(chunk))
+        self._status.chunk_downloaded(len(chunk))
 
 
-class Progress(object):
+class Status(object):
+    """Holds details about the downland status."""
 
     def __init__(self):
         self.downloaded = 0
@@ -315,14 +318,19 @@ class Progress(object):
 
 
 class ProgressReporter(object):
+    """
+    Reports download progress based on its status.
 
-    def __init__(self, progress, output, tick=.1, update_interval=1):
+    Uses threading to periodically update the status (speed, ETA, etc.).
+
+    """
+    def __init__(self, status, output, tick=.1, update_interval=1):
         """
 
-        :type progress: Progress
+        :type status: Status
         :type output: file
         """
-        self.progress = progress
+        self.status = status
         self.output = output
         self._tick = tick
         self._update_interval = update_interval
@@ -330,9 +338,16 @@ class ProgressReporter(object):
         self._status_line = ''
         self._prev_bytes = 0
         self._prev_time = time()
+        self._stop = False
+
+    def stop(self):
+        """Stop reporting on next tick."""
+        self._stop = True
 
     def report(self):
-        if self.progress.has_finished:
+        if self._stop:
+            return
+        if self.status.has_finished:
             self.sum_up()
         else:
             self.report_speed()
@@ -343,31 +358,28 @@ class ProgressReporter(object):
         now = time()
 
         if now - self._prev_time >= self._update_interval:
-
-            downloaded = self.progress.downloaded
-
+            downloaded = self.status.downloaded
             try:
-                # TODO: Use a longer interval for the speed/eta calculation?
                 speed = ((downloaded - self._prev_bytes)
                          / (now - self._prev_time))
             except ZeroDivisionError:
                 speed = 0
 
-            if not self.progress.total_size:
+            if not self.status.total_size:
                 self._status_line = PROGRESS_NO_CONTENT_LENGTH.format(
                     downloaded=humanize_bytes(downloaded),
                     speed=humanize_bytes(speed),
                 )
             else:
                 try:
-                    percentage = downloaded / self.progress.total_size * 100
+                    percentage = downloaded / self.status.total_size * 100
                 except ZeroDivisionError:
                     percentage = 0
 
                 if not speed:
                     eta = '-:--:--'
                 else:
-                    s = int((self.progress.total_size - downloaded) / speed)
+                    s = int((self.status.total_size - downloaded) / speed)
                     h, s = divmod(s, 60 * 60)
                     m, s = divmod(s, 60)
                     eta = '{}:{:0>2}:{:0>2}'.format(h, m, s)
@@ -396,15 +408,15 @@ class ProgressReporter(object):
                              else 0)
 
     def sum_up(self):
-        actually_downloaded = (self.progress.downloaded
-                               - self.progress.resumed_from)
-        time_taken = self.progress.time_finished - self.progress.time_started
+        actually_downloaded = (self.status.downloaded
+                               - self.status.resumed_from)
+        time_taken = self.status.time_finished - self.status.time_started
 
         self.output.write(CLEAR_LINE)
         self.output.write(SUMMARY.format(
             downloaded=humanize_bytes(actually_downloaded),
-            total=(self.progress.total_size
-                   and humanize_bytes(self.progress.total_size)),
+            total=(self.status.total_size
+                   and humanize_bytes(self.status.total_size)),
             speed=humanize_bytes(actually_downloaded / time_taken),
             time=time_taken,
         ))

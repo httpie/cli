@@ -1,2 +1,3 @@
+tox
 httpbin
 docutils

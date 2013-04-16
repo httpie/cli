@@ -1540,6 +1540,7 @@ class Response(object):
         self.status_code = status_code
 
 
+# noinspection PyTypeChecker
 class DownloadTest(BaseTestCase):
     # TODO: Download tests.
 
@@ -1562,31 +1563,19 @@ class DownloadTest(BaseTestCase):
     def test_download_no_Content_Length(self):
         download = Download(output_file=open(os.devnull, 'w'))
         download.start(Response(url=httpbin('/')))
-        download._on_progress(b'12345')
+        download._chunk_downloaded(b'12345')
         download.finish()
         self.assertFalse(download.interrupted)
 
-    def test_download_with_Content_Length(self):
+    def test_download_interrupted(self):
         download = Download(
-            output_file=open(os.devnull, 'w'),
-            progress_file=BytesIO(),
+            output_file=open(os.devnull, 'w')
         )
         download.start(Response(
             url=httpbin('/'),
             headers={'Content-Length': 5}
         ))
-        download._on_progress(b'12345')
-        time.sleep(1.5)
-        download.finish()
-        self.assertFalse(download.interrupted)
-
-    def test_download_interrupted(self):
-        download = Download(output_file=open(os.devnull, 'w'))
-        download.start(Response(
-            url=httpbin('/'),
-            headers={'Content-Length': 5}
-        ))
-        download._on_progress(b'1234')
+        download._chunk_downloaded(b'1234')
         download.finish()
         self.assertTrue(download.interrupted)
 

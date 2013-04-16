@@ -139,10 +139,7 @@ def main(args=sys.argv[1:], env=Environment()):
                 env.stderr.write('\n')
             else:
                 raise
-
     except (KeyboardInterrupt, SystemExit):
-        if download:
-            download.finish()
         if traceback:
             raise
         env.stderr.write('\n')
@@ -159,5 +156,9 @@ def main(args=sys.argv[1:], env=Environment()):
             raise
         error('%s: %s', type(e).__name__, str(e))
         exit_status = ExitStatus.ERROR
+
+    finally:
+        if download and not download.finished:
+            download.failed()
 
     return exit_status
