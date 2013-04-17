@@ -469,7 +469,7 @@ come). There are two flags that control authentication:
                         ``basic`` so it can often be omitted.
 ===================     ======================================================
 
-Authorization information from ``.netrc`` is honored as well.
+
 
 Basic auth:
 
@@ -492,6 +492,19 @@ With password prompt:
 .. code-block:: bash
 
     $ http -a username example.org
+
+
+Authorization information from your ``.netrc`` file is honored as well:
+
+.. code-block:: bash
+
+    $ cat .netrc
+    machine httpbin.org
+    login httpie
+    password test
+    $ http httpbin.org/basic-auth/httpie/test
+    HTTP/1.1 200 OK
+    [...]
 
 
 =======
