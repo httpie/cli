@@ -1541,7 +1541,7 @@ class Response(object):
 
 # noinspection PyTypeChecker
 class DownloadTest(BaseTestCase):
-    # TODO: Download tests.
+    # TODO: more tests
 
     def test_actual_download(self):
         url = httpbin('/robots.txt')

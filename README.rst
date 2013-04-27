@@ -1162,8 +1162,10 @@ Changelog
 
 *You can click a version name to see a diff with the previous one.*
 
-* `0.5.0-alpha`_
-    * Added ``--download`` mode.
+* `0.6.0-dev`_
+* `0.5.0`_ (2013-04-27)
+    * Added a `download mode`_ via ``--download``.
+    * Bugfixes.
 * `0.4.1`_ (2013-02-26)
     * Fixed ``setup.py``.
 * `0.4.0`_ (2013-02-22)
@@ -1269,6 +1271,7 @@ Changelog
 .. _0.3.0: https://github.com/jkbr/httpie/compare/0.2.7...0.3.0
 .. _0.4.0: https://github.com/jkbr/httpie/compare/0.3.0...0.4.0
 .. _0.4.1: https://github.com/jkbr/httpie/compare/0.4.0...0.4.1
-.. _0.5.0-alpha: https://github.com/jkbr/httpie/compare/0.4.0...master
+.. _0.5.0: https://github.com/jkbr/httpie/compare/0.4.1...0.5.0
+.. _0.6.0-dev: https://github.com/jkbr/httpie/compare/0.5.0...master
 .. _AUTHORS.rst: https://github.com/jkbr/httpie/blob/master/AUTHORS.rst
 .. _LICENSE: https://github.com/jkbr/httpie/blob/master/LICENSE
