@@ -19,7 +19,6 @@ To make it run faster and offline you can::
     HTTPBIN_URL=http://localhost:5000 tox
 
 """
-from io import BytesIO
 import subprocess
 import os
 import sys

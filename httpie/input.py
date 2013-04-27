@@ -115,8 +115,7 @@ class Parser(ArgumentParser):
         self._parse_items()
         if not env.stdin_isatty:
             self._body_from_file(self.env.stdin)
-        if not (self.args.url.startswith(HTTP)
-                or self.args.url.startswith(HTTPS)):
+        if not (self.args.url.startswith((HTTP, HTTPS))):
             # Default to 'https://' if invoked as `https args`.
             scheme = HTTPS if self.env.progname == 'https' else HTTP
             self.args.url = scheme + self.args.url

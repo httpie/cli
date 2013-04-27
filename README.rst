@@ -889,7 +889,7 @@ support that, the whole file will simply be downloaded:
 Other notes:
 
 * The ``--download`` option only changes how the response body is treated.
-* You can still set custom headers, use ``--verbose, -v``, etc.
+* You can still set custom headers, use sessions, ``--verbose, -v``, etc.
 * ``--download`` always implies ``--follow`` (redirects are followed).
 * HTTPie exits with status code ``1`` (error) if the body hasn't been fully
   downloaded.
