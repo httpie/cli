@@ -1464,6 +1464,28 @@ class SessionTest(BaseTestCase):
         # Should be the same as before r2.
         self.assertDictEqual(r1.json, r3.json)
 
+    def test_session_by_path(self):
+        session_path = os.path.join(self.config_dir, 'session-by-path.json')
+
+        r1 = http(
+            '--session=' + session_path,
+            'GET',
+            httpbin('/get'),
+            'Foo:Bar',
+            env=self.env
+        )
+        self.assertIn(OK, r1)
+
+        r2 = http(
+            '--session=' + session_path,
+            'GET',
+            httpbin('/get'),
+            env=self.env
+        )
+        self.assertIn(OK, r2)
+
+        self.assertEqual(r2.json['headers']['Foo'], 'Bar')
+
 
 class DownloadUtilsTest(BaseTestCase):
 

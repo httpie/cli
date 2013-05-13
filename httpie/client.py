@@ -28,7 +28,7 @@ def get_response(args, config_dir):
     else:
         response = sessions.get_response(
             config_dir=config_dir,
-            name=args.session or args.session_read_only,
+            session_name=args.session or args.session_read_only,
             requests_kwargs=requests_kwargs,
             read_only=bool(args.session_read_only),
         )

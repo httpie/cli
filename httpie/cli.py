@@ -7,13 +7,13 @@ from argparse import FileType, OPTIONAL, ZERO_OR_MORE, SUPPRESS
 
 from . import __doc__
 from . import __version__
-from .sessions import DEFAULT_SESSIONS_DIR, Session
+from .sessions import DEFAULT_SESSIONS_DIR
 from .output import AVAILABLE_STYLES, DEFAULT_STYLE
 from .input import (Parser, AuthCredentialsArgType, KeyValueArgType,
                     SEP_PROXY, SEP_CREDENTIALS, SEP_GROUP_ITEMS,
                     OUT_REQ_HEAD, OUT_REQ_BODY, OUT_RESP_HEAD,
                     OUT_RESP_BODY, OUTPUT_OPTIONS,
-                    PRETTY_MAP, PRETTY_STDOUT_TTY_ONLY, RegexValidator)
+                    PRETTY_MAP, PRETTY_STDOUT_TTY_ONLY, SessionNameValidator)
 
 
 def _(text):
@@ -256,19 +256,21 @@ output_options.add_argument(
     ''')
 )
 
+
 ###############################################################################
 # Sessions
 ###############################################################################
+
 sessions = parser.add_argument_group(title='Sessions')\
                  .add_mutually_exclusive_group(required=False)
 
+session_name_validator = SessionNameValidator(
+    'Session name contains invalid characters.')
+
 sessions.add_argument(
     '--session',
-    metavar='SESSION_NAME',
-    type=RegexValidator(
-        Session.VALID_NAME_PATTERN,
-        'Session name contains invalid characters.'
-    ),
+    metavar='SESSION_NAME_OR_PATH',
+    type=session_name_validator,
     help=_('''
     Create, or reuse and update a session.
     Within a session, custom headers, auth credential, as well as any
@@ -278,7 +280,8 @@ sessions.add_argument(
 )
 sessions.add_argument(
     '--session-read-only',
-    metavar='SESSION_NAME',
+    metavar='SESSION_NAME_OR_PATH',
+    type=session_name_validator,
     help=_('''
         Create or read a session without updating it form the
         request/response exchange.
@@ -289,6 +292,7 @@ sessions.add_argument(
 ###############################################################################
 # Authentication
 ###############################################################################
+
 # ``requests.request`` keyword arguments.
 auth = parser.add_argument_group(title='Authentication')
 auth.add_argument(
@@ -312,8 +316,9 @@ auth.add_argument(
 )
 
 
+###############################################################################
 # Network
-#############################################
+###############################################################################
 
 network = parser.add_argument_group(title='Network')
 

@@ -20,6 +20,7 @@ except ImportError:
 from requests.structures import CaseInsensitiveDict
 
 from .compat import urlsplit, str
+from .sessions import VALID_SESSION_NAME_PATTERN
 
 
 HTTP_POST = 'POST'
@@ -373,24 +374,15 @@ class KeyValue(object):
         return self.__dict__ == other.__dict__
 
 
-def session_name_arg_type(name):
-    from .sessions import Session
-    if not Session.is_valid_name(name):
-        raise ArgumentTypeError(
-            'special characters and spaces are not'
-            ' allowed in session names: "%s"'
-            % name)
-    return name
+class SessionNameValidator(object):
 
-
-class RegexValidator(object):
-
-    def __init__(self, pattern, error_message):
-        self.pattern = re.compile(pattern)
+    def __init__(self, error_message):
         self.error_message = error_message
 
     def __call__(self, value):
-        if not self.pattern.search(value):
+        # Session name can be a path or just a name.
+        if (os.path.sep not in value
+                and not VALID_SESSION_NAME_PATTERN.search(value)):
             raise ArgumentError(None, self.error_message)
         return value
 

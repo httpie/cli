@@ -937,13 +937,17 @@ Streamed output by small chunks alá ``tail -f``:
 Sessions
 ========
 
-By default, every request is completely independent of the previous ones.
+By default, every request is completely independent of any previous ones.
 HTTPie also supports persistent sessions, where custom headers (except for the
 ones starting with ``Content-`` or ``If-``), authorization, and cookies
 (manually specified or sent by the server) persist between requests
 to the same host.
 
-Create a new session named ``user1``:
+--------------
+Named Sessions
+--------------
+
+Create a new session named ``user1`` for ``example.org``:
 
 .. code-block:: bash
 
@@ -966,14 +970,30 @@ To use a session without updating it from the request/response exchange
 once it is created, specify the session name via
 ``--session-read-only=SESSION_NAME`` instead.
 
-Session data are stored in JSON files in the directory
+Named sessions' data is stored in JSON files in the directory
 ``~/.httpie/sessions/<host>/<name>.json``
 (``%APPDATA%\httpie\sessions\<host>\<name>.json`` on Windows).
+
+------------------
+Anonymous Sessions
+------------------
+
+Instead of a name, you can also directly specify a path to a session file. This
+allows for re-using session across multiple hosts:
+
+.. code-block:: bash
+
+    $ http --session=/tmp/session.json example.org
+    $ http --session=/tmp/session.json admin.example.org
+    $ http --session=~/.httpie/sessions/another.example.org/test.json example.org
+    $ http --session-read-only=/tmp/session.json example.org
+
+
 **Warning:** All session data, including credentials, cookie data,
 and custom headers are stored in plain text.
 
-Session files can also be created and edited manually in a text editor.
-
+Note that session files can also be created and edited manually in a text
+editor; they are plain JSON.
 
 See also `Config`_.
 
@@ -1164,6 +1184,8 @@ Changelog
 *You can click a version name to see a diff with the previous one.*
 
 * `0.6.0-dev`_
+    * ``--session`` and ``--session-read-only`` now also accept paths to
+      session files (eg. ``http --session=/tmp/session.json example.org``).
 * `0.5.1`_ (2013-05-13)
     * ``Content-*`` and ``If-*`` request headers are not stored in sessions
       anymore as they are request-specific.

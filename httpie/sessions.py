@@ -3,9 +3,6 @@
 """
 import re
 import os
-import glob
-import errno
-import shutil
 
 import requests
 from requests.cookies import RequestsCookieJar, create_cookie
@@ -17,26 +14,36 @@ from .config import BaseConfigDict, DEFAULT_CONFIG_DIR
 
 SESSIONS_DIR_NAME = 'sessions'
 DEFAULT_SESSIONS_DIR = os.path.join(DEFAULT_CONFIG_DIR, SESSIONS_DIR_NAME)
-
-
+VALID_SESSION_NAME_PATTERN = re.compile('^[a-zA-Z0-9_.-]+$')
 # Request headers starting with these prefixes won't be stored in sessions.
 # They are specific to each request.
 # http://en.wikipedia.org/wiki/List_of_HTTP_header_fields#Requests
 SESSION_IGNORED_HEADER_PREFIXES = ['Content-', 'If-']
 
 
-def get_response(name, requests_kwargs, config_dir, read_only=False):
+def get_response(session_name, requests_kwargs, config_dir, read_only=False):
     """Like `client.get_response`, but applies permanent
     aspects of the session to the request.
 
     """
-    sessions_dir = os.path.join(config_dir, SESSIONS_DIR_NAME)
-    host = Host(
-        root_dir=sessions_dir,
-        name=requests_kwargs['headers'].get('Host', None)
-             or urlsplit(requests_kwargs['url']).netloc.split('@')[-1]
-    )
-    session = Session(host, name)
+    if os.path.sep in session_name:
+        path = os.path.expanduser(session_name)
+    else:
+        hostname = (
+            requests_kwargs['headers'].get('Host', None)
+            or urlsplit(requests_kwargs['url']).netloc.split('@')[-1]
+        )
+
+        assert re.match('^[a-zA-Z0-9_.:-]+$', hostname)
+
+        # host:port => host_port
+        hostname = hostname.replace(':', '_')
+        path = os.path.join(config_dir,
+                            SESSIONS_DIR_NAME,
+                            hostname,
+                            session_name + '.json')
+
+    session = Session(path)
     session.load()
 
     # Merge request and session headers to get final headers for this request.
@@ -68,69 +75,13 @@ def get_response(name, requests_kwargs, config_dir, read_only=False):
         return response
 
 
-class Host(object):
-    """A host is a per-host directory on the disk containing sessions files."""
-
-    VALID_NAME_PATTERN = re.compile('^[a-zA-Z0-9_.:-]+$')
-
-    def __init__(self, name, root_dir=DEFAULT_SESSIONS_DIR):
-        assert self.VALID_NAME_PATTERN.match(name)
-        self.name = name
-        self.root_dir = root_dir
-
-    def __iter__(self):
-        """Return an iterator yielding `Session` instances."""
-        for fn in sorted(glob.glob1(self.path, '*.json')):
-            session_name = os.path.splitext(fn)[0]
-            yield Session(host=self, name=session_name)
-
-    @staticmethod
-    def _quote_name(name):
-        """host:port => host_port"""
-        return name.replace(':', '_')
-
-    @staticmethod
-    def _unquote_name(name):
-        """host_port => host:port"""
-        return re.sub(r'_(\d+)$', r':\1', name)
-
-    @classmethod
-    def all(cls, root_dir=DEFAULT_SESSIONS_DIR):
-        """Return a generator yielding a host at a time."""
-        for name in sorted(glob.glob1(root_dir, '*')):
-            if os.path.isdir(os.path.join(root_dir, name)):
-                yield Host(cls._unquote_name(name), root_dir=root_dir)
-
-    @property
-    def verbose_name(self):
-        return '%s %s' % (self.name, self.path)
-
-    def delete(self):
-        shutil.rmtree(self.path)
-
-    @property
-    def path(self):
-        path = os.path.join(self.root_dir, self._quote_name(self.name))
-        try:
-            os.makedirs(path, mode=0o700)
-        except OSError as e:
-            if e.errno != errno.EEXIST:
-                raise
-        return path
-
-
 class Session(BaseConfigDict):
-
-    help = 'https://github.com/jkbr/httpie#sessions'
+    helpurl = 'https://github.com/jkbr/httpie#sessions'
     about = 'HTTPie session file'
 
-    VALID_NAME_PATTERN = re.compile('^[a-zA-Z0-9_.-]+$')
-
-    def __init__(self, host, name, *args, **kwargs):
-        assert self.VALID_NAME_PATTERN.match(name)
+    def __init__(self, path, *args, **kwargs):
         super(Session, self).__init__(*args, **kwargs)
-        self.host = host
-        self.name = name
+        self._path = path
         self['headers'] = {}
         self['cookies'] = {}
         self['auth'] = {
@@ -139,13 +90,8 @@ class Session(BaseConfigDict):
             'password': None
         }
 
-    @property
-    def directory(self):
-        return self.host.path
-
-    @property
-    def verbose_name(self):
-        return '%s %s %s' % (self.host.name, self.name, self.path)
+    def _get_path(self):
+        return self._path
 
     def update_headers(self, request_headers):
         """
