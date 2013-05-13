@@ -1164,7 +1164,7 @@ Changelog
 *You can click a version name to see a diff with the previous one.*
 
 * `0.6.0-dev`_
-    * ``Content-*`` and ``If-`` request headers are not stored in sessions
+    * ``Content-*`` and ``If-*`` request headers are not stored in sessions
       anymore as they are request-specific.
 * `0.5.0`_ (2013-04-27)
     * Added a `download mode`_ via ``--download``.
