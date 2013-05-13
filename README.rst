@@ -979,7 +979,7 @@ Anonymous Sessions
 ------------------
 
 Instead of a name, you can also directly specify a path to a session file. This
-allows for re-using session across multiple hosts:
+allows for sessions to be re-used across multiple hosts:
 
 .. code-block:: bash
 

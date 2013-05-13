@@ -1601,9 +1601,23 @@ class DownloadTest(BaseTestCase):
         self.assertIn('Done', r.stderr)
         self.assertEqual(body, r)
 
+    def test_download_with_Content_Length(self):
+        download = Download(output_file=open(os.devnull, 'w'))
+        download.start(Response(
+            url=httpbin('/'),
+             headers={'Content-Length': 10}
+        ))
+        time.sleep(1.1)
+        download._chunk_downloaded(b'12345')
+        time.sleep(1.1)
+        download._chunk_downloaded(b'12345')
+        download.finish()
+        self.assertFalse(download.interrupted)
+
     def test_download_no_Content_Length(self):
         download = Download(output_file=open(os.devnull, 'w'))
         download.start(Response(url=httpbin('/')))
+        time.sleep(1.1)
         download._chunk_downloaded(b'12345')
         download.finish()
         self.assertFalse(download.interrupted)
