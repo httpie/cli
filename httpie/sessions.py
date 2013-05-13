@@ -19,7 +19,13 @@ SESSIONS_DIR_NAME = 'sessions'
 DEFAULT_SESSIONS_DIR = os.path.join(DEFAULT_CONFIG_DIR, SESSIONS_DIR_NAME)
 
 
-def get_response(name, request_kwargs, config_dir, read_only=False):
+# Request headers starting with these prefixes won't be stored in sessions.
+# They are specific to each request.
+# http://en.wikipedia.org/wiki/List_of_HTTP_header_fields#Requests
+SESSION_IGNORED_HEADER_PREFIXES = ['Content-', 'If-']
+
+
+def get_response(name, requests_kwargs, config_dir, read_only=False):
     """Like `client.get_response`, but applies permanent
     aspects of the session to the request.
 
@@ -27,28 +33,31 @@ def get_response(name, request_kwargs, config_dir, read_only=False):
     sessions_dir = os.path.join(config_dir, SESSIONS_DIR_NAME)
     host = Host(
         root_dir=sessions_dir,
-        name=request_kwargs['headers'].get('Host', None)
-             or urlsplit(request_kwargs['url']).netloc.split('@')[-1]
+        name=requests_kwargs['headers'].get('Host', None)
+             or urlsplit(requests_kwargs['url']).netloc.split('@')[-1]
     )
     session = Session(host, name)
     session.load()
 
+    # Merge request and session headers to get final headers for this request.
+    request_headers = requests_kwargs.get('headers', {})
+    merged_headers = session.headers.copy()
+    merged_headers.update(request_headers)
+    requests_kwargs['headers'] = merged_headers
     # Update session headers with the request headers.
-    session['headers'].update(request_kwargs.get('headers', {}))
-    # Use the merged headers for the request
-    request_kwargs['headers'] = session['headers']
+    session.update_headers(request_headers)
 
-    auth = request_kwargs.get('auth', None)
+    auth = requests_kwargs.get('auth', None)
     if auth:
         session.auth = auth
     elif session.auth:
-        request_kwargs['auth'] = session.auth
+        requests_kwargs['auth'] = session.auth
 
     requests_session = requests.Session()
     requests_session.cookies = session.cookies
 
     try:
-        response = requests_session.request(**request_kwargs)
+        response = requests_session.request(**requests_kwargs)
     except Exception:
         raise
     else:
@@ -138,6 +147,29 @@ class Session(BaseConfigDict):
     def verbose_name(self):
         return '%s %s %s' % (self.host.name, self.name, self.path)
 
+    def update_headers(self, request_headers):
+        """
+        Update the session headers with the request ones while ignoring
+        certain name prefixes.
+
+        :type request_headers: dict
+
+        """
+        for name, value in request_headers.items():
+
+            if name == 'User-Agent' and value.startswith('HTTPie/'):
+                continue
+
+            for prefix in SESSION_IGNORED_HEADER_PREFIXES:
+                if name.lower().startswith(prefix.lower()):
+                    break
+            else:
+                self['headers'][name] = value
+
+    @property
+    def headers(self):
+        return self['headers']
+
     @property
     def cookies(self):
         jar = RequestsCookieJar()
@@ -149,6 +181,9 @@ class Session(BaseConfigDict):
 
     @cookies.setter
     def cookies(self, jar):
+        """
+        :type jar: CookieJar
+        """
         # http://docs.python.org/2/library/cookielib.html#cookie-objects
         stored_attrs = ['value', 'path', 'secure', 'expires']
         self['cookies'] = {}

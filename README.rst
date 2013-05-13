@@ -938,9 +938,10 @@ Sessions
 ========
 
 By default, every request is completely independent of the previous ones.
-HTTPie also supports persistent sessions, where custom headers, authorization,
-and cookies (manually specified or sent by the server) persist between
-requests to the same host.
+HTTPie also supports persistent sessions, where custom headers (except for the
+ones starting with ``Content-`` or ``If-``), authorization, and cookies
+(manually specified or sent by the server) persist between requests
+to the same host.
 
 Create a new session named ``user1``:
 

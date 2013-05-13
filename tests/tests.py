@@ -1370,6 +1370,26 @@ class SessionTest(BaseTestCase):
         self.assertEqual(r.json['headers']['Cookie'], 'hello=world')
         self.assertIn('Basic ', r.json['headers']['Authorization'])
 
+    def test_session_ignored_header_prefixes(self):
+        r = http(
+            '--session=test',
+            'GET',
+            httpbin('/get'),
+            'Content-Type: text/plain',
+            'If-Unmodified-Since: Sat, 29 Oct 1994 19:43:31 GMT',
+            env=self.env
+        )
+        self.assertIn(OK, r)
+
+        r2 = http(
+            '--session=test',
+            'GET',
+            httpbin('/get')
+        )
+        self.assertIn(OK, r2)
+        self.assertNotIn('Content-Type', r2.json['headers'])
+        self.assertNotIn('If-Unmodified-Since', r2.json['headers'])
+
     def test_session_update(self):
         # Get a response to a request from the original session.
         r1 = http(

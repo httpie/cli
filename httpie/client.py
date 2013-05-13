@@ -29,7 +29,7 @@ def get_response(args, config_dir):
         response = sessions.get_response(
             config_dir=config_dir,
             name=args.session or args.session_read_only,
-            request_kwargs=requests_kwargs,
+            requests_kwargs=requests_kwargs,
             read_only=bool(args.session_read_only),
         )
 
