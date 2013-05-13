@@ -1164,6 +1164,7 @@ Changelog
 *You can click a version name to see a diff with the previous one.*
 
 * `0.6.0-dev`_
+* `0.5.1`_ (2013-05-13)
     * ``Content-*`` and ``If-*`` request headers are not stored in sessions
       anymore as they are request-specific.
 * `0.5.0`_ (2013-04-27)
@@ -1275,6 +1276,7 @@ Changelog
 .. _0.4.0: https://github.com/jkbr/httpie/compare/0.3.0...0.4.0
 .. _0.4.1: https://github.com/jkbr/httpie/compare/0.4.0...0.4.1
 .. _0.5.0: https://github.com/jkbr/httpie/compare/0.4.1...0.5.0
-.. _0.6.0-dev: https://github.com/jkbr/httpie/compare/0.5.0...master
+.. _0.5.1: https://github.com/jkbr/httpie/compare/0.5.0...0.5.1
+.. _0.6.0-dev: https://github.com/jkbr/httpie/compare/0.5.1...master
 .. _AUTHORS.rst: https://github.com/jkbr/httpie/blob/master/AUTHORS.rst
 .. _LICENSE: https://github.com/jkbr/httpie/blob/master/LICENSE
