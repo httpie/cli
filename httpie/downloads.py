@@ -382,7 +382,7 @@ class ProgressReporterThread(threading.Thread):
                     s = int((self.status.total_size - downloaded) / speed)
                     h, s = divmod(s, 60 * 60)
                     m, s = divmod(s, 60)
-                    eta = '{}:{:0>2}:{:0>2}'.format(h, m, s)
+                    eta = '{0}:{1:0>2}:{2:0>2}'.format(h, m, s)
 
                 self._status_line = PROGRESS.format(
                     percentage=percentage,
