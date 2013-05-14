@@ -46,12 +46,8 @@ def get_response(session_name, requests_kwargs, config_dir, read_only=False):
     session = Session(path)
     session.load()
 
-    # Merge request and session headers to get final headers for this request.
     request_headers = requests_kwargs.get('headers', {})
-    merged_headers = session.headers.copy()
-    merged_headers.update(request_headers)
-    requests_kwargs['headers'] = merged_headers
-    # Update session headers with the request headers.
+    requests_kwargs['headers'] = dict(session.headers, **request_headers)
     session.update_headers(request_headers)
 
     auth = requests_kwargs.get('auth', None)
