@@ -9,7 +9,7 @@ import re
 import sys
 import mimetypes
 import threading
-from time import time
+from time import sleep, time
 
 from .output import RawStream
 from .models import HTTPResponse
@@ -163,7 +163,7 @@ class Download(object):
         self.finished = False
 
         self._status = Status()
-        self._progress_reporter = ProgressReporter(
+        self._progress_reporter = ProgressReporterThread(
             status=self._status,
             output=progress_file
         )
@@ -253,7 +253,7 @@ class Download(object):
                 self._output_file.name
             )
         )
-        self._progress_reporter.report()
+        self._progress_reporter.start()
 
         return stream, self._output_file
 
@@ -263,7 +263,6 @@ class Download(object):
         self._status.finished()
 
     def failed(self):
-        self.finish()
         self._progress_reporter.stop()
 
     @property
@@ -317,7 +316,7 @@ class Status(object):
         self.time_finished = time()
 
 
-class ProgressReporter(object):
+class ProgressReporterThread(threading.Thread):
     """
     Reports download progress based on its status.
 
@@ -330,6 +329,7 @@ class ProgressReporter(object):
         :type status: Status
         :type output: file
         """
+        super(ProgressReporterThread, self).__init__()
         self.status = status
         self.output = output
         self._tick = tick
@@ -338,20 +338,20 @@ class ProgressReporter(object):
         self._status_line = ''
         self._prev_bytes = 0
         self._prev_time = time()
-        self._stop = False
+        self._should_stop = threading.Event()
 
     def stop(self):
         """Stop reporting on next tick."""
-        self._stop = True
+        self._should_stop.set()
 
-    def report(self):
-        if self._stop:
-            return
-        if self.status.has_finished:
-            self.sum_up()
-        else:
+    def run(self):
+        while not self._should_stop.is_set():
+            if self.status.has_finished:
+                self.sum_up()
+                break
+
             self.report_speed()
-            threading.Timer(self._tick, self.report).start()
+            sleep(self._tick)
 
     def report_speed(self):
 
