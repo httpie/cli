@@ -181,6 +181,13 @@ between requests to the same host:
 
     $ http --session=logged-in httpbin.org/headers
 
+
+Set a custom ``Host`` header to work around missing DNS records:
+
+.. code-block:: bash
+
+    $ http localhost:8000 Host:example.com
+
 ..
 
 --------
