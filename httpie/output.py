@@ -268,8 +268,9 @@ class PrettyStream(EncodedStream):
     def _process_body(self, chunk):
         return (self.processor
                     .process_body(
-                        chunk.decode(self.msg.encoding, 'replace'),
-                        self.msg.content_type)
+                        content=chunk.decode(self.msg.encoding, 'replace'),
+                        content_type=self.msg.content_type,
+                        encoding=self.msg.encoding)
                     .encode(self.output_encoding, 'replace'))
 
 
@@ -371,12 +372,13 @@ class BaseProcessor(object):
         """
         return headers
 
-    def process_body(self, content, content_type, subtype):
+    def process_body(self, content, content_type, subtype, encoding):
         """Return processed `content`.
 
         :param content: The body content as text
         :param content_type: Full content type, e.g., 'application/atom+xml'.
         :param subtype: E.g. 'xml'.
+        :param encoding: The original content encoding.
 
         """
         return content
@@ -385,7 +387,7 @@ class BaseProcessor(object):
 class JSONProcessor(BaseProcessor):
     """JSON body processor."""
 
-    def process_body(self, content, content_type, subtype):
+    def process_body(self, content, content_type, subtype, encoding):
         if subtype == 'json':
             try:
                 # Indent the JSON data, sort keys by name, and
@@ -403,12 +405,12 @@ class JSONProcessor(BaseProcessor):
 class XMLProcessor(BaseProcessor):
     """XML body processor."""
 
-    def process_body(self, content, content_type, subtype):
+    def process_body(self, content, content_type, subtype, encoding):
         if subtype == 'xml':
             try:
                 # Pretty print the XML
-                doc = xml.dom.minidom.parseString(content)
-                content = doc.toprettyxml(indent=' '*DEFAULT_INDENT)
+                doc = xml.dom.minidom.parseString(content.encode(encoding))
+                content = doc.toprettyxml(indent=' ' * DEFAULT_INDENT)
             except xml.parsers.expat.ExpatError:
                 # Ignore invalid XML errors (skips attempting to pretty print)
                 pass
@@ -446,7 +448,7 @@ class PygmentsProcessor(BaseProcessor):
         return pygments.highlight(
             headers, HTTPLexer(), self.formatter).strip()
 
-    def process_body(self, content, content_type, subtype):
+    def process_body(self, content, content_type, subtype, encoding):
         try:
             lexer = self.lexers_by_type.get(content_type)
             if not lexer:
@@ -506,13 +508,18 @@ class OutputProcessor(object):
             headers = processor.process_headers(headers)
         return headers
 
-    def process_body(self, content, content_type):
+    def process_body(self, content, content_type, encoding):
         # e.g., 'application/atom+xml'
         content_type = content_type.split(';')[0]
         # e.g., 'xml'
         subtype = content_type.split('/')[-1].split('+')[-1]
 
         for processor in self.processors:
-            content = processor.process_body(content, content_type, subtype)
+            content = processor.process_body(
+                content,
+                content_type,
+                subtype,
+                encoding
+            )
 
         return content
