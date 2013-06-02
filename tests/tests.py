@@ -1170,6 +1170,8 @@ class ItemParsingTest(BaseTestCase):
             # files
             self.key_value_type('bar\\@baz@%s' % FILE_PATH_ARG)
         ])
+        # `requests.structures.CaseInsensitiveDict` => `dict`
+        headers = dict(headers._store.values())
         self.assertDictEqual(headers, {
             'foo:bar': 'baz',
             'jack@jill': 'hill',
@@ -1199,6 +1201,8 @@ class ItemParsingTest(BaseTestCase):
             self.key_value_type('test-file@%s' % FILE_PATH_ARG),
             self.key_value_type('query==value'),
         ])
+        # `requests.structures.CaseInsensitiveDict` => `dict`
+        headers = dict(headers._store.values())
         self.assertDictEqual(headers, {
             'header': 'value',
             'eh': ''
