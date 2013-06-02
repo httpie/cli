@@ -404,6 +404,7 @@ class JSONProcessor(BaseProcessor):
 
 class XMLProcessor(BaseProcessor):
     """XML body processor."""
+    # TODO: tests
 
     def process_body(self, content, content_type, subtype, encoding):
         if subtype == 'xml':
