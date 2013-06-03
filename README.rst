@@ -751,6 +751,7 @@ Also, the following formatting is applied:
 * HTTP headers are sorted by name.
 * JSON data is indented, sorted by keys, and unicode escapes are converted
   to the characters they represent.
+* XML data is indented for better readability.
 
 One of these options can be used to control output processing:
 
@@ -1190,8 +1191,9 @@ Changelog
 
 *You can click a version name to see a diff with the previous one.*
 
-* `0.6.0-dev`_
-    * XML responses are now formatted.
+* `0.7.0-dev`_
+* `0.6.0`_
+    * XML data is now formatted.
     * ``--session`` and ``--session-read-only`` now also accept paths to
       session files (eg. ``http --session=/tmp/session.json example.org``).
 * `0.5.1`_ (2013-05-13)
@@ -1307,6 +1309,7 @@ Changelog
 .. _0.4.1: https://github.com/jkbr/httpie/compare/0.4.0...0.4.1
 .. _0.5.0: https://github.com/jkbr/httpie/compare/0.4.1...0.5.0
 .. _0.5.1: https://github.com/jkbr/httpie/compare/0.5.0...0.5.1
-.. _0.6.0-dev: https://github.com/jkbr/httpie/compare/0.5.1...master
+.. _0.6.0: https://github.com/jkbr/httpie/compare/0.5.1...0.6.0
+.. _0.7.0-dev: https://github.com/jkbr/httpie/compare/0.6.0...master
 .. _AUTHORS.rst: https://github.com/jkbr/httpie/blob/master/AUTHORS.rst
 .. _LICENSE: https://github.com/jkbr/httpie/blob/master/LICENSE
