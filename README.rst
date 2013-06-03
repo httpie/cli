@@ -840,7 +840,7 @@ by adding the following to your ``~/.bash_profile``:
 
     function httpless {
         # `httpless example.org'
-        http --pretty=all "$@" | less -R;
+        http --pretty=all --print=hb "$@" | less -R;
     }
 
 
