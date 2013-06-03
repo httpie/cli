@@ -1192,7 +1192,7 @@ Changelog
 *You can click a version name to see a diff with the previous one.*
 
 * `0.7.0-dev`_
-* `0.6.0`_
+* `0.6.0`_ (2013-06-03)
     * XML data is now formatted.
     * ``--session`` and ``--session-read-only`` now also accept paths to
       session files (eg. ``http --session=/tmp/session.json example.org``).
