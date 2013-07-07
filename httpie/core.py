@@ -132,6 +132,10 @@ def main(args=sys.argv[1:], env=Environment()):
                 download.finish()
                 if download.interrupted:
                     exit_status = ExitStatus.ERROR
+                    error('Incomplete download: size=%d; downloaded=%d' % (
+                        download.status.total_size,
+                        download.status.downloaded
+                    ))
 
         except IOError as e:
             if not traceback and e.errno == errno.EPIPE:

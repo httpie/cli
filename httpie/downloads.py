@@ -162,9 +162,9 @@ class Download(object):
         self._resumed_from = 0
         self.finished = False
 
-        self._status = Status()
+        self.status = Status()
         self._progress_reporter = ProgressReporterThread(
-            status=self._status,
+            status=self.status,
             output=progress_file
         )
 
@@ -197,7 +197,7 @@ class Download(object):
         :return: RawStream, output_file
 
         """
-        assert not self._status.time_started
+        assert not self.status.time_started
 
         try:
             total_size = int(response.headers['Content-Length'])
@@ -232,7 +232,7 @@ class Download(object):
                 )
             self._output_file = open(get_unique_filename(fn), mode='a+b')
 
-        self._status.started(
+        self.status.started(
             resumed_from=self._resumed_from,
             total_size=total_size
         )
@@ -260,7 +260,7 @@ class Download(object):
     def finish(self):
         assert not self.finished
         self.finished = True
-        self._status.finished()
+        self.status.finished()
 
     def failed(self):
         self._progress_reporter.stop()
@@ -269,8 +269,8 @@ class Download(object):
     def interrupted(self):
         return (
             self.finished
-            and self._status.total_size
-            and self._status.total_size != self._status.downloaded
+            and self.status.total_size
+            and self.status.total_size != self.status.downloaded
         )
 
     def _chunk_downloaded(self, chunk):
@@ -282,7 +282,7 @@ class Download(object):
         :type chunk: bytes
 
         """
-        self._status.chunk_downloaded(len(chunk))
+        self.status.chunk_downloaded(len(chunk))
 
 
 class Status(object):

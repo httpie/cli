@@ -110,7 +110,8 @@ with open(BIN_FILE_PATH, 'rb') as f:
 
 
 def httpbin(path):
-    return HTTPBIN_URL + path
+    url = HTTPBIN_URL + path
+    return url
 
 
 def mk_config_dir():
@@ -1627,9 +1628,7 @@ class DownloadTest(BaseTestCase):
         self.assertFalse(download.interrupted)
 
     def test_download_interrupted(self):
-        download = Download(
-            output_file=open(os.devnull, 'w')
-        )
+        download = Download(output_file=open(os.devnull, 'w'))
         download.start(Response(
             url=httpbin('/'),
             headers={'Content-Length': 5}
