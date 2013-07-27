@@ -658,6 +658,7 @@ class PrettyOptionsTest(BaseTestCase):
         )
         #noinspection PyUnresolvedReferences
         # Tests that the JSON data is formatted.
+        print(list(r))
         self.assertEqual(list(r)[0], "a")
         self.assertEqual(list(r)[1], "1")
         self.assertNotIn(COLOR, r)
