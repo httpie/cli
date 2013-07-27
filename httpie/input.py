@@ -70,9 +70,10 @@ OUTPUT_OPTIONS = frozenset([
 
 # Pretty
 PRETTY_MAP = {
-    'all': ['format', 'colors'],
+    'all': ['format', 'colors', 'unsorted'],
     'colors': ['colors'],
     'format': ['format'],
+    'unsorted': ['unsorted'],
     'none': []
 }
 PRETTY_STDOUT_TTY_ONLY = object()

@@ -487,6 +487,9 @@ class OutputProcessor(object):
         ],
         'colors': [
             PygmentsProcessor
+        ],
+        'unsorted': [
+            PygmentsProcessor
         ]
     }
 
