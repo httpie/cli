@@ -652,7 +652,8 @@ class PrettyOptionsTest(BaseTestCase):
             '--pretty=unsorted',
             'GET',
             httpbin('/get'),
-            'a=b&1=2',
+            'a=b',
+            '1=2',
             env=TestEnvironment(colors=256),
         )
         #noinspection PyUnresolvedReferences
