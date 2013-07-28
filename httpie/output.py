@@ -402,6 +402,23 @@ class JSONProcessor(BaseProcessor):
         return content
 
 
+class OrderedJSONProcessor(BaseProcessor):
+    """JSON body processor."""
+
+    def process_body(self, content, content_type, subtype, encoding):
+        if subtype == 'json':
+            try:
+                # Indent the JSON data, sort keys by name, and
+                # avoid unicode escapes to improve readability.
+                content = json.dumps(json.loads(content),
+                                     sort_keys=False,
+                                     ensure_ascii=False,
+                                     indent=DEFAULT_INDENT)
+            except ValueError:
+                # Invalid JSON but we don't care.
+                pass
+        return content
+
 class XMLProcessor(BaseProcessor):
     """XML body processor."""
     # TODO: tests
@@ -488,8 +505,8 @@ class OutputProcessor(object):
         'colors': [
             PygmentsProcessor
         ],
-        'unsorted': [
-            PygmentsProcessor
+        'ordered': [
+            OrderedJSONProcessor
         ]
     }
 

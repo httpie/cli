@@ -646,7 +646,7 @@ class PrettyOptionsTest(BaseTestCase):
         self.assertEqual(r.strip().count('\n'), 2)
         self.assertNotIn(COLOR, r)
 
-    def test_unsorted_option(self):
+    def test_ordered_option(self):
         r = http(
             '--print=B',
             '--pretty=unsorted',
@@ -658,7 +658,7 @@ class PrettyOptionsTest(BaseTestCase):
         )
         #noinspection PyUnresolvedReferences
         # Tests that the JSON data is formatted.
-        self.assertIn(COLOR, r)
+        self.assertNotIn(COLOR, r)
 
 
 class VerboseFlagTest(BaseTestCase):
