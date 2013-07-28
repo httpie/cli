@@ -70,7 +70,7 @@ OUTPUT_OPTIONS = frozenset([
 
 # Pretty
 PRETTY_MAP = {
-    'all': ['format', 'colors', 'ordered'],
+    'all': ['format', 'ordered'],
     'colors': ['colors'],
     'format': ['format'],
     'ordered': ['ordered'],

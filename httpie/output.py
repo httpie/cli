@@ -506,7 +506,8 @@ class OutputProcessor(object):
             PygmentsProcessor
         ],
         'ordered': [
-            OrderedJSONProcessor
+            OrderedJSONProcessor,
+            PygmentsProcessor
         ]
     }
 
