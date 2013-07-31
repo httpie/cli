@@ -425,7 +425,7 @@ To set custom headers you can use the ``Header:Value`` notation:
 
 .. code-block:: bash
 
-    $ http example.org  User-Agent:Bacon/1.0  Cookie:valued-visitor=yes  X-Foo:Bar  Referer:http://httpie.org/
+    $ http example.org  User-Agent:Bacon/1.0  'Cookie:valued-visitor=yes;foo=bar'  X-Foo:Bar  Referer:http://httpie.org/
 
 
 .. code-block:: http
@@ -433,7 +433,7 @@ To set custom headers you can use the ``Header:Value`` notation:
     GET / HTTP/1.1
     Accept: */*
     Accept-Encoding: identity, deflate, compress, gzip
-    Cookie: valued-visitor=yes
+    Cookie: valued-visitor=yes;foo=bar
     Host: example.org
     Referer: http://httpie.org/
     User-Agent: Bacon/1.0
