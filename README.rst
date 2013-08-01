@@ -709,7 +709,12 @@ On OS X, you can send the contents of the clipboard with ``pbpaste``:
 
 
 Passing data through ``stdin`` cannot be combined with data fields specified
-on the command line.
+on the command line:
+
+
+.. code-block:: bash
+
+    $ echo 'data' | http POST example.org more=data   # This is invalid
 
 
 -------------------------
