@@ -8,6 +8,7 @@ import json
 import mimetypes
 import getpass
 from io import BytesIO
+#noinspection PyCompatibility
 from argparse import ArgumentParser, ArgumentTypeError, ArgumentError
 
 try:
@@ -417,8 +418,8 @@ class KeyValueArgType(object):
             """Tokenize `s`. There are only two token types - strings
             and escaped characters:
 
-            >>> tokenize(r'foo\=bar\\baz')
-            ['foo', Escaped('='), 'bar', Escaped('\\'), 'baz']
+            tokenize(r'foo\=bar\\baz')
+            => ['foo', Escaped('='), 'bar', Escaped('\\'), 'baz']
 
             """
             tokens = ['']
