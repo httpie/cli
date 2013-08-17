@@ -241,7 +241,7 @@ class Download(object):
             msg=HTTPResponse(response),
             with_headers=False,
             with_body=True,
-            on_body_chunk_downloaded=self._chunk_downloaded,
+            on_body_chunk_downloaded=self.chunk_downloaded,
             chunk_size=1024 * 8
         )
 
@@ -273,7 +273,7 @@ class Download(object):
             and self.status.total_size != self.status.downloaded
         )
 
-    def _chunk_downloaded(self, chunk):
+    def chunk_downloaded(self, chunk):
         """
         A download progress callback.
 

@@ -23,6 +23,7 @@ import subprocess
 import os
 import sys
 import json
+#noinspection PyCompatibility
 import argparse
 import tempfile
 import unittest
@@ -31,9 +32,11 @@ import time
 from requests.structures import CaseInsensitiveDict
 
 try:
+    #noinspection PyCompatibility
     from urllib.request import urlopen
 except ImportError:
     # noinspection PyUnresolvedReferences
+    #noinspection PyCompatibility
     from urllib2 import urlopen
 try:
     from unittest import skipIf, skip
@@ -1613,9 +1616,9 @@ class DownloadTest(BaseTestCase):
              headers={'Content-Length': 10}
         ))
         time.sleep(1.1)
-        download._chunk_downloaded(b'12345')
+        download.chunk_downloaded(b'12345')
         time.sleep(1.1)
-        download._chunk_downloaded(b'12345')
+        download.chunk_downloaded(b'12345')
         download.finish()
         self.assertFalse(download.interrupted)
 
@@ -1623,7 +1626,7 @@ class DownloadTest(BaseTestCase):
         download = Download(output_file=open(os.devnull, 'w'))
         download.start(Response(url=httpbin('/')))
         time.sleep(1.1)
-        download._chunk_downloaded(b'12345')
+        download.chunk_downloaded(b'12345')
         download.finish()
         self.assertFalse(download.interrupted)
 
@@ -1633,7 +1636,7 @@ class DownloadTest(BaseTestCase):
             url=httpbin('/'),
             headers={'Content-Length': 5}
         ))
-        download._chunk_downloaded(b'1234')
+        download.chunk_downloaded(b'1234')
         download.finish()
         self.assertTrue(download.interrupted)
 

@@ -109,6 +109,7 @@ class HTTPResponse(HTTPMessage):
     def iter_lines(self, chunk_size):
         return ((line, b'\n') for line in self._orig.iter_lines(chunk_size))
 
+    #noinspection PyProtectedMember
     @property
     def headers(self):
         original = self._orig.raw._original_response
