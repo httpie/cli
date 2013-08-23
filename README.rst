@@ -717,6 +717,10 @@ on the command line:
     $ echo 'data' | http POST example.org more=data   # This is invalid
 
 
+To prevent HTTPie from reading ``stdin`` data you can use the
+``--ignore-stdin`` option.
+
+
 -------------------------
 Body Data From a Filename
 -------------------------
@@ -1060,14 +1064,18 @@ When using HTTPie from **shell scripts**, it can be handy to set the
 ``--check-status`` flag. It instructs HTTPie to exit with an error if the
 HTTP status is one of ``3xx``, ``4xx``, or ``5xx``. The exit status will
 be ``3`` (unless ``--follow`` is set), ``4``, or ``5``,
-respectively. Also, the ``--timeout`` option allows to overwrite the default
-30s timeout:
+respectively.
+
+The ``--ignore-stdin`` option prevents HTTPie from reading data from ``stdin``,
+which is usually not desirable during non-interactive invocations.
+
+Also, the ``--timeout`` option allows to overwrite the default 30s timeout:
 
 .. code-block:: bash
 
     #!/bin/bash
 
-    if http --timeout=2.5 --check-status HEAD example.org/health &> /dev/null; then
+    if http --check-status --ignore-stdin --timeout=2.5 HEAD example.org/health &> /dev/null; then
         echo 'OK!'
     else
         case $? in
@@ -1197,6 +1205,7 @@ Changelog
 *You can click a version name to see a diff with the previous one.*
 
 * `0.7.0-dev`_
+    * Added ``--ignore-stdin``.
 * `0.6.0`_ (2013-06-03)
     * XML data is now formatted.
     * ``--session`` and ``--session-read-only`` now also accept paths to

@@ -812,6 +812,7 @@ class RequestBodyFromFilePathTest(BaseTestCase):
         # FIXME: *sometimes* fails on py33, the content-type is form.
         # https://github.com/jkbr/httpie/issues/140
         r = http(
+            '--verbose',
             'POST',
             httpbin('/post'),
             '@' + FILE_PATH_ARG
@@ -1082,6 +1083,30 @@ class StreamTest(BaseTestCase):
         self.assertIn(BIN_FILE_CONTENT, r)
 
 
+class IgnoreStdinTest(BaseTestCase):
+
+    def test_ignore_stdin(self):
+        with open(FILE_PATH) as f:
+            r = http(
+                '--ignore-stdin',
+                '--verbose',
+                httpbin('/get'),
+                env=TestEnvironment(stdin=f, stdin_isatty=False)
+            )
+        self.assertIn(OK, r)
+        self.assertIn('GET /get HTTP', r)  # Don't default to POST.
+        self.assertNotIn(FILE_CONTENT, r)  # Don't send stdin data.
+
+    def test_ignore_stdin_cannot_prompt_password(self):
+        r = http(
+            '--ignore-stdin',
+            '--auth=username-without-password',
+            httpbin('/get'),
+        )
+        self.assertEqual(r.exit_status, ExitStatus.ERROR)
+        self.assertIn('because --ignore-stdin', r.stderr)
+
+
 class LineEndingsTest(BaseTestCase):
     """Test that CRLF is properly used in headers and
     as the headers/body separator."""
@@ -1234,6 +1259,7 @@ class ArgumentParserTestCase(unittest.TestCase):
         self.parser.args.method = 'GET'
         self.parser.args.url = 'http://example.com/'
         self.parser.args.items = []
+        self.parser.args.ignore_stdin = False
 
         self.parser.env = TestEnvironment()
 
@@ -1249,6 +1275,7 @@ class ArgumentParserTestCase(unittest.TestCase):
         self.parser.args.method = None
         self.parser.args.url = 'http://example.com/'
         self.parser.args.items = []
+        self.parser.args.ignore_stdin = False
         self.parser.env = TestEnvironment()
 
         self.parser._guess_method()
@@ -1262,6 +1289,7 @@ class ArgumentParserTestCase(unittest.TestCase):
         self.parser.args.method = 'http://example.com/'
         self.parser.args.url = 'data=field'
         self.parser.args.items = []
+        self.parser.args.ignore_stdin = False
         self.parser.env = TestEnvironment()
         self.parser._guess_method()
 
@@ -1277,6 +1305,7 @@ class ArgumentParserTestCase(unittest.TestCase):
         self.parser.args.method = 'http://example.com/'
         self.parser.args.url = 'test:header'
         self.parser.args.items = []
+        self.parser.args.ignore_stdin = False
 
         self.parser.env = TestEnvironment()
 
@@ -1297,6 +1326,7 @@ class ArgumentParserTestCase(unittest.TestCase):
             input.KeyValue(
                 key='old_item', value='b', sep='=', orig='old_item=b')
         ]
+        self.parser.args.ignore_stdin = False
 
         self.parser.env = TestEnvironment()
 

@@ -115,7 +115,7 @@ class Parser(ArgumentParser):
         self._process_pretty_options()
         self._guess_method()
         self._parse_items()
-        if not env.stdin_isatty:
+        if not self.args.ignore_stdin and not env.stdin_isatty:
             self._body_from_file(self.env.stdin)
         if not (self.args.url.startswith((HTTP, HTTPS))):
             # Default to 'https://' if invoked as `https args`.
@@ -184,6 +184,9 @@ class Parser(ArgumentParser):
         if self.args.auth:
             if not self.args.auth.has_password():
                 # Stdin already read (if not a tty) so it's save to prompt.
+                if self.args.ignore_stdin:
+                    self.error('Unable to prompt for passwords because'
+                               ' --ignore-stdin is set.')
                 self.args.auth.prompt_password(url.netloc)
 
         elif url.username is not None:
@@ -241,7 +244,7 @@ class Parser(ArgumentParser):
         if self.args.method is None:
             # Invoked as `http URL'.
             assert not self.args.items
-            if not self.env.stdin_isatty:
+            if not self.args.ignore_stdin and not self.env.stdin_isatty:
                 self.args.method = HTTP_POST
             else:
                 self.args.method = HTTP_GET
@@ -266,9 +269,12 @@ class Parser(ArgumentParser):
                 # Set the URL correctly
                 self.args.url = self.args.method
                 # Infer the method
-                has_data = not self.env.stdin_isatty or any(
-                    item.sep in SEP_GROUP_DATA_ITEMS
-                    for item in self.args.items
+                has_data = (
+                    (not self.args.ignore_stdin and
+                     not self.env.stdin_isatty) or any(
+                        item.sep in SEP_GROUP_DATA_ITEMS
+                        for item in self.args.items
+                    )
                 )
                 self.args.method = HTTP_POST if has_data else HTTP_GET
 
