@@ -458,8 +458,7 @@ Any of the default headers can be overwritten.
 Authentication
 ==============
 
-The currently supported authentication schemes are Basic and Digest (more to
-come). There are two flags that control authentication:
+The currently supported authentication schemes are Basic, Digest and NTLM (requires the `requests-ntlm <https://github.com/requests/requests-ntlm>`_ library). There are two flags that control authentication:
 
 ===================     ======================================================
 ``--auth, -a``          Pass a ``username:password`` pair as
@@ -472,8 +471,8 @@ come). There are two flags that control authentication:
                         have higher priority).
 
 ``--auth-type``         Specify the auth mechanism. Possible values are
-                        ``basic`` and ``digest``. The default value is
-                        ``basic`` so it can often be omitted.
+                        ``basic``, ``digest`` and ``NTLM``. The default value
+                        ``basic`` so it can often be omitted. 
 ===================     ======================================================
 
 
