@@ -69,10 +69,18 @@ def get_requests_kwargs(args):
 
     credentials = None
     if args.auth:
-        credentials = {
-            'basic': requests.auth.HTTPBasicAuth,
-            'digest': requests.auth.HTTPDigestAuth,
-        }[args.auth_type](args.auth.key, args.auth.value)
+        if args.auth_type == 'basic':
+            credentials = requests.auth.HTTPBasicAuth(args.auth.key, args.auth.value)
+        elif args.auth_type == 'digest':
+            credentials = requests.auth.HTTPDigestAuth(args.auth.key, args.auth.value)
+        elif args.auth_type == 'NTLM':
+            try:
+                from requests_ntlm import HttpNtlmAuth
+            except ImportError:
+                sys.stderr.write("Please install the requests-ntlm library from https://github.com/requests/requests-ntlm")
+                raise
+            credentials = HttpNtlmAuth(args.auth.key, args.auth.value)
+
 
     kwargs = {
         'stream': True,

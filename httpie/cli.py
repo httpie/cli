@@ -383,7 +383,7 @@ auth.add_argument(
 
 auth.add_argument(
     '--auth-type',
-    choices=['basic', 'digest'],
+    choices=['basic', 'digest', 'NTLM'],
     default='basic',
     help="""
     The authentication mechanism to be used. Defaults to "basic".
