@@ -77,7 +77,7 @@ def get_requests_kwargs(args):
             try:
                 from requests_ntlm import HttpNtlmAuth
             except ImportError:
-                print "Please install the requests-ntlm library from https://github.com/requests/requests-ntlm"
+                sys.stderr.write("Please install the requests-ntlm library from https://github.com/requests/requests-ntlm")
                 raise
             credentials = HttpNtlmAuth(args.auth.key, args.auth.value)
 
