@@ -26,10 +26,8 @@ test-install: venv
 		--download-cache /tmp/pipcache
 
 test:
-	. venv/bin/activate; cd venv/build/httpbin && \
-		python manage.py runserver -p $(PORT) &
-	sleep 5
+	. venv/bin/activate; python venv/build/httpbin/manage.py runserver -p $(PORT) &
 	- . venv/bin/activate; HTTPBIN_URL=http://127.0.0.1:$(PORT) python setup.py test
 	- . venv/bin/activate; HTTPBIN_URL=http://127.0.0.1:$(PORT) tox
 	@# We need to kill the django process as well as its subprocesses.
-	kill -9 `pgrep -f "manage.py runserver -p $(PORT)"`
+	kill -9 `pgrep -f "venv/build/httpbin/manage.py runserver -p $(PORT)"`

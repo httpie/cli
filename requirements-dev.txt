@@ -1,2 +1,3 @@
+# Run "make test-install" to install test dependencies
 tox
 docutils
