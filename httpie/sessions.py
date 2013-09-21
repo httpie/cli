@@ -6,10 +6,10 @@ import os
 
 import requests
 from requests.cookies import RequestsCookieJar, create_cookie
-from requests.auth import HTTPBasicAuth, HTTPDigestAuth
 
 from .compat import urlsplit
 from .config import BaseConfigDict, DEFAULT_CONFIG_DIR
+from httpie.plugins import plugin_manager
 
 
 SESSIONS_DIR_NAME = 'sessions'
@@ -21,7 +21,8 @@ VALID_SESSION_NAME_PATTERN = re.compile('^[a-zA-Z0-9_.-]+$')
 SESSION_IGNORED_HEADER_PREFIXES = ['Content-', 'If-']
 
 
-def get_response(session_name, requests_kwargs, config_dir, read_only=False):
+def get_response(session_name, requests_kwargs, config_dir, args,
+                 read_only=False):
     """Like `client.get_response`, but applies permanent
     aspects of the session to the request.
 
@@ -50,9 +51,12 @@ def get_response(session_name, requests_kwargs, config_dir, read_only=False):
     requests_kwargs['headers'] = dict(session.headers, **request_headers)
     session.update_headers(request_headers)
 
-    auth = requests_kwargs.get('auth', None)
-    if auth:
-        session.auth = auth
+    if args.auth:
+        session.auth = {
+            'type': args.auth_type,
+            'username': args.auth.key,
+            'password': args.auth.value,
+        }
     elif session.auth:
         requests_kwargs['auth'] = session.auth
 
@@ -140,15 +144,10 @@ class Session(BaseConfigDict):
         auth = self.get('auth', None)
         if not auth or not auth['type']:
             return
-        Auth = {'basic': HTTPBasicAuth,
-                'digest': HTTPDigestAuth}[auth['type']]
-        return Auth(auth['username'], auth['password'])
+        auth_plugin = plugin_manager.get_auth_plugin(auth['type'])()
+        return auth_plugin.get_auth(auth['username'], auth['password'])
 
     @auth.setter
-    def auth(self, cred):
-        self['auth'] = {
-            'type': {HTTPBasicAuth: 'basic',
-                     HTTPDigestAuth: 'digest'}[type(cred)],
-            'username': cred.username,
-            'password': cred.password,
-        }
+    def auth(self, auth):
+        assert set(['type', 'username', 'password']) == set(auth.keys())
+        self['auth'] = auth

@@ -514,6 +514,13 @@ Authorization information from your ``.netrc`` file is honored as well:
     [...]
 
 
+-------
+Plugins
+-------
+
+* `httpie-ntlm <https://github.com/jkbr/httpie-ntlm>`_
+
+
 =======
 Proxies
 =======
@@ -1206,6 +1213,7 @@ Changelog
 
 * `0.7.0-dev`_
     * Added ``--ignore-stdin``.
+    * Added support for auth plugins.
 * `0.6.0`_ (2013-06-03)
     * XML data is now formatted.
     * ``--session`` and ``--session-read-only`` now also accept paths to

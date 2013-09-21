@@ -10,6 +10,8 @@ from argparse import (RawDescriptionHelpFormatter, FileType,
 
 from . import __doc__
 from . import __version__
+from .plugins.builtin import BuiltinAuthPlugin
+from .plugins import plugin_manager
 from .sessions import DEFAULT_SESSIONS_DIR
 from .output import AVAILABLE_STYLES, DEFAULT_STYLE
 from .input import (Parser, AuthCredentialsArgType, KeyValueArgType,
@@ -381,14 +383,32 @@ auth.add_argument(
     """,
 )
 
+_auth_plugins = plugin_manager.get_auth_plugins()
 auth.add_argument(
     '--auth-type',
-    choices=['basic', 'digest'],
-    default='basic',
+    choices=[plugin.auth_type for plugin in _auth_plugins],
+    default=_auth_plugins[0].auth_type,
     help="""
-    The authentication mechanism to be used. Defaults to "basic".
+    The authentication mechanism to be used. Defaults to "{default}".
+
+    {types}
 
     """
+    .format(default=_auth_plugins[0].auth_type, types='\n    '.join(
+        '"{type}": {name}{package}{description}'.format(
+            type=plugin.auth_type,
+            name=plugin.name,
+            package=(
+                '' if issubclass(plugin, BuiltinAuthPlugin)
+                else ' (provided by %s)' % plugin.package_name
+            ),
+            description=(
+                '' if not plugin.description else
+                '\n      ' + ('\n      '.join(wrap(plugin.description)))
+            )
+        )
+        for plugin in _auth_plugins
+    )),
 )
 
 

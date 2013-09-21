@@ -7,11 +7,18 @@ import requests.auth
 
 from . import sessions
 from . import __version__
+from .plugins import plugin_manager
 
 
 FORM = 'application/x-www-form-urlencoded; charset=utf-8'
 JSON = 'application/json; charset=utf-8'
 DEFAULT_UA = 'HTTPie/%s' % __version__
+
+
+class HTTPie(object):
+
+    def __init__(self, env, plugin_manager):
+        pass
 
 
 def get_response(args, config_dir):
@@ -27,6 +34,7 @@ def get_response(args, config_dir):
         response = requests.request(**requests_kwargs)
     else:
         response = sessions.get_response(
+            args=args,
             config_dir=config_dir,
             session_name=args.session or args.session_read_only,
             requests_kwargs=requests_kwargs,
@@ -69,10 +77,8 @@ def get_requests_kwargs(args):
 
     credentials = None
     if args.auth:
-        credentials = {
-            'basic': requests.auth.HTTPBasicAuth,
-            'digest': requests.auth.HTTPDigestAuth,
-        }[args.auth_type](args.auth.key, args.auth.value)
+        auth_plugin = plugin_manager.get_auth_plugin(args.auth_type)()
+        credentials = auth_plugin.get_auth(args.auth.key, args.auth.value)
 
     kwargs = {
         'stream': True,

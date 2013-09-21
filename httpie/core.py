@@ -18,13 +18,13 @@ from httpie import __version__ as httpie_version
 from requests import __version__ as requests_version
 from pygments import __version__ as pygments_version
 
-from .cli import parser
 from .compat import str, is_py3
 from .client import get_response
 from .downloads import Download
 from .models import Environment
 from .output import build_output_stream, write, write_with_colors_win_py3
 from . import ExitStatus
+from .plugins import plugin_manager
 
 
 def get_exit_status(http_status, follow=False):
@@ -58,6 +58,9 @@ def main(args=sys.argv[1:], env=Environment()):
     Return exit status code.
 
     """
+    plugin_manager.load_installed_plugins()
+    from .cli import parser
+
     if env.config.default_options:
         args = env.config.default_options + args
 

@@ -6,7 +6,7 @@ import sys
 import re
 import json
 import mimetypes
-import getpass
+from getpass import getpass
 from io import BytesIO
 #noinspection PyCompatibility
 from argparse import ArgumentParser, ArgumentTypeError, ArgumentError
