@@ -501,11 +501,11 @@ With password prompt:
     $ http -a username example.org
 
 
-Authorization information from your ``.netrc`` file is honored as well:
+Authorization information from your ``~/.netrc`` file is honored as well:
 
 .. code-block:: bash
 
-    $ cat .netrc
+    $ cat ~/.netrc
     machine httpbin.org
     login httpie
     password test
