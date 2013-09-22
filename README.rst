@@ -458,8 +458,8 @@ Any of the default headers can be overwritten.
 Authentication
 ==============
 
-The currently supported authentication schemes are Basic and Digest (more to
-come). There are two flags that control authentication:
+The currently supported authentication schemes are Basic and Digest
+(see `auth plugins`_ for more). There are two flags that control authentication:
 
 ===================     ======================================================
 ``--auth, -a``          Pass a ``username:password`` pair as
@@ -514,11 +514,12 @@ Authorization information from your ``.netrc`` file is honored as well:
     [...]
 
 
--------
-Plugins
--------
+------------
+Auth Plugins
+------------
 
 * `httpie-ntlm <https://github.com/jkbr/httpie-ntlm>`_
+* `httpie-oauth <https://github.com/jkbr/httpie-oauth>`_
 
 
 =======
