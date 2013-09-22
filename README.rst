@@ -509,6 +509,7 @@ Authorization information from your ``.netrc`` file is honored as well:
     machine httpbin.org
     login httpie
     password test
+
     $ http httpbin.org/basic-auth/httpie/test
     HTTP/1.1 200 OK
     [...]
