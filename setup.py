@@ -40,7 +40,7 @@ setup(
     author=httpie.__author__,
     author_email='jakub@roztocil.name',
     license=httpie.__licence__,
-    packages=['httpie'],
+    packages=['httpie', 'httpie.plugins'],
     entry_points={
         'console_scripts': [
             'http = httpie.__main__:main',
