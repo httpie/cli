@@ -1216,6 +1216,7 @@ Changelog
 * `0.7.0-dev`_
     * Added ``--ignore-stdin``.
     * Added support for auth plugins.
+    * Improved ``Content-Disposition`` parsing for ``--download`` mode.
 * `0.6.0`_ (2013-06-03)
     * XML data is now formatted.
     * ``--session`` and ``--session-read-only`` now also accept paths to

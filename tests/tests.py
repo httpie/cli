@@ -1562,9 +1562,16 @@ class DownloadUtilsTest(BaseTestCase):
             parse('attachment; filename=".hello-WORLD_123.txt"'),
             'hello-WORLD_123.txt'
         )
+        self.assertEqual(
+            parse('attachment; filename="white space.txt"'),
+            'white space.txt'
+        )
+        self.assertEqual(
+            parse(r'attachment; filename="\"quotes\".txt"'),
+            '"quotes".txt'
+        )
+        self.assertEqual(parse('attachment; filename=/etc/hosts'), 'hosts')
         self.assertIsNone(parse('attachment; filename='))
-        self.assertIsNone(parse('attachment; filename=/etc/hosts'))
-        self.assertIsNone(parse('attachment; filename=hello@world'))
 
     def test_filename_from_url(self):
         self.assertEqual(filename_from_url(

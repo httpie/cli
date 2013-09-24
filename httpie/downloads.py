@@ -10,6 +10,7 @@ import sys
 import mimetypes
 import threading
 from time import sleep, time
+from mailbox import Message
 
 from .output import RawStream
 from .models import HTTPResponse
@@ -104,11 +105,14 @@ def filename_from_content_disposition(content_disposition):
 
     """
     # attachment; filename=jkbr-httpie-0.4.1-20-g40bd8f6.tar.gz
-    match = re.search('filename=(\S+)', content_disposition)
-    if match and match.group(1):
-        fn = match.group(1).strip('."')
-        if re.match('^[a-zA-Z0-9._-]+$', fn):
-            return fn
+
+    msg = Message('Content-Disposition: %s' % content_disposition)
+    filename = msg.get_filename()
+    if filename:
+        # Basic sanitation.
+        filename = os.path.basename(filename).lstrip('.').strip()
+        if filename:
+            return filename
 
 
 def filename_from_url(url, content_type):
