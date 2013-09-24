@@ -15,12 +15,6 @@ JSON = 'application/json; charset=utf-8'
 DEFAULT_UA = 'HTTPie/%s' % __version__
 
 
-class HTTPie(object):
-
-    def __init__(self, env, plugin_manager):
-        pass
-
-
 def get_response(args, config_dir):
     """Send the request and return a `request.Response`."""
 
