@@ -3,7 +3,6 @@ import sys
 from pprint import pformat
 
 import requests
-import requests.auth
 
 from . import sessions
 from . import __version__
