@@ -1214,6 +1214,7 @@ Changelog
 *You can click a version name to see a diff with the previous one.*
 
 * `0.8.0-dev`_
+    * Update to Requests 2.0.0
 * `0.7.0`_ (2013-09-24)
     * Added ``--ignore-stdin``.
     * Added support for auth plugins.

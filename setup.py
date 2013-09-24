@@ -11,7 +11,7 @@ if sys.argv[-1] == 'test':
 
 
 requirements = [
-    'requests>=1.2.3',
+    'requests>=2.0.0',
     'Pygments>=1.5'
 ]
 try:

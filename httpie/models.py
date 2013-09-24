@@ -88,16 +88,7 @@ class HTTPMessage(object):
     @property
     def content_type(self):
         """Return the message content type."""
-        ct = self._orig.headers.get(
-            b'Content-Type',
-            self._orig.headers.get(
-                'Content-Type',
-                ''
-            )
-        )
-        if isinstance(ct, bytes):
-            ct = ct.decode()
-        return ct
+        return self._orig.headers.get('Content-Type', '')
 
 
 class HTTPResponse(HTTPMessage):
