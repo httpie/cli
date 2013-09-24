@@ -246,14 +246,15 @@ command:
 Request Items
 =============
 
-There are five different *request item* types that provide a
+There are a few different *request item* types that provide a
 convenient mechanism for specifying HTTP headers, simple JSON and
 form data, files, and URL parameters.
 
 They are key/value pairs specified after the URL. All have in
 common that they become part of the actual request that is sent and that
 their type is distinguished only by the separator used:
-``:``, ``=``, ``:=``, ``@``, and ``==``.
+``:``, ``=``, ``:=``, ``==``, ``@``, ``=@``, and ``:=@``. The ones with an
+``@`` expect a file path as value.
 
 +-----------------------+-----------------------------------------------------+
 | Item Type             | Description                                         |
@@ -266,16 +267,16 @@ their type is distinguished only by the separator used:
 |                       | The ``==`` separator is used                        |
 +-----------------------+-----------------------------------------------------+
 | Data Fields           | Request data fields to be serialized as a JSON      |
-| ``field=value``       | object (default), or to be form encoded             |
-|                       | (``--form, -f``).                                   |
+| ``field=value``,      | object (default), or to be form encoded             |
+| ``field=@file.txt``   | (``--form, -f``).                                   |
 +-----------------------+-----------------------------------------------------+
 | Raw JSON fields       | Useful when sending JSON and one or                 |
-| ``field:=json``       | more fields need to be a ``Boolean``, ``Number``,   |
-|                       | nested ``Object``, or an ``Array``,  e.g.,          |
+| ``field:=json``,      | more fields need to be a ``Boolean``, ``Number``,   |
+| ``field:=@file.json`` | nested ``Object``, or an ``Array``,  e.g.,          |
 |                       | ``meals:='["ham","spam"]'`` or ``pies:=[1,2,3]``    |
 |                       | (note the quotes).                                  |
 +-----------------------+-----------------------------------------------------+
-| Files                 | Only available with ``--form, -f``.                 |
+| Form File Fields      | Only available with ``--form, -f``.                 |
 | ``field@/dir/file``   | For example ``screenshot@~/Pictures/img.png``.      |
 |                       | The presence of a file field results                |
 |                       | in a ``multipart/form-data`` request.               |
@@ -284,6 +285,8 @@ their type is distinguished only by the separator used:
 You can use ``\`` to escape characters that shouldn't be used as separators
 (or parts thereof). For instance, ``foo\==bar`` will become a data key/value
 pair (``foo=`` and ``bar``) instead of a URL parameter.
+
+You can also quote values, e.g. ``foo="bar baz"``.
 
 Note that data fields aren't the only way to specify request data:
 `Redirected input`_ allows for passing arbitrary data to be sent with the
@@ -332,11 +335,16 @@ Simple example:
 
 
 Non-string fields use the ``:=`` separator, which allows you to embed raw JSON
-into the resulting object:
+into the resulting object. Text and raw JSON files can also be embedded into
+fields using ``=@`` and ``:=@``:
 
 .. code-block:: bash
 
-    $ http PUT api.example.com/person/1 name=John age:=29 married:=false hobbies:='["http", "pies"]'
+    $ http PUT api.example.com/person/1 \
+        name=John \
+        age:=29 married:=false hobbies:='["http", "pies"]' \  # Raw JSON
+        description=@about-john.txt \   # Embed text file
+        bookmarks:=@bookmarks.json      # Embed JSON file
 
 
 .. code-block:: http
@@ -352,8 +360,12 @@ into the resulting object:
             "http",
             "pies"
         ],
+        "description": "John is a nice guy who likes pies.",
         "married": false,
-        "name": "John"
+        "name": "John",
+        "bookmarks": {
+            "HTTPie": "http://httpie.org",
+        }
     }
 
 
@@ -383,7 +395,7 @@ Regular Forms
 
 .. code-block:: bash
 
-    $ http --form POST api.example.org/person/1 name='John Smith' email=john@example.org
+    $ http --form POST api.example.org/person/1 name='John Smith' email=john@example.org cv=@~/Documents/cv.txt
 
 
 .. code-block:: http
@@ -391,7 +403,7 @@ Regular Forms
     POST /person/1 HTTP/1.1
     Content-Type: application/x-www-form-urlencoded; charset=utf-8
 
-    name=John+Smith&email=john%40example.org
+    name=John+Smith&email=john%40example.org&cv=John's+CV+...
 
 
 -----------------
@@ -415,6 +427,9 @@ submitted:
         <input type="text" name="name" />
         <input type="file" name="cv" />
     </form>
+
+Note that ``@`` is used to simulate a file upload form field, whereas
+``=@`` just embeds the file content as a regular text field value.
 
 
 ============
@@ -1214,6 +1229,8 @@ Changelog
 *You can click a version name to see a diff with the previous one.*
 
 * `0.8.0-dev`_
+    * Added ``field=@file.txt`` and ``field:=@file.json`` for embedding
+      the contents of text and JSON files into request data.
 * `0.7.1`_ (2013-09-24)
     * Added ``--ignore-stdin``.
     * Added support for auth plugins.

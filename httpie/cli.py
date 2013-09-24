@@ -15,7 +15,7 @@ from .plugins import plugin_manager
 from .sessions import DEFAULT_SESSIONS_DIR
 from .output import AVAILABLE_STYLES, DEFAULT_STYLE
 from .input import (Parser, AuthCredentialsArgType, KeyValueArgType,
-                    SEP_PROXY, SEP_CREDENTIALS, SEP_GROUP_ITEMS,
+                    SEP_PROXY, SEP_CREDENTIALS, SEP_GROUP_ALL_ITEMS,
                     OUT_REQ_HEAD, OUT_REQ_BODY, OUT_RESP_HEAD,
                     OUT_RESP_BODY, OUTPUT_OPTIONS, OUTPUT_OPTIONS_DEFAULT,
                     PRETTY_MAP, PRETTY_STDOUT_TTY_ONLY, SessionNameValidator)
@@ -94,7 +94,7 @@ positional.add_argument(
     'items',
     metavar='REQUEST ITEM',
     nargs=ZERO_OR_MORE,
-    type=KeyValueArgType(*SEP_GROUP_ITEMS),
+    type=KeyValueArgType(*SEP_GROUP_ALL_ITEMS),
     help=r"""
     Optional key-value pairs to be included in the request. The separator used
     determines the type:
@@ -112,13 +112,21 @@ positional.add_argument(
 
         name=HTTPie  language=Python  description='CLI HTTP client'
 
+    ':=' Non-string JSON data fields (only with --json, -j):
+
+        awesome:=true  amount:=42  colors:='["red", "green", "blue"]'
+
     '@' Form file fields (only with --form, -f):
 
         cs@~/Documents/CV.pdf
 
-    ':=' Non-string JSON data fields (only with --json, -j):
+    '=@' A data field like '=', but takes a file path and embeds its content:
 
-        awesome:=true  amount:=42  colors:='["red", "green", "blue"]'
+         essay=@Documents/essay.txt
+
+    ':=@' A raw JSON field like ':=', but takes a file path and embeds its content:
+
+        package:=@./package.json
 
     You can use a backslash to escape a colliding separator in the field name:
 

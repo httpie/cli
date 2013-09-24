@@ -37,22 +37,40 @@ SEP_PROXY = ':'
 SEP_DATA = '='
 SEP_DATA_RAW_JSON = ':='
 SEP_FILES = '@'
+SEP_DATA_EMBED_FILE = '=@'
+SEP_DATA_EMBED_RAW_JSON_FILE = ':=@'
 SEP_QUERY = '=='
 
 # Separators that become request data
 SEP_GROUP_DATA_ITEMS = frozenset([
     SEP_DATA,
     SEP_DATA_RAW_JSON,
-    SEP_FILES
+    SEP_FILES,
+    SEP_DATA_EMBED_FILE,
+    SEP_DATA_EMBED_RAW_JSON_FILE
+])
+
+# Separators for items whose value is a filename to be embedded
+SEP_GROUP_DATA_EMBED_ITEMS = frozenset([
+    SEP_DATA_EMBED_FILE,
+    SEP_DATA_EMBED_RAW_JSON_FILE,
+])
+
+# Separators for raw JSON items
+SEP_GROUP_RAW_JSON_ITEMS = frozenset([
+    SEP_DATA_RAW_JSON,
+    SEP_DATA_EMBED_RAW_JSON_FILE,
 ])
 
 # Separators allowed in ITEM arguments
-SEP_GROUP_ITEMS = frozenset([
+SEP_GROUP_ALL_ITEMS = frozenset([
     SEP_HEADERS,
     SEP_QUERY,
     SEP_DATA,
     SEP_DATA_RAW_JSON,
-    SEP_FILES
+    SEP_FILES,
+    SEP_DATA_EMBED_FILE,
+    SEP_DATA_EMBED_RAW_JSON_FILE,
 ])
 
 
@@ -257,7 +275,7 @@ class Parser(ArgumentParser):
                 # Parse the URL as an ITEM and store it as the first ITEM arg.
                 self.args.items.insert(
                     0,
-                    KeyValueArgType(*SEP_GROUP_ITEMS).__call__(self.args.url)
+                    KeyValueArgType(*SEP_GROUP_ALL_ITEMS).__call__(self.args.url)
                 )
 
             except ArgumentTypeError as e:
@@ -558,9 +576,7 @@ def parse_items(items, data=None, headers=None, files=None, params=None):
         params = ParamDict()
 
     for item in items:
-
         value = item.value
-        key = item.key
 
         if item.sep == SEP_HEADERS:
             target = headers
@@ -572,21 +588,28 @@ def parse_items(items, data=None, headers=None, files=None, params=None):
                     value = (os.path.basename(value),
                              BytesIO(f.read()))
             except IOError as e:
-                raise ParseError(
-                    'Invalid argument "%s": %s' % (item.orig, e))
+                raise ParseError('"%s": %s' % (item.orig, e))
             target = files
 
-        elif item.sep in [SEP_DATA, SEP_DATA_RAW_JSON]:
-            if item.sep == SEP_DATA_RAW_JSON:
+        elif item.sep in SEP_GROUP_DATA_ITEMS:
+
+            if item.sep in SEP_GROUP_DATA_EMBED_ITEMS:
                 try:
-                    value = json.loads(item.value)
-                except ValueError:
-                    raise ParseError('"%s" is not valid JSON' % item.orig)
+                    with open(os.path.expanduser(value), 'rb') as f:
+                        value = f.read()
+                except IOError as e:
+                    raise ParseError('%s": %s' % (item.orig, e))
+
+            if item.sep in SEP_GROUP_RAW_JSON_ITEMS:
+                try:
+                    value = json.loads(value)
+                except ValueError as e:
+                    raise ParseError('"%s": %s' % (item.orig, e))
             target = data
 
         else:
             raise TypeError(item)
 
-        target[key] = value
+        target[item.key] = value
 
     return headers, data, files, params

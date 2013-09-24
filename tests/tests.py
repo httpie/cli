@@ -101,15 +101,22 @@ def patharg(path):
 FILE_PATH = os.path.join(TESTS_ROOT, 'fixtures', 'file.txt')
 FILE2_PATH = os.path.join(TESTS_ROOT, 'fixtures', 'file2.txt')
 BIN_FILE_PATH = os.path.join(TESTS_ROOT, 'fixtures', 'file.bin')
+JSON_FILE_PATH = os.path.join(TESTS_ROOT, 'fixtures', 'test.json')
 
 FILE_PATH_ARG = patharg(FILE_PATH)
 FILE2_PATH_ARG = patharg(FILE2_PATH)
 BIN_FILE_PATH_ARG = patharg(BIN_FILE_PATH)
+JSON_FILE_PATH_ARG = patharg(JSON_FILE_PATH)
 
 with open(FILE_PATH) as f:
+    # Strip because we don't want new lines in the data so that we can
+    # easily count occurrences also when embedded in JSON (where the new
+    # line would be escaped).
     FILE_CONTENT = f.read().strip()
 with open(BIN_FILE_PATH, 'rb') as f:
     BIN_FILE_CONTENT = f.read()
+with open(JSON_FILE_PATH, 'rb') as f:
+    JSON_FILE_CONTENT = f.read()
 
 
 def httpbin(path):
@@ -1172,11 +1179,7 @@ class ItemParsingTest(BaseTestCase):
 
     def setUp(self):
         self.key_value_type = input.KeyValueArgType(
-            input.SEP_HEADERS,
-            input.SEP_QUERY,
-            input.SEP_DATA,
-            input.SEP_DATA_RAW_JSON,
-            input.SEP_FILES,
+            *input.SEP_GROUP_ALL_ITEMS
         )
 
     def test_invalid_items(self):
@@ -1223,26 +1226,41 @@ class ItemParsingTest(BaseTestCase):
             self.key_value_type('eh:'),
             self.key_value_type('ed='),
             self.key_value_type('bool:=true'),
-            self.key_value_type('test-file@%s' % FILE_PATH_ARG),
+            self.key_value_type('file@' + FILE_PATH_ARG),
             self.key_value_type('query==value'),
+            self.key_value_type('string-embed=@' + FILE_PATH_ARG),
+            self.key_value_type('raw-json-embed:=@' + JSON_FILE_PATH_ARG),
         ])
+
+        # Parsed headers
         # `requests.structures.CaseInsensitiveDict` => `dict`
         headers = dict(headers._store.values())
         self.assertDictEqual(headers, {
             'header': 'value',
             'eh': ''
         })
-        self.assertDictEqual(data, {
+
+        # Parsed data
+        raw_json_embed = data.pop('raw-json-embed')
+        self.assertDictEqual(raw_json_embed, json.loads(JSON_FILE_CONTENT))
+        data['string-embed'] = data['string-embed'].strip()
+        self.assertDictEqual(dict(data), {
             "ed": "",
             "string": "value",
             "bool": True,
             "list": ["a", 1, {}, False],
             "obj": {"a": "b"},
+            "string-embed": FILE_CONTENT,
         })
+
+        # Parsed query string parameters
         self.assertDictEqual(params, {
             'query': 'value',
         })
-        self.assertIn('test-file', files)
+
+        # Parsed file fields
+        self.assertIn('file', files)
+        self.assertEqual(files['file'][1].read().strip(), FILE_CONTENT)
 
 
 class ArgumentParserTestCase(unittest.TestCase):
