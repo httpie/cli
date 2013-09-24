@@ -596,7 +596,7 @@ def parse_items(items, data=None, headers=None, files=None, params=None):
             if item.sep in SEP_GROUP_DATA_EMBED_ITEMS:
                 try:
                     with open(os.path.expanduser(value), 'rb') as f:
-                        value = f.read()
+                        value = f.read().decode('utf8')
                 except IOError as e:
                     raise ParseError('%s": %s' % (item.orig, e))
 

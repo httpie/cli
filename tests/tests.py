@@ -1242,7 +1242,8 @@ class ItemParsingTest(BaseTestCase):
 
         # Parsed data
         raw_json_embed = data.pop('raw-json-embed')
-        self.assertDictEqual(raw_json_embed, json.loads(JSON_FILE_CONTENT))
+        self.assertDictEqual(raw_json_embed, json.loads(
+            JSON_FILE_CONTENT.decode('utf8')))
         data['string-embed'] = data['string-embed'].strip()
         self.assertDictEqual(dict(data), {
             "ed": "",
@@ -1260,7 +1261,8 @@ class ItemParsingTest(BaseTestCase):
 
         # Parsed file fields
         self.assertIn('file', files)
-        self.assertEqual(files['file'][1].read().strip(), FILE_CONTENT)
+        self.assertEqual(files['file'][1].read().strip().decode('utf8'),
+                         FILE_CONTENT)
 
 
 class ArgumentParserTestCase(unittest.TestCase):
