@@ -1217,6 +1217,7 @@ Changelog
 * `0.7.0`_ (2013-09-24)
     * Added ``--ignore-stdin``.
     * Added support for auth plugins.
+    * Improved ``--help`` output.
     * Improved ``Content-Disposition`` parsing for ``--download`` mode.
 * `0.6.0`_ (2013-06-03)
     * XML data is now formatted.
