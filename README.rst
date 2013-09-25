@@ -547,7 +547,7 @@ protocol (which is included in the value in case of redirects across protocols):
 
 .. code-block:: bash
 
-    $ http --proxy=http:10.10.1.10:3128 --proxy=https:10.10.1.10:1080 example.org
+    $ http --proxy=http:http://10.10.1.10:3128 --proxy=https:https://10.10.1.10:1080 example.org
 
 
 With Basic authentication:
@@ -565,8 +565,8 @@ In your ``~/.bash_profile``:
 
 .. code-block:: bash
 
- export HTTP_PROXY=10.10.1.10:3128
- export HTTPS_PROXY=10.10.1.10:1080
+ export HTTP_PROXY=http://10.10.1.10:3128
+ export HTTPS_PROXY=https://10.10.1.10:1080
  export NO_PROXY=localhost,example.com
 
 

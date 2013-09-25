@@ -430,11 +430,12 @@ network.add_argument(
     '--proxy',
     default=[],
     action='append',
-    metavar='PROTOCOL:HOST',
+    metavar='PROTOCOL:PROXY_URL',
     type=KeyValueArgType(SEP_PROXY),
     help="""
-    String mapping protocol to the URL of the proxy (e.g. http:foo.bar:3128).
-    You can specify multiple proxies with different protocols.
+    String mapping protocol to the URL of the proxy
+    (e.g. http:http://foo.bar:3128). You can specify multiple proxies with
+    different protocols.
 
     """
 )
