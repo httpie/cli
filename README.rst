@@ -232,7 +232,18 @@ If the port is omitted, then port 80 is assumed.
 .. code-block:: bash
 
     $ http :/foo
+
+.. code-block:: http
+
+    GET http://localhost/foo
+
+.. code-block:: bash
+
     $ http :3000/bar
+
+.. code-block:: http
+
+    GET http://localhost:3000/bar
 
 If find yourself manually constructing URLs with **querystring parameters**
 on the terminal, you may appreciate the ``param==value`` syntax for appending
