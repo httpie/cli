@@ -64,6 +64,7 @@ sys.path.insert(0, os.path.realpath(os.path.join(TESTS_ROOT, '..')))
 
 from httpie import ExitStatus
 from httpie import input
+from httpie.cli import parser
 from httpie.models import Environment
 from httpie.core import main
 from httpie.output import BINARY_SUPPRESSED_NOTICE
@@ -1264,6 +1265,52 @@ class ItemParsingTest(BaseTestCase):
         self.assertEqual(files['file'][1].read().strip().decode('utf8'),
                          FILE_CONTENT)
 
+class CLIParserTestCase(unittest.TestCase):
+
+    def test_expand_localhost_shorthand(self):
+        args = parser.parse_args(args=[':'], env=TestEnvironment())
+
+        self.assertEqual(args.url, 'http://localhost')
+
+    def test_expand_localhost_shorthand_with_slash(self):
+        args = parser.parse_args(args=[':/'], env=TestEnvironment())
+
+        self.assertEqual(args.url, 'http://localhost/')
+
+    def test_expand_locahost_shorthand_with_port(self):
+        args = parser.parse_args(args=[':3000'], env=TestEnvironment())
+
+        self.assertEqual(args.url, 'http://localhost:3000')
+
+    def test_expand_localhost_shorthand_with_path(self):
+        args = parser.parse_args(args=[':/path'], env=TestEnvironment())
+
+        self.assertEqual(args.url, 'http://localhost/path')
+
+    def test_expand_localhost_shorthand_with_port_and_slash(self):
+        args = parser.parse_args(args=[':3000/'], env=TestEnvironment())
+
+        self.assertEqual(args.url, 'http://localhost:3000/')
+
+    def test_expand_localhost_shorthand_with_port_and_path(self):
+        args = parser.parse_args(args=[':3000/path'], env=TestEnvironment())
+
+        self.assertEqual(args.url, 'http://localhost:3000/path')
+
+    def test_dont_expand_shorthand_ipv6_as_shorthand(self):
+        args = parser.parse_args(args=['::1'], env=TestEnvironment())
+
+        self.assertEqual(args.url, 'http://::1')
+
+    def test_dont_expand_longer_ipv6_as_shorthand(self):
+        args = parser.parse_args(args=['::ffff:c000:0280'], env=TestEnvironment())
+
+        self.assertEqual(args.url, 'http://::ffff:c000:0280')
+
+    def test_dont_expand_full_ipv6_as_shorthand(self):
+        args = parser.parse_args(args=['0000:0000:0000:0000:0000:0000:0000:0001'], env=TestEnvironment())
+
+        self.assertEqual(args.url, 'http://0000:0000:0000:0000:0000:0000:0000:0001')
 
 class ArgumentParserTestCase(unittest.TestCase):
 

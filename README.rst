@@ -121,7 +121,6 @@ See also ``http --help``.
 Examples
 --------
 
-
 Custom `HTTP method`_, `HTTP headers`_ and `JSON`_ data:
 
 .. code-block:: bash
@@ -225,6 +224,15 @@ Request URL
 The only information HTTPie needs to perform a request is a URL.
 The default scheme is, somewhat unsurprisingly, ``http://``,
 and can be omitted from the argument – ``http example.org`` works just fine.
+
+Additionally, curl-like shorthand for localhost is supported.
+This means that, for example ``:3000`` would expand to ``http://localhost:3000``
+If the port is omitted, then port 80 is assumed.
+
+.. code-block:: bash
+
+    $ http :/foo
+    $ http :3000/bar
 
 If find yourself manually constructing URLs with **querystring parameters**
 on the terminal, you may appreciate the ``param==value`` syntax for appending
