@@ -138,7 +138,17 @@ class Parser(ArgumentParser):
         if not (self.args.url.startswith((HTTP, HTTPS))):
             # Default to 'https://' if invoked as `https args`.
             scheme = HTTPS if self.env.progname == 'https' else HTTP
-            self.args.url = scheme + self.args.url
+            # See if we're using curl style shorthand for localhost (:3000/foo)
+            shorthand = re.match(r'^:(?!:)(\d*)(\/?.*)$', self.args.url)
+            if shorthand:
+                port = shorthand.group(1)
+                rest = shorthand.group(2)
+                self.args.url = scheme + 'localhost'
+                if port:
+                    self.args.url += ':' + port
+                self.args.url += rest
+            else:
+                self.args.url = scheme + self.args.url
         self._process_auth()
 
         return self.args

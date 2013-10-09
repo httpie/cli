@@ -121,7 +121,6 @@ See also ``http --help``.
 Examples
 --------
 
-
 Custom `HTTP method`_, `HTTP headers`_ and `JSON`_ data:
 
 .. code-block:: bash
@@ -225,6 +224,31 @@ Request URL
 The only information HTTPie needs to perform a request is a URL.
 The default scheme is, somewhat unsurprisingly, ``http://``,
 and can be omitted from the argument – ``http example.org`` works just fine.
+
+Additionally, curl-like shorthand for localhost is supported.
+This means that, for example ``:3000`` would expand to ``http://localhost:3000``
+If the port is omitted, then port 80 is assumed.
+
+.. code-block:: bash
+
+    $ http :/foo
+
+
+.. code-block:: http
+
+    GET /foo HTTP/1.1
+    Host: localhost
+
+
+.. code-block:: bash
+
+    $ http :3000/bar
+
+
+.. code-block:: http
+
+    GET /bar HTTP/1.1
+    Host: localhost:3000
 
 If find yourself manually constructing URLs with **querystring parameters**
 on the terminal, you may appreciate the ``param==value`` syntax for appending
@@ -1231,6 +1255,7 @@ Changelog
 * `0.8.0-dev`_
     * Added ``field=@file.txt`` and ``field:=@file.json`` for embedding
       the contents of text and JSON files into request data.
+    * Added curl-style shorthand for localhost
 * `0.7.1`_ (2013-09-24)
     * Added ``--ignore-stdin``.
     * Added support for auth plugins.

@@ -88,6 +88,11 @@ positional.add_argument(
     help="""
     The scheme defaults to 'http://' if the URL does not include one.
 
+    You can also use a shorthand for localhost
+
+        $ http :3000                    # => http://localhost:3000
+        $ http :/foo                    # => http://localhost/foo
+
     """
 )
 positional.add_argument(
