@@ -1255,6 +1255,7 @@ Changelog
 * `0.8.0-dev`_
     * Added ``field=@file.txt`` and ``field:=@file.json`` for embedding
       the contents of text and JSON files into request data.
+    * Added curl-style shorthand for localhost
 * `0.7.1`_ (2013-09-24)
     * Added ``--ignore-stdin``.
     * Added support for auth plugins.
