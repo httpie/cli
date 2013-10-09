@@ -233,18 +233,21 @@ If the port is omitted, then port 80 is assumed.
 
     $ http :/foo
 
+
 .. code-block:: http
 
-    GET /foo
+    GET /foo HTTP/1.1
     Host: localhost
+
 
 .. code-block:: bash
 
     $ http :3000/bar
 
+
 .. code-block:: http
 
-    GET /bar
+    GET /bar HTTP/1.1
     Host: localhost:3000
 
 If find yourself manually constructing URLs with **querystring parameters**
