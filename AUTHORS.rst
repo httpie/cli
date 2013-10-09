@@ -29,3 +29,4 @@ Patches and ideas
 * `Davey Shafik <https://github.com/dshafik>`_
 * `cido <https://github.com/cido>`_
 * `Justin Bonnar <https://github.com/jargonjustin>`_
+* `Nathan LaFreniere <https://github.com/nlf>`_
