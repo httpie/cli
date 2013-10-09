@@ -138,7 +138,10 @@ class Parser(ArgumentParser):
         if not (self.args.url.startswith((HTTP, HTTPS))):
             # Default to 'https://' if invoked as `https args`.
             scheme = HTTPS if self.env.progname == 'https' else HTTP
-            self.args.url = scheme + self.args.url
+            if self.args.url.startswith(':'):
+                self.args.url = scheme + 'localhost' + self.args.url
+            else:
+                self.args.url = scheme + self.args.url
         self._process_auth()
 
         return self.args
