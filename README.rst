@@ -558,8 +558,9 @@ Authorization information from your ``~/.netrc`` file is honored as well:
 Auth Plugins
 ------------
 
-* `httpie-ntlm <https://github.com/jkbr/httpie-ntlm>`_
-* `httpie-oauth <https://github.com/jkbr/httpie-oauth>`_
+* `httpie-oauth <https://github.com/jkbr/httpie-oauth>`_ - OAuth
+* `httpie-negotiate <https://github.com/ndzou/httpie-negotiate>`_ - NTLM (NT LAN Manager)
+* `httpie-oauth <https://github.com/jkbr/httpie-oauth>`_ - SPNEGO (GSS Negotiate)
 
 
 =======
