@@ -409,8 +409,10 @@ class XMLProcessor(BaseProcessor):
     def process_body(self, content, content_type, subtype, encoding):
         if subtype == 'xml':
             try:
-                # Pretty print the XML
-                doc = xml.dom.minidom.parseString(content.encode(encoding))
+                # Pretty print the XML; pre-process content into clean string
+                raw_string = ''.join(
+                    (x.strip() for x in content.encode(encoding).split('\n')))
+                doc = xml.dom.minidom.parseString(raw_string)
                 content = doc.toprettyxml(indent=' ' * DEFAULT_INDENT)
             except xml.parsers.expat.ExpatError:
                 # Ignore invalid XML errors (skips attempting to pretty print)
