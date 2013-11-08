@@ -20,6 +20,10 @@ from .models import HTTPRequest, HTTPResponse, Environment
 from .input import (OUT_REQ_BODY, OUT_REQ_HEAD,
                     OUT_RESP_HEAD, OUT_RESP_BODY)
 
+try:
+    import msgpack
+except ImportError:
+    msgpack = None
 
 # The default number of spaces to indent when pretty printing
 DEFAULT_INDENT = 4
@@ -397,6 +401,23 @@ class JSONProcessor(BaseProcessor):
                 pass
         return content
 
+class MsgpackProcessor(BaseProcessor):
+    """MsgPack body processor."""
+
+    def process_body(self, content, content_type, subtype, encoding):
+        if not msgpack:
+            return content
+        if subtype == 'x-msgpack':
+            try:
+                # Load the msgpack data and then dump it as JSON
+                content = json.dumps(msgpack.loads(content),
+                                     sort_keys=True,
+                                     ensure_ascii=False,
+                                     indent=DEFAULT_INDENT).encode(encoding)
+            except ValueError:
+                pass
+        return content
+
 
 class XMLProcessor(BaseProcessor):
     """XML body processor."""
@@ -447,6 +468,12 @@ class PygmentsProcessor(BaseProcessor):
 
     def process_body(self, content, content_type, subtype, encoding):
         try:
+            # Msgpack is a transport format, not a language, so Pygments
+            # doesn't support it (nor it shouldn't). Since Msgpack is designed
+            # to be a binary JSON transport, we treat it as JSON for the purpose
+            # of displaying and highlighting it.
+            if content_type == "application/x-msgpack":
+                content_type = "application/json"
             lexer = self.lexers_by_type.get(content_type)
             if not lexer:
                 try:
@@ -479,6 +506,7 @@ class OutputProcessor(object):
         'format': [
             HeadersProcessor,
             JSONProcessor,
+            MsgpackProcessor,
             XMLProcessor
         ],
         'colors': [
