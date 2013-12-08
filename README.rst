@@ -1354,6 +1354,14 @@ Changelog
 * `0.1.6`_ (2012-03-04)
 
 
+------------
+
+
+.. image:: https://d2weczhvl823v0.cloudfront.net/jkbr/httpie/trend.png
+    :target: https://bitdeli.com/free
+    :alt: Bitdeli Badge
+
+
 .. _Requests: http://python-requests.org
 .. _Pygments: http://pygments.org/
 .. _pip: http://www.pip-installer.org/en/latest/index.html
