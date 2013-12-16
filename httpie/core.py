@@ -19,7 +19,7 @@ from requests import __version__ as requests_version
 from pygments import __version__ as pygments_version
 
 from .compat import str, is_py3
-from .client import get_response
+from .client import get_responses
 from .downloads import Download
 from .models import Environment
 from .output import build_output_stream, write, write_with_colors_win_py3
@@ -92,60 +92,71 @@ def main(args=sys.argv[1:], env=Environment()):
             )
             download.pre_request(args.headers)
 
-        response = get_response(args, config_dir=env.config.directory)
+        last_response = None
+        # This will in fact be `stderr` with `--download`
+        outfile = env.stdout
+        flush = env.stdout_isatty or args.stream
+        for response in get_responses(args, env.config.directory):
+            if last_response is not None:
+                try:
+                    write((b'\n\n',), outfile, flush)
+                except IOError as e:
+                    if not traceback and e.errno == errno.EPIPE:
+                        # Ignore broken pipes unless --traceback.
+                        env.stderr.write('\n')
+                    else:
+                        raise
+            last_response = response
+
+            stream = build_output_stream(args, env, response.request, response)
+            
+            try:
+                if env.is_windows and is_py3 and 'colors' in args.prettify:
+                    write_with_colors_win_py3(stream, outfile, flush)
+                else:
+                    write(stream, outfile, flush)
+            except IOError as e:
+                if not traceback and e.errno == errno.EPIPE:
+                    # Ignore broken pipes unless --traceback.
+                    env.stderr.write('\n')
+                else:
+                    raise
 
         if args.check_status or download:
-
             exit_status = get_exit_status(
-                http_status=response.status_code,
+                http_status=last_response.status_code,
                 follow=args.follow
             )
 
             if not env.stdout_isatty and exit_status != ExitStatus.OK:
                 error('HTTP %s %s',
-                      response.raw.status,
-                      response.raw.reason,
+                      last_response.raw.status,
+                      last_response.raw.reason,
                       level='warning')
 
-        write_kwargs = {
-            'stream': build_output_stream(
-                args, env, response.request, response),
-
-            # This will in fact be `stderr` with `--download`
-            'outfile': env.stdout,
-
-            'flush': env.stdout_isatty or args.stream
-        }
-
-        try:
-
-            if env.is_windows and is_py3 and 'colors' in args.prettify:
-                write_with_colors_win_py3(**write_kwargs)
-            else:
-                write(**write_kwargs)
-
-            if download and exit_status == ExitStatus.OK:
+        if download and exit_status == ExitStatus.OK:
+            try:
                 # Response body download.
-                download_stream, download_to = download.start(response)
+                download_stream, download_to = download.start(last_response)
                 write(
                     stream=download_stream,
                     outfile=download_to,
                     flush=False,
                 )
-                download.finish()
-                if download.interrupted:
-                    exit_status = ExitStatus.ERROR
-                    error('Incomplete download: size=%d; downloaded=%d' % (
-                        download.status.total_size,
-                        download.status.downloaded
-                    ))
+            except IOError as e:
+                if not traceback and e.errno == errno.EPIPE:
+                    # Ignore broken pipes unless --traceback.
+                    env.stderr.write('\n')
+                else:
+                    raise
 
-        except IOError as e:
-            if not traceback and e.errno == errno.EPIPE:
-                # Ignore broken pipes unless --traceback.
-                env.stderr.write('\n')
-            else:
-                raise
+            download.finish()
+            if download.interrupted:
+                exit_status = ExitStatus.ERROR
+                error('Incomplete download: size=%d; downloaded=%d' % (
+                    download.status.total_size,
+                    download.status.downloaded
+                ))
     except (KeyboardInterrupt, SystemExit):
         if traceback:
             raise
