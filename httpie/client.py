@@ -74,7 +74,6 @@ def get_requests_kwargs(args):
         credentials = auth_plugin.get_auth(args.auth.key, args.auth.value)
 
     kwargs = {
-        'stream': True,
         'method': args.method.lower(),
         'url': args.url,
         'headers': args.headers,
