@@ -57,6 +57,8 @@ def get_responses(args, config_dir):
             read_only=bool(args.session_read_only),
         )
 
+    # Yielding the response before retrieving the next response (if any)
+    # causes an error.
     redirect = None
     redirects = ()
     if args.follow:
