@@ -155,7 +155,7 @@ class HTTPRequest(HTTPMessage):
         headers = dict(self._orig.headers)
 
         if 'Host' not in headers:
-            headers['Host'] = url.netloc
+            headers['Host'] = url.netloc.split('@')[-1]
 
         headers = ['%s: %s' % (name, value)
                    for name, value in headers.items()]
