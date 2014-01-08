@@ -199,7 +199,7 @@ output_processing.add_argument(
     default=DEFAULT_STYLE,
     choices=AVAILABLE_STYLES,
     help="""
-    Output coloring style (default is "{default}"). On of:
+    Output coloring style (default is "{default}"). One of:
 
 {available}
 
