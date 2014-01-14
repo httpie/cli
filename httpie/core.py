@@ -64,6 +64,9 @@ def main(args=sys.argv[1:], env=Environment()):
     if env.config.default_options:
         args = env.config.default_options + args
 
+    if env.config.default_request_items:
+        args = args + env.config.default_request_items
+
     def error(msg, *args, **kwargs):
         msg = msg % args
         level = kwargs.get('level', 'error')

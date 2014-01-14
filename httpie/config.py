@@ -92,7 +92,8 @@ class Config(BaseConfigDict):
 
     DEFAULTS = {
         'implicit_content_type': 'json',
-        'default_options': []
+        'default_options': [],
+        'default_request_items': [],
     }
 
     def __init__(self, *args, **kwargs):

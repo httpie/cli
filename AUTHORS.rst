@@ -30,3 +30,4 @@ Patches and ideas
 * `cido <https://github.com/cido>`_
 * `Justin Bonnar <https://github.com/jargonjustin>`_
 * `Nathan LaFreniere <https://github.com/nlf>`_
+* `Dionysis Grigoropoulos <https://github.com/Erethon>`_
