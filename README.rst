@@ -1373,7 +1373,7 @@ Changelog
 .. _the repository: https://github.com/jkbr/httpie
 .. _these fine people: https://github.com/jkbr/httpie/contributors
 .. _Jakub Roztocil: http://subtleapps.com
-.. _@jakubroztocil: https://twitter.com/jkbrzt
+.. _@jkbrzt: https://twitter.com/jkbrzt
 .. _existing issues: https://github.com/jkbr/httpie/issues?state=open
 .. _claudiatd/httpie-artwork: https://github.com/claudiatd/httpie-artwork
 .. _0.1.6: https://github.com/jkbr/httpie/compare/0.1.4...0.1.6
