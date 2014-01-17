@@ -1237,7 +1237,7 @@ See `claudiatd/httpie-artwork`_
 Authors
 =======
 
-`Jakub Roztocil`_  (`@jakubroztocil`_) created HTTPie and `these fine people`_
+`Jakub Roztocil`_  (`@jkbrzt`_) created HTTPie and `these fine people`_
 have contributed.
 
 =======
@@ -1372,8 +1372,8 @@ Changelog
 .. _Debian: http://packages.debian.org/httpie
 .. _the repository: https://github.com/jkbr/httpie
 .. _these fine people: https://github.com/jkbr/httpie/contributors
-.. _Jakub Roztocil: http://roztocil.name
-.. _@jakubroztocil: https://twitter.com/jakubroztocil
+.. _Jakub Roztocil: http://subtleapps.com
+.. _@jakubroztocil: https://twitter.com/jkbrzt
 .. _existing issues: https://github.com/jkbr/httpie/issues?state=open
 .. _claudiatd/httpie-artwork: https://github.com/claudiatd/httpie-artwork
 .. _0.1.6: https://github.com/jkbr/httpie/compare/0.1.4...0.1.6
