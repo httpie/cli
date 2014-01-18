@@ -37,6 +37,43 @@ def get_response(args, config_dir):
     return response
 
 
+def get_responses(args, config_dir):
+    requests_kwargs = get_requests_kwargs(args)
+
+    if args.debug:
+        sys.stderr.write('\n>>> requests.request(%s)\n\n'
+                         % pformat(requests_kwargs))
+
+    requests_kwargs['allow_redirects'] = False
+    session = requests.Session()
+    if not args.session and not args.session_read_only:
+        response = session.request(**requests_kwargs)
+    else:
+        response = sessions.get_response(
+            args=args,
+            config_dir=config_dir,
+            session_name=args.session or args.session_read_only,
+            requests_kwargs=requests_kwargs,
+            read_only=bool(args.session_read_only),
+        )
+
+    # Yielding the response before retrieving the next response (if any)
+    # causes an error.
+    redirect = None
+    redirects = ()
+    if args.follow:
+        redirects = session.resolve_redirects(response, response.request)
+        try:
+            redirect = next(redirects)
+        except StopIteration:
+            pass
+    yield response
+    if redirect is not None:
+        yield redirect
+    for response in redirects:
+        yield response
+
+
 def get_requests_kwargs(args):
     """Translate our `args` into `requests.request` keyword arguments."""
 
