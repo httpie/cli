@@ -250,6 +250,17 @@ If the port is omitted, then port 80 is assumed.
     GET /bar HTTP/1.1
     Host: localhost:3000
 
+
+.. code-block:: bash
+
+    $ http :
+
+
+.. code-block:: http
+
+    GET / HTTP/1.1
+    Host: localhost
+
 If find yourself manually constructing URLs with **querystring parameters**
 on the terminal, you may appreciate the ``param==value`` syntax for appending
 URL parameters so that you don't have to worry about escaping the ``&``
@@ -1256,7 +1267,9 @@ Changelog
 * `0.8.0-dev`_
     * Added ``field=@file.txt`` and ``field:=@file.json`` for embedding
       the contents of text and JSON files into request data.
-    * Added curl-style shorthand for localhost
+    * Added curl-style shorthand for localhost.
+    * Fixed request ``Host`` header value output so that it doesn't contain
+      credentials, if included in the URL.
 * `0.7.1`_ (2013-09-24)
     * Added ``--ignore-stdin``.
     * Added support for auth plugins.
