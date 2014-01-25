@@ -1264,7 +1264,8 @@ Changelog
 
 *You can click a version name to see a diff with the previous one.*
 
-* `0.8.0-dev`_
+* `0.9.0-dev`_
+* `0.8.0`_ (2014-01-25)
     * Added ``field=@file.txt`` and ``field:=@file.json`` for embedding
       the contents of text and JSON files into request data.
     * Added curl-style shorthand for localhost.
@@ -1403,6 +1404,7 @@ Changelog
 .. _0.5.1: https://github.com/jkbr/httpie/compare/0.5.0...0.5.1
 .. _0.6.0: https://github.com/jkbr/httpie/compare/0.5.1...0.6.0
 .. _0.7.1: https://github.com/jkbr/httpie/compare/0.6.0...0.7.1
-.. _0.8.0-dev: https://github.com/jkbr/httpie/compare/0.7.1...master
+.. _0.8.0: https://github.com/jkbr/httpie/compare/0.7.1...0.8.0
+.. _0.9.0-dev:: https://github.com/jkbr/httpie/compare/0.8.0...master
 .. _AUTHORS.rst: https://github.com/jkbr/httpie/blob/master/AUTHORS.rst
 .. _LICENSE: https://github.com/jkbr/httpie/blob/master/LICENSE
