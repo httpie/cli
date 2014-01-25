@@ -302,7 +302,7 @@ their type is distinguished only by the separator used:
 |                       | The ``==`` separator is used                        |
 +-----------------------+-----------------------------------------------------+
 | Data Fields           | Request data fields to be serialized as a JSON      |
-| ``field=value``,      | object (default), or to be form encoded             |
+| ``field=value``,      | object (default), or to be form-encoded             |
 | ``field=@file.txt``   | (``--form, -f``).                                   |
 +-----------------------+-----------------------------------------------------+
 | Raw JSON fields       | Useful when sending JSON and one or                 |

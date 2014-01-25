@@ -1265,6 +1265,7 @@ class ItemParsingTest(BaseTestCase):
         self.assertEqual(files['file'][1].read().strip().decode('utf8'),
                          FILE_CONTENT)
 
+
 class CLIParserTestCase(unittest.TestCase):
 
     def test_expand_localhost_shorthand(self):
@@ -1277,7 +1278,7 @@ class CLIParserTestCase(unittest.TestCase):
 
         self.assertEqual(args.url, 'http://localhost/')
 
-    def test_expand_locahost_shorthand_with_port(self):
+    def test_expand_localhost_shorthand_with_port(self):
         args = parser.parse_args(args=[':3000'], env=TestEnvironment())
 
         self.assertEqual(args.url, 'http://localhost:3000')
@@ -1303,14 +1304,23 @@ class CLIParserTestCase(unittest.TestCase):
         self.assertEqual(args.url, 'http://::1')
 
     def test_dont_expand_longer_ipv6_as_shorthand(self):
-        args = parser.parse_args(args=['::ffff:c000:0280'], env=TestEnvironment())
-
+        args = parser.parse_args(
+            args=['::ffff:c000:0280'],
+            env=TestEnvironment()
+        )
         self.assertEqual(args.url, 'http://::ffff:c000:0280')
 
     def test_dont_expand_full_ipv6_as_shorthand(self):
-        args = parser.parse_args(args=['0000:0000:0000:0000:0000:0000:0000:0001'], env=TestEnvironment())
+        args = parser.parse_args(
+            args=['0000:0000:0000:0000:0000:0000:0000:0001'],
+            env=TestEnvironment()
+        )
 
-        self.assertEqual(args.url, 'http://0000:0000:0000:0000:0000:0000:0000:0001')
+        self.assertEqual(
+            args.url,
+            'http://0000:0000:0000:0000:0000:0000:0000:0001'
+        )
+
 
 class ArgumentParserTestCase(unittest.TestCase):
 

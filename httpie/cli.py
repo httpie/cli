@@ -97,7 +97,7 @@ positional.add_argument(
 )
 positional.add_argument(
     'items',
-    metavar='REQUEST ITEM',
+    metavar='REQUEST_ITEM',
     nargs=ZERO_OR_MORE,
     type=KeyValueArgType(*SEP_GROUP_ALL_ITEMS),
     help=r"""
