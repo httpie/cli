@@ -608,7 +608,13 @@ def parse_items(items, data=None, headers=None, files=None, params=None):
                     with open(os.path.expanduser(value), 'rb') as f:
                         value = f.read().decode('utf8')
                 except IOError as e:
-                    raise ParseError('%s": %s' % (item.orig, e))
+                    raise ParseError('"%s": %s' % (item.orig, e))
+                except UnicodeDecodeError:
+                    raise ParseError(
+                        '"%s": cannot embed the content of "%s",'
+                        ' not a UTF8 or ASCII-encoded text file'
+                        % (item.orig, item.value)
+                    )
 
             if item.sep in SEP_GROUP_RAW_JSON_ITEMS:
                 try:
