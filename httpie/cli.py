@@ -466,6 +466,27 @@ network.add_argument(
 )
 
 network.add_argument(
+    '--ssl-cert',
+    default=None,
+    help="""
+    You can specify a local cert to use as client side SSL certificate.
+    This file may either contain both private key and certificate or you may
+    specify --ssl-key separately.
+
+    """
+)
+
+network.add_argument(
+    '--ssl-key',
+    default=None,
+    help="""
+    The private key to use with SSL. Only needed if --ssl-cert is given and the
+    certificate file does not contain the private key.
+
+    """
+)
+
+network.add_argument(
     '--timeout',
     type=float,
     default=30,
