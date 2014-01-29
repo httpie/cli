@@ -1,5 +1,4 @@
 from __future__ import division
-import argparse
 
 
 def humanize_bytes(n, precision=2):
@@ -46,11 +45,3 @@ def humanize_bytes(n, precision=2):
 
     return '%.*f %s' % (precision, n / factor, suffix)
 
-
-def existing_file(filename):
-    try:
-        open(filename, 'rb')
-    except IOError as ex:
-        raise argparse.ArgumentTypeError(
-            '%s: %s' % (filename, ex.args[1]))
-    return filename

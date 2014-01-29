@@ -1,6 +1,7 @@
 """Parsing and processing of CLI input (args, auth credentials, files, stdin).
 
 """
+import argparse
 import os
 import sys
 import re
@@ -630,3 +631,12 @@ def parse_items(items, data=None, headers=None, files=None, params=None):
         target[item.key] = value
 
     return headers, data, files, params
+
+
+def readable_file_arg(filename):
+    try:
+        open(filename, 'rb')
+    except IOError as ex:
+        raise argparse.ArgumentTypeError(
+            '%s: %s' % (filename, ex.args[1]))
+    return filename
