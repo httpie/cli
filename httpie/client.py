@@ -74,10 +74,10 @@ def get_requests_kwargs(args):
         credentials = auth_plugin.get_auth(args.auth.key, args.auth.value)
 
     cert = None
-    if args.ssl_cert:
-        cert = args.ssl_cert
-        if args.ssl_key:
-            cert = (cert, args.ssl_key)
+    if args.cert:
+        cert = args.cert
+        if args.certkey:
+            cert = (cert, args.certkey)
 
     kwargs = {
         'stream': True,

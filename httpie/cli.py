@@ -467,23 +467,23 @@ network.add_argument(
 )
 
 network.add_argument(
-    '--ssl-cert',
+    '--cert',
     default=None,
     type=readable_file_arg,
     help="""
     You can specify a local cert to use as client side SSL certificate.
     This file may either contain both private key and certificate or you may
-    specify --ssl-key separately.
+    specify --certkey separately.
 
     """
 )
 
 network.add_argument(
-    '--ssl-key',
+    '--certkey',
     default=None,
     type=readable_file_arg,
     help="""
-    The private key to use with SSL. Only needed if --ssl-cert is given and the
+    The private key to use with SSL. Only needed if --cert is given and the
     certificate file does not contain the private key.
 
     """
