@@ -1269,6 +1269,8 @@ Changelog
 *You can click a version name to see a diff with the previous one.*
 
 * `0.9.0-dev`_
+    * Added ``--cert`` and ``--certkey`` parameters to specify a client side
+      certificate and private key for SSL
 * `0.8.0`_ (2014-01-25)
     * Added ``field=@file.txt`` and ``field:=@file.json`` for embedding
       the contents of text and JSON files into request data.
