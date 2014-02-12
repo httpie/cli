@@ -44,3 +44,4 @@ def humanize_bytes(n, precision=2):
             break
 
     return '%.*f %s' % (precision, n / factor, suffix)
+

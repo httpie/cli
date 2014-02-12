@@ -615,6 +615,10 @@ To skip the host's SSL certificate verification, you can pass ``--verify=no``
 path. The path can also be configured via the environment variable
 ``REQUESTS_CA_BUNDLE``.
 
+To use a client side certificate for the SSL communication, you can pass the 
+path of the cert file with ``--cert``. If the private key is not contained
+in the cert file you may pass the path of the key file with ``--certkey``.
+
 
 ==============
 Output Options
@@ -1265,6 +1269,8 @@ Changelog
 *You can click a version name to see a diff with the previous one.*
 
 * `0.9.0-dev`_
+    * Added ``--cert`` and ``--certkey`` parameters to specify a client side
+      certificate and private key for SSL
 * `0.8.0`_ (2014-01-25)
     * Added ``field=@file.txt`` and ``field:=@file.json`` for embedding
       the contents of text and JSON files into request data.

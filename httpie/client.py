@@ -73,6 +73,12 @@ def get_requests_kwargs(args):
         auth_plugin = plugin_manager.get_auth_plugin(args.auth_type)()
         credentials = auth_plugin.get_auth(args.auth.key, args.auth.value)
 
+    cert = None
+    if args.cert:
+        cert = args.cert
+        if args.certkey:
+            cert = (cert, args.certkey)
+
     kwargs = {
         'stream': True,
         'method': args.method.lower(),
@@ -83,6 +89,7 @@ def get_requests_kwargs(args):
             'yes': True,
             'no': False
         }.get(args.verify, args.verify),
+        'cert': cert,
         'timeout': args.timeout,
         'auth': credentials,
         'proxies': dict((p.key, p.value) for p in args.proxy),

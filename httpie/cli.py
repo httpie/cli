@@ -18,7 +18,8 @@ from .input import (Parser, AuthCredentialsArgType, KeyValueArgType,
                     SEP_PROXY, SEP_CREDENTIALS, SEP_GROUP_ALL_ITEMS,
                     OUT_REQ_HEAD, OUT_REQ_BODY, OUT_RESP_HEAD,
                     OUT_RESP_BODY, OUTPUT_OPTIONS, OUTPUT_OPTIONS_DEFAULT,
-                    PRETTY_MAP, PRETTY_STDOUT_TTY_ONLY, SessionNameValidator)
+                    PRETTY_MAP, PRETTY_STDOUT_TTY_ONLY, SessionNameValidator,
+                    readable_file_arg)
 
 
 class HTTPieHelpFormatter(RawDescriptionHelpFormatter):
@@ -461,6 +462,29 @@ network.add_argument(
     Set to "no" to skip checking the host's SSL certificate. You can also pass
     the  path to a CA_BUNDLE file for private certs. You can also set the
     REQUESTS_CA_BUNDLE  environment variable. Defaults to "yes".
+
+    """
+)
+
+network.add_argument(
+    '--cert',
+    default=None,
+    type=readable_file_arg,
+    help="""
+    You can specify a local cert to use as client side SSL certificate.
+    This file may either contain both private key and certificate or you may
+    specify --certkey separately.
+
+    """
+)
+
+network.add_argument(
+    '--certkey',
+    default=None,
+    type=readable_file_arg,
+    help="""
+    The private key to use with SSL. Only needed if --cert is given and the
+    certificate file does not contain the private key.
 
     """
 )
