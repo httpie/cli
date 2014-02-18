@@ -417,11 +417,20 @@ class ProgressReporterThread(threading.Thread):
         time_taken = self.status.time_finished - self.status.time_started
 
         self.output.write(CLEAR_LINE)
+
+        try:
+            speed = actually_downloaded / time_taken
+        except ZeroDivisionError:
+            # Either time is 0 (not all systems provide `time.time`
+            # with a better precision than 1 second), and/or nothing
+            # has been downloaded.
+            speed = actually_downloaded
+
         self.output.write(SUMMARY.format(
             downloaded=humanize_bytes(actually_downloaded),
             total=(self.status.total_size
                    and humanize_bytes(self.status.total_size)),
-            speed=humanize_bytes(actually_downloaded / time_taken),
+            speed=humanize_bytes(speed),
             time=time_taken,
         ))
         self.output.flush()
