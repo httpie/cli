@@ -615,7 +615,7 @@ To skip the host's SSL certificate verification, you can pass ``--verify=no``
 path. The path can also be configured via the environment variable
 ``REQUESTS_CA_BUNDLE``.
 
-To use a client side certificate for the SSL communication, you can pass the 
+To use a client side certificate for the SSL communication, you can pass the
 path of the cert file with ``--cert``. If the private key is not contained
 in the cert file you may pass the path of the key file with ``--certkey``.
 
@@ -1372,14 +1372,6 @@ Changelog
     * Added support for field name escaping.
     * Many bug fixes.
 * `0.1.6`_ (2012-03-04)
-
-
-------------
-
-
-.. image:: https://d2weczhvl823v0.cloudfront.net/jkbr/httpie/trend.png
-    :target: https://bitdeli.com/free
-    :alt: Bitdeli Badge
 
 
 .. _Requests: http://python-requests.org
