@@ -61,15 +61,14 @@ Installation
 ============
 
 The latest **stable version** of HTTPie can always be installed or updated
-to via `pip`_ (prefered)
-or ``easy_install``:
+to via `pip`_ (prefered) or ``easy_install``:
 
 .. code-block:: bash
 
     $ pip install --upgrade httpie
 
 
-Alternatively:
+If the above doesn't work:
 
 .. code-block:: bash
 
@@ -89,9 +88,9 @@ Or, you can install the **development version** directly from GitHub:
     $ pip install --upgrade https://github.com/jkbr/httpie/tarball/master
 
 
-There are also packages available for `Ubuntu`_, `Debian`_, and possibly other
-Linux distributions as well. However, there may be a significant delay between
-official HTTPie releases and package updates.
+Many Linux distributions provide an ``httpie`` package that can be installed
+via the system package manager (e.g. ``yum install httpie`` or
+``apt-get install httpie``).
 
 
 =====

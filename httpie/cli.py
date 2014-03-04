@@ -460,8 +460,8 @@ network.add_argument(
     default='yes',
     help="""
     Set to "no" to skip checking the host's SSL certificate. You can also pass
-    the  path to a CA_BUNDLE file for private certs. You can also set the
-    REQUESTS_CA_BUNDLE  environment variable. Defaults to "yes".
+    the path to a CA_BUNDLE file for private certs. You can also set the
+    REQUESTS_CA_BUNDLE environment variable. Defaults to "yes".
 
     """
 )
