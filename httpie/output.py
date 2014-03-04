@@ -20,6 +20,10 @@ from .models import HTTPRequest, HTTPResponse, Environment
 from .input import (OUT_REQ_BODY, OUT_REQ_HEAD,
                     OUT_RESP_HEAD, OUT_RESP_BODY)
 
+try:
+    import msgpack
+except ImportError:
+    msgpack = None
 
 # The default number of spaces to indent when pretty printing
 DEFAULT_INDENT = 4
@@ -261,14 +265,12 @@ class PrettyStream(EncodedStream):
 
     def _iter_body(self):
         for line, lf in self.msg.iter_lines(self.CHUNK_SIZE):
-            if b'\0' in line:
-                raise BinarySuppressedError()
             yield self._process_body(line) + lf
 
     def _process_body(self, chunk):
         return (self.processor
                     .process_body(
-                        content=chunk.decode(self.msg.encoding, 'replace'),
+                        content=chunk,
                         content_type=self.msg.content_type,
                         encoding=self.msg.encoding)
                     .encode(self.output_encoding, 'replace'))
@@ -290,8 +292,6 @@ class BufferedPrettyStream(PrettyStream):
         # but bail out immediately if the body is binary.
         body = bytearray()
         for chunk in self.msg.iter_body(self.CHUNK_SIZE):
-            if b'\0' in chunk:
-                raise BinarySuppressedError()
             body.extend(chunk)
 
         yield self._process_body(body)
@@ -375,10 +375,10 @@ class BaseProcessor(object):
     def process_body(self, content, content_type, subtype, encoding):
         """Return processed `content`.
 
-        :param content: The body content as text
+        :param content: The body content as bytes
         :param content_type: Full content type, e.g., 'application/atom+xml'.
         :param subtype: E.g. 'xml'.
-        :param encoding: The original content encoding.
+        :param encoding: The content encoding.
 
         """
         return content
@@ -392,12 +392,29 @@ class JSONProcessor(BaseProcessor):
             try:
                 # Indent the JSON data, sort keys by name, and
                 # avoid unicode escapes to improve readability.
-                content = json.dumps(json.loads(content),
+                content = json.dumps(json.loads(content.decode(encoding, "replace")),
                                      sort_keys=True,
                                      ensure_ascii=False,
-                                     indent=DEFAULT_INDENT)
+                                     indent=DEFAULT_INDENT).encode(encoding)
             except ValueError:
                 # Invalid JSON but we don't care.
+                pass
+        return content
+
+class MsgpackProcessor(BaseProcessor):
+    """MsgPack body processor."""
+
+    def process_body(self, content, content_type, subtype, encoding):
+        if not msgpack:
+            return content
+        if subtype == 'x-msgpack':
+            try:
+                # Load the msgpack data and then dump it as JSON
+                content = json.dumps(msgpack.loads(content),
+                                     sort_keys=True,
+                                     ensure_ascii=False,
+                                     indent=DEFAULT_INDENT).encode(encoding)
+            except ValueError:
                 pass
         return content
 
@@ -410,7 +427,7 @@ class XMLProcessor(BaseProcessor):
         if subtype == 'xml':
             try:
                 # Pretty print the XML
-                doc = xml.dom.minidom.parseString(content.encode(encoding))
+                doc = xml.dom.minidom.parseString(content)
                 content = doc.toprettyxml(indent=' ' * DEFAULT_INDENT)
             except xml.parsers.expat.ExpatError:
                 # Ignore invalid XML errors (skips attempting to pretty print)
@@ -451,6 +468,12 @@ class PygmentsProcessor(BaseProcessor):
 
     def process_body(self, content, content_type, subtype, encoding):
         try:
+            # Msgpack is a transport format, not a language, so Pygments
+            # doesn't support it (nor it shouldn't). Since Msgpack is designed
+            # to be a binary JSON transport, we treat it as JSON for the purpose
+            # of displaying and highlighting it.
+            if content_type == "application/x-msgpack":
+                content_type = "application/json"
             lexer = self.lexers_by_type.get(content_type)
             if not lexer:
                 try:
@@ -461,8 +484,8 @@ class PygmentsProcessor(BaseProcessor):
         except ClassNotFound:
             pass
         else:
-            content = pygments.highlight(content, lexer, self.formatter)
-        return content.strip()
+            content = pygments.highlight(content.decode(encoding, "replace"), lexer, self.formatter)
+        return content.strip().encode(encoding)
 
 
 class HeadersProcessor(BaseProcessor):
@@ -483,6 +506,7 @@ class OutputProcessor(object):
         'format': [
             HeadersProcessor,
             JSONProcessor,
+            MsgpackProcessor,
             XMLProcessor
         ],
         'colors': [
@@ -523,4 +547,7 @@ class OutputProcessor(object):
                 encoding
             )
 
-        return content
+        if b'\0' in content:
+            raise BinarySuppressedError()
+
+        return content.decode(encoding)
