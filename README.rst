@@ -75,10 +75,16 @@ If the above doesn't work:
     $ easy_install httpie
 
 
-Or, you can install the **development version** directly from GitHub:
+Many Linux distributions also provide an ``httpie`` package that can be
+installed via the system package manager (e.g. ``yum install httpie`` or
+``apt-get install httpie``).
 
 
-.. image:: https://secure.travis-ci.org/jkbr/httpie.png
+You can install the **development version** of HTTPie directly from GitHub
+|travis-master|:
+
+
+.. |travis-master| image:: https://secure.travis-ci.org/jkbr/httpie.png
     :target: http://travis-ci.org/jkbr/httpie
     :alt: Build Status of the master branch
 
@@ -86,11 +92,6 @@ Or, you can install the **development version** directly from GitHub:
 .. code-block:: bash
 
     $ pip install --upgrade https://github.com/jkbr/httpie/tarball/master
-
-
-Many Linux distributions provide an ``httpie`` package that can be installed
-via the system package manager (e.g. ``yum install httpie`` or
-``apt-get install httpie``).
 
 
 =====
