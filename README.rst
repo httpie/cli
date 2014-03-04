@@ -60,8 +60,7 @@ Main Features
 Installation
 ============
 
-The **latest stable version** of HTTPie can always be installed or updated
-to via `pip`_ (prefered), or ``easy_install``:
+The **latest stable version** can always be installed or updated to via `pip`_:
 
 .. code-block:: bash
 
@@ -75,12 +74,12 @@ If the above fails:
     $ easy_install httpie
 
 
-Many Linux distributions also provide an ``httpie`` package that can be
-installed via the system package manager, e.g. ``yum install httpie`` or
-``apt-get install httpie``.
+Many Linux distributions also provide a package that can be installed via
+system package manager, e.g.
+``yum install httpie`` or ``apt-get install httpie``.
 
 
-The **latest development version** of HTTPie can be installed directly from GitHub:
+The **latest development version** can be installed directly from GitHub:
 |travis-master|
 
 .. |travis-master| image:: https://secure.travis-ci.org/jkbr/httpie.png
