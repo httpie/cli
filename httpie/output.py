@@ -2,7 +2,7 @@
 
 """
 import json
-import xml.dom.minidom
+from xml.etree import ElementTree
 from functools import partial
 from itertools import chain
 
@@ -406,13 +406,33 @@ class XMLProcessor(BaseProcessor):
     """XML body processor."""
     # TODO: tests
 
+    # in-place prettyprint formatter
+    # c.f. http://effbot.org/zone/element-lib.htm#prettyprint
+    @staticmethod
+    def indent(elem, indent_text=' ' * DEFAULT_INDENT):
+        def _indent(elem, level=0):
+            i = "\n" + level * indent_text
+            if len(elem):
+                if not elem.text or not elem.text.strip():
+                    elem.text = i + indent_text
+                if not elem.tail or not elem.tail.strip():
+                    elem.tail = i
+                for elem in elem:
+                    _indent(elem, level + 1)
+                if not elem.tail or not elem.tail.strip():
+                    elem.tail = i
+            else:
+                if level and (not elem.tail or not elem.tail.strip()):
+                    elem.tail = i
+        return _indent(elem)
+
     def process_body(self, content, content_type, subtype, encoding):
         if subtype == 'xml':
             try:
-                # Pretty print the XML
-                doc = xml.dom.minidom.parseString(content.encode(encoding))
-                content = doc.toprettyxml(indent=' ' * DEFAULT_INDENT)
-            except xml.parsers.expat.ExpatError:
+                root = ElementTree.fromstring(content.encode(encoding))
+                self.indent(root)
+                content = ElementTree.tostring(root)
+            except ElementTree.ParseError:
                 # Ignore invalid XML errors (skips attempting to pretty print)
                 pass
         return content
