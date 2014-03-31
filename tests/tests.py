@@ -1571,7 +1571,9 @@ class SessionTest(BaseTestCase):
 
         # Origin can differ on Travis.
         del r1.json['origin'], r3.json['origin']
-
+        # Different for each request.
+        del r1.json['headers']['X-Request-Id'], \
+            r3.json['headers']['X-Request-Id']
         # Should be the same as before r2.
         self.assertDictEqual(r1.json, r3.json)
 
