@@ -3,7 +3,7 @@ python:
   - 2.6
   - 2.7
   - pypy
-  - 3.3
+  - 3.4
 script: python setup.py test
 install:
   - pip install . --use-mirrors
