@@ -1,7 +1,6 @@
 """Parsing and processing of CLI input (args, auth credentials, files, stdin).
 
 """
-import argparse
 import os
 import sys
 import re
@@ -163,7 +162,8 @@ class Parser(ArgumentParser):
             sys.stderr: self.env.stderr,
             None: self.env.stderr
         }.get(file, file)
-
+        if not hasattr(file, 'buffer'):
+            message = message.encode('utf8')
         super(Parser, self)._print_message(message, file)
 
     def _setup_standard_streams(self):
@@ -637,6 +637,5 @@ def readable_file_arg(filename):
     try:
         open(filename, 'rb')
     except IOError as ex:
-        raise argparse.ArgumentTypeError(
-            '%s: %s' % (filename, ex.args[1]))
+        raise ArgumentTypeError('%s: %s' % (filename, ex.args[1]))
     return filename

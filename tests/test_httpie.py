@@ -19,6 +19,11 @@ class HTTPieTest(TestCase):
         assert r.exit_status == httpie.ExitStatus.ERROR
         assert 'https://github.com/jkbr/httpie/issues' in r
 
+    def test_version(self):
+        r = http('--version')
+        assert r.exit_status == httpie.ExitStatus.ERROR
+        assert httpie.__version__ == r.stderr.strip()
+
     def test_GET(self):
         r = http('GET', httpbin('/get'))
         assert HTTP_OK in r

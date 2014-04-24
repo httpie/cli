@@ -107,16 +107,6 @@ def http(*args, **kwargs):
         >>> r.json is None
         True
 
-    $ http --version:
-
-        >>> r = http('--version')
-        >>> r.exit_status
-        1
-        >>> r.stderr.strip() == httpie.__version__
-        True
-        >>> r == ''
-        True
-
     """
     env = kwargs.get('env')
     if not env:
