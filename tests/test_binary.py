@@ -3,11 +3,8 @@ from unittest import TestCase
 
 from httpie.compat import urlopen
 from httpie.output import BINARY_SUPPRESSED_NOTICE
-from tests import (
-    TestEnvironment, http, httpbin,
-    BIN_FILE_PATH, BIN_FILE_CONTENT, BIN_FILE_PATH_ARG,
-
-)
+from tests import TestEnvironment, http, httpbin
+from tests.fixtures import BIN_FILE_PATH, BIN_FILE_CONTENT, BIN_FILE_PATH_ARG
 
 
 class BinaryRequestDataTest(TestCase):

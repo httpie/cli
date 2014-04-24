@@ -5,11 +5,12 @@ from unittest import TestCase
 # noinspection PyCompatibility
 import argparse
 
-from tests import (
-    TestEnvironment, http, httpbin,
+from tests import TestEnvironment, http, httpbin, HTTP_OK
+from tests.fixtures import (
     FILE_PATH_ARG, JSON_FILE_PATH_ARG,
-    JSON_FILE_CONTENT, FILE_CONTENT, HTTP_OK, FILE_PATH
+    JSON_FILE_CONTENT, FILE_CONTENT, FILE_PATH
 )
+
 from httpie import input
 from httpie.input import KeyValue, KeyValueArgType
 from httpie import ExitStatus

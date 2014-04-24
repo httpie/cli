@@ -2,11 +2,7 @@ import os
 import shutil
 from unittest import TestCase
 
-from tests import (
-    TestEnvironment,
-    mk_config_dir, http, httpbin,
-    HTTP_OK,
-)
+from tests import TestEnvironment, mk_config_dir, http, httpbin, HTTP_OK
 
 
 class SessionsTest(TestCase):

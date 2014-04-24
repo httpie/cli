@@ -1,18 +1,18 @@
 from unittest import TestCase
 
+import pytest
+
 from httpie.compat import is_windows
 from httpie.output import BINARY_SUPPRESSED_NOTICE
-from tests import (
-    http, httpbin, skipIf,
-    TestEnvironment,
-    BIN_FILE_CONTENT, BIN_FILE_PATH
-)
+from tests import http, httpbin, TestEnvironment
+from tests.fixtures import BIN_FILE_CONTENT, BIN_FILE_PATH
 
 
 class StreamTest(TestCase):
     # GET because httpbin 500s with binary POST body.
 
-    @skipIf(is_windows, 'Pretty redirect not supported under Windows')
+    @pytest.mark.skipif(is_windows,
+                        reason='Pretty redirect not supported under Windows')
     def test_pretty_redirected_stream(self):
         """Test that --stream works with prettified redirected output."""
         with open(BIN_FILE_PATH, 'rb') as f:

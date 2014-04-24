@@ -2,10 +2,8 @@ import os
 from unittest import TestCase
 
 from httpie.input import ParseError
-from tests import (
-    TestEnvironment, http, httpbin,
-    FILE_PATH_ARG, FILE_PATH, HTTP_OK, FILE_CONTENT,
-)
+from tests import TestEnvironment, http, httpbin, HTTP_OK
+from tests.fixtures import FILE_PATH_ARG, FILE_PATH, FILE_CONTENT
 
 
 class MultipartFormDataFileUploadTest(TestCase):

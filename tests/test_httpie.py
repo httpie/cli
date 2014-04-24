@@ -1,11 +1,8 @@
 """High-level tests."""
 from unittest import TestCase
 
-from tests import (
-    TestEnvironment,
-    http, httpbin, HTTP_OK,
-    FILE_PATH, FILE_CONTENT
-)
+from tests import TestEnvironment, http, httpbin, HTTP_OK
+from tests.fixtures import FILE_PATH, FILE_CONTENT
 
 
 class HTTPieTest(TestCase):
