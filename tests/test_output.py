@@ -1,11 +1,7 @@
 from unittest import TestCase
 
 from httpie import ExitStatus
-from tests import (
-    TestEnvironment,
-    http, httpbin,
-    HTTP_OK, COLOR, CRLF
-)
+from tests import TestEnvironment, http, httpbin, HTTP_OK, COLOR, CRLF
 
 
 class VerboseFlagTest(TestCase):

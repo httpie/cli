@@ -40,8 +40,9 @@ class StreamTest(TestCase):
         """Test that --stream works with non-prettified
         redirected terminal output."""
         with open(BIN_FILE_PATH, 'rb') as f:
-            env = TestEnvironment(stdout_isatty=False, stdin=f,
-                                  stdin_isatty=False)
+            env = TestEnvironment(stdout_isatty=False,
+                                  stdin_isatty=False,
+                                  stdin=f)
             r = http('--pretty=none', '--stream', '--verbose', 'GET',
                      httpbin('/get'), env=env)
         # We get 'Bad Request' but it's okay.

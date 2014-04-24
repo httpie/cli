@@ -36,7 +36,6 @@ class HTTPieTest(TestCase):
         assert r.json['form'] == {'foo': ['bar', 'baz']}
 
     def test_POST_stdin(self):
-
         with open(FILE_PATH) as f:
             env = TestEnvironment(stdin=f, stdin_isatty=False)
             r = http('--form', 'POST', httpbin('/post'), env=env)

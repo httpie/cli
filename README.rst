@@ -801,9 +801,9 @@ verbatim contents of that XML file with ``Content-Type: application/xml``:
     $ http PUT httpbin.org/put @/data/file.xml
 
 
-=================
+===============
 Terminal Output
-=================
+===============
 
 HTTPie does several things by default in order to make its terminal output
 easy to read.
@@ -1201,51 +1201,14 @@ HTTPie reaches its final version ``1.0``. All changes are recorded in the
 Contribute
 ==========
 
-Bug reports and code and documentation patches are greatly appretiated. You can
-also help by using the development version of HTTPie and reporting any bugs you
-might encounter.
-
-Before working on a new feature or a bug, please browse the `existing issues`_
-to see whether it has been previously discussed. If the change in question
-is a bigger one, it's always good to discuss before your starting working on
-it.
-
-Then fork and clone `the repository`_.
-
-It's very useful to point the ``http`` command to your local branch during
-development. To do so, install HTTPie with ``pip`` in editable mode:
-
-.. code-block:: bash
-
-    $ pip install --upgrade --force-reinstall --editable .
+Please see `CONTRIBUTING`_.
 
 
-Please run the existing suite of tests before a pull request is submitted:
-
-.. code-block:: bash
-
-    python setup.py test
-
-
-`Tox`_ can also be used to conveniently run tests in all of the
-`supported Python environments`_:
-
-.. code-block:: bash
-
-    # Install tox
-    pip install tox
-
-    # Run tests
-    tox
-
-
-Don't forget to add yourself to `AUTHORS.rst`_.
-
-=======
+====
 Logo
-=======
+====
 
-See `claudiatd/httpie-artwork`_
+Please see `claudiatd/httpie-artwork`_
 
 =======
 Authors
@@ -1270,6 +1233,7 @@ Changelog
 * `0.9.0-dev`_
     * Added ``--cert`` and ``--certkey`` parameters to specify a client side
       certificate and private key for SSL
+    * Started using pytest.
 * `0.8.0`_ (2014-01-25)
     * Added ``field=@file.txt`` and ``field:=@file.json`` for embedding
       the contents of text and JSON files into request data.
@@ -1376,14 +1340,10 @@ Changelog
 .. _Requests: http://python-requests.org
 .. _Pygments: http://pygments.org/
 .. _pip: http://www.pip-installer.org/en/latest/index.html
-.. _Tox: http://tox.testrun.org
 .. _Github API: http://developer.github.com/v3/issues/comments/#create-a-comment
-.. _supported Python environments: https://github.com/jkbr/httpie/blob/master/tox.ini
-.. _the repository: https://github.com/jkbr/httpie
 .. _these fine people: https://github.com/jkbr/httpie/contributors
 .. _Jakub Roztocil: http://subtleapps.com
 .. _@jkbrzt: https://twitter.com/jkbrzt
-.. _existing issues: https://github.com/jkbr/httpie/issues?state=open
 .. _claudiatd/httpie-artwork: https://github.com/claudiatd/httpie-artwork
 .. _0.1.6: https://github.com/jkbr/httpie/compare/0.1.4...0.1.6
 .. _0.2.0: https://github.com/jkbr/httpie/compare/0.1.6...0.2.0
@@ -1401,5 +1361,6 @@ Changelog
 .. _0.7.1: https://github.com/jkbr/httpie/compare/0.6.0...0.7.1
 .. _0.8.0: https://github.com/jkbr/httpie/compare/0.7.1...0.8.0
 .. _0.9.0-dev: https://github.com/jkbr/httpie/compare/0.8.0...master
-.. _AUTHORS.rst: https://github.com/jkbr/httpie/blob/master/AUTHORS.rst
 .. _LICENSE: https://github.com/jkbr/httpie/blob/master/LICENSE
+.. _Tox: http://tox.testrun.org
+.. _CONTRIBUTING: https://github.com/jkbr/httpie/blob/master/CONTRIBUTING.rst

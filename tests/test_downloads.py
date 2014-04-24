@@ -7,12 +7,8 @@ from requests.structures import CaseInsensitiveDict
 
 from httpie.compat import urlopen
 from httpie.downloads import (
-    parse_content_range,
-    filename_from_content_disposition,
-    filename_from_url,
-    get_unique_filename,
-    ContentRangeError,
-    Download,
+    parse_content_range, filename_from_content_disposition, filename_from_url,
+    get_unique_filename, ContentRangeError, Download,
 )
 from tests import httpbin, http, TestEnvironment
 

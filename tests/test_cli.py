@@ -5,23 +5,20 @@ from unittest import TestCase
 # noinspection PyCompatibility
 import argparse
 
+from httpie import input
+from httpie.input import KeyValue, KeyValueArgType
+from httpie import ExitStatus
+from httpie.cli import parser
 from tests import TestEnvironment, http, httpbin, HTTP_OK
 from tests.fixtures import (
     FILE_PATH_ARG, JSON_FILE_PATH_ARG,
     JSON_FILE_CONTENT, FILE_CONTENT, FILE_PATH
 )
 
-from httpie import input
-from httpie.input import KeyValue, KeyValueArgType
-from httpie import ExitStatus
-from httpie.cli import parser
-
 
 class ItemParsingTest(TestCase):
     def setUp(self):
-        self.key_value_type = KeyValueArgType(
-            *input.SEP_GROUP_ALL_ITEMS
-        )
+        self.key_value_type = KeyValueArgType(*input.SEP_GROUP_ALL_ITEMS)
 
     def test_invalid_items(self):
         items = ['no-separator']
