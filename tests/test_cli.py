@@ -18,7 +18,6 @@ from httpie.cli import parser
 
 
 class ItemParsingTest(TestCase):
-
     def setUp(self):
         self.key_value_type = KeyValueArgType(
             *input.SEP_GROUP_ALL_ITEMS
@@ -98,57 +97,33 @@ class ItemParsingTest(TestCase):
 
 
 class QuerystringTest(TestCase):
-
     def test_query_string_params_in_url(self):
-        r = http(
-            '--print=Hhb',
-            'GET',
-            httpbin('/get?a=1&b=2')
-        )
-
+        r = http('--print=Hhb', 'GET', httpbin('/get?a=1&b=2'))
         path = '/get?a=1&b=2'
         url = httpbin(path)
-
         assert HTTP_OK in r
         assert 'GET %s HTTP/1.1' % path in r
         assert '"url": "%s"' % url in r
 
     def test_query_string_params_items(self):
-        r = http(
-            '--print=Hhb',
-            'GET',
-            httpbin('/get'),
-            'a==1',
-            'b==2'
-        )
-
+        r = http('--print=Hhb', 'GET', httpbin('/get'), 'a==1', 'b==2')
         path = '/get?a=1&b=2'
         url = httpbin(path)
-
         assert HTTP_OK in r
         assert 'GET %s HTTP/1.1' % path in r
         assert '"url": "%s"' % url in r
 
     def test_query_string_params_in_url_and_items_with_duplicates(self):
-        r = http(
-            '--print=Hhb',
-            'GET',
-            httpbin('/get?a=1&a=1'),
-            'a==1',
-            'a==1',
-            'b==2',
-        )
-
+        r = http('--print=Hhb', 'GET', httpbin('/get?a=1&a=1'),
+                 'a==1', 'a==1', 'b==2')
         path = '/get?a=1&a=1&a=1&a=1&b=2'
         url = httpbin(path)
-
         assert HTTP_OK in r
         assert 'GET %s HTTP/1.1' % path in r
         assert '"url": "%s"' % url in r
 
 
 class CLIParserTestCase(TestCase):
-
     def test_expand_localhost_shorthand(self):
         args = parser.parse_args(args=[':'], env=TestEnvironment())
         assert args.url == 'http://localhost'
@@ -193,7 +168,6 @@ class CLIParserTestCase(TestCase):
 
 
 class ArgumentParserTestCase(TestCase):
-
     def setUp(self):
         self.parser = input.Parser()
 
@@ -213,7 +187,6 @@ class ArgumentParserTestCase(TestCase):
         assert self.parser.args.items == []
 
     def test_guess_when_method_not_set(self):
-
         self.parser.args = argparse.Namespace()
         self.parser.args.method = None
         self.parser.args.url = 'http://example.com/'
@@ -240,9 +213,9 @@ class ArgumentParserTestCase(TestCase):
         assert self.parser.args.url == 'http://example.com/'
         assert self.parser.args.items == [
             KeyValue(key='data',
-                           value='field',
-                           sep='=',
-                           orig='data=field')
+                     value='field',
+                     sep='=',
+                     orig='data=field')
         ]
 
     def test_guess_when_method_set_but_invalid_and_header_field(self):
@@ -260,9 +233,9 @@ class ArgumentParserTestCase(TestCase):
         assert self.parser.args.url == 'http://example.com/'
         assert self.parser.args.items, [
             KeyValue(key='test',
-                           value='header',
-                           sep=':',
-                           orig='test:header')
+                     value='header',
+                     sep=':',
+                     orig='test:header')
         ]
 
     def test_guess_when_method_set_but_invalid_and_item_exists(self):
@@ -287,46 +260,27 @@ class ArgumentParserTestCase(TestCase):
 
 
 class TestNoOptions(TestCase):
-
     def test_valid_no_options(self):
-        r = http(
-            '--verbose',
-            '--no-verbose',
-            'GET',
-            httpbin('/get')
-        )
+        r = http('--verbose', '--no-verbose', 'GET', httpbin('/get'))
         assert 'GET /get HTTP/1.1' not in r
 
     def test_invalid_no_options(self):
-        r = http(
-            '--no-war',
-            'GET',
-            httpbin('/get')
-        )
+        r = http('--no-war', 'GET', httpbin('/get'))
         assert r.exit_status == 1
         assert 'unrecognized arguments: --no-war' in r.stderr
         assert 'GET /get HTTP/1.1' not in r
 
 
 class IgnoreStdinTest(TestCase):
-
     def test_ignore_stdin(self):
         with open(FILE_PATH) as f:
-            r = http(
-                '--ignore-stdin',
-                '--verbose',
-                httpbin('/get'),
-                env=TestEnvironment(stdin=f, stdin_isatty=False)
-            )
+            env = TestEnvironment(stdin=f, stdin_isatty=False)
+            r = http('--ignore-stdin', '--verbose', httpbin('/get'), env=env)
         assert HTTP_OK in r
         assert 'GET /get HTTP' in r, "Don't default to POST."
         assert FILE_CONTENT not in r, "Don't send stdin data."
 
     def test_ignore_stdin_cannot_prompt_password(self):
-        r = http(
-            '--ignore-stdin',
-            '--auth=username-without-password',
-            httpbin('/get'),
-        )
+        r = http('--ignore-stdin', '--auth=no-password', httpbin('/get'))
         assert r.exit_status == ExitStatus.ERROR
         assert 'because --ignore-stdin' in r.stderr

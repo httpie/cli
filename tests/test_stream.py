@@ -16,19 +16,11 @@ class StreamTest(TestCase):
     def test_pretty_redirected_stream(self):
         """Test that --stream works with prettified redirected output."""
         with open(BIN_FILE_PATH, 'rb') as f:
-            r = http(
-                '--verbose',
-                '--pretty=all',
-                '--stream',
-                'GET',
-                httpbin('/get'),
-                env=TestEnvironment(
-                    colors=256,
-                    stdin=f,
-                    stdin_isatty=False,
-                    stdout_isatty=False,
-                )
-            )
+            env = TestEnvironment(colors=256, stdin=f,
+                                  stdin_isatty=False,
+                                  stdout_isatty=False)
+            r = http('--verbose', '--pretty=all', '--stream', 'GET',
+                     httpbin('/get'), env=env)
         assert BINARY_SUPPRESSED_NOTICE.decode() in r
         # We get 'Bad Request' but it's okay.
         #self.assertIn(OK_COLOR, r)
@@ -37,17 +29,9 @@ class StreamTest(TestCase):
         """Test that --stream works with non-prettified
         redirected terminal output."""
         with open(BIN_FILE_PATH, 'rb') as f:
-            r = http(
-                '--pretty=none',
-                '--stream',
-                '--verbose',
-                'GET',
-                httpbin('/get'),
-                env=TestEnvironment(
-                    stdin=f,
-                    stdin_isatty=False
-                ),
-            )
+            env = TestEnvironment(stdin=f, stdin_isatty=False)
+            r = http('--pretty=none', '--stream', '--verbose', 'GET',
+                     httpbin('/get'), env=env)
         assert BINARY_SUPPRESSED_NOTICE.decode() in r
         # We get 'Bad Request' but it's okay.
         #self.assertIn(OK, r)
@@ -56,18 +40,10 @@ class StreamTest(TestCase):
         """Test that --stream works with non-prettified
         redirected terminal output."""
         with open(BIN_FILE_PATH, 'rb') as f:
-            r = http(
-                '--pretty=none',
-                '--stream',
-                '--verbose',
-                'GET',
-                httpbin('/get'),
-                env=TestEnvironment(
-                    stdout_isatty=False,
-                    stdin=f,
-                    stdin_isatty=False
-                )
-            )
+            env = TestEnvironment(stdout_isatty=False, stdin=f,
+                                  stdin_isatty=False)
+            r = http('--pretty=none', '--stream', '--verbose', 'GET',
+                     httpbin('/get'), env=env)
         # We get 'Bad Request' but it's okay.
         #self.assertIn(OK.encode(), r)
         assert BIN_FILE_CONTENT in r

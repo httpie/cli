@@ -5,10 +5,8 @@ import json
 import shutil
 import tempfile
 
-from requests.structures import CaseInsensitiveDict
-
-TESTS_ROOT = os.path.abspath(os.path.dirname(__file__))
 # HACK: Prepend ../ to PYTHONPATH so that we can import httpie form there.
+TESTS_ROOT = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, os.path.realpath(os.path.join(TESTS_ROOT, '..')))
 from httpie import ExitStatus
 from httpie.models import Environment
@@ -21,16 +19,23 @@ HTTPBIN_URL = os.environ.get('HTTPBIN_URL',
 
 
 CRLF = '\r\n'
+COLOR = '\x1b['
 HTTP_OK = 'HTTP/1.1 200'
-OK_COLOR = (
+HTTP_OK_COLOR = (
     'HTTP\x1b[39m\x1b[38;5;245m/\x1b[39m\x1b'
     '[38;5;37m1.1\x1b[39m\x1b[38;5;245m \x1b[39m\x1b[38;5;37m200'
     '\x1b[39m\x1b[38;5;245m \x1b[39m\x1b[38;5;136mOK'
 )
-COLOR = '\x1b['
 
 
 def httpbin(path):
+    """
+    Return a fully-qualified URL for `path`.
+
+    >>> httpbin('/get')
+    'http://httpbin.org/get'
+
+    """
     url = HTTPBIN_URL + path
     return url
 
@@ -39,21 +44,17 @@ def mk_config_dir():
     return tempfile.mkdtemp(prefix='httpie_test_config_dir_')
 
 
-class Response(object):
-
-    # noinspection PyDefaultArgument
-    def __init__(self, url, headers={}, status_code=200):
-        self.url = url
-        self.headers = CaseInsensitiveDict(headers)
-        self.status_code = status_code
-
-
 class TestEnvironment(Environment):
+    """
+    Environment subclass with reasonable defaults suitable for testing.
+
+    """
     colors = 0
     stdin_isatty = True,
     stdout_isatty = True
     is_windows = False
-    _shutil = shutil  # we need it in __del__ (would get gc'd)
+
+    _shutil = shutil  # needed by __del__ (would get gc'd)
 
     def __init__(self, **kwargs):
 
@@ -75,12 +76,41 @@ class TestEnvironment(Environment):
             self._shutil.rmtree(self.config_dir)
 
 
-class BytesResponse(bytes):
-    stderr = json = exit_status = None
+class Response(object):
+    stderr = None
+    json = None
+    exit_status = None
 
 
-class StrResponse(str):
-    stderr = json = exit_status = None
+class BytesResponse(bytes, Response):
+    pass
+
+
+class StrResponse(str, Response):
+
+    @property
+    def json(self):
+        if not hasattr(self, '_json'):
+            self._json = None
+            # De-serialize JSON body if possible.
+            if COLOR in self:
+                # Colorized output cannot be parsed.
+                pass
+            elif self.strip().startswith('{'):
+                # Looks like JSON body.
+                self._json = json.loads(self)
+            elif self.count('Content-Type:') == 1 and 'application/json' in self:
+                # Looks like a JSON HTTP message, try to extract its body.
+                try:
+                    j = self.strip()[self.strip().rindex('\r\n\r\n'):]
+                except ValueError:
+                    pass
+                else:
+                    try:
+                        self._json = json.loads(j)
+                    except ValueError:
+                        pass
+        return self._json
 
 
 def http(*args, **kwargs):
@@ -119,29 +149,11 @@ def http(*args, **kwargs):
 
         stdout.seek(0)
         stderr.seek(0)
-
         output = stdout.read()
         try:
             r = StrResponse(output.decode('utf8'))
         except UnicodeDecodeError:
             r = BytesResponse(output)
-        else:
-            if COLOR not in r:
-                # De-serialize JSON body if possible.
-                if r.strip().startswith('{'):
-                    #noinspection PyTypeChecker
-                    r.json = json.loads(r)
-                elif r.count('Content-Type:') == 1 and 'application/json' in r:
-                    try:
-                        j = r.strip()[r.strip().rindex('\r\n\r\n'):]
-                    except ValueError:
-                        pass
-                    else:
-                        try:
-                            r.json = json.loads(j)
-                        except ValueError:
-                            pass
-
         r.stderr = stderr.read()
         r.exit_status = exit_status
 
@@ -150,3 +162,4 @@ def http(*args, **kwargs):
     finally:
         stdout.close()
         stderr.close()
+
