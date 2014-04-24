@@ -2,6 +2,7 @@ dist
 httpie.egg-info
 build
 *.pyc
+*.egg
 .tox
 README.html
 .coverage

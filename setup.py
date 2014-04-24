@@ -1,16 +1,32 @@
-import os
 import sys
 import codecs
 from setuptools import setup
+from setuptools.command.test import test as TestCommand
+
 import httpie
 
 
-if sys.argv[-1] == 'test':
-    status = os.system('python tests/tests.py')
-    sys.exit(1 if status > 127 else status)
+class PyTest(TestCommand):
+    def finalize_options(self):
+        TestCommand.finalize_options(self)
+        self.test_suite = True
+        self.test_args = [
+            '--doctest-modules',
+            './httpie', './tests'
+        ]
+        self.test_suite = True
+
+    def run_tests(self):
+        import pytest
+        sys.exit(pytest.main(self.test_args))
 
 
-requirements = [
+tests_require = [
+    'pytest',
+]
+
+
+install_requires = [
     'requests>=2.0.0',
     'Pygments>=1.5'
 ]
@@ -18,11 +34,11 @@ try:
     #noinspection PyUnresolvedReferences
     import argparse
 except ImportError:
-    requirements.append('argparse>=1.2.1')
+    install_requires.append('argparse>=1.2.1')
 
 if 'win32' in str(sys.platform).lower():
     # Terminal colors for Windows
-    requirements.append('colorama>=0.2.4')
+    install_requires.append('colorama>=0.2.4')
 
 
 def long_description():
@@ -46,7 +62,11 @@ setup(
             'http = httpie.__main__:main',
         ],
     },
-    install_requires=requirements,
+    install_requires=install_requires,
+    cmdclass={'test': PyTest},
+    tests_require=tests_require,
+    extras_require={'tests': tests_require},
+
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Programming Language :: Python',

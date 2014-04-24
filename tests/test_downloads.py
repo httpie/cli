@@ -2,6 +2,7 @@ import os
 import time
 from unittest import TestCase
 
+import pytest
 from requests.structures import CaseInsensitiveDict
 
 from httpie.compat import urlopen
@@ -32,22 +33,22 @@ class DownloadUtilsTest(TestCase):
         assert parse('bytes 100-199/*', 100) == 200
 
         # missing
-        self.assertRaises(ContentRangeError, parse, None, 100)
+        pytest.raises(ContentRangeError, parse, None, 100)
 
         # syntax error
-        self.assertRaises(ContentRangeError, parse, 'beers 100-199/*', 100)
+        pytest.raises(ContentRangeError, parse, 'beers 100-199/*', 100)
 
         # unexpected range
-        self.assertRaises(ContentRangeError, parse, 'bytes 100-199/*', 99)
+        pytest.raises(ContentRangeError, parse, 'bytes 100-199/*', 99)
 
         # invalid instance-length
-        self.assertRaises(ContentRangeError, parse, 'bytes 100-199/199', 100)
+        pytest.raises(ContentRangeError, parse, 'bytes 100-199/199', 100)
 
         # invalid byte-range-resp-spec
-        self.assertRaises(ContentRangeError, parse, 'bytes 100-99/199', 100)
+        pytest.raises(ContentRangeError, parse, 'bytes 100-99/199', 100)
 
         # invalid byte-range-resp-spec
-        self.assertRaises(ContentRangeError, parse, 'bytes 100-100/*', 100)
+        pytest.raises(ContentRangeError, parse, 'bytes 100-100/*', 100)
 
     def test_Content_Disposition_parsing(self):
         parse = filename_from_content_disposition

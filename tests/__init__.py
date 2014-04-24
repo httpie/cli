@@ -5,15 +5,13 @@ import json
 import shutil
 import tempfile
 
-# HACK: Prepend ../ to PYTHONPATH so that we can import httpie form there.
-TESTS_ROOT = os.path.abspath(os.path.dirname(__file__))
-sys.path.insert(0, os.path.realpath(os.path.join(TESTS_ROOT, '..')))
 from httpie import ExitStatus
 from httpie.models import Environment
 from httpie.core import main
 from httpie.compat import bytes, str
 
 
+TESTS_ROOT = os.path.abspath(os.path.dirname(__file__))
 HTTPBIN_URL = os.environ.get('HTTPBIN_URL',
                              'http://httpbin.org').rstrip('/')
 

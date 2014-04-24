@@ -1,3 +1,4 @@
 tox
+pytest
 git+git://github.com/kennethreitz/httpbin.git@7c96875e87a448f08fb1981e85eb79e77d592d98
 docutils

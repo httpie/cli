@@ -17,9 +17,10 @@ class VerboseFlagTest(TestCase):
     def test_verbose_form(self):
         # https://github.com/jkbr/httpie/issues/53
         r = http('--verbose', '--form', 'POST', httpbin('/post'),
-                 'foo=bar', 'baz=bar')
+                 'A=B', 'C=D')
         assert HTTP_OK in r
-        assert 'foo=bar&baz=bar' in r
+        # Python 2.6 has no ordered dict, so we test for both orders here.
+        assert 'A=B&C=D' in r or 'C=D&A=B', r
 
     def test_verbose_json(self):
         r = http('--verbose', 'POST', httpbin('/post'), 'foo=bar', 'baz=bar')

@@ -10,20 +10,20 @@ def humanize_bytes(n, precision=2):
     Assumes `from __future__ import division`.
 
     >>> humanize_bytes(1)
-    '1 byte'
-    >>> humanize_bytes(1024)
+    '1 B'
+    >>> humanize_bytes(1024, precision=1)
     '1.0 kB'
-    >>> humanize_bytes(1024 * 123)
+    >>> humanize_bytes(1024 * 123, precision=1)
     '123.0 kB'
-    >>> humanize_bytes(1024 * 12342)
+    >>> humanize_bytes(1024 * 12342, precision=1)
     '12.1 MB'
-    >>> humanize_bytes(1024 * 12342, 2)
+    >>> humanize_bytes(1024 * 12342, precision=2)
     '12.05 MB'
-    >>> humanize_bytes(1024 * 1234, 2)
+    >>> humanize_bytes(1024 * 1234, precision=2)
     '1.21 MB'
-    >>> humanize_bytes(1024 * 1234 * 1111, 2)
+    >>> humanize_bytes(1024 * 1234 * 1111, precision=2)
     '1.31 GB'
-    >>> humanize_bytes(1024 * 1234 * 1111, 1)
+    >>> humanize_bytes(1024 * 1234 * 1111, precision=1)
     '1.3 GB'
 
     """
