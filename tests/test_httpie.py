@@ -22,7 +22,8 @@ class HTTPieTest(TestCase):
     def test_version(self):
         r = http('--version')
         assert r.exit_status == httpie.ExitStatus.ERROR
-        assert httpie.__version__ == r.stderr.strip()
+        # FIXME: py3 has version in stdout, py2 in stderr
+        assert httpie.__version__ == r.stderr.strip() + r.strip()
 
     def test_GET(self):
         r = http('GET', httpbin('/get'))

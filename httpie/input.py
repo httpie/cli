@@ -10,11 +10,7 @@ import getpass
 from io import BytesIO
 #noinspection PyCompatibility
 from argparse import ArgumentParser, ArgumentTypeError, ArgumentError
-
-try:
-    from collections import OrderedDict
-except ImportError:
-    OrderedDict = dict
+from .compat import OrderedDict
 
 # TODO: Use MultiDict for headers once added to `requests`.
 # https://github.com/jkbr/httpie/issues/130
@@ -157,6 +153,7 @@ class Parser(ArgumentParser):
     # noinspection PyShadowingBuiltins
     def _print_message(self, message, file=None):
         # Sneak in our stderr/stdout.
+        print(file)
         file = {
             sys.stdout: self.env.stdout,
             sys.stderr: self.env.stderr,
