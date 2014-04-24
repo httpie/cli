@@ -1379,8 +1379,6 @@ Changelog
 .. _Tox: http://tox.testrun.org
 .. _Github API: http://developer.github.com/v3/issues/comments/#create-a-comment
 .. _supported Python environments: https://github.com/jkbr/httpie/blob/master/tox.ini
-.. _Ubuntu: http://packages.ubuntu.com/httpie
-.. _Debian: http://packages.debian.org/httpie
 .. _the repository: https://github.com/jkbr/httpie
 .. _these fine people: https://github.com/jkbr/httpie/contributors
 .. _Jakub Roztocil: http://subtleapps.com

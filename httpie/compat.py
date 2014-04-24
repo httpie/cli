@@ -17,3 +17,10 @@ try:
 except ImportError:
     #noinspection PyUnresolvedReferences,PyCompatibility
     from urlparse import urlsplit
+
+try:
+    #noinspection PyCompatibility
+    from urllib.request import urlopen
+except ImportError:
+    #noinspection PyCompatibility
+    from urllib2 import urlopen

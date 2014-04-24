@@ -155,7 +155,6 @@ class Download(object):
 
         :param output_file: The file to store response body in. If not
                             provided, it will be guessed from the response.
-        :type output_file: file
 
         :param progress_file: Where to report download progress.
         :type progress_file: file
