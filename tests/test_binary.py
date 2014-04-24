@@ -1,14 +1,16 @@
 """Tests for dealing with binary request and response data."""
+from unittest import TestCase
+
 from httpie.compat import urlopen
 from httpie.output import BINARY_SUPPRESSED_NOTICE
 from tests import (
-    BaseTestCase, TestEnvironment, http, httpbin,
+    TestEnvironment, http, httpbin,
     BIN_FILE_PATH, BIN_FILE_CONTENT, BIN_FILE_PATH_ARG,
 
 )
 
 
-class BinaryRequestDataTest(BaseTestCase):
+class BinaryRequestDataTest(TestCase):
 
     def test_binary_stdin(self):
         with open(BIN_FILE_PATH, 'rb') as stdin:
@@ -23,7 +25,7 @@ class BinaryRequestDataTest(BaseTestCase):
                 httpbin('/post'),
                 env=env,
             )
-            self.assertEqual(r, BIN_FILE_CONTENT)
+            assert r == BIN_FILE_CONTENT
 
     def test_binary_file_path(self):
         env = TestEnvironment(
@@ -38,7 +40,7 @@ class BinaryRequestDataTest(BaseTestCase):
             env=env,
         )
 
-        self.assertEqual(r, BIN_FILE_CONTENT)
+        assert r == BIN_FILE_CONTENT
 
     def test_binary_file_form(self):
         env = TestEnvironment(
@@ -53,10 +55,10 @@ class BinaryRequestDataTest(BaseTestCase):
             'test@' + BIN_FILE_PATH_ARG,
             env=env,
         )
-        self.assertIn(bytes(BIN_FILE_CONTENT), bytes(r))
+        assert bytes(BIN_FILE_CONTENT) in bytes(r)
 
 
-class BinaryResponseDataTest(BaseTestCase):
+class BinaryResponseDataTest(TestCase):
 
     url = 'http://www.google.com/favicon.ico'
 
@@ -71,7 +73,7 @@ class BinaryResponseDataTest(BaseTestCase):
             'GET',
             self.url
         )
-        self.assertIn(BINARY_SUPPRESSED_NOTICE.decode(), r)
+        assert BINARY_SUPPRESSED_NOTICE.decode() in r
 
     def test_binary_suppresses_when_not_terminal_but_pretty(self):
         r = http(
@@ -81,7 +83,7 @@ class BinaryResponseDataTest(BaseTestCase):
             env=TestEnvironment(stdin_isatty=True,
                             stdout_isatty=False)
         )
-        self.assertIn(BINARY_SUPPRESSED_NOTICE.decode(), r)
+        assert BINARY_SUPPRESSED_NOTICE.decode() in r
 
     def test_binary_included_and_correct_when_suitable(self):
         r = http(
@@ -90,4 +92,4 @@ class BinaryResponseDataTest(BaseTestCase):
             env=TestEnvironment(stdin_isatty=True,
                             stdout_isatty=False)
         )
-        self.assertEqual(r, self.bindata)
+        assert r == self.bindata

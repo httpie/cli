@@ -1,26 +1,28 @@
 """High-level tests."""
+from unittest import TestCase
+
 from tests import (
-    BaseTestCase, TestEnvironment,
-    http, httpbin, OK,
+    TestEnvironment,
+    http, httpbin, HTTP_OK,
     FILE_PATH, FILE_CONTENT
 )
 
 
-class HTTPieTest(BaseTestCase):
+class HTTPieTest(TestCase):
 
     def test_GET(self):
         r = http(
             'GET',
             httpbin('/get')
         )
-        self.assertIn(OK, r)
+        assert HTTP_OK in r
 
     def test_DELETE(self):
         r = http(
             'DELETE',
             httpbin('/delete')
         )
-        self.assertIn(OK, r)
+        assert HTTP_OK in r
 
     def test_PUT(self):
         r = http(
@@ -28,8 +30,8 @@ class HTTPieTest(BaseTestCase):
             httpbin('/put'),
             'foo=bar'
         )
-        self.assertIn(OK, r)
-        self.assertIn(r'\"foo\": \"bar\"', r)
+        assert HTTP_OK in r
+        assert r'\"foo\": \"bar\"' in r
 
     def test_POST_JSON_data(self):
         r = http(
@@ -37,8 +39,8 @@ class HTTPieTest(BaseTestCase):
             httpbin('/post'),
             'foo=bar'
         )
-        self.assertIn(OK, r)
-        self.assertIn(r'\"foo\": \"bar\"', r)
+        assert HTTP_OK in r
+        assert r'\"foo\": \"bar\"' in r
 
     def test_POST_form(self):
         r = http(
@@ -47,8 +49,8 @@ class HTTPieTest(BaseTestCase):
             httpbin('/post'),
             'foo=bar'
         )
-        self.assertIn(OK, r)
-        self.assertIn('"foo": "bar"', r)
+        assert HTTP_OK in r
+        assert '"foo": "bar"' in r
 
     def test_POST_form_multiple_values(self):
         r = http(
@@ -58,10 +60,8 @@ class HTTPieTest(BaseTestCase):
             'foo=bar',
             'foo=baz',
         )
-        self.assertIn(OK, r)
-        self.assertDictEqual(r.json['form'], {
-            'foo': ['bar', 'baz']
-        })
+        assert HTTP_OK in r
+        assert r.json['form'] == {'foo': ['bar', 'baz']}
 
     def test_POST_stdin(self):
 
@@ -77,8 +77,8 @@ class HTTPieTest(BaseTestCase):
                 httpbin('/post'),
                 env=env
             )
-        self.assertIn(OK, r)
-        self.assertIn(FILE_CONTENT, r)
+        assert HTTP_OK in r
+        assert FILE_CONTENT in r
 
     def test_headers(self):
         r = http(
@@ -86,6 +86,6 @@ class HTTPieTest(BaseTestCase):
             httpbin('/headers'),
             'Foo:bar'
         )
-        self.assertIn(OK, r)
-        self.assertIn('"User-Agent": "HTTPie', r)
-        self.assertIn('"Foo": "bar"', r)
+        assert HTTP_OK in r
+        assert '"User-Agent": "HTTPie' in r
+        assert '"Foo": "bar"' in r

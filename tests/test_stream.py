@@ -1,13 +1,15 @@
+from unittest import TestCase
+
 from httpie.compat import is_windows
 from httpie.output import BINARY_SUPPRESSED_NOTICE
 from tests import (
     http, httpbin, skipIf,
-    BaseTestCase, TestEnvironment,
+    TestEnvironment,
     BIN_FILE_CONTENT, BIN_FILE_PATH
 )
 
 
-class StreamTest(BaseTestCase):
+class StreamTest(TestCase):
     # GET because httpbin 500s with binary POST body.
 
     @skipIf(is_windows, 'Pretty redirect not supported under Windows')
@@ -27,7 +29,7 @@ class StreamTest(BaseTestCase):
                     stdout_isatty=False,
                 )
             )
-        self.assertIn(BINARY_SUPPRESSED_NOTICE.decode(), r)
+        assert BINARY_SUPPRESSED_NOTICE.decode() in r
         # We get 'Bad Request' but it's okay.
         #self.assertIn(OK_COLOR, r)
 
@@ -46,7 +48,7 @@ class StreamTest(BaseTestCase):
                     stdin_isatty=False
                 ),
             )
-        self.assertIn(BINARY_SUPPRESSED_NOTICE.decode(), r)
+        assert BINARY_SUPPRESSED_NOTICE.decode() in r
         # We get 'Bad Request' but it's okay.
         #self.assertIn(OK, r)
 
@@ -68,4 +70,4 @@ class StreamTest(BaseTestCase):
             )
         # We get 'Bad Request' but it's okay.
         #self.assertIn(OK.encode(), r)
-        self.assertIn(BIN_FILE_CONTENT, r)
+        assert BIN_FILE_CONTENT in r

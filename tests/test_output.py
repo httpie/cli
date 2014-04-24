@@ -1,11 +1,14 @@
+from unittest import TestCase
+
+from httpie import ExitStatus
 from tests import (
-    BaseTestCase, TestEnvironment,
+    TestEnvironment,
     http, httpbin,
-    OK, COLOR, CRLF
+    HTTP_OK, COLOR, CRLF
 )
 
 
-class VerboseFlagTest(BaseTestCase):
+class VerboseFlagTest(TestCase):
 
     def test_verbose(self):
         r = http(
@@ -14,9 +17,8 @@ class VerboseFlagTest(BaseTestCase):
             httpbin('/get'),
             'test-header:__test__'
         )
-        self.assertIn(OK, r)
-        #noinspection PyUnresolvedReferences
-        self.assertEqual(r.count('__test__'), 2)
+        assert HTTP_OK in r
+        assert r.count('__test__') == 2
 
     def test_verbose_form(self):
         # https://github.com/jkbr/httpie/issues/53
@@ -28,8 +30,8 @@ class VerboseFlagTest(BaseTestCase):
             'foo=bar',
             'baz=bar'
         )
-        self.assertIn(OK, r)
-        self.assertIn('foo=bar&baz=bar', r)
+        assert HTTP_OK in r
+        assert 'foo=bar&baz=bar' in r
 
     def test_verbose_json(self):
         r = http(
@@ -39,12 +41,12 @@ class VerboseFlagTest(BaseTestCase):
             'foo=bar',
             'baz=bar'
         )
-        self.assertIn(OK, r)
-        self.assertIn('"baz": "bar"', r)  # request
-        self.assertIn(r'\"baz\": \"bar\"', r)  # response
+        assert HTTP_OK in r
+        assert '"baz": "bar"' in r  # request
+        assert r'\"baz\": \"bar\"' in r  # response
 
 
-class PrettyOptionsTest(BaseTestCase):
+class PrettyOptionsTest(TestCase):
     """Test the --pretty flag handling."""
 
     def test_pretty_enabled_by_default(self):
@@ -53,14 +55,14 @@ class PrettyOptionsTest(BaseTestCase):
             httpbin('/get'),
             env=TestEnvironment(colors=256),
         )
-        self.assertIn(COLOR, r)
+        assert COLOR in r
 
     def test_pretty_enabled_by_default_unless_stdout_redirected(self):
         r = http(
             'GET',
             httpbin('/get')
         )
-        self.assertNotIn(COLOR, r)
+        assert COLOR not in r
 
     def test_force_pretty(self):
         r = http(
@@ -69,7 +71,7 @@ class PrettyOptionsTest(BaseTestCase):
             httpbin('/get'),
             env=TestEnvironment(stdout_isatty=False, colors=256),
         )
-        self.assertIn(COLOR, r)
+        assert COLOR in r
 
     def test_force_ugly(self):
         r = http(
@@ -77,7 +79,7 @@ class PrettyOptionsTest(BaseTestCase):
             'GET',
             httpbin('/get'),
         )
-        self.assertNotIn(COLOR, r)
+        assert COLOR not in r
 
     def test_subtype_based_pygments_lexer_match(self):
         """Test that media subtype is used if type/subtype doesn't
@@ -92,7 +94,7 @@ class PrettyOptionsTest(BaseTestCase):
             'a=b',
             env=TestEnvironment(colors=256)
         )
-        self.assertIn(COLOR, r)
+        assert COLOR in r
 
     def test_colors_option(self):
         r = http(
@@ -105,8 +107,8 @@ class PrettyOptionsTest(BaseTestCase):
         )
         #noinspection PyUnresolvedReferences
         # Tests that the JSON data isn't formatted.
-        self.assertEqual(r.strip().count('\n'), 0)
-        self.assertIn(COLOR, r)
+        assert not r.strip().count('\n')
+        assert COLOR in r
 
     def test_format_option(self):
         r = http(
@@ -119,11 +121,11 @@ class PrettyOptionsTest(BaseTestCase):
         )
         #noinspection PyUnresolvedReferences
         # Tests that the JSON data is formatted.
-        self.assertEqual(r.strip().count('\n'), 2)
-        self.assertNotIn(COLOR, r)
+        assert r.strip().count('\n') == 2
+        assert COLOR not in r
 
 
-class LineEndingsTest(BaseTestCase):
+class LineEndingsTest(TestCase):
     """Test that CRLF is properly used in headers and
     as the headers/body separator."""
 
@@ -132,11 +134,11 @@ class LineEndingsTest(BaseTestCase):
         for header in lines:
             if header == CRLF:
                 break
-            self.assertTrue(header.endswith(CRLF), repr(header))
+            assert header.endswith(CRLF), repr(header)
         else:
             self.fail('CRLF between headers and body not found in %r' % msg)
         body = ''.join(lines)
-        self.assertNotIn(CRLF, body)
+        assert CRLF not in body
         return body
 
     def test_CRLF_headers_only(self):
@@ -146,7 +148,7 @@ class LineEndingsTest(BaseTestCase):
             httpbin('/get')
         )
         body = self._validate_crlf(r)
-        self.assertFalse(body, 'Garbage after headers: %r' % r)
+        assert not body, 'Garbage after headers: %r' % r
 
     def test_CRLF_ugly_response(self):
         r = http(
@@ -162,7 +164,7 @@ class LineEndingsTest(BaseTestCase):
             'GET',
             httpbin('/get')
         )
-        self.assertEqual(r.exit_status, 0)
+        assert r.exit_status == ExitStatus.OK
         self._validate_crlf(r)
 
     def test_CRLF_ugly_request(self):

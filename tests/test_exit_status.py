@@ -1,30 +1,32 @@
+from unittest import TestCase
+
 import requests
 
 from httpie import ExitStatus
 from tests import (
-    BaseTestCase, TestEnvironment,
-    http, httpbin, OK, skip, skipIf
+    TestEnvironment,
+    http, httpbin, HTTP_OK, skip, skipIf
 )
 
 
-class ExitStatusTest(BaseTestCase):
+class ExitStatusTest(TestCase):
 
     def test_ok_response_exits_0(self):
         r = http(
             'GET',
             httpbin('/status/200')
         )
-        self.assertIn(OK, r)
-        self.assertEqual(r.exit_status, ExitStatus.OK)
+        assert HTTP_OK in r
+        assert r.exit_status == ExitStatus.OK
 
     def test_error_response_exits_0_without_check_status(self):
         r = http(
             'GET',
             httpbin('/status/500')
         )
-        self.assertIn('HTTP/1.1 500', r)
-        self.assertEqual(r.exit_status, ExitStatus.OK)
-        self.assertTrue(not r.stderr)
+        assert 'HTTP/1.1 500' in r
+        assert r.exit_status == ExitStatus.OK
+        assert not r.stderr
 
     @skip('timeout broken in requests'
           ' (https://github.com/jkbr/httpie/issues/185)')
@@ -34,7 +36,7 @@ class ExitStatusTest(BaseTestCase):
             'GET',
             httpbin('/delay/1')
         )
-        self.assertEqual(r.exit_status, ExitStatus.ERROR_TIMEOUT)
+        assert r.exit_status == ExitStatus.ERROR_TIMEOUT
 
     def test_3xx_check_status_exits_3_and_stderr_when_stdout_redirected(self):
         r = http(
@@ -44,9 +46,9 @@ class ExitStatusTest(BaseTestCase):
             httpbin('/status/301'),
             env=TestEnvironment(stdout_isatty=False,)
         )
-        self.assertIn('HTTP/1.1 301', r)
-        self.assertEqual(r.exit_status, ExitStatus.ERROR_HTTP_3XX)
-        self.assertIn('301 moved permanently', r.stderr.lower())
+        assert 'HTTP/1.1 301' in r
+        assert r.exit_status == ExitStatus.ERROR_HTTP_3XX
+        assert '301 moved permanently' in r.stderr.lower()
 
     @skipIf(requests.__version__ == '0.13.6',
             'Redirects with prefetch=False are broken in Requests 0.13.6')
@@ -58,8 +60,8 @@ class ExitStatusTest(BaseTestCase):
             httpbin('/status/301')
         )
         # The redirect will be followed so 200 is expected.
-        self.assertIn('HTTP/1.1 200 OK', r)
-        self.assertEqual(r.exit_status, ExitStatus.OK)
+        assert 'HTTP/1.1 200 OK' in r
+        assert r.exit_status == ExitStatus.OK
 
     def test_4xx_check_status_exits_4(self):
         r = http(
@@ -67,10 +69,10 @@ class ExitStatusTest(BaseTestCase):
             'GET',
             httpbin('/status/401')
         )
-        self.assertIn('HTTP/1.1 401', r)
-        self.assertEqual(r.exit_status, ExitStatus.ERROR_HTTP_4XX)
+        assert 'HTTP/1.1 401' in r
+        assert r.exit_status == ExitStatus.ERROR_HTTP_4XX
         # Also stderr should be empty since stdout isn't redirected.
-        self.assertTrue(not r.stderr)
+        assert not r.stderr
 
     def test_5xx_check_status_exits_5(self):
         r = http(
@@ -78,5 +80,5 @@ class ExitStatusTest(BaseTestCase):
             'GET',
             httpbin('/status/500')
         )
-        self.assertIn('HTTP/1.1 500', r)
-        self.assertEqual(r.exit_status, ExitStatus.ERROR_HTTP_5XX)
+        assert 'HTTP/1.1 500' in r
+        assert r.exit_status == ExitStatus.ERROR_HTTP_5XX

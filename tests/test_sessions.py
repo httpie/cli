@@ -1,14 +1,15 @@
 import os
 import shutil
+from unittest import TestCase
 
 from tests import (
-    BaseTestCase, TestEnvironment,
+    TestEnvironment,
     mk_config_dir, http, httpbin,
-    OK,
+    HTTP_OK,
 )
 
 
-class SessionsTest(BaseTestCase):
+class SessionsTest(TestCase):
 
     @property
     def env(self):
@@ -27,7 +28,7 @@ class SessionsTest(BaseTestCase):
             'Hello:World',
             env=self.env
         )
-        self.assertIn(OK, r)
+        assert HTTP_OK in r
 
     def tearDown(self):
         shutil.rmtree(self.config_dir)
@@ -40,11 +41,10 @@ class SessionsTest(BaseTestCase):
             httpbin('/get'),
             env=self.env
         )
-        self.assertIn(OK, r)
-
-        self.assertEqual(r.json['headers']['Hello'], 'World')
-        self.assertEqual(r.json['headers']['Cookie'], 'hello=world')
-        self.assertIn('Basic ', r.json['headers']['Authorization'])
+        assert HTTP_OK in r
+        assert r.json['headers']['Hello'] == 'World'
+        assert r.json['headers']['Cookie'] == 'hello=world'
+        assert 'Basic ' in r.json['headers']['Authorization']
 
     def test_session_ignored_header_prefixes(self):
         r = http(
@@ -55,16 +55,16 @@ class SessionsTest(BaseTestCase):
             'If-Unmodified-Since: Sat, 29 Oct 1994 19:43:31 GMT',
             env=self.env
         )
-        self.assertIn(OK, r)
+        assert HTTP_OK in r
 
         r2 = http(
             '--session=test',
             'GET',
             httpbin('/get')
         )
-        self.assertIn(OK, r2)
-        self.assertNotIn('Content-Type', r2.json['headers'])
-        self.assertNotIn('If-Unmodified-Since', r2.json['headers'])
+        assert HTTP_OK in r2
+        assert 'Content-Type' not in r2.json['headers']
+        assert 'If-Unmodified-Since' not in r2.json['headers']
 
     def test_session_update(self):
         # Get a response to a request from the original session.
@@ -74,7 +74,7 @@ class SessionsTest(BaseTestCase):
             httpbin('/get'),
             env=self.env
         )
-        self.assertIn(OK, r1)
+        assert HTTP_OK in r1
 
         # Make a request modifying the session data.
         r2 = http(
@@ -86,7 +86,7 @@ class SessionsTest(BaseTestCase):
             'Hello:World2',
             env=self.env
         )
-        self.assertIn(OK, r2)
+        assert HTTP_OK in r2
 
         # Get a response to a request from the updated session.
         r3 = http(
@@ -95,12 +95,11 @@ class SessionsTest(BaseTestCase):
             httpbin('/get'),
             env=self.env
         )
-        self.assertIn(OK, r3)
-
-        self.assertEqual(r3.json['headers']['Hello'], 'World2')
-        self.assertEqual(r3.json['headers']['Cookie'], 'hello=world2')
-        self.assertNotEqual(r1.json['headers']['Authorization'],
-                            r3.json['headers']['Authorization'])
+        assert HTTP_OK in r3
+        assert r3.json['headers']['Hello'] == 'World2'
+        assert r3.json['headers']['Cookie'] == 'hello=world2'
+        assert (r1.json['headers']['Authorization'] !=
+                r3.json['headers']['Authorization'])
 
     def test_session_read_only(self):
         # Get a response from the original session.
@@ -110,7 +109,7 @@ class SessionsTest(BaseTestCase):
             httpbin('/get'),
             env=self.env
         )
-        self.assertIn(OK, r1)
+        assert HTTP_OK in r1
 
         # Make a request modifying the session data but
         # with --session-read-only.
@@ -123,7 +122,7 @@ class SessionsTest(BaseTestCase):
             'Hello:World2',
             env=self.env
         )
-        self.assertIn(OK, r2)
+        assert HTTP_OK in r2
 
         # Get a response from the updated session.
         r3 = http(
@@ -132,7 +131,7 @@ class SessionsTest(BaseTestCase):
             httpbin('/get'),
             env=self.env
         )
-        self.assertIn(OK, r3)
+        assert HTTP_OK in r3
 
         # Origin can differ on Travis.
         del r1.json['origin'], r3.json['origin']
@@ -140,11 +139,10 @@ class SessionsTest(BaseTestCase):
         del r1.json['headers']['X-Request-Id'], \
             r3.json['headers']['X-Request-Id']
         # Should be the same as before r2.
-        self.assertDictEqual(r1.json, r3.json)
+        assert r1.json == r3.json
 
     def test_session_by_path(self):
         session_path = os.path.join(self.config_dir, 'session-by-path.json')
-
         r1 = http(
             '--session=' + session_path,
             'GET',
@@ -152,7 +150,7 @@ class SessionsTest(BaseTestCase):
             'Foo:Bar',
             env=self.env
         )
-        self.assertIn(OK, r1)
+        assert HTTP_OK in r1
 
         r2 = http(
             '--session=' + session_path,
@@ -160,6 +158,6 @@ class SessionsTest(BaseTestCase):
             httpbin('/get'),
             env=self.env
         )
-        self.assertIn(OK, r2)
+        assert HTTP_OK in r2
 
-        self.assertEqual(r2.json['headers']['Foo'], 'Bar')
+        assert r2.json['headers']['Foo'] in 'Bar'

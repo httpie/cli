@@ -1,11 +1,13 @@
 """HTTP authentication-related tests."""
+from unittest import TestCase
+
 import requests
 
-from tests import BaseTestCase, http, httpbin, OK, skipIf
+from tests import http, httpbin, HTTP_OK, skipIf
 import httpie.input
 
 
-class AuthTest(BaseTestCase):
+class AuthTest(TestCase):
 
     def test_basic_auth(self):
         r = http(
@@ -13,9 +15,9 @@ class AuthTest(BaseTestCase):
             'GET',
             httpbin('/basic-auth/user/password')
         )
-        self.assertIn(OK, r)
-        self.assertIn('"authenticated": true', r)
-        self.assertIn('"user": "user"', r)
+        assert HTTP_OK in r
+        assert '"authenticated": true' in r
+        assert '"user": "user"' in r
 
     @skipIf(requests.__version__ == '0.13.6',
             'Redirects with prefetch=False are broken in Requests 0.13.6')
@@ -26,9 +28,9 @@ class AuthTest(BaseTestCase):
             'GET',
             httpbin('/digest-auth/auth/user/password')
         )
-        self.assertIn(OK, r)
-        self.assertIn(r'"authenticated": true', r)
-        self.assertIn(r'"user": "user"', r)
+        assert HTTP_OK in r
+        assert r'"authenticated": true' in r
+        assert r'"user": "user"', r
 
     def test_password_prompt(self):
 
@@ -41,9 +43,9 @@ class AuthTest(BaseTestCase):
             httpbin('/basic-auth/user/password')
         )
 
-        self.assertIn(OK, r)
-        self.assertIn('"authenticated": true', r)
-        self.assertIn('"user": "user"', r)
+        assert HTTP_OK in r
+        assert '"authenticated": true' in r
+        assert '"user": "user"' in r
 
     def test_credentials_in_url(self):
         url = httpbin('/basic-auth/user/password')
@@ -52,9 +54,9 @@ class AuthTest(BaseTestCase):
             'GET',
             url
         )
-        self.assertIn(OK, r)
-        self.assertIn('"authenticated": true', r)
-        self.assertIn('"user": "user"', r)
+        assert HTTP_OK in r
+        assert '"authenticated": true'in r
+        assert '"user": "user"' in r
 
     def test_credentials_in_url_auth_flag_has_priority(self):
         """When credentials are passed in URL and via -a at the same time,
@@ -66,6 +68,6 @@ class AuthTest(BaseTestCase):
             'GET',
             url
         )
-        self.assertIn(OK, r)
-        self.assertIn('"authenticated": true', r)
-        self.assertIn('"user": "user"', r)
+        assert HTTP_OK in r
+        assert '"authenticated": true' in r
+        assert '"user": "user"' in r

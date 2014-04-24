@@ -1,23 +1,25 @@
 """CLI argument parsing related tests."""
 import json
+from unittest import TestCase
 
 # noinspection PyCompatibility
 import argparse
 
 from tests import (
-    BaseTestCase, TestEnvironment, http, httpbin,
+    TestEnvironment, http, httpbin,
     FILE_PATH_ARG, JSON_FILE_PATH_ARG,
-    JSON_FILE_CONTENT, FILE_CONTENT, OK, FILE_PATH
+    JSON_FILE_CONTENT, FILE_CONTENT, HTTP_OK, FILE_PATH
 )
 from httpie import input
+from httpie.input import KeyValue, KeyValueArgType
 from httpie import ExitStatus
 from httpie.cli import parser
 
 
-class ItemParsingTest(BaseTestCase):
+class ItemParsingTest(TestCase):
 
     def setUp(self):
-        self.key_value_type = input.KeyValueArgType(
+        self.key_value_type = KeyValueArgType(
             *input.SEP_GROUP_ALL_ITEMS
         )
 
@@ -39,22 +41,18 @@ class ItemParsingTest(BaseTestCase):
         ])
         # `requests.structures.CaseInsensitiveDict` => `dict`
         headers = dict(headers._store.values())
-        self.assertDictEqual(headers, {
+        assert headers == {
             'foo:bar': 'baz',
             'jack@jill': 'hill',
-        })
-        self.assertDictEqual(data, {
-            'baz=bar': 'foo',
-        })
-        self.assertIn('bar@baz', files)
+        }
+        assert data == {'baz=bar': 'foo'}
+        assert 'bar@baz' in files
 
     def test_escape_longsep(self):
         headers, data, files, params = input.parse_items([
             self.key_value_type('bob\\:==foo'),
         ])
-        self.assertDictEqual(params, {
-            'bob:': 'foo',
-        })
+        assert params == {'bob:': 'foo'}
 
     def test_valid_items(self):
         headers, data, files, params = input.parse_items([
@@ -74,37 +72,31 @@ class ItemParsingTest(BaseTestCase):
         # Parsed headers
         # `requests.structures.CaseInsensitiveDict` => `dict`
         headers = dict(headers._store.values())
-        self.assertDictEqual(headers, {
-            'header': 'value',
-            'eh': ''
-        })
+        assert headers == {'header': 'value', 'eh': ''}
 
         # Parsed data
         raw_json_embed = data.pop('raw-json-embed')
-        self.assertDictEqual(raw_json_embed, json.loads(
-            JSON_FILE_CONTENT.decode('utf8')))
+        assert raw_json_embed == json.loads(
+            JSON_FILE_CONTENT.decode('utf8'))
         data['string-embed'] = data['string-embed'].strip()
-        self.assertDictEqual(dict(data), {
+        assert dict(data) == {
             "ed": "",
             "string": "value",
             "bool": True,
             "list": ["a", 1, {}, False],
             "obj": {"a": "b"},
             "string-embed": FILE_CONTENT,
-        })
+        }
 
         # Parsed query string parameters
-        self.assertDictEqual(params, {
-            'query': 'value',
-        })
+        assert params == {'query': 'value'}
 
         # Parsed file fields
-        self.assertIn('file', files)
-        self.assertEqual(files['file'][1].read().strip().decode('utf8'),
-                         FILE_CONTENT)
+        assert 'file' in files
+        assert files['file'][1].read().strip().decode('utf8') == FILE_CONTENT
 
 
-class QuerystringTest(BaseTestCase):
+class QuerystringTest(TestCase):
 
     def test_query_string_params_in_url(self):
         r = http(
@@ -116,9 +108,9 @@ class QuerystringTest(BaseTestCase):
         path = '/get?a=1&b=2'
         url = httpbin(path)
 
-        self.assertIn(OK, r)
-        self.assertIn('GET %s HTTP/1.1' % path, r)
-        self.assertIn('"url": "%s"' % url, r)
+        assert HTTP_OK in r
+        assert 'GET %s HTTP/1.1' % path in r
+        assert '"url": "%s"' % url in r
 
     def test_query_string_params_items(self):
         r = http(
@@ -132,9 +124,9 @@ class QuerystringTest(BaseTestCase):
         path = '/get?a=1&b=2'
         url = httpbin(path)
 
-        self.assertIn(OK, r)
-        self.assertIn('GET %s HTTP/1.1' % path, r)
-        self.assertIn('"url": "%s"' % url, r)
+        assert HTTP_OK in r
+        assert 'GET %s HTTP/1.1' % path in r
+        assert '"url": "%s"' % url in r
 
     def test_query_string_params_in_url_and_items_with_duplicates(self):
         r = http(
@@ -149,68 +141,57 @@ class QuerystringTest(BaseTestCase):
         path = '/get?a=1&a=1&a=1&a=1&b=2'
         url = httpbin(path)
 
-        self.assertIn(OK, r)
-        self.assertIn('GET %s HTTP/1.1' % path, r)
-        self.assertIn('"url": "%s"' % url, r)
+        assert HTTP_OK in r
+        assert 'GET %s HTTP/1.1' % path in r
+        assert '"url": "%s"' % url in r
 
 
-class CLIParserTestCase(BaseTestCase):
+class CLIParserTestCase(TestCase):
 
     def test_expand_localhost_shorthand(self):
         args = parser.parse_args(args=[':'], env=TestEnvironment())
-
-        self.assertEqual(args.url, 'http://localhost')
+        assert args.url == 'http://localhost'
 
     def test_expand_localhost_shorthand_with_slash(self):
         args = parser.parse_args(args=[':/'], env=TestEnvironment())
-
-        self.assertEqual(args.url, 'http://localhost/')
+        assert args.url == 'http://localhost/'
 
     def test_expand_localhost_shorthand_with_port(self):
         args = parser.parse_args(args=[':3000'], env=TestEnvironment())
-
-        self.assertEqual(args.url, 'http://localhost:3000')
+        assert args.url == 'http://localhost:3000'
 
     def test_expand_localhost_shorthand_with_path(self):
         args = parser.parse_args(args=[':/path'], env=TestEnvironment())
-
-        self.assertEqual(args.url, 'http://localhost/path')
+        assert args.url == 'http://localhost/path'
 
     def test_expand_localhost_shorthand_with_port_and_slash(self):
         args = parser.parse_args(args=[':3000/'], env=TestEnvironment())
-
-        self.assertEqual(args.url, 'http://localhost:3000/')
+        assert args.url == 'http://localhost:3000/'
 
     def test_expand_localhost_shorthand_with_port_and_path(self):
         args = parser.parse_args(args=[':3000/path'], env=TestEnvironment())
-
-        self.assertEqual(args.url, 'http://localhost:3000/path')
+        assert args.url == 'http://localhost:3000/path'
 
     def test_dont_expand_shorthand_ipv6_as_shorthand(self):
         args = parser.parse_args(args=['::1'], env=TestEnvironment())
-
-        self.assertEqual(args.url, 'http://::1')
+        assert args.url == 'http://::1'
 
     def test_dont_expand_longer_ipv6_as_shorthand(self):
         args = parser.parse_args(
             args=['::ffff:c000:0280'],
             env=TestEnvironment()
         )
-        self.assertEqual(args.url, 'http://::ffff:c000:0280')
+        assert args.url == 'http://::ffff:c000:0280'
 
     def test_dont_expand_full_ipv6_as_shorthand(self):
         args = parser.parse_args(
             args=['0000:0000:0000:0000:0000:0000:0000:0001'],
             env=TestEnvironment()
         )
-
-        self.assertEqual(
-            args.url,
-            'http://0000:0000:0000:0000:0000:0000:0000:0001'
-        )
+        assert args.url == 'http://0000:0000:0000:0000:0000:0000:0000:0001'
 
 
-class ArgumentParserTestCase(BaseTestCase):
+class ArgumentParserTestCase(TestCase):
 
     def setUp(self):
         self.parser = input.Parser()
@@ -226,9 +207,9 @@ class ArgumentParserTestCase(BaseTestCase):
 
         self.parser._guess_method()
 
-        self.assertEqual(self.parser.args.method, 'GET')
-        self.assertEqual(self.parser.args.url, 'http://example.com/')
-        self.assertEqual(self.parser.args.items, [])
+        assert self.parser.args.method == 'GET'
+        assert self.parser.args.url == 'http://example.com/'
+        assert self.parser.args.items == []
 
     def test_guess_when_method_not_set(self):
 
@@ -241,9 +222,9 @@ class ArgumentParserTestCase(BaseTestCase):
 
         self.parser._guess_method()
 
-        self.assertEqual(self.parser.args.method, 'GET')
-        self.assertEqual(self.parser.args.url, 'http://example.com/')
-        self.assertEqual(self.parser.args.items, [])
+        assert self.parser.args.method == 'GET'
+        assert self.parser.args.url == 'http://example.com/'
+        assert self.parser.args.items == []
 
     def test_guess_when_method_set_but_invalid_and_data_field(self):
         self.parser.args = argparse.Namespace()
@@ -254,12 +235,14 @@ class ArgumentParserTestCase(BaseTestCase):
         self.parser.env = TestEnvironment()
         self.parser._guess_method()
 
-        self.assertEqual(self.parser.args.method, 'POST')
-        self.assertEqual(self.parser.args.url, 'http://example.com/')
-        self.assertEqual(
-            self.parser.args.items,
-            [input.KeyValue(
-                key='data', value='field', sep='=', orig='data=field')])
+        assert self.parser.args.method == 'POST'
+        assert self.parser.args.url == 'http://example.com/'
+        assert self.parser.args.items == [
+            KeyValue(key='data',
+                           value='field',
+                           sep='=',
+                           orig='data=field')
+        ]
 
     def test_guess_when_method_set_but_invalid_and_header_field(self):
         self.parser.args = argparse.Namespace()
@@ -272,19 +255,21 @@ class ArgumentParserTestCase(BaseTestCase):
 
         self.parser._guess_method()
 
-        self.assertEqual(self.parser.args.method, 'GET')
-        self.assertEqual(self.parser.args.url, 'http://example.com/')
-        self.assertEqual(
-            self.parser.args.items,
-            [input.KeyValue(
-                key='test', value='header', sep=':', orig='test:header')])
+        assert self.parser.args.method == 'GET'
+        assert self.parser.args.url == 'http://example.com/'
+        assert self.parser.args.items, [
+            KeyValue(key='test',
+                           value='header',
+                           sep=':',
+                           orig='test:header')
+        ]
 
     def test_guess_when_method_set_but_invalid_and_item_exists(self):
         self.parser.args = argparse.Namespace()
         self.parser.args.method = 'http://example.com/'
         self.parser.args.url = 'new_item=a'
         self.parser.args.items = [
-            input.KeyValue(
+            KeyValue(
                 key='old_item', value='b', sep='=', orig='old_item=b')
         ]
         self.parser.args.ignore_stdin = False
@@ -293,15 +278,14 @@ class ArgumentParserTestCase(BaseTestCase):
 
         self.parser._guess_method()
 
-        self.assertEqual(self.parser.args.items, [
-            input.KeyValue(
-                key='new_item', value='a', sep='=', orig='new_item=a'),
-            input.KeyValue(
+        assert self.parser.args.items, [
+            KeyValue(key='new_item', value='a', sep='=', orig='new_item=a'),
+            KeyValue(
                 key='old_item', value='b', sep='=', orig='old_item=b'),
-        ])
+        ]
 
 
-class TestNoOptions(BaseTestCase):
+class TestNoOptions(TestCase):
 
     def test_valid_no_options(self):
         r = http(
@@ -310,7 +294,7 @@ class TestNoOptions(BaseTestCase):
             'GET',
             httpbin('/get')
         )
-        self.assertNotIn('GET /get HTTP/1.1', r)
+        assert 'GET /get HTTP/1.1' not in r
 
     def test_invalid_no_options(self):
         r = http(
@@ -318,12 +302,12 @@ class TestNoOptions(BaseTestCase):
             'GET',
             httpbin('/get')
         )
-        self.assertEqual(r.exit_status, 1)
-        self.assertIn('unrecognized arguments: --no-war', r.stderr)
-        self.assertNotIn('GET /get HTTP/1.1', r)
+        assert r.exit_status == 1
+        assert 'unrecognized arguments: --no-war' in r.stderr
+        assert 'GET /get HTTP/1.1' not in r
 
 
-class IgnoreStdinTest(BaseTestCase):
+class IgnoreStdinTest(TestCase):
 
     def test_ignore_stdin(self):
         with open(FILE_PATH) as f:
@@ -333,9 +317,9 @@ class IgnoreStdinTest(BaseTestCase):
                 httpbin('/get'),
                 env=TestEnvironment(stdin=f, stdin_isatty=False)
             )
-        self.assertIn(OK, r)
-        self.assertIn('GET /get HTTP', r)  # Don't default to POST.
-        self.assertNotIn(FILE_CONTENT, r)  # Don't send stdin data.
+        assert HTTP_OK in r
+        assert 'GET /get HTTP' in r, "Don't default to POST."
+        assert FILE_CONTENT not in r, "Don't send stdin data."
 
     def test_ignore_stdin_cannot_prompt_password(self):
         r = http(
@@ -343,5 +327,5 @@ class IgnoreStdinTest(BaseTestCase):
             '--auth=username-without-password',
             httpbin('/get'),
         )
-        self.assertEqual(r.exit_status, ExitStatus.ERROR)
-        self.assertIn('because --ignore-stdin', r.stderr)
+        assert r.exit_status == ExitStatus.ERROR
+        assert 'because --ignore-stdin' in r.stderr

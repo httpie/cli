@@ -1,5 +1,6 @@
 import os
 import time
+from unittest import TestCase
 
 from httpie.compat import urlopen
 from httpie.downloads import (
@@ -10,19 +11,17 @@ from httpie.downloads import (
     ContentRangeError,
     Download,
 )
-from tests import (
-    BaseTestCase, httpbin, http, TestEnvironment, Response
-)
+from tests import httpbin, http, TestEnvironment, Response
 
 
-class DownloadUtilsTest(BaseTestCase):
+class DownloadUtilsTest(TestCase):
 
     def test_Content_Range_parsing(self):
 
         parse = parse_content_range
 
-        self.assertEqual(parse('bytes 100-199/200', 100), 200)
-        self.assertEqual(parse('bytes 100-199/*', 100), 200)
+        assert parse('bytes 100-199/200', 100) == 200
+        assert parse('bytes 100-199/*', 100) == 200
 
         # missing
         self.assertRaises(ContentRangeError, parse, None, 100)
@@ -44,42 +43,34 @@ class DownloadUtilsTest(BaseTestCase):
 
     def test_Content_Disposition_parsing(self):
         parse = filename_from_content_disposition
-        self.assertEqual(
-            parse('attachment; filename=hello-WORLD_123.txt'),
-            'hello-WORLD_123.txt'
-        )
-        self.assertEqual(
-            parse('attachment; filename=".hello-WORLD_123.txt"'),
-            'hello-WORLD_123.txt'
-        )
-        self.assertEqual(
-            parse('attachment; filename="white space.txt"'),
-            'white space.txt'
-        )
-        self.assertEqual(
-            parse(r'attachment; filename="\"quotes\".txt"'),
-            '"quotes".txt'
-        )
-        self.assertEqual(parse('attachment; filename=/etc/hosts'), 'hosts')
-        self.assertIsNone(parse('attachment; filename='))
+        assert 'hello-WORLD_123.txt' == parse(
+            'attachment; filename=hello-WORLD_123.txt')
+        assert 'hello-WORLD_123.txt' == parse(
+            'attachment; filename=".hello-WORLD_123.txt"')
+        assert 'white space.txt' == parse(
+            'attachment; filename="white space.txt"')
+        assert '"quotes".txt' == parse(
+            r'attachment; filename="\"quotes\".txt"')
+        assert parse('attachment; filename=/etc/hosts') == 'hosts'
+        assert parse('attachment; filename=') is None
 
     def test_filename_from_url(self):
-        self.assertEqual(filename_from_url(
+        assert 'foo.txt' == filename_from_url(
             url='http://example.org/foo',
             content_type='text/plain'
-        ), 'foo.txt')
-        self.assertEqual(filename_from_url(
+        )
+        assert 'foo.html' == filename_from_url(
             url='http://example.org/foo',
             content_type='text/html; charset=utf8'
-        ), 'foo.html')
-        self.assertEqual(filename_from_url(
+        )
+        assert 'foo' == filename_from_url(
             url='http://example.org/foo',
             content_type=None
-        ), 'foo')
-        self.assertEqual(filename_from_url(
+        )
+        assert 'foo' == filename_from_url(
             url='http://example.org/foo',
             content_type='x-foo/bar'
-        ), 'foo')
+        )
 
     def test_unique_filename(self):
 
@@ -93,21 +84,12 @@ class DownloadUtilsTest(BaseTestCase):
             exists.attempt = 0
             return exists
 
-        self.assertEqual(
-            get_unique_filename('foo.bar', exists=make_exists()),
-            'foo.bar'
-        )
-        self.assertEqual(
-            get_unique_filename('foo.bar', exists=make_exists(1)),
-            'foo.bar-1'
-        )
-        self.assertEqual(
-            get_unique_filename('foo.bar', exists=make_exists(10)),
-            'foo.bar-10'
-        )
+        assert 'foo.bar' == get_unique_filename('foo.bar', make_exists())
+        assert 'foo.bar-1' == get_unique_filename('foo.bar', make_exists(1))
+        assert 'foo.bar-10' == get_unique_filename('foo.bar', make_exists(10))
 
 
-class DownloadsTest(BaseTestCase):
+class DownloadsTest(TestCase):
     # TODO: more tests
 
     def test_actual_download(self):
@@ -121,10 +103,10 @@ class DownloadsTest(BaseTestCase):
                 stdout_isatty=False
             )
         )
-        self.assertIn('Downloading', r.stderr)
-        self.assertIn('[K', r.stderr)
-        self.assertIn('Done', r.stderr)
-        self.assertEqual(body, r)
+        assert 'Downloading' in r.stderr
+        assert '[K' in r.stderr
+        assert 'Done' in r.stderr
+        assert body == r
 
     def test_download_with_Content_Length(self):
         download = Download(output_file=open(os.devnull, 'w'))
@@ -137,7 +119,7 @@ class DownloadsTest(BaseTestCase):
         time.sleep(1.1)
         download.chunk_downloaded(b'12345')
         download.finish()
-        self.assertFalse(download.interrupted)
+        assert not download.interrupted
 
     def test_download_no_Content_Length(self):
         download = Download(output_file=open(os.devnull, 'w'))
@@ -145,7 +127,7 @@ class DownloadsTest(BaseTestCase):
         time.sleep(1.1)
         download.chunk_downloaded(b'12345')
         download.finish()
-        self.assertFalse(download.interrupted)
+        assert not download.interrupted
 
     def test_download_interrupted(self):
         download = Download(output_file=open(os.devnull, 'w'))
@@ -155,4 +137,4 @@ class DownloadsTest(BaseTestCase):
         ))
         download.chunk_downloaded(b'1234')
         download.finish()
-        self.assertTrue(download.interrupted)
+        assert download.interrupted

@@ -1,13 +1,14 @@
 import os
 import tempfile
+from unittest import TestCase
 
 from tests import (
-    BaseTestCase, TestEnvironment,
+    TestEnvironment,
     http, httpbin, Environment, skip
 )
 
 
-class WindowsOnlyTests(BaseTestCase):
+class WindowsOnlyTests(TestCase):
 
     @skip('FIXME: kills the runner')
     #@skipIf(not is_windows, 'windows-only')
@@ -16,7 +17,7 @@ class WindowsOnlyTests(BaseTestCase):
         http(httpbin('/get'), env=Environment())
 
 
-class FakeWindowsTest(BaseTestCase):
+class FakeWindowsTest(TestCase):
 
     def test_output_file_pretty_not_allowed_on_windows(self):
 
@@ -28,5 +29,4 @@ class FakeWindowsTest(BaseTestCase):
             httpbin('/get'),
             env=TestEnvironment(is_windows=True)
         )
-        self.assertIn(
-            'Only terminal output can be colorized on Windows', r.stderr)
+        assert 'Only terminal output can be colorized on Windows' in r.stderr
