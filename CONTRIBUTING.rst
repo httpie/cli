@@ -63,14 +63,21 @@ HTTPie uses `pytest`_ and `Tox`_.
 
 .. code-block:: bash
 
-    # Run all tests on the current Python:
+    ### Running all tests:
+
+    # Current Python
     python setup.py test
 
-    # Run all tests on all installed supported Pythons:
+    # All the supported and available  Pythons
     tox
 
-    # Run specific tests:
+    ### Running specific tests:
+
+    # Current Python
     pytest tests/test_uploads.py
+
+    # All Pythons
+    tox -- tests/test_uploads.py --verbose
 
 
 Don't forget to add yourself to `AUTHORS.rst`_.
