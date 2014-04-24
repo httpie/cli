@@ -43,7 +43,7 @@ def get_exit_status(http_status, follow=False):
 
 
 def print_debug_info(env):
-    sys.stderr.writelines([
+    env.stderr.writelines([
         'HTTPie %s\n' % httpie_version,
         'HTTPie data: %s\n' % env.config.directory,
         'Requests %s\n' % requests_version,

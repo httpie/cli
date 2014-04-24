@@ -132,10 +132,14 @@ def http(*args, **kwargs):
 
     stdout = env.stdout
     stderr = env.stderr
-    try:
+    args = list(args)
 
+    if '--debug' not in args and '--traceback' not in args:
+        args = ['--traceback'] + args
+    print(args)
+    try:
         try:
-            exit_status = main(args=['--traceback'] + list(args), **kwargs)
+            exit_status = main(args=args, **kwargs)
             if '--download' in args:
                 # Let the progress reporter thread finish.
                 time.sleep(.5)

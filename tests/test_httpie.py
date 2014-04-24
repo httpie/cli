@@ -3,9 +3,21 @@ from unittest import TestCase
 
 from tests import TestEnvironment, http, httpbin, HTTP_OK
 from tests.fixtures import FILE_PATH, FILE_CONTENT
+import httpie
 
 
 class HTTPieTest(TestCase):
+
+    def test_debug(self):
+        r = http('--debug')
+        assert r.exit_status == httpie.ExitStatus.OK
+        assert 'HTTPie %s' % httpie.__version__ in r.stderr
+        assert 'HTTPie data:' in r.stderr
+
+    def test_help(self):
+        r = http('--help')
+        assert r.exit_status == httpie.ExitStatus.ERROR
+        assert 'https://github.com/jkbr/httpie/issues' in r
 
     def test_GET(self):
         r = http('GET', httpbin('/get'))
