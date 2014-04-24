@@ -1,12 +1,10 @@
 from unittest import TestCase
 
 import requests
+import pytest
 
 from httpie import ExitStatus
-from tests import (
-    TestEnvironment,
-    http, httpbin, HTTP_OK, skip, skipIf
-)
+from tests import TestEnvironment, http, httpbin, HTTP_OK
 
 
 class ExitStatusTest(TestCase):
@@ -28,8 +26,8 @@ class ExitStatusTest(TestCase):
         assert r.exit_status == ExitStatus.OK
         assert not r.stderr
 
-    @skip('timeout broken in requests'
-          ' (https://github.com/jkbr/httpie/issues/185)')
+    @pytest.mark.skipif(True, reason='timeout broken in requests'
+                      ' (https://github.com/jkbr/httpie/issues/185)')
     def test_timeout_exit_status(self):
         r = http(
             '--timeout=0.5',
@@ -50,8 +48,9 @@ class ExitStatusTest(TestCase):
         assert r.exit_status == ExitStatus.ERROR_HTTP_3XX
         assert '301 moved permanently' in r.stderr.lower()
 
-    @skipIf(requests.__version__ == '0.13.6',
-            'Redirects with prefetch=False are broken in Requests 0.13.6')
+    @pytest.mark.skipif(
+        requests.__version__ == '0.13.6',
+        reason='Redirects with prefetch=False are broken in Requests 0.13.6')
     def test_3xx_check_status_redirects_allowed_exits_0(self):
         r = http(
             '--check-status',

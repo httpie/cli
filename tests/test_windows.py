@@ -2,16 +2,15 @@ import os
 import tempfile
 from unittest import TestCase
 
-from tests import (
-    TestEnvironment,
-    http, httpbin, Environment, skip
-)
+import pytest
+
+from tests import TestEnvironment, http, httpbin, Environment
+from httpie.compat import is_windows
 
 
 class WindowsOnlyTests(TestCase):
 
-    @skip('FIXME: kills the runner')
-    #@skipIf(not is_windows, 'windows-only')
+    @pytest.mark.skipif(not is_windows, reason='windows-only')
     def test_windows_colorized_output(self):
         # Spits out the colorized output.
         http(httpbin('/get'), env=Environment())

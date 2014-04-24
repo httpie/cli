@@ -2,8 +2,9 @@
 from unittest import TestCase
 
 import requests
+import pytest
 
-from tests import http, httpbin, HTTP_OK, skipIf
+from tests import http, httpbin, HTTP_OK
 import httpie.input
 
 
@@ -19,8 +20,9 @@ class AuthTest(TestCase):
         assert '"authenticated": true' in r
         assert '"user": "user"' in r
 
-    @skipIf(requests.__version__ == '0.13.6',
-            'Redirects with prefetch=False are broken in Requests 0.13.6')
+    @pytest.mark.skipif(
+        requests.__version__ == '0.13.6',
+        reason='Redirects with prefetch=False are broken in Requests 0.13.6')
     def test_digest_auth(self):
         r = http(
             '--auth-type=digest',

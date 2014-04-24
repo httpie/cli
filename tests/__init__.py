@@ -4,18 +4,6 @@ import time
 import json
 import shutil
 import tempfile
-try:
-    from unittest import skipIf, skip
-except ImportError:
-    skip = lambda msg: lambda self: None
-
-    # noinspection PyUnusedLocal
-    def skipIf(cond, reason):
-        def decorator(test_method):
-            if cond:
-                return lambda self: None
-            return test_method
-        return decorator
 
 from requests.structures import CaseInsensitiveDict
 

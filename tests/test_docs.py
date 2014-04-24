@@ -2,7 +2,9 @@ import os
 import subprocess
 from unittest import TestCase
 
-from tests import TESTS_ROOT, skipIf
+import pytest
+
+from tests import TESTS_ROOT
 
 
 def has_docutils():
@@ -28,7 +30,7 @@ def get_readme_errors():
 
 class READMETest(TestCase):
 
-    @skipIf(not has_docutils(), 'docutils not installed')
+    @pytest.mark.skipif(not has_docutils(), reason='docutils not installed')
     def test_README_reStructuredText_valid(self):
         errors = get_readme_errors()
         assert not errors, errors
