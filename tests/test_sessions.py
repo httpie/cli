@@ -4,7 +4,7 @@ import shutil
 from tests import TestEnvironment, mk_config_dir, http, httpbin, HTTP_OK
 
 
-class BaseSessionTest(object):
+class SessionTestBase(object):
 
     def setup_method(self, method):
         """Create and a unique config dir for each test."""
@@ -25,7 +25,7 @@ class BaseSessionTest(object):
         return TestEnvironment(config_dir=self.config_dir)
 
 
-class TestSessionFlow(BaseSessionTest):
+class TestSessionFlow(SessionTestBase):
     """
     These tests, start with an existing session create in setup_method().
 
@@ -97,14 +97,14 @@ class TestSessionFlow(BaseSessionTest):
         assert r2.json == r4.json
 
 
-class TestSession(BaseSessionTest):
+class TestSession(SessionTestBase):
     """Stand-alone session tests."""
 
     def test_session_ignored_header_prefixes(self):
         r1 = http('--session=test', 'GET', httpbin('/get'),
-                 'Content-Type: text/plain',
-                 'If-Unmodified-Since: Sat, 29 Oct 1994 19:43:31 GMT',
-                 env=self.env())
+                  'Content-Type: text/plain',
+                  'If-Unmodified-Since: Sat, 29 Oct 1994 19:43:31 GMT',
+                  env=self.env())
         assert HTTP_OK in r1
 
         r2 = http('--session=test', 'GET', httpbin('/get'), env=self.env())
