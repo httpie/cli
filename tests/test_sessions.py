@@ -5,9 +5,8 @@ from tests import TestEnvironment, mk_config_dir, http, httpbin, HTTP_OK
 
 
 class SessionTestBase(object):
-
     def setup_method(self, method):
-        """Create and a unique config dir for each test."""
+        """Create and reuse a unique config dir for each test."""
         self.config_dir = mk_config_dir()
 
     def teardown_method(self, method):
@@ -27,7 +26,7 @@ class SessionTestBase(object):
 
 class TestSessionFlow(SessionTestBase):
     """
-    These tests, start with an existing session create in setup_method().
+    These tests start with an existing session created in `setup_method()`.
 
     """
 
@@ -40,7 +39,7 @@ class TestSessionFlow(SessionTestBase):
         super(TestSessionFlow, self).setup_method(method)
         r1 = http('--follow', '--session=test', '--auth=username:password',
                   'GET', httpbin('/cookies/set?hello=world'), 'Hello:World',
-                 env=self.env())
+                  env=self.env())
         assert HTTP_OK in r1
 
     def test_session_created_and_reused(self):
