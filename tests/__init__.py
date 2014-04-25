@@ -15,8 +15,6 @@ from httpie.compat import bytes, str
 
 
 TESTS_ROOT = os.path.abspath(os.path.dirname(__file__))
-HTTPBIN_URL = os.environ.get('HTTPBIN_URL',
-                             'http://httpbin.org').rstrip('/')
 
 
 CRLF = '\r\n'
@@ -29,16 +27,22 @@ HTTP_OK_COLOR = (
 )
 
 
-def httpbin(path):
+def httpbin(path, auth=None,
+            base=os.environ.get('HTTPBIN_URL', 'http://httpbin.org')):
     """
     Return a fully-qualified httpbin URL for `path`.
 
     >>> httpbin('/get')
     'http://httpbin.org/get'
 
+    >>> httpbin('/get', auth='user:password')
+    'http://user:password@httpbin.org/get'
+
     """
-    url = HTTPBIN_URL + path
-    return url
+    if auth:
+        proto, rest = base.split('://', 1)
+        base = proto + '://' + auth + '@' + rest
+    return base.rstrip('/') + path
 
 
 class TestEnvironment(Environment):
