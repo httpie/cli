@@ -75,7 +75,7 @@ class TestEnvironment(Environment):
 
 def http(*args, **kwargs):
     """
-    Run HTTPie and capture stderr/out and exist status.
+    Run HTTPie and capture stderr/out and exit status.
 
     Invoke `httpie.core.main()` with `args` and `kwargs`,
     and return a `CLIResponse` subclass instance.
@@ -114,10 +114,11 @@ def http(*args, **kwargs):
 
     stdout = env.stdout
     stderr = env.stderr
-    args = list(args)
 
+    args = list(args)
     if '--debug' not in args and '--traceback' not in args:
         args = ['--traceback'] + args
+
     try:
         try:
             exit_status = main(args=args, **kwargs)
@@ -134,11 +135,13 @@ def http(*args, **kwargs):
         stderr.seek(0)
         output = stdout.read()
         try:
-            # noinspection PyArgumentList
-            r = StrCLIResponse(output.decode('utf8'))
+            output = output.decode('utf8')
         except UnicodeDecodeError:
             # noinspection PyArgumentList
             r = BytesCLIResponse(output)
+        else:
+            # noinspection PyArgumentList
+            r = StrCLIResponse(output)
         r.stderr = stderr.read()
         r.exit_status = exit_status
 
@@ -169,7 +172,9 @@ class BytesCLIResponse(bytes, BaseCLIResponse):
     """
     Used as a fallback when a StrCLIResponse cannot be used.
 
-    E.g. the output contains binary data. `.json` will always be None.
+    E.g. when the output contains binary data or when it is colorized.
+
+    `.json` will always be None.
 
     """
 
@@ -178,6 +183,11 @@ class StrCLIResponse(str, BaseCLIResponse):
 
     @property
     def json(self):
+        """
+        Return deserialized JSON body, if one included in the output
+        and is parseable.
+
+        """
         if not hasattr(self, '_json'):
             self._json = None
             # De-serialize JSON body if possible.
@@ -189,7 +199,8 @@ class StrCLIResponse(str, BaseCLIResponse):
                 self._json = json.loads(self)
             elif (self.count('Content-Type:') == 1
                     and 'application/json' in self):
-                # Looks like a JSON HTTP message, try to extract its body.
+                # Looks like a whole JSON HTTP message,
+                # try to extract its body.
                 try:
                     j = self.strip()[self.strip().rindex('\r\n\r\n'):]
                 except ValueError:
