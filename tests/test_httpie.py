@@ -1,12 +1,10 @@
 """High-level tests."""
-from unittest import TestCase
-
 from tests import TestEnvironment, http, httpbin, HTTP_OK
 from tests.fixtures import FILE_PATH, FILE_CONTENT
 import httpie
 
 
-class HTTPieTest(TestCase):
+class TestHTTPie:
 
     def test_debug(self):
         r = http('--debug')

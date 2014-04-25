@@ -1,5 +1,3 @@
-from unittest import TestCase
-
 import requests
 import pytest
 
@@ -7,7 +5,7 @@ from httpie import ExitStatus
 from tests import TestEnvironment, http, httpbin, HTTP_OK
 
 
-class ExitStatusTest(TestCase):
+class TestExitStatus:
     def test_ok_response_exits_0(self):
         r = http('GET', httpbin('/status/200'))
         assert HTTP_OK in r

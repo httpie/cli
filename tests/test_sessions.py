@@ -1,16 +1,16 @@
 import os
 import shutil
-from unittest import TestCase
 
 from tests import TestEnvironment, mk_config_dir, http, httpbin, HTTP_OK
 
 
-class SessionsTest(TestCase):
+class TestSessions:
+
     @property
     def env(self):
         return TestEnvironment(config_dir=self.config_dir)
 
-    def setUp(self):
+    def setup_method(self, method):
         # Start a full-blown session with a custom request header,
         # authorization, and response cookies.
         self.config_dir = mk_config_dir()
@@ -19,7 +19,7 @@ class SessionsTest(TestCase):
                  env=self.env)
         assert HTTP_OK in r
 
-    def tearDown(self):
+    def teardown_method(self, method):
         shutil.rmtree(self.config_dir)
 
     def test_session_create(self):

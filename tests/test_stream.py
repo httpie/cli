@@ -1,5 +1,3 @@
-from unittest import TestCase
-
 import pytest
 
 from httpie.compat import is_windows
@@ -8,7 +6,7 @@ from tests import http, httpbin, TestEnvironment
 from tests.fixtures import BIN_FILE_CONTENT, BIN_FILE_PATH
 
 
-class StreamTest(TestCase):
+class TestStream:
     # GET because httpbin 500s with binary POST body.
 
     @pytest.mark.skipif(is_windows,

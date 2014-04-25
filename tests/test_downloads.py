@@ -1,6 +1,5 @@
 import os
 import time
-from unittest import TestCase
 
 import pytest
 from requests.structures import CaseInsensitiveDict
@@ -21,7 +20,7 @@ class Response(object):
         self.status_code = status_code
 
 
-class DownloadUtilsTest(TestCase):
+class TestDownloadUtils:
     def test_Content_Range_parsing(self):
         parse = parse_content_range
 
@@ -46,18 +45,16 @@ class DownloadUtilsTest(TestCase):
         # invalid byte-range-resp-spec
         pytest.raises(ContentRangeError, parse, 'bytes 100-100/*', 100)
 
-    def test_Content_Disposition_parsing(self):
-        parse = filename_from_content_disposition
-        assert 'hello-WORLD_123.txt' == parse(
-            'attachment; filename=hello-WORLD_123.txt')
-        assert 'hello-WORLD_123.txt' == parse(
-            'attachment; filename=".hello-WORLD_123.txt"')
-        assert 'white space.txt' == parse(
-            'attachment; filename="white space.txt"')
-        assert '"quotes".txt' == parse(
-            r'attachment; filename="\"quotes\".txt"')
-        assert parse('attachment; filename=/etc/hosts') == 'hosts'
-        assert parse('attachment; filename=') is None
+    @pytest.mark.parametrize('header, expected_filename', [
+        ('attachment; filename=hello-WORLD_123.txt', 'hello-WORLD_123.txt'),
+        ('attachment; filename=".hello-WORLD_123.txt"', 'hello-WORLD_123.txt'),
+        ('attachment; filename="white space.txt"', 'white space.txt'),
+        (r'attachment; filename="\"quotes\".txt"', '"quotes".txt'),
+        ('attachment; filename=/etc/hosts', 'hosts'),
+        ('attachment; filename=', None)
+    ])
+    def test_Content_Disposition_parsing(self, header, expected_filename):
+        assert filename_from_content_disposition(header) == expected_filename
 
     def test_filename_from_url(self):
         assert 'foo.txt' == filename_from_url(
@@ -94,7 +91,7 @@ class DownloadUtilsTest(TestCase):
         assert 'foo.bar-10' == get_unique_filename('foo.bar', attempts(10))
 
 
-class DownloadsTest(TestCase):
+class TestDownloads:
     # TODO: more tests
 
     def test_actual_download(self):

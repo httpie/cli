@@ -1,10 +1,8 @@
-from unittest import TestCase
-
 from httpie import ExitStatus
 from tests import TestEnvironment, http, httpbin, HTTP_OK, COLOR, CRLF
 
 
-class VerboseFlagTest(TestCase):
+class TestVerboseFlag:
     def test_verbose(self):
         r = http('--verbose', 'GET', httpbin('/get'), 'test-header:__test__')
         assert HTTP_OK in r
@@ -24,7 +22,7 @@ class VerboseFlagTest(TestCase):
         assert r'\"baz\": \"bar\"' in r  # response
 
 
-class PrettyOptionsTest(TestCase):
+class TestPrettyOptions:
     """Test the --pretty flag handling."""
 
     def test_pretty_enabled_by_default(self):
@@ -72,7 +70,7 @@ class PrettyOptionsTest(TestCase):
         assert COLOR not in r
 
 
-class LineEndingsTest(TestCase):
+class TestLineEndings:
     """
     Test that CRLF is properly used in headers
     and as the headers/body separator.
@@ -85,7 +83,7 @@ class LineEndingsTest(TestCase):
                 break
             assert header.endswith(CRLF), repr(header)
         else:
-            self.fail('CRLF between headers and body not found in %r' % msg)
+            assert 0, 'CRLF between headers and body not found in %r' % msg
         body = ''.join(lines)
         assert CRLF not in body
         return body

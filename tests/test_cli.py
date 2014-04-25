@@ -1,9 +1,9 @@
 """CLI argument parsing related tests."""
 import json
-from unittest import TestCase
-
 # noinspection PyCompatibility
 import argparse
+
+import pytest
 
 from httpie import input
 from httpie.input import KeyValue, KeyValueArgType
@@ -16,15 +16,15 @@ from tests.fixtures import (
 )
 
 
-class ItemParsingTest(TestCase):
-    def setUp(self):
-        self.key_value_type = KeyValueArgType(*input.SEP_GROUP_ALL_ITEMS)
+class TestItemParsing:
+
+    key_value_type = KeyValueArgType(*input.SEP_GROUP_ALL_ITEMS)
 
     def test_invalid_items(self):
         items = ['no-separator']
         for item in items:
-            self.assertRaises(argparse.ArgumentTypeError,
-                              lambda: self.key_value_type(item))
+            pytest.raises(argparse.ArgumentTypeError,
+                          self.key_value_type, item)
 
     def test_escape(self):
         headers, data, files, params = input.parse_items([
@@ -93,7 +93,7 @@ class ItemParsingTest(TestCase):
         assert files['file'][1].read().strip().decode('utf8') == FILE_CONTENT
 
 
-class QuerystringTest(TestCase):
+class TestQuerystring:
     def test_query_string_params_in_url(self):
         r = http('--print=Hhb', 'GET', httpbin('/get?a=1&b=2'))
         path = '/get?a=1&b=2'
@@ -120,7 +120,7 @@ class QuerystringTest(TestCase):
         assert '"url": "%s"' % url in r
 
 
-class CLIParserTestCase(TestCase):
+class TestCLIParser:
     def test_expand_localhost_shorthand(self):
         args = parser.parse_args(args=[':'], env=TestEnvironment())
         assert args.url == 'http://localhost'
@@ -164,8 +164,9 @@ class CLIParserTestCase(TestCase):
         assert args.url == 'http://0000:0000:0000:0000:0000:0000:0000:0001'
 
 
-class ArgumentParserTestCase(TestCase):
-    def setUp(self):
+class TestArgumentParser:
+
+    def setup_method(self, method):
         self.parser = input.Parser()
 
     def test_guess_when_method_set_and_valid(self):
@@ -256,7 +257,7 @@ class ArgumentParserTestCase(TestCase):
         ]
 
 
-class TestNoOptions(TestCase):
+class TestNoOptions:
     def test_valid_no_options(self):
         r = http('--verbose', '--no-verbose', 'GET', httpbin('/get'))
         assert 'GET /get HTTP/1.1' not in r
@@ -268,7 +269,7 @@ class TestNoOptions(TestCase):
         assert 'GET /get HTTP/1.1' not in r
 
 
-class IgnoreStdinTest(TestCase):
+class TestIgnoreStdin:
     def test_ignore_stdin(self):
         with open(FILE_PATH) as f:
             env = TestEnvironment(stdin=f, stdin_isatty=False)

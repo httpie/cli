@@ -1,6 +1,4 @@
 """HTTP authentication-related tests."""
-from unittest import TestCase
-
 import requests
 import pytest
 
@@ -8,7 +6,7 @@ from tests import http, httpbin, HTTP_OK
 import httpie.input
 
 
-class AuthTest(TestCase):
+class TestAuth:
     def test_basic_auth(self):
         r = http('--auth=user:password', 'GET',
                  httpbin('/basic-auth/user/password'))

@@ -1,13 +1,11 @@
 """Tests for dealing with binary request and response data."""
-from unittest import TestCase
-
 from httpie.compat import urlopen
 from httpie.output import BINARY_SUPPRESSED_NOTICE
 from tests import TestEnvironment, http, httpbin
 from tests.fixtures import BIN_FILE_PATH, BIN_FILE_CONTENT, BIN_FILE_PATH_ARG
 
 
-class BinaryRequestDataTest(TestCase):
+class TestBinaryRequestData:
     def test_binary_stdin(self):
         with open(BIN_FILE_PATH, 'rb') as stdin:
             env = TestEnvironment(
@@ -31,7 +29,7 @@ class BinaryRequestDataTest(TestCase):
         assert bytes(BIN_FILE_CONTENT) in bytes(r)
 
 
-class BinaryResponseDataTest(TestCase):
+class TestBinaryResponseData:
     url = 'http://www.google.com/favicon.ico'
 
     @property

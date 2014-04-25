@@ -2,13 +2,11 @@
 Tests for the provided defaults regarding HTTP method, and --json vs. --form.
 
 """
-from unittest import TestCase
-
 from tests import TestEnvironment, http, httpbin, HTTP_OK
 from tests.fixtures import FILE_PATH
 
 
-class ImplicitHTTPMethodTest(TestCase):
+class TestImplicitHTTPMethod:
     def test_implicit_GET(self):
         r = http(httpbin('/get'))
         assert HTTP_OK in r
@@ -35,7 +33,7 @@ class ImplicitHTTPMethodTest(TestCase):
         assert HTTP_OK in r
 
 
-class AutoContentTypeAndAcceptHeadersTest(TestCase):
+class TestAutoContentTypeAndAcceptHeaders:
     """
     Test that Accept and Content-Type correctly defaults to JSON,
     but can still be overridden. The same with Content-Type when --form
