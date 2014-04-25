@@ -2,7 +2,7 @@ import os
 import sys
 
 from .config import DEFAULT_CONFIG_DIR, Config
-from .compat import urlsplit, is_windows, bytes, str
+from .compat import urlsplit, is_windows, str
 
 
 class Environment(object):
