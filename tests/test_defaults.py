@@ -14,17 +14,17 @@ class TestImplicitHTTPMethod:
     def test_implicit_GET_with_headers(self):
         r = http(httpbin('/headers'), 'Foo:bar')
         assert HTTP_OK in r
-        assert '"Foo": "bar"' in r
+        assert r.json['headers']['Foo'] == 'bar'
 
     def test_implicit_POST_json(self):
         r = http(httpbin('/post'), 'hello=world')
         assert HTTP_OK in r
-        assert r'\"hello\": \"world\"' in r
+        assert r.json['json'] == {'hello': 'world'}
 
     def test_implicit_POST_form(self):
         r = http('--form', httpbin('/post'), 'foo=bar')
         assert HTTP_OK in r
-        assert '"foo": "bar"' in r
+        assert r.json['form'] == {'foo': 'bar'}
 
     def test_implicit_POST_stdin(self):
         with open(FILE_PATH) as f:
@@ -45,8 +45,8 @@ class TestAutoContentTypeAndAcceptHeaders:
         # https://github.com/jkbr/httpie/issues/62
         r = http('GET', httpbin('/headers'))
         assert HTTP_OK in r
-        assert '"Accept": "*/*"' in r
-        assert '"Content-Type": "application/json' not in r
+        assert r.json['headers']['Accept'] == '*/*'
+        assert 'Content-Type' not in r.json['headers']
 
     def test_POST_no_data_no_auto_headers(self):
         # JSON headers shouldn't be automatically set for POST with no data.

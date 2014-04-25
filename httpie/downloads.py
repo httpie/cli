@@ -157,7 +157,6 @@ class Download(object):
                             provided, it will be guessed from the response.
 
         :param progress_file: Where to report download progress.
-        :type progress_file: file
 
         """
         self._output_file = output_file

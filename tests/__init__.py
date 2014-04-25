@@ -31,7 +31,7 @@ HTTP_OK_COLOR = (
 
 def httpbin(path):
     """
-    Return a fully-qualified URL for `path`.
+    Return a fully-qualified httpbin URL for `path`.
 
     >>> httpbin('/get')
     'http://httpbin.org/get'
@@ -39,10 +39,6 @@ def httpbin(path):
     """
     url = HTTPBIN_URL + path
     return url
-
-
-def mk_config_dir():
-    return tempfile.mkdtemp(prefix='httpie_test_config_dir_')
 
 
 class TestEnvironment(Environment):
@@ -79,23 +75,26 @@ class TestEnvironment(Environment):
 
 def http(*args, **kwargs):
     """
-    Invoke `httpie.core.main()` with `args` and `kwargs`,
-    and return a `CLIResponse` subclass.
+    Run HTTPie and capture stderr/out and exist status.
 
-    It is either a `StrResponse`, or `BytesResponse`
+    Invoke `httpie.core.main()` with `args` and `kwargs`,
+    and return a `CLIResponse` subclass instance.
+
+    The return value is either a `StrCLIResponse`, or `BytesCLIResponse`
     if unable to decode the output.
 
     The response has the following attributes:
 
+        `stdout` is represented by the instance itself (print r)
         `stderr`: text written to stderr
         `exit_status`: the exit status
         `json`: decoded JSON (if possible) or `None`
 
     Exceptions are propagated except for SystemExit.
 
-    $ http GET example.org:
+    $ http --auth=user:password GET httpbin.org/basic-auth/user/password
 
-        >>> r = http('GET', 'example.org')
+        >>> r = http('-a', 'user:pw', httpbin('/basic-auth/user/pw'))
         >>> type(r) == StrCLIResponse
         True
         >>> r.exit_status
@@ -104,8 +103,9 @@ def http(*args, **kwargs):
         ''
         >>> 'HTTP/1.1 200 OK' in r
         True
-        >>> r.json is None
+        >>> r.json == {'authenticated': True, 'user': 'user'}
         True
+
 
     """
     env = kwargs.get('env')
@@ -200,3 +200,7 @@ class StrCLIResponse(str, BaseCLIResponse):
                     except ValueError:
                         pass
         return self._json
+
+
+def mk_config_dir():
+    return tempfile.mkdtemp(prefix='httpie_test_config_dir_')

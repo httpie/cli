@@ -105,7 +105,8 @@ class TestDownloads:
         assert body == r
 
     def test_download_with_Content_Length(self):
-        download = Download(output_file=open(os.devnull, 'w'))
+        devnull = open(os.devnull, 'w')
+        download = Download(output_file=devnull, progress_file=devnull)
         download.start(Response(
             url=httpbin('/'),
             headers={'Content-Length': 10}
@@ -118,7 +119,8 @@ class TestDownloads:
         assert not download.interrupted
 
     def test_download_no_Content_Length(self):
-        download = Download(output_file=open(os.devnull, 'w'))
+        devnull = open(os.devnull, 'w')
+        download = Download(output_file=devnull, progress_file=devnull)
         download.start(Response(url=httpbin('/')))
         time.sleep(1.1)
         download.chunk_downloaded(b'12345')
@@ -126,7 +128,8 @@ class TestDownloads:
         assert not download.interrupted
 
     def test_download_interrupted(self):
-        download = Download(output_file=open(os.devnull, 'w'))
+        devnull = open(os.devnull, 'w')
+        download = Download(output_file=devnull, progress_file=devnull)
         download.start(Response(
             url=httpbin('/'),
             headers={'Content-Length': 5}

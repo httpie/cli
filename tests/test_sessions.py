@@ -95,4 +95,4 @@ class TestSessions:
         r2 = http('--session=' + session_path, 'GET', httpbin('/get'),
                   env=self.env)
         assert HTTP_OK in r2
-        assert r2.json['headers']['Foo'] in 'Bar'
+        assert r2.json['headers']['Foo'] == 'Bar'
