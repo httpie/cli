@@ -4,7 +4,7 @@ branches:
 install:
   - ps: (new-object net.webclient).DownloadFile('https://raw.github.com/pypa/pip/master/contrib/get-pip.py', 'C:\get-pip.py')
   - C:\Python27\python.exe c:\get-pip.py
-  - pip instal -U pip
+  - C:\Python27\Scripts\pip.exe instal -U pip
 build: off
 test_script:
   - C:\Python27\python.exe setup.py test
