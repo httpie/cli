@@ -19,27 +19,28 @@ class TestUnicode:
     def test_unicode_form_item(self):
         r = http('--form', 'POST', httpbin('/post'), u'test=%s' % UNICODE)
         assert HTTP_OK in r
-        assert r.json['form']['test'] == UNICODE
+        assert r.json['form'] == {'test': UNICODE}
 
     def test_unicode_json_item(self):
         r = http('--json', 'POST', httpbin('/post'), u'test=%s' % UNICODE)
         assert HTTP_OK in r
-        assert r.json['json']['test'] == UNICODE
+        assert r.json['json'] == {'test': UNICODE}
 
     def test_unicode_raw_json_item(self):
-        r = http('--json', 'POST', httpbin('/post'), u'test:=["%s"]' % UNICODE)
+        r = http('--json', 'POST', httpbin('/post'),
+                 u'test:={ "%s" : [ "%s" ] }' % (UNICODE, UNICODE))
         assert HTTP_OK in r
-        assert r.json['json']['test'] == [UNICODE]
+        assert r.json['json'] == {'test': {UNICODE: [UNICODE]}}
 
     def test_unicode_url_query_arg_item(self):
         r = http(httpbin('/get'), u'test==%s' % UNICODE)
         assert HTTP_OK in r
-        assert r.json['args']['test'] == UNICODE, r
+        assert r.json['args'] == {'test': UNICODE}, r
 
     def test_unicode_url(self):
         r = http(httpbin(u'/get?test=' + UNICODE))
         assert HTTP_OK in r
-        assert r.json['args']['test'] == UNICODE
+        assert r.json['args'] == {'test': UNICODE}
 
     def test_unicode_basic_auth(self):
         # it doesn't really authenticate us because httpbin

@@ -16,7 +16,7 @@ from .compat import OrderedDict
 # https://github.com/jkbr/httpie/issues/130
 from requests.structures import CaseInsensitiveDict
 
-from .compat import urlsplit, str, bytes
+from .compat import urlsplit, str
 from .sessions import VALID_SESSION_NAME_PATTERN
 
 

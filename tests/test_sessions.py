@@ -1,8 +1,8 @@
 # coding=utf-8
 import os
 import shutil
-from httpie.plugins.builtin import HTTPBasicAuth
 
+from httpie.plugins.builtin import HTTPBasicAuth
 from tests import TestEnvironment, mk_config_dir, http, httpbin, HTTP_OK
 
 
