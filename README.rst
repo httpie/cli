@@ -1245,6 +1245,7 @@ Changelog
 * `0.9.0-dev`_
     * Added ``--cert`` and ``--certkey`` parameters to specify a client side
       certificate and private key for SSL
+    * Improved unicode support.
     * Switched from ``unittest`` to ``pytest``.
     * Various test suite improvements.
     * Added `CONTRIBUTING`_.
