@@ -1,6 +1,9 @@
-build: off
 branches:
   only:
     - master
+install:
+  - ps: (new-object net.webclient).DownloadFile('https://raw.github.com/pypa/pip/master/contrib/get-pip.py', 'C:\get-pip.py')
+  - C:\Python27\python.exe c:\get-pip.py
+build: off
 test_script:
   - C:\Python27\python.exe setup.py test
