@@ -167,7 +167,7 @@ class BaseStream(object):
 
     def _get_headers(self):
         """Return the headers' bytes."""
-        return self.msg.headers.encode('ascii')
+        return self.msg.headers.encode('utf8')
 
     def _iter_body(self):
         """Return an iterator over the message body."""
@@ -221,7 +221,7 @@ class EncodedStream(BaseStream):
 
         if env.stdout_isatty:
             # Use the encoding supported by the terminal.
-            output_encoding = getattr(env.stdout, 'encoding', None)
+            output_encoding = env.stdout_encoding
         else:
             # Preserve the message encoding.
             output_encoding = self.msg.encoding

@@ -18,7 +18,7 @@ from httpie import __version__ as httpie_version
 from requests import __version__ as requests_version
 from pygments import __version__ as pygments_version
 
-from .compat import str, is_py3
+from .compat import str, bytes, is_py3
 from .client import get_response
 from .downloads import Download
 from .models import Environment
@@ -52,12 +52,26 @@ def print_debug_info(env):
     ])
 
 
+def decode_args(args, stdin_encoding):
+    """
+    Convert all bytes ags to str
+    by decoding them using stdin encoding.
+
+    """
+    return [
+        arg.decode(stdin_encoding) if type(arg) == bytes else arg
+        for arg in args
+    ]
+
+
 def main(args=sys.argv[1:], env=Environment()):
     """Run the main program and write the output to ``env.stdout``.
 
     Return exit status code.
 
     """
+    args = decode_args(args, env.stdin_encoding)
+
     plugin_manager.load_installed_plugins()
     from .cli import parser
 

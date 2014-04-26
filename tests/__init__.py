@@ -94,7 +94,12 @@ def http(*args, **kwargs):
         `exit_status`: the exit status
         `json`: decoded JSON (if possible) or `None`
 
-    Exceptions are propagated except for SystemExit.
+    Exceptions are propagated.
+
+    If you pass ``error_exit_ok=True``, then error exit statuses
+    won't result into an exception.
+
+    Example:
 
     $ http --auth=user:password GET httpbin.org/basic-auth/user/password
 
@@ -112,6 +117,7 @@ def http(*args, **kwargs):
 
 
     """
+    error_exit_ok = kwargs.pop('error_exit_ok', False)
     env = kwargs.get('env')
     if not env:
         env = kwargs['env'] = TestEnvironment()
@@ -123,21 +129,35 @@ def http(*args, **kwargs):
     if '--debug' not in args and '--traceback' not in args:
         args = ['--traceback'] + args
 
+    def dump_stderr():
+        stderr.seek(0)
+        sys.stderr.write(stderr.read())
+
     try:
         try:
             exit_status = main(args=args, **kwargs)
             if '--download' in args:
                 # Let the progress reporter thread finish.
                 time.sleep(.5)
+        except SystemExit:
+            if error_exit_ok:
+                exit_status = httpie.ExitStatus.ERROR
+            else:
+                dump_stderr()
+                raise
         except Exception:
+            stderr.seek(0)
             sys.stderr.write(stderr.read())
             raise
-        except SystemExit:
-            exit_status = httpie.ExitStatus.ERROR
+        else:
+            if exit_status != httpie.ExitStatus.OK and not error_exit_ok:
+                dump_stderr()
+                raise Exception('Unexpected exit status: %s', exit_status)
 
         stdout.seek(0)
         stderr.seek(0)
         output = stdout.read()
+
         try:
             output = output.decode('utf8')
         except UnicodeDecodeError:
@@ -148,6 +168,9 @@ def http(*args, **kwargs):
             r = StrCLIResponse(output)
         r.stderr = stderr.read()
         r.exit_status = exit_status
+
+        if r.exit_status != httpie.ExitStatus.OK:
+            sys.stderr.write(r.stderr)
 
         return r
 

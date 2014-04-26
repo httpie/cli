@@ -13,12 +13,12 @@ class TestHTTPie:
         assert 'HTTPie data:' in r.stderr
 
     def test_help(self):
-        r = http('--help')
+        r = http('--help', error_exit_ok=True)
         assert r.exit_status == httpie.ExitStatus.ERROR
         assert 'https://github.com/jkbr/httpie/issues' in r
 
     def test_version(self):
-        r = http('--version')
+        r = http('--version', error_exit_ok=True)
         assert r.exit_status == httpie.ExitStatus.ERROR
         # FIXME: py3 has version in stdout, py2 in stderr
         assert httpie.__version__ == r.stderr.strip() + r.strip()

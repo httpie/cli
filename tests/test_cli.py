@@ -263,7 +263,8 @@ class TestNoOptions:
         assert 'GET /get HTTP/1.1' not in r
 
     def test_invalid_no_options(self):
-        r = http('--no-war', 'GET', httpbin('/get'))
+        r = http('--no-war', 'GET', httpbin('/get'),
+                 error_exit_ok=True)
         assert r.exit_status == 1
         assert 'unrecognized arguments: --no-war' in r.stderr
         assert 'GET /get HTTP/1.1' not in r
@@ -279,6 +280,7 @@ class TestIgnoreStdin:
         assert FILE_CONTENT not in r, "Don't send stdin data."
 
     def test_ignore_stdin_cannot_prompt_password(self):
-        r = http('--ignore-stdin', '--auth=no-password', httpbin('/get'))
+        r = http('--ignore-stdin', '--auth=no-password', httpbin('/get'),
+                 error_exit_ok=True)
         assert r.exit_status == ExitStatus.ERROR
         assert 'because --ignore-stdin' in r.stderr

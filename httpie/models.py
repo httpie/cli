@@ -40,10 +40,26 @@ class Environment(object):
         stdout = sys.stdout
         stderr = sys.stderr
 
+    stdin_encoding = None
+    stdout_encoding = None
+
     def __init__(self, **kwargs):
         assert all(hasattr(type(self), attr)
                    for attr in kwargs.keys())
         self.__dict__.update(**kwargs)
+
+        if self.stdin_encoding is None:
+            self.stdin_encoding = getattr(
+                self.stdin, 'encoding', None) or 'utf8'
+
+        if self.stdout_encoding is None:
+            actual_stdout = self.stdout
+            if is_windows:
+                from colorama import AnsiToWin32
+                if isinstance(AnsiToWin32, self.stdout):
+                    actual_stdout = self.stdout.wrapped
+            self.stdout_encoding = getattr(
+                actual_stdout, 'encoding', None) or 'utf8'
 
     @property
     def config(self):

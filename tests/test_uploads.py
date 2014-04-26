@@ -45,11 +45,11 @@ class TestRequestBodyFromFilePath:
     def test_request_body_from_file_by_path_no_field_name_allowed(self):
         env = TestEnvironment(stdin_isatty=True)
         r = http('POST', httpbin('/post'), 'field-name@' + FILE_PATH_ARG,
-                 env=env)
+                 env=env, error_exit_ok=True)
         assert 'perhaps you meant --form?' in r.stderr
 
     def test_request_body_from_file_by_path_no_data_items_allowed(self):
         env = TestEnvironment(stdin_isatty=False)
         r = http('POST', httpbin('/post'), '@' + FILE_PATH_ARG, 'foo=bar',
-                 env=env)
+                 env=env, error_exit_ok=True)
         assert 'cannot be mixed' in r.stderr

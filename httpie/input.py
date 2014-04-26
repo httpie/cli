@@ -16,7 +16,7 @@ from .compat import OrderedDict
 # https://github.com/jkbr/httpie/issues/130
 from requests.structures import CaseInsensitiveDict
 
-from .compat import urlsplit, str
+from .compat import urlsplit, str, bytes
 from .sessions import VALID_SESSION_NAME_PATTERN
 
 
@@ -153,14 +153,13 @@ class Parser(ArgumentParser):
     # noinspection PyShadowingBuiltins
     def _print_message(self, message, file=None):
         # Sneak in our stderr/stdout.
-        print(file)
         file = {
             sys.stdout: self.env.stdout,
             sys.stderr: self.env.stderr,
             None: self.env.stderr
         }.get(file, file)
-        if not hasattr(file, 'buffer'):
-            message = message.encode('utf8')
+        if not hasattr(file, 'buffer') and isinstance(message, str):
+            message = message.encode(self.env.stdout_encoding)
         super(Parser, self)._print_message(message, file)
 
     def _setup_standard_streams(self):
@@ -502,7 +501,7 @@ class KeyValueArgType(object):
 
         else:
             raise ArgumentTypeError(
-                '"%s" is not a valid value' % string)
+                u'"%s" is not a valid value' % string)
 
         return self.key_value_class(
             key=key, value=value, sep=sep, orig=string)
