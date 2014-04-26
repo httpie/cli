@@ -170,27 +170,23 @@ class Parser(ArgumentParser):
         if not self.env.stdout_isatty and self.args.output_file:
             self.error('Cannot use --output, -o with redirected output.')
 
-        # FIXME: Come up with a cleaner solution.
         if self.args.download:
-
+            # FIXME: Come up with a cleaner solution.
             if not self.env.stdout_isatty:
-                # Use stdout as tge download output file.
+                # Use stdout as the download output file.
                 self.args.output_file = self.env.stdout
-
             # With `--download`, we write everything that would normally go to
             # `stdout` to `stderr` instead. Let's replace the stream so that
             # we don't have to use many `if`s throughout the codebase.
             # The response body will be treated separately.
             self.env.stdout = self.env.stderr
             self.env.stdout_isatty = self.env.stderr_isatty
-
         elif self.args.output_file:
             # When not `--download`ing, then `--output` simply replaces
             # `stdout`. The file is opened for appending, which isn't what
             # we want in this case.
             self.args.output_file.seek(0)
             self.args.output_file.truncate()
-
             self.env.stdout = self.args.output_file
             self.env.stdout_isatty = False
 
@@ -289,7 +285,7 @@ class Parser(ArgumentParser):
             except ArgumentTypeError as e:
                 if self.args.traceback:
                     raise
-                self.error(e.message)
+                self.error(e.args[0])
 
             else:
                 # Set the URL correctly
@@ -323,7 +319,7 @@ class Parser(ArgumentParser):
         except ParseError as e:
             if self.args.traceback:
                 raise
-            self.error(e.message)
+            self.error(e.args[0])
 
         if self.args.files and not self.args.form:
             # `http url @/path/to/file`

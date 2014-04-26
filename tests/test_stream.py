@@ -20,8 +20,6 @@ class TestStream:
             r = http('--verbose', '--pretty=all', '--stream', 'GET',
                      httpbin('/get'), env=env)
         assert BINARY_SUPPRESSED_NOTICE.decode() in r
-        # We get 'Bad Request' but it's okay.
-        #self.assertIn(OK_COLOR, r)
 
     def test_encoded_stream(self):
         """Test that --stream works with non-prettified
@@ -31,8 +29,6 @@ class TestStream:
             r = http('--pretty=none', '--stream', '--verbose', 'GET',
                      httpbin('/get'), env=env)
         assert BINARY_SUPPRESSED_NOTICE.decode() in r
-        # We get 'Bad Request' but it's okay.
-        #self.assertIn(OK, r)
 
     def test_redirected_stream(self):
         """Test that --stream works with non-prettified
@@ -43,6 +39,4 @@ class TestStream:
                                   stdin=f)
             r = http('--pretty=none', '--stream', '--verbose', 'GET',
                      httpbin('/get'), env=env)
-        # We get 'Bad Request' but it's okay.
-        #self.assertIn(OK.encode(), r)
         assert BIN_FILE_CONTENT in r

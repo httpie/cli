@@ -1,18 +1,21 @@
 import os
 import codecs
 
-from tests import TESTS_ROOT
-
 
 def patharg(path):
-    """Back slashes need to be escaped in ITEM args, even in Windows paths."""
+    """
+    Back slashes need to be escaped in ITEM args,
+    even in Windows paths.
+
+    """
     return path.replace('\\', '\\\\\\')
 
 
-### Test files
-FILE_PATH = os.path.join(TESTS_ROOT, 'fixtures', 'test.txt')
-JSON_FILE_PATH = os.path.join(TESTS_ROOT, 'fixtures', 'test.json')
-BIN_FILE_PATH = os.path.join(TESTS_ROOT, 'fixtures', 'test.bin')
+FIXTURES_ROOT = os.path.abspath(os.path.dirname(__file__))
+FILE_PATH = os.path.join(FIXTURES_ROOT, 'test.txt')
+JSON_FILE_PATH = os.path.join(FIXTURES_ROOT, 'test.json')
+BIN_FILE_PATH = os.path.join(FIXTURES_ROOT, 'test.bin')
+
 
 FILE_PATH_ARG = patharg(FILE_PATH)
 BIN_FILE_PATH_ARG = patharg(BIN_FILE_PATH)
