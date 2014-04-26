@@ -10,7 +10,7 @@ from tests.fixtures import UNICODE
 class TestUnicode:
 
     def test_unicode_headers(self):
-        r = http('--verbose', httpbin('/headers'), u'Test:%s' % UNICODE)
+        r = http(httpbin('/headers'), u'Test:%s' % UNICODE)
         assert HTTP_OK in r
         assert r.json['headers']['Test'] == UNICODE
 
@@ -42,9 +42,9 @@ class TestUnicode:
         assert UNICODE in r
 
     def test_unicode_raw_json_item(self):
-        r = http('--verbose',
-                 '--json', 'POST', httpbin('/post'),
+        r = http('--json', 'POST', httpbin('/post'),
                  u'test:={ "%s" : [ "%s" ] }' % (UNICODE, UNICODE))
+        assert r.json['json'] == {'test': {UNICODE: [UNICODE]}}
 
     def test_unicode_raw_json_item_verbose(self):
         r = http('--verbose',
