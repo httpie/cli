@@ -43,7 +43,6 @@ class BaseConfigDict(dict):
                 raise
         return path
 
-    @property
     def is_new(self):
         return not os.path.exists(self._get_path())
 

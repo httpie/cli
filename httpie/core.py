@@ -2,29 +2,31 @@
 
 Invocation flow:
 
-    1. Read, validate and process the input (args, `stdin`).
-    2. Create and send a request.
-    3. Stream, and possibly process and format, the requested parts
-       of the request-response exchange.
-    4. Simultaneously write to `stdout`
-    5. Exit.
+  1. Read, validate and process the input (args, `stdin`).
+  2. Create and send a request.
+  3. Stream, and possibly process and format, the parts
+     of the request-response exchange selected by output options.
+  4. Simultaneously write to `stdout`
+  5. Exit.
 
 """
 import sys
 import errno
 
 import requests
-from httpie import __version__ as httpie_version
 from requests import __version__ as requests_version
 from pygments import __version__ as pygments_version
 
-from .compat import str, bytes, is_py3
-from .client import get_response
-from .downloads import Download
-from .models import Environment
-from .output import build_output_stream, write, write_with_colors_win_py3
-from . import ExitStatus
-from .plugins import plugin_manager
+from httpie import __version__ as httpie_version, ExitStatus
+from httpie.compat import str, bytes, is_py3
+from httpie.client import get_response
+from httpie.downloads import Download
+from httpie.context import Environment
+from httpie.plugins import plugin_manager
+from httpie.output.streams import (
+    build_output_stream,
+    write, write_with_colors_win_py3
+)
 
 
 def get_exit_status(http_status, follow=False):

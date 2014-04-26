@@ -12,10 +12,10 @@ import threading
 from time import sleep, time
 from mailbox import Message
 
-from .output import RawStream
-from .models import HTTPResponse
-from .utils import humanize_bytes
-from .compat import urlsplit
+from httpie.output.streams import RawStream
+from httpie.models import HTTPResponse
+from httpie.utils import humanize_bytes
+from httpie.compat import urlsplit
 
 
 PARTIAL_CONTENT = 206

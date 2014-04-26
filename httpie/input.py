@@ -132,8 +132,7 @@ class Parser(ArgumentParser):
         if not self.args.ignore_stdin and not env.stdin_isatty:
             self._body_from_file(self.env.stdin)
         if not (self.args.url.startswith((HTTP, HTTPS))):
-            # Default to 'https://' if invoked as `https args`.
-            scheme = HTTPS if self.env.progname == 'https' else HTTP
+            scheme = HTTP
 
             # See if we're using curl style shorthand for localhost (:3000/foo)
             shorthand = re.match(r'^:(?!:)(\d*)(/?.*)$', self.args.url)
@@ -277,10 +276,8 @@ class Parser(ArgumentParser):
             # and the first ITEM is now incorrectly in `args.url`.
             try:
                 # Parse the URL as an ITEM and store it as the first ITEM arg.
-                self.args.items.insert(
-                    0,
-                    KeyValueArgType(*SEP_GROUP_ALL_ITEMS).__call__(self.args.url)
-                )
+                self.args.items.insert(0, KeyValueArgType(
+                    *SEP_GROUP_ALL_ITEMS).__call__(self.args.url))
 
             except ArgumentTypeError as e:
                 if self.args.traceback:
@@ -292,11 +289,9 @@ class Parser(ArgumentParser):
                 self.args.url = self.args.method
                 # Infer the method
                 has_data = (
-                    (not self.args.ignore_stdin and
-                     not self.env.stdin_isatty) or any(
-                        item.sep in SEP_GROUP_DATA_ITEMS
-                        for item in self.args.items
-                    )
+                    (not self.args.ignore_stdin and not self.env.stdin_isatty)
+                     or any(item.sep in SEP_GROUP_DATA_ITEMS
+                            for item in self.args.items)
                 )
                 self.args.method = HTTP_POST if has_data else HTTP_GET
 

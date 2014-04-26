@@ -13,7 +13,7 @@ from . import __version__
 from .plugins.builtin import BuiltinAuthPlugin
 from .plugins import plugin_manager
 from .sessions import DEFAULT_SESSIONS_DIR
-from .output import AVAILABLE_STYLES, DEFAULT_STYLE
+from .output.processors.colors import AVAILABLE_STYLES, DEFAULT_STYLE
 from .input import (Parser, AuthCredentialsArgType, KeyValueArgType,
                     SEP_PROXY, SEP_CREDENTIALS, SEP_GROUP_ALL_ITEMS,
                     OUT_REQ_HEAD, OUT_REQ_BODY, OUT_RESP_HEAD,

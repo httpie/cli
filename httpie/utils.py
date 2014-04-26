@@ -43,5 +43,6 @@ def humanize_bytes(n, precision=2):
         if n >= factor:
             break
 
+    # noinspection PyUnboundLocalVariable
     return '%.*f %s' % (precision, n / factor, suffix)
 

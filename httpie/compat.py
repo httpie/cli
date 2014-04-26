@@ -34,6 +34,7 @@ except ImportError:
     # noinspection PyCompatibility
     from UserDict import DictMixin
 
+    # noinspection PyShadowingBuiltins
     class OrderedDict(dict, DictMixin):
         # Copyright (c) 2009 Raymond Hettinger
         #
@@ -56,6 +57,7 @@ except ImportError:
         #     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
         #     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
         #     OTHER DEALINGS IN THE SOFTWARE.
+        # noinspection PyMissingConstructor
         def __init__(self, *args, **kwds):
             if len(args) > 1:
                 raise TypeError('expected at most 1 arguments, got %d'
@@ -68,6 +70,7 @@ except ImportError:
 
         def clear(self):
             self.__end = end = []
+            # noinspection PyUnusedLocal
             end += [None, end, end]     # sentinel node for doubly linked list
             self.__map = {}             # key --> [key, prev, next]
             dict.clear(self)
@@ -139,6 +142,7 @@ except ImportError:
         def copy(self):
             return self.__class__(self)
 
+        # noinspection PyMethodOverriding
         @classmethod
         def fromkeys(cls, iterable, value=None):
             d = cls()

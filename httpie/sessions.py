@@ -74,7 +74,7 @@ def get_response(session_name, requests_kwargs, config_dir, args,
         raise
     else:
         # Existing sessions with `read_only=True` don't get updated.
-        if session.is_new or not read_only:
+        if session.is_new() or not read_only:
             session.cookies = requests_session.cookies
             session.save()
         return response

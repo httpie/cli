@@ -10,7 +10,7 @@ import shutil
 import tempfile
 
 import httpie
-from httpie.models import Environment
+from httpie.context import Environment
 from httpie.core import main
 from httpie.compat import bytes, str
 
