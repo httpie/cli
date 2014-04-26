@@ -11,7 +11,7 @@ class PyTest(TestCommand):
         TestCommand.finalize_options(self)
         self.test_suite = True
         self.test_args = [
-            '--doctest-modules', '-n', '8',
+            '--doctest-modules',
             './httpie', './tests'
         ]
         self.test_suite = True
@@ -23,7 +23,6 @@ class PyTest(TestCommand):
 
 tests_require = [
     'pytest',
-    'pytest-xdist',
 ]
 
 
