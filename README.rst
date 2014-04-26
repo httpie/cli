@@ -1384,7 +1384,7 @@ Changelog
 .. |version| image:: https://badge.fury.io/py/httpie.svg
     :target: http://badge.fury.io/py/httpie
 
-.. |unix| image:: https://secure.travis-ci.org/jkbr/httpie.png
+.. |unix| image:: https://api.travis-ci.org/jkbr/httpie.svg
     :target: http://travis-ci.org/jkbr/httpie
     :alt: Build Status of the master branch on Mac/Linux
 
