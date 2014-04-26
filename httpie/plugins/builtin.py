@@ -20,7 +20,7 @@ class HTTPBasicAuth(requests.auth.HTTPBasicAuth):
 
         """
         credentials = u'%s:%s' % (self.username, self.password)
-        token = b64encode(credentials.encode('utf8')).strip()
+        token = b64encode(credentials.encode('utf8')).strip().decode('latin1')
         r.headers['Authorization'] = 'Basic %s' % token
         return r
 

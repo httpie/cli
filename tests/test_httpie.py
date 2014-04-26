@@ -61,5 +61,5 @@ class TestHTTPie:
     def test_headers(self):
         r = http('GET', httpbin('/headers'), 'Foo:bar')
         assert HTTP_OK in r
-        assert '"User-Agent": "HTTPie' in r
+        assert '"User-Agent": "HTTPie' in r, r
         assert '"Foo": "bar"' in r

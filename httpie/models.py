@@ -104,7 +104,10 @@ class HTTPMessage(object):
     @property
     def content_type(self):
         """Return the message content type."""
-        return self._orig.headers.get('Content-Type', '')
+        ct = self._orig.headers.get('Content-Type', '')
+        if not isinstance(ct, str):
+            ct = ct.decode('utf8')
+        return ct
 
 
 class HTTPResponse(HTTPMessage):

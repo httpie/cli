@@ -83,8 +83,8 @@ def get_requests_kwargs(args):
     # This allows for unicode headers which is non-standard but practical.
     # See: https://github.com/jkbr/httpie/issues/212
     headers = dict(
-        (k.encode('utf8'), v.encode('utf8') if isinstance(v, str) else v)
-        for k, v in args.headers.items()
+        (name, value.encode('utf8') if isinstance(value, str) else value)
+        for name, value in args.headers.items()
     )
 
     kwargs = {
