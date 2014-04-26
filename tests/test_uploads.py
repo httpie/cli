@@ -32,7 +32,7 @@ class TestRequestBodyFromFilePath:
     def test_request_body_from_file_by_path(self):
         r = http('--verbose', 'POST', httpbin('/post'), '@' + FILE_PATH_ARG)
         assert HTTP_OK in r
-        assert FILE_CONTENT in r
+        assert FILE_CONTENT in r, r
         assert '"Content-Type": "text/plain"' in r
 
     def test_request_body_from_file_by_path_with_explicit_content_type(self):
