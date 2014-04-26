@@ -73,8 +73,7 @@ class TestItemParsing:
 
         # Parsed data
         raw_json_embed = data.pop('raw-json-embed')
-        assert raw_json_embed == json.loads(
-            JSON_FILE_CONTENT.decode('utf8'))
+        assert raw_json_embed == json.loads(JSON_FILE_CONTENT)
         data['string-embed'] = data['string-embed'].strip()
         assert dict(data) == {
             "ed": "",
