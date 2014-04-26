@@ -11,7 +11,7 @@ class PyTest(TestCommand):
         TestCommand.finalize_options(self)
         self.test_suite = True
         self.test_args = [
-            '--doctest-modules',
+            '--doctest-modules', '--verbose',
             './httpie', './tests'
         ]
         self.test_suite = True
