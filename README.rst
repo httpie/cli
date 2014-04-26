@@ -61,6 +61,12 @@ Main Features
 Installation
 ============
 
+
+
+------------------------
+Stable version |version|
+------------------------
+
 The **latest stable version** can always be installed or updated to via `pip`_:
 
 .. code-block:: bash
@@ -68,7 +74,7 @@ The **latest stable version** can always be installed or updated to via `pip`_:
     $ pip install --upgrade httpie
 
 
-If the above fails:
+If the above fails, please use ``easy_install`` instead:
 
 .. code-block:: bash
 
@@ -80,17 +86,23 @@ system package manager, e.g.
 ``yum install httpie`` or ``apt-get install httpie``.
 
 
+
+-------------------
+Development version
+-------------------
+
+=============  =============
+Mac/Linux      Windows
+|unix|         |windows|
+=============  =============
+
+
 The **latest development version** can be installed directly from GitHub:
-|travis-master|
-
-.. |travis-master| image:: https://secure.travis-ci.org/jkbr/httpie.png
-    :target: http://travis-ci.org/jkbr/httpie
-    :alt: Build Status of the master branch
-
 
 .. code-block:: bash
 
     $ pip install --upgrade https://github.com/jkbr/httpie/tarball/master
+
 
 
 =====
@@ -194,9 +206,9 @@ Set a custom ``Host`` header to work around missing DNS records:
 advanced usage, and also features additional examples.*
 
 
-============
+===========
 HTTP Method
-============
+===========
 
 The name of the HTTP method comes right before the URL argument:
 
@@ -1366,3 +1378,15 @@ Changelog
 .. _LICENSE: https://github.com/jkbr/httpie/blob/master/LICENSE
 .. _Tox: http://tox.testrun.org
 .. _CONTRIBUTING: https://github.com/jkbr/httpie/blob/master/CONTRIBUTING.rst
+
+
+.. |version| image:: https://badge.fury.io/py/httpie.svg
+    :target: http://badge.fury.io/py/httpie
+
+.. |unix| image:: https://secure.travis-ci.org/jkbr/httpie.png
+    :target: http://travis-ci.org/jkbr/httpie
+    :alt: Build Status of the master branch on Mac/Linux
+
+.. |windows|  image:: https://ci.appveyor.com/api/projects/status/f7b5dogxuseq8srw
+    :target: https://ci.appveyor.com/project/jkbr/httpie
+    :alt: Build Status of the master branch on Windows
