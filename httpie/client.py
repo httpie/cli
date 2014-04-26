@@ -38,6 +38,15 @@ def get_response(args, config_dir):
     return response
 
 
+def encode_headers(headers):
+    # This allows for unicode headers which is non-standard but practical.
+    # See: https://github.com/jkbr/httpie/issues/212
+    return dict(
+        (name, value.encode('utf8') if isinstance(value, str) else value)
+        for name, value in headers.items()
+    )
+
+
 def get_requests_kwargs(args):
     """Translate our `args` into `requests.request` keyword arguments."""
 
@@ -80,18 +89,11 @@ def get_requests_kwargs(args):
         if args.certkey:
             cert = (cert, args.certkey)
 
-    # This allows for unicode headers which is non-standard but practical.
-    # See: https://github.com/jkbr/httpie/issues/212
-    headers = dict(
-        (name, value.encode('utf8') if isinstance(value, str) else value)
-        for name, value in args.headers.items()
-    )
-
     kwargs = {
         'stream': True,
         'method': args.method.lower(),
         'url': args.url,
-        'headers': headers,
+        'headers': encode_headers(args.headers),
         'data': args.data,
         'verify': {
             'yes': True,

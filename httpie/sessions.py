@@ -27,6 +27,7 @@ def get_response(session_name, requests_kwargs, config_dir, args,
     aspects of the session to the request.
 
     """
+    from .client import encode_headers
     if os.path.sep in session_name:
         path = os.path.expanduser(session_name)
     else:
@@ -49,8 +50,9 @@ def get_response(session_name, requests_kwargs, config_dir, args,
 
     request_headers = requests_kwargs.get('headers', {})
 
-    requests_kwargs['headers'] = dict(session.headers)
-    requests_kwargs['headers'].update(request_headers)
+    merged_headers = dict(session.headers)
+    merged_headers.update(request_headers)
+    requests_kwargs['headers'] = encode_headers(merged_headers)
 
     session.update_headers(request_headers)
 

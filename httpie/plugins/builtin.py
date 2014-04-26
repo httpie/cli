@@ -19,10 +19,15 @@ class HTTPBasicAuth(requests.auth.HTTPBasicAuth):
         See https://github.com/jkbr/httpie/issues/212
 
         """
-        credentials = u'%s:%s' % (self.username, self.password)
-        token = b64encode(credentials.encode('utf8')).strip().decode('latin1')
-        r.headers['Authorization'] = 'Basic %s' % token
+        r.headers['Authorization'] = type(self).make_header(
+            self.username, self.password).encode('latin1')
         return r
+
+    @staticmethod
+    def make_header(username, password):
+        credentials = u'%s:%s' % (username, password)
+        token = b64encode(credentials.encode('utf8')).strip().decode('latin1')
+        return 'Basic %s' % token
 
 
 class BasicAuthPlugin(BuiltinAuthPlugin):

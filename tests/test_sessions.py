@@ -1,5 +1,7 @@
+# coding=utf-8
 import os
 import shutil
+from httpie.plugins.builtin import HTTPBasicAuth
 
 from tests import TestEnvironment, mk_config_dir, http, httpbin, HTTP_OK
 
@@ -121,3 +123,17 @@ class TestSession(SessionTestBase):
                   env=self.env())
         assert HTTP_OK in r2
         assert r2.json['headers']['Foo'] == 'Bar'
+
+    def test_session_unicode(self):
+        UNICODE = u'太陽'
+        r1 = http('--session=test', '--auth', u'test:' + UNICODE,
+                  'GET', httpbin('/get'),
+                  u'Test:%s' % UNICODE,
+                  env=self.env())
+        assert HTTP_OK in r1
+
+        r2 = http('--session=test', 'GET', httpbin('/get'), env=self.env())
+        assert HTTP_OK in r2
+        assert (r2.json['headers']['Authorization']
+                == HTTPBasicAuth.make_header(u'test', UNICODE))
+        assert r2.json['headers']['Test'] == UNICODE
