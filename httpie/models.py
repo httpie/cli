@@ -180,8 +180,12 @@ class HTTPRequest(HTTPMessage):
                    for name, value in headers.items()]
 
         headers.insert(0, request_line)
+        headers = '\r\n'.join(headers).strip()
 
-        return '\r\n'.join(headers).strip()
+        if isinstance(headers, bytes):
+            # Python < 3
+            headers = headers.decode('utf8')
+        return headers
 
     @property
     def encoding(self):
