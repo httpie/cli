@@ -11,10 +11,8 @@ class PyTest(TestCommand):
         TestCommand.finalize_options(self)
         self.test_suite = True
         self.test_args = [
-            '--doctest-modules',
-            '-n', '8',
-            './httpie',
-            './tests'
+            '--doctest-modules', '-n', '8',
+            './httpie', './tests'
         ]
         self.test_suite = True
 
@@ -66,10 +64,8 @@ setup(
         ],
     },
     install_requires=install_requires,
-    cmdclass={'test': PyTest},
     tests_require=tests_require,
-    extras_require={'tests': tests_require},
-
+    cmdclass={'test': PyTest},
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Programming Language :: Python',
