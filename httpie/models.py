@@ -56,7 +56,7 @@ class Environment(object):
             actual_stdout = self.stdout
             if is_windows:
                 from colorama import AnsiToWin32
-                if isinstance(AnsiToWin32, self.stdout):
+                if isinstance(self.stdout, AnsiToWin32):
                     actual_stdout = self.stdout.wrapped
             self.stdout_encoding = getattr(
                 actual_stdout, 'encoding', None) or 'utf8'
