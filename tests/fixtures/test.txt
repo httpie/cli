@@ -1,1 +1,1 @@
-some UTF8-encoded unicode text 太陽 by Jakub Roztočil
+[one line of UTF8-encoded unicode text] χρυσαφὶ 太陽 เลิศ ♜♞♝♛♚♝♞♜ оживлённым तान्यहानि 有朋 ஸ்றீனிவாஸ ٱلرَّحْمـَبنِ

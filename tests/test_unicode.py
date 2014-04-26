@@ -4,9 +4,7 @@ Various unicode handling related tests.
 
 """
 from tests import http, httpbin, HTTP_OK
-
-
-UNICODE = u'太陽'
+from tests.fixtures import UNICODE
 
 
 class TestUnicode:

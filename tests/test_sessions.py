@@ -4,6 +4,7 @@ import shutil
 
 from httpie.plugins.builtin import HTTPBasicAuth
 from tests import TestEnvironment, mk_config_dir, http, httpbin, HTTP_OK
+from tests.fixtures import UNICODE
 
 
 class SessionTestBase(object):
@@ -125,7 +126,6 @@ class TestSession(SessionTestBase):
         assert r2.json['headers']['Foo'] == 'Bar'
 
     def test_session_unicode(self):
-        UNICODE = u'太陽'
         r1 = http('--session=test', '--auth', u'test:' + UNICODE,
                   'GET', httpbin('/get'),
                   u'Test:%s' % UNICODE,

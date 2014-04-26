@@ -32,3 +32,5 @@ with codecs.open(JSON_FILE_PATH, encoding='utf8') as f:
 
 with open(BIN_FILE_PATH, 'rb') as f:
     BIN_FILE_CONTENT = f.read()
+
+UNICODE = FILE_CONTENT

@@ -1,3 +1,4 @@
+# coding=utf-8
 """Utilities used by HTTPie tests.
 
 """
