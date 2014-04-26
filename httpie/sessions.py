@@ -48,7 +48,10 @@ def get_response(session_name, requests_kwargs, config_dir, args,
     session.load()
 
     request_headers = requests_kwargs.get('headers', {})
-    requests_kwargs['headers'] = dict(session.headers, **request_headers)
+
+    requests_kwargs['headers'] = dict(session.headers)
+    requests_kwargs['headers'].update(request_headers)
+
     session.update_headers(request_headers)
 
     if args.auth:
