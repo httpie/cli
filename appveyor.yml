@@ -8,6 +8,6 @@ install:
   - C:\Python27\Scripts\pip.exe install -e .
 build: off
 test_script:
-  - C:\Python27\Scripts\pip.exe
+  - C:\Python27\Scripts\pip.exe --version
   - C:\Python27\Scripts\http.exe --debug
   - C:\Python27\python.exe setup.py test
