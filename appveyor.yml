@@ -1,3 +1,4 @@
+# https://ci.appveyor.com/project/jkbr/httpie
 build: false
 environment:
   matrix:
