@@ -1,14 +1,13 @@
-# https://ci.appveyor.com/project/jkbr/httpie
+build: false
 environment:
   matrix:
-    - PYTHON: C:\Python27
-    - PYTHON: C:\Python33
+    - PYTHON: "C:\\Python27"
+    - PYTHON: "C:\\Python33"
 install:
-  - ps: (new-object net.webclient).DownloadFile('https://raw.github.com/pypa/pip/master/contrib/get-pip.py', 'C:\get-pip.py')
-  - cmd: %PYTHON%\python.exe c:\get-pip.py
-  - cmd: %PYTHON%\Scripts\pip.exe install -e .
-build: off
+  - ps: (new-object net.webclient).DownloadFile('https://raw.github.com/pypa/pip/master/contrib/get-pip.py', 'C:\\get-pip.py')
+  - "%PYTHON%\\python.exe c:\\get-pip.py"
+  - "%PYTHON%\\Scripts\\pip.exe install -e ."
 test_script:
-  - %PYTHON%\Scripts\pip.exe --version
-  - %PYTHON%\Scripts\http.exe --debug
-  - %PYTHON%\python.exe setup.py test
+  - "%PYTHON%\\Scripts\\pip.exe --version"
+  - "%PYTHON%\\Scripts\\http.exe --debug"
+  - "%PYTHON%\\python.exe setup.py test"
