@@ -2,15 +2,15 @@
 build: false
 environment:
   matrix:
-    - PYTHON: "C:\\Python27"
-    - PYTHON: "C:\\Python34"
+    - PYTHON: "C:/Python27"
+    - PYTHON: "C:/Python34"
 init:
-  - ps: "ls C:\Python*"
+  - ps: "ls C:/Python*"
 install:
-  - ps: (new-object net.webclient).DownloadFile('https://raw.github.com/pypa/pip/master/contrib/get-pip.py', 'C:\\get-pip.py')
-  - "%PYTHON%\\python.exe c:\\get-pip.py"
-  - "%PYTHON%\\Scripts\\pip.exe install -e ."
+  - ps: (new-object net.webclient).DownloadFile('https://raw.github.com/pypa/pip/master/contrib/get-pip.py', 'C:/get-pip.py')
+  - "%PYTHON%/python.exe c:/get-pip.py"
+  - "%PYTHON%/Scripts/pip.exe install -e ."
 test_script:
-  - "%PYTHON%\\Scripts\\pip.exe --version"
-  - "%PYTHON%\\Scripts\\http.exe --debug"
-  - "%PYTHON%\\python.exe setup.py test"
+  - "%PYTHON%/Scripts/pip.exe --version"
+  - "%PYTHON%/Scripts/http.exe --debug"
+  - "%PYTHON%/python.exe setup.py test"
