@@ -5,10 +5,11 @@ environment:
     - PYTHON: "C:/Python27"
     - PYTHON: "C:/Python34"
 init:
+  - "ECHO %PYTHON%"
   - ps: "ls C:/Python*"
 install:
   - ps: (new-object net.webclient).DownloadFile('https://raw.github.com/pypa/pip/master/contrib/get-pip.py', 'C:/get-pip.py')
-  - "%PYTHON%/python.exe c:/get-pip.py"
+  - "%PYTHON%/python.exe C:/get-pip.py"
   - "%PYTHON%/Scripts/pip.exe install -e ."
 test_script:
   - "%PYTHON%/Scripts/pip.exe --version"
