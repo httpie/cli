@@ -4,6 +4,10 @@ python:
   - 2.7
   - pypy
   - 3.3
-script: python setup.py test
 install:
+  - pip install pytest pytest-cov python-coveralls --use-mirrors
   - pip install . --use-mirrors
+script:
+  - py.test --cov ./httpie --cov ./tests --doctest-modules --verbose ./httpie ./tests
+after_success:
+  - coveralls
