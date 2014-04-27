@@ -18,12 +18,10 @@ class BaseConfigDict(dict):
     name = None
     helpurl = None
     about = None
-    directory = DEFAULT_CONFIG_DIR
 
     def __init__(self, directory=None, *args, **kwargs):
         super(BaseConfigDict, self).__init__(*args, **kwargs)
-        if directory:
-            self.directory = directory
+        self.directory = kwargs.pop('directory', DEFAULT_CONFIG_DIR)
 
     def __getattr__(self, item):
         return self[item]
