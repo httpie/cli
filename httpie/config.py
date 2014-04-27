@@ -18,19 +18,13 @@ class BaseConfigDict(dict):
     name = None
     helpurl = None
     about = None
-    directory = DEFAULT_CONFIG_DIR
-
-    def __init__(self, directory=None, *args, **kwargs):
-        super(BaseConfigDict, self).__init__(*args, **kwargs)
-        if directory:
-            self.directory = directory
 
     def __getattr__(self, item):
         return self[item]
 
     def _get_path(self):
         """Return the config file path without side-effects."""
-        return os.path.join(self.directory, self.name + '.json')
+        raise NotImplementedError()
 
     @property
     def path(self):
@@ -94,6 +88,10 @@ class Config(BaseConfigDict):
         'default_options': []
     }
 
-    def __init__(self, *args, **kwargs):
-        super(Config, self).__init__(*args, **kwargs)
+    def __init__(self, directory=DEFAULT_CONFIG_DIR):
+        super(Config, self).__init__()
         self.update(self.DEFAULTS)
+        self.directory = directory
+
+    def _get_path(self):
+        return os.path.join(self.directory, self.name + '.json')
