@@ -5,10 +5,10 @@ environment:
     - PYTHON: C:\Python33
 install:
   - ps: (new-object net.webclient).DownloadFile('https://raw.github.com/pypa/pip/master/contrib/get-pip.py', 'C:\get-pip.py')
-  - cmd: %PYTHON%\python.exe c:\get-pip.py
-  - cmd: %PYTHON%\Scripts\pip.exe install -e .
+  - cmd: "%PYTHON%\python.exe" c:\get-pip.py
+  - cmd: "%PYTHON%\Scripts\pip.exe" install -e .
 build: off
 test_script:
-  - cmd: %PYTHON%\Scripts\pip.exe --version
-  - cmd: %PYTHON%\Scripts\http.exe --debug
-  - cmd: %PYTHON%\python.exe setup.py test
+  - cmd: "%PYTHON%\Scripts\pip.exe" --version
+  - cmd: "%PYTHON%\Scripts\http.exe" --debug
+  - cmd: "%PYTHON%\python.exe" setup.py test
