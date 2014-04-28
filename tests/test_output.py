@@ -1,5 +1,9 @@
+import pytest
+
 from httpie import ExitStatus
+from httpie.output.processors.colors import get_lexer
 from tests import TestEnvironment, http, httpbin, HTTP_OK, COLOR, CRLF
+
 
 
 class TestVerboseFlag:
@@ -20,6 +24,23 @@ class TestVerboseFlag:
         assert HTTP_OK in r
         assert '"baz": "bar"' in r  # request
         assert r'\"baz\": \"bar\"' in r  # response
+
+
+class TestColors:
+
+    @pytest.mark.parametrize('mime', [
+        'text/html',
+        'foo/html',
+        'text/html+foo',
+        'text/foo+html'
+    ])
+    def test_get_lexer(self, mime):
+        lexer = get_lexer(mime)
+        assert lexer is not None
+        assert lexer.name == 'HTML'
+
+    def test_get_lexer_not_found(self):
+        assert get_lexer('xxx/yyy') is None
 
 
 class TestPrettyOptions:
