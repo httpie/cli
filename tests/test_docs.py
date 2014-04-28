@@ -11,7 +11,6 @@ def has_docutils():
     try:
         #noinspection PyUnresolvedReferences
         import docutils
-
         return True
     except ImportError:
         return False

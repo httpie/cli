@@ -29,15 +29,17 @@ class TestVerboseFlag:
 class TestColors:
 
     @pytest.mark.parametrize('mime', [
-        'text/html',
-        'foo/html',
-        'text/html+foo',
-        'text/foo+html'
+        'application/json',
+        'application/json+foo',
+        'application/foo+json',
+        'foo/json',
+        'foo/json+bar',
+        'foo/bar+json',
     ])
     def test_get_lexer(self, mime):
         lexer = get_lexer(mime)
         assert lexer is not None
-        assert lexer.name == 'HTML'
+        assert lexer.name == 'JSON'
 
     def test_get_lexer_not_found(self):
         assert get_lexer('xxx/yyy') is None

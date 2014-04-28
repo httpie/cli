@@ -1,11 +1,11 @@
-import pygments
-from pygments import token, lexer
-from pygments.styles import get_style_by_name, STYLE_MAP
-from pygments.lexers import get_lexer_for_mimetype, get_lexer_by_name
+import pygments.lexer
+import pygments.token
+import pygments.styles
+import pygments.lexers
+import pygments.style
 from pygments.formatters.terminal import TerminalFormatter
 from pygments.formatters.terminal256 import Terminal256Formatter
 from pygments.util import ClassNotFound
-from pygments.style import Style
 
 from httpie.compat import is_windows
 from .base import BaseProcessor
@@ -13,9 +13,37 @@ from .base import BaseProcessor
 
 # Colors on Windows via colorama don't look that
 # great and fruity seems to give the best result there.
-AVAILABLE_STYLES = set(STYLE_MAP.keys())
+AVAILABLE_STYLES = set(pygments.styles.STYLE_MAP.keys())
 AVAILABLE_STYLES.add('solarized')
 DEFAULT_STYLE = 'solarized' if not is_windows else 'fruity'
+
+
+def get_lexer(mime):
+    mime_types, lexer_names = [mime], []
+    type_, subtype = mime.split('/')
+    if '+' not in subtype:
+        lexer_names.append(subtype)
+    else:
+        subtype_name, subtype_suffix = subtype.split('+')
+        lexer_names.extend([subtype_name, subtype_suffix])
+        mime_types.extend([
+            '%s/%s' % (type_, subtype_name),
+            '%s/%s' % (type_, subtype_suffix)
+        ])
+    lexer = None
+    for mime_type in mime_types:
+        try:
+            lexer = pygments.lexers.get_lexer_for_mimetype(mime_type)
+            break
+        except ClassNotFound:
+            pass
+    else:
+        for name in lexer_names:
+            try:
+                lexer = pygments.lexers.get_lexer_by_name(name)
+            except ClassNotFound:
+                pass
+    return lexer
 
 
 class PygmentsProcessor(BaseProcessor):
@@ -37,7 +65,7 @@ class PygmentsProcessor(BaseProcessor):
         self.lexers_by_type = {}
 
         try:
-            style = get_style_by_name(
+            style = pygments.styles.get_style_by_name(
                 self.kwargs.get('pygments_style', DEFAULT_STYLE))
         except ClassNotFound:
             style = Solarized256Style
@@ -58,23 +86,13 @@ class PygmentsProcessor(BaseProcessor):
         return body.strip()
 
     def get_lexer(self, mime):
-        lexer = self.lexers_by_type.get(mime)
-        if not lexer:
-            try:
-                lexer = get_lexer_for_mimetype(mime)
-            except ClassNotFound:
-                if '+' in mime:
-                    # 'application/atom+xml' => 'xml'
-                    subtype = mime.split('+')[-1]
-                    try:
-                        lexer = get_lexer_by_name(subtype)
-                    except ClassNotFound:
-                        pass
-        self.lexers_by_type[mime] = lexer
-        return lexer
+        if mime in self.lexers_by_type:
+            return self.lexers_by_type[mime]
+        self.lexers_by_type[mime] = get_lexer(mime)
+        return self.lexers_by_type[mime]
 
 
-class HTTPLexer(lexer.RegexLexer):
+class HTTPLexer(pygments.lexer.RegexLexer):
     """Simplified HTTP lexer for Pygments.
 
     It only operates on headers and provides a stronger contrast between
@@ -90,39 +108,39 @@ class HTTPLexer(lexer.RegexLexer):
         'root': [
             # Request-Line
             (r'([A-Z]+)( +)([^ ]+)( +)(HTTP)(/)(\d+\.\d+)',
-             lexer.bygroups(
-                 token.Name.Function,
-                 token.Text,
-                 token.Name.Namespace,
-                 token.Text,
-                 token.Keyword.Reserved,
-                 token.Operator,
-                 token.Number
+             pygments.lexer.bygroups(
+                 pygments.token.Name.Function,
+                 pygments.token.Text,
+                 pygments.token.Name.Namespace,
+                 pygments.token.Text,
+                 pygments.token.Keyword.Reserved,
+                 pygments.token.Operator,
+                 pygments.token.Number
              )),
             # Response Status-Line
             (r'(HTTP)(/)(\d+\.\d+)( +)(\d{3})( +)(.+)',
-             lexer.bygroups(
-                 token.Keyword.Reserved,  # 'HTTP'
-                 token.Operator,  # '/'
-                 token.Number,  # Version
-                 token.Text,
-                 token.Number,  # Status code
-                 token.Text,
-                 token.Name.Exception,  # Reason
+             pygments.lexer.bygroups(
+                 pygments.token.Keyword.Reserved,  # 'HTTP'
+                 pygments.token.Operator,  # '/'
+                 pygments.token.Number,  # Version
+                 pygments.token.Text,
+                 pygments.token.Number,  # Status code
+                 pygments.token.Text,
+                 pygments.token.Name.Exception,  # Reason
              )),
             # Header
-            (r'(.*?)( *)(:)( *)(.+)', lexer.bygroups(
-                token.Name.Attribute,  # Name
-                token.Text,
-                token.Operator,  # Colon
-                token.Text,
-                token.String  # Value
+            (r'(.*?)( *)(:)( *)(.+)', pygments.lexer.bygroups(
+                pygments.token.Name.Attribute,  # Name
+                pygments.token.Text,
+                pygments.token.Operator,  # Colon
+                pygments.token.Text,
+                pygments.token.String  # Value
             ))
         ]
     }
 
 
-class Solarized256Style(Style):
+class Solarized256Style(pygments.style.Style):
     """
     solarized256
     ------------
@@ -152,43 +170,43 @@ class Solarized256Style(Style):
 
     background_color = BASE03
     styles = {
-        token.Keyword: GREEN,
-        token.Keyword.Constant: ORANGE,
-        token.Keyword.Declaration: BLUE,
-        token.Keyword.Namespace: ORANGE,
-        token.Keyword.Reserved: BLUE,
-        token.Keyword.Type: RED,
-        token.Name.Attribute: BASE1,
-        token.Name.Builtin: BLUE,
-        token.Name.Builtin.Pseudo: BLUE,
-        token.Name.Class: BLUE,
-        token.Name.Constant: ORANGE,
-        token.Name.Decorator: BLUE,
-        token.Name.Entity: ORANGE,
-        token.Name.Exception: YELLOW,
-        token.Name.Function: BLUE,
-        token.Name.Tag: BLUE,
-        token.Name.Variable: BLUE,
-        token.String: CYAN,
-        token.String.Backtick: BASE01,
-        token.String.Char: CYAN,
-        token.String.Doc: CYAN,
-        token.String.Escape: RED,
-        token.String.Heredoc: CYAN,
-        token.String.Regex: RED,
-        token.Number: CYAN,
-        token.Operator: BASE1,
-        token.Operator.Word: GREEN,
-        token.Comment: BASE01,
-        token.Comment.Preproc: GREEN,
-        token.Comment.Special: GREEN,
-        token.Generic.Deleted: CYAN,
-        token.Generic.Emph: 'italic',
-        token.Generic.Error: RED,
-        token.Generic.Heading: ORANGE,
-        token.Generic.Inserted: GREEN,
-        token.Generic.Strong: 'bold',
-        token.Generic.Subheading: ORANGE,
-        token.Token: BASE1,
-        token.Token.Other: ORANGE,
+        pygments.token.Keyword: GREEN,
+        pygments.token.Keyword.Constant: ORANGE,
+        pygments.token.Keyword.Declaration: BLUE,
+        pygments.token.Keyword.Namespace: ORANGE,
+        pygments.token.Keyword.Reserved: BLUE,
+        pygments.token.Keyword.Type: RED,
+        pygments.token.Name.Attribute: BASE1,
+        pygments.token.Name.Builtin: BLUE,
+        pygments.token.Name.Builtin.Pseudo: BLUE,
+        pygments.token.Name.Class: BLUE,
+        pygments.token.Name.Constant: ORANGE,
+        pygments.token.Name.Decorator: BLUE,
+        pygments.token.Name.Entity: ORANGE,
+        pygments.token.Name.Exception: YELLOW,
+        pygments.token.Name.Function: BLUE,
+        pygments.token.Name.Tag: BLUE,
+        pygments.token.Name.Variable: BLUE,
+        pygments.token.String: CYAN,
+        pygments.token.String.Backtick: BASE01,
+        pygments.token.String.Char: CYAN,
+        pygments.token.String.Doc: CYAN,
+        pygments.token.String.Escape: RED,
+        pygments.token.String.Heredoc: CYAN,
+        pygments.token.String.Regex: RED,
+        pygments.token.Number: CYAN,
+        pygments.token.Operator: BASE1,
+        pygments.token.Operator.Word: GREEN,
+        pygments.token.Comment: BASE01,
+        pygments.token.Comment.Preproc: GREEN,
+        pygments.token.Comment.Special: GREEN,
+        pygments.token.Generic.Deleted: CYAN,
+        pygments.token.Generic.Emph: 'italic',
+        pygments.token.Generic.Error: RED,
+        pygments.token.Generic.Heading: ORANGE,
+        pygments.token.Generic.Inserted: GREEN,
+        pygments.token.Generic.Strong: 'bold',
+        pygments.token.Generic.Subheading: ORANGE,
+        pygments.token.Token: BASE1,
+        pygments.token.Token.Other: ORANGE,
     }
