@@ -8,18 +8,18 @@ from textwrap import dedent, wrap
 from argparse import (RawDescriptionHelpFormatter, FileType,
                       OPTIONAL, ZERO_OR_MORE, SUPPRESS)
 
-from . import __doc__
-from . import __version__
-from .plugins.builtin import BuiltinAuthPlugin
-from .plugins import plugin_manager
-from .sessions import DEFAULT_SESSIONS_DIR
-from .output.processors.colors import AVAILABLE_STYLES, DEFAULT_STYLE
-from .input import (Parser, AuthCredentialsArgType, KeyValueArgType,
-                    SEP_PROXY, SEP_CREDENTIALS, SEP_GROUP_ALL_ITEMS,
-                    OUT_REQ_HEAD, OUT_REQ_BODY, OUT_RESP_HEAD,
-                    OUT_RESP_BODY, OUTPUT_OPTIONS, OUTPUT_OPTIONS_DEFAULT,
-                    PRETTY_MAP, PRETTY_STDOUT_TTY_ONLY, SessionNameValidator,
-                    readable_file_arg)
+from httpie import __doc__, __version__
+from httpie.plugins.builtin import BuiltinAuthPlugin
+from httpie.plugins import plugin_manager
+from httpie.sessions import DEFAULT_SESSIONS_DIR
+from httpie.output.formatters.colors import AVAILABLE_STYLES, DEFAULT_STYLE
+from httpie.input import (Parser, AuthCredentialsArgType, KeyValueArgType,
+                          SEP_PROXY, SEP_CREDENTIALS, SEP_GROUP_ALL_ITEMS,
+                          OUT_REQ_HEAD, OUT_REQ_BODY, OUT_RESP_HEAD,
+                          OUT_RESP_BODY, OUTPUT_OPTIONS,
+                          OUTPUT_OPTIONS_DEFAULT, PRETTY_MAP,
+                          PRETTY_STDOUT_TTY_ONLY, SessionNameValidator,
+                          readable_file_arg)
 
 
 class HTTPieHelpFormatter(RawDescriptionHelpFormatter):
@@ -60,7 +60,7 @@ parser = Parser(
 #######################################################################
 
 positional = parser.add_argument_group(
-    title='Positional arguments',
+    title='Positional Arguments',
     description=dedent("""
     These arguments come after any flags and in the order they are listed here.
     Only URL is required.
@@ -147,7 +147,7 @@ positional.add_argument(
 #######################################################################
 
 content_type = parser.add_argument_group(
-    title='Predefined content types',
+    title='Predefined Content Types',
     description=None
 )
 
@@ -179,7 +179,7 @@ content_type.add_argument(
 # Output processing
 #######################################################################
 
-output_processing = parser.add_argument_group(title='Output processing')
+output_processing = parser.add_argument_group(title='Output Processing')
 
 output_processing.add_argument(
     '--pretty',
@@ -208,14 +208,12 @@ output_processing.add_argument(
     environment variable is set to "xterm-256color" or similar
     (e.g., via `export TERM=xterm-256color' in your ~/.bashrc).
 
-    """
-    .format(
+    """.format(
         default=DEFAULT_STYLE,
         available='\n'.join(
-            '{0: >20}'.format(line.strip())
-            for line in
-            wrap(' '.join(sorted(AVAILABLE_STYLES)), 60)
-        ),
+            '{0}{1}'.format(8*' ', line.strip())
+            for line in wrap(', '.join(sorted(AVAILABLE_STYLES)), 60)
+        ).rstrip(),
     )
 )
 
@@ -223,7 +221,7 @@ output_processing.add_argument(
 #######################################################################
 # Output options
 #######################################################################
-output_options = parser.add_argument_group(title='Output options')
+output_options = parser.add_argument_group(title='Output Options')
 
 output_options.add_argument(
     '--print', '-p',

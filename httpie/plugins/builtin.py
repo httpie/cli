@@ -2,7 +2,7 @@ from base64 import b64encode
 
 import requests.auth
 
-from .base import AuthPlugin
+from httpie.plugins.base import AuthPlugin
 
 
 class BuiltinAuthPlugin(AuthPlugin):

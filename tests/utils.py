@@ -158,7 +158,6 @@ def http(*args, **kwargs):
         stdout.seek(0)
         stderr.seek(0)
         output = stdout.read()
-
         try:
             output = output.decode('utf8')
         except UnicodeDecodeError:

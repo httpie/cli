@@ -1,4 +1,4 @@
-from .compat import urlsplit, str
+from httpie.compat import urlsplit, str
 
 
 class HTTPMessage(object):

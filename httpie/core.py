@@ -72,10 +72,9 @@ def main(args=sys.argv[1:], env=Environment()):
     Return exit status code.
 
     """
-    args = decode_args(args, env.stdin_encoding)
+    from httpie.cli import parser
 
     plugin_manager.load_installed_plugins()
-    from .cli import parser
 
     if env.config.default_options:
         args = env.config.default_options + args

@@ -2,11 +2,14 @@ from __future__ import absolute_import
 import re
 from xml.etree import ElementTree
 
-from .base import BaseProcessor, DEFAULT_INDENT
+from httpie.plugins import FormatterPlugin
 
 
 DECLARATION_RE = re.compile('<\?xml[^\n]+?\?>', flags=re.I)
 DOCTYPE_RE = re.compile('<!DOCTYPE[^\n]+?>', flags=re.I)
+
+
+DEFAULT_INDENT = 4
 
 
 def indent(elem, indent_text=' ' * DEFAULT_INDENT):
@@ -33,10 +36,10 @@ def indent(elem, indent_text=' ' * DEFAULT_INDENT):
     return _indent(elem)
 
 
-class XMLProcessor(BaseProcessor):
+class XMLFormatter(FormatterPlugin):
     # TODO: tests
 
-    def process_body(self, body, mime):
+    def format_body(self, body, mime):
         if 'xml' in mime:
             # FIXME: orig NS names get forgotten during the conversion, etc.
             try:

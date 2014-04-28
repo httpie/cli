@@ -4,10 +4,10 @@ from pprint import pformat
 
 import requests
 
-from . import sessions
-from . import __version__
-from .compat import str
-from .plugins import plugin_manager
+from httpie import sessions
+from httpie import __version__
+from httpie.compat import str
+from httpie.plugins import plugin_manager
 
 
 FORM = 'application/x-www-form-urlencoded; charset=utf-8'
