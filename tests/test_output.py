@@ -5,7 +5,6 @@ from httpie.output.processors.colors import get_lexer
 from utils import TestEnvironment, http, httpbin, HTTP_OK, COLOR, CRLF
 
 
-
 class TestVerboseFlag:
     def test_verbose(self):
         r = http('--verbose', 'GET', httpbin('/get'), 'test-header:__test__')

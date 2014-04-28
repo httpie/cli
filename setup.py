@@ -1,12 +1,14 @@
 import sys
 import codecs
-from setuptools import setup
+from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 
 import httpie
 
 
 class PyTest(TestCommand):
+    # `$ python setup.py test' simply installs minimal requirements
+    # and runs the tests with no fancy stuff like parallel execution.
     def finalize_options(self):
         TestCommand.finalize_options(self)
         self.test_suite = True
@@ -45,7 +47,6 @@ def long_description():
     with codecs.open('README.rst', encoding='utf8') as f:
         return f.read()
 
-
 setup(
     name='httpie',
     version=httpie.__version__,
@@ -56,7 +57,7 @@ setup(
     author=httpie.__author__,
     author_email='jakub@roztocil.name',
     license=httpie.__licence__,
-    packages=['httpie', 'httpie.plugins'],
+    packages=find_packages(),
     entry_points={
         'console_scripts': [
             'http = httpie.__main__:main',
@@ -72,6 +73,8 @@ setup(
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.1',
         'Programming Language :: Python :: 3.2',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
         'Environment :: Console',
         'Intended Audience :: Developers',
         'Intended Audience :: System Administrators',

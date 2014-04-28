@@ -38,12 +38,9 @@ Development Environment
 
     # (Recommended: create a new virtualenv)
 
-    # Install dev. requirements:
-    pip install -r requirements-dev.txt
-
-    # Install HTTPie in editable mode
-    # (the `http' command will point to your working copy):
-    pip install --upgrade --force-reinstall --editable .
+    # Install dev. requirements and also HTTPie (in editable mode
+    # so that the `http' command will point to your working copy):
+    make
 
 
 Making Changes
@@ -66,10 +63,13 @@ HTTPie uses `pytest`_ and `Tox`_.
     ### Running all tests:
 
     # Current Python
-    python setup.py test
+    make test
 
-    # All the supported and available  Pythons
-    tox
+    # Current Python with coverage
+    make test-cover
+
+    # All the supported and available Pythons via Tox
+    make test-tox
 
     ### Running specific tests:
 

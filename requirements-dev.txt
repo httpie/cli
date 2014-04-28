@@ -1,4 +1,5 @@
 tox
 pytest
 pytest-xdist
+pytest-cov
 docutils
