@@ -2,8 +2,8 @@
 Tests for the provided defaults regarding HTTP method, and --json vs. --form.
 
 """
-from tests import TestEnvironment, http, httpbin, HTTP_OK
-from tests.fixtures import FILE_PATH
+from utils import TestEnvironment, http, httpbin, HTTP_OK
+from fixtures import FILE_PATH
 
 
 class TestImplicitHTTPMethod:

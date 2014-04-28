@@ -4,7 +4,7 @@ import subprocess
 
 import pytest
 
-from tests import TESTS_ROOT
+from utils import TESTS_ROOT
 
 
 def has_docutils():

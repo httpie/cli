@@ -2,7 +2,7 @@ import pytest
 
 from httpie import ExitStatus
 from httpie.output.processors.colors import get_lexer
-from tests import TestEnvironment, http, httpbin, HTTP_OK, COLOR, CRLF
+from utils import TestEnvironment, http, httpbin, HTTP_OK, COLOR, CRLF
 
 
 

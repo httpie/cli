@@ -4,7 +4,7 @@ import tempfile
 import pytest
 from httpie.context import Environment
 
-from tests import TestEnvironment, http, httpbin
+from utils import TestEnvironment, http, httpbin
 from httpie.compat import is_windows
 
 

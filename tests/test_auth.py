@@ -2,7 +2,7 @@
 import requests
 import pytest
 
-from tests import http, httpbin, HTTP_OK
+from utils import http, httpbin, HTTP_OK
 import httpie.input
 
 

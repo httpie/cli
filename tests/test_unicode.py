@@ -3,8 +3,8 @@
 Various unicode handling related tests.
 
 """
-from tests import http, httpbin, HTTP_OK
-from tests.fixtures import UNICODE
+from utils import http, httpbin, HTTP_OK
+from fixtures import UNICODE
 
 
 class TestUnicode:

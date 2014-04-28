@@ -3,8 +3,8 @@ import os
 import shutil
 
 from httpie.plugins.builtin import HTTPBasicAuth
-from tests import TestEnvironment, mk_config_dir, http, httpbin, HTTP_OK
-from tests.fixtures import UNICODE
+from utils import TestEnvironment, mk_config_dir, http, httpbin, HTTP_OK
+from fixtures import UNICODE
 
 
 class SessionTestBase(object):

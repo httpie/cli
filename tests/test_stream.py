@@ -2,8 +2,8 @@ import pytest
 
 from httpie.compat import is_windows
 from httpie.output.streams import BINARY_SUPPRESSED_NOTICE
-from tests import http, httpbin, TestEnvironment
-from tests.fixtures import BIN_FILE_CONTENT, BIN_FILE_PATH
+from utils import http, httpbin, TestEnvironment
+from fixtures import BIN_FILE_CONTENT, BIN_FILE_PATH
 
 
 class TestStream:

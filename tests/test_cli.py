@@ -9,8 +9,8 @@ from httpie import input
 from httpie.input import KeyValue, KeyValueArgType
 from httpie import ExitStatus
 from httpie.cli import parser
-from tests import TestEnvironment, http, httpbin, HTTP_OK
-from tests.fixtures import (
+from utils import TestEnvironment, http, httpbin, HTTP_OK
+from fixtures import (
     FILE_PATH_ARG, JSON_FILE_PATH_ARG,
     JSON_FILE_CONTENT, FILE_CONTENT, FILE_PATH
 )

@@ -1,4 +1,5 @@
-import os
+"""Test data"""
+from os import path
 import codecs
 
 
@@ -11,10 +12,10 @@ def patharg(path):
     return path.replace('\\', '\\\\\\')
 
 
-FIXTURES_ROOT = os.path.abspath(os.path.dirname(__file__))
-FILE_PATH = os.path.join(FIXTURES_ROOT, 'test.txt')
-JSON_FILE_PATH = os.path.join(FIXTURES_ROOT, 'test.json')
-BIN_FILE_PATH = os.path.join(FIXTURES_ROOT, 'test.bin')
+FIXTURES_ROOT = path.join(path.abspath(path.dirname(__file__)), 'fixtures')
+FILE_PATH = path.join(FIXTURES_ROOT, 'test.txt')
+JSON_FILE_PATH = path.join(FIXTURES_ROOT, 'test.json')
+BIN_FILE_PATH = path.join(FIXTURES_ROOT, 'test.bin')
 
 
 FILE_PATH_ARG = patharg(FILE_PATH)
@@ -37,3 +38,4 @@ with open(BIN_FILE_PATH, 'rb') as f:
     BIN_FILE_CONTENT = f.read()
 
 UNICODE = FILE_CONTENT
+

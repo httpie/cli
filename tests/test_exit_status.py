@@ -2,7 +2,7 @@ import requests
 import pytest
 
 from httpie import ExitStatus
-from tests import TestEnvironment, http, httpbin, HTTP_OK
+from utils import TestEnvironment, http, httpbin, HTTP_OK
 
 
 class TestExitStatus:

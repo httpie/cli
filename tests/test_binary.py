@@ -1,8 +1,8 @@
 """Tests for dealing with binary request and response data."""
 from httpie.compat import urlopen
 from httpie.output.streams import BINARY_SUPPRESSED_NOTICE
-from tests import TestEnvironment, http, httpbin
-from tests.fixtures import BIN_FILE_PATH, BIN_FILE_CONTENT, BIN_FILE_PATH_ARG
+from utils import TestEnvironment, http, httpbin
+from fixtures import BIN_FILE_PATH, BIN_FILE_CONTENT, BIN_FILE_PATH_ARG
 
 
 class TestBinaryRequestData:
