@@ -15,7 +15,7 @@ class TestHTTPie:
     def test_help(self):
         r = http('--help', error_exit_ok=True)
         assert r.exit_status == httpie.ExitStatus.ERROR
-        assert 'https://github.com/jkbr/httpie/issues' in r
+        assert 'https://github.com/jakubroztocil/httpie/issues' in r
 
     def test_version(self):
         r = http('--version', error_exit_ok=True)

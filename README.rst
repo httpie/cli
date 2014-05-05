@@ -11,7 +11,7 @@ colorized responses. HTTPie can be used for **testing, debugging**, and
 generally **interacting** with HTTP servers.
 
 
-.. image:: https://github.com/jkbr/httpie/raw/master/httpie.png
+.. image:: https://github.com/jakubroztocil/httpie/raw/master/httpie.png
     :alt: HTTPie compared to cURL
     :width: 835
     :height: 835
@@ -101,7 +101,7 @@ The **latest development version** can be installed directly from GitHub:
 
 .. code-block:: bash
 
-    $ pip install --upgrade https://github.com/jkbr/httpie/tarball/master
+    $ pip install --upgrade https://github.com/jakubroztocil/httpie/tarball/master
 
 
 
@@ -154,12 +154,12 @@ See the request that is being sent using one of the `output options`_:
 
 
 Use `Github API`_ to post a comment on an
-`issue <https://github.com/jkbr/httpie/issues/83>`_
+`issue <https://github.com/jakubroztocil/httpie/issues/83>`_
 with `authentication`_:
 
 .. code-block:: bash
 
-    $ http -a USERNAME POST https://api.github.com/repos/jkbr/httpie/issues/83/comments body='HTTPie is awesome!'
+    $ http -a USERNAME POST https://api.github.com/repos/jakubroztocil/httpie/issues/83/comments body='HTTPie is awesome!'
 
 
 Upload a file using `redirected input`_:
@@ -580,8 +580,8 @@ Authorization information from your ``~/.netrc`` file is honored as well:
 Auth Plugins
 ------------
 
-* `httpie-oauth <https://github.com/jkbr/httpie-oauth>`_: OAuth
-* `httpie-ntlm <https://github.com/jkbr/httpie-ntlm>`_: NTLM (NT LAN Manager)
+* `httpie-oauth <https://github.com/jakubroztocil/httpie-oauth>`_: OAuth
+* `httpie-ntlm <https://github.com/jakubroztocil/httpie-ntlm>`_: NTLM (NT LAN Manager)
 * `httpie-negotiate <https://github.com/ndzou/httpie-negotiate>`_: SPNEGO (GSS Negotiate)
 
 
@@ -756,7 +756,7 @@ You can even pipe web services together using HTTPie:
 
 .. code-block:: bash
 
-    $ http GET https://api.github.com/repos/jkbr/httpie | http POST httpbin.org/post
+    $ http GET https://api.github.com/repos/jakubroztocil/httpie | http POST httpbin.org/post
 
 
 You can use ``cat`` to enter multiline data on the terminal:
@@ -940,19 +940,19 @@ is being saved to a file.
 
 .. code-block:: bash
 
-    $ http --download https://github.com/jkbr/httpie/tarball/master
+    $ http --download https://github.com/jakubroztocil/httpie/tarball/master
 
 .. code-block:: http
 
     HTTP/1.1 200 OK
     Connection: keep-alive
-    Content-Disposition: attachment; filename=jkbr-httpie-0.4.1-33-gfc4f70a.tar.gz
+    Content-Disposition: attachment; filename=jakubroztocil-httpie-0.4.1-33-gfc4f70a.tar.gz
     Content-Length: 505530
     Content-Type: application/x-gzip
     Server: GitHub.com
     Vary: Accept-Encoding
 
-    Downloading 494.89 kB to "jkbr-httpie-0.4.1-33-gfc4f70a.tar.gz"
+    Downloading 494.89 kB to "jakubroztocil-httpie-0.4.1-33-gfc4f70a.tar.gz"
     /  21.01% 104.00 kB   47.55 kB/s  0:00:08 ETA
 
 
@@ -966,7 +966,7 @@ headers and progress are still shown in the terminal:
 
 .. code-block:: bash
 
-    $ http -d https://github.com/jkbr/httpie/tarball/master |  tar zxf -
+    $ http -d https://github.com/jakubroztocil/httpie/tarball/master |  tar zxf -
 
 
 If ``--output, -o`` is specified, you can resume a partial download using the
@@ -1226,7 +1226,7 @@ Please see `claudiatd/httpie-artwork`_
 Authors
 =======
 
-`Jakub Roztocil`_  (`@jkbrzt`_) created HTTPie and `these fine people`_
+`Jakub Roztocil`_  (`@jakubroztocil`_) created HTTPie and `these fine people`_
 have contributed.
 
 =======
@@ -1356,38 +1356,38 @@ Changelog
 .. _Pygments: http://pygments.org/
 .. _pip: http://www.pip-installer.org/en/latest/index.html
 .. _Github API: http://developer.github.com/v3/issues/comments/#create-a-comment
-.. _these fine people: https://github.com/jkbr/httpie/contributors
+.. _these fine people: https://github.com/jakubroztocil/httpie/contributors
 .. _Jakub Roztocil: http://subtleapps.com
-.. _@jkbrzt: https://twitter.com/jkbrzt
+.. _@jakubroztocil: https://twitter.com/jakubroztocil
 .. _claudiatd/httpie-artwork: https://github.com/claudiatd/httpie-artwork
-.. _0.1.6: https://github.com/jkbr/httpie/compare/0.1.4...0.1.6
-.. _0.2.0: https://github.com/jkbr/httpie/compare/0.1.6...0.2.0
-.. _0.2.1: https://github.com/jkbr/httpie/compare/0.2.0...0.2.1
-.. _0.2.2: https://github.com/jkbr/httpie/compare/0.2.1...0.2.2
-.. _0.2.5: https://github.com/jkbr/httpie/compare/0.2.2...0.2.5
-.. _0.2.6: https://github.com/jkbr/httpie/compare/0.2.5...0.2.6
-.. _0.2.7: https://github.com/jkbr/httpie/compare/0.2.5...0.2.7
-.. _0.3.0: https://github.com/jkbr/httpie/compare/0.2.7...0.3.0
-.. _0.4.0: https://github.com/jkbr/httpie/compare/0.3.0...0.4.0
-.. _0.4.1: https://github.com/jkbr/httpie/compare/0.4.0...0.4.1
-.. _0.5.0: https://github.com/jkbr/httpie/compare/0.4.1...0.5.0
-.. _0.5.1: https://github.com/jkbr/httpie/compare/0.5.0...0.5.1
-.. _0.6.0: https://github.com/jkbr/httpie/compare/0.5.1...0.6.0
-.. _0.7.1: https://github.com/jkbr/httpie/compare/0.6.0...0.7.1
-.. _0.8.0: https://github.com/jkbr/httpie/compare/0.7.1...0.8.0
-.. _0.9.0-dev: https://github.com/jkbr/httpie/compare/0.8.0...master
-.. _LICENSE: https://github.com/jkbr/httpie/blob/master/LICENSE
+.. _0.1.6: https://github.com/jakubroztocil/httpie/compare/0.1.4...0.1.6
+.. _0.2.0: https://github.com/jakubroztocil/httpie/compare/0.1.6...0.2.0
+.. _0.2.1: https://github.com/jakubroztocil/httpie/compare/0.2.0...0.2.1
+.. _0.2.2: https://github.com/jakubroztocil/httpie/compare/0.2.1...0.2.2
+.. _0.2.5: https://github.com/jakubroztocil/httpie/compare/0.2.2...0.2.5
+.. _0.2.6: https://github.com/jakubroztocil/httpie/compare/0.2.5...0.2.6
+.. _0.2.7: https://github.com/jakubroztocil/httpie/compare/0.2.5...0.2.7
+.. _0.3.0: https://github.com/jakubroztocil/httpie/compare/0.2.7...0.3.0
+.. _0.4.0: https://github.com/jakubroztocil/httpie/compare/0.3.0...0.4.0
+.. _0.4.1: https://github.com/jakubroztocil/httpie/compare/0.4.0...0.4.1
+.. _0.5.0: https://github.com/jakubroztocil/httpie/compare/0.4.1...0.5.0
+.. _0.5.1: https://github.com/jakubroztocil/httpie/compare/0.5.0...0.5.1
+.. _0.6.0: https://github.com/jakubroztocil/httpie/compare/0.5.1...0.6.0
+.. _0.7.1: https://github.com/jakubroztocil/httpie/compare/0.6.0...0.7.1
+.. _0.8.0: https://github.com/jakubroztocil/httpie/compare/0.7.1...0.8.0
+.. _0.9.0-dev: https://github.com/jakubroztocil/httpie/compare/0.8.0...master
+.. _LICENSE: https://github.com/jakubroztocil/httpie/blob/master/LICENSE
 .. _Tox: http://tox.testrun.org
-.. _CONTRIBUTING: https://github.com/jkbr/httpie/blob/master/CONTRIBUTING.rst
+.. _CONTRIBUTING: https://github.com/jakubroztocil/httpie/blob/master/CONTRIBUTING.rst
 
 
 .. |version| image:: https://badge.fury.io/py/httpie.svg
     :target: http://badge.fury.io/py/httpie
 
-.. |unix| image:: https://api.travis-ci.org/jkbr/httpie.svg
-    :target: http://travis-ci.org/jkbr/httpie
+.. |unix| image:: https://api.travis-ci.org/jakubroztocil/httpie.svg
+    :target: http://travis-ci.org/jakubroztocil/httpie
     :alt: Build Status of the master branch on Mac/Linux
 
 .. |windows|  image:: https://ci.appveyor.com/api/projects/status/f7b5dogxuseq8srw
-    :target: https://ci.appveyor.com/project/jkbr/httpie
+    :target: https://ci.appveyor.com/project/jakubroztocil/httpie
     :alt: Build Status of the master branch on Windows

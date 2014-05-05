@@ -12,7 +12,7 @@ class TestVerboseFlag:
         assert r.count('__test__') == 2
 
     def test_verbose_form(self):
-        # https://github.com/jkbr/httpie/issues/53
+        # https://github.com/jakubroztocil/httpie/issues/53
         r = http('--verbose', '--form', 'POST', httpbin('/post'),
                  'A=B', 'C=D')
         assert HTTP_OK in r

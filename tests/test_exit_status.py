@@ -20,7 +20,7 @@ class TestExitStatus:
     @pytest.mark.skipif(
         True,
         reason='timeout broken in requests'
-               ' (https://github.com/jkbr/httpie/issues/185)')
+               ' (https://github.com/jakubroztocil/httpie/issues/185)')
     def test_timeout_exit_status(self):
         r = http('--timeout=0.5', 'GET', httpbin('/delay/1'),
                  error_exit_ok=True)

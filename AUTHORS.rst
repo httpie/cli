@@ -2,7 +2,7 @@
 HTTPie authors
 ==============
 
-* `Jakub Roztocil <https://github.com/jkbr>`_
+* `Jakub Roztocil <https://github.com/jakubroztocil>`_
 
 
 Patches and ideas

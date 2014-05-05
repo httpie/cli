@@ -2,7 +2,7 @@ class AuthPlugin(object):
     """
     Base auth plugin class.
 
-    See <https://github.com/jkbr/httpie-ntlm> for an example auth plugin.
+    See <https://github.com/jakubroztocil/httpie-ntlm> for an example auth plugin.
 
     """
 

@@ -49,7 +49,7 @@ parser = Parser(
 
     Suggestions and bug reports are greatly appreciated:
 
-        https://github.com/jkbr/httpie/issues
+        https://github.com/jakubroztocil/httpie/issues
 
     """)
 )

@@ -13,7 +13,7 @@ from argparse import ArgumentParser, ArgumentTypeError, ArgumentError
 from .compat import OrderedDict
 
 # TODO: Use MultiDict for headers once added to `requests`.
-# https://github.com/jkbr/httpie/issues/130
+# https://github.com/jakubroztocil/httpie/issues/130
 from requests.structures import CaseInsensitiveDict
 
 from .compat import urlsplit, str
