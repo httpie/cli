@@ -30,4 +30,4 @@ Patches and ideas
 * `cido <https://github.com/cido>`_
 * `Justin Bonnar <https://github.com/jargonjustin>`_
 * `Nathan LaFreniere <https://github.com/nlf>`_
-* `Matthias Lehmann <https://github.com/matleh>`
+* `Matthias Lehmann <https://github.com/matleh>`_
