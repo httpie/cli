@@ -21,21 +21,17 @@ VALID_SESSION_NAME_PATTERN = re.compile('^[a-zA-Z0-9_.-]+$')
 SESSION_IGNORED_HEADER_PREFIXES = ['Content-', 'If-']
 
 
-def get_response(session_name, requests_kwargs, config_dir, args,
-                 read_only=False):
+def get_response(session_name, config_dir, args, read_only=False):
     """Like `client.get_response`, but applies permanent
     aspects of the session to the request.
 
     """
-    from .client import encode_headers
+    from .client import get_requests_kwargs, dump_request
     if os.path.sep in session_name:
         path = os.path.expanduser(session_name)
     else:
-        hostname = (
-            requests_kwargs['headers'].get('Host', None)
-            or urlsplit(requests_kwargs['url']).netloc.split('@')[-1]
-        )
-
+        hostname = (args.headers.get('Host', None)
+                    or urlsplit(args.url).netloc.split('@')[-1])
         assert re.match('^[a-zA-Z0-9_.:-]+$', hostname)
 
         # host:port => host_port
@@ -48,13 +44,10 @@ def get_response(session_name, requests_kwargs, config_dir, args,
     session = Session(path)
     session.load()
 
-    request_headers = requests_kwargs.get('headers', {})
-
-    merged_headers = dict(session.headers)
-    merged_headers.update(request_headers)
-    requests_kwargs['headers'] = encode_headers(merged_headers)
-
-    session.update_headers(request_headers)
+    requests_kwargs = get_requests_kwargs(args, base_headers=session.headers)
+    if args.debug:
+        dump_request(requests_kwargs)
+    session.update_headers(requests_kwargs['headers'])
 
     if args.auth:
         session.auth = {

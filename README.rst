@@ -1246,6 +1246,7 @@ Changelog
     * Added ``--cert`` and ``--certkey`` parameters to specify a client side
       certificate and private key for SSL
     * Improved unicode support.
+    * Fixed ``User-Agent`` overwriting when used within a session.
     * Switched from ``unittest`` to ``pytest``.
     * Various test suite improvements.
     * Added `CONTRIBUTING`_.

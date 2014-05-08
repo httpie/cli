@@ -137,3 +137,14 @@ class TestSession(SessionTestBase):
         assert (r2.json['headers']['Authorization']
                 == HTTPBasicAuth.make_header(u'test', UNICODE))
         assert r2.json['headers']['Test'] == UNICODE
+
+    def test_session_default_header_value_overwritten(self):
+        # https://github.com/jakubroztocil/httpie/issues/180
+        r1 = http('--session=test', httpbin('/headers'), 'User-Agent:custom',
+                  env=self.env())
+        assert HTTP_OK in r1
+        assert r1.json['headers']['User-Agent'] == 'custom'
+
+        r2 = http('--session=test', httpbin('/headers'), env=self.env())
+        assert HTTP_OK in r2
+        assert r2.json['headers']['User-Agent'] == 'custom'
