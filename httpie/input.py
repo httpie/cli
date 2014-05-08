@@ -136,6 +136,7 @@ class Parser(ArgumentParser):
 
             # See if we're using curl style shorthand for localhost (:3000/foo)
             shorthand = re.match(r'^:(?!:)(\d*)(/?.*)$', self.args.url)
+            base_url = re.match(r'^/.*$', self.args.url)
             if shorthand:
                 port = shorthand.group(1)
                 rest = shorthand.group(2)
@@ -143,6 +144,13 @@ class Parser(ArgumentParser):
                 if port:
                     self.args.url += ':' + port
                 self.args.url += rest
+            elif base_url:
+                if not self.env.base_url:
+                    raise ParseError('No HTTPIE_BASEURL environment '
+                                     'variable configured.')
+                url = self.env.base_url.rstrip('/') + self.args.url
+                if not (url.startswith((HTTP, HTTPS))):
+                    self.args.url = scheme + url
             else:
                 self.args.url = scheme + self.args.url
         self._process_auth()

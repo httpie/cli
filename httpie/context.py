@@ -17,6 +17,7 @@ class Environment(object):
 
     """
     is_windows = is_windows
+    base_url = os.environ.get('HTTPIE_BASEURL', '')
     config_dir = DEFAULT_CONFIG_DIR
     colors = 256 if '256color' in os.environ.get('TERM', '') else 88
     stdin = sys.stdin
