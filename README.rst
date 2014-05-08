@@ -295,11 +295,11 @@ through an environment variable ``HTTPIE_BASEURL``, request URLs such as
 
 .. code-block:: http
 
-    POST /HTTP/1.1
+    POST / HTTP/1.1
     Host: example.com
 
 
-If the ``HTTPIE_BASEURL`` does not start with a scheme the default scheme
+If the ``HTTPIE_BASEURL`` does not start with a scheme, the default scheme
 ``http://`` is used.
 
 If find yourself manually constructing URLs with **querystring parameters**
