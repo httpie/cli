@@ -8,12 +8,15 @@ might encounter.
 Bug Reports
 ===========
 
-Along with a description of the problem, please provide the output of the
-failing command with the ``--debug`` flag, e.g.:
+It's important that you provide the full command argument list
+as well as the output of the failing command. 
+Use the ``--debug`` flag and copy&paste both the command and its output
+to your bug report, e.g.:
 
 .. code-block:: bash
 
-    $ http --debug [minimal set of arguments that trigger the error]
+    $ http --debug [arguments that trigger the error]
+    [complete output]
 
 
 Contributing Code and Documentation
