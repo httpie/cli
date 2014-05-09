@@ -8,8 +8,8 @@ might encounter.
 Bug Reports
 ===========
 
-It's important that you provide the full command argument list
-as well as the output of the failing command. 
+**It's important that you provide the full command argument list
+as well as the output of the failing command.**
 Use the ``--debug`` flag and copy&paste both the command and its output
 to your bug report, e.g.:
 
