@@ -148,8 +148,8 @@ class Parser(ArgumentParser):
                 if not self.env.base_url:
                     raise ParseError('No HTTPIE_BASEURL environment '
                                      'variable configured.')
-                url = self.env.base_url.rstrip('/') + self.args.url
-                if not (url.startswith((HTTP, HTTPS))):
+                self.args.url = self.env.base_url.rstrip('/') + self.args.url
+                if not (self.args.url.startswith((HTTP, HTTPS))):
                     self.args.url = scheme + url
             else:
                 self.args.url = scheme + self.args.url
