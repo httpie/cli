@@ -5,6 +5,7 @@ python:
   - 2.7
   - pypy
   - 3.3
+  - 3.4
 script:
   - make
 after_success:
