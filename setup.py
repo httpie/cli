@@ -29,7 +29,7 @@ tests_require = [
 
 
 install_requires = [
-    'requests>=2.0.0',
+    'requests>=2.3.0',
     'Pygments>=1.5'
 ]
 try:

@@ -18,13 +18,13 @@ class TestExitStatus:
         assert not r.stderr
 
     @pytest.mark.skipif(
-        True,
-        reason='timeout broken in requests'
-               ' (https://github.com/jakubroztocil/httpie/issues/185)')
+        tuple(map(int, requests.__version__.split('.'))) < (2, 3, 0),
+        reason='timeout broken in requests prior v2.3.0 (#185)'
+    )
     def test_timeout_exit_status(self):
+
         r = http('--timeout=0.5', 'GET', httpbin('/delay/1'),
                  error_exit_ok=True)
-        assert HTTP_OK in r
         assert r.exit_status == ExitStatus.ERROR_TIMEOUT
 
     def test_3xx_check_status_exits_3_and_stderr_when_stdout_redirected(self):
