@@ -630,6 +630,20 @@ To use a client side certificate for the SSL communication, you can pass the
 path of the cert file with ``--cert``. If the private key is not contained
 in the cert file you may pass the path of the key file with ``--certkey``.
 
+If you use Python 2.x and need to talk to servers that use **SNI (Server Name
+Indication)** you need to install some additional dependencies:
+
+.. code-block:: bash
+
+    $ pip install --upgrade pyopenssl pyasn1 ndg-httpsclient
+
+
+You can use the following command to test SNI support:
+
+.. code-block:: bash
+
+    $ http https://sni.velox.ch
+
 
 ==============
 Output Options
