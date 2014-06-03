@@ -10,11 +10,12 @@ from fixtures import UNICODE
 class TestUnicode:
 
     def test_unicode_headers(self):
+        # httpbin doesn't interpret utf8 headers
         r = http(httpbin('/headers'), u'Test:%s' % UNICODE)
         assert HTTP_OK in r
-        assert r.json['headers']['Test'] == UNICODE
 
     def test_unicode_headers_verbose(self):
+        # httpbin doesn't interpret utf8 headers
         r = http('--verbose', httpbin('/headers'), u'Test:%s' % UNICODE)
         assert HTTP_OK in r
         assert UNICODE in r

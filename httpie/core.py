@@ -61,7 +61,8 @@ def decode_args(args, stdin_encoding):
 
     """
     return [
-        arg.decode(stdin_encoding) if type(arg) == bytes else arg
+        arg.decode(stdin_encoding)
+        if type(arg) == bytes else arg
         for arg in args
     ]
 
@@ -72,9 +73,10 @@ def main(args=sys.argv[1:], env=Environment()):
     Return exit status code.
 
     """
-    from httpie.cli import parser
-
+    args = decode_args(args, env.stdin_encoding)
     plugin_manager.load_installed_plugins()
+
+    from httpie.cli import parser
 
     if env.config.default_options:
         args = env.config.default_options + args

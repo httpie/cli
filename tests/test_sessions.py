@@ -132,11 +132,13 @@ class TestSession(SessionTestBase):
                   env=self.env())
         assert HTTP_OK in r1
 
-        r2 = http('--session=test', 'GET', httpbin('/get'), env=self.env())
+        r2 = http('--session=test', '--verbose', 'GET',
+                  httpbin('/get'), env=self.env())
         assert HTTP_OK in r2
         assert (r2.json['headers']['Authorization']
                 == HTTPBasicAuth.make_header(u'test', UNICODE))
-        assert r2.json['headers']['Test'] == UNICODE
+        # httpbin doesn't interpret utf8 headers
+        assert UNICODE in r2
 
     def test_session_default_header_value_overwritten(self):
         # https://github.com/jakubroztocil/httpie/issues/180
