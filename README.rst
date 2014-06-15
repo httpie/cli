@@ -756,7 +756,7 @@ Or the output of another program:
 
 .. code-block:: bash
 
-    $ grep /var/log/httpd/error_log '401 Unauthorized' | http POST example.org/intruders
+    $ grep '401 Unauthorized' /var/log/httpd/error_log | http POST example.org/intruders
 
 
 You can use ``echo`` for simple data:
