@@ -13,6 +13,15 @@ class TestAuth:
         assert HTTP_OK in r
         assert r.json == {'authenticated': True, 'user': 'user'}
 
+    def test_basic_auth_from_environment(self):
+        import os
+        os.environ["HTTPIE_PASSWORD"] = "password"
+        r = http('--auth=user',
+                 'GET', httpbin('/basic-auth/user/password'))
+        assert HTTP_OK in r
+        assert r.json == {'authenticated': True, 'user': 'user'}
+        del os.environ["HTTPIE_PASSWORD"]
+
     @pytest.mark.skipif(
         requests.__version__ == '0.13.6',
         reason='Redirects with prefetch=False are broken in Requests 0.13.6')
