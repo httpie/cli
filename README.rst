@@ -84,7 +84,7 @@ and provides the latest version) is to use `pip`_:
 
 
 .. code-block:: bash
-    # Install or update to the latest version.
+
     $ pip install --upgrade httpie
 
 
