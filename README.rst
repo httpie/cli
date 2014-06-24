@@ -67,23 +67,30 @@ Installation
 Stable version |version|
 ------------------------
 
-The **latest stable version** can always be installed or updated to via `pip`_:
+On **Mac OS X**, HTTPie can be installed via `Homebrew <http://brew.sh/>`_:
 
 .. code-block:: bash
 
+    $ brew install httpie
+    
+
+Most **Linux** distributions provide a package that can be installed via
+system package manager, e.g. ``yum install httpie`` or ``apt-get install httpie``.
+Note that the package might include a slightly older version of HTTPie.
+
+
+A **universal installation method** (that works on **Windows**, Mac OS X, Linux, …, 
+and provides the latest version) is to use `pip`_:
+
+
+.. code-block:: bash
+    # Install or update to the latest version.
     $ pip install --upgrade httpie
 
 
-If the above fails, please use ``easy_install`` instead:
-
-.. code-block:: bash
-
-    $ easy_install httpie
+If the above fails, please use ``easy_install`` instead (``$ easy_install httpie``).
 
 
-Many Linux distributions also provide a package that can be installed via
-system package manager, e.g.
-``yum install httpie`` or ``apt-get install httpie``.
 
 
 
