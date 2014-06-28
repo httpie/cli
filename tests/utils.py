@@ -20,7 +20,7 @@ TESTS_ROOT = os.path.abspath(os.path.dirname(__file__))
 
 CRLF = '\r\n'
 COLOR = '\x1b['
-HTTP_OK = 'HTTP/1.1 200'
+HTTP_OK = '200 OK'
 HTTP_OK_COLOR = (
     'HTTP\x1b[39m\x1b[38;5;245m/\x1b[39m\x1b'
     '[38;5;37m1.1\x1b[39m\x1b[38;5;245m \x1b[39m\x1b[38;5;37m200'
@@ -28,22 +28,19 @@ HTTP_OK_COLOR = (
 )
 
 
-def httpbin(path, auth=None,
-            base=os.environ.get('HTTPBIN_URL', 'http://httpbin.org')):
-    """
-    Return a fully-qualified httpbin URL for `path`.
+def no_content_type(headers):
+    return (
+        'Content-Type' not in headers
+        # We need to do also this because of this issue:
+        # <https://github.com/kevin1024/pytest-httpbin/issues/5>
+        # TODO: remove this function once the issue is if fixed
+        or headers['Content-Type'] == 'text/plain'
+    )
 
-    >>> httpbin('/get')
-    'http://httpbin.org/get'
 
-    >>> httpbin('/get', auth='user:password')
-    'http://user:password@httpbin.org/get'
-
-    """
-    if auth:
-        proto, rest = base.split('://', 1)
-        base = proto + '://' + auth + '@' + rest
-    return base.rstrip('/') + path
+def add_auth(url, auth):
+    proto, rest = url.split('://', 1)
+    return proto + '://' + auth + '@' + rest
 
 
 class TestEnvironment(Environment):
@@ -104,7 +101,7 @@ def http(*args, **kwargs):
 
     $ http --auth=user:password GET httpbin.org/basic-auth/user/password
 
-        >>> r = http('-a', 'user:pw', httpbin('/basic-auth/user/pw'))
+        >>> r = http('-a', 'user:pw', 'httpbin.org/basic-auth/user/pw')
         >>> type(r) == StrCLIResponse
         True
         >>> r.exit_status

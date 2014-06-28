@@ -26,6 +26,7 @@ class PyTest(TestCommand):
 
 tests_require = [
     'pytest',
+    'pytest-httpbin',
 ]
 
 

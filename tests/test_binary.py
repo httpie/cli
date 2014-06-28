@@ -1,30 +1,30 @@
 """Tests for dealing with binary request and response data."""
 from httpie.compat import urlopen
 from httpie.output.streams import BINARY_SUPPRESSED_NOTICE
-from utils import TestEnvironment, http, httpbin
+from utils import TestEnvironment, http
 from fixtures import BIN_FILE_PATH, BIN_FILE_CONTENT, BIN_FILE_PATH_ARG
 
 
 class TestBinaryRequestData:
-    def test_binary_stdin(self):
+    def test_binary_stdin(self, httpbin):
         with open(BIN_FILE_PATH, 'rb') as stdin:
             env = TestEnvironment(
                 stdin=stdin,
                 stdin_isatty=False,
                 stdout_isatty=False
             )
-            r = http('--print=B', 'POST', httpbin('/post'), env=env)
+            r = http('--print=B', 'POST', httpbin.url + '/post', env=env)
             assert r == BIN_FILE_CONTENT
 
-    def test_binary_file_path(self):
+    def test_binary_file_path(self, httpbin):
         env = TestEnvironment(stdin_isatty=True, stdout_isatty=False)
-        r = http('--print=B', 'POST', httpbin('/post'),
+        r = http('--print=B', 'POST', httpbin.url + '/post',
                  '@' + BIN_FILE_PATH_ARG, env=env, )
         assert r == BIN_FILE_CONTENT
 
-    def test_binary_file_form(self):
+    def test_binary_file_form(self, httpbin):
         env = TestEnvironment(stdin_isatty=True, stdout_isatty=False)
-        r = http('--print=B', '--form', 'POST', httpbin('/post'),
+        r = http('--print=B', '--form', 'POST', httpbin.url + '/post',
                  'test@' + BIN_FILE_PATH_ARG, env=env)
         assert bytes(BIN_FILE_CONTENT) in bytes(r)
 

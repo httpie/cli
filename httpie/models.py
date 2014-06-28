@@ -105,8 +105,13 @@ class HTTPRequest(HTTPMessage):
         if 'Host' not in self._orig.headers:
             headers['Host'] = url.netloc.split('@')[-1]
 
-        headers = ['%s: %s' % (name, value)
-                   for name, value in headers.items()]
+        headers = [
+            '%s: %s' % (
+                name,
+                value if isinstance(value, str) else value.decode('utf8')
+            )
+            for name, value in headers.items()
+        ]
 
         headers.insert(0, request_line)
         headers = '\r\n'.join(headers).strip()

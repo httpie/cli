@@ -2,4 +2,5 @@ tox
 pytest
 pytest-xdist
 pytest-cov
+pytest-httpbin
 docutils

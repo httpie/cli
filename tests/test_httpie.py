@@ -1,5 +1,5 @@
 """High-level tests."""
-from utils import TestEnvironment, http, httpbin, HTTP_OK
+from utils import TestEnvironment, http, HTTP_OK
 from fixtures import FILE_PATH, FILE_CONTENT
 import httpie
 
@@ -23,43 +23,43 @@ class TestHTTPie:
         # FIXME: py3 has version in stdout, py2 in stderr
         assert httpie.__version__ == r.stderr.strip() + r.strip()
 
-    def test_GET(self):
-        r = http('GET', httpbin('/get'))
+    def test_GET(self, httpbin):
+        r = http('GET', httpbin.url + '/get')
         assert HTTP_OK in r
 
-    def test_DELETE(self):
-        r = http('DELETE', httpbin('/delete'))
+    def test_DELETE(self, httpbin):
+        r = http('DELETE', httpbin.url + '/delete')
         assert HTTP_OK in r
 
-    def test_PUT(self):
-        r = http('PUT', httpbin('/put'), 'foo=bar')
+    def test_PUT(self, httpbin):
+        r = http('PUT', httpbin.url + '/put', 'foo=bar')
         assert HTTP_OK in r
-        assert r'\"foo\": \"bar\"' in r
+        assert r.json['json']['foo'] == 'bar'
 
-    def test_POST_JSON_data(self):
-        r = http('POST', httpbin('/post'), 'foo=bar')
+    def test_POST_JSON_data(self, httpbin):
+        r = http('POST', httpbin.url + '/post', 'foo=bar')
         assert HTTP_OK in r
-        assert r'\"foo\": \"bar\"' in r
+        assert r.json['json']['foo'] == 'bar'
 
-    def test_POST_form(self):
-        r = http('--form', 'POST', httpbin('/post'), 'foo=bar')
+    def test_POST_form(self, httpbin):
+        r = http('--form', 'POST', httpbin.url + '/post', 'foo=bar')
         assert HTTP_OK in r
         assert '"foo": "bar"' in r
 
-    def test_POST_form_multiple_values(self):
-        r = http('--form', 'POST', httpbin('/post'), 'foo=bar', 'foo=baz')
+    def test_POST_form_multiple_values(self, httpbin):
+        r = http('--form', 'POST', httpbin.url + '/post', 'foo=bar', 'foo=baz')
         assert HTTP_OK in r
         assert r.json['form'] == {'foo': ['bar', 'baz']}
 
-    def test_POST_stdin(self):
+    def test_POST_stdin(self, httpbin):
         with open(FILE_PATH) as f:
             env = TestEnvironment(stdin=f, stdin_isatty=False)
-            r = http('--form', 'POST', httpbin('/post'), env=env)
+            r = http('--form', 'POST', httpbin.url + '/post', env=env)
         assert HTTP_OK in r
         assert FILE_CONTENT in r
 
-    def test_headers(self):
-        r = http('GET', httpbin('/headers'), 'Foo:bar')
+    def test_headers(self, httpbin):
+        r = http('GET', httpbin.url + '/headers', 'Foo:bar')
         assert HTTP_OK in r
         assert '"User-Agent": "HTTPie' in r, r
         assert '"Foo": "bar"' in r
