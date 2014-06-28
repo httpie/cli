@@ -102,8 +102,7 @@ class HTTPRequest(HTTPMessage):
         )
 
         headers = dict(self._orig.headers)
-
-        if 'Host' not in headers:
+        if 'Host' not in self._orig.headers:
             headers['Host'] = url.netloc.split('@')[-1]
 
         headers = ['%s: %s' % (name, value)
