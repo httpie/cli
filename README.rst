@@ -72,14 +72,14 @@ On **Mac OS X**, HTTPie can be installed via `Homebrew <http://brew.sh/>`_:
 .. code-block:: bash
 
     $ brew install httpie
-    
+
 
 Most **Linux** distributions provide a package that can be installed via
 system package manager, e.g. ``yum install httpie`` or ``apt-get install httpie``.
 Note that the package might include a slightly older version of HTTPie.
 
 
-A **universal installation method** (that works on **Windows**, Mac OS X, Linux, …, 
+A **universal installation method** (that works on **Windows**, Mac OS X, Linux, …,
 and provides the latest version) is to use `pip`_:
 
 
@@ -89,7 +89,6 @@ and provides the latest version) is to use `pip`_:
 
 
 If the above fails, please use ``easy_install`` instead (``$ easy_install httpie``).
-
 
 
 
@@ -108,6 +107,10 @@ The **latest development version** can be installed directly from GitHub:
 
 .. code-block:: bash
 
+    # Mac OS X via Homebrew
+    $ brew install httpie --HEAD
+
+    # Universal
     $ pip install --upgrade https://github.com/jakubroztocil/httpie/tarball/master
 
 
