@@ -1,5 +1,4 @@
 """Miscellaneous regression tests"""
-import socket
 
 from utils import http, HTTP_OK
 

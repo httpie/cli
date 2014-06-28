@@ -25,8 +25,10 @@ class PyTest(TestCommand):
 
 
 tests_require = [
-    'pytest',
+    # Pytest needs to come last.
+    # <bitbucket.org/pypa/setuptools/issue/196/tests_require-pytest-pytest-cov-breaks>
     'pytest-httpbin',
+    'pytest',
 ]
 
 
