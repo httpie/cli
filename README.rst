@@ -53,6 +53,7 @@ Main Features
 * Wget-like downloads
 * Python 2.6, 2.7 and 3.x support
 * Linux, Mac OS X and Windows support
+* Plugins
 * Documentation
 * Test coverage
 

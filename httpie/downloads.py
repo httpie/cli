@@ -135,12 +135,12 @@ def filename_from_url(url, content_type):
     return fn
 
 
-def get_unique_filename(fn, exists=os.path.exists):
+def get_unique_filename(filename, exists=os.path.exists):
     attempt = 0
     while True:
         suffix = '-' + str(attempt) if attempt > 0 else ''
-        if not exists(fn + suffix):
-            return fn + suffix
+        if not exists(filename + suffix):
+            return filename + suffix
         attempt += 1
 
 
@@ -223,16 +223,16 @@ class Download(object):
         else:
             # TODO: Should the filename be taken from response.history[0].url?
             # Output file not specified. Pick a name that doesn't exist yet.
-            fn = None
+            filename = None
             if 'Content-Disposition' in response.headers:
-                fn = filename_from_content_disposition(
+                filename = filename_from_content_disposition(
                     response.headers['Content-Disposition'])
-            if not fn:
-                fn = filename_from_url(
+            if not filename:
+                filename = filename_from_url(
                     url=response.url,
                     content_type=response.headers.get('Content-Type'),
                 )
-            self._output_file = open(get_unique_filename(fn), mode='a+b')
+            self._output_file = open(get_unique_filename(filename), mode='a+b')
 
         self.status.started(
             resumed_from=self._resumed_from,
