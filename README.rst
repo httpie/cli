@@ -593,6 +593,7 @@ Auth Plugins
 * `httpie-oauth <https://github.com/jakubroztocil/httpie-oauth>`_: OAuth
 * `httpie-ntlm <https://github.com/jakubroztocil/httpie-ntlm>`_: NTLM (NT LAN Manager)
 * `httpie-negotiate <https://github.com/ndzou/httpie-negotiate>`_: SPNEGO (GSS Negotiate)
+* `requests-hawk <https://github.com/mozilla-services/requests-hawk>`_: Hawk
 
 
 =======
