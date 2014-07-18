@@ -1272,10 +1272,11 @@ Changelog
     * Added ``--cert`` and ``--certkey`` parameters to specify a client side
       certificate and private key for SSL
     * Improved unicode support.
-    * Fixed ``User-Agent`` overwriting when used within a session.
     * Switched from ``unittest`` to ``pytest``.
     * Various test suite improvements.
     * Added `CONTRIBUTING`_.
+    * Fixed ``User-Agent`` overwriting when used within a session.
+    * Fixed handling of empty passwords in URL credentials.
 * `0.8.0`_ (2014-01-25)
     * Added ``field=@file.txt`` and ``field:=@file.json`` for embedding
       the contents of text and JSON files into request data.

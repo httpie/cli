@@ -211,7 +211,8 @@ class Parser(ArgumentParser):
 
         elif url.username is not None:
             # Handle http://username:password@hostname/
-            username, password = url.username, url.password
+            username = url.username
+            password = url.password or ''
             self.args.auth = AuthCredentials(
                 key=username,
                 value=password,

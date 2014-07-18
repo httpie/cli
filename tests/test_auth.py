@@ -2,8 +2,9 @@
 import requests
 import pytest
 
-from utils import http, add_auth, HTTP_OK
+from utils import http, add_auth, HTTP_OK, TestEnvironment
 import httpie.input
+import httpie.cli
 
 
 class TestAuth:
@@ -44,3 +45,18 @@ class TestAuth:
         r = http('--auth=user:password', 'GET', url)
         assert HTTP_OK in r
         assert r.json == {'authenticated': True, 'user': 'user'}
+
+    @pytest.mark.parametrize('url', [
+        'username@example.org',
+        'username:@example.org',
+    ])
+    def test_only_username_in_url(self, url):
+        """
+        https://github.com/jakubroztocil/httpie/issues/242
+
+        """
+        args = httpie.cli.parser.parse_args(args=[url], env=TestEnvironment())
+        assert args.auth
+        assert args.auth.key == 'username'
+        assert args.auth.value == ''
+
