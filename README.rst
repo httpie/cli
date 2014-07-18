@@ -53,6 +53,7 @@ Main Features
 * Wget-like downloads
 * Python 2.6, 2.7 and 3.x support
 * Linux, Mac OS X and Windows support
+* Plugins
 * Documentation
 * Test coverage
 
@@ -67,23 +68,29 @@ Installation
 Stable version |version|
 ------------------------
 
-The **latest stable version** can always be installed or updated to via `pip`_:
+On **Mac OS X**, HTTPie can be installed via `Homebrew <http://brew.sh/>`_:
+
+.. code-block:: bash
+
+    $ brew install httpie
+
+
+Most **Linux** distributions provide a package that can be installed via
+system package manager, e.g. ``yum install httpie`` or ``apt-get install httpie``.
+Note that the package might include a slightly older version of HTTPie.
+
+
+A **universal installation method** (that works on **Windows**, Mac OS X, Linux, …,
+and provides the latest version) is to use `pip`_:
+
 
 .. code-block:: bash
 
     $ pip install --upgrade httpie
 
 
-If the above fails, please use ``easy_install`` instead:
+If the above fails, please use ``easy_install`` instead (``$ easy_install httpie``).
 
-.. code-block:: bash
-
-    $ easy_install httpie
-
-
-Many Linux distributions also provide a package that can be installed via
-system package manager, e.g.
-``yum install httpie`` or ``apt-get install httpie``.
 
 
 
@@ -101,6 +108,10 @@ The **latest development version** can be installed directly from GitHub:
 
 .. code-block:: bash
 
+    # Mac OS X via Homebrew
+    $ brew install httpie --HEAD
+
+    # Universal
     $ pip install --upgrade https://github.com/jakubroztocil/httpie/tarball/master
 
 
@@ -613,6 +624,7 @@ Auth Plugins
 * `httpie-oauth <https://github.com/jakubroztocil/httpie-oauth>`_: OAuth
 * `httpie-ntlm <https://github.com/jakubroztocil/httpie-ntlm>`_: NTLM (NT LAN Manager)
 * `httpie-negotiate <https://github.com/ndzou/httpie-negotiate>`_: SPNEGO (GSS Negotiate)
+* `requests-hawk <https://github.com/mozilla-services/requests-hawk>`_: Hawk
 
 
 =======
@@ -659,6 +671,20 @@ path. The path can also be configured via the environment variable
 To use a client side certificate for the SSL communication, you can pass the
 path of the cert file with ``--cert``. If the private key is not contained
 in the cert file you may pass the path of the key file with ``--certkey``.
+
+If you use Python 2.x and need to talk to servers that use **SNI (Server Name
+Indication)** you need to install some additional dependencies:
+
+.. code-block:: bash
+
+    $ pip install --upgrade pyopenssl pyasn1 ndg-httpsclient
+
+
+You can use the following command to test SNI support:
+
+.. code-block:: bash
+
+    $ http https://sni.velox.ch
 
 
 ==============
@@ -772,7 +798,7 @@ Or the output of another program:
 
 .. code-block:: bash
 
-    $ grep /var/log/httpd/error_log '401 Unauthorized' | http POST example.org/intruders
+    $ grep '401 Unauthorized' /var/log/httpd/error_log | http POST example.org/intruders
 
 
 You can use ``echo`` for simple data:
@@ -1276,10 +1302,11 @@ Changelog
     * Added ``--cert`` and ``--certkey`` parameters to specify a client side
       certificate and private key for SSL
     * Improved unicode support.
-    * Fixed ``User-Agent`` overwriting when used within a session.
     * Switched from ``unittest`` to ``pytest``.
     * Various test suite improvements.
     * Added `CONTRIBUTING`_.
+    * Fixed ``User-Agent`` overwriting when used within a session.
+    * Fixed handling of empty passwords in URL credentials.
 * `0.8.0`_ (2014-01-25)
     * Added ``field=@file.txt`` and ``field:=@file.json`` for embedding
       the contents of text and JSON files into request data.

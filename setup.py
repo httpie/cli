@@ -1,5 +1,6 @@
 import sys
 import codecs
+
 from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 
@@ -24,12 +25,15 @@ class PyTest(TestCommand):
 
 
 tests_require = [
+    # Pytest needs to come last.
+    # <bitbucket.org/pypa/setuptools/issue/196/tests_require-pytest-pytest-cov-breaks>
+    'pytest-httpbin',
     'pytest',
 ]
 
 
 install_requires = [
-    'requests>=2.0.0',
+    'requests>=2.3.0',
     'Pygments>=1.5'
 ]
 try:
@@ -69,8 +73,10 @@ setup(
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Programming Language :: Python',
+        'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.1',
         'Programming Language :: Python :: 3.2',
         'Programming Language :: Python :: 3.3',

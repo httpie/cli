@@ -1,11 +1,12 @@
 from itertools import chain
 from functools import partial
 
+from httpie.compat import str
 from httpie.context import Environment
 from httpie.models import HTTPRequest, HTTPResponse
 from httpie.input import (OUT_REQ_BODY, OUT_REQ_HEAD,
                           OUT_RESP_HEAD, OUT_RESP_BODY)
-from httpie.output.processors import ProcessorManager
+from httpie.output.processing import Formatting, Conversion
 
 
 BINARY_SUPPRESSED_NOTICE = (
@@ -59,7 +60,6 @@ def build_output_stream(args, env, request, response):
     exchange each of which yields `bytes` chunks.
 
     """
-
     req_h = OUT_REQ_HEAD in args.output_options
     req_b = OUT_REQ_BODY in args.output_options
     resp_h = OUT_RESP_HEAD in args.output_options
@@ -111,11 +111,9 @@ def get_stream_type(env, args):
         Stream = partial(
             PrettyStream if args.stream else BufferedPrettyStream,
             env=env,
-            processor=ProcessorManager(
-                env=env,
-                groups=args.prettify,
-                pygments_style=args.style
-            ),
+            conversion=Conversion(),
+            formatting=Formatting(env=env, groups=args.prettify,
+                                  color_scheme=args.style),
         )
     else:
         Stream = partial(EncodedStream, env=env)
@@ -140,23 +138,23 @@ class BaseStream(object):
         self.with_body = with_body
         self.on_body_chunk_downloaded = on_body_chunk_downloaded
 
-    def _get_headers(self):
+    def get_headers(self):
         """Return the headers' bytes."""
         return self.msg.headers.encode('utf8')
 
-    def _iter_body(self):
+    def iter_body(self):
         """Return an iterator over the message body."""
         raise NotImplementedError()
 
     def __iter__(self):
         """Return an iterator over `self.msg`."""
         if self.with_headers:
-            yield self._get_headers()
+            yield self.get_headers()
             yield b'\r\n\r\n'
 
         if self.with_body:
             try:
-                for chunk in self._iter_body():
+                for chunk in self.iter_body():
                     yield chunk
                     if self.on_body_chunk_downloaded:
                         self.on_body_chunk_downloaded(chunk)
@@ -176,7 +174,7 @@ class RawStream(BaseStream):
         super(RawStream, self).__init__(**kwargs)
         self.chunk_size = chunk_size
 
-    def _iter_body(self):
+    def iter_body(self):
         return self.msg.iter_body(self.chunk_size)
 
 
@@ -204,7 +202,7 @@ class EncodedStream(BaseStream):
         # Default to utf8 when unsure.
         self.output_encoding = output_encoding or 'utf8'
 
-    def _iter_body(self):
+    def iter_body(self):
 
         for line, lf in self.msg.iter_lines(self.CHUNK_SIZE):
 
@@ -226,25 +224,44 @@ class PrettyStream(EncodedStream):
 
     CHUNK_SIZE = 1
 
-    def __init__(self, processor, **kwargs):
+    def __init__(self, conversion, formatting, **kwargs):
         super(PrettyStream, self).__init__(**kwargs)
-        self.processor = processor
+        self.formatting = formatting
+        self.conversion = conversion
+        self.mime = self.msg.content_type.split(';')[0]
 
-    def _get_headers(self):
-        return self.processor.process_headers(
+    def get_headers(self):
+        return self.formatting.format_headers(
             self.msg.headers).encode(self.output_encoding)
 
-    def _iter_body(self):
-        for line, lf in self.msg.iter_lines(self.CHUNK_SIZE):
+    def iter_body(self):
+        first_chunk = True
+        iter_lines = self.msg.iter_lines(self.CHUNK_SIZE)
+        for line, lf in iter_lines:
             if b'\0' in line:
+                if first_chunk:
+                    converter = self.conversion.get_converter(self.mime)
+                    if converter:
+                        body = bytearray()
+                        # noinspection PyAssignmentToLoopOrWithParameter
+                        for line, lf in chain([(line, lf)], iter_lines):
+                            body.extend(line)
+                            body.extend(lf)
+                        self.mime, body = converter.convert(body)
+                        assert isinstance(body, str)
+                        yield self.process_body(body)
+                        return
                 raise BinarySuppressedError()
-            yield self._process_body(line) + lf
+            yield self.process_body(line) + lf
+            first_chunk = False
 
-    def _process_body(self, chunk):
-        return self.processor.process_body(
-            body=chunk.decode(self.msg.encoding, 'replace'),
-            mime=self.msg.content_type.split(';')[0]
-        ).encode(self.output_encoding, 'replace')
+    def process_body(self, chunk):
+        if not isinstance(chunk, str):
+            # Text when a converter has been used,
+            # otherwise it will always be bytes.
+            chunk = chunk.decode(self.msg.encoding, 'replace')
+        chunk = self.formatting.format_body(content=chunk, mime=self.mime)
+        return chunk.encode(self.output_encoding, 'replace')
 
 
 class BufferedPrettyStream(PrettyStream):
@@ -257,14 +274,20 @@ class BufferedPrettyStream(PrettyStream):
 
     CHUNK_SIZE = 1024 * 10
 
-    def _iter_body(self):
-
+    def iter_body(self):
         # Read the whole body before prettifying it,
         # but bail out immediately if the body is binary.
+        converter = None
         body = bytearray()
+
         for chunk in self.msg.iter_body(self.CHUNK_SIZE):
-            if b'\0' in chunk:
-                raise BinarySuppressedError()
+            if not converter and b'\0' in chunk:
+                converter = self.conversion.get_converter(self.mime)
+                if not converter:
+                    raise BinarySuppressedError()
             body.extend(chunk)
 
-        yield self._process_body(body)
+        if converter:
+            self.mime, body = converter.convert(body)
+
+        yield self.process_body(body)

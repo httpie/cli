@@ -1,4 +1,4 @@
-from .compat import urlsplit, str
+from httpie.compat import urlsplit, str
 
 
 class HTTPMessage(object):
@@ -102,12 +102,16 @@ class HTTPRequest(HTTPMessage):
         )
 
         headers = dict(self._orig.headers)
-
-        if 'Host' not in headers:
+        if 'Host' not in self._orig.headers:
             headers['Host'] = url.netloc.split('@')[-1]
 
-        headers = ['%s: %s' % (name, value)
-                   for name, value in headers.items()]
+        headers = [
+            '%s: %s' % (
+                name,
+                value if isinstance(value, str) else value.decode('utf8')
+            )
+            for name, value in headers.items()
+        ]
 
         headers.insert(0, request_line)
         headers = '\r\n'.join(headers).strip()

@@ -7,8 +7,8 @@ import os
 import requests
 from requests.cookies import RequestsCookieJar, create_cookie
 
-from .compat import urlsplit
-from .config import BaseConfigDict, DEFAULT_CONFIG_DIR
+from httpie.compat import urlsplit
+from httpie.config import BaseConfigDict, DEFAULT_CONFIG_DIR
 from httpie.plugins import plugin_manager
 
 

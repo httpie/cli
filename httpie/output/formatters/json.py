@@ -1,12 +1,15 @@
 from __future__ import absolute_import
 import json
 
-from .base import BaseProcessor, DEFAULT_INDENT
+from httpie.plugins import FormatterPlugin
 
 
-class JSONProcessor(BaseProcessor):
+DEFAULT_INDENT = 4
 
-    def process_body(self, body, mime):
+
+class JSONFormatter(FormatterPlugin):
+
+    def format_body(self, body, mime):
         if 'json' in mime:
             try:
                 obj = json.loads(body)

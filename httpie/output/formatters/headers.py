@@ -1,9 +1,9 @@
-from .base import BaseProcessor
+from httpie.plugins import FormatterPlugin
 
 
-class HeadersProcessor(BaseProcessor):
+class HeadersFormatter(FormatterPlugin):
 
-    def process_headers(self, headers):
+    def format_headers(self, headers):
         """
         Sorts headers by name while retaining relative
         order of multiple headers with the same name.

@@ -2,8 +2,8 @@ import os
 import json
 import errno
 
-from . import __version__
-from .compat import is_windows
+from httpie import __version__
+from httpie.compat import is_windows
 
 
 DEFAULT_CONFIG_DIR = os.environ.get(

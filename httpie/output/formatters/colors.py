@@ -8,7 +8,7 @@ from pygments.formatters.terminal256 import Terminal256Formatter
 from pygments.util import ClassNotFound
 
 from httpie.compat import is_windows
-from .base import BaseProcessor
+from httpie.plugins import FormatterPlugin
 
 
 # Colors on Windows via colorama don't look that
@@ -16,6 +16,52 @@ from .base import BaseProcessor
 AVAILABLE_STYLES = set(pygments.styles.STYLE_MAP.keys())
 AVAILABLE_STYLES.add('solarized')
 DEFAULT_STYLE = 'solarized' if not is_windows else 'fruity'
+
+
+class ColorFormatter(FormatterPlugin):
+    """
+    Colorize using Pygments
+
+    This processor that applies syntax highlighting to the headers,
+    and also to the body if its content type is recognized.
+
+    """
+    group_name = 'colors'
+
+    def __init__(self, env, color_scheme=DEFAULT_STYLE, **kwargs):
+        super(ColorFormatter, self).__init__(**kwargs)
+        if not env.colors:
+            self.enabled = False
+            return
+
+        # Cache to speed things up when we process streamed body by line.
+        self.lexer_cache = {}
+
+        try:
+            style_class = pygments.styles.get_style_by_name(color_scheme)
+        except ClassNotFound:
+            style_class = Solarized256Style
+
+        if env.is_windows or env.colors == 256:
+            fmt_class = Terminal256Formatter
+        else:
+            fmt_class = TerminalFormatter
+        self.formatter = fmt_class(style=style_class)
+
+    def format_headers(self, headers):
+        return pygments.highlight(headers, HTTPLexer(), self.formatter).strip()
+
+    def format_body(self, body, mime):
+        lexer = self.get_lexer(mime)
+        if lexer:
+            body = pygments.highlight(body, lexer, self.formatter)
+        return body.strip()
+
+    def get_lexer(self, mime):
+        if mime in self.lexer_cache:
+            return self.lexer_cache[mime]
+        self.lexer_cache[mime] = get_lexer(mime)
+        return self.lexer_cache[mime]
 
 
 def get_lexer(mime):
@@ -44,52 +90,6 @@ def get_lexer(mime):
             except ClassNotFound:
                 pass
     return lexer
-
-
-class PygmentsProcessor(BaseProcessor):
-    """
-    Colorize using Pygments
-
-    This processor that applies syntax highlighting to the headers,
-    and also to the body if its content type is recognized.
-
-    """
-    def __init__(self, *args, **kwargs):
-        super(PygmentsProcessor, self).__init__(*args, **kwargs)
-
-        if not self.env.colors:
-            self.enabled = False
-            return
-
-        # Cache to speed things up when we process streamed body by line.
-        self.lexers_by_type = {}
-
-        try:
-            style = pygments.styles.get_style_by_name(
-                self.kwargs.get('pygments_style', DEFAULT_STYLE))
-        except ClassNotFound:
-            style = Solarized256Style
-
-        if self.env.is_windows or self.env.colors == 256:
-            fmt_class = Terminal256Formatter
-        else:
-            fmt_class = TerminalFormatter
-        self.formatter = fmt_class(style=style)
-
-    def process_headers(self, headers):
-        return pygments.highlight(headers, HTTPLexer(), self.formatter).strip()
-
-    def process_body(self, body, mime):
-        lexer = self.get_lexer(mime)
-        if lexer:
-            body = pygments.highlight(body, lexer, self.formatter)
-        return body.strip()
-
-    def get_lexer(self, mime):
-        if mime in self.lexers_by_type:
-            return self.lexers_by_type[mime]
-        self.lexers_by_type[mime] = get_lexer(mime)
-        return self.lexers_by_type[mime]
 
 
 class HTTPLexer(pygments.lexer.RegexLexer):

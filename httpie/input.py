@@ -10,14 +10,13 @@ import getpass
 from io import BytesIO
 #noinspection PyCompatibility
 from argparse import ArgumentParser, ArgumentTypeError, ArgumentError
-from .compat import OrderedDict
 
 # TODO: Use MultiDict for headers once added to `requests`.
 # https://github.com/jakubroztocil/httpie/issues/130
 from requests.structures import CaseInsensitiveDict
 
-from .compat import urlsplit, str
-from .sessions import VALID_SESSION_NAME_PATTERN
+from httpie.compat import OrderedDict, urlsplit, str
+from httpie.sessions import VALID_SESSION_NAME_PATTERN
 
 
 HTTP_POST = 'POST'
@@ -220,7 +219,8 @@ class Parser(ArgumentParser):
 
         elif url.username is not None:
             # Handle http://username:password@hostname/
-            username, password = url.username, url.password
+            username = url.username
+            password = url.password or ''
             self.args.auth = AuthCredentials(
                 key=username,
                 value=password,

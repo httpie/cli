@@ -9,7 +9,7 @@ from httpie.downloads import (
     parse_content_range, filename_from_content_disposition, filename_from_url,
     get_unique_filename, ContentRangeError, Download,
 )
-from utils import httpbin, http, TestEnvironment
+from utils import http, TestEnvironment
 
 
 class Response(object):
@@ -94,8 +94,8 @@ class TestDownloadUtils:
 class TestDownloads:
     # TODO: more tests
 
-    def test_actual_download(self):
-        url = httpbin('/robots.txt')
+    def test_actual_download(self, httpbin):
+        url = httpbin.url + '/robots.txt'
         body = urlopen(url).read().decode()
         env = TestEnvironment(stdin_isatty=True, stdout_isatty=False)
         r = http('--download', url, env=env)
@@ -104,11 +104,11 @@ class TestDownloads:
         assert 'Done' in r.stderr
         assert body == r
 
-    def test_download_with_Content_Length(self):
+    def test_download_with_Content_Length(self, httpbin):
         devnull = open(os.devnull, 'w')
         download = Download(output_file=devnull, progress_file=devnull)
         download.start(Response(
-            url=httpbin('/'),
+            url=httpbin.url + '/',
             headers={'Content-Length': 10}
         ))
         time.sleep(1.1)
@@ -118,20 +118,20 @@ class TestDownloads:
         download.finish()
         assert not download.interrupted
 
-    def test_download_no_Content_Length(self):
+    def test_download_no_Content_Length(self, httpbin):
         devnull = open(os.devnull, 'w')
         download = Download(output_file=devnull, progress_file=devnull)
-        download.start(Response(url=httpbin('/')))
+        download.start(Response(url=httpbin.url + '/'))
         time.sleep(1.1)
         download.chunk_downloaded(b'12345')
         download.finish()
         assert not download.interrupted
 
-    def test_download_interrupted(self):
+    def test_download_interrupted(self, httpbin):
         devnull = open(os.devnull, 'w')
         download = Download(output_file=devnull, progress_file=devnull)
         download.start(Response(
-            url=httpbin('/'),
+            url=httpbin.url + '/',
             headers={'Content-Length': 5}
         ))
         download.chunk_downloaded(b'1234')
