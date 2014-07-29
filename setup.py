@@ -34,7 +34,8 @@ tests_require = [
 
 install_requires = [
     'requests>=2.3.0',
-    'Pygments>=1.5'
+    'Pygments>=1.5',
+    'colorama>=0.3.1'
 ]
 try:
     #noinspection PyUnresolvedReferences
