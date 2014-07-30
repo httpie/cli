@@ -22,7 +22,10 @@ def get_response(args, config_dir):
         requests_kwargs = get_requests_kwargs(args)
         if args.debug:
             dump_request(requests_kwargs)
-        response = requests.request(**requests_kwargs)
+
+        s = requests.Session()
+        s.max_redirects = args.redirects
+        response = s.request(**requests_kwargs)
     else:
         response = sessions.get_response(
             args=args,

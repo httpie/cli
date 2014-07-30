@@ -377,6 +377,15 @@ sessions.add_argument(
     """
 )
 
+sessions.add_argument(
+    '--max-redirects',
+    dest='redirects',
+    default=30,
+    help="""
+    By default, requests has a limit of 30 redirects.
+
+    """
+)
 
 #######################################################################
 # Authentication
