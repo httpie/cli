@@ -18,26 +18,28 @@ from fixtures import (
 
 class TestItemParsing:
 
-    key_value_type = KeyValueArgType(*input.SEP_GROUP_ALL_ITEMS)
+    key_value = KeyValueArgType(*input.SEP_GROUP_ALL_ITEMS)
 
     def test_invalid_items(self):
         items = ['no-separator']
         for item in items:
-            pytest.raises(argparse.ArgumentTypeError,
-                          self.key_value_type, item)
+            pytest.raises(argparse.ArgumentTypeError, self.key_value, item)
 
-    def test_escape(self):
+    def test_escape_separator(self):
         items = input.parse_items([
             # headers
-            self.key_value_type(r'foo\:bar:baz'),
-            self.key_value_type(r'jack\@jill:hill'),
+            self.key_value(r'foo\:bar:baz'),
+            self.key_value(r'jack\@jill:hill'),
+
             # data
-            self.key_value_type(r'baz\=bar=foo'),
+            self.key_value(r'baz\=bar=foo'),
+
             # files
-            self.key_value_type(r'bar\@baz@%s' % FILE_PATH_ARG)
+            self.key_value(r'bar\@baz@%s' % FILE_PATH_ARG),
         ])
         # `requests.structures.CaseInsensitiveDict` => `dict`
         headers = dict(items.headers._store.values())
+
         assert headers == {
             'foo:bar': 'baz',
             'jack@jill': 'hill',
@@ -45,25 +47,36 @@ class TestItemParsing:
         assert items.data == {'baz=bar': 'foo'}
         assert 'bar@baz' in items.files
 
+    @pytest.mark.parametrize(('string', 'key', 'sep', 'value'), [
+        ('path=c:\windows', 'path', '=', 'c:\windows'),
+        ('path=c:\windows\\', 'path', '=', 'c:\windows\\'),
+        ('path\==c:\windows', 'path=', '=', 'c:\windows'),
+    ])
+    def test_backslash_before_non_special_character_does_not_escape(
+            self, string, key, sep, value):
+        expected = KeyValue(orig=string, key=key, sep=sep, value=value)
+        actual = self.key_value(string)
+        assert actual == expected
+
     def test_escape_longsep(self):
         items = input.parse_items([
-            self.key_value_type(r'bob\:==foo'),
+            self.key_value(r'bob\:==foo'),
         ])
         assert items.params == {'bob:': 'foo'}
 
     def test_valid_items(self):
         items = input.parse_items([
-            self.key_value_type('string=value'),
-            self.key_value_type('header:value'),
-            self.key_value_type('list:=["a", 1, {}, false]'),
-            self.key_value_type('obj:={"a": "b"}'),
-            self.key_value_type('eh:'),
-            self.key_value_type('ed='),
-            self.key_value_type('bool:=true'),
-            self.key_value_type('file@' + FILE_PATH_ARG),
-            self.key_value_type('query==value'),
-            self.key_value_type('string-embed=@' + FILE_PATH_ARG),
-            self.key_value_type('raw-json-embed:=@' + JSON_FILE_PATH_ARG),
+            self.key_value('string=value'),
+            self.key_value('header:value'),
+            self.key_value('list:=["a", 1, {}, false]'),
+            self.key_value('obj:={"a": "b"}'),
+            self.key_value('eh:'),
+            self.key_value('ed='),
+            self.key_value('bool:=true'),
+            self.key_value('file@' + FILE_PATH_ARG),
+            self.key_value('query==value'),
+            self.key_value('string-embed=@' + FILE_PATH_ARG),
+            self.key_value('raw-json-embed:=@' + JSON_FILE_PATH_ARG),
         ])
 
         # Parsed headers

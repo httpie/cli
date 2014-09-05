@@ -398,6 +398,9 @@ class KeyValue(object):
     def __eq__(self, other):
         return self.__dict__ == other.__dict__
 
+    def __repr__(self):
+        return repr(self.__dict__)
+
 
 class SessionNameValidator(object):
 
@@ -424,6 +427,9 @@ class KeyValueArgType(object):
 
     def __init__(self, *separators):
         self.separators = separators
+        self.special_characters = set('\\')
+        for separator in separators:
+            self.special_characters.update(separator)
 
     def __call__(self, string):
         """Parse `string` and return `self.key_value_class()` instance.
@@ -446,17 +452,18 @@ class KeyValueArgType(object):
             => ['foo', Escaped('='), 'bar', Escaped('\\'), 'baz']
 
             """
+            backslash = '\\'
             tokens = ['']
-            esc = False
+            s = iter(s)
             for c in s:
-                if esc:
-                    tokens.extend([Escaped(c), ''])
-                    esc = False
-                else:
-                    if c == '\\':
-                        esc = True
+                if c == backslash:
+                    nc = next(s, '')
+                    if nc in self.special_characters:
+                        tokens.extend([Escaped(nc), ''])
                     else:
-                        tokens[-1] += c
+                        tokens[-1] += c + nc
+                else:
+                    tokens[-1] += c
             return tokens
 
         tokens = tokenize(string)

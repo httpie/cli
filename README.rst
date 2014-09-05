@@ -1277,6 +1277,9 @@ Changelog
     * Added `CONTRIBUTING`_.
     * Fixed ``User-Agent`` overwriting when used within a session.
     * Fixed handling of empty passwords in URL credentials.
+    * To make it easier to deal with Windows paths in request items, ``\``
+      now only special characters (the ones that are used as key-value
+      separators).
 * `0.8.0`_ (2014-01-25)
     * Added ``field=@file.txt`` and ``field:=@file.json`` for embedding
       the contents of text and JSON files into request data.
