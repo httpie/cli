@@ -27,32 +27,32 @@ class TestItemParsing:
                           self.key_value_type, item)
 
     def test_escape(self):
-        headers, data, files, params = input.parse_items([
+        items = input.parse_items([
             # headers
-            self.key_value_type('foo\\:bar:baz'),
-            self.key_value_type('jack\\@jill:hill'),
+            self.key_value_type(r'foo\:bar:baz'),
+            self.key_value_type(r'jack\@jill:hill'),
             # data
-            self.key_value_type('baz\\=bar=foo'),
+            self.key_value_type(r'baz\=bar=foo'),
             # files
-            self.key_value_type('bar\\@baz@%s' % FILE_PATH_ARG)
+            self.key_value_type(r'bar\@baz@%s' % FILE_PATH_ARG)
         ])
         # `requests.structures.CaseInsensitiveDict` => `dict`
-        headers = dict(headers._store.values())
+        headers = dict(items.headers._store.values())
         assert headers == {
             'foo:bar': 'baz',
             'jack@jill': 'hill',
         }
-        assert data == {'baz=bar': 'foo'}
-        assert 'bar@baz' in files
+        assert items.data == {'baz=bar': 'foo'}
+        assert 'bar@baz' in items.files
 
     def test_escape_longsep(self):
-        headers, data, files, params = input.parse_items([
-            self.key_value_type('bob\\:==foo'),
+        items = input.parse_items([
+            self.key_value_type(r'bob\:==foo'),
         ])
-        assert params == {'bob:': 'foo'}
+        assert items.params == {'bob:': 'foo'}
 
     def test_valid_items(self):
-        headers, data, files, params = input.parse_items([
+        items = input.parse_items([
             self.key_value_type('string=value'),
             self.key_value_type('header:value'),
             self.key_value_type('list:=["a", 1, {}, false]'),
@@ -68,14 +68,14 @@ class TestItemParsing:
 
         # Parsed headers
         # `requests.structures.CaseInsensitiveDict` => `dict`
-        headers = dict(headers._store.values())
+        headers = dict(items.headers._store.values())
         assert headers == {'header': 'value', 'eh': ''}
 
         # Parsed data
-        raw_json_embed = data.pop('raw-json-embed')
+        raw_json_embed = items.data.pop('raw-json-embed')
         assert raw_json_embed == json.loads(JSON_FILE_CONTENT)
-        data['string-embed'] = data['string-embed'].strip()
-        assert dict(data) == {
+        items.data['string-embed'] = items.data['string-embed'].strip()
+        assert dict(items.data) == {
             "ed": "",
             "string": "value",
             "bool": True,
@@ -85,11 +85,12 @@ class TestItemParsing:
         }
 
         # Parsed query string parameters
-        assert params == {'query': 'value'}
+        assert items.params == {'query': 'value'}
 
         # Parsed file fields
-        assert 'file' in files
-        assert files['file'][1].read().strip().decode('utf8') == FILE_CONTENT
+        assert 'file' in items.files
+        assert (items.files['file'][1].read().strip().decode('utf8')
+                == FILE_CONTENT)
 
 
 class TestQuerystring:

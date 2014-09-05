@@ -8,6 +8,7 @@ import json
 import mimetypes
 import getpass
 from io import BytesIO
+from collections import namedtuple
 #noinspection PyCompatibility
 from argparse import ArgumentParser, ArgumentTypeError, ArgumentError
 
@@ -560,6 +561,10 @@ class ParamDict(OrderedDict):
             self[key].append(value)
 
 
+RequestItems = namedtuple('RequestItems',
+                          ['headers', 'data', 'files', 'params'])
+
+
 def parse_items(items, data=None, headers=None, files=None, params=None):
     """Parse `KeyValue` `items` into `data`, `headers`, `files`,
     and `params`.
@@ -617,7 +622,7 @@ def parse_items(items, data=None, headers=None, files=None, params=None):
 
         target[item.key] = value
 
-    return headers, data, files, params
+    return RequestItems(headers, data, files, params)
 
 
 def readable_file_arg(filename):
