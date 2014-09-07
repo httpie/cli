@@ -1280,6 +1280,7 @@ Changelog
     * To make it easier to deal with Windows paths in request items, ``\``
       now only escapes special characters (the ones that are used as key-value
       separators).
+    * Fixed ``--output=/dev/null`` on Linux.
 * `0.8.0`_ (2014-01-25)
     * Added ``field=@file.txt`` and ``field:=@file.json`` for embedding
       the contents of text and JSON files into request data.

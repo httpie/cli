@@ -5,6 +5,7 @@ import os
 import sys
 import re
 import json
+import errno
 import mimetypes
 import getpass
 from io import BytesIO
@@ -185,7 +186,14 @@ class Parser(ArgumentParser):
             # `stdout`. The file is opened for appending, which isn't what
             # we want in this case.
             self.args.output_file.seek(0)
-            self.args.output_file.truncate()
+            try:
+                self.args.output_file.truncate()
+            except IOError as e:
+                if e.errno == errno.EINVAL:
+                    # E.g. /dev/null on Linux.
+                    pass
+                else:
+                    raise
             self.env.stdout = self.args.output_file
             self.env.stdout_isatty = False
 
