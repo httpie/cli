@@ -9,6 +9,7 @@ python:
   - pypy
   - 3.3
   - 3.4
+  - pypy3
 script:
   - make
 after_success:
