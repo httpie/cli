@@ -22,8 +22,8 @@ init: uninstall-httpie
 	@echo
 
 test: init
-	@echo $(TAG)Running tests in on current Python in parallel and with coverage $(END)
-	py.test --cov ./httpie --cov ./tests -n 8 --doctest-modules --verbose ./httpie ./tests
+	@echo $(TAG)Running tests in on current Python with coverage $(END)
+	py.test --cov ./httpie --cov ./tests --doctest-modules --verbose ./httpie ./tests
 	@echo
 
 test-tox: init
