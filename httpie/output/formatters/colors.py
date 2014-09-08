@@ -42,7 +42,7 @@ class ColorFormatter(FormatterPlugin):
         except ClassNotFound:
             style_class = Solarized256Style
 
-        if env.is_windows or env.colors == 256:
+        if env.colors == 256:
             fmt_class = Terminal256Formatter
         else:
             fmt_class = TerminalFormatter
