@@ -452,8 +452,8 @@ class KeyValueArgType(object):
         class Escaped(str):
             """Represents an escaped character."""
 
-        def tokenize(s):
-            """Tokenize `s`. There are only two token types - strings
+        def tokenize(string):
+            """Tokenize `string`. There are only two token types - strings
             and escaped characters:
 
             tokenize(r'foo\=bar\\baz')
@@ -462,16 +462,16 @@ class KeyValueArgType(object):
             """
             backslash = '\\'
             tokens = ['']
-            s = iter(s)
-            for c in s:
-                if c == backslash:
-                    nc = next(s, '')
-                    if nc in self.special_characters:
-                        tokens.extend([Escaped(nc), ''])
+            characters = iter(string)
+            for char in characters:
+                if char == backslash:
+                    next_char = next(characters, '')
+                    if next_char in self.special_characters:
+                        tokens.extend([Escaped(next_char), ''])
                     else:
-                        tokens[-1] += c + nc
+                        tokens[-1] += char + next_char
                 else:
-                    tokens[-1] += c
+                    tokens[-1] += char
             return tokens
 
         tokens = tokenize(string)
