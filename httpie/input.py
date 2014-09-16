@@ -460,16 +460,15 @@ class KeyValueArgType(object):
             => ['foo', Escaped('='), 'bar', Escaped('\\'), 'baz']
 
             """
-            backslash = '\\'
             tokens = ['']
             characters = iter(string)
             for char in characters:
-                if char == backslash:
-                    next_char = next(characters, '')
-                    if next_char in self.special_characters:
-                        tokens.extend([Escaped(next_char), ''])
+                if char == '\\':
+                    char = next(characters, '')
+                    if char not in self.special_characters:
+                        tokens[-1] += '\\' + char
                     else:
-                        tokens[-1] += char + next_char
+                        tokens.extend([Escaped(char), ''])
                 else:
                     tokens[-1] += char
             return tokens
