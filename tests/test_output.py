@@ -32,9 +32,13 @@ class TestColors:
         'application/json',
         'application/json+foo',
         'application/foo+json',
+        'application/json-foo',
+        'application/x-json',
         'foo/json',
         'foo/json+bar',
         'foo/bar+json',
+        'foo/json-foo',
+        'foo/x-json',
     ])
     def test_get_lexer(self, mime):
         lexer = get_lexer(mime)
