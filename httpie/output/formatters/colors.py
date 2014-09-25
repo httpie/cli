@@ -76,6 +76,10 @@ def get_lexer(mime):
             '%s/%s' % (type_, subtype_name),
             '%s/%s' % (type_, subtype_suffix)
         ])
+    # as a last resort, if no lexer feels responsible, and
+    # the subtype contains 'json', take the JSON lexer
+    if 'json' in subtype:
+        lexer_names.append('json')
     lexer = None
     for mime_type in mime_types:
         try:

@@ -31,3 +31,4 @@ Patches and ideas
 * `Justin Bonnar <https://github.com/jargonjustin>`_
 * `Nathan LaFreniere <https://github.com/nlf>`_
 * `Matthias Lehmann <https://github.com/matleh>`_
+* `Dennis Brakhane <https://github.com/brakhane>`_
