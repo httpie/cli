@@ -1277,6 +1277,7 @@ Changelog
     * Added `CONTRIBUTING`_.
     * Fixed ``User-Agent`` overwriting when used within a session.
     * Fixed handling of empty passwords in URL credentials.
+    * Fixed multiple file uploads with the same form field name.
     * To make it easier to deal with Windows paths in request items, ``\``
       now only escapes special characters (the ones that are used as key-value
       separators).

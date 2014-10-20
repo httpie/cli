@@ -2,11 +2,12 @@
 import json
 # noinspection PyCompatibility
 import argparse
+import os
 
 import pytest
 
 from httpie import input
-from httpie.input import KeyValue, KeyValueArgType
+from httpie.input import KeyValue, KeyValueArgType, DataDict
 from httpie import ExitStatus
 from httpie.cli import parser
 from utils import TestEnvironment, http, HTTP_OK
@@ -105,6 +106,25 @@ class TestItemParsing:
         assert (items.files['file'][1].read().strip().decode('utf8')
                 == FILE_CONTENT)
 
+    def test_multiple_file_fields_with_same_field_name(self):
+        items = input.parse_items([
+            self.key_value('file_field@' + FILE_PATH_ARG),
+            self.key_value('file_field@' + FILE_PATH_ARG),
+        ])
+        assert len(items.files['file_field']) == 2
+
+    def test_multiple_text_fields_with_same_field_name(self):
+        items = input.parse_items(
+            [self.key_value('text_field=a'),
+             self.key_value('text_field=b')],
+            data_class=DataDict
+        )
+        assert items.data['text_field'] == ['a', 'b']
+        assert list(items.data.items()) == [
+            ('text_field', 'a'),
+            ('text_field', 'b'),
+        ]
+
 
 class TestQuerystring:
     def test_query_string_params_in_url(self, httpbin):
@@ -134,7 +154,7 @@ class TestQuerystring:
         assert '"url": "%s"' % url in r
 
 
-class TestCLIParser:
+class TestURLshorthand:
     def test_expand_localhost_shorthand(self):
         args = parser.parse_args(args=[':'], env=TestEnvironment())
         assert args.url == 'http://localhost'

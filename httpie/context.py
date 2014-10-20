@@ -25,13 +25,16 @@ class Environment(object):
     stdout_encoding = None
     stderr = sys.stderr
     stderr_isatty = stderr.isatty()
+    colors = 256
     if not is_windows:
         import curses
-        curses.setupterm()
-        colors = curses.tigetnum('colors')
+        try:
+            curses.setupterm()
+            colors = curses.tigetnum('colors')
+        except curses.error:
+            pass
         del curses
     else:
-        colors = 256
         # noinspection PyUnresolvedReferences
         import colorama.initialise
         stdout = colorama.initialise.wrap_stream(

@@ -48,7 +48,7 @@ class BaseConfigDict(dict):
                 except ValueError as e:
                     raise ValueError(
                         'Invalid %s JSON: %s [%s]' %
-                        (type(self).__name__, e.message, self.path)
+                        (type(self).__name__, str(e), self.path)
                     )
                 self.update(data)
         except IOError as e:

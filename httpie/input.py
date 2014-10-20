@@ -309,21 +309,20 @@ class Parser(ArgumentParser):
          and `args.files`.
 
         """
-        self.args.headers = CaseInsensitiveDict()
-        self.args.data = ParamDict() if self.args.form else OrderedDict()
-        self.args.files = OrderedDict()
-        self.args.params = ParamDict()
-
         try:
-            parse_items(items=self.args.items,
-                        headers=self.args.headers,
-                        data=self.args.data,
-                        files=self.args.files,
-                        params=self.args.params)
+            items = parse_items(
+                items=self.args.items,
+                data_class=ParamsDict if self.args.form else OrderedDict
+            )
         except ParseError as e:
             if self.args.traceback:
                 raise
             self.error(e.args[0])
+        else:
+            self.args.headers = items.headers
+            self.args.data = items.data
+            self.args.files = items.files
+            self.args.params = items.params
 
         if self.args.files and not self.args.form:
             # `http url @/path/to/file`
@@ -555,7 +554,7 @@ class AuthCredentialsArgType(KeyValueArgType):
             )
 
 
-class ParamDict(OrderedDict):
+class RequestItemsDict(OrderedDict):
     """Multi-value dict for URL parameters and form data."""
 
     #noinspection PyMethodOverriding
@@ -567,31 +566,46 @@ class ParamDict(OrderedDict):
         data and URL params.
 
         """
+        assert not isinstance(value, list)
         if key not in self:
-            super(ParamDict, self).__setitem__(key, value)
+            super(RequestItemsDict, self).__setitem__(key, value)
         else:
             if not isinstance(self[key], list):
-                super(ParamDict, self).__setitem__(key, [self[key]])
+                super(RequestItemsDict, self).__setitem__(key, [self[key]])
             self[key].append(value)
+
+
+class ParamsDict(RequestItemsDict):
+    pass
+
+
+class DataDict(RequestItemsDict):
+
+    def items(self):
+        for key, values in super(RequestItemsDict, self).items():
+            if not isinstance(values, list):
+                values = [values]
+            for value in values:
+                yield key, value
 
 
 RequestItems = namedtuple('RequestItems',
                           ['headers', 'data', 'files', 'params'])
 
 
-def parse_items(items, data=None, headers=None, files=None, params=None):
+def parse_items(items,
+                headers_class=CaseInsensitiveDict,
+                data_class=OrderedDict,
+                files_class=DataDict,
+                params_class=ParamsDict):
     """Parse `KeyValue` `items` into `data`, `headers`, `files`,
     and `params`.
 
     """
-    if headers is None:
-        headers = CaseInsensitiveDict()
-    if data is None:
-        data = OrderedDict()
-    if files is None:
-        files = OrderedDict()
-    if params is None:
-        params = ParamDict()
+    headers = []
+    data = []
+    files = []
+    params = []
 
     for item in items:
         value = item.value
@@ -634,9 +648,12 @@ def parse_items(items, data=None, headers=None, files=None, params=None):
         else:
             raise TypeError(item)
 
-        target[item.key] = value
+        target.append((item.key, value))
 
-    return RequestItems(headers, data, files, params)
+    return RequestItems(headers_class(headers),
+                        data_class(data),
+                        files_class(files),
+                        params_class(params))
 
 
 def readable_file_arg(filename):
