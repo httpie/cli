@@ -62,6 +62,7 @@ extras_require = {
     ' or python_version == "3.0"'
     ' or python_version == "3.1" ': ['argparse>=1.2.1'],
     ':sys_platform == "win32"': ['colorama>=0.2.4'],
+    'security': ['pyOpenSSL', 'ndg-httpsclient', 'pyasn1'],
 }
 
 
