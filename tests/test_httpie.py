@@ -63,3 +63,8 @@ class TestHTTPie:
         assert HTTP_OK in r
         assert '"User-Agent": "HTTPie' in r, r
         assert '"Foo": "bar"' in r
+
+    def test_headers_override_content_length(self, httpbin):
+        r = http('POST', httpbin.url + '/post', 'Content-Length:not_zero')
+        assert HTTP_OK in r
+        assert '"Content-Length": "not_zero"' in r
