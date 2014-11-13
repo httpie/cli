@@ -63,3 +63,8 @@ class TestHTTPie:
         assert HTTP_OK in r
         assert '"User-Agent": "HTTPie' in r, r
         assert '"Foo": "bar"' in r
+
+    def test_json_order(self, httpbin):
+        r = http('PATCH', httpbin.url + '/patch', 'order:={"map":{"1":"first","2":"second"}}')
+        assert HTTP_OK in r
+        assert r.json['data'] == '{"order": {"map": {"1": "first", "2": "second"}}}'
