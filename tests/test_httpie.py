@@ -1,7 +1,10 @@
 """High-level tests."""
+import requests
+import pytest
+import httpie
+
 from utils import TestEnvironment, http, HTTP_OK
 from fixtures import FILE_PATH, FILE_CONTENT
-import httpie
 
 
 class TestHTTPie:
@@ -64,6 +67,10 @@ class TestHTTPie:
         assert '"User-Agent": "HTTPie' in r, r
         assert '"Foo": "bar"' in r
 
+    @pytest.mark.skipif(
+        tuple(map(int, requests.__version__.split('.'))) < (2, 4, 4),
+        reason='content-length overriding broken in requests v2.4.4 (#2332)'
+    )
     def test_headers_override_content_length(self, httpbin):
         r = http('POST', httpbin.url + '/post', 'Content-Length:not_zero')
         assert HTTP_OK in r
