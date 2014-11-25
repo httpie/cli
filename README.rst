@@ -298,6 +298,16 @@ command:
 
     GET /?search=HTTPie&tbm=isch HTTP/1.1
 
+To issue HTTP requests to a UNIX domain socket (added in `0.9.0-dev`_):
+
+* Use new ``http+unix://`` scheme in URL.
+* Use url-encoded socket path as the hostname part of the URL.
+  e.g.: for a socket at ``/tmp/profilesvc.sock``, you could do:
+
+.. code-block:: bash
+
+    $ http http+unix://%2Ftmp%2Fprofilesvc.sock/status/pid
+
 
 =============
 Request Items
@@ -1329,6 +1339,8 @@ Changelog
     * Fixed handling of empty passwords in URL credentials.
     * Fixed multiple file uploads with the same form field name.
     * Fixed ``--output=/dev/null`` on Linux.
+    * Improved terminal color depth detection via ``curses``.
+    * Add support for unix domain sockets with ``http+unix://`` scheme.
     * Miscellaneous bugfixes.
 * `0.8.0`_ (2014-01-25)
     * Added ``field=@file.txt`` and ``field:=@file.json`` for embedding

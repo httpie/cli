@@ -4,3 +4,4 @@ pytest-cov
 pytest-httpbin
 docutils
 wheel
+waitress

@@ -3,6 +3,7 @@ import sys
 from pprint import pformat
 
 import requests
+import requests_unixsocket
 
 from httpie import sessions
 from httpie import __version__
@@ -22,7 +23,7 @@ def get_response(args, config_dir):
         requests_kwargs = get_requests_kwargs(args)
         if args.debug:
             dump_request(requests_kwargs)
-        response = requests.request(**requests_kwargs)
+        response = get_session().request(**requests_kwargs)
     else:
         response = sessions.get_response(
             args=args,
@@ -32,6 +33,10 @@ def get_response(args, config_dir):
         )
 
     return response
+
+
+def get_session():
+    return requests_unixsocket.Session()
 
 
 def dump_request(kwargs):
