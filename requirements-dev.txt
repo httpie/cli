@@ -2,4 +2,5 @@ tox
 pytest
 pytest-cov
 pytest-httpbin
+git+https://github.com/klrmn/pytest-rerunfailures.git
 docutils
