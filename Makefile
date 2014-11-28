@@ -23,7 +23,7 @@ init: uninstall-httpie
 
 test: init
 	@echo $(TAG)Running tests in on current Python with coverage $(END)
-	py.test --cov ./httpie --cov ./tests --doctest-modules --verbose ./httpie ./tests
+	py.test --cov ./httpie --cov ./tests --doctest-modules --verbose --reruns=3 ./httpie ./tests
 	@echo
 
 test-tox: init
