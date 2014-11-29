@@ -30,8 +30,8 @@ class Environment(object):
         import curses
         try:
             curses.setupterm()
-            colors = curses.tigetnum('colors').to_bytes()
-        except curses.error:
+            colors = curses.tigetnum('colors')
+        except curses.error or TypeError:
             pass
         del curses
     else:
