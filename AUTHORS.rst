@@ -32,3 +32,4 @@ Patches and ideas
 * `Nathan LaFreniere <https://github.com/nlf>`_
 * `Matthias Lehmann <https://github.com/matleh>`_
 * `Dennis Brakhane <https://github.com/brakhane>`_
+* `Steven Richards <https://github.com/captainkrtek>`_
