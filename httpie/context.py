@@ -31,7 +31,7 @@ class Environment(object):
         try:
             curses.setupterm()
             colors = curses.tigetnum('colors')
-        except curses.error or TypeError:
+        except curses.error:
             pass
         del curses
     else:
