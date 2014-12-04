@@ -5,6 +5,7 @@ from httpie.output.formatters.headers import HeadersFormatter
 from httpie.output.formatters.json import JSONFormatter
 from httpie.output.formatters.xml import XMLFormatter
 from httpie.output.formatters.colors import ColorFormatter
+from httpie.output.converters.msgpack import MsgpackConverter
 
 
 plugin_manager = PluginManager()
@@ -14,3 +15,4 @@ plugin_manager.register(HeadersFormatter,
                         JSONFormatter,
                         XMLFormatter,
                         ColorFormatter)
+plugin_manager.register(MsgpackConverter)
