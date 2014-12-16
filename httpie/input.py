@@ -76,12 +76,14 @@ OUT_REQ_HEAD = 'H'
 OUT_REQ_BODY = 'B'
 OUT_RESP_HEAD = 'h'
 OUT_RESP_BODY = 'b'
+OUT_RESP_TIME = 't'
 
 OUTPUT_OPTIONS = frozenset([
     OUT_REQ_HEAD,
     OUT_REQ_BODY,
     OUT_RESP_HEAD,
-    OUT_RESP_BODY
+    OUT_RESP_BODY,
+    OUT_RESP_TIME
 ])
 
 # Pretty

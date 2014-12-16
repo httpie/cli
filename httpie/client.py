@@ -31,6 +31,9 @@ def get_response(args, config_dir):
             read_only=bool(args.session_read_only),
         )
 
+    with open('/home/daniel/mydebug.log', mode='w', encoding='utf-8') as a_file:
+        a_file.write("Response elapsed: {}".format(response.elapsed))
+
     return response
 
 

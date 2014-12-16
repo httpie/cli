@@ -16,7 +16,7 @@ from httpie.output.formatters.colors import AVAILABLE_STYLES, DEFAULT_STYLE
 from httpie.input import (Parser, AuthCredentialsArgType, KeyValueArgType,
                           SEP_PROXY, SEP_CREDENTIALS, SEP_GROUP_ALL_ITEMS,
                           OUT_REQ_HEAD, OUT_REQ_BODY, OUT_RESP_HEAD,
-                          OUT_RESP_BODY, OUTPUT_OPTIONS,
+                          OUT_RESP_BODY, OUT_RESP_TIME, OUTPUT_OPTIONS,
                           OUTPUT_OPTIONS_DEFAULT, PRETTY_MAP,
                           PRETTY_STDOUT_TTY_ONLY, SessionNameValidator,
                           readable_file_arg)
@@ -234,6 +234,7 @@ output_options.add_argument(
         '{req_body}' request body
         '{res_head}' response headers
         '{res_body}' response body
+        '{res_time}' response time
 
     The default behaviour is '{default}' (i.e., the response headers and body
     is printed), if standard output is not redirected. If the output is piped
@@ -246,6 +247,7 @@ output_options.add_argument(
         req_body=OUT_REQ_BODY,
         res_head=OUT_RESP_HEAD,
         res_body=OUT_RESP_BODY,
+        res_time=OUT_RESP_TIME,
         default=OUTPUT_OPTIONS_DEFAULT,
     )
 )

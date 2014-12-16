@@ -5,7 +5,8 @@ from httpie.compat import str
 from httpie.context import Environment
 from httpie.models import HTTPRequest, HTTPResponse
 from httpie.input import (OUT_REQ_BODY, OUT_REQ_HEAD,
-                          OUT_RESP_HEAD, OUT_RESP_BODY)
+                          OUT_RESP_HEAD, OUT_RESP_BODY,
+                          OUT_RESP_TIME)
 from httpie.output.processing import Formatting, Conversion
 
 
@@ -64,6 +65,7 @@ def build_output_stream(args, env, request, response):
     req_b = OUT_REQ_BODY in args.output_options
     resp_h = OUT_RESP_HEAD in args.output_options
     resp_b = OUT_RESP_BODY in args.output_options
+    resp_t = OUT_RESP_TIME in args.output_options
     req = req_h or req_b
     resp = resp_h or resp_b
 
@@ -85,6 +87,12 @@ def build_output_stream(args, env, request, response):
             msg=HTTPResponse(response),
             with_headers=resp_h,
             with_body=resp_b))
+
+    if resp_t:
+        output.append(Stream(
+            msg=HTTPResponse(response),
+            with_time=resp_t,
+            elapsed_time=response.elapsed))
 
     if env.stdout_isatty and resp_b:
         # Ensure a blank line after the response body.
@@ -124,18 +132,20 @@ def get_stream_type(env, args):
 class BaseStream(object):
     """Base HTTP message output stream class."""
 
-    def __init__(self, msg, with_headers=True, with_body=True,
-                 on_body_chunk_downloaded=None):
+    def __init__(self, msg, with_headers=True, with_body=True, with_time=False,
+                 on_body_chunk_downloaded=None, elapsed_time=0):
         """
         :param msg: a :class:`models.HTTPMessage` subclass
         :param with_headers: if `True`, headers will be included
         :param with_body: if `True`, body will be included
 
         """
-        assert with_headers or with_body
+        assert with_headers or with_body or with_time
         self.msg = msg
         self.with_headers = with_headers
         self.with_body = with_body
+        self.with_time = with_time
+        self.elapsed_time = elapsed_time
         self.on_body_chunk_downloaded = on_body_chunk_downloaded
 
     def get_headers(self):
@@ -162,6 +172,16 @@ class BaseStream(object):
                 if self.with_headers:
                     yield b'\n'
                 yield e.message
+
+        if self.with_time:
+            hours = self.elapsed_time.days * 24
+            (minutes, seconds) = divmod(self.elapsed_time.seconds, 60)
+            milliseconds = self.elapsed_time.microseconds / 1000
+            yield '{hours}:{minutes}:{seconds}.{milliseconds}'.format(
+                hours=hours, minutes=minutes,
+                seconds=seconds, milliseconds=milliseconds).encode('utf8')
+            yield b'\r\n\r\n'
+
 
 
 class RawStream(BaseStream):
