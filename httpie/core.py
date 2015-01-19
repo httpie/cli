@@ -163,12 +163,17 @@ def main(args=sys.argv[1:], env=Environment()):
                 env.stderr.write('\n')
             else:
                 raise
-    except (KeyboardInterrupt, SystemExit):
+    except KeyboardInterrupt:
         if traceback:
             raise
         env.stderr.write('\n')
         exit_status = ExitStatus.ERROR
-
+    except SystemExit as e:
+        if e.code != ExitStatus.OK:
+            if traceback:
+                raise
+            env.stderr.write('\n')
+            exit_status = ExitStatus.ERROR
     except requests.Timeout:
         exit_status = ExitStatus.ERROR_TIMEOUT
         error('Request timed out (%ss).', args.timeout)
