@@ -633,17 +633,59 @@ In your ``~/.bash_profile``:
 HTTPS
 =====
 
-To skip the host's SSL certificate verification, you can pass ``--verify=no``
-(default is ``yes``). You can also use ``--verify`` to set a custom CA bundle
-path. The path can also be configured via the environment variable
-``REQUESTS_CA_BUNDLE``.
+-----------------------------------
+Server SSL certificate verification
+-----------------------------------
 
-To use a client side certificate for the SSL communication, you can pass the
-path of the cert file with ``--cert``. If the private key is not contained
-in the cert file you may pass the path of the key file with ``--cert-key``.
+To skip the **host's SSL certificate verification,** you can pass
+``--verify=no`` (default is ``yes``):
 
-If you use Python 2.x and need to talk to servers that use **SNI (Server Name
-Indication)** you need to install some additional dependencies:
+.. code-block:: bash
+
+    $ http --verify=no https://example.org
+
+
+You can also use ``--verify=<CA_BUNDLE_PATH>`` to set a custom CA bundle path:
+
+.. code-block:: bash
+
+    $ http --verify=/ssl/custom_ca_bundle https://example.org
+
+
+The path can also be configured via the environment variable
+``REQUESTS_CA_BUNDLE`` (picked up by the underlying python-requests library):
+
+.. code-block:: bash
+
+    $ REQUESTS_CA_BUNDLE=/ssl/custom_ca_bundle http https://example.org
+
+
+---------------------------
+Client side SSL certificate
+---------------------------
+To use a **client side certificate** for the SSL communication, you can pass
+the path of the cert file with ``--cert``:
+
+.. code-block:: bash
+
+    $ http --cert=client.pem https://example.org
+
+
+If the private key is not contained in the cert file you may pass the
+path of the key file with ``--cert-key``:
+
+.. code-block:: bash
+
+    $ http --cert=client.crt --cert-key=client.key https://example.org
+
+
+----------------------------
+SNI (Server Name Indication)
+----------------------------
+
+If you use HTTPie with Python < 2.7.9 and need to talk to servers that use
+**SNI (Server Name Indication)** you need to install some additional
+dependencies:
 
 .. code-block:: bash
 
