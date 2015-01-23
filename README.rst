@@ -645,7 +645,8 @@ To skip the **host's SSL certificate verification,** you can pass
     $ http --verify=no https://example.org
 
 
-You can also use ``--verify=<CA_BUNDLE_PATH>`` to set a custom CA bundle path:
+You can also use ``--verify=<CA_BUNDLE_PATH>`` to set a **custom CA bundle**
+path:
 
 .. code-block:: bash
 
@@ -671,7 +672,7 @@ the path of the cert file with ``--cert``:
     $ http --cert=client.pem https://example.org
 
 
-If the private key is not contained in the cert file you may pass the
+If the **private key** is not contained in the cert file you may pass the
 path of the key file with ``--cert-key``:
 
 .. code-block:: bash
@@ -683,8 +684,9 @@ path of the key file with ``--cert-key``:
 SNI (Server Name Indication)
 ----------------------------
 
-If you use HTTPie with Python < 2.7.9 and need to talk to servers that use
-**SNI (Server Name Indication)** you need to install some additional
+If you use HTTPie with Python < 2.7.9
+(can be verified with ``python --version``) and need to talk to servers that
+use **SNI (Server Name Indication)** you need to install some additional
 dependencies:
 
 .. code-block:: bash
