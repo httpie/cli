@@ -3,28 +3,28 @@ Python 2.6, 2.7, and 3.x compatibility.
 
 """
 # Borrow these from requests:
-#noinspection PyUnresolvedReferences
+# noinspection PyUnresolvedReferences
 from requests.compat import is_windows, bytes, str, is_py3, is_py26
 
 try:
-    #noinspection PyUnresolvedReferences,PyCompatibility
+    # noinspection PyUnresolvedReferences,PyCompatibility
     from urllib.parse import urlsplit
 except ImportError:
-    #noinspection PyUnresolvedReferences,PyCompatibility
+    # noinspection PyUnresolvedReferences,PyCompatibility
     from urlparse import urlsplit
 
 try:
-    #noinspection PyCompatibility
+    # noinspection PyCompatibility
     from urllib.request import urlopen
 except ImportError:
-    #noinspection PyCompatibility
+    # noinspection PyCompatibility
     from urllib2 import urlopen
 
 try:
     from collections import OrderedDict
 except ImportError:
-    ### Python 2.6 OrderedDict class, needed for headers, parameters, etc .###
-    ### <https://pypi.python.org/pypi/ordereddict/1.1>
+    # Python 2.6 OrderedDict class, needed for headers, parameters, etc .###
+    # <https://pypi.python.org/pypi/ordereddict/1.1>
     # noinspection PyCompatibility
     from UserDict import DictMixin
 

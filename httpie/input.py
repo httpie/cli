@@ -4,13 +4,12 @@
 import os
 import sys
 import re
-import json
 import errno
 import mimetypes
 import getpass
 from io import BytesIO
 from collections import namedtuple
-#noinspection PyCompatibility
+# noinspection PyCompatibility
 from argparse import ArgumentParser, ArgumentTypeError, ArgumentError
 
 # TODO: Use MultiDict for headers once added to `requests`.
@@ -19,6 +18,7 @@ from requests.structures import CaseInsensitiveDict
 
 from httpie.compat import OrderedDict, urlsplit, str
 from httpie.sessions import VALID_SESSION_NAME_PATTERN
+from httpie.utils import load_json_preserve_order
 
 
 HTTP_POST = 'POST'
@@ -111,7 +111,7 @@ class Parser(ArgumentParser):
         kwargs['add_help'] = False
         super(Parser, self).__init__(*args, **kwargs)
 
-    #noinspection PyMethodOverriding
+    # noinspection PyMethodOverriding
     def parse_args(self, env, args=None, namespace=None):
 
         self.env = env
@@ -640,7 +640,7 @@ def parse_items(items,
 
             if item.sep in SEP_GROUP_RAW_JSON_ITEMS:
                 try:
-                    value = json.loads(value, object_pairs_hook=OrderedDict)
+                    value = load_json_preserve_order(value)
                 except ValueError as e:
                     raise ParseError('"%s": %s' % (item.orig, e))
             target = data

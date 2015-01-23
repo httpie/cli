@@ -1,4 +1,13 @@
 from __future__ import division
+import json
+
+from httpie.compat import is_py26, OrderedDict
+
+
+def load_json_preserve_order(s):
+    if is_py26:
+        return json.loads(s)
+    return json.loads(s, object_pairs_hook=OrderedDict)
 
 
 def humanize_bytes(n, precision=2):
