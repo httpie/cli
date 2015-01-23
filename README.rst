@@ -640,7 +640,7 @@ path. The path can also be configured via the environment variable
 
 To use a client side certificate for the SSL communication, you can pass the
 path of the cert file with ``--cert``. If the private key is not contained
-in the cert file you may pass the path of the key file with ``--certkey``.
+in the cert file you may pass the path of the key file with ``--cert-key``.
 
 If you use Python 2.x and need to talk to servers that use **SNI (Server Name
 Indication)** you need to install some additional dependencies:
@@ -1269,20 +1269,21 @@ Changelog
 *You can click a version name to see a diff with the previous one.*
 
 * `0.9.0-dev`_
-    * Added ``--cert`` and ``--certkey`` parameters to specify a client side
+    * Added ``--cert`` and ``--cert-key`` parameters to specify a client side
       certificate and private key for SSL
-    * Improved unicode support.
-    * Switched from ``unittest`` to ``pytest``.
-    * Various test suite improvements.
-    * Added `CONTRIBUTING`_.
     * Fixed ``User-Agent`` overwriting when used within a session.
     * Fixed handling of empty passwords in URL credentials.
     * Fixed multiple file uploads with the same form field name.
+    * Fixed ``--output=/dev/null`` on Linux.
+    * Improved unicode support.
+    * Improved terminal color depth detection via ``curses``.
     * To make it easier to deal with Windows paths in request items, ``\``
       now only escapes special characters (the ones that are used as key-value
-      separators).
-    * Fixed ``--output=/dev/null`` on Linux.
-    * Improved terminal color depth detection via ``curses``.
+      separators by HTTPie).
+    * Switched from ``unittest`` to ``pytest``.
+    * Various test suite improvements.
+    * Added `CONTRIBUTING`_.
+    * Miscellaneous bugfixes.
 * `0.8.0`_ (2014-01-25)
     * Added ``field=@file.txt`` and ``field:=@file.json`` for embedding
       the contents of text and JSON files into request data.

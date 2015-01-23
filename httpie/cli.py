@@ -471,13 +471,13 @@ network.add_argument(
     help="""
     You can specify a local cert to use as client side SSL certificate.
     This file may either contain both private key and certificate or you may
-    specify --certkey separately.
+    specify --cert-key separately.
 
     """
 )
 
 network.add_argument(
-    '--certkey',
+    '--cert-key',
     default=None,
     type=readable_file_arg,
     help="""

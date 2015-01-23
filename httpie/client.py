@@ -98,8 +98,8 @@ def get_requests_kwargs(args, base_headers=None):
     cert = None
     if args.cert:
         cert = args.cert
-        if args.certkey:
-            cert = cert, args.certkey
+        if args.cert_key:
+            cert = cert, args.cert_key
 
     kwargs = {
         'stream': True,
