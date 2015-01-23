@@ -640,7 +640,7 @@ def parse_items(items,
 
             if item.sep in SEP_GROUP_RAW_JSON_ITEMS:
                 try:
-                    value = json.loads(value)
+                    value = json.loads(value, object_pairs_hook=OrderedDict)
                 except ValueError as e:
                     raise ParseError('"%s": %s' % (item.orig, e))
             target = data
