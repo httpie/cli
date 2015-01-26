@@ -23,7 +23,7 @@ class JSONFormatter(FormatterPlugin):
                 # Invalid JSON, ignore.
                 pass
             else:
-                # Indent, sort keys by name depending on version
+                # Indent, sort keys by name  depending on version
                 # and avoid unicode escapes to improve readability.
                 if sys.version_info >= (2, 7):
                     sort_keys=False
