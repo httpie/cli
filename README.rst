@@ -1322,7 +1322,7 @@ Changelog
       now only escapes special characters (the ones that are used as key-value
       separators by HTTPie).
     * Switched from ``unittest`` to ``pytest``.
-    * Added Python `wheel` suppor.
+    * Added Python `wheel` support.
     * Various test suite improvements.
     * Added `CONTRIBUTING`_.
     * Fixed ``User-Agent`` overwriting when used within a session.
