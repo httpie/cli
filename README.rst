@@ -98,10 +98,10 @@ If the above fails, please use ``easy_install`` instead (``$ easy_install httpie
 Development version
 -------------------
 
-=============  =============
-Mac/Linux      Windows
-|unix|         |windows|
-=============  =============
+===========  =============  =============
+Tests        Mac/Linux      Windows
+|coverage|   |unix|         |windows|
+===========  =============  =============
 
 
 The **latest development version** can be installed directly from GitHub:
@@ -1465,6 +1465,9 @@ Changelog
 
 .. |version| image:: https://badge.fury.io/py/httpie.svg
     :target: http://badge.fury.io/py/httpie
+
+.. |coverage| image:: https://coveralls.io/repos/jakubroztocil/httpie/badge.svg?branch=master
+    :target: https://coveralls.io/r/jakubroztocil/httpie?branch=master
 
 .. |unix| image:: https://api.travis-ci.org/jakubroztocil/httpie.svg
     :target: http://travis-ci.org/jakubroztocil/httpie
