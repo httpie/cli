@@ -1312,21 +1312,23 @@ Changelog
 
 *You can click a version name to see a diff with the previous one.*
 
-* `0.9.0-dev`_
+
+* `0.9.0`_ (2015-01-31)
     * Added ``--cert`` and ``--cert-key`` parameters to specify a client side
       certificate and private key for SSL
-    * Fixed ``User-Agent`` overwriting when used within a session.
-    * Fixed handling of empty passwords in URL credentials.
-    * Fixed multiple file uploads with the same form field name.
-    * Fixed ``--output=/dev/null`` on Linux.
     * Improved unicode support.
     * Improved terminal color depth detection via ``curses``.
     * To make it easier to deal with Windows paths in request items, ``\``
       now only escapes special characters (the ones that are used as key-value
       separators by HTTPie).
     * Switched from ``unittest`` to ``pytest``.
+    * Added Python `wheel` suppor.
     * Various test suite improvements.
     * Added `CONTRIBUTING`_.
+    * Fixed ``User-Agent`` overwriting when used within a session.
+    * Fixed handling of empty passwords in URL credentials.
+    * Fixed multiple file uploads with the same form field name.
+    * Fixed ``--output=/dev/null`` on Linux.
     * Miscellaneous bugfixes.
 * `0.8.0`_ (2014-01-25)
     * Added ``field=@file.txt`` and ``field:=@file.json`` for embedding
@@ -1454,7 +1456,8 @@ Changelog
 .. _0.6.0: https://github.com/jakubroztocil/httpie/compare/0.5.1...0.6.0
 .. _0.7.1: https://github.com/jakubroztocil/httpie/compare/0.6.0...0.7.1
 .. _0.8.0: https://github.com/jakubroztocil/httpie/compare/0.7.1...0.8.0
-.. _0.9.0-dev: https://github.com/jakubroztocil/httpie/compare/0.8.0...master
+.. _0.9.0: https://github.com/jakubroztocil/httpie/compare/0.9.0...master
+.. _1.0.0-dev: https://github.com/jakubroztocil/httpie/compare/0.9.0...master
 .. _LICENSE: https://github.com/jakubroztocil/httpie/blob/master/LICENSE
 .. _Tox: http://tox.testrun.org
 .. _CONTRIBUTING: https://github.com/jakubroztocil/httpie/blob/master/CONTRIBUTING.rst
