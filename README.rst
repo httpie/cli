@@ -1312,7 +1312,7 @@ Changelog
 
 *You can click a version name to see a diff with the previous one.*
 
-
+* `1.0.0-dev`_
 * `0.9.0`_ (2015-01-31)
     * Added ``--cert`` and ``--cert-key`` parameters to specify a client side
       certificate and private key for SSL
