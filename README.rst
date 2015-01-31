@@ -1456,7 +1456,7 @@ Changelog
 .. _0.6.0: https://github.com/jakubroztocil/httpie/compare/0.5.1...0.6.0
 .. _0.7.1: https://github.com/jakubroztocil/httpie/compare/0.6.0...0.7.1
 .. _0.8.0: https://github.com/jakubroztocil/httpie/compare/0.7.1...0.8.0
-.. _0.9.0: https://github.com/jakubroztocil/httpie/compare/0.9.0...master
+.. _0.9.0: https://github.com/jakubroztocil/httpie/compare/0.8.0...0.9.0
 .. _1.0.0-dev: https://github.com/jakubroztocil/httpie/compare/0.9.0...master
 .. _LICENSE: https://github.com/jakubroztocil/httpie/blob/master/LICENSE
 .. _Tox: http://tox.testrun.org
