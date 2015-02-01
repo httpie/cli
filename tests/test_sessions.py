@@ -162,3 +162,8 @@ class TestSession(SessionTestBase):
         r2 = http('--session=test', httpbin.url + '/headers', env=self.env())
         assert HTTP_OK in r2
         assert r2.json['headers']['User-Agent'] == 'custom'
+
+    def test_max_redirects(self, httpbin):
+        self.start_session(httpbin)
+        r1 = http('--max-redirects=31', '--follow', 'GET', 'http://httpbin.org/redirect/31', env=self.env())
+        assert HTTP_OK in r1
