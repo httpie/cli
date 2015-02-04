@@ -25,6 +25,7 @@ HTTP_POST = 'POST'
 HTTP_GET = 'GET'
 HTTP = 'http://'
 HTTPS = 'https://'
+HTTP_UNIX = 'http+unix://'
 
 
 # Various separators used in args
@@ -132,7 +133,7 @@ class Parser(ArgumentParser):
         self._parse_items()
         if not self.args.ignore_stdin and not env.stdin_isatty:
             self._body_from_file(self.env.stdin)
-        if not (self.args.url.startswith((HTTP, HTTPS))):
+        if not (self.args.url.startswith((HTTP, HTTPS, HTTP_UNIX))):
             scheme = HTTP
 
             # See if we're using curl style shorthand for localhost (:3000/foo)

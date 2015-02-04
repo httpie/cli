@@ -36,6 +36,7 @@ tests_require = [
 
 install_requires = [
     'requests>=2.3.0',
+    'requests-unixsocket>=0.1.2',
     'Pygments>=1.5'
 ]
 
