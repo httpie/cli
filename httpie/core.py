@@ -183,7 +183,13 @@ def main(args=sys.argv[1:], env=Environment()):
         #       Network errors vs. bugs, etc.
         if traceback:
             raise
-        error('%s: %s', type(e).__name__, str(e))
+        msg = str(e)
+        if hasattr(e, 'request'):
+            request = e.request
+            if hasattr(request, 'url'):
+                msg += ' while doing %s request to URL: %s' % (
+                    request.method, request.url)
+        error('%s: %s', type(e).__name__, msg)
         exit_status = ExitStatus.ERROR
 
     finally:
