@@ -2,9 +2,9 @@
 import json
 # noinspection PyCompatibility
 import argparse
-import os
 
 import pytest
+from requests.exceptions import InvalidSchema
 
 from httpie import input
 from httpie.input import KeyValue, KeyValueArgType, DataDict
@@ -321,3 +321,12 @@ class TestIgnoreStdin:
                  error_exit_ok=True)
         assert r.exit_status == ExitStatus.ERROR
         assert 'because --ignore-stdin' in r.stderr
+
+
+class TestSchemes:
+
+    def test_custom_scheme(self):
+        # InvalidSchema is expected because HTTPie
+        # shouldn't touch a formally valid scheme.
+        with pytest.raises(InvalidSchema):
+            http('foo+bar-BAZ.123://bah')

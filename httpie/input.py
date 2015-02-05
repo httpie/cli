@@ -21,6 +21,10 @@ from httpie.sessions import VALID_SESSION_NAME_PATTERN
 from httpie.utils import load_json_preserve_order
 
 
+# ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
+# <http://tools.ietf.org/html/rfc3986#section-3.1>
+URL_SCHEME_RE = re.compile(r'^[a-z][a-z0-9.+-]*://', re.IGNORECASE)
+
 HTTP_POST = 'POST'
 HTTP_GET = 'GET'
 HTTP = 'http://'
@@ -132,7 +136,7 @@ class Parser(ArgumentParser):
         self._parse_items()
         if not self.args.ignore_stdin and not env.stdin_isatty:
             self._body_from_file(self.env.stdin)
-        if not (self.args.url.startswith((HTTP, HTTPS))):
+        if not URL_SCHEME_RE.match(self.args.url):
             scheme = HTTP
 
             # See if we're using curl style shorthand for localhost (:3000/foo)
