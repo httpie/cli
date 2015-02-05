@@ -1,12 +1,14 @@
 from itertools import groupby
 from pkg_resources import iter_entry_points
 from httpie.plugins import AuthPlugin, FormatterPlugin, ConverterPlugin
+from httpie.plugins.base import TransportPlugin
 
 
 ENTRY_POINT_NAMES = [
     'httpie.plugins.auth.v1',
     'httpie.plugins.formatter.v1',
     'httpie.plugins.converter.v1',
+    'httpie.plugins.transport.v1',
 ]
 
 
@@ -56,3 +58,8 @@ class PluginManager(object):
     def get_converters(self):
         return [plugin for plugin in self
                 if issubclass(plugin, ConverterPlugin)]
+
+    # Adapters
+    def get_adapter_plugins(self):
+        return [plugin for plugin in self
+                if issubclass(plugin, TransportPlugin)]

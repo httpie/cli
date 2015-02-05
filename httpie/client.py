@@ -15,16 +15,29 @@ JSON = 'application/json; charset=utf-8'
 DEFAULT_UA = 'HTTPie/%s' % __version__
 
 
+def get_requests_session():
+
+    requests_session = requests.Session()
+    for adapter_plugin_cls in plugin_manager.get_adapter_plugins():
+        adapter_plugin = adapter_plugin_cls()
+        requests_session.mount(prefix=adapter_plugin.prefix,
+                               adapter=adapter_plugin.get_adapter())
+    return requests_session
+
+
 def get_response(args, config_dir):
     """Send the request and return a `request.Response`."""
 
+    requests_session = get_requests_session()
+
     if not args.session and not args.session_read_only:
-        requests_kwargs = get_requests_kwargs(args)
+        kwargs = get_requests_kwargs(args)
         if args.debug:
-            dump_request(requests_kwargs)
-        response = requests.request(**requests_kwargs)
+            dump_request(kwargs)
+        response = requests_session.request(**kwargs)
     else:
         response = sessions.get_response(
+            requests_session=requests_session,
             args=args,
             config_dir=config_dir,
             session_name=args.session or args.session_read_only,

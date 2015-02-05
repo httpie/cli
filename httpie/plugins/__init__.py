@@ -1,4 +1,12 @@
-from httpie.plugins.base import AuthPlugin, FormatterPlugin, ConverterPlugin
+"""
+WARNING: The plugin API is still work in progress and will
+         probably be completely reworked by v1.0.0.
+
+"""
+from httpie.plugins.base import (
+    AuthPlugin, FormatterPlugin,
+    ConverterPlugin, TransportPlugin
+)
 from httpie.plugins.manager import PluginManager
 from httpie.plugins.builtin import BasicAuthPlugin, DigestAuthPlugin
 from httpie.output.formatters.headers import HeadersFormatter
