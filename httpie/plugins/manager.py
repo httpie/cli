@@ -60,6 +60,6 @@ class PluginManager(object):
                 if issubclass(plugin, ConverterPlugin)]
 
     # Adapters
-    def get_adapter_plugins(self):
+    def get_trasnsport_plugins(self):
         return [plugin for plugin in self
                 if issubclass(plugin, TransportPlugin)]

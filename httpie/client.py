@@ -16,12 +16,11 @@ DEFAULT_UA = 'HTTPie/%s' % __version__
 
 
 def get_requests_session():
-
     requests_session = requests.Session()
-    for adapter_plugin_cls in plugin_manager.get_adapter_plugins():
-        adapter_plugin = adapter_plugin_cls()
-        requests_session.mount(prefix=adapter_plugin.prefix,
-                               adapter=adapter_plugin.get_adapter())
+    for cls in plugin_manager.get_trasnsport_plugins():
+        transport_plugin = cls()
+        requests_session.mount(prefix=transport_plugin.prefix,
+                               adapter=transport_plugin.get_adapter())
     return requests_session
 
 
