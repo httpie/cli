@@ -595,6 +595,7 @@ Auth Plugins
 * `httpie-ntlm <https://github.com/jakubroztocil/httpie-ntlm>`_: NTLM (NT LAN Manager)
 * `httpie-negotiate <https://github.com/ndzou/httpie-negotiate>`_: SPNEGO (GSS Negotiate)
 * `requests-hawk <https://github.com/mozilla-services/requests-hawk>`_: Hawk
+* `httpie-api-auth <https://github.com/pd/httpie-api-auth>`_: ApiAuth
 
 
 =======
