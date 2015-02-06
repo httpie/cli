@@ -52,7 +52,7 @@ class HTTPResponse(HTTPMessage):
     @property
     def headers(self):
         original = self._orig.raw._original_response
-        version = {9: '0.9', 10: '1.0', 11: '1.1'}[original.version]
+        version = {9: '0.9', 10: '1.0', 11: '1.1', 20: '2.0'}[original.version]
         status_line = 'HTTP/{version} {status} {reason}'.format(
             version=version,
             status=original.status,
