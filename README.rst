@@ -11,7 +11,7 @@ colorized responses. HTTPie can be used for **testing, debugging**, and
 generally **interacting** with HTTP servers.
 
 
-.. image:: https://github.com/jakubroztocil/httpie/raw/master/httpie.png
+.. image:: httpie.png
     :alt: HTTPie compared to cURL
     :width: 835
     :height: 835
@@ -1465,7 +1465,7 @@ Changelog
 .. _0.8.0: https://github.com/jakubroztocil/httpie/compare/0.7.1...0.8.0
 .. _0.9.0: https://github.com/jakubroztocil/httpie/compare/0.8.0...0.9.0
 .. _0.9.1: https://github.com/jakubroztocil/httpie/compare/0.9.0...0.9.1
-.. _1.0.0-dev: https://github.com/jakubroztocil/httpie/compare/0.9.0...master
+.. _1.0.0-dev: https://github.com/jakubroztocil/httpie/compare/0.9.1...master
 .. _LICENSE: https://github.com/jakubroztocil/httpie/blob/master/LICENSE
 .. _Tox: http://tox.testrun.org
 .. _CONTRIBUTING: https://github.com/jakubroztocil/httpie/blob/master/CONTRIBUTING.rst
