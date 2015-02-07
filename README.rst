@@ -1314,6 +1314,12 @@ Changelog
 *You can click a version name to see a diff with the previous one.*
 
 * `1.0.0-dev`_
+* `0.9.1`_ (2015-02-07)
+    * Added support for Requests transport adapter plugins
+      to enable plugin-provided features such as
+      `unix socket <https://github.com/msabramo/httpie-unixsocket>`_
+      communication and
+      `HTTP/2 <https://github.com/jakubroztocil/httpie-http2>`_.
 * `0.9.0`_ (2015-01-31)
     * Added ``--cert`` and ``--cert-key`` parameters to specify a client side
       certificate and private key for SSL
@@ -1458,6 +1464,7 @@ Changelog
 .. _0.7.1: https://github.com/jakubroztocil/httpie/compare/0.6.0...0.7.1
 .. _0.8.0: https://github.com/jakubroztocil/httpie/compare/0.7.1...0.8.0
 .. _0.9.0: https://github.com/jakubroztocil/httpie/compare/0.8.0...0.9.0
+.. _0.9.1: https://github.com/jakubroztocil/httpie/compare/0.9.0...0.9.1
 .. _1.0.0-dev: https://github.com/jakubroztocil/httpie/compare/0.9.0...master
 .. _LICENSE: https://github.com/jakubroztocil/httpie/blob/master/LICENSE
 .. _Tox: http://tox.testrun.org
