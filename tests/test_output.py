@@ -1,8 +1,8 @@
 import pytest
 
+from utils import TestEnvironment, http, HTTP_OK, COLOR, CRLF
 from httpie import ExitStatus
 from httpie.output.formatters.colors import get_lexer
-from utils import TestEnvironment, http, HTTP_OK, COLOR, CRLF
 
 
 class TestVerboseFlag:
