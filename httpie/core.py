@@ -67,7 +67,7 @@ def decode_args(args, stdin_encoding):
     ]
 
 
-def main(args=sys.argv[1:], env=Environment()):
+def main(args=sys.argv[1:], env=Environment(), error=None):
     """Run the main program and write the output to ``env.stdout``.
 
     Return exit status code.
@@ -81,10 +81,13 @@ def main(args=sys.argv[1:], env=Environment()):
     if env.config.default_options:
         args = env.config.default_options + args
 
-    def error(msg, *args, **kwargs):
+    def _error(msg, *args, **kwargs):
         msg = msg % args
         level = kwargs.get('level', 'error')
         env.stderr.write('\nhttp: %s: %s\n' % (level, msg))
+
+    if error is None:
+        error = _error
 
     debug = '--debug' in args
     traceback = debug or '--traceback' in args
