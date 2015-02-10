@@ -1,6 +1,9 @@
 # coding=utf-8
 import os
 import shutil
+import sys
+
+import pytest
 
 from httpie.plugins.builtin import HTTPBasicAuth
 from utils import TestEnvironment, mk_config_dir, http, HTTP_OK, \
@@ -132,6 +135,10 @@ class TestSession(SessionTestBase):
         assert HTTP_OK in r2
         assert r2.json['headers']['Foo'] == 'Bar'
 
+    @pytest.mark.skipif(
+        sys.version_info >= (3,),
+        reason="This test fails intermittently on Python 3 - "
+               "see https://github.com/jakubroztocil/httpie/issues/282")
     def test_session_unicode(self, httpbin):
         self.start_session(httpbin)
 
