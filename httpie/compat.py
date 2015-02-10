@@ -6,23 +6,23 @@ Python 2.6, 2.7, and 3.x compatibility.
 # noinspection PyUnresolvedReferences
 from requests.compat import is_windows, bytes, str, is_py3, is_py26
 
-try:
+try:  # pragma: no cover
     # noinspection PyUnresolvedReferences,PyCompatibility
     from urllib.parse import urlsplit
-except ImportError:
+except ImportError:  # pragma: no cover
     # noinspection PyUnresolvedReferences,PyCompatibility
     from urlparse import urlsplit
 
-try:
+try:  # pragma: no cover
     # noinspection PyCompatibility
     from urllib.request import urlopen
-except ImportError:
+except ImportError:  # pragma: no cover
     # noinspection PyCompatibility
     from urllib2 import urlopen
 
-try:
+try:  # pragma: no cover
     from collections import OrderedDict
-except ImportError:
+except ImportError:  # pragma: no cover
     # Python 2.6 OrderedDict class, needed for headers, parameters, etc .###
     # <https://pypi.python.org/pypi/ordereddict/1.1>
     # noinspection PyCompatibility
