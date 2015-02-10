@@ -1,4 +1,5 @@
 # https://travis-ci.org/jakubroztocil/httpie
+sudo: false
 os:
   - linux
   - osx
