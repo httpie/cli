@@ -11,5 +11,4 @@ python:
 script:
   - make
 after_success:
-  - pip install python-coveralls
-  - coveralls
+  - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install python-coveralls && coveralls; fi
