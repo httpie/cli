@@ -18,14 +18,6 @@ generally **interacting** with HTTP servers.
     :align: center
 
 
-
-..
-
-    .. image:: https://raw.github.com/claudiatd/httpie-artwork/master/images/httpie_logo_simple.png
-        :alt: HTTPie logo
-        :align: center
-
-
 HTTPie is written in Python, and under the hood it uses the excellent
 `Requests`_ and `Pygments`_ libraries.
 
