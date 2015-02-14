@@ -1468,16 +1468,16 @@ Changelog
 .. _CONTRIBUTING: https://github.com/jakubroztocil/httpie/blob/master/CONTRIBUTING.rst
 
 
-.. |version| image:: https://img.shields.io/pypi/v/httpie.svg?style=flat
+.. |version| image:: https://img.shields.io/pypi/v/httpie.svg?style=flat-square
     :target: https://pypi.python.org/pypi/httpie
 
-.. |coverage| image:: https://img.shields.io/coveralls/jakubroztocil/httpie/master.svg?style=flat
+.. |coverage| image:: https://img.shields.io/coveralls/jakubroztocil/httpie/master.svg?style=flat-square
     :target: https://coveralls.io/r/jakubroztocil/httpie?branch=master
 
-.. |unix| image:: https://img.shields.io/travis/jakubroztocil/httpie/master.svg?style=flat
+.. |unix| image:: https://img.shields.io/travis/jakubroztocil/httpie/master.svg?style=flat-square
     :target: http://travis-ci.org/jakubroztocil/httpie
     :alt: Build Status of the master branch on Mac/Linux
 
-.. |windows|  image:: https://img.shields.io/appveyor/ci/jakubroztocil/httpie.svg?style=flat
+.. |windows|  image:: https://img.shields.io/appveyor/ci/jakubroztocil/httpie.svg?style=flat-square
     :target: https://ci.appveyor.com/project/jakubroztocil/httpie
     :alt: Build Status of the master branch on Windows
