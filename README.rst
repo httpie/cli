@@ -1314,7 +1314,7 @@ Changelog
 *You can click a version name to see a diff with the previous one.*
 
 * `1.0.0-dev`_
-    * The default color ``--style`` is now ``fruity`` (was ``solarized``).
+    * The default color ``--style`` is now ``monokai`` (was ``solarized``).
     * Changed the default JSON ``Content-Type``
       from ``application/json; charset=utf-8`` to ``application/json``
       as UTF-8 is the default encoding for JSON.
