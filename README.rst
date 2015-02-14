@@ -13,17 +13,18 @@ generally **interacting** with HTTP servers.
 
 .. image:: httpie.png
     :alt: HTTPie compared to cURL
-    :width: 835
-    :height: 835
+    :width: 679
+    :height: 781
     :align: center
 
 
-------
 
+..
 
-.. image:: https://raw.github.com/claudiatd/httpie-artwork/master/images/httpie_logo_simple.png
-    :alt: HTTPie logo
-    :align: center
+    .. image:: https://raw.github.com/claudiatd/httpie-artwork/master/images/httpie_logo_simple.png
+        :alt: HTTPie logo
+        :align: center
+
 
 HTTPie is written in Python, and under the hood it uses the excellent
 `Requests`_ and `Pygments`_ libraries.
