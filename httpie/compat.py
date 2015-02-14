@@ -4,7 +4,7 @@ Python 2.6, 2.7, and 3.x compatibility.
 """
 # Borrow these from requests:
 # noinspection PyUnresolvedReferences
-from requests.compat import is_windows, bytes, str, is_py3, is_py26
+from requests.compat import is_windows, bytes, str, is_py3, is_py26, is_pypy
 
 try:  # pragma: no cover
     # noinspection PyUnresolvedReferences,PyCompatibility
