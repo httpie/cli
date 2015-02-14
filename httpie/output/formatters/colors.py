@@ -7,7 +7,6 @@ from pygments.formatters.terminal import TerminalFormatter
 from pygments.formatters.terminal256 import Terminal256Formatter
 from pygments.util import ClassNotFound
 
-from httpie.compat import is_windows
 from httpie.plugins import FormatterPlugin
 
 
@@ -15,7 +14,7 @@ from httpie.plugins import FormatterPlugin
 # great and fruity seems to give the best result there.
 AVAILABLE_STYLES = set(pygments.styles.STYLE_MAP.keys())
 AVAILABLE_STYLES.add('solarized')
-DEFAULT_STYLE = 'solarized' if not is_windows else 'fruity'
+DEFAULT_STYLE = 'fruity'
 
 
 class ColorFormatter(FormatterPlugin):
@@ -144,6 +143,8 @@ class HTTPLexer(pygments.lexer.RegexLexer):
     }
 
 
+# TODO: As Solarized is not the default theme any longer, it should be removed
+#       or bundled directly with Pygments so that we don't need to support it.
 class Solarized256Style(pygments.style.Style):
     """
     solarized256
