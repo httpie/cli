@@ -362,7 +362,7 @@ object by default. HTTPie also automatically sets the following headers,
 both of which can be overwritten:
 
 ================    =======================================
-``Content-Type``    ``application/json; charset=utf-8``
+``Content-Type``    ``application/json``
 ``Accept``          ``application/json``
 ================    =======================================
 
@@ -382,7 +382,7 @@ Simple example:
     PUT / HTTP/1.1
     Accept: application/json
     Accept-Encoding: identity, deflate, compress, gzip
-    Content-Type: application/json; charset=utf-8
+    Content-Type: application/json
     Host: example.org
 
     {
@@ -408,7 +408,7 @@ fields using ``=@`` and ``:=@``:
 
     PUT /person/1 HTTP/1.1
     Accept: application/json
-    Content-Type: application/json; charset=utf-8
+    Content-Type: application/json
     Host: api.example.com
 
     {
@@ -727,7 +727,7 @@ documentation examples:
     PUT /put HTTP/1.1
     Accept: application/json
     Accept-Encoding: identity, deflate, compress, gzip
-    Content-Type: application/json; charset=utf-8
+    Content-Type: application/json
     Host: httpbin.org
     User-Agent: HTTPie/0.2.7dev
 
@@ -1314,6 +1314,9 @@ Changelog
 *You can click a version name to see a diff with the previous one.*
 
 * `1.0.0-dev`_
+    * Changed the default JSON ``Content-Type``
+      from ``application/json; charset=utf-8`` to ``application/json``
+      as UTF-8 is the default encoding for JSON.
 * `0.9.1`_ (2015-02-07)
     * Added support for Requests transport adapter plugins
       to enable plugin-provided features such as

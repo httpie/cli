@@ -59,14 +59,14 @@ class TestAutoContentTypeAndAcceptHeaders:
         r = http('POST', httpbin.url + '/post', 'a=b')
         assert HTTP_OK in r
         assert '"Accept": "application/json"' in r
-        assert '"Content-Type": "application/json; charset=utf-8' in r
+        assert '"Content-Type": "application/json' in r
 
     def test_GET_with_data_auto_JSON_headers(self, httpbin):
         # JSON headers should automatically be set also for GET with data.
         r = http('POST', httpbin.url + '/post', 'a=b')
         assert HTTP_OK in r
         assert '"Accept": "application/json"' in r, r
-        assert '"Content-Type": "application/json; charset=utf-8' in r
+        assert '"Content-Type": "application/json' in r
 
     def test_POST_explicit_JSON_auto_JSON_accept(self, httpbin):
         r = http('--json', 'POST', httpbin.url + '/post')

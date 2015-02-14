@@ -11,7 +11,7 @@ from httpie.plugins import plugin_manager
 
 
 FORM = 'application/x-www-form-urlencoded; charset=utf-8'
-JSON = 'application/json; charset=utf-8'
+JSON = 'application/json'
 DEFAULT_UA = 'HTTPie/%s' % __version__
 
 
