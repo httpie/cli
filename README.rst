@@ -381,7 +381,7 @@ Simple example:
 
     PUT / HTTP/1.1
     Accept: application/json
-    Accept-Encoding: identity, deflate, compress, gzip
+    Accept-Encoding: gzip, deflate
     Content-Type: application/json
     Host: example.org
 
@@ -504,7 +504,7 @@ To set custom headers you can use the ``Header:Value`` notation:
 
     GET / HTTP/1.1
     Accept: */*
-    Accept-Encoding: identity, deflate, compress, gzip
+    Accept-Encoding: gzip, deflate
     Cookie: valued-visitor=yes;foo=bar
     Host: example.org
     Referer: http://httpie.org/
@@ -518,7 +518,7 @@ There are a couple of default headers that HTTPie sets:
 
     GET / HTTP/1.1
     Accept: */*
-    Accept-Encoding: identity, deflate, compress, gzip
+    Accept-Encoding: gzip, deflate
     User-Agent: HTTPie/<version>
     Host: <taken-from-URL>
 
@@ -726,7 +726,7 @@ documentation examples:
     $ http --verbose PUT httpbin.org/put hello=world
     PUT /put HTTP/1.1
     Accept: application/json
-    Accept-Encoding: identity, deflate, compress, gzip
+    Accept-Encoding: gzip, deflate
     Content-Type: application/json
     Host: httpbin.org
     User-Agent: HTTPie/0.2.7dev
