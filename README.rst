@@ -1,16 +1,17 @@
+
+
 ****************************************
 HTTPie: a CLI, cURL-like tool for humans
 ****************************************
 
 
-|pypi| |unix_build| |windows_build| |coverage|
 
 
 HTTPie (pronounced *aych-tee-tee-pie*) is a **command line HTTP client**.  Its
 goal is to make CLI interaction with web services as **human-friendly** as
 possible. It provides a simple ``http`` command that allows for sending
 arbitrary HTTP requests using a simple and natural syntax, and displays
-colorized responses. HTTPie can be used for **testing, debugging**, and
+colorized output. HTTPie can be used for **testing, debugging**, and
 generally **interacting** with HTTP servers.
 
 
@@ -25,7 +26,16 @@ HTTPie is written in Python, and under the hood it uses the excellent
 `Requests`_ and `Pygments`_ libraries.
 
 
-**Table of Contents**
+-----
+
+|pypi| |unix_build| |windows_build| |coverage|
+
+-----
+
+
+=================
+Table of Contents
+=================
 
 
 .. contents::
@@ -71,9 +81,16 @@ On **Mac OS X**, HTTPie can be installed via `Homebrew <http://brew.sh/>`_:
     $ brew install httpie
 
 
-Most **Linux** distributions provide a package that can be installed via
-system package manager, e.g. ``yum install httpie`` or ``apt-get install httpie``.
-Note that the package might include a slightly older version of HTTPie.
+Most **Linux** distributions provide a package that can be installed using the
+the system package manager, e.g.:
+
+.. code-block:: bash
+
+    # Debian-based distributions such as Ubuntu:
+    $ apt-get install httpie
+
+    # RPM-based distributions:
+    $ yum install httpie
 
 
 A **universal installation method** (that works on **Windows**, Mac OS X, Linux, …,
@@ -82,12 +99,14 @@ and provides the latest version) is to use `pip`_:
 
 .. code-block:: bash
 
+    # Make sure we have an up-to-date version of pip and setuptools:
+    $ pip install --upgrade pip setuptools
+
     $ pip install --upgrade httpie
 
 
-If the above fails, please use ``easy_install`` instead (``$ easy_install httpie``).
-
-
+(If ``pip`` installation fails for some reason, you can try
+``easy_install httpie`` as a fallback.)
 
 
 -------------------
