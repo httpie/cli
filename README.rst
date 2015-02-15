@@ -33,11 +33,6 @@ HTTPie is written in Python, and under the hood it uses the excellent
 -----
 
 
-=================
-Table of Contents
-=================
-
-
 .. contents::
     :local:
     :depth: 1
