@@ -3,6 +3,9 @@ HTTPie: a CLI, cURL-like tool for humans
 ****************************************
 
 
+|pypi| |unix_build| |windows_build| |coverage|
+
+
 HTTPie (pronounced *aych-tee-tee-pie*) is a **command line HTTP client**.  Its
 goal is to make CLI interaction with web services as **human-friendly** as
 possible. It provides a simple ``http`` command that allows for sending
@@ -57,9 +60,9 @@ Installation
 
 
 
-------------------------
-Stable version |version|
-------------------------
+--------------
+Stable version
+--------------
 
 On **Mac OS X**, HTTPie can be installed via `Homebrew <http://brew.sh/>`_:
 
@@ -90,12 +93,6 @@ If the above fails, please use ``easy_install`` instead (``$ easy_install httpie
 -------------------
 Development version
 -------------------
-
-===========  =============  =============
-Tests        Mac/Linux      Windows
-|coverage|   |unix|         |windows|
-===========  =============  =============
-
 
 The **latest development version** can be installed directly from GitHub:
 
@@ -1468,16 +1465,18 @@ Changelog
 .. _CONTRIBUTING: https://github.com/jakubroztocil/httpie/blob/master/CONTRIBUTING.rst
 
 
-.. |version| image:: https://img.shields.io/pypi/v/httpie.svg?style=flat-square
+.. |pypi| image:: https://img.shields.io/pypi/v/httpie.svg?style=flat-square&label=latest%20version
     :target: https://pypi.python.org/pypi/httpie
+    :alt: Latest version released on PyPi
 
 .. |coverage| image:: https://img.shields.io/coveralls/jakubroztocil/httpie/master.svg?style=flat-square
     :target: https://coveralls.io/r/jakubroztocil/httpie?branch=master
+    :alt: Test coverage
 
-.. |unix| image:: https://img.shields.io/travis/jakubroztocil/httpie/master.svg?style=flat-square
+.. |unix_build| image:: https://img.shields.io/travis/jakubroztocil/httpie/master.svg?style=flat-square&label=unix%20build
     :target: http://travis-ci.org/jakubroztocil/httpie
-    :alt: Build Status of the master branch on Mac/Linux
+    :alt: Build status of the master branch on Mac/Linux
 
-.. |windows|  image:: https://img.shields.io/appveyor/ci/jakubroztocil/httpie.svg?style=flat-square
+.. |windows_build|  image:: https://img.shields.io/appveyor/ci/jakubroztocil/httpie.svg?style=flat-square&label=windows%20build
     :target: https://ci.appveyor.com/project/jakubroztocil/httpie
-    :alt: Build Status of the master branch on Windows
+    :alt: Build status of the master branch on Windows
