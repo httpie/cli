@@ -1,11 +1,6 @@
-
-
 ****************************************
 HTTPie: a CLI, cURL-like tool for humans
 ****************************************
-
-
-
 
 HTTPie (pronounced *aych-tee-tee-pie*) is a **command line HTTP client**.  Its
 goal is to make CLI interaction with web services as **human-friendly** as
@@ -62,8 +57,6 @@ Main Features
 ============
 Installation
 ============
-
-
 
 --------------
 Stable version
@@ -1285,13 +1278,13 @@ HTTPie reaches its final version ``1.0``. All changes are recorded in the
 
 
 
+=======
+Authors
+=======
 
 
-==========
-Contribute
-==========
-
-Please see `CONTRIBUTING <CONTRIBUTING.rst>`_.
+`Jakub Roztocil`_  (`@jakubroztocil`_) created HTTPie and `these fine people`_
+have contributed.
 
 
 ====
@@ -1301,12 +1294,11 @@ Logo
 Please see `claudiatd/httpie-artwork`_
 
 
-=======
-Authors
-=======
+==========
+Contribute
+==========
 
-`Jakub Roztocil`_  (`@jakubroztocil`_) created HTTPie and `these fine people`_
-have contributed.
+Please see `CONTRIBUTING <CONTRIBUTING.rst>`_.
 
 
 ==========
