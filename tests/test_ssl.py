@@ -5,7 +5,6 @@ import pytest_httpbin.certs
 from requests.exceptions import SSLError
 
 from httpie import ExitStatus
-from httpie.compat import is_pypy
 from utils import http, HTTP_OK, TESTS_ROOT
 
 
@@ -19,9 +18,6 @@ CLIENT_PEM = os.path.join(TESTS_ROOT, 'client_certs', 'client.pem')
 CA_BUNDLE = pytest_httpbin.certs.where()
 
 
-@pytest.mark.skipif(
-    is_pypy,
-    reason='https://github.com/jakubroztocil/httpie/issues/308')
 class TestClientSSLCertHandling(object):
 
     def test_cert_file_not_found(self, httpbin_secure):
@@ -58,9 +54,6 @@ class TestClientSSLCertHandling(object):
         assert HTTP_OK in r
 
 
-@pytest.mark.skipif(
-    is_pypy,
-    reason='https://github.com/jakubroztocil/httpie/issues/308')
 class TestServerSSLCertHandling(object):
 
     def test_self_signed_server_cert_by_default_raises_ssl_error(
