@@ -1281,14 +1281,17 @@ and usage from scripts, where HTTPie serves as a generic HTTP client.
 As HTTPie is still under heavy development, the existing command line
 syntax and some of the ``--OPTIONS`` may change slightly before
 HTTPie reaches its final version ``1.0``. All changes are recorded in the
-`changelog`_.
+`change log`_.
+
+
+
 
 
 ==========
 Contribute
 ==========
 
-Please see `CONTRIBUTING`_.
+Please see `CONTRIBUTING <CONTRIBUTING.rst>`_.
 
 
 ====
@@ -1297,6 +1300,7 @@ Logo
 
 Please see `claudiatd/httpie-artwork`_
 
+
 =======
 Authors
 =======
@@ -1304,18 +1308,20 @@ Authors
 `Jakub Roztocil`_  (`@jakubroztocil`_) created HTTPie and `these fine people`_
 have contributed.
 
+
+==========
+Change Log
+==========
+
+Please see `CHANGELOG <CHANGELOG.rst>`_.
+
+
 =======
 Licence
 =======
 
-Please see `LICENSE`_.
+Please see `LICENSE <LICENSE>`_.
 
-
-=========
-Changelog
-=========
-
-Please see `CHANGELOG <CHANGELOG.rst>`_.
 
 
 .. _Requests: http://python-requests.org
@@ -1326,9 +1332,6 @@ Please see `CHANGELOG <CHANGELOG.rst>`_.
 .. _Jakub Roztocil: http://subtleapps.com
 .. _@jakubroztocil: https://twitter.com/jakubroztocil
 .. _claudiatd/httpie-artwork: https://github.com/claudiatd/httpie-artwork
-.. _LICENSE: https://github.com/jakubroztocil/httpie/blob/master/LICENSE
-.. _Tox: http://tox.testrun.org
-.. _CONTRIBUTING: https://github.com/jakubroztocil/httpie/blob/master/CONTRIBUTING.rst
 
 
 .. |pypi| image:: https://img.shields.io/pypi/v/httpie.svg?style=flat-square&label=latest%20version
