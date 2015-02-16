@@ -3,11 +3,16 @@ import sys
 from pprint import pformat
 
 import requests
+from requests.packages import urllib3
 
 from httpie import sessions
 from httpie import __version__
 from httpie.compat import str
 from httpie.plugins import plugin_manager
+
+
+# https://urllib3.readthedocs.org/en/latest/security.html
+urllib3.disable_warnings()
 
 
 FORM = 'application/x-www-form-urlencoded; charset=utf-8'
