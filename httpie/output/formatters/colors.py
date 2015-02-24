@@ -14,7 +14,7 @@ from httpie.plugins import FormatterPlugin
 # great and fruity seems to give the best result there.
 AVAILABLE_STYLES = set(pygments.styles.STYLE_MAP.keys())
 AVAILABLE_STYLES.add('solarized')
-DEFAULT_STYLE = 'solarized'
+DEFAULT_STYLE = 'monokai'
 
 
 class ColorFormatter(FormatterPlugin):

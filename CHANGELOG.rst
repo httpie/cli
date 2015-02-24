@@ -9,6 +9,7 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 `1.0.0-dev`_ (Unreleased)
 -------------------------
 
+* Changed the default color ``--style`` from ``solarized`` to ``monokai``
 
 
 `0.9.2`_ (2015-02-24)
