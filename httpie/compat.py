@@ -2,12 +2,26 @@
 Python 2.6, 2.7, and 3.x compatibility.
 
 """
-# Borrow these from requests:
-# noinspection PyUnresolvedReferences
-from requests.compat import (
-    is_windows, bytes, str,
-    is_py3, is_py26, is_pypy, is_py27
-)
+import sys
+
+
+# Taken from `requests.compat`
+_ver = sys.version_info
+is_py2 = (_ver[0] == 2)
+is_py26 = (is_py2 and _ver[1] == 6)
+is_py27 = (is_py2 and _ver[1] == 7)
+is_py3 = (_ver[0] == 3)
+is_pypy = ('pypy' in _ver)
+is_windows = 'win32' in str(sys.platform).lower()
+
+
+if is_py2:
+    bytes = str
+    str = unicode
+elif is_py3:
+    str = str
+    bytes = bytes
+
 
 try:  # pragma: no cover
     # noinspection PyUnresolvedReferences,PyCompatibility
