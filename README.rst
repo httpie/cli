@@ -10,7 +10,7 @@ colorized output. HTTPie can be used for **testing, debugging**, and
 generally **interacting** with HTTP servers.
 
 
-.. image:: httpie.png
+.. image:: https://raw.githubusercontent.com/jakubroztocil/httpie/master/httpie.png
     :alt: HTTPie compared to cURL
     :width: 679
     :height: 781
@@ -58,9 +58,6 @@ Main Features
 Installation
 ============
 
---------------
-Stable version
---------------
 
 On **Mac OS X**, HTTPie can be installed via `Homebrew <http://brew.sh/>`_:
 
