@@ -9,6 +9,12 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 `1.0.0-dev`_ (Unreleased)
 -------------------------
 
+
+
+`0.9.2`_ (2015-02-24)
+---------------------
+
+* Fixed compatibility with Requests 2.5.1
 * Changed the default color ``--style`` from ``solarized`` to ``monokai``
 * Changed the default JSON ``Content-Type`` to ``application/json`` as UTF-8
   is the default JSON encoding
@@ -243,4 +249,5 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 .. _0.8.0: https://github.com/jakubroztocil/httpie/compare/0.7.1...0.8.0
 .. _0.9.0: https://github.com/jakubroztocil/httpie/compare/0.8.0...0.9.0
 .. _0.9.1: https://github.com/jakubroztocil/httpie/compare/0.9.0...0.9.1
-.. _1.0.0-dev: https://github.com/jakubroztocil/httpie/compare/0.9.1...master
+.. _0.9.2: https://github.com/jakubroztocil/httpie/compare/0.9.1...0.9.2
+.. _1.0.0-dev: https://github.com/jakubroztocil/httpie/compare/0.9.2...master
