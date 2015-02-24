@@ -15,7 +15,6 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 ---------------------
 
 * Fixed compatibility with Requests 2.5.1
-* Changed the default color ``--style`` from ``solarized`` to ``monokai``
 * Changed the default JSON ``Content-Type`` to ``application/json`` as UTF-8
   is the default JSON encoding
 
