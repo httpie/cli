@@ -67,7 +67,7 @@ On **Mac OS X**, HTTPie can be installed via `Homebrew <http://brew.sh/>`_:
 
 
 Most **Linux** distributions provide a package that can be installed using the
-the system package manager, e.g.:
+system package manager, e.g.:
 
 .. code-block:: bash
 
