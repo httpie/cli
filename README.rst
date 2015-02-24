@@ -1298,21 +1298,21 @@ Please see `claudiatd/httpie-artwork`_
 Contribute
 ==========
 
-Please see `CONTRIBUTING <CONTRIBUTING.rst>`_.
+Please see `CONTRIBUTING <https://github.com/jakubroztocil/httpie/blob/master/CONTRIBUTING.rst>`_.
 
 
 ==========
 Change Log
 ==========
 
-Please see `CHANGELOG <CHANGELOG.rst>`_.
+Please see `CHANGELOG <https://github.com/jakubroztocil/httpie/blob/master/CHANGELOG.rst>`_.
 
 
 =======
 Licence
 =======
 
-Please see `LICENSE <LICENSE>`_.
+Please see `LICENSE <https://github.com/jakubroztocil/httpie/blob/master/LICENSE>`_.
 
 
 
