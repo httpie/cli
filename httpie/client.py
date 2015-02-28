@@ -52,7 +52,7 @@ def get_response(args, config_dir):
 
 
 def dump_request(kwargs):
-    sys.stderr.write('\n>>> requests.request(%s)\n\n'
+    sys.stderr.write('\n>>> requests.request(**%s)\n\n'
                      % pformat(kwargs))
 
 
