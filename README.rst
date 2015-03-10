@@ -277,7 +277,7 @@ If the port is omitted, then port 80 is assumed.
     GET / HTTP/1.1
     Host: localhost
 
-If find yourself manually constructing URLs with **querystring parameters**
+If you find yourself manually constructing URLs with **querystring parameters**
 on the terminal, you may appreciate the ``param==value`` syntax for appending
 URL parameters so that you don't have to worry about escaping the ``&``
 separators. To search for ``HTTPie`` on Google Images you could use this
@@ -315,7 +315,7 @@ their type is distinguished only by the separator used:
 +-----------------------+-----------------------------------------------------+
 | URL parameters        | Appends the given name/value pair as a query        |
 | ``name==value``       | string parameter to the URL.                        |
-|                       | The ``==`` separator is used                        |
+|                       | The ``==`` separator is used.                       |
 +-----------------------+-----------------------------------------------------+
 | Data Fields           | Request data fields to be serialized as a JSON      |
 | ``field=value``,      | object (default), or to be form-encoded             |
@@ -446,7 +446,8 @@ Regular Forms
 
 .. code-block:: bash
 
-    $ http --form POST api.example.org/person/1 name='John Smith' email=john@example.org cv=@~/Documents/cv.txt
+    $ http --form POST api.example.org/person/1 name='John Smith' \
+        email=john@example.org cv=@~/Documents/cv.txt
 
 
 .. code-block:: http
@@ -491,7 +492,8 @@ To set custom headers you can use the ``Header:Value`` notation:
 
 .. code-block:: bash
 
-    $ http example.org  User-Agent:Bacon/1.0  'Cookie:valued-visitor=yes;foo=bar'  X-Foo:Bar  Referer:http://httpie.org/
+    $ http example.org  User-Agent:Bacon/1.0  'Cookie:valued-visitor=yes;foo=bar'  \
+        X-Foo:Bar  Referer:http://httpie.org/
 
 
 .. code-block:: http
@@ -532,7 +534,7 @@ The currently supported authentication schemes are Basic and Digest
                         the argument. Or, if you only specify a username
                         (``-a username``), you'll be prompted for
                         the password before the request is sent.
-                        To send a an empty password, pass ``username:``.
+                        To send an empty password, pass ``username:``.
                         The ``username:password@hostname`` URL syntax is
                         supported as well (but credentials passed via ``-a``
                         have higher priority).
