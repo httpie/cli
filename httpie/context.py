@@ -1,4 +1,5 @@
 import sys
+import os
 
 from httpie.compat import is_windows
 from httpie.config import DEFAULT_CONFIG_DIR, Config
