@@ -1,8 +1,8 @@
 import pytest
 
+from utils import TestEnvironment, http, HTTP_OK, COLOR, CRLF
 from httpie import ExitStatus
 from httpie.output.formatters.colors import get_lexer
-from utils import TestEnvironment, http, HTTP_OK, COLOR, CRLF
 
 
 class TestVerboseFlag:
@@ -32,9 +32,13 @@ class TestColors:
         'application/json',
         'application/json+foo',
         'application/foo+json',
+        'application/json-foo',
+        'application/x-json',
         'foo/json',
         'foo/json+bar',
         'foo/bar+json',
+        'foo/json-foo',
+        'foo/x-json',
     ])
     def test_get_lexer(self, mime):
         lexer = get_lexer(mime)

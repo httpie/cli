@@ -2,29 +2,44 @@
 Python 2.6, 2.7, and 3.x compatibility.
 
 """
-# Borrow these from requests:
-#noinspection PyUnresolvedReferences
-from requests.compat import is_windows, bytes, str, is_py3, is_py26
+import sys
 
-try:
-    #noinspection PyUnresolvedReferences,PyCompatibility
+
+is_py2 = sys.version_info[0] == 2
+is_py26 = sys.version_info[:2] == (2, 6)
+is_py27 = sys.version_info[:2] == (2, 7)
+is_py3 = sys.version_info[0] == 3
+is_pypy = 'pypy' in sys.version.lower()
+is_windows = 'win32' in str(sys.platform).lower()
+
+
+if is_py2:
+    bytes = str
+    str = unicode
+elif is_py3:
+    str = str
+    bytes = bytes
+
+
+try:  # pragma: no cover
+    # noinspection PyUnresolvedReferences,PyCompatibility
     from urllib.parse import urlsplit
-except ImportError:
-    #noinspection PyUnresolvedReferences,PyCompatibility
+except ImportError:  # pragma: no cover
+    # noinspection PyUnresolvedReferences,PyCompatibility
     from urlparse import urlsplit
 
-try:
-    #noinspection PyCompatibility
+try:  # pragma: no cover
+    # noinspection PyCompatibility
     from urllib.request import urlopen
-except ImportError:
-    #noinspection PyCompatibility
+except ImportError:  # pragma: no cover
+    # noinspection PyCompatibility
     from urllib2 import urlopen
 
-try:
+try:  # pragma: no cover
     from collections import OrderedDict
-except ImportError:
-    ### Python 2.6 OrderedDict class, needed for headers, parameters, etc .###
-    ### <https://pypi.python.org/pypi/ordereddict/1.1>
+except ImportError:  # pragma: no cover
+    # Python 2.6 OrderedDict class, needed for headers, parameters, etc .###
+    # <https://pypi.python.org/pypi/ordereddict/1.1>
     # noinspection PyCompatibility
     from UserDict import DictMixin
 

@@ -15,7 +15,7 @@ class AuthPlugin(BasePlugin):
     """
     Base auth plugin class.
 
-    See <https://github.com/jkbr/httpie-ntlm> for an example auth plugin.
+    See <https://github.com/jakubroztocil/httpie-ntlm> for an example auth plugin.
 
     """
     # The value that should be passed to --auth-type
@@ -25,6 +25,25 @@ class AuthPlugin(BasePlugin):
     def get_auth(self, username, password):
         """
         Return a ``requests.auth.AuthBase`` subclass instance.
+
+        """
+        raise NotImplementedError()
+
+
+class TransportPlugin(BasePlugin):
+    """
+
+    http://docs.python-requests.org/en/latest/user/advanced/#transport-adapters
+
+    """
+
+    # The URL prefix the adapter should be mount to.
+    prefix = None
+
+    def get_adapter(self):
+        """
+        Return a ``requests.adapters.BaseAdapter`` subclass instance to be
+        mounted to ``self.prefix``.
 
         """
         raise NotImplementedError()

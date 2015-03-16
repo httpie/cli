@@ -4,20 +4,26 @@
 import os
 import sys
 import re
-import json
+import errno
 import mimetypes
 import getpass
 from io import BytesIO
-#noinspection PyCompatibility
+from collections import namedtuple, Iterable
+# noinspection PyCompatibility
 from argparse import ArgumentParser, ArgumentTypeError, ArgumentError
 
 # TODO: Use MultiDict for headers once added to `requests`.
 # https://github.com/jakubroztocil/httpie/issues/130
 from requests.structures import CaseInsensitiveDict
 
-from httpie.compat import OrderedDict, urlsplit, str
+from httpie.compat import OrderedDict, urlsplit, str, is_pypy, is_py27
 from httpie.sessions import VALID_SESSION_NAME_PATTERN
+from httpie.utils import load_json_preserve_order
 
+
+# ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
+# <http://tools.ietf.org/html/rfc3986#section-3.1>
+URL_SCHEME_RE = re.compile(r'^[a-z][a-z0-9.+-]*://', re.IGNORECASE)
 
 HTTP_POST = 'POST'
 HTTP_GET = 'GET'
@@ -109,7 +115,7 @@ class Parser(ArgumentParser):
         kwargs['add_help'] = False
         super(Parser, self).__init__(*args, **kwargs)
 
-    #noinspection PyMethodOverriding
+    # noinspection PyMethodOverriding
     def parse_args(self, env, args=None, namespace=None):
 
         self.env = env
@@ -130,7 +136,7 @@ class Parser(ArgumentParser):
         self._parse_items()
         if not self.args.ignore_stdin and not env.stdin_isatty:
             self._body_from_file(self.env.stdin)
-        if not (self.args.url.startswith((HTTP, HTTPS))):
+        if not URL_SCHEME_RE.match(self.args.url):
             scheme = HTTP
 
             # See if we're using curl style shorthand for localhost (:3000/foo)
@@ -192,7 +198,14 @@ class Parser(ArgumentParser):
             # `stdout`. The file is opened for appending, which isn't what
             # we want in this case.
             self.args.output_file.seek(0)
-            self.args.output_file.truncate()
+            try:
+                self.args.output_file.truncate()
+            except IOError as e:
+                if e.errno == errno.EINVAL:
+                    # E.g. /dev/null on Linux.
+                    pass
+                else:
+                    raise
             self.env.stdout = self.args.output_file
             self.env.stdout_isatty = False
 
@@ -308,21 +321,20 @@ class Parser(ArgumentParser):
          and `args.files`.
 
         """
-        self.args.headers = CaseInsensitiveDict()
-        self.args.data = ParamDict() if self.args.form else OrderedDict()
-        self.args.files = OrderedDict()
-        self.args.params = ParamDict()
-
         try:
-            parse_items(items=self.args.items,
-                        headers=self.args.headers,
-                        data=self.args.data,
-                        files=self.args.files,
-                        params=self.args.params)
+            items = parse_items(
+                items=self.args.items,
+                data_class=ParamsDict if self.args.form else OrderedDict
+            )
         except ParseError as e:
             if self.args.traceback:
                 raise
             self.error(e.args[0])
+        else:
+            self.args.headers = items.headers
+            self.args.data = items.data
+            self.args.files = items.files
+            self.args.params = items.params
 
         if self.args.files and not self.args.form:
             # `http url @/path/to/file`
@@ -405,6 +417,9 @@ class KeyValue(object):
     def __eq__(self, other):
         return self.__dict__ == other.__dict__
 
+    def __repr__(self):
+        return repr(self.__dict__)
+
 
 class SessionNameValidator(object):
 
@@ -431,6 +446,9 @@ class KeyValueArgType(object):
 
     def __init__(self, *separators):
         self.separators = separators
+        self.special_characters = set('\\')
+        for separator in separators:
+            self.special_characters.update(separator)
 
     def __call__(self, string):
         """Parse `string` and return `self.key_value_class()` instance.
@@ -445,8 +463,8 @@ class KeyValueArgType(object):
         class Escaped(str):
             """Represents an escaped character."""
 
-        def tokenize(s):
-            """Tokenize `s`. There are only two token types - strings
+        def tokenize(string):
+            """Tokenize `string`. There are only two token types - strings
             and escaped characters:
 
             tokenize(r'foo\=bar\\baz')
@@ -454,16 +472,16 @@ class KeyValueArgType(object):
 
             """
             tokens = ['']
-            esc = False
-            for c in s:
-                if esc:
-                    tokens.extend([Escaped(c), ''])
-                    esc = False
-                else:
-                    if c == '\\':
-                        esc = True
+            characters = iter(string)
+            for char in characters:
+                if char == '\\':
+                    char = next(characters, '')
+                    if char not in self.special_characters:
+                        tokens[-1] += '\\' + char
                     else:
-                        tokens[-1] += c
+                        tokens.extend([Escaped(char), ''])
+                else:
+                    tokens[-1] += char
             return tokens
 
         tokens = tokenize(string)
@@ -548,8 +566,19 @@ class AuthCredentialsArgType(KeyValueArgType):
             )
 
 
-class ParamDict(OrderedDict):
+class RequestItemsDict(OrderedDict):
     """Multi-value dict for URL parameters and form data."""
+
+    if is_pypy and is_py27:
+        # Manually set keys when initialized with an iterable as PyPy
+        # doesn't call __setitem__ in such case (pypy3 does).
+        def __init__(self, *args, **kwargs):
+            if len(args) == 1 and isinstance(args[0], Iterable):
+                super(RequestItemsDict, self).__init__(**kwargs)
+                for k, v in args[0]:
+                    self[k] = v
+            else:
+                super(RequestItemsDict, self).__init__(*args, **kwargs)
 
     #noinspection PyMethodOverriding
     def __setitem__(self, key, value):
@@ -560,27 +589,46 @@ class ParamDict(OrderedDict):
         data and URL params.
 
         """
+        assert not isinstance(value, list)
         if key not in self:
-            super(ParamDict, self).__setitem__(key, value)
+            super(RequestItemsDict, self).__setitem__(key, value)
         else:
             if not isinstance(self[key], list):
-                super(ParamDict, self).__setitem__(key, [self[key]])
+                super(RequestItemsDict, self).__setitem__(key, [self[key]])
             self[key].append(value)
 
 
-def parse_items(items, data=None, headers=None, files=None, params=None):
+class ParamsDict(RequestItemsDict):
+    pass
+
+
+class DataDict(RequestItemsDict):
+
+    def items(self):
+        for key, values in super(RequestItemsDict, self).items():
+            if not isinstance(values, list):
+                values = [values]
+            for value in values:
+                yield key, value
+
+
+RequestItems = namedtuple('RequestItems',
+                          ['headers', 'data', 'files', 'params'])
+
+
+def parse_items(items,
+                headers_class=CaseInsensitiveDict,
+                data_class=OrderedDict,
+                files_class=DataDict,
+                params_class=ParamsDict):
     """Parse `KeyValue` `items` into `data`, `headers`, `files`,
     and `params`.
 
     """
-    if headers is None:
-        headers = CaseInsensitiveDict()
-    if data is None:
-        data = OrderedDict()
-    if files is None:
-        files = OrderedDict()
-    if params is None:
-        params = ParamDict()
+    headers = []
+    data = []
+    files = []
+    params = []
 
     for item in items:
         value = item.value
@@ -615,7 +663,7 @@ def parse_items(items, data=None, headers=None, files=None, params=None):
 
             if item.sep in SEP_GROUP_RAW_JSON_ITEMS:
                 try:
-                    value = json.loads(value)
+                    value = load_json_preserve_order(value)
                 except ValueError as e:
                     raise ParseError('"%s": %s' % (item.orig, e))
             target = data
@@ -623,9 +671,12 @@ def parse_items(items, data=None, headers=None, files=None, params=None):
         else:
             raise TypeError(item)
 
-        target[item.key] = value
+        target.append((item.key, value))
 
-    return headers, data, files, params
+    return RequestItems(headers_class(headers),
+                        data_class(data),
+                        files_class(files),
+                        params_class(params))
 
 
 def readable_file_arg(filename):

@@ -4,9 +4,10 @@ import json
 import argparse
 
 import pytest
+from requests.exceptions import InvalidSchema
 
 from httpie import input
-from httpie.input import KeyValue, KeyValueArgType
+from httpie.input import KeyValue, KeyValueArgType, DataDict
 from httpie import ExitStatus
 from httpie.cli import parser
 from utils import TestEnvironment, http, HTTP_OK
@@ -18,64 +19,77 @@ from fixtures import (
 
 class TestItemParsing:
 
-    key_value_type = KeyValueArgType(*input.SEP_GROUP_ALL_ITEMS)
+    key_value = KeyValueArgType(*input.SEP_GROUP_ALL_ITEMS)
 
     def test_invalid_items(self):
         items = ['no-separator']
         for item in items:
-            pytest.raises(argparse.ArgumentTypeError,
-                          self.key_value_type, item)
+            pytest.raises(argparse.ArgumentTypeError, self.key_value, item)
 
-    def test_escape(self):
-        headers, data, files, params = input.parse_items([
+    def test_escape_separator(self):
+        items = input.parse_items([
             # headers
-            self.key_value_type('foo\\:bar:baz'),
-            self.key_value_type('jack\\@jill:hill'),
+            self.key_value(r'foo\:bar:baz'),
+            self.key_value(r'jack\@jill:hill'),
+
             # data
-            self.key_value_type('baz\\=bar=foo'),
+            self.key_value(r'baz\=bar=foo'),
+
             # files
-            self.key_value_type('bar\\@baz@%s' % FILE_PATH_ARG)
+            self.key_value(r'bar\@baz@%s' % FILE_PATH_ARG),
         ])
         # `requests.structures.CaseInsensitiveDict` => `dict`
-        headers = dict(headers._store.values())
+        headers = dict(items.headers._store.values())
+
         assert headers == {
             'foo:bar': 'baz',
             'jack@jill': 'hill',
         }
-        assert data == {'baz=bar': 'foo'}
-        assert 'bar@baz' in files
+        assert items.data == {'baz=bar': 'foo'}
+        assert 'bar@baz' in items.files
+
+    @pytest.mark.parametrize(('string', 'key', 'sep', 'value'), [
+        ('path=c:\windows', 'path', '=', 'c:\windows'),
+        ('path=c:\windows\\', 'path', '=', 'c:\windows\\'),
+        ('path\==c:\windows', 'path=', '=', 'c:\windows'),
+    ])
+    def test_backslash_before_non_special_character_does_not_escape(
+            self, string, key, sep, value):
+        expected = KeyValue(orig=string, key=key, sep=sep, value=value)
+        actual = self.key_value(string)
+        assert actual == expected
 
     def test_escape_longsep(self):
-        headers, data, files, params = input.parse_items([
-            self.key_value_type('bob\\:==foo'),
+        items = input.parse_items([
+            self.key_value(r'bob\:==foo'),
         ])
-        assert params == {'bob:': 'foo'}
+        assert items.params == {'bob:': 'foo'}
 
     def test_valid_items(self):
-        headers, data, files, params = input.parse_items([
-            self.key_value_type('string=value'),
-            self.key_value_type('header:value'),
-            self.key_value_type('list:=["a", 1, {}, false]'),
-            self.key_value_type('obj:={"a": "b"}'),
-            self.key_value_type('eh:'),
-            self.key_value_type('ed='),
-            self.key_value_type('bool:=true'),
-            self.key_value_type('file@' + FILE_PATH_ARG),
-            self.key_value_type('query==value'),
-            self.key_value_type('string-embed=@' + FILE_PATH_ARG),
-            self.key_value_type('raw-json-embed:=@' + JSON_FILE_PATH_ARG),
+        items = input.parse_items([
+            self.key_value('string=value'),
+            self.key_value('header:value'),
+            self.key_value('list:=["a", 1, {}, false]'),
+            self.key_value('obj:={"a": "b"}'),
+            self.key_value('eh:'),
+            self.key_value('ed='),
+            self.key_value('bool:=true'),
+            self.key_value('file@' + FILE_PATH_ARG),
+            self.key_value('query==value'),
+            self.key_value('string-embed=@' + FILE_PATH_ARG),
+            self.key_value('raw-json-embed:=@' + JSON_FILE_PATH_ARG),
         ])
 
         # Parsed headers
         # `requests.structures.CaseInsensitiveDict` => `dict`
-        headers = dict(headers._store.values())
+        headers = dict(items.headers._store.values())
         assert headers == {'header': 'value', 'eh': ''}
 
         # Parsed data
-        raw_json_embed = data.pop('raw-json-embed')
+        raw_json_embed = items.data.pop('raw-json-embed')
         assert raw_json_embed == json.loads(JSON_FILE_CONTENT)
-        data['string-embed'] = data['string-embed'].strip()
-        assert dict(data) == {
+        items.data['string-embed'] = items.data['string-embed'].strip()
+        assert dict(items.data) == {
             "ed": "",
             "string": "value",
             "bool": True,
@@ -85,11 +99,31 @@ class TestItemParsing:
         }
 
         # Parsed query string parameters
-        assert params == {'query': 'value'}
+        assert items.params == {'query': 'value'}
 
         # Parsed file fields
-        assert 'file' in files
-        assert files['file'][1].read().strip().decode('utf8') == FILE_CONTENT
+        assert 'file' in items.files
+        assert (items.files['file'][1].read().strip().decode('utf8')
+                == FILE_CONTENT)
+
+    def test_multiple_file_fields_with_same_field_name(self):
+        items = input.parse_items([
+            self.key_value('file_field@' + FILE_PATH_ARG),
+            self.key_value('file_field@' + FILE_PATH_ARG),
+        ])
+        assert len(items.files['file_field']) == 2
+
+    def test_multiple_text_fields_with_same_field_name(self):
+        items = input.parse_items(
+            [self.key_value('text_field=a'),
+             self.key_value('text_field=b')],
+            data_class=DataDict
+        )
+        assert items.data['text_field'] == ['a', 'b']
+        assert list(items.data.items()) == [
+            ('text_field', 'a'),
+            ('text_field', 'b'),
+        ]
 
 
 class TestQuerystring:
@@ -120,7 +154,7 @@ class TestQuerystring:
         assert '"url": "%s"' % url in r
 
 
-class TestCLIParser:
+class TestURLshorthand:
     def test_expand_localhost_shorthand(self):
         args = parser.parse_args(args=[':'], env=TestEnvironment())
         assert args.url == 'http://localhost'
@@ -287,3 +321,12 @@ class TestIgnoreStdin:
                  error_exit_ok=True)
         assert r.exit_status == ExitStatus.ERROR
         assert 'because --ignore-stdin' in r.stderr
+
+
+class TestSchemes:
+
+    def test_custom_scheme(self):
+        # InvalidSchema is expected because HTTPie
+        # shouldn't touch a formally valid scheme.
+        with pytest.raises(InvalidSchema):
+            http('foo+bar-BAZ.123://bah')

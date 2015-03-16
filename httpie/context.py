@@ -1,8 +1,6 @@
-import os
 import sys
 
-from requests.compat import is_windows
-
+from httpie.compat import is_windows
 from httpie.config import DEFAULT_CONFIG_DIR, Config
 
 
@@ -19,7 +17,6 @@ class Environment(object):
     is_windows = is_windows
     base_url = os.environ.get('HTTPIE_BASEURL', '')
     config_dir = DEFAULT_CONFIG_DIR
-    colors = 256 if '256color' in os.environ.get('TERM', '') else 88
     stdin = sys.stdin
     stdin_isatty = stdin.isatty()
     stdin_encoding = None
@@ -28,13 +25,31 @@ class Environment(object):
     stdout_encoding = None
     stderr = sys.stderr
     stderr_isatty = stderr.isatty()
-    if is_windows:
+    colors = 256
+    if not is_windows:
+        import curses
+        try:
+            curses.setupterm()
+            try:
+                colors = curses.tigetnum('colors')
+            except TypeError:
+                # pypy3 (2.4.0)
+                colors = curses.tigetnum(b'colors')
+        except curses.error:
+            pass
+        del curses
+    else:
         # noinspection PyUnresolvedReferences
-        from colorama.initialise import wrap_stream
-        stdout = wrap_stream(stdout, convert=None, strip=None,
-                             autoreset=True, wrap=True)
-        stderr = wrap_stream(stderr, convert=None, strip=None,
-                             autoreset=True, wrap=True)
+        import colorama.initialise
+        stdout = colorama.initialise.wrap_stream(
+            stdout, convert=None, strip=None,
+            autoreset=True, wrap=True
+        )
+        stderr = colorama.initialise.wrap_stream(
+            stderr, convert=None, strip=None,
+            autoreset=True, wrap=True
+        )
+        del colorama
 
     def __init__(self, **kwargs):
         """
@@ -52,6 +67,7 @@ class Environment(object):
         if self.stdout_encoding is None:
             actual_stdout = self.stdout
             if is_windows:
+                # noinspection PyUnresolvedReferences
                 from colorama import AnsiToWin32
                 if isinstance(self.stdout, AnsiToWin32):
                     actual_stdout = self.stdout.wrapped

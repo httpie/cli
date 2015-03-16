@@ -7,7 +7,6 @@ from pygments.formatters.terminal import TerminalFormatter
 from pygments.formatters.terminal256 import Terminal256Formatter
 from pygments.util import ClassNotFound
 
-from httpie.compat import is_windows
 from httpie.plugins import FormatterPlugin
 
 
@@ -15,7 +14,7 @@ from httpie.plugins import FormatterPlugin
 # great and fruity seems to give the best result there.
 AVAILABLE_STYLES = set(pygments.styles.STYLE_MAP.keys())
 AVAILABLE_STYLES.add('solarized')
-DEFAULT_STYLE = 'solarized' if not is_windows else 'fruity'
+DEFAULT_STYLE = 'monokai'
 
 
 class ColorFormatter(FormatterPlugin):
@@ -42,7 +41,7 @@ class ColorFormatter(FormatterPlugin):
         except ClassNotFound:
             style_class = Solarized256Style
 
-        if env.is_windows or env.colors == 256:
+        if env.colors == 256:
             fmt_class = Terminal256Formatter
         else:
             fmt_class = TerminalFormatter
@@ -76,6 +75,10 @@ def get_lexer(mime):
             '%s/%s' % (type_, subtype_name),
             '%s/%s' % (type_, subtype_suffix)
         ])
+    # as a last resort, if no lexer feels responsible, and
+    # the subtype contains 'json', take the JSON lexer
+    if 'json' in subtype:
+        lexer_names.append('json')
     lexer = None
     for mime_type in mime_types:
         try:
@@ -140,6 +143,8 @@ class HTTPLexer(pygments.lexer.RegexLexer):
     }
 
 
+# TODO: As Solarized is not the default theme any longer, it should be removed
+#       or bundled directly with Pygments so that we don't need to support it.
 class Solarized256Style(pygments.style.Style):
     """
     solarized256

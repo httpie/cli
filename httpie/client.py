@@ -3,6 +3,7 @@ import sys
 from pprint import pformat
 
 import requests
+from requests.packages import urllib3
 
 from httpie import sessions
 from httpie import __version__
@@ -10,21 +11,37 @@ from httpie.compat import str
 from httpie.plugins import plugin_manager
 
 
+# https://urllib3.readthedocs.org/en/latest/security.html
+urllib3.disable_warnings()
+
+
 FORM = 'application/x-www-form-urlencoded; charset=utf-8'
-JSON = 'application/json; charset=utf-8'
+JSON = 'application/json'
 DEFAULT_UA = 'HTTPie/%s' % __version__
+
+
+def get_requests_session():
+    requests_session = requests.Session()
+    for cls in plugin_manager.get_trasnsport_plugins():
+        transport_plugin = cls()
+        requests_session.mount(prefix=transport_plugin.prefix,
+                               adapter=transport_plugin.get_adapter())
+    return requests_session
 
 
 def get_response(args, config_dir):
     """Send the request and return a `request.Response`."""
 
+    requests_session = get_requests_session()
+
     if not args.session and not args.session_read_only:
-        requests_kwargs = get_requests_kwargs(args)
+        kwargs = get_requests_kwargs(args)
         if args.debug:
-            dump_request(requests_kwargs)
-        response = requests.request(**requests_kwargs)
+            dump_request(kwargs)
+        response = requests_session.request(**kwargs)
     else:
         response = sessions.get_response(
+            requests_session=requests_session,
             args=args,
             config_dir=config_dir,
             session_name=args.session or args.session_read_only,
@@ -35,7 +52,7 @@ def get_response(args, config_dir):
 
 
 def dump_request(kwargs):
-    sys.stderr.write('\n>>> requests.request(%s)\n\n'
+    sys.stderr.write('\n>>> requests.request(**%s)\n\n'
                      % pformat(kwargs))
 
 
@@ -98,8 +115,8 @@ def get_requests_kwargs(args, base_headers=None):
     cert = None
     if args.cert:
         cert = args.cert
-        if args.certkey:
-            cert = cert, args.certkey
+        if args.cert_key:
+            cert = cert, args.cert_key
 
     kwargs = {
         'stream': True,

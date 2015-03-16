@@ -1,7 +1,10 @@
 """High-level tests."""
+import pytest
 from utils import TestEnvironment, http, HTTP_OK
 from fixtures import FILE_PATH, FILE_CONTENT
+
 import httpie
+from httpie.compat import is_py26
 
 
 class TestHTTPie:
@@ -14,12 +17,12 @@ class TestHTTPie:
 
     def test_help(self):
         r = http('--help', error_exit_ok=True)
-        assert r.exit_status == httpie.ExitStatus.ERROR
+        assert r.exit_status == httpie.ExitStatus.OK
         assert 'https://github.com/jakubroztocil/httpie/issues' in r
 
     def test_version(self):
         r = http('--version', error_exit_ok=True)
-        assert r.exit_status == httpie.ExitStatus.ERROR
+        assert r.exit_status == httpie.ExitStatus.OK
         # FIXME: py3 has version in stdout, py2 in stderr
         assert httpie.__version__ == r.stderr.strip() + r.strip()
 
@@ -63,3 +66,14 @@ class TestHTTPie:
         assert HTTP_OK in r
         assert '"User-Agent": "HTTPie' in r, r
         assert '"Foo": "bar"' in r
+
+    @pytest.mark.skipif(
+        is_py26,
+        reason='the `object_pairs_hook` arg for `json.loads()` is Py>2.6 only'
+    )
+    def test_json_input_preserve_order(self, httpbin):
+        r = http('PATCH', httpbin.url + '/patch',
+                 'order:={"map":{"1":"first","2":"second"}}')
+        assert HTTP_OK in r
+        assert r.json['data'] == \
+            '{"order": {"map": {"1": "first", "2": "second"}}}'
