@@ -31,6 +31,7 @@ tests_require = [
     # https://bitbucket.org/pypa/setuptools/issue/196/
     'pytest-httpbin',
     'pytest',
+    'mock',
 ]
 
 
