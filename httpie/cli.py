@@ -21,7 +21,6 @@ from httpie.input import (Parser, AuthCredentialsArgType, KeyValueArgType,
                           PRETTY_STDOUT_TTY_ONLY, SessionNameValidator,
                           readable_file_arg)
 
-
 class HTTPieHelpFormatter(RawDescriptionHelpFormatter):
     """A nicer help formatter.
 
@@ -72,6 +71,7 @@ positional.add_argument(
     metavar='METHOD',
     nargs=OPTIONAL,
     default=None,
+    choices=('GET', 'PUT', 'POST', 'HEAD', 'CONNECT'),
     help="""
     The HTTP method to be used for the request (GET, POST, PUT, DELETE, ...).
 

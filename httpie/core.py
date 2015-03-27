@@ -27,7 +27,7 @@ from httpie.output.streams import (
     build_output_stream,
     write, write_with_colors_win_py3
 )
-
+import argcomplete
 
 def get_exit_status(http_status, follow=False):
     """Translate HTTP status code to exit status code."""
@@ -98,6 +98,7 @@ def main(args=sys.argv[1:], env=Environment()):
     download = None
 
     try:
+        argcomplete.autocomplete(parser)
         args = parser.parse_args(args=args, env=env)
 
         if args.download:

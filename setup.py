@@ -49,6 +49,11 @@ if not 'bdist_wheel' in sys.argv:
     except ImportError:
         install_requires.append('argparse>=1.2.1')
 
+    try:
+        import argcomplete
+    except ImportError:
+        install_requires.append('argcomplete')
+
     if 'win32' in str(sys.platform).lower():
         # Terminal colors for Windows
         install_requires.append('colorama>=0.2.4')
