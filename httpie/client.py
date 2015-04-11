@@ -92,7 +92,7 @@ def get_requests_kwargs(args, base_headers=None):
     # Serialize JSON data, if needed.
     data = args.data
     auto_json = data and not args.form
-    if args.json or auto_json and isinstance(data, dict):
+    if (args.json or auto_json) and isinstance(data, dict):
         if data:
             data = json.dumps(data)
         else:
