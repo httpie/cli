@@ -4,8 +4,10 @@ _http_complete() {
 	local cur_word=${COMP_WORDS[COMP_CWORD]}
 	local prev_word=${COMP_WORDS[COMP_CWORD - 1]}
 
-	if [[ "$cur_word" == -*  ]]; then
+	if [[ "$cur_word" == -* ]]; then
 		_http_complete_options "$cur_word"
+	elif [[ "$prev_word" == "http" ]]; then
+		_http_complete_http_params "$cur_word"
 	fi
 }
 
@@ -18,5 +20,11 @@ _http_complete_options() {
 	-c --continue --session --session-read-only -a --auth --auth-type --proxy
 	--follow --verify --cert --cert-key --timeout --check-status --ignore-stdin
 	--help --version --traceback --debug"
+	COMPREPLY=( $( compgen -W "$options" -- "$cur_word" ) )
+}
+
+_http_complete_http_params() {
+	local cur_word=$1
+	local options="GET PUT POST HEAD DELETE TRACE	CONNECT"
 	COMPREPLY=( $( compgen -W "$options" -- "$cur_word" ) )
 }
