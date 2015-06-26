@@ -1,3 +1,4 @@
+from email.header import Header
 import json
 import sys
 from pprint import pformat
@@ -59,10 +60,16 @@ def dump_request(kwargs):
 def encode_headers(headers):
     # This allows for unicode headers which is non-standard but practical.
     # See: https://github.com/jakubroztocil/httpie/issues/212
-    return dict(
-        (name, value.encode('utf8') if isinstance(value, str) else value)
-        for name, value in headers.items()
-    )
+
+    ret = {}
+
+    for name, value in headers.items():
+        if isinstance(value, str) and '=?utf-8?' not in value:
+            value = Header(value, charset='utf-8').encode()
+
+        ret[name] = value
+
+    return ret
 
 
 def get_default_headers(args):
