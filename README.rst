@@ -592,7 +592,7 @@ Auth Plugins
 * `httpie-negotiate <https://github.com/ndzou/httpie-negotiate>`_: SPNEGO (GSS Negotiate)
 * `requests-hawk <https://github.com/mozilla-services/requests-hawk>`_: Hawk
 * `httpie-api-auth <https://github.com/pd/httpie-api-auth>`_: ApiAuth
-* `httpie-edgegrid` <https://github.com/akamai-open/httpie-edgegrid>: EdgeGrid
+* `httpie-edgegrid <https://github.com/akamai-open/httpie-edgegrid>`_: EdgeGrid
 
 
 =======
