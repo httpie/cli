@@ -114,6 +114,7 @@ def get_stream_type(env, args):
             conversion=Conversion(),
             formatting=Formatting(env=env, groups=args.prettify,
                                   color_scheme=args.style),
+            mime_override=args.mime,
         )
     else:
         Stream = partial(EncodedStream, env=env)
@@ -224,11 +225,11 @@ class PrettyStream(EncodedStream):
 
     CHUNK_SIZE = 1
 
-    def __init__(self, conversion, formatting, **kwargs):
+    def __init__(self, conversion, formatting, mime_override, **kwargs):
         super(PrettyStream, self).__init__(**kwargs)
         self.formatting = formatting
         self.conversion = conversion
-        self.mime = self.msg.content_type.split(';')[0]
+        self.mime = mime_override or self.msg.content_type.split(';')[0]
 
     def get_headers(self):
         return self.formatting.format_headers(
