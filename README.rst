@@ -10,7 +10,7 @@ colorized output. HTTPie can be used for **testing, debugging**, and
 generally **interacting** with HTTP servers.
 
 
-.. image:: https://raw.githubusercontent.com/jakubroztocil/httpie/master/httpie.png
+.. image:: https://raw.githubusercontent.com/jkbrzt/httpie/master/httpie.png
     :alt: HTTPie compared to cURL
     :width: 679
     :height: 781
@@ -106,7 +106,7 @@ The **latest development version** can be installed directly from GitHub:
     $ brew install httpie --HEAD
 
     # Universal
-    $ pip install --upgrade https://github.com/jakubroztocil/httpie/tarball/master
+    $ pip install --upgrade https://github.com/jkbrzt/httpie/tarball/master
 
 
 
@@ -159,12 +159,12 @@ See the request that is being sent using one of the `output options`_:
 
 
 Use `Github API`_ to post a comment on an
-`issue <https://github.com/jakubroztocil/httpie/issues/83>`_
+`issue <https://github.com/jkbrzt/httpie/issues/83>`_
 with `authentication`_:
 
 .. code-block:: bash
 
-    $ http -a USERNAME POST https://api.github.com/repos/jakubroztocil/httpie/issues/83/comments body='HTTPie is awesome!'
+    $ http -a USERNAME POST https://api.github.com/repos/jkbrzt/httpie/issues/83/comments body='HTTPie is awesome!'
 
 
 Upload a file using `redirected input`_:
@@ -587,8 +587,8 @@ Authorization information from your ``~/.netrc`` file is honored as well:
 Auth Plugins
 ------------
 
-* `httpie-oauth <https://github.com/jakubroztocil/httpie-oauth>`_: OAuth
-* `httpie-ntlm <https://github.com/jakubroztocil/httpie-ntlm>`_: NTLM (NT LAN Manager)
+* `httpie-oauth <https://github.com/jkbrzt/httpie-oauth>`_: OAuth
+* `httpie-ntlm <https://github.com/jkbrzt/httpie-ntlm>`_: NTLM (NT LAN Manager)
 * `httpie-negotiate <https://github.com/ndzou/httpie-negotiate>`_: SPNEGO (GSS Negotiate)
 * `requests-hawk <https://github.com/mozilla-services/requests-hawk>`_: Hawk
 * `httpie-api-auth <https://github.com/pd/httpie-api-auth>`_: ApiAuth
@@ -824,7 +824,7 @@ You can even pipe web services together using HTTPie:
 
 .. code-block:: bash
 
-    $ http GET https://api.github.com/repos/jakubroztocil/httpie | http POST httpbin.org/post
+    $ http GET https://api.github.com/repos/jkbrzt/httpie | http POST httpbin.org/post
 
 
 You can use ``cat`` to enter multiline data on the terminal:
@@ -1008,19 +1008,19 @@ is being saved to a file.
 
 .. code-block:: bash
 
-    $ http --download https://github.com/jakubroztocil/httpie/tarball/master
+    $ http --download https://github.com/jkbrzt/httpie/tarball/master
 
 .. code-block:: http
 
     HTTP/1.1 200 OK
     Connection: keep-alive
-    Content-Disposition: attachment; filename=jakubroztocil-httpie-0.4.1-33-gfc4f70a.tar.gz
+    Content-Disposition: attachment; filename=jkbrzt-httpie-0.4.1-33-gfc4f70a.tar.gz
     Content-Length: 505530
     Content-Type: application/x-gzip
     Server: GitHub.com
     Vary: Accept-Encoding
 
-    Downloading 494.89 kB to "jakubroztocil-httpie-0.4.1-33-gfc4f70a.tar.gz"
+    Downloading 494.89 kB to "jkbrzt-httpie-0.4.1-33-gfc4f70a.tar.gz"
     /  21.01% 104.00 kB   47.55 kB/s  0:00:08 ETA
 
 
@@ -1034,7 +1034,7 @@ headers and progress are still shown in the terminal:
 
 .. code-block:: bash
 
-    $ http -d https://github.com/jakubroztocil/httpie/tarball/master |  tar zxf -
+    $ http -d https://github.com/jkbrzt/httpie/tarball/master |  tar zxf -
 
 
 If ``--output, -o`` is specified, you can resume a partial download using the
@@ -1283,7 +1283,7 @@ Authors
 =======
 
 
-`Jakub Roztocil`_  (`@jakubroztocil`_) created HTTPie and `these fine people`_
+`Jakub Roztocil`_  (`@jkbrzt`_) created HTTPie and `these fine people`_
 have contributed.
 
 
@@ -1298,21 +1298,21 @@ Please see `claudiatd/httpie-artwork`_
 Contribute
 ==========
 
-Please see `CONTRIBUTING <https://github.com/jakubroztocil/httpie/blob/master/CONTRIBUTING.rst>`_.
+Please see `CONTRIBUTING <https://github.com/jkbrzt/httpie/blob/master/CONTRIBUTING.rst>`_.
 
 
 ==========
 Change Log
 ==========
 
-Please see `CHANGELOG <https://github.com/jakubroztocil/httpie/blob/master/CHANGELOG.rst>`_.
+Please see `CHANGELOG <https://github.com/jkbrzt/httpie/blob/master/CHANGELOG.rst>`_.
 
 
 =======
 Licence
 =======
 
-Please see `LICENSE <https://github.com/jakubroztocil/httpie/blob/master/LICENSE>`_.
+Please see `LICENSE <https://github.com/jkbrzt/httpie/blob/master/LICENSE>`_.
 
 
 
@@ -1320,9 +1320,9 @@ Please see `LICENSE <https://github.com/jakubroztocil/httpie/blob/master/LICENSE
 .. _Pygments: http://pygments.org/
 .. _pip: http://www.pip-installer.org/en/latest/index.html
 .. _Github API: http://developer.github.com/v3/issues/comments/#create-a-comment
-.. _these fine people: https://github.com/jakubroztocil/httpie/contributors
-.. _Jakub Roztocil: http://subtleapps.com
-.. _@jakubroztocil: https://twitter.com/jakubroztocil
+.. _these fine people: https://github.com/jkbrzt/httpie/contributors
+.. _Jakub Roztocil: http://roztocil.co
+.. _@jkbrzt: https://twitter.com/jkbrzt
 .. _claudiatd/httpie-artwork: https://github.com/claudiatd/httpie-artwork
 
 
@@ -1330,14 +1330,14 @@ Please see `LICENSE <https://github.com/jakubroztocil/httpie/blob/master/LICENSE
     :target: https://pypi.python.org/pypi/httpie
     :alt: Latest version released on PyPi
 
-.. |coverage| image:: https://img.shields.io/coveralls/jakubroztocil/httpie/master.svg?style=flat-square
-    :target: https://coveralls.io/r/jakubroztocil/httpie?branch=master
+.. |coverage| image:: https://img.shields.io/coveralls/jkbrzt/httpie/master.svg?style=flat-square
+    :target: https://coveralls.io/r/jkbrzt/httpie?branch=master
     :alt: Test coverage
 
-.. |unix_build| image:: https://img.shields.io/travis/jakubroztocil/httpie/master.svg?style=flat-square&label=unix%20build
-    :target: http://travis-ci.org/jakubroztocil/httpie
+.. |unix_build| image:: https://img.shields.io/travis/jkbrzt/httpie/master.svg?style=flat-square&label=unix%20build
+    :target: http://travis-ci.org/jkbrzt/httpie
     :alt: Build status of the master branch on Mac/Linux
 
-.. |windows_build|  image:: https://img.shields.io/appveyor/ci/jakubroztocil/httpie.svg?style=flat-square&label=windows%20build
-    :target: https://ci.appveyor.com/project/jakubroztocil/httpie
+.. |windows_build|  image:: https://img.shields.io/appveyor/ci/jkbrzt/httpie.svg?style=flat-square&label=windows%20build
+    :target: https://ci.appveyor.com/project/jkbrzt/httpie
     :alt: Build status of the master branch on Windows
