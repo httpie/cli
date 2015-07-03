@@ -27,7 +27,7 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 
 * Added support for Requests transport adapter plugins
   (see `httpie-unixsocket <https://github.com/msabramo/httpie-unixsocket>`_
-  and `httpie-http2 <https://github.com/jakubroztocil/httpie-http2>`_)
+  and `httpie-http2 <https://github.com/jkbrzt/httpie-http2>`_)
 
 
 `0.9.0`_ (2015-01-31)
@@ -231,25 +231,25 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 * Initial public release
 
 
-.. _`0.1`: https://github.com/jakubroztocil/httpie/commit/b966efa
-.. _0.1.4: https://github.com/jakubroztocil/httpie/compare/b966efa...0.1.4
-.. _0.1.5: https://github.com/jakubroztocil/httpie/compare/0.1.4...0.1.5
-.. _0.1.6: https://github.com/jakubroztocil/httpie/compare/0.1.5...0.1.6
-.. _0.2.0: https://github.com/jakubroztocil/httpie/compare/0.1.6...0.2.0
-.. _0.2.1: https://github.com/jakubroztocil/httpie/compare/0.2.0...0.2.1
-.. _0.2.2: https://github.com/jakubroztocil/httpie/compare/0.2.1...0.2.2
-.. _0.2.5: https://github.com/jakubroztocil/httpie/compare/0.2.2...0.2.5
-.. _0.2.6: https://github.com/jakubroztocil/httpie/compare/0.2.5...0.2.6
-.. _0.2.7: https://github.com/jakubroztocil/httpie/compare/0.2.5...0.2.7
-.. _0.3.0: https://github.com/jakubroztocil/httpie/compare/0.2.7...0.3.0
-.. _0.4.0: https://github.com/jakubroztocil/httpie/compare/0.3.0...0.4.0
-.. _0.4.1: https://github.com/jakubroztocil/httpie/compare/0.4.0...0.4.1
-.. _0.5.0: https://github.com/jakubroztocil/httpie/compare/0.4.1...0.5.0
-.. _0.5.1: https://github.com/jakubroztocil/httpie/compare/0.5.0...0.5.1
-.. _0.6.0: https://github.com/jakubroztocil/httpie/compare/0.5.1...0.6.0
-.. _0.7.1: https://github.com/jakubroztocil/httpie/compare/0.6.0...0.7.1
-.. _0.8.0: https://github.com/jakubroztocil/httpie/compare/0.7.1...0.8.0
-.. _0.9.0: https://github.com/jakubroztocil/httpie/compare/0.8.0...0.9.0
-.. _0.9.1: https://github.com/jakubroztocil/httpie/compare/0.9.0...0.9.1
-.. _0.9.2: https://github.com/jakubroztocil/httpie/compare/0.9.1...0.9.2
-.. _1.0.0-dev: https://github.com/jakubroztocil/httpie/compare/0.9.2...master
+.. _`0.1`: https://github.com/jkbrzt/httpie/commit/b966efa
+.. _0.1.4: https://github.com/jkbrzt/httpie/compare/b966efa...0.1.4
+.. _0.1.5: https://github.com/jkbrzt/httpie/compare/0.1.4...0.1.5
+.. _0.1.6: https://github.com/jkbrzt/httpie/compare/0.1.5...0.1.6
+.. _0.2.0: https://github.com/jkbrzt/httpie/compare/0.1.6...0.2.0
+.. _0.2.1: https://github.com/jkbrzt/httpie/compare/0.2.0...0.2.1
+.. _0.2.2: https://github.com/jkbrzt/httpie/compare/0.2.1...0.2.2
+.. _0.2.5: https://github.com/jkbrzt/httpie/compare/0.2.2...0.2.5
+.. _0.2.6: https://github.com/jkbrzt/httpie/compare/0.2.5...0.2.6
+.. _0.2.7: https://github.com/jkbrzt/httpie/compare/0.2.5...0.2.7
+.. _0.3.0: https://github.com/jkbrzt/httpie/compare/0.2.7...0.3.0
+.. _0.4.0: https://github.com/jkbrzt/httpie/compare/0.3.0...0.4.0
+.. _0.4.1: https://github.com/jkbrzt/httpie/compare/0.4.0...0.4.1
+.. _0.5.0: https://github.com/jkbrzt/httpie/compare/0.4.1...0.5.0
+.. _0.5.1: https://github.com/jkbrzt/httpie/compare/0.5.0...0.5.1
+.. _0.6.0: https://github.com/jkbrzt/httpie/compare/0.5.1...0.6.0
+.. _0.7.1: https://github.com/jkbrzt/httpie/compare/0.6.0...0.7.1
+.. _0.8.0: https://github.com/jkbrzt/httpie/compare/0.7.1...0.8.0
+.. _0.9.0: https://github.com/jkbrzt/httpie/compare/0.8.0...0.9.0
+.. _0.9.1: https://github.com/jkbrzt/httpie/compare/0.9.0...0.9.1
+.. _0.9.2: https://github.com/jkbrzt/httpie/compare/0.9.1...0.9.2
+.. _1.0.0-dev: https://github.com/jkbrzt/httpie/compare/0.9.2...master

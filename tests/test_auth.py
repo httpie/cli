@@ -52,7 +52,7 @@ class TestAuth:
     ])
     def test_only_username_in_url(self, url):
         """
-        https://github.com/jakubroztocil/httpie/issues/242
+        https://github.com/jkbrzt/httpie/issues/242
 
         """
         args = httpie.cli.parser.parse_args(args=[url], env=TestEnvironment())

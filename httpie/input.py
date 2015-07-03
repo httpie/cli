@@ -13,7 +13,7 @@ from collections import namedtuple, Iterable
 from argparse import ArgumentParser, ArgumentTypeError, ArgumentError
 
 # TODO: Use MultiDict for headers once added to `requests`.
-# https://github.com/jakubroztocil/httpie/issues/130
+# https://github.com/jkbrzt/httpie/issues/130
 from requests.structures import CaseInsensitiveDict
 
 from httpie.compat import OrderedDict, urlsplit, str, is_pypy, is_py27

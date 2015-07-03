@@ -1,4 +1,4 @@
-# https://travis-ci.org/jakubroztocil/httpie
+# https://travis-ci.org/jkbrzt/httpie
 sudo: false
 os:
   - linux

@@ -138,7 +138,7 @@ class TestSession(SessionTestBase):
     @pytest.mark.skipif(
         sys.version_info >= (3,),
         reason="This test fails intermittently on Python 3 - "
-               "see https://github.com/jakubroztocil/httpie/issues/282")
+               "see https://github.com/jkbrzt/httpie/issues/282")
     def test_session_unicode(self, httpbin):
         self.start_session(httpbin)
 
@@ -159,7 +159,7 @@ class TestSession(SessionTestBase):
 
     def test_session_default_header_value_overwritten(self, httpbin):
         self.start_session(httpbin)
-        # https://github.com/jakubroztocil/httpie/issues/180
+        # https://github.com/jkbrzt/httpie/issues/180
         r1 = http('--session=test',
                   httpbin.url + '/headers', 'User-Agent:custom',
                   env=self.env())

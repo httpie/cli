@@ -7,7 +7,7 @@ from httpie.compat import is_windows
 
 def test_Host_header_overwrite(httpbin):
     """
-    https://github.com/jakubroztocil/httpie/issues/235
+    https://github.com/jkbrzt/httpie/issues/235
 
     """
     host = 'httpbin.org'
@@ -21,7 +21,7 @@ def test_Host_header_overwrite(httpbin):
 @pytest.mark.skipif(is_windows, reason='Unix-only')
 def test_output_devnull(httpbin):
     """
-    https://github.com/jakubroztocil/httpie/issues/252
+    https://github.com/jkbrzt/httpie/issues/252
 
     """
     http('--output=/dev/null', httpbin + '/get')

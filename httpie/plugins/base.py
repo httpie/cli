@@ -15,7 +15,7 @@ class AuthPlugin(BasePlugin):
     """
     Base auth plugin class.
 
-    See <https://github.com/jakubroztocil/httpie-ntlm> for an example auth plugin.
+    See <https://github.com/jkbrzt/httpie-ntlm> for an example auth plugin.
 
     """
     # The value that should be passed to --auth-type

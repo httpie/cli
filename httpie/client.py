@@ -58,7 +58,7 @@ def dump_request(kwargs):
 
 def encode_headers(headers):
     # This allows for unicode headers which is non-standard but practical.
-    # See: https://github.com/jakubroztocil/httpie/issues/212
+    # See: https://github.com/jkbrzt/httpie/issues/212
     return dict(
         (name, value.encode('utf8') if isinstance(value, str) else value)
         for name, value in headers.items()
