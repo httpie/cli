@@ -328,6 +328,22 @@ class Parser(ArgumentParser):
             self.args.files = items.files
             self.args.params = items.params
 
+        if self.args.files and '-' in self.args.files.values():
+            # input from a pipline for a multipartform
+            # ` cmd | http -f POST url file@-`
+            file_fields = list(self.args.files.keys())
+            if file_fields == [''] or self.args.files.values() != ['-']:
+                self.error(
+                    'Invalid file fileds(you just need one f@-'')'
+                )
+            if self.args.ignore_stdin or self.env.stdin_isatty:
+                self.error(
+                    'Invalid stdin(you need stdin when http -f url f@-)'
+                )
+            self.args.files.clear()
+            value = ('-', BytesIO(self.env.stdin.read()))
+            self.args.files.__setitem__(file_fields[0], value)
+
         if self.args.files and not self.args.form:
             # `http url @/path/to/file`
             file_fields = list(self.args.files.keys())
@@ -630,12 +646,15 @@ def parse_items(items,
         elif item.sep == SEP_QUERY:
             target = params
         elif item.sep == SEP_FILES:
-            try:
-                with open(os.path.expanduser(value), 'rb') as f:
-                    value = (os.path.basename(value),
-                             BytesIO(f.read()))
-            except IOError as e:
-                raise ParseError('"%s": %s' % (item.orig, e))
+            if(value == '-'):
+                pass
+            else:
+                try:
+                    with open(os.path.expanduser(value), 'rb') as f:
+                        value = (os.path.basename(value),
+                                BytesIO(f.read()))
+                except IOError as e:
+                    raise ParseError('"%s": %s' % (item.orig, e))
             target = files
 
         elif item.sep in SEP_GROUP_DATA_ITEMS:
