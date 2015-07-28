@@ -29,7 +29,6 @@ HTTP_POST = 'POST'
 HTTP_GET = 'GET'
 HTTP = 'http://'
 HTTPS = 'https://'
-WS = 'ws://'
 
 
 # Various separators used in args
