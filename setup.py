@@ -37,7 +37,8 @@ tests_require = [
 
 install_requires = [
     'requests>=2.3.0',
-    'Pygments>=1.5'
+    'Pygments>=1.5',
+    'websocket-client>=0.32.0'
 ]
 
 ### Conditional dependencies:

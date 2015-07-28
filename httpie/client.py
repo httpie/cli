@@ -9,6 +9,7 @@ from httpie import sessions
 from httpie import __version__
 from httpie.compat import str
 from httpie.plugins import plugin_manager
+from httpie.websocket import handle_ws
 
 
 # https://urllib3.readthedocs.org/en/latest/security.html
@@ -31,6 +32,12 @@ def get_requests_session():
 
 def get_response(args, config_dir):
     """Send the request and return a `request.Response`."""
+
+    url = args.url
+    # Handle web-socket connection
+    if url.startswith('ws://'):
+        response = handle_ws(url, data=args.data)
+        return response
 
     requests_session = get_requests_session()
 
