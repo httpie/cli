@@ -9,7 +9,7 @@ from httpie import sessions
 from httpie import __version__
 from httpie.compat import str
 from httpie.plugins import plugin_manager
-from httpie.websocket import handle_ws
+from httpie.websocket_handler import handle_ws
 
 
 # https://urllib3.readthedocs.org/en/latest/security.html
