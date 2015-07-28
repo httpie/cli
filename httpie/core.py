@@ -126,16 +126,16 @@ def main(args=sys.argv[1:], env=Environment(), error=None):
                       response.raw.status,
                       response.raw.reason,
                       level='warning')
-
         write_kwargs = {
-            'stream': build_output_stream(
-                args, env, response.request, response),
-
             # This will in fact be `stderr` with `--download`
             'outfile': env.stdout,
 
             'flush': env.stdout_isatty or args.stream
         }
+        if not hasattr(response, 'ws'):
+            write_kwargs['stream'] = build_output_stream(args, env, response.request, response)
+        else:
+            write_kwargs['stream'] = [response.data]
 
         try:
 

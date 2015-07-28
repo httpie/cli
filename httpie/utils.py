@@ -54,4 +54,3 @@ def humanize_bytes(n, precision=2):
 
     # noinspection PyUnboundLocalVariable
     return '%.*f %s' % (precision, n / factor, suffix)
-

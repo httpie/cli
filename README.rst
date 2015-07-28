@@ -203,6 +203,13 @@ Set a custom ``Host`` header to work around missing DNS records:
 
     $ http localhost:8000 Host:example.com
 
+
+Open websocket connection and send json-encoded data or just open connection and notify server with *send* method
+
+.. code-block:: bash
+
+    $ http ws://example.org hello=World
+    $ http ws://example.org
 ..
 
 --------
