@@ -328,23 +328,36 @@ class Parser(ArgumentParser):
             self.args.files = items.files
             self.args.params = items.params
 
-        if self.args.files and '-' in self.args.files.values():
+        if self.args.files:
             # input from a pipline for a multipartform
             # ` cmd | http -f POST url f@-`
             file_fields = list(self.args.files.keys())
-            if file_fields == ['']:
-                self.error(
-                    'Invalid file fileds(you just need one f@-'')'
-                )
-            if self.args.ignore_stdin or self.env.stdin_isatty:
-                self.error(
-                    'Invalid stdin(you need stdin when http -f url f@-)'
-                )
-            # only accept the first one f@-
-            self.args.files.clear()
-            key = file_fields[0]
-            value = ('-', BytesIO(self.env.stdin.read()))
-            self.args.files[key] = value
+            file_values = list(self.args.files.values())
+            for key, values in zip(file_fields, file_values):
+                if isinstance(values, list):
+                    for value in values:
+                        if value[0] != '-':
+                            continue
+                        if self.args.ignore_stdin or self.env.stdin_isatty:
+                            self.error(
+                                'you need stdin when http -f post f@-'
+                            )
+
+                        index = values.index(value)
+                        values.remove(value)
+                        value = ('-', BytesIO(self.env.stdin.read()))
+                        values.insert(index, value)
+
+                if isinstance(values, tuple):
+                    if values[0] == '-':
+                        if self.args.ignore_stdin or self.env.stdin_isatty:
+                            self.error(
+                                'you need stdin when http -f post f@-'
+                            )
+
+                        del self.args.files[key]
+                        values = ('-', BytesIO(self.env.stdin.read()))
+                        self.args.files[key] = values
 
         if self.args.files and not self.args.form:
             # `http url @/path/to/file`
@@ -655,6 +668,8 @@ def parse_items(items,
                                  BytesIO(f.read()))
                 except IOError as e:
                     raise ParseError('"%s": %s' % (item.orig, e))
+            else:
+                value = (value, None)
             target = files
 
         elif item.sep in SEP_GROUP_DATA_ITEMS:
