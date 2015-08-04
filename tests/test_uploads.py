@@ -71,3 +71,37 @@ class TestRequestBodyFromFilePath:
         r = http('POST', httpbin.url + '/post', '@' + FILE_PATH_ARG, 'foo=bar',
                  env=env, error_exit_ok=True)
         assert 'cannot be mixed' in r.stderr
+
+
+class TestMultipartFormDataAnonymousFileUpload:
+    """
+    `date| http -f POST URL file@-'
+    """
+
+    def test_stdin_as_file_upload_ok(self, httpbin):
+        with open(FILE_PATH, 'rb') as f:
+            env = TestEnvironment(stdin=f, stdin_isatty=False)
+            r = http('--form', '--verbose', 'POST', httpbin.url + '/post',
+                     'test-file@-', 'foo=bar', env=env)
+        assert HTTP_OK in r
+        assert 'Content-Disposition: form-data; name="foo"' in r
+        assert 'Content-Disposition: form-data; name="test-file";' \
+               ' filename="-"' in r
+        assert FILE_CONTENT in r
+        assert '"foo": "bar"' in r
+
+    def test_upload_multiple_fields_with_the_same_name(self, httpbin):
+        with open(FILE_PATH, 'rb') as f:
+            env = TestEnvironment(stdin=f, stdin_isatty=False)
+            r = http('--form', '--verbose', 'POST', httpbin.url + '/post',
+                     'test-file@-','test-file@-', env=env)
+        assert HTTP_OK in r
+        assert r.count('Content-Disposition: form-data; name="test-file";'
+               ' filename="-"') == 2
+        # doesn't seem to support filed field lists
+        assert r.count(FILE_CONTENT) == 2
+
+    def test_upload_anonymous_file_without_stdin(self, httpbin):
+        r = http('POST', httpbin.url + '/post', 'test-file@-',
+                 error_exit_ok=True)
+        assert 'you need stdin when http -f post f@-' in r.stderr
