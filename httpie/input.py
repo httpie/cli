@@ -333,6 +333,7 @@ class Parser(ArgumentParser):
             # ` cmd | http -f POST url f@-`
             file_fields = list(self.args.files.keys())
             file_values = list(self.args.files.values())
+            stdin_to_file = False
             for key, values in zip(file_fields, file_values):
                 if isinstance(values, list):
                     for value in values:
@@ -347,6 +348,7 @@ class Parser(ArgumentParser):
                         values.remove(value)
                         value = ('-', BytesIO(self.env.stdin.read()))
                         values.insert(index, value)
+                        stdin_to_file = True
 
                 if isinstance(values, tuple):
                     if values[0] == '-':
@@ -358,6 +360,10 @@ class Parser(ArgumentParser):
                         del self.args.files[key]
                         values = ('-', BytesIO(self.env.stdin.read()))
                         self.args.files[key] = values
+                        stdin_to_file = True
+            # stdin already turn to a file
+            if stdin_to_file:
+                self.args.ignore_stdin = True
 
         if self.args.files and not self.args.form:
             # `http url @/path/to/file`
