@@ -22,7 +22,7 @@ DEFAULT_UA = 'HTTPie/%s' % __version__
 
 def get_requests_session():
     requests_session = requests.Session()
-    for cls in plugin_manager.get_trasnsport_plugins():
+    for cls in plugin_manager.get_transport_plugins():
         transport_plugin = cls()
         requests_session.mount(prefix=transport_plugin.prefix,
                                adapter=transport_plugin.get_adapter())
