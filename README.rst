@@ -593,6 +593,7 @@ Auth Plugins
 * `requests-hawk <https://github.com/mozilla-services/requests-hawk>`_: Hawk
 * `httpie-api-auth <https://github.com/pd/httpie-api-auth>`_: ApiAuth
 * `httpie-edgegrid <https://github.com/akamai-open/httpie-edgegrid>`_: EdgeGrid
+* `httpie-jwt-auth <https://github.com/teracyhq/httpie-jwt-auth>`_: JWTAuth
 
 
 =======
