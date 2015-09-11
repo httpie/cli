@@ -2,7 +2,7 @@
 sudo: false
 os:
   - linux
-  - osx
+  # - osx
 env:
   global:
     - NEWEST_PYTHON=3.4
