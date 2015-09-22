@@ -3,6 +3,7 @@ import pytest
 from utils import TestEnvironment, http, HTTP_OK, COLOR, CRLF
 from httpie import ExitStatus
 from httpie.output.formatters.colors import get_lexer
+from httpie.output.formatters.xml import XMLFormatter
 
 
 class TestVerboseFlag:
@@ -138,3 +139,39 @@ class TestLineEndings:
     def test_CRLF_formatted_request(self, httpbin):
         r = http('--pretty=format', '--print=HB', 'GET', httpbin.url + '/get')
         self._validate_crlf(r)
+
+
+class TestXmlFormatter:
+
+    @pytest.fixture
+    def formatter(self):
+        return XMLFormatter()
+
+    def test_it_does_not_parse_non_xml_body(self, formatter):
+        body = 'foo'
+        formatted_body = formatter.format_body(body=body, mime='text/html')
+        assert body == body
+
+    def test_it_parses_xml_body(self, formatter):
+        xml_body = '''<body>Some text</body>'''
+        formatted_body = formatter.format_body(body=xml_body, mime='text/xml')
+        assert xml_body == formatted_body
+
+    def test_it_ignores_invalid_xml_body(self, formatter):
+        invalid_body = '''<body>Hello!'''
+        formatted_body = formatter.format_body(body=invalid_body, mime='xml')
+        assert invalid_body == formatted_body
+
+    def test_it_returns_xml_body_when_parsing_xml_bomb(self, formatter):
+        xmlbomb = '''
+        <!DOCTYPE xmlbomb [
+        <!ENTITY a "1234567890" >
+        <!ENTITY b "&a;&a;&a;&a;&a;&a;&a;&a;">
+        <!ENTITY c "&b;&b;&b;&b;&b;&b;&b;&b;">
+        <!ENTITY d "&c;&c;&c;&c;&c;&c;&c;&c;">
+        <!ENTITY e "&d;&d;&d;&d;&d;&d;&d;&d;">
+        ]>
+        <bomb>&e;</bomb>
+        '''
+        formatted_body = formatter.format_body(body=xmlbomb, mime='xml')
+        assert formatted_body == xmlbomb
