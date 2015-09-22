@@ -46,7 +46,6 @@ class XMLFormatter(FormatterPlugin):
                 root = ElementTree.fromstring(body.encode('utf8'))
             except (ElementTree.ParseError, ElementTree.EntitiesForbidden):
                 # Ignore invalid XML errors (skips attempting to pretty print)
-                print 'invalid!'
                 pass
             else:
                 indent(root)
