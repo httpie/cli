@@ -33,4 +33,4 @@ Patches and ideas
 * `Matthias Lehmann <https://github.com/matleh>`_
 * `Dennis Brakhane <https://github.com/brakhane>`_
 * `Matt Layman <https://github.com/mblayman>`_
-* `Edward Yang <https://github.com/honorabrutroll`_
+* `Edward Yang <https://github.com/honorabrutroll>`_
