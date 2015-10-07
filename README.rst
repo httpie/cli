@@ -895,7 +895,7 @@ Colors and Formatting
 ---------------------
 
 Syntax highlighting is applied to HTTP headers and bodies (where it makes
-sense). You can choose your prefered color scheme via the ``--style`` option
+sense). You can choose your preferred color scheme via the ``--style`` option
 if you don't like the default one (see ``$ http --help`` for the possible
 values).
 
