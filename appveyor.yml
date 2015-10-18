@@ -1,4 +1,4 @@
-# https://ci.appveyor.com/project/jakubroztocil/httpie
+# https://ci.appveyor.com/project/jkbrzt/httpie
 build: false
 environment:
   matrix:

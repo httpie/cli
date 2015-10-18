@@ -104,7 +104,7 @@ def filename_from_content_disposition(content_disposition):
     :return: the filename if present and valid, otherwise `None`
 
     """
-    # attachment; filename=jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz
+    # attachment; filename=jkbrzt-httpie-0.4.1-20-g40bd8f6.tar.gz
 
     msg = Message('Content-Disposition: %s' % content_disposition)
     filename = msg.get_filename()

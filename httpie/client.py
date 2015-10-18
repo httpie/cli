@@ -22,7 +22,7 @@ DEFAULT_UA = 'HTTPie/%s' % __version__
 
 def get_requests_session():
     requests_session = requests.Session()
-    for cls in plugin_manager.get_trasnsport_plugins():
+    for cls in plugin_manager.get_transport_plugins():
         transport_plugin = cls()
         requests_session.mount(prefix=transport_plugin.prefix,
                                adapter=transport_plugin.get_adapter())
@@ -58,7 +58,7 @@ def dump_request(kwargs):
 
 def encode_headers(headers):
     # This allows for unicode headers which is non-standard but practical.
-    # See: https://github.com/jakubroztocil/httpie/issues/212
+    # See: https://github.com/jkbrzt/httpie/issues/212
     return dict(
         (name, value.encode('utf8') if isinstance(value, str) else value)
         for name, value in headers.items()

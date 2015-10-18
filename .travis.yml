@@ -1,8 +1,8 @@
-# https://travis-ci.org/jakubroztocil/httpie
+# https://travis-ci.org/jkbrzt/httpie
 sudo: false
 os:
   - linux
-  - osx
+  # - osx
 env:
   global:
     - NEWEST_PYTHON=3.4
