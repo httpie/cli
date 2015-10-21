@@ -33,3 +33,4 @@ Patches and ideas
 * `Matthias Lehmann <https://github.com/matleh>`_
 * `Dennis Brakhane <https://github.com/brakhane>`_
 * `Matt Layman <https://github.com/mblayman>`_
+* `Mathias Bogaert <https://github.com/analytically>`_

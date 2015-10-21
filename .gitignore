@@ -9,3 +9,4 @@ README.html
 htmlcov
 .idea
 .DS_Store
+.cache
