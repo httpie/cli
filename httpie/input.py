@@ -521,7 +521,7 @@ class AuthCredentials(KeyValue):
 
     def _getpass(self, prompt):
         # To allow mocking.
-        return getpass.getpass(prompt.__str__())
+        return getpass.getpass(str(prompt))
 
     def has_password(self):
         return self.value is not None
