@@ -155,7 +155,7 @@ class Parser(ArgumentParser):
                                      'variable configured.')
                 self.args.url = self.env.base_url.rstrip('/') + self.args.url
                 if not (self.args.url.startswith((HTTP, HTTPS))):
-                    self.args.url = scheme + url
+                    self.args.url = scheme + self.args.url
             else:
                 self.args.url = scheme + self.args.url
         self._process_auth()
