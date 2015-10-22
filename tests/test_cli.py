@@ -7,7 +7,7 @@ import pytest
 from requests.exceptions import InvalidSchema
 
 from httpie import input
-from httpie.input import KeyValue, KeyValueArgType, DataDict
+from httpie.input import KeyValue, KeyValueArgType, DataDict, ParseError
 from httpie import ExitStatus
 from httpie.cli import parser
 from utils import TestEnvironment, http, HTTP_OK
@@ -174,6 +174,25 @@ class TestURLshorthand:
     def test_expand_localhost_shorthand_with_port_and_slash(self):
         args = parser.parse_args(args=[':3000/'], env=TestEnvironment())
         assert args.url == 'http://localhost:3000/'
+
+    def test_base_url_env_var(self):
+        env = TestEnvironment(base_url='http://example.com')
+        args = parser.parse_args(args=['/path'], env=env)
+        assert args.url == 'http://example.com/path'
+
+    def test_base_url_env_var_not_present(self):
+        with pytest.raises(ParseError):
+            args = parser.parse_args(args=['/path'], env=TestEnvironment())
+
+    def test_base_url_env_var_without_scheme(self):
+        env = TestEnvironment(base_url='example.com')
+        args = parser.parse_args(args=['/path'], env=env)
+        assert args.url == 'http://example.com/path'
+
+    def test_base_url_env_var_with_trailing_slash(self):
+        env = TestEnvironment(base_url='http://example.com/')
+        args = parser.parse_args(args=['/path'], env=env)
+        assert args.url == 'http://example.com/path'
 
     def test_expand_localhost_shorthand_with_port_and_path(self):
         args = parser.parse_args(args=[':3000/path'], env=TestEnvironment())
