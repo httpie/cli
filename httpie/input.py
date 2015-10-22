@@ -303,8 +303,8 @@ class Parser(ArgumentParser):
                 # Infer the method
                 has_data = (
                     (not self.args.ignore_stdin and not self.env.stdin_isatty)
-                     or any(item.sep in SEP_GROUP_DATA_ITEMS
-                            for item in self.args.items)
+                    or any(item.sep in SEP_GROUP_DATA_ITEMS
+                           for item in self.args.items)
                 )
                 self.args.method = HTTP_POST if has_data else HTTP_GET
 
@@ -572,7 +572,7 @@ class RequestItemsDict(OrderedDict):
             else:
                 super(RequestItemsDict, self).__init__(*args, **kwargs)
 
-    #noinspection PyMethodOverriding
+    # noinspection PyMethodOverriding
     def __setitem__(self, key, value):
         """ If `key` is assigned more than once, `self[key]` holds a
         `list` of all the values.

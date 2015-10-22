@@ -38,4 +38,3 @@ with open(BIN_FILE_PATH, 'rb') as f:
     BIN_FILE_CONTENT = f.read()
 
 UNICODE = FILE_CONTENT
-
