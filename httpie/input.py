@@ -336,17 +336,14 @@ class Parser(ArgumentParser):
                     'Invalid file fields (perhaps you meant --form?): %s'
                     % ','.join(file_fields))
 
-            fn, fd = self.args.files['']
+            fn, fd, ct = self.args.files['']
             self.args.files = {}
 
             self._body_from_file(fd)
 
             if 'Content-Type' not in self.args.headers:
-                mime, encoding = mimetypes.guess_type(fn, strict=False)
-                if mime:
-                    content_type = mime
-                    if encoding:
-                        content_type = '%s; charset=%s' % (mime, encoding)
+                content_type = get_content_type(fn)
+                if content_type:
                     self.args.headers['Content-Type'] = content_type
 
     def _process_output_options(self):
@@ -607,6 +604,16 @@ class DataDict(RequestItemsDict):
 RequestItems = namedtuple('RequestItems',
                           ['headers', 'data', 'files', 'params'])
 
+def get_content_type(filename):
+    """Get content type for a filename in format appropriate for Content-Type
+    headers.
+    """
+    mime, encoding = mimetypes.guess_type(filename, strict=False)
+    if mime:
+        content_type = mime
+        if encoding:
+            content_type = '%s; charset=%s' % (mime, encoding)
+        return content_type
 
 def parse_items(items,
                 headers_class=CaseInsensitiveDict,
@@ -633,7 +640,8 @@ def parse_items(items,
             try:
                 with open(os.path.expanduser(value), 'rb') as f:
                     value = (os.path.basename(value),
-                             BytesIO(f.read()))
+                             BytesIO(f.read()),
+                             get_content_type(value))
             except IOError as e:
                 raise ParseError('"%s": %s' % (item.orig, e))
             target = files
