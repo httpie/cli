@@ -467,7 +467,7 @@ If one or more file fields is present, the serialization and content type is
 
 .. code-block:: bash
 
-    $ http -f POST example.com/jobs name='John Smith' cv@~/Documents/cv.pdf
+    $ http -f POST example.com/jobs name='John Smith' cv=@~/Documents/cv.pdf
 
 
 The request above is the same as if the following HTML form were
