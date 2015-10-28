@@ -137,7 +137,7 @@ class Parser(ArgumentParser):
         if not self.args.ignore_stdin and not env.stdin_isatty:
             self._body_from_file(self.env.stdin)
         if not URL_SCHEME_RE.match(self.args.url):
-            scheme = HTTP
+            scheme = self.args.default_scheme + "://"
 
             # See if we're using curl style shorthand for localhost (:3000/foo)
             shorthand = re.match(r'^:(?!:)(\d*)(/?.*)$', self.args.url)
