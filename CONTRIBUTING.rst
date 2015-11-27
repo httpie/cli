@@ -1,7 +1,7 @@
 Contributing to HTTPie
 ######################
 
-Bug reports and code and documentation patches are greatly appretiated. You can
+Bug reports and code and documentation patches are greatly appreciated. You can
 also help by using the development version of HTTPie and reporting any bugs you
 might encounter.
 
