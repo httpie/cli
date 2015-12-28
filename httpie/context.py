@@ -1,4 +1,5 @@
 import sys
+import os
 
 from httpie.compat import is_windows
 from httpie.config import DEFAULT_CONFIG_DIR, Config
@@ -15,6 +16,7 @@ class Environment(object):
 
     """
     is_windows = is_windows
+    base_url = os.environ.get('HTTPIE_BASEURL', '')
     config_dir = DEFAULT_CONFIG_DIR
     stdin = sys.stdin
     stdin_isatty = stdin.isatty()

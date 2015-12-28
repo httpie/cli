@@ -277,6 +277,36 @@ If the port is omitted, then port 80 is assumed.
     GET / HTTP/1.1
     Host: localhost
 
+Finally, you can use the base URL feature. If a base URL has been configured
+through an environment variable ``HTTPIE_BASEURL``, request URLs such as
+``/todos`` will get the base URL automatically prepended.
+
+.. code-block:: bash
+
+    $ export HTTPIE_BASEURL=http://example.com
+    $ http /todos
+
+
+.. code-block:: http
+
+    GET /todos HTTP/1.1
+    Host: example.com
+
+
+.. code-block:: bash
+
+    $ http POST /
+
+
+.. code-block:: http
+
+    POST / HTTP/1.1
+    Host: example.com
+
+
+If the ``HTTPIE_BASEURL`` does not start with a scheme, the default scheme
+``http://`` is used.
+
 If you find yourself manually constructing URLs with **querystring parameters**
 on the terminal, you may appreciate the ``param==value`` syntax for appending
 URL parameters so that you don't have to worry about escaping the ``&``
