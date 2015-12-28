@@ -14,7 +14,6 @@ class PyTest(TestCommand):
     # and runs the tests with no fancy stuff like parallel execution.
     def finalize_options(self):
         TestCommand.finalize_options(self)
-        self.test_suite = True
         self.test_args = [
             '--doctest-modules', '--verbose',
             './httpie', './tests'
