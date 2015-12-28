@@ -36,7 +36,8 @@ tests_require = [
 
 install_requires = [
     'requests>=2.3.0',
-    'Pygments>=1.5'
+    'Pygments>=1.5',
+    'defusedxml==0.4.1',
 ]
 
 ### Conditional dependencies:

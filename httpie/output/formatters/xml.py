@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 import re
-from xml.etree import ElementTree
+from defusedxml import ElementTree
 
 from httpie.plugins import FormatterPlugin
 
@@ -44,7 +44,7 @@ class XMLFormatter(FormatterPlugin):
             # FIXME: orig NS names get forgotten during the conversion, etc.
             try:
                 root = ElementTree.fromstring(body.encode('utf8'))
-            except ElementTree.ParseError:
+            except (ElementTree.ParseError, ElementTree.EntitiesForbidden):
                 # Ignore invalid XML errors (skips attempting to pretty print)
                 pass
             else:
