@@ -5,6 +5,9 @@ Change Log
 This document records all notable changes to `HTTPie <http://httpie.org>`_.
 This project adheres to `Semantic Versioning <http://semver.org/>`_.
 
+`1.0.0-dev`_ (Unreleased)
+-------------------------
+
 
 `0.9.3`_ (2016-01-01)
 -------------------------
