@@ -64,17 +64,20 @@ class TestSessionFlow(SessionTestBase):
     def test_session_update(self, httpbin):
         self.start_session(httpbin)
         # Get a response to a request from the original session.
-        r2 = http('--session=test', 'GET', httpbin.url + '/get', env=self.env())
+        r2 = http('--session=test', 'GET', httpbin.url + '/get',
+                  env=self.env())
         assert HTTP_OK in r2
 
         # Make a request modifying the session data.
         r3 = http('--follow', '--session=test', '--auth=username:password2',
-                  'GET', httpbin.url + '/cookies/set?hello=world2', 'Hello:World2',
+                  'GET', httpbin.url + '/cookies/set?hello=world2',
+                  'Hello:World2',
                   env=self.env())
         assert HTTP_OK in r3
 
         # Get a response to a request from the updated session.
-        r4 = http('--session=test', 'GET', httpbin.url + '/get', env=self.env())
+        r4 = http('--session=test', 'GET', httpbin.url + '/get',
+                  env=self.env())
         assert HTTP_OK in r4
         assert r4.json['headers']['Hello'] == 'World2'
         assert r4.json['headers']['Cookie'] == 'hello=world2'
@@ -84,7 +87,8 @@ class TestSessionFlow(SessionTestBase):
     def test_session_read_only(self, httpbin):
         self.start_session(httpbin)
         # Get a response from the original session.
-        r2 = http('--session=test', 'GET', httpbin.url + '/get', env=self.env())
+        r2 = http('--session=test', 'GET', httpbin.url + '/get',
+                  env=self.env())
         assert HTTP_OK in r2
 
         # Make a request modifying the session data but
@@ -96,7 +100,8 @@ class TestSessionFlow(SessionTestBase):
         assert HTTP_OK in r3
 
         # Get a response from the updated session.
-        r4 = http('--session=test', 'GET', httpbin.url + '/get', env=self.env())
+        r4 = http('--session=test', 'GET', httpbin.url + '/get',
+                  env=self.env())
         assert HTTP_OK in r4
 
         # Origin can differ on Travis.
@@ -117,8 +122,8 @@ class TestSession(SessionTestBase):
                   'If-Unmodified-Since: Sat, 29 Oct 1994 19:43:31 GMT',
                   env=self.env())
         assert HTTP_OK in r1
-
-        r2 = http('--session=test', 'GET', httpbin.url + '/get', env=self.env())
+        r2 = http('--session=test', 'GET', httpbin.url + '/get',
+                  env=self.env())
         assert HTTP_OK in r2
         assert no_content_type(r2.json['headers'])
         assert 'If-Unmodified-Since' not in r2.json['headers']

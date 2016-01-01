@@ -4,7 +4,7 @@ NOTE: the CLI interface may change before reaching v1.0.
 
 """
 from textwrap import dedent, wrap
-#noinspection PyCompatibility
+# noinspection PyCompatibility
 from argparse import (RawDescriptionHelpFormatter, FileType,
                       OPTIONAL, ZERO_OR_MORE, SUPPRESS)
 

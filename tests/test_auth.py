@@ -59,4 +59,3 @@ class TestAuth:
         assert args.auth
         assert args.auth.key == 'username'
         assert args.auth.value == ''
-

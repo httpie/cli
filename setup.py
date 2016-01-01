@@ -40,12 +40,12 @@ install_requires = [
     'Pygments>=1.5'
 ]
 
-### Conditional dependencies:
+# Conditional dependencies:
 
 # sdist
-if not 'bdist_wheel' in sys.argv:
+if 'bdist_wheel' not in sys.argv:
     try:
-        #noinspection PyUnresolvedReferences
+        # noinspection PyUnresolvedReferences
         import argparse
     except ImportError:
         install_requires.append('argparse>=1.2.1')

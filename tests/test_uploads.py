@@ -30,7 +30,7 @@ class TestMultipartFormDataFileUpload:
                  'test-file@%s' % FILE_PATH_ARG)
         assert HTTP_OK in r
         assert r.count('Content-Disposition: form-data; name="test-file";'
-               ' filename="%s"' % os.path.basename(FILE_PATH)) == 2
+                       ' filename="%s"' % os.path.basename(FILE_PATH)) == 2
         # Should be 4, but is 3 because httpbin
         # doesn't seem to support filed field lists
         assert r.count(FILE_CONTENT) in [3, 4]
