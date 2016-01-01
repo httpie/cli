@@ -378,7 +378,8 @@ class Parser(ArgumentParser):
         if self.args.prettify == PRETTY_STDOUT_TTY_ONLY:
             self.args.prettify = PRETTY_MAP[
                 'all' if self.env.stdout_isatty else 'none']
-        elif self.args.prettify and self.env.is_windows:
+        elif (self.args.prettify and self.env.is_windows and
+              self.args.output_file):
             self.error('Only terminal output can be colorized on Windows.')
         else:
             # noinspection PyTypeChecker
