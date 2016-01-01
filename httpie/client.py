@@ -11,8 +11,14 @@ from httpie.compat import str
 from httpie.plugins import plugin_manager
 
 
-# https://urllib3.readthedocs.org/en/latest/security.html
-urllib3.disable_warnings()
+try:
+    # https://urllib3.readthedocs.org/en/latest/security.html
+    urllib3.disable_warnings()
+except AttributeError:
+    # In some rare cases, the user may have an old version of the requests or urllib3,
+    # and there is no method called "disable_warnings." In these cases, we don't need to call
+    # the method. They may get some noisy output but execution shouldn't die. Move on
+    pass
 
 
 FORM = 'application/x-www-form-urlencoded; charset=utf-8'
