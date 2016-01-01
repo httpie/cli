@@ -28,6 +28,7 @@ class PyTest(TestCommand):
 tests_require = [
     # Pytest needs to come last.
     # https://bitbucket.org/pypa/setuptools/issue/196/
+    'setuptools>=17.1',  # Fix 'mock requires setuptools>=17.1' on Win+Py3
     'pytest-httpbin',
     'pytest',
     'mock',
