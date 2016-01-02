@@ -80,6 +80,9 @@ Running all tests:
     # Run all tests in all of the supported and available Pythons via Tox
     make test-tox
 
+    # Run all tests for code as well as packaging, etc.
+    make test-all
+
 
 Running specific tests:
 ***********************
@@ -99,6 +102,7 @@ Running specific tests:
 
 -----
 
+See `Makefile`_ for additional development utilities.
 Don't forget to add yourself to `AUTHORS`_!
 
 
@@ -106,6 +110,7 @@ Don't forget to add yourself to `AUTHORS`_!
 .. _supported Python environments: https://github.com/jkbrzt/httpie/blob/master/tox.ini
 .. _existing issues: https://github.com/jkbrzt/httpie/issues?state=open
 .. _AUTHORS: https://github.com/jkbrzt/httpie/blob/master/AUTHORS.rst
+.. _Makefile: https://github.com/jkbrzt/httpie/blob/master/Makefile
 .. _pytest: http://pytest.org/
 .. _Style Guide for Python Code: http://python.org/dev/peps/pep-0008/
 .. _test suite: https://github.com/jkbrzt/httpie/tree/master/tests

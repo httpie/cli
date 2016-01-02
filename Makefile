@@ -10,14 +10,20 @@ END=" \#\#\# \033[0m\n"
 all: test
 
 uninstall-httpie:
-	@echo $(TAG)Removing existing installation of HTTPie$(END)
-	@echo "(NOTE: uninstall httpie manually if this fails)"
+	@echo $(TAG)Uninstalling httpie$(END)
 	@echo
-	- pip uninstall --yes httpie >/dev/null
-	! which http
+	- pip uninstall --yes httpie &2>/dev/null
+	@echo "Verifying…"
+	cd .. && ! python -m httpie --version &2>/dev/null
+	@echo "Done"
 	@echo
 
 uninstall-all: uninstall-httpie
+
+	@echo $(TAG)Uninstalling httpie requirements$(END)
+	- pip uninstall --yes pygments requests
+
+	@echo $(TAG)Uninstalling development requirements$(END)
 	- pip uninstall --yes -r $(REQUIREMENTS)
 
 init: uninstall-httpie
