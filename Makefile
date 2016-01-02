@@ -1,3 +1,7 @@
+#
+# See ./CONTRIBUTING.rst
+#
+
 VERSION=$(shell grep __version__ httpie/__init__.py)
 REQUIREMENTS="requirements-dev.txt"
 TAG="\n\n\033[0;32m\#\#\# "
@@ -7,6 +11,8 @@ all: test
 
 uninstall-httpie:
 	@echo $(TAG)Removing existing installation of HTTPie$(END)
+	@echo "(NOTE: uninstall httpie manually if this fails)"
+	@echo
 	- pip uninstall --yes httpie >/dev/null
 	! which http
 	@echo
@@ -22,7 +28,7 @@ init: uninstall-httpie
 	@echo
 
 test: init
-	@echo $(TAG)Running tests in on current Python with coverage $(END)
+	@echo $(TAG)Running tests on the current Python interpreter with coverage $(END)
 	py.test --cov ./httpie --cov ./tests --doctest-modules --verbose ./httpie ./tests
 	@echo
 
