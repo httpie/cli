@@ -588,6 +588,7 @@ Auth Plugins
 ------------
 
 * `httpie-oauth <https://github.com/jkbrzt/httpie-oauth>`_: OAuth
+* `httpie-hmac-auth <https://github.com/guardian/httpie-hmac-auth>`_: HMAC
 * `httpie-ntlm <https://github.com/jkbrzt/httpie-ntlm>`_: NTLM (NT LAN Manager)
 * `httpie-negotiate <https://github.com/ndzou/httpie-negotiate>`_: SPNEGO (GSS Negotiate)
 * `requests-hawk <https://github.com/mozilla-services/requests-hawk>`_: Hawk
