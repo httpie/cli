@@ -5,13 +5,20 @@ Change Log
 This document records all notable changes to `HTTPie <http://httpie.org>`_.
 This project adheres to `Semantic Versioning <http://semver.org/>`_.
 
-
 `1.0.0-dev`_ (Unreleased)
 -------------------------
 
+
+`0.9.3`_ (2016-01-01)
+-------------------------
+
 * Changed the default color ``--style`` from ``solarized`` to ``monokai``
-* Added Bash auto complete support
+* Added basic Bash autocomplete support (need to be installed manually)
 * Added request details to connection error messages
+* Fixed ``'requests.packages.urllib3' has no attribute 'disable_warnings'``
+  errors that occurred in some installations
+* Fixed colors and formatting on Windows
+* Fixed ``--auth`` prompt on Windows
 
 
 `0.9.2`_ (2015-02-24)
@@ -252,4 +259,5 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 .. _0.9.0: https://github.com/jkbrzt/httpie/compare/0.8.0...0.9.0
 .. _0.9.1: https://github.com/jkbrzt/httpie/compare/0.9.0...0.9.1
 .. _0.9.2: https://github.com/jkbrzt/httpie/compare/0.9.1...0.9.2
-.. _1.0.0-dev: https://github.com/jkbrzt/httpie/compare/0.9.2...master
+.. _0.9.3: https://github.com/jkbrzt/httpie/compare/0.9.2...0.9.3
+.. _1.0.0-dev: https://github.com/jkbrzt/httpie/compare/0.9.3...master

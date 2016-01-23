@@ -1,12 +1,13 @@
+######################
 Contributing to HTTPie
 ######################
 
-Bug reports and code and documentation patches are greatly appretiated. You can
-also help by using the development version of HTTPie and reporting any bugs you
-might encounter.
+Bug reports and code and documentation patches are welcome. You can
+help this project also by using the development version of HTTPie
+and by reporting any bugs you might encounter.
 
-Bug Reports
-===========
+1. Reporting bugs
+=================
 
 **It's important that you provide the full command argument list
 as well as the output of the failing command.**
@@ -15,12 +16,12 @@ to your bug report, e.g.:
 
 .. code-block:: bash
 
-    $ http --debug [arguments that trigger the error]
-    [complete output]
+    $ http --debug [COMPLETE ARGUMENT LIST THAT TRIGGERS THE ERROR]
+    [COMPLETE OUTPUT]
 
 
-Contributing Code and Documentation
-===================================
+2. Contributing Code and Docs
+=============================
 
 Before working on a new feature or a bug, please browse `existing issues`_
 to see whether it has been previously discussed. If the change in question
@@ -28,8 +29,11 @@ is a bigger one, it's always good to discuss before your starting working on
 it.
 
 
-Development Environment
------------------------
+Creating Development Environment
+--------------------------------
+
+Go to https://github.com/jkbrzt/httpie and fork the project repository.
+
 
 .. code-block:: bash
 
@@ -52,44 +56,61 @@ Making Changes
 Please make sure your changes conform to `Style Guide for Python Code`_ (PEP8).
 
 
-Tests
------
+Testing
+-------
 
 Before opening a pull requests, please make sure the `test suite`_ passes
-in all of the `supported Python environments`_. You should also **add tests
-for any new features and bug fixes**.
+in all of the `supported Python environments`_. You should also add tests
+for any new features and bug fixes.
 
-HTTPie uses `pytest`_ and `Tox`_.
+HTTPie uses `pytest`_ and `Tox`_ for testing.
+
+
+Running all tests:
+******************
 
 .. code-block:: bash
 
-    ### Running all tests:
-
-    # Current Python
+    # Run all tests on the current Python interpreter
     make test
 
-    # Current Python with coverage
+    # Run all tests on the current Python with coverage
     make test-cover
 
-    # All the supported and available Pythons via Tox
+    # Run all tests in all of the supported and available Pythons via Tox
     make test-tox
 
-    ### Running specific tests:
+    # Run all tests for code as well as packaging, etc.
+    make test-all
 
-    # Current Python
-    pytest tests/test_uploads.py
 
-    # All Pythons
+Running specific tests:
+***********************
+
+.. code-block:: bash
+
+    # Run specific tests on the current Python
+    py.test tests/test_uploads.py
+    py.test tests/test_uploads.py::TestMultipartFormDataFileUpload
+    py.test tests/test_uploads.py::TestMultipartFormDataFileUpload::test_upload_ok
+
+    # Run specific tests on the on all Pythons via Tox
     tox -- tests/test_uploads.py --verbose
+    tox -- tests/test_uploads.py::TestMultipartFormDataFileUpload --verbose
+    tox -- tests/test_uploads.py::TestMultipartFormDataFileUpload::test_upload_ok --verbose
 
 
-Don't forget to add yourself to `AUTHORS.rst`_.
+-----
+
+See `Makefile`_ for additional development utilities.
+Don't forget to add yourself to `AUTHORS`_!
 
 
 .. _Tox: http://tox.testrun.org
 .. _supported Python environments: https://github.com/jkbrzt/httpie/blob/master/tox.ini
 .. _existing issues: https://github.com/jkbrzt/httpie/issues?state=open
-.. _AUTHORS.rst: https://github.com/jkbrzt/httpie/blob/master/AUTHORS.rst
+.. _AUTHORS: https://github.com/jkbrzt/httpie/blob/master/AUTHORS.rst
+.. _Makefile: https://github.com/jkbrzt/httpie/blob/master/Makefile
 .. _pytest: http://pytest.org/
 .. _Style Guide for Python Code: http://python.org/dev/peps/pep-0008/
 .. _test suite: https://github.com/jkbrzt/httpie/tree/master/tests

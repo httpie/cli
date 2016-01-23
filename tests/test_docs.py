@@ -9,7 +9,7 @@ from utils import TESTS_ROOT
 
 def has_docutils():
     try:
-        #noinspection PyUnresolvedReferences
+        # noinspection PyUnresolvedReferences
         import docutils
         return True
     except ImportError:
@@ -32,8 +32,8 @@ assert filenames
 def test_rst_file_syntax(filename):
     p = subprocess.Popen(
         ['rst2pseudoxml.py', '--report=1', '--exit-status=1', filename],
-         stderr=subprocess.PIPE,
-         stdout=subprocess.PIPE
+        stderr=subprocess.PIPE,
+        stdout=subprocess.PIPE
     )
     err = p.communicate()[1]
     assert p.returncode == 0, err

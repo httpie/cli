@@ -2,9 +2,9 @@
 HTTPie: a CLI, cURL-like tool for humans
 ****************************************
 
-HTTPie (pronounced *aych-tee-tee-pie*) is a **command line HTTP client**.  Its
-goal is to make CLI interaction with web services as **human-friendly** as
-possible. It provides a simple ``http`` command that allows for sending
+HTTPie (pronounced *aitch-tee-tee-pie*) is a **command line HTTP client**.  
+Its goal is to make CLI interaction with web services as **human-friendly** 
+as possible. It provides a simple ``http`` command that allows for sending
 arbitrary HTTP requests using a simple and natural syntax, and displays
 colorized output. HTTPie can be used for **testing, debugging**, and
 generally **interacting** with HTTP servers.
@@ -588,6 +588,7 @@ Auth Plugins
 ------------
 
 * `httpie-oauth <https://github.com/jkbrzt/httpie-oauth>`_: OAuth
+* `httpie-hmac-auth <https://github.com/guardian/httpie-hmac-auth>`_: HMAC
 * `httpie-ntlm <https://github.com/jkbrzt/httpie-ntlm>`_: NTLM (NT LAN Manager)
 * `httpie-negotiate <https://github.com/ndzou/httpie-negotiate>`_: SPNEGO (GSS Negotiate)
 * `requests-hawk <https://github.com/mozilla-services/requests-hawk>`_: Hawk

@@ -6,11 +6,11 @@ from httpie import __version__
 from httpie.compat import is_windows
 
 
-DEFAULT_CONFIG_DIR = os.environ.get(
+DEFAULT_CONFIG_DIR = str(os.environ.get(
     'HTTPIE_CONFIG_DIR',
     os.path.expanduser('~/.httpie') if not is_windows else
     os.path.expandvars(r'%APPDATA%\\httpie')
-)
+))
 
 
 class BaseConfigDict(dict):

@@ -303,8 +303,8 @@ class Parser(ArgumentParser):
                 # Infer the method
                 has_data = (
                     (not self.args.ignore_stdin and not self.env.stdin_isatty)
-                     or any(item.sep in SEP_GROUP_DATA_ITEMS
-                            for item in self.args.items)
+                    or any(item.sep in SEP_GROUP_DATA_ITEMS
+                           for item in self.args.items)
                 )
                 self.args.method = HTTP_POST if has_data else HTTP_GET
 
@@ -378,7 +378,8 @@ class Parser(ArgumentParser):
         if self.args.prettify == PRETTY_STDOUT_TTY_ONLY:
             self.args.prettify = PRETTY_MAP[
                 'all' if self.env.stdout_isatty else 'none']
-        elif self.args.prettify and self.env.is_windows:
+        elif (self.args.prettify and self.env.is_windows and
+              self.args.output_file):
             self.error('Only terminal output can be colorized on Windows.')
         else:
             # noinspection PyTypeChecker
@@ -521,7 +522,7 @@ class AuthCredentials(KeyValue):
 
     def _getpass(self, prompt):
         # To allow mocking.
-        return getpass.getpass(prompt)
+        return getpass.getpass(str(prompt))
 
     def has_password(self):
         return self.value is not None
@@ -572,7 +573,7 @@ class RequestItemsDict(OrderedDict):
             else:
                 super(RequestItemsDict, self).__init__(*args, **kwargs)
 
-    #noinspection PyMethodOverriding
+    # noinspection PyMethodOverriding
     def __setitem__(self, key, value):
         """ If `key` is assigned more than once, `self[key]` holds a
         `list` of all the values.

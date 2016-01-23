@@ -53,7 +53,7 @@ class TestEnvironment(Environment):
     stdout_isatty = True
     is_windows = False
 
-    _shutil = shutil  # needed by __del__ (would get gc'd)
+    _shutil_rmtree = shutil.rmtree  # needed by __del__ (would get gc'd)
 
     def __init__(self, **kwargs):
 
@@ -72,7 +72,7 @@ class TestEnvironment(Environment):
 
     def __del__(self):
         if self.delete_config_dir:
-            self._shutil.rmtree(self.config_dir)
+            self._shutil_rmtree(self.config_dir)
 
 
 def http(*args, **kwargs):
