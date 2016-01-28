@@ -6,6 +6,9 @@ from httpie import __version__
 from httpie.compat import is_windows
 
 def get_default_config_dir():
+    """Returns the path to the httpie config directory.
+
+    Supports Windows and XDG_CONFIG_HOME."""
     env_config_dir = os.environ.get("HTTPIE_CONFIG_DIR")
     if env_config_dir:
         return env_config_dir
