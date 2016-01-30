@@ -272,7 +272,7 @@ class Download(object):
         return (
             self.finished
             and self.status.total_size
-            and self.status.total_size != self.status.downloaded
+            and self.status.total_size > self.status.downloaded
         )
 
     def chunk_downloaded(self, chunk):
