@@ -634,7 +634,8 @@ def parse_items(items,
             try:
                 with open(os.path.expanduser(value), 'rb') as f:
                     value = (os.path.basename(value),
-                             BytesIO(f.read()))
+                             BytesIO(f.read()),
+                             mimetypes.guess_type(value, strict=False)[0])
             except IOError as e:
                 raise ParseError('"%s": %s' % (item.orig, e))
             target = files
