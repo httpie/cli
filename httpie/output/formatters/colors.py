@@ -14,7 +14,7 @@ from httpie.plugins import FormatterPlugin
 # great and fruity seems to give the best result there.
 AVAILABLE_STYLES = set(pygments.styles.STYLE_MAP.keys())
 AVAILABLE_STYLES.add('solarized')
-DEFAULT_STYLE = 'monokai'
+DEFAULT_STYLE = 'solarized'
 
 
 class ColorFormatter(FormatterPlugin):
@@ -143,8 +143,6 @@ class HTTPLexer(pygments.lexer.RegexLexer):
     }
 
 
-# TODO: As Solarized is not the default theme any longer, it should be removed
-#       or bundled directly with Pygments so that we don't need to support it.
 class Solarized256Style(pygments.style.Style):
     """
     solarized256
