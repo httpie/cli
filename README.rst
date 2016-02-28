@@ -359,7 +359,7 @@ token ``--`` to prevent confusion with ``--arguments``:
 .. code-block:: http
 
     POST /post HTTP/1.1
-    --Weird-Header: yes
+    --Weird-Header: bar
 
     {
         "-name-starting-with-dash": "value"

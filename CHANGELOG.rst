@@ -12,6 +12,8 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 * Added ``-A`` as short name for ``--auth-type``
 * Changed the default color style back to``solarized`` as it supports
   both the light and dark terminal background mode.
+* Fixed ``--session`` when used with ``--download``.
+* Fixed handling of ``Content-Type`` with multiple ``+subtype`` parts.
 
 
 `0.9.3`_ (2016-01-01)
