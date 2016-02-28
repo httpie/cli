@@ -24,7 +24,7 @@ except AttributeError:
 
 FORM = 'application/x-www-form-urlencoded; charset=utf-8'
 JSON = 'application/json'
-DEFAULT_UA = 'HTTPie/%s' % __version__
+DEFAULT_UA = 'HTTPie/%s (https://github.com/jkbrzt/httpie)' % __version__
 
 
 def get_requests_session():
