@@ -180,8 +180,8 @@ class TestSession(SessionTestBase):
         # https://github.com/jkbrzt/httpie/issues/412
         self.start_session(httpbin)
         cwd = os.getcwd()
+        os.chdir(gettempdir())
         try:
-            os.chdir(gettempdir())
             http('--session=test', '--download',
                  httpbin.url + '/get', env=self.env())
         finally:
