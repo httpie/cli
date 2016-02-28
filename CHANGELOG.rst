@@ -11,7 +11,7 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 * Added ``Content-Type`` of files uploaded in ``multipart/form-data`` requests
 * Added ``-A`` as short name for ``--auth-type``
 * Changed the default color style back to ``solarized`` as it supports
-  both the light and dark terminal background mode.
+  both the light and dark terminal background mode
 * Fixed ``--session`` when used with ``--download``
 * Fixed handling of ``Content-Type`` with multiple ``+subtype`` parts
 
