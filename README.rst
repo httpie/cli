@@ -106,7 +106,7 @@ The **latest development version** can be installed directly from GitHub:
     $ brew install httpie --HEAD
 
     # Universal
-    $ pip install --upgrade https://github.com/jkbrzt/httpie/tarball/master
+    $ pip install --upgrade https://github.com/jkbrzt/httpie/archive/master.tar.gz
 
 
 
