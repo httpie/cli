@@ -59,11 +59,19 @@ Installation
 ============
 
 
-On **Mac OS X**, HTTPie can be installed via `Homebrew <http://brew.sh/>`_:
+On **Mac OS X**, HTTPie can be installed via `Homebrew <http://brew.sh/>`_
+(recommended):
 
 .. code-block:: bash
 
     $ brew install httpie
+
+
+A MacPorts *port* is also available:
+
+.. code-block:: bash
+
+    $ port install httpie
 
 
 Most **Linux** distributions provide a package that can be installed using the
