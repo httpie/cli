@@ -65,11 +65,11 @@ class ColorFormatter(FormatterPlugin):
 
 def get_lexer(mime):
     mime_types, lexer_names = [mime], []
-    type_, subtype = mime.split('/')
+    type_, subtype = mime.split('/', 1)
     if '+' not in subtype:
         lexer_names.append(subtype)
     else:
-        subtype_name, subtype_suffix = subtype.split('+')
+        subtype_name, subtype_suffix = subtype.split('+', 1)
         lexer_names.extend([subtype_name, subtype_suffix])
         mime_types.extend([
             '%s/%s' % (type_, subtype_name),

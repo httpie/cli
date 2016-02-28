@@ -39,6 +39,7 @@ class TestColors:
         'foo/bar+json',
         'foo/json-foo',
         'foo/x-json',
+        'application/vnd.comverge.grid+hal+json',
     ])
     def test_get_lexer(self, mime):
         lexer = get_lexer(mime)
