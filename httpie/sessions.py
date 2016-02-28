@@ -101,6 +101,10 @@ class Session(BaseConfigDict):
 
         """
         for name, value in request_headers.items():
+
+            if value is None:
+                continue  # Ignore explicitely unset headers
+
             value = value.decode('utf8')
             if name == 'User-Agent' and value.startswith('HTTPie/'):
                 continue

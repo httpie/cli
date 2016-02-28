@@ -2,6 +2,7 @@
 import os
 import shutil
 import sys
+from tempfile import gettempdir
 
 import pytest
 
@@ -174,3 +175,14 @@ class TestSession(SessionTestBase):
         r2 = http('--session=test', httpbin.url + '/headers', env=self.env())
         assert HTTP_OK in r2
         assert r2.json['headers']['User-Agent'] == 'custom'
+
+    def test_download_in_session(self, httpbin):
+        # https://github.com/jkbrzt/httpie/issues/412
+        self.start_session(httpbin)
+        cwd = os.getcwd()
+        try:
+            os.chdir(gettempdir())
+            http('--session=test', '--download',
+                 httpbin.url + '/get', env=self.env())
+        finally:
+            os.chdir(cwd)
