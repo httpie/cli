@@ -341,11 +341,28 @@ their type is distinguished only by the separator used:
 |                       | in a ``multipart/form-data`` request.               |
 +-----------------------+-----------------------------------------------------+
 
+
 You can use ``\`` to escape characters that shouldn't be used as separators
 (or parts thereof). For instance, ``foo\==bar`` will become a data key/value
 pair (``foo=`` and ``bar``) instead of a URL parameter.
 
-You can also quote values, e.g. ``foo="bar baz"``.
+Often it is necessary to quote the values, e.g. ``foo='bar baz'``.
+
+If any of the field names or headers starts with a minus
+(e.g., ``-fieldname``), you need to place all such items after the special
+token ``--`` to prevent confusion with ``--arguments``:
+
+.. code-block:: bash
+
+    $ http httpbin.org/post  --  -name-starting-with-dash=foo --Weird-Header:bar
+
+.. code-block:: http
+    POST /post HTTP/1.1
+    --Weird-Header: yes
+
+    {
+        "-name-starting-with-dash": "value"
+    }
 
 Note that data fields aren't the only way to specify request data:
 `Redirected input`_ allows for passing arbitrary data to be sent with the
