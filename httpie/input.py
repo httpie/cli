@@ -103,7 +103,7 @@ OUTPUT_OPTIONS_DEFAULT = OUT_RESP_HEAD + OUT_RESP_BODY
 OUTPUT_OPTIONS_DEFAULT_STDOUT_REDIRECTED = OUT_RESP_BODY
 
 
-class Parser(ArgumentParser):
+class HTTPieArgumentParser(ArgumentParser):
     """Adds additional logic to `argparse.ArgumentParser`.
 
     Handles all input (CLI args, file args, stdin), applies defaults,
@@ -113,13 +113,13 @@ class Parser(ArgumentParser):
 
     def __init__(self, *args, **kwargs):
         kwargs['add_help'] = False
-        super(Parser, self).__init__(*args, **kwargs)
+        super(HTTPieArgumentParser, self).__init__(*args, **kwargs)
 
     # noinspection PyMethodOverriding
     def parse_args(self, env, args=None, namespace=None):
 
         self.env = env
-        self.args, no_options = super(Parser, self)\
+        self.args, no_options = super(HTTPieArgumentParser, self)\
             .parse_known_args(args, namespace)
 
         if self.args.debug:
@@ -164,7 +164,7 @@ class Parser(ArgumentParser):
         }.get(file, file)
         if not hasattr(file, 'buffer') and isinstance(message, str):
             message = message.encode(self.env.stdout_encoding)
-        super(Parser, self)._print_message(message, file)
+        super(HTTPieArgumentParser, self)._print_message(message, file)
 
     def _setup_standard_streams(self):
         """

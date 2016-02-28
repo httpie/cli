@@ -201,7 +201,7 @@ class TestURLshorthand:
 class TestArgumentParser:
 
     def setup_method(self, method):
-        self.parser = input.Parser()
+        self.parser = input.HTTPieArgumentParser()
 
     def test_guess_when_method_set_and_valid(self):
         self.parser.args = argparse.Namespace()

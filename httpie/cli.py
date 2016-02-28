@@ -13,7 +13,8 @@ from httpie.plugins.builtin import BuiltinAuthPlugin
 from httpie.plugins import plugin_manager
 from httpie.sessions import DEFAULT_SESSIONS_DIR
 from httpie.output.formatters.colors import AVAILABLE_STYLES, DEFAULT_STYLE
-from httpie.input import (Parser, AuthCredentialsArgType, KeyValueArgType,
+from httpie.input import (HTTPieArgumentParser,
+                          AuthCredentialsArgType, KeyValueArgType,
                           SEP_PROXY, SEP_CREDENTIALS, SEP_GROUP_ALL_ITEMS,
                           OUT_REQ_HEAD, OUT_REQ_BODY, OUT_RESP_HEAD,
                           OUT_RESP_BODY, OUTPUT_OPTIONS,
@@ -40,7 +41,7 @@ class HTTPieHelpFormatter(RawDescriptionHelpFormatter):
         text = dedent(text).strip() + '\n\n'
         return text.splitlines()
 
-parser = Parser(
+parser = HTTPieArgumentParser(
     formatter_class=HTTPieHelpFormatter,
     description='%s <http://httpie.org>' % __doc__.strip(),
     epilog=dedent("""
@@ -51,8 +52,10 @@ parser = Parser(
 
         https://github.com/jkbrzt/httpie/issues
 
-    """)
+    """),
+    usage='see http --help'
 )
+
 
 
 #######################################################################
