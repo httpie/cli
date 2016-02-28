@@ -8,7 +8,8 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 `1.0.0-dev`_ (Unreleased)
 -------------------------
 
-* Changed the default color style back to ``solarized`` as it supports
+* Added ``Content-Type`` of files uploaded in ``multipart/form-data`` requests.
+* Changed the default color style back to``solarized`` as it supports
   both the light and dark terminal background mode.
 
 

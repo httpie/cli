@@ -605,9 +605,13 @@ class DataDict(RequestItemsDict):
 RequestItems = namedtuple('RequestItems',
                           ['headers', 'data', 'files', 'params'])
 
+
 def get_content_type(filename):
-    """Get content type for a filename in format appropriate for Content-Type
-    headers.
+    """
+    Return the content type for ``filename`` in format appropriate
+    for Content-Type headers, or ``None`` if the file type is unknown
+    to ``mimetypes``.
+
     """
     mime, encoding = mimetypes.guess_type(filename, strict=False)
     if mime:
@@ -615,6 +619,7 @@ def get_content_type(filename):
         if encoding:
             content_type = '%s; charset=%s' % (mime, encoding)
         return content_type
+
 
 def parse_items(items,
                 headers_class=CaseInsensitiveDict,
