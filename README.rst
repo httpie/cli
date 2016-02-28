@@ -2,8 +2,8 @@
 HTTPie: a CLI, cURL-like tool for humans
 ****************************************
 
-HTTPie (pronounced *aitch-tee-tee-pie*) is a **command line HTTP client**.  
-Its goal is to make CLI interaction with web services as **human-friendly** 
+HTTPie (pronounced *aitch-tee-tee-pie*) is a **command line HTTP client**.
+Its goal is to make CLI interaction with web services as **human-friendly**
 as possible. It provides a simple ``http`` command that allows for sending
 arbitrary HTTP requests using a simple and natural syntax, and displays
 colorized output. HTTPie can be used for **testing, debugging**, and
@@ -1010,20 +1010,17 @@ is being saved to a file.
 
 .. code-block:: bash
 
-    $ http --download https://github.com/jkbrzt/httpie/tarball/master
+    $ http --download https://github.com/jkbrzt/httpie/archive/master.tar.gz
 
 .. code-block:: http
 
     HTTP/1.1 200 OK
-    Connection: keep-alive
-    Content-Disposition: attachment; filename=jkbrzt-httpie-0.4.1-33-gfc4f70a.tar.gz
-    Content-Length: 505530
+    Content-Disposition: attachment; filename=httpie-master.tar.gz
+    Content-Length: 257336
     Content-Type: application/x-gzip
-    Server: GitHub.com
-    Vary: Accept-Encoding
 
-    Downloading 494.89 kB to "jkbrzt-httpie-0.4.1-33-gfc4f70a.tar.gz"
-    /  21.01% 104.00 kB   47.55 kB/s  0:00:08 ETA
+    Downloading 251.30 kB to "httpie-master.tar.gz"
+    Done. 251.30 kB in 2.73862s (91.76 kB/s)
 
 
 If not provided via ``--output, -o``, the output filename will be determined
@@ -1036,7 +1033,7 @@ headers and progress are still shown in the terminal:
 
 .. code-block:: bash
 
-    $ http -d https://github.com/jkbrzt/httpie/tarball/master |  tar zxf -
+    $ http -d https://github.com/jkbrzt/httpie/archive/master.tar.gz |  tar zxf -
 
 
 If ``--output, -o`` is specified, you can resume a partial download using the
