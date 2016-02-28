@@ -357,6 +357,7 @@ token ``--`` to prevent confusion with ``--arguments``:
     $ http httpbin.org/post  --  -name-starting-with-dash=foo --Weird-Header:bar
 
 .. code-block:: http
+
     POST /post HTTP/1.1
     --Weird-Header: yes
 
