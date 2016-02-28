@@ -400,7 +400,7 @@ auth.add_argument(
 
 _auth_plugins = plugin_manager.get_auth_plugins()
 auth.add_argument(
-    '--auth-type',
+    '--auth-type', '-A',
     choices=[plugin.auth_type for plugin in _auth_plugins],
     default=_auth_plugins[0].auth_type,
     help="""

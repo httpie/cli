@@ -14,11 +14,12 @@ class TestAuth:
         assert HTTP_OK in r
         assert r.json == {'authenticated': True, 'user': 'user'}
 
+    @pytest.mark.parametrize('argument_name', ['--auth-type', '-A'])
     @pytest.mark.skipif(
         requests.__version__ == '0.13.6',
         reason='Redirects with prefetch=False are broken in Requests 0.13.6')
-    def test_digest_auth(self, httpbin):
-        r = http('--auth-type=digest', '--auth=user:password',
+    def test_digest_auth(self, httpbin, argument_name):
+        r = http(argument_name + '=digest', '--auth=user:password',
                  'GET', httpbin.url + '/digest-auth/auth/user/password')
         assert HTTP_OK in r
         assert r.json == {'authenticated': True, 'user': 'user'}
