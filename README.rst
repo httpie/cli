@@ -565,7 +565,7 @@ The currently supported authentication schemes are Basic and Digest
                         supported as well (but credentials passed via ``-a``
                         have higher priority).
 
-``--auth-type``         Specify the auth mechanism. Possible values are
+``--auth-type, -A``     Specify the auth mechanism. Possible values are
                         ``basic`` and ``digest``. The default value is
                         ``basic`` so it can often be omitted.
 ===================     ======================================================
@@ -585,7 +585,7 @@ Digest auth:
 
 .. code-block:: bash
 
-    $ http --auth-type=digest -a username:password example.org
+    $ http -A digest -a username:password example.org
 
 
 With password prompt:
