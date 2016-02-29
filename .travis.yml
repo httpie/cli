@@ -1,11 +1,14 @@
 # https://travis-ci.org/jkbrzt/httpie
 sudo: false
+
+language: python
 os:
   - linux
+
 env:
   global:
-  - NEWEST_PYTHON=3.4
-language: python
+    - NEWEST_PYTHON=3.4
+
 python:
   - 2.6
   - 2.7
@@ -22,5 +25,6 @@ matrix:
 
 script:
   - make
+
 after_success:
   - [[ $TRAVIS_PYTHON_VERSION == $NEWEST_PYTHON && $TRAVIS_OS_NAME == 'linux']] && pip install python-coveralls && coveralls
