@@ -19,23 +19,32 @@ python:
 matrix:
 
   include:
+
+    # Manually defined OS X builds
     # https://docs.travis-ci.com/user/multi-os/#Python-example-(unsupported-languages)
+
+    # Stock OSX Python
     - os: osx
       language: generic
       env:
         - TOXENV=py27
+
+    # Latest Python 2.x from Homebrew
     - os: osx
       language: generic
       env:
+        - TOXENV=py27
         - BREW_INSTALL=python
-        - TOXENV=py27
+
+    # Latest Python 3.x from Homebrew
     - os: osx
       language: generic
       env:
-        - BREW_INSTALL=python3
         - TOXENV=py35
+        - BREW_INSTALL=python3
 
 install:
+  - brew update
   - |
     if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
       if [[ -n "$BREW_INSTALL" ]]; then
@@ -49,7 +58,7 @@ script:
     if [[ $TRAVIS_OS_NAME == 'linux' ]]; then
       make
     else
-      tox -e "$TOXENV"
+      PATH="/usr/local/bin:$PATH" tox -e "$TOXENV"
     fi
 
 after_success:
