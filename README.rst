@@ -1372,7 +1372,7 @@ Please see `LICENSE <https://github.com/jkbrzt/httpie/blob/master/LICENSE>`_.
 .. _claudiatd/httpie-artwork: https://github.com/claudiatd/httpie-artwork
 
 
-.. |pypi| image:: https://img.shields.io/pypi/v/httpie.svg?style=flat-square&label=latest%20version
+.. |pypi| image:: https://img.shields.io/pypi/v/httpie.svg?style=flat-square&label=Latest%20version
     :target: https://pypi.python.org/pypi/httpie
     :alt: Latest version released on PyPi
 
@@ -1384,6 +1384,6 @@ Please see `LICENSE <https://github.com/jkbrzt/httpie/blob/master/LICENSE>`_.
     :target: http://travis-ci.org/jkbrzt/httpie
     :alt: Build status of the master branch on Mac/Linux
 
-.. |windows_build|  image:: https://img.shields.io/appveyor/ci/jkbrzt/httpie.svg?style=flat-square&label=windows%20build
+.. |windows_build|  image:: https://img.shields.io/appveyor/ci/jkbrzt/httpie.svg?style=flat-square&label=Windows%20build
     :target: https://ci.appveyor.com/project/jkbrzt/httpie
     :alt: Build status of the master branch on Windows
