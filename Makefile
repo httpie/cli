@@ -11,7 +11,7 @@ END=" \#\#\# \033[0m\n"
 all: test
 
 
-init: uninstall-httpie
+init:
 	@echo $(TAG)Installing dev requirements$(END)
 	pip install --upgrade -r $(REQUIREMENTS)
 
