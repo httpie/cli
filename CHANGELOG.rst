@@ -13,7 +13,7 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 * Added ``--max-redirects`` (default 30)
 * Added ``-A`` as short name for ``--auth-type``
 * Added ``-F`` as short name for ``--follow``
-* Changed the default color style back to``solarized`` as it supports
+* Changed the default color style back to ``solarized`` as it supports
   both the light and dark terminal background mode
 * Fixed ``--session`` when used with ``--download``
 * Fixed handling of ``Content-Type`` with multiple ``+subtype`` parts
