@@ -448,6 +448,7 @@ network.add_argument(
 )
 network.add_argument(
     '--follow',
+    '-F',
     default=False,
     action='store_true',
     help="""
