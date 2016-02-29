@@ -22,7 +22,7 @@ SESSION_IGNORED_HEADER_PREFIXES = ['Content-', 'If-']
 
 def get_response(requests_session, session_name,
                  config_dir, args, read_only=False):
-    """Like `client.get_response`, but applies permanent
+    """Like `client.get_responses`, but applies permanent
     aspects of the session to the request.
 
     """
@@ -30,8 +30,8 @@ def get_response(requests_session, session_name,
     if os.path.sep in session_name:
         path = os.path.expanduser(session_name)
     else:
-        hostname = (args.headers.get('Host', None)
-                    or urlsplit(args.url).netloc.split('@')[-1])
+        hostname = (args.headers.get('Host', None) or
+                    urlsplit(args.url).netloc.split('@')[-1])
         if not hostname:
             # HACK/FIXME: httpie-unixsocket's URLs have no hostname.
             hostname = 'localhost'

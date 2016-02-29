@@ -99,7 +99,6 @@ def main(args=sys.argv[1:], env=Environment(), error=None):
             return exit_status
 
     download = None
-
     try:
         args = parser.parse_args(args=args, env=env)
 
@@ -112,60 +111,64 @@ def main(args=sys.argv[1:], env=Environment(), error=None):
             )
             download.pre_request(args.headers)
 
-        response = get_response(args, config_dir=env.config.directory)
+        last_response = get_response(args, config_dir=env.config.directory)
 
-        if args.check_status or download:
+        redirect_chain = last_response.history + [last_response]
+        for response in redirect_chain:
 
-            exit_status = get_exit_status(
-                http_status=response.status_code,
-                follow=args.follow
-            )
+            if exit_status != ExitStatus.OK:
+                break
 
-            if not env.stdout_isatty and exit_status != ExitStatus.OK:
-                error('HTTP %s %s',
-                      response.raw.status,
-                      response.raw.reason,
-                      level='warning')
+            if args.check_status or download:
 
-        write_kwargs = {
-            'stream': build_output_stream(
-                args, env, response.request, response),
-
-            # This will in fact be `stderr` with `--download`
-            'outfile': env.stdout,
-
-            'flush': env.stdout_isatty or args.stream
-        }
-
-        try:
-
-            if env.is_windows and is_py3 and 'colors' in args.prettify:
-                write_with_colors_win_py3(**write_kwargs)
-            else:
-                write(**write_kwargs)
-
-            if download and exit_status == ExitStatus.OK:
-                # Response body download.
-                download_stream, download_to = download.start(response)
-                write(
-                    stream=download_stream,
-                    outfile=download_to,
-                    flush=False,
+                exit_status = get_exit_status(
+                    http_status=response.status_code,
+                    follow=args.follow
                 )
-                download.finish()
-                if download.interrupted:
-                    exit_status = ExitStatus.ERROR
-                    error('Incomplete download: size=%d; downloaded=%d' % (
-                        download.status.total_size,
-                        download.status.downloaded
-                    ))
 
-        except IOError as e:
-            if not traceback and e.errno == errno.EPIPE:
-                # Ignore broken pipes unless --traceback.
-                env.stderr.write('\n')
-            else:
-                raise
+                if not env.stdout_isatty and exit_status != ExitStatus.OK:
+                    error('HTTP %s %s',
+                          response.raw.status,
+                          response.raw.reason,
+                          level='warning')
+
+            write_kwargs = {
+                'stream': build_output_stream(args, env,
+                                              response.request,
+                                              response),
+                # This will in fact be `stderr` with `--download`
+                'outfile': env.stdout,
+                'flush': env.stdout_isatty or args.stream
+            }
+
+            try:
+                if env.is_windows and is_py3 and 'colors' in args.prettify:
+                    write_with_colors_win_py3(**write_kwargs)
+                else:
+                    write(**write_kwargs)
+            except IOError as e:
+                if not traceback and e.errno == errno.EPIPE:
+                    # Ignore broken pipes unless --traceback.
+                    env.stderr.write('\n')
+                else:
+                    raise
+
+        if download and exit_status == ExitStatus.OK:
+            # Last response body download.
+            download_stream, download_to = download.start(last_response)
+            write(
+                stream=download_stream,
+                outfile=download_to,
+                flush=False,
+            )
+            download.finish()
+            if download.interrupted:
+                exit_status = ExitStatus.ERROR
+                error('Incomplete download: size=%d; downloaded=%d' % (
+                    download.status.total_size,
+                    download.status.downloaded
+                ))
+
     except KeyboardInterrupt:
         if traceback:
             raise
