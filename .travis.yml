@@ -2,10 +2,9 @@
 sudo: false
 os:
   - linux
-  # - osx
 env:
   global:
-    - NEWEST_PYTHON=3.4
+  - NEWEST_PYTHON=3.4
 language: python
 python:
   - 2.6
@@ -14,7 +13,14 @@ python:
   - 3.3
   - 3.4
   - pypy3
+
+matrix:
+  include:
+    # https://docs.travis-ci.com/user/multi-os/#Python-example-(unsupported-languages)
+    - os: osx
+      language: generic
+
 script:
   - make
 after_success:
-  - if [[ $TRAVIS_PYTHON_VERSION == $NEWEST_PYTHON ]]; then pip install python-coveralls && coveralls; fi
+  - [[ $TRAVIS_PYTHON_VERSION == $NEWEST_PYTHON && $TRAVIS_OS_NAME == 'linux']] && pip install python-coveralls && coveralls
