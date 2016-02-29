@@ -623,6 +623,21 @@ Auth Plugins
 * `httpie-jwt-auth <https://github.com/teracyhq/httpie-jwt-auth>`_: JWTAuth (JSON Web Tokens)
 
 
+==============
+HTTP Redirects
+==============
+
+By default, HTTP redirects are not followed and only the first
+response is shown. To instruct HTTPie to follow the ``Location`` header of
+``30x`` responses and show the final response instead, use the ``--follow, -F`` option.
+
+If you additionally wish to see the intermediary requests/responses as well,
+use the ``--show-redirects, -R`` option as well.
+
+To change the default limit of maximum 30 redirects, use the
+``--max-redirects=<limit>`` option.
+
+
 =======
 Proxies
 =======
@@ -1251,6 +1266,7 @@ Also, the ``--timeout`` option allows to overwrite the default 30s timeout:
             3) echo 'Unexpected HTTP 3xx Redirection!' ;;
             4) echo 'HTTP 4xx Client Error!' ;;
             5) echo 'HTTP 5xx Server Error!' ;;
+            6) echo 'Exceeded --max-redirects=<n> redirects!' ;;
             *) echo 'Other Error!' ;;
         esac
     fi

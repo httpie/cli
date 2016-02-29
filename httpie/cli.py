@@ -380,16 +380,6 @@ sessions.add_argument(
     """
 )
 
-sessions.add_argument(
-    '--max-redirects',
-    dest='redirects',
-    default=30,
-    help="""
-    By default, requests has a limit of 30 redirects.
-
-    """
-)
-
 #######################################################################
 # Authentication
 #######################################################################
@@ -456,15 +446,35 @@ network.add_argument(
     """
 )
 network.add_argument(
-    '--follow',
+    '--follow', '-F',
     default=False,
     action='store_true',
     help="""
-    Set this flag if full redirects are allowed (e.g. re-POST-ing of data at
-    new Location).
+    Follow 30x Location redirects.
 
     """
 )
+
+network.add_argument(
+    '--show-redirects', '-R',
+    default=False,
+    action='store_true',
+    help="""
+    Show all responses within the redirect chain (works with --follow).
+
+    """
+)
+
+network.add_argument(
+    '--max-redirects',
+    type=int,
+    default=30,
+    help="""
+    By default, requests have a limit of 30 redirects (works with --follow).
+
+    """
+)
+
 network.add_argument(
     '--verify',
     default='yes',

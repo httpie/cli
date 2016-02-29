@@ -113,8 +113,12 @@ def main(args=sys.argv[1:], env=Environment(), error=None):
 
         last_response = get_response(args, config_dir=env.config.directory)
 
-        redirect_chain = last_response.history + [last_response]
-        for response in redirect_chain:
+        if args.show_redirects:
+            responses = last_response.history + [last_response]
+        else:
+            responses = [last_response]
+
+        for response in responses:
 
             if exit_status != ExitStatus.OK:
                 break
@@ -183,7 +187,9 @@ def main(args=sys.argv[1:], env=Environment(), error=None):
     except requests.Timeout:
         exit_status = ExitStatus.ERROR_TIMEOUT
         error('Request timed out (%ss).', args.timeout)
-
+    except requests.TooManyRedirects:
+        exit_status = ExitStatus.ERROR_TOO_MANY_REDIRECTS
+        error('Too many redirects (--max-redirects=%s).', args.max_redirects)
     except Exception as e:
         # TODO: Better distinction between expected and unexpected errors.
         #       Network errors vs. bugs, etc.

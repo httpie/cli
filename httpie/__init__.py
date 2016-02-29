@@ -12,6 +12,7 @@ class ExitStatus:
     OK = 0
     ERROR = 1
     ERROR_TIMEOUT = 2
+    ERROR_TOO_MANY_REDIRECTS = 6
 
     # Used only when requested with --check-status:
     ERROR_HTTP_3XX = 3
