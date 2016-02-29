@@ -1325,6 +1325,19 @@ HTTPie reaches its final version ``1.0``. All changes are recorded in the
 
 
 =======
+Support
+=======
+
+* Use `GitHub issues <https://github.com/jkbr/httpie/issues>`_
+  for bug reports and feature requests.
+* Ask questions and discuss features on
+  `Gitter chat <https://gitter.im/jkbrzt/httpie>`_.
+* Ask questions on `StackOverflow <https://stackoverflow.com>`_
+  (please make sure to use the
+  `httpie <http://stackoverflow.com/questions/tagged/httpie>`_ tag).
+* You can also tweet directly to `@jkbrzt <https://twitter.com/jkbrzt>`_.
+
+=======
 Authors
 =======
 
