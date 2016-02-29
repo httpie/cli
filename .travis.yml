@@ -27,4 +27,7 @@ script:
   - make
 
 after_success:
-  - [[ $TRAVIS_PYTHON_VERSION == $NEWEST_PYTHON && $TRAVIS_OS_NAME == 'linux']] && pip install python-coveralls && coveralls
+  - |
+    if [[ $TRAVIS_PYTHON_VERSION == $NEWEST_PYTHON && $TRAVIS_OS_NAME == 'linux']]; then
+      pip install python-coveralls && coveralls
+    fi
