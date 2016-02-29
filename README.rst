@@ -23,7 +23,7 @@ HTTPie is written in Python, and under the hood it uses the excellent
 
 -----
 
-|pypi| |unix_build| |windows_build| |coverage|
+|gitter| |pypi| |unix_build| |windows_build| |coverage|
 
 -----
 
@@ -1372,18 +1372,23 @@ Please see `LICENSE <https://github.com/jkbrzt/httpie/blob/master/LICENSE>`_.
 .. _claudiatd/httpie-artwork: https://github.com/claudiatd/httpie-artwork
 
 
-.. |pypi| image:: https://img.shields.io/pypi/v/httpie.svg?style=flat-square&label=Latest%20version
+.. |pypi| image:: https://img.shields.io/pypi/v/httpie.svg?style=flat-square&label=latest%20version
     :target: https://pypi.python.org/pypi/httpie
     :alt: Latest version released on PyPi
 
-.. |coverage| image:: https://img.shields.io/coveralls/jkbrzt/httpie/master.svg?style=flat-square&label=Coverage
+.. |coverage| image:: https://img.shields.io/coveralls/jkbrzt/httpie/master.svg?style=flat-square&label=coverage
     :target: https://coveralls.io/r/jkbrzt/httpie?branch=master
     :alt: Test coverage
 
-.. |unix_build| image:: https://img.shields.io/travis/jkbrzt/httpie/master.svg?style=flat-square&label=Linux%20and%20OS%20X%20builds
+.. |unix_build| image:: https://img.shields.io/travis/jkbrzt/httpie/master.svg?style=flat-square&label=unix%20build
     :target: http://travis-ci.org/jkbrzt/httpie
     :alt: Build status of the master branch on Mac/Linux
 
-.. |windows_build|  image:: https://img.shields.io/appveyor/ci/jkbrzt/httpie.svg?style=flat-square&label=Windows%20build
+.. |windows_build|  image:: https://img.shields.io/appveyor/ci/jkbrzt/httpie.svg?style=flat-square&label=windows%20build
     :target: https://ci.appveyor.com/project/jkbrzt/httpie
     :alt: Build status of the master branch on Windows
+
+.. |gitter| image:: https://badges.gitter.im/jkbrzt/httpie.svg
+    :target: https://gitter.im/jkbrzt/httpie
+    :alt: Chat on Gitter
+
