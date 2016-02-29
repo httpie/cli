@@ -35,18 +35,21 @@ matrix:
         - BREW_INSTALL=python3
         - TOXENV=py35
 
+install:
+  - |
+    if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
+      if [[ -n "$BREW_INSTALL" ]]; then
+        brew install "$BREW_INSTALL"
+      fi
+      sudo pip install tox
+    fi
+
 script:
   - |
     if [[ $TRAVIS_OS_NAME == 'linux' ]]; then
       make
     else
       tox -e "$TOXENV"
-    fi
-
-install:
-  - |
-    if [[ $TRAVIS_OS_NAME == 'osx' && -n "$BREW_INSTALL" ]]; then
-      brew install "$BREW_INSTALL"
     fi
 
 after_success:
