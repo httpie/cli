@@ -26,6 +26,12 @@ matrix:
 script:
   - make
 
+install:
+  - |
+    if [[ $TRAVIS_OS_NAME == 'osx']]; then
+        brew install python
+    fi
+
 after_success:
   - |
     if [[ $TRAVIS_PYTHON_VERSION == $NEWEST_PYTHON && $TRAVIS_OS_NAME == 'linux']]; then
