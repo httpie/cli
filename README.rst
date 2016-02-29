@@ -631,11 +631,16 @@ By default, HTTP redirects are not followed and only the first
 response is shown. To instruct HTTPie to follow the ``Location`` header of
 ``30x`` responses and show the final response instead, use the ``--follow, -F`` option.
 
-If you additionally wish to see the intermediary requests/responses as well,
-use the ``--show-redirects, -R`` option as well.
+If you additionally wish to see the intermediary requests/responses,
+then use the ``--show-redirects, -R`` option as well.
 
 To change the default limit of maximum 30 redirects, use the
 ``--max-redirects=<limit>`` option.
+
+
+.. code-block:: bash
+
+    $ http --follow --show-redirects --max-redirects=5 httpbin.org/redirect/3
 
 
 =======

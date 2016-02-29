@@ -17,6 +17,6 @@ class TestRedirects:
         assert HTTP_OK in r
 
     def test_max_redirects(self, httpbin):
-        r = http('--max-redirects=2', '--follow', httpbin.url + '/redirect/3',
+        r = http('--max-redirects=1', '--follow', httpbin.url + '/redirect/3',
                  error_exit_ok=True)
         assert r.exit_status == ExitStatus.ERROR_TOO_MANY_REDIRECTS

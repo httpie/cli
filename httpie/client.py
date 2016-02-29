@@ -40,6 +40,7 @@ def get_response(args, config_dir):
     """Send the request and return a `request.Response`."""
 
     requests_session = get_requests_session()
+    requests_session.max_redirects = args.max_redirects
 
     if not args.session and not args.session_read_only:
         kwargs = get_requests_kwargs(args)

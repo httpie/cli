@@ -192,7 +192,6 @@ def main(args=sys.argv[1:], env=Environment(), error=None):
         error('Too many redirects (--max-redirects=%s).', args.max_redirects)
     except Exception as e:
         # TODO: Better distinction between expected and unexpected errors.
-        #       Network errors vs. bugs, etc.
         if traceback:
             raise
         msg = str(e)
