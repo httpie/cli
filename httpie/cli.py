@@ -220,6 +220,16 @@ output_processing.add_argument(
     )
 )
 
+output_processing.add_argument(
+    '--force-mime',
+    dest='mime',
+    metavar='MIMETYPE',
+    help="""
+    Override the mime type returned by the remote host. Can be used to force
+    prettifying output when the server sets an incorrect Content-Type header.
+    """
+)
+
 
 #######################################################################
 # Output options
