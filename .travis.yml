@@ -44,10 +44,10 @@ matrix:
         - BREW_INSTALL=python3
 
 install:
-  - brew update
   - |
     if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
       if [[ -n "$BREW_INSTALL" ]]; then
+        brew update
         brew install "$BREW_INSTALL"
       fi
       sudo pip install tox
