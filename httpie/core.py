@@ -20,12 +20,13 @@ from pygments import __version__ as pygments_version
 from httpie import __version__ as httpie_version, ExitStatus
 from httpie.compat import str, bytes, is_py3
 from httpie.client import get_response
-from httpie.downloads import Download
+from httpie.downloads import Downloader
 from httpie.context import Environment
 from httpie.plugins import plugin_manager
 from httpie.output.streams import (
     build_output_stream,
-    write, write_with_colors_win_py3
+    write_stream,
+    write_stream_with_colors_win_py3
 )
 
 
@@ -98,21 +99,20 @@ def main(args=sys.argv[1:], env=Environment(), error=None):
         if args == ['--debug']:
             return exit_status
 
-    download = None
+    downloader = None
     try:
         args = parser.parse_args(args=args, env=env)
 
         if args.download:
             args.follow = True  # --download implies --follow.
-            download = Download(
+            downloader = Downloader(
                 output_file=args.output_file,
                 progress_file=env.stderr,
                 resume=args.download_resume
             )
-            download.pre_request(args.headers)
+            downloader.pre_request(args.headers)
 
         last_response = get_response(args, config_dir=env.config.directory)
-
         if args.show_redirects:
             responses = last_response.history + [last_response]
         else:
@@ -120,36 +120,33 @@ def main(args=sys.argv[1:], env=Environment(), error=None):
 
         for response in responses:
 
-            if exit_status != ExitStatus.OK:
-                break
-
-            if args.check_status or download:
-
+            if args.check_status or downloader:
                 exit_status = get_exit_status(
                     http_status=response.status_code,
                     follow=args.follow
                 )
-
                 if not env.stdout_isatty and exit_status != ExitStatus.OK:
                     error('HTTP %s %s',
                           response.raw.status,
                           response.raw.reason,
                           level='warning')
 
-            write_kwargs = {
-                'stream': build_output_stream(args, env,
-                                              response.request,
-                                              response),
-                # This will in fact be `stderr` with `--download`
+            write_stream_kwargs = {
+                'stream': build_output_stream(
+                    args=args,
+                    env=env,
+                    request=response.request,
+                    response=response,
+                ),
+                # NOTE: `env.stdout` will in fact be `stderr` with `--download`
                 'outfile': env.stdout,
                 'flush': env.stdout_isatty or args.stream
             }
-
             try:
                 if env.is_windows and is_py3 and 'colors' in args.prettify:
-                    write_with_colors_win_py3(**write_kwargs)
+                    write_stream_with_colors_win_py3(**write_stream_kwargs)
                 else:
-                    write(**write_kwargs)
+                    write_stream(**write_stream_kwargs)
             except IOError as e:
                 if not traceback and e.errno == errno.EPIPE:
                     # Ignore broken pipes unless --traceback.
@@ -157,20 +154,20 @@ def main(args=sys.argv[1:], env=Environment(), error=None):
                 else:
                     raise
 
-        if download and exit_status == ExitStatus.OK:
+        if downloader and exit_status == ExitStatus.OK:
             # Last response body download.
-            download_stream, download_to = download.start(last_response)
-            write(
+            download_stream, download_to = downloader.start(last_response)
+            write_stream(
                 stream=download_stream,
                 outfile=download_to,
                 flush=False,
             )
-            download.finish()
-            if download.interrupted:
+            downloader.finish()
+            if downloader.interrupted:
                 exit_status = ExitStatus.ERROR
                 error('Incomplete download: size=%d; downloaded=%d' % (
-                    download.status.total_size,
-                    download.status.downloaded
+                    downloader.status.total_size,
+                    downloader.status.downloaded
                 ))
 
     except KeyboardInterrupt:
@@ -204,7 +201,7 @@ def main(args=sys.argv[1:], env=Environment(), error=None):
         exit_status = ExitStatus.ERROR
 
     finally:
-        if download and not download.finished:
-            download.failed()
+        if downloader and not downloader.finished:
+            downloader.failed()
 
     return exit_status

@@ -7,7 +7,7 @@ from requests.structures import CaseInsensitiveDict
 from httpie.compat import urlopen
 from httpie.downloads import (
     parse_content_range, filename_from_content_disposition, filename_from_url,
-    get_unique_filename, ContentRangeError, Download,
+    get_unique_filename, ContentRangeError, Downloader,
 )
 from utils import http, TestEnvironment
 
@@ -106,34 +106,34 @@ class TestDownloads:
 
     def test_download_with_Content_Length(self, httpbin):
         devnull = open(os.devnull, 'w')
-        download = Download(output_file=devnull, progress_file=devnull)
-        download.start(Response(
+        downloader = Downloader(output_file=devnull, progress_file=devnull)
+        downloader.start(Response(
             url=httpbin.url + '/',
             headers={'Content-Length': 10}
         ))
         time.sleep(1.1)
-        download.chunk_downloaded(b'12345')
+        downloader.chunk_downloaded(b'12345')
         time.sleep(1.1)
-        download.chunk_downloaded(b'12345')
-        download.finish()
-        assert not download.interrupted
+        downloader.chunk_downloaded(b'12345')
+        downloader.finish()
+        assert not downloader.interrupted
 
     def test_download_no_Content_Length(self, httpbin):
         devnull = open(os.devnull, 'w')
-        download = Download(output_file=devnull, progress_file=devnull)
-        download.start(Response(url=httpbin.url + '/'))
+        downloader = Downloader(output_file=devnull, progress_file=devnull)
+        downloader.start(Response(url=httpbin.url + '/'))
         time.sleep(1.1)
-        download.chunk_downloaded(b'12345')
-        download.finish()
-        assert not download.interrupted
+        downloader.chunk_downloaded(b'12345')
+        downloader.finish()
+        assert not downloader.interrupted
 
     def test_download_interrupted(self, httpbin):
         devnull = open(os.devnull, 'w')
-        download = Download(output_file=devnull, progress_file=devnull)
-        download.start(Response(
+        downloader = Downloader(output_file=devnull, progress_file=devnull)
+        downloader.start(Response(
             url=httpbin.url + '/',
             headers={'Content-Length': 5}
         ))
-        download.chunk_downloaded(b'1234')
-        download.finish()
-        assert download.interrupted
+        downloader.chunk_downloaded(b'1234')
+        downloader.finish()
+        assert downloader.interrupted

@@ -24,7 +24,7 @@ class BinarySuppressedError(Exception):
     message = BINARY_SUPPRESSED_NOTICE
 
 
-def write(stream, outfile, flush):
+def write_stream(stream, outfile, flush):
     """Write the output stream."""
     try:
         # Writing bytes so we use the buffer interface (Python 3).
@@ -38,7 +38,7 @@ def write(stream, outfile, flush):
             outfile.flush()
 
 
-def write_with_colors_win_py3(stream, outfile, flush):
+def write_stream_with_colors_win_py3(stream, outfile, flush):
     """Like `write`, but colorized chunks are written as text
     directly to `outfile` to ensure it gets processed by colorama.
     Applies only to Windows with Python 3 and colorized terminal output.

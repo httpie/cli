@@ -144,7 +144,7 @@ def get_unique_filename(filename, exists=os.path.exists):
         attempt += 1
 
 
-class Download(object):
+class Downloader(object):
 
     def __init__(self, output_file=None,
                  resume=False, progress_file=sys.stderr):
