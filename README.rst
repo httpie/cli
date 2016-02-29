@@ -1335,7 +1335,7 @@ Support
 * Ask questions on `StackOverflow <https://stackoverflow.com>`_
   (please make sure to use the
   `httpie <http://stackoverflow.com/questions/tagged/httpie>`_ tag).
-* You can also tweet directly to `@jkbrzt <https://twitter.com/jkbrzt>`_.
+* You can also tweet directly to `@jkbrzt`_.
 
 =======
 Authors
