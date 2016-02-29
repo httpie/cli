@@ -7,29 +7,46 @@ os:
 
 env:
   global:
-    - NEWEST_PYTHON=3.4
+    - NEWEST_PYTHON=3.5
 
 python:
   - 2.6
   - 2.7
   - pypy
-  - 3.3
-  - 3.4
+  - 3.5
   - pypy3
 
 matrix:
+
   include:
     # https://docs.travis-ci.com/user/multi-os/#Python-example-(unsupported-languages)
     - os: osx
       language: generic
+      env:
+        - TOXENV=py27
+    - os: osx
+      language: generic
+      env:
+        - BREW_INSTALL=python
+        - TOXENV=py27
+    - os: osx
+      language: generic
+      env:
+        - BREW_INSTALL=python3
+        - TOXENV=py35
 
 script:
-  - make
+  - |
+    if [[ $TRAVIS_OS_NAME == 'linux' ]]; then
+      make
+    else
+      tox -e "$TOXENV"
+    fi
 
 install:
   - |
-    if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
-        brew install python
+    if [[ $TRAVIS_OS_NAME == 'osx' && -n "$BREW_INSTALL" ]]; then
+      brew install "$BREW_INSTALL"
     fi
 
 after_success:
