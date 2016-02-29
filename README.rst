@@ -1376,7 +1376,7 @@ Please see `LICENSE <https://github.com/jkbrzt/httpie/blob/master/LICENSE>`_.
     :target: https://pypi.python.org/pypi/httpie
     :alt: Latest version released on PyPi
 
-.. |coverage| image:: https://img.shields.io/coveralls/jkbrzt/httpie/master.svg?style=flat-square
+.. |coverage| image:: https://img.shields.io/coveralls/jkbrzt/httpie/master.svg?style=flat-square&label=Coverage
     :target: https://coveralls.io/r/jkbrzt/httpie?branch=master
     :alt: Test coverage
 
