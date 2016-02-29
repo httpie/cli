@@ -1380,7 +1380,7 @@ Please see `LICENSE <https://github.com/jkbrzt/httpie/blob/master/LICENSE>`_.
     :target: https://coveralls.io/r/jkbrzt/httpie?branch=master
     :alt: Test coverage
 
-.. |unix_build| image:: https://img.shields.io/travis/jkbrzt/httpie/master.svg?style=flat-square&label=unix%20build
+.. |unix_build| image:: https://img.shields.io/travis/jkbrzt/httpie/master.svg?style=flat-square&label=Linux%20and%20OS%20X%20builds
     :target: http://travis-ci.org/jkbrzt/httpie
     :alt: Build status of the master branch on Mac/Linux
 
