@@ -189,7 +189,7 @@ def http(*args, **kwargs):
     if '--debug' not in args:
         if '--traceback' not in args:
             extra_args.append('--traceback')
-        if '--timeout' not in ' '.join(args):
+        if not any('--timeout' in arg for arg in args):
             extra_args.append('--timeout=3')
     args = extra_args + args
 
