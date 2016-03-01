@@ -7,8 +7,7 @@ from tempfile import gettempdir
 import pytest
 
 from httpie.plugins.builtin import HTTPBasicAuth
-from utils import TestEnvironment, mk_config_dir, http, HTTP_OK, \
-    no_content_type
+from utils import TestEnvironment, mk_config_dir, http, HTTP_OK
 from fixtures import UNICODE
 
 
@@ -126,7 +125,7 @@ class TestSession(SessionTestBase):
         r2 = http('--session=test', 'GET', httpbin.url + '/get',
                   env=self.env())
         assert HTTP_OK in r2
-        assert no_content_type(r2.json['headers'])
+        assert 'Content-Type' not in r2.json['headers']
         assert 'If-Unmodified-Since' not in r2.json['headers']
 
     def test_session_by_path(self, httpbin):
@@ -158,8 +157,8 @@ class TestSession(SessionTestBase):
         assert HTTP_OK in r2
 
         # FIXME: Authorization *sometimes* is not present on Python3
-        assert (r2.json['headers']['Authorization']
-                == HTTPBasicAuth.make_header(u'test', UNICODE))
+        assert (r2.json['headers']['Authorization'] ==
+                HTTPBasicAuth.make_header(u'test', UNICODE))
         # httpbin doesn't interpret utf8 headers
         assert UNICODE in r2
 

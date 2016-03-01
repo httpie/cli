@@ -1,7 +1,5 @@
 # coding=utf-8
-"""Utilities used by HTTPie tests.
-
-"""
+"""Utilities for HTTPie test suite."""
 import os
 import sys
 import time
@@ -15,8 +13,6 @@ from httpie.compat import bytes, str
 
 
 TESTS_ROOT = os.path.abspath(os.path.dirname(__file__))
-
-
 CRLF = '\r\n'
 COLOR = '\x1b['
 HTTP_OK = '200 OK'
@@ -27,14 +23,9 @@ HTTP_OK_COLOR = (
 )
 
 
-def no_content_type(headers):
-    return (
-        'Content-Type' not in headers or
-        # We need to do also this because of this issue:
-        # <https://github.com/kevin1024/pytest-httpbin/issues/5>
-        # TODO: remove this function once the issue is if fixed
-        headers['Content-Type'] == 'text/plain'
-    )
+def mk_config_dir():
+    dirname = tempfile.mkdtemp(prefix='httpie_config_')
+    return dirname
 
 
 def add_auth(url, auth):
@@ -43,10 +34,7 @@ def add_auth(url, auth):
 
 
 class TestEnvironment(Environment):
-    """
-    Environment subclass with reasonable defaults suitable for testing.
-
-    """
+    """Environment subclass with reasonable defaults for testing."""
     colors = 0
     stdin_isatty = True,
     stdout_isatty = True
@@ -84,6 +72,67 @@ class TestEnvironment(Environment):
             self.cleanup()
         except Exception:
             pass
+
+
+class BaseCLIResponse(object):
+    """
+    Represents the result of simulated `$ http' invocation  via `http()`.
+
+    Holds and provides access to:
+
+        - stdout output: print(self)
+        - stderr output: print(self.stderr)
+        - exit_status output: print(self.exit_status)
+
+    """
+    stderr = None
+    json = None
+    exit_status = None
+
+
+class BytesCLIResponse(bytes, BaseCLIResponse):
+    """
+    Used as a fallback when a StrCLIResponse cannot be used.
+
+    E.g. when the output contains binary data or when it is colorized.
+
+    `.json` will always be None.
+
+    """
+
+
+class StrCLIResponse(str, BaseCLIResponse):
+
+    @property
+    def json(self):
+        """
+        Return deserialized JSON body, if one included in the output
+        and is parseable.
+
+        """
+        if not hasattr(self, '_json'):
+            self._json = None
+            # De-serialize JSON body if possible.
+            if COLOR in self:
+                # Colorized output cannot be parsed.
+                pass
+            elif self.strip().startswith('{'):
+                # Looks like JSON body.
+                self._json = json.loads(self)
+            elif (self.count('Content-Type:') == 1 and
+                    'application/json' in self):
+                # Looks like a whole JSON HTTP message,
+                # try to extract its body.
+                try:
+                    j = self.strip()[self.strip().rindex('\r\n\r\n'):]
+                except ValueError:
+                    pass
+                else:
+                    try:
+                        self._json = json.loads(j)
+                    except ValueError:
+                        pass
+        return self._json
 
 
 def http(*args, **kwargs):
@@ -187,69 +236,3 @@ def http(*args, **kwargs):
         stdout.close()
         stderr.close()
         env.cleanup()
-
-
-class BaseCLIResponse(object):
-    """
-    Represents the result of simulated `$ http' invocation  via `http()`.
-
-    Holds and provides access to:
-
-        - stdout output: print(self)
-        - stderr output: print(self.stderr)
-        - exit_status output: print(self.exit_status)
-
-    """
-    stderr = None
-    json = None
-    exit_status = None
-
-
-class BytesCLIResponse(bytes, BaseCLIResponse):
-    """
-    Used as a fallback when a StrCLIResponse cannot be used.
-
-    E.g. when the output contains binary data or when it is colorized.
-
-    `.json` will always be None.
-
-    """
-
-
-class StrCLIResponse(str, BaseCLIResponse):
-
-    @property
-    def json(self):
-        """
-        Return deserialized JSON body, if one included in the output
-        and is parseable.
-
-        """
-        if not hasattr(self, '_json'):
-            self._json = None
-            # De-serialize JSON body if possible.
-            if COLOR in self:
-                # Colorized output cannot be parsed.
-                pass
-            elif self.strip().startswith('{'):
-                # Looks like JSON body.
-                self._json = json.loads(self)
-            elif (self.count('Content-Type:') == 1 and
-                    'application/json' in self):
-                # Looks like a whole JSON HTTP message,
-                # try to extract its body.
-                try:
-                    j = self.strip()[self.strip().rindex('\r\n\r\n'):]
-                except ValueError:
-                    pass
-                else:
-                    try:
-                        self._json = json.loads(j)
-                    except ValueError:
-                        pass
-        return self._json
-
-
-def mk_config_dir():
-    dirname = tempfile.mkdtemp(prefix='httpie_config_')
-    return dirname

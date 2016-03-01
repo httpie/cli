@@ -2,7 +2,7 @@
 Tests for the provided defaults regarding HTTP method, and --json vs. --form.
 
 """
-from utils import TestEnvironment, http, HTTP_OK, no_content_type
+from utils import TestEnvironment, http, HTTP_OK
 from fixtures import FILE_PATH
 
 
@@ -46,7 +46,7 @@ class TestAutoContentTypeAndAcceptHeaders:
         r = http('GET', httpbin.url + '/headers')
         assert HTTP_OK in r
         assert r.json['headers']['Accept'] == '*/*'
-        assert no_content_type(r.json['headers'])
+        assert 'Content-Type' not in r.json['headers']
 
     def test_POST_no_data_no_auto_headers(self, httpbin):
         # JSON headers shouldn't be automatically set for POST with no data.
