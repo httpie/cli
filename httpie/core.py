@@ -173,8 +173,10 @@ def main(args=sys.argv[1:], env=Environment(), custom_log_error=None):
     args = decode_args(args, env.stdin_encoding)
     plugin_manager.load_installed_plugins()
 
-    def log_error(msg, *args, level='error'):
+    def log_error(msg, *args, **kwargs):
         msg = msg % args
+        level = kwargs.get('level', 'error')
+        assert level in ['error', 'warning']
         env.stderr.write('\nhttp: %s: %s\n' % (level, msg))
 
     from httpie.cli import parser
