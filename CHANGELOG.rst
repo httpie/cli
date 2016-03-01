@@ -13,6 +13,8 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 * Added ``--max-redirects`` (default 30)
 * Added ``-A`` as short name for ``--auth-type``
 * Added ``-F`` as short name for ``--follow``
+* Added JSON detection when ``--json, -j`` is used in order to correctly format
+  JSON responses even when an incorrect ``Content-Type`` is returned.
 * Changed the default color style back to ``solarized`` as it supports
   both the light and dark terminal background mode
 * Fixed ``--session`` when used with ``--download``

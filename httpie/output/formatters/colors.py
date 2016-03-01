@@ -1,3 +1,5 @@
+import json
+
 import pygments.lexer
 import pygments.token
 import pygments.styles
@@ -5,6 +7,7 @@ import pygments.lexers
 import pygments.style
 from pygments.formatters.terminal import TerminalFormatter
 from pygments.formatters.terminal256 import Terminal256Formatter
+from pygments.lexers.special import TextLexer
 from pygments.util import ClassNotFound
 
 from httpie.plugins import FormatterPlugin
@@ -27,11 +30,15 @@ class ColorFormatter(FormatterPlugin):
     """
     group_name = 'colors'
 
-    def __init__(self, env, color_scheme=DEFAULT_STYLE, **kwargs):
+    def __init__(self, env, explicit_json=False,
+                 color_scheme=DEFAULT_STYLE, **kwargs):
         super(ColorFormatter, self).__init__(**kwargs)
         if not env.colors:
             self.enabled = False
             return
+
+        # --json, -j
+        self.explicit_json = explicit_json
 
         # Cache to speed things up when we process streamed body by line.
         self.lexer_cache = {}
@@ -51,19 +58,18 @@ class ColorFormatter(FormatterPlugin):
         return pygments.highlight(headers, HTTPLexer(), self.formatter).strip()
 
     def format_body(self, body, mime):
-        lexer = self.get_lexer(mime)
+        lexer = self.get_lexer(mime, body)
         if lexer:
             body = pygments.highlight(body, lexer, self.formatter)
         return body.strip()
 
-    def get_lexer(self, mime):
-        if mime in self.lexer_cache:
-            return self.lexer_cache[mime]
-        self.lexer_cache[mime] = get_lexer(mime)
-        return self.lexer_cache[mime]
+    def get_lexer(self, mime, body):
+        return get_lexer(mime, body, self.explicit_json)
 
 
-def get_lexer(mime):
+def get_lexer(mime, explicit_json=False, body=''):
+
+    # Build candidate mime type and lexer names.
     mime_types, lexer_names = [mime], []
     type_, subtype = mime.split('/', 1)
     if '+' not in subtype:
@@ -75,10 +81,14 @@ def get_lexer(mime):
             '%s/%s' % (type_, subtype_name),
             '%s/%s' % (type_, subtype_suffix)
         ])
-    # as a last resort, if no lexer feels responsible, and
-    # the subtype contains 'json', take the JSON lexer
-    if 'json' in subtype:
+
+    # As a last resort, if no lexer feels responsible, and
+    # the subtype contains 'json' or explicit --json is set,
+    # take the JSON lexer
+    if 'json' in subtype or explicit_json:
         lexer_names.append('json')
+
+    # Try to resolve the right lexer.
     lexer = None
     for mime_type in mime_types:
         try:
@@ -92,6 +102,18 @@ def get_lexer(mime):
                 lexer = pygments.lexers.get_lexer_by_name(name)
             except ClassNotFound:
                 pass
+
+    if lexer and explicit_json and body and isinstance(lexer, TextLexer):
+        # When a text lexer is resolved even with --json (i.e. explicit
+        # text/plain Content-Type), try to parse the response as JSON
+        # and if it parses, sneak in the JSON lexer instead.
+        try:
+            json.loads(body)  # FIXME: it also gets parsed in json.py
+        except ValueError:
+            pass  # Invalid JSON, ignore.
+        else:
+            lexer = pygments.lexers.get_lexer_by_name('json')
+
     return lexer
 
 

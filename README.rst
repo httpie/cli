@@ -389,7 +389,9 @@ both of which can be overwritten:
 You can use ``--json, -j`` to explicitly set ``Accept``
 to ``application/json`` regardless of whether you are sending data
 (it's a shortcut for setting the header via the usual header notation –
-``http url Accept:application/json``).
+``http url Accept:application/json``). Also, with ``--json, -j``,
+HTTPie tries to detect if the body is JSON even if the ``Content-Type``
+doesn't specify it in order to correctly format it.
 
 Simple example:
 
@@ -1330,8 +1332,8 @@ Support
 
 * Use `GitHub issues <https://github.com/jkbr/httpie/issues>`_
   for bug reports and feature requests.
-* Ask questions and discuss features on
-  `Gitter chat <https://gitter.im/jkbrzt/httpie>`_.
+* Ask questions and discuss features in
+  ` our Gitter chat room <https://gitter.im/jkbrzt/httpie>`_.
 * Ask questions on `StackOverflow <https://stackoverflow.com>`_
   (please make sure to use the
   `httpie <http://stackoverflow.com/questions/tagged/httpie>`_ tag).

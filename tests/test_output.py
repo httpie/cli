@@ -28,23 +28,28 @@ class TestVerboseFlag:
 
 class TestColors:
 
-    @pytest.mark.parametrize('mime', [
-        'application/json',
-        'application/json+foo',
-        'application/foo+json',
-        'application/json-foo',
-        'application/x-json',
-        'foo/json',
-        'foo/json+bar',
-        'foo/bar+json',
-        'foo/json-foo',
-        'foo/x-json',
-        'application/vnd.comverge.grid+hal+json',
-    ])
-    def test_get_lexer(self, mime):
-        lexer = get_lexer(mime)
+    @pytest.mark.parametrize(
+        argnames=['mime', 'explicit_json', 'body', 'expected_lexer_name'],
+        argvalues=[
+            ('application/json',     False, None, 'JSON'),
+            ('application/json+foo', False, None, 'JSON'),
+            ('application/foo+json', False, None, 'JSON'),
+            ('application/json-foo', False, None, 'JSON'),
+            ('application/x-json',   False, None, 'JSON'),
+            ('foo/json',             False, None, 'JSON'),
+            ('foo/json+bar',         False, None, 'JSON'),
+            ('foo/bar+json',         False, None, 'JSON'),
+            ('foo/json-foo',         False, None, 'JSON'),
+            ('foo/x-json',           False, None, 'JSON'),
+            ('application/vnd.comverge.grid+hal+json', False, None, 'JSON'),
+            ('text/plain',           True, '{}', 'JSON'),
+            ('text/plain',           True, 'foo', 'Text only'),
+        ]
+    )
+    def test_get_lexer(self, mime, explicit_json, body, expected_lexer_name):
+        lexer = get_lexer(mime, body=body, explicit_json=explicit_json)
         assert lexer is not None
-        assert lexer.name == 'JSON'
+        assert lexer.name == expected_lexer_name
 
     def test_get_lexer_not_found(self):
         assert get_lexer('xxx/yyy') is None

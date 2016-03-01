@@ -112,8 +112,12 @@ def get_stream_type(env, args):
             PrettyStream if args.stream else BufferedPrettyStream,
             env=env,
             conversion=Conversion(),
-            formatting=Formatting(env=env, groups=args.prettify,
-                                  color_scheme=args.style),
+            formatting=Formatting(
+                env=env,
+                groups=args.prettify,
+                color_scheme=args.style,
+                explicit_json=args.json,
+            ),
         )
     else:
         Stream = partial(EncodedStream, env=env)
