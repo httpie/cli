@@ -577,7 +577,7 @@ troubleshooting.add_argument(
     action='store_true',
     default=False,
     help="""
-    Prints exception traceback should one occur.
+    Prints the exception traceback should one occur.
 
     """
 )
@@ -586,8 +586,8 @@ troubleshooting.add_argument(
     action='store_true',
     default=False,
     help="""
-    Prints exception traceback should one occur, and also other information
-    that is useful for debugging HTTPie itself and for reporting bugs.
+    Prints the exception traceback should one occur, as well as other
+    information useful for debugging HTTPie itself and for reporting bugs.
 
     """
 )

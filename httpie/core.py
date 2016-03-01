@@ -164,8 +164,8 @@ def main(args=sys.argv[1:], env=Environment(), custom_log_error=None):
     """
     The main function.
 
-    Pre-process args, handle some special type of invocations, and run the main
-    program with error handling.
+    Pre-process args, handle some special types of invocations,
+    and run the main program with error handling.
 
     Return exit status code.
 
