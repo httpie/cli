@@ -6,7 +6,6 @@ import os
 import sys
 import time
 import json
-import shutil
 import tempfile
 
 import httpie
@@ -30,11 +29,11 @@ HTTP_OK_COLOR = (
 
 def no_content_type(headers):
     return (
-        'Content-Type' not in headers
+        'Content-Type' not in headers or
         # We need to do also this because of this issue:
         # <https://github.com/kevin1024/pytest-httpbin/issues/5>
         # TODO: remove this function once the issue is if fixed
-        or headers['Content-Type'] == 'text/plain'
+        headers['Content-Type'] == 'text/plain'
     )
 
 
@@ -53,68 +52,82 @@ class TestEnvironment(Environment):
     stdout_isatty = True
     is_windows = False
 
-    _shutil_rmtree = shutil.rmtree  # needed by __del__ (would get gc'd)
-
     def __init__(self, **kwargs):
-
         if 'stdout' not in kwargs:
-            kwargs['stdout'] = tempfile.TemporaryFile('w+b')
-
+            kwargs['stdout'] = tempfile.TemporaryFile(
+                mode='w+b',
+                prefix='httpie_stdout'
+            )
         if 'stderr' not in kwargs:
-            kwargs['stderr'] = tempfile.TemporaryFile('w+t')
-
-        self.delete_config_dir = False
-        if 'config_dir' not in kwargs:
-            kwargs['config_dir'] = mk_config_dir()
-            self.delete_config_dir = True
-
+            kwargs['stderr'] = tempfile.TemporaryFile(
+                mode='w+t',
+                prefix='httpie_stderr'
+            )
         super(TestEnvironment, self).__init__(**kwargs)
+        self._delete_config_dir = False
+
+    @property
+    def config(self):
+        if not self.config_dir.startswith(tempfile.gettempdir()):
+            self.config_dir = mk_config_dir()
+            self._delete_config_dir = True
+        return super(TestEnvironment, self).config
+
+    def cleanup(self):
+        if self._delete_config_dir:
+            assert self.config_dir.startswith(tempfile.gettempdir())
+            from shutil import rmtree
+            rmtree(self.config_dir)
 
     def __del__(self):
-        if self.delete_config_dir:
-            self._shutil_rmtree(self.config_dir)
+        try:
+            self.cleanup()
+        except Exception:
+            pass
 
 
 def http(*args, **kwargs):
+    # noinspection PyUnresolvedReferences
     """
-    Run HTTPie and capture stderr/out and exit status.
+        Run HTTPie and capture stderr/out and exit status.
 
-    Invoke `httpie.core.main()` with `args` and `kwargs`,
-    and return a `CLIResponse` subclass instance.
+        Invoke `httpie.core.main()` with `args` and `kwargs`,
+        and return a `CLIResponse` subclass instance.
 
-    The return value is either a `StrCLIResponse`, or `BytesCLIResponse`
-    if unable to decode the output.
+        The return value is either a `StrCLIResponse`, or `BytesCLIResponse`
+        if unable to decode the output.
 
-    The response has the following attributes:
+        The response has the following attributes:
 
-        `stdout` is represented by the instance itself (print r)
-        `stderr`: text written to stderr
-        `exit_status`: the exit status
-        `json`: decoded JSON (if possible) or `None`
+            `stdout` is represented by the instance itself (print r)
+            `stderr`: text written to stderr
+            `exit_status`: the exit status
+            `json`: decoded JSON (if possible) or `None`
 
-    Exceptions are propagated.
+        Exceptions are propagated.
 
-    If you pass ``error_exit_ok=True``, then error exit statuses
-    won't result into an exception.
+        If you pass ``error_exit_ok=True``, then error exit statuses
+        won't result into an exception.
 
-    Example:
+        Example:
 
-    $ http --auth=user:password GET httpbin.org/basic-auth/user/password
+        $ http --auth=user:password GET httpbin.org/basic-auth/user/password
 
-        >>> r = http('-a', 'user:pw', 'httpbin.org/basic-auth/user/pw')
-        >>> type(r) == StrCLIResponse
-        True
-        >>> r.exit_status
-        0
-        >>> r.stderr
-        ''
-        >>> 'HTTP/1.1 200 OK' in r
-        True
-        >>> r.json == {'authenticated': True, 'user': 'user'}
-        True
+            >>> httpbin = getfixture('httpbin')
+            >>> r = http('-a', 'user:pw', httpbin.url + '/basic-auth/user/pw')
+            >>> type(r) == StrCLIResponse
+            True
+            >>> r.exit_status
+            0
+            >>> r.stderr
+            ''
+            >>> 'HTTP/1.1 200 OK' in r
+            True
+            >>> r.json == {'authenticated': True, 'user': 'user'}
+            True
 
 
-    """
+        """
     error_exit_ok = kwargs.pop('error_exit_ok', False)
     env = kwargs.get('env')
     if not env:
@@ -174,6 +187,7 @@ def http(*args, **kwargs):
     finally:
         stdout.close()
         stderr.close()
+        env.cleanup()
 
 
 class BaseCLIResponse(object):
@@ -221,8 +235,8 @@ class StrCLIResponse(str, BaseCLIResponse):
             elif self.strip().startswith('{'):
                 # Looks like JSON body.
                 self._json = json.loads(self)
-            elif (self.count('Content-Type:') == 1
-                    and 'application/json' in self):
+            elif (self.count('Content-Type:') == 1 and
+                    'application/json' in self):
                 # Looks like a whole JSON HTTP message,
                 # try to extract its body.
                 try:
@@ -238,4 +252,5 @@ class StrCLIResponse(str, BaseCLIResponse):
 
 
 def mk_config_dir():
-    return tempfile.mkdtemp(prefix='httpie_test_config_dir_')
+    dirname = tempfile.mkdtemp(prefix='httpie_config_')
+    return dirname
