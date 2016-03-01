@@ -288,17 +288,17 @@ If the port is omitted, then port 80 is assumed.
 If you find yourself manually constructing URLs with **querystring parameters**
 on the terminal, you may appreciate the ``param==value`` syntax for appending
 URL parameters so that you don't have to worry about escaping the ``&``
-separators. To search for ``HTTPie`` on Google Images you could use this
-command:
+separators and as well as special character in parameter values.
+To search for ``HTTPie logo`` on Google Images you could use this command:
 
 .. code-block:: bash
 
-    $ http GET www.google.com search==HTTPie tbm==isch
+    $ http www.google.com search=='HTTPie logo' tbm==isch
 
 
 .. code-block:: http
 
-    GET /?search=HTTPie&tbm=isch HTTP/1.1
+    GET /?search=HTTPie+logo&tbm=isch HTTP/1.1
 
 
 =============
