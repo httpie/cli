@@ -3,6 +3,7 @@ from pytest import raises
 from requests import Request, Timeout
 from requests.exceptions import ConnectionError
 
+from httpie import ExitStatus
 from httpie.core import main
 
 error_msg = None
@@ -17,8 +18,8 @@ def test_error(get_response):
     exc = ConnectionError('Connection aborted')
     exc.request = Request(method='GET', url='http://www.google.com')
     get_response.side_effect = exc
-    ret = main(['--ignore-stdin', 'www.google.com'], error=error)
-    assert ret == 1
+    ret = main(['--ignore-stdin', 'www.google.com'], custom_log_error=error)
+    assert ret == ExitStatus.ERROR
     assert error_msg == (
         'ConnectionError: '
         'Connection aborted while doing GET request to URL: '
@@ -43,6 +44,6 @@ def test_timeout(get_response):
     exc = Timeout('Request timed out')
     exc.request = Request(method='GET', url='http://www.google.com')
     get_response.side_effect = exc
-    ret = main(['--ignore-stdin', 'www.google.com'], error=error)
-    assert ret == 2
+    ret = main(['--ignore-stdin', 'www.google.com'], custom_log_error=error)
+    assert ret == ExitStatus.ERROR_TIMEOUT
     assert error_msg == 'Request timed out (30s).'
