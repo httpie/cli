@@ -83,9 +83,8 @@ def get_lexer(mime, explicit_json=False, body=''):
         ])
 
     # As a last resort, if no lexer feels responsible, and
-    # the subtype contains 'json' or explicit --json is set,
-    # take the JSON lexer
-    if 'json' in subtype or explicit_json:
+    # the subtype contains 'json', take the JSON lexer
+    if 'json' in subtype:
         lexer_names.append('json')
 
     # Try to resolve the right lexer.
@@ -103,14 +102,12 @@ def get_lexer(mime, explicit_json=False, body=''):
             except ClassNotFound:
                 pass
 
-    if lexer and explicit_json and body and isinstance(lexer, TextLexer):
-        # When a text lexer is resolved even with --json (i.e. explicit
-        # text/plain Content-Type), try to parse the response as JSON
-        # and if it parses, sneak in the JSON lexer instead.
+    if explicit_json and body and (not lexer or isinstance(lexer, TextLexer)):
+        # JSON response with an incorrect Content-Type?
         try:
-            json.loads(body)  # FIXME: it also gets parsed in json.py
+            json.loads(body)  # FIXME: the body also gets parsed in json.py
         except ValueError:
-            pass  # Invalid JSON, ignore.
+            pass  # Nope
         else:
             lexer = pygments.lexers.get_lexer_by_name('json')
 
