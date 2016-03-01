@@ -89,45 +89,44 @@ class TestEnvironment(Environment):
 def http(*args, **kwargs):
     # noinspection PyUnresolvedReferences
     """
-        Run HTTPie and capture stderr/out and exit status.
+    Run HTTPie and capture stderr/out and exit status.
 
-        Invoke `httpie.core.main()` with `args` and `kwargs`,
-        and return a `CLIResponse` subclass instance.
+    Invoke `httpie.core.main()` with `args` and `kwargs`,
+    and return a `CLIResponse` subclass instance.
 
-        The return value is either a `StrCLIResponse`, or `BytesCLIResponse`
-        if unable to decode the output.
+    The return value is either a `StrCLIResponse`, or `BytesCLIResponse`
+    if unable to decode the output.
 
-        The response has the following attributes:
+    The response has the following attributes:
 
-            `stdout` is represented by the instance itself (print r)
-            `stderr`: text written to stderr
-            `exit_status`: the exit status
-            `json`: decoded JSON (if possible) or `None`
+        `stdout` is represented by the instance itself (print r)
+        `stderr`: text written to stderr
+        `exit_status`: the exit status
+        `json`: decoded JSON (if possible) or `None`
 
-        Exceptions are propagated.
+    Exceptions are propagated.
 
-        If you pass ``error_exit_ok=True``, then error exit statuses
-        won't result into an exception.
+    If you pass ``error_exit_ok=True``, then error exit statuses
+    won't result into an exception.
 
-        Example:
+    Example:
 
-        $ http --auth=user:password GET httpbin.org/basic-auth/user/password
+    $ http --auth=user:password GET httpbin.org/basic-auth/user/password
 
-            >>> httpbin = getfixture('httpbin')
-            >>> r = http('-a', 'user:pw', httpbin.url + '/basic-auth/user/pw')
-            >>> type(r) == StrCLIResponse
-            True
-            >>> r.exit_status
-            0
-            >>> r.stderr
-            ''
-            >>> 'HTTP/1.1 200 OK' in r
-            True
-            >>> r.json == {'authenticated': True, 'user': 'user'}
-            True
+        >>> httpbin = getfixture('httpbin')
+        >>> r = http('-a', 'user:pw', httpbin.url + '/basic-auth/user/pw')
+        >>> type(r) == StrCLIResponse
+        True
+        >>> r.exit_status
+        0
+        >>> r.stderr
+        ''
+        >>> 'HTTP/1.1 200 OK' in r
+        True
+        >>> r.json == {'authenticated': True, 'user': 'user'}
+        True
 
-
-        """
+    """
     error_exit_ok = kwargs.pop('error_exit_ok', False)
     env = kwargs.get('env')
     if not env:
