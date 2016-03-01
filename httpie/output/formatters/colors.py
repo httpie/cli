@@ -41,9 +41,6 @@ class ColorFormatter(FormatterPlugin):
         # --json, -j
         self.explicit_json = explicit_json
 
-        # Cache to speed things up when we process streamed body by line.
-        self.lexer_cache = {}
-
         try:
             style_class = pygments.styles.get_style_by_name(color_scheme)
         except ClassNotFound:
@@ -65,7 +62,11 @@ class ColorFormatter(FormatterPlugin):
         return body.strip()
 
     def get_lexer(self, mime, body):
-        return get_lexer(mime, body, self.explicit_json)
+        return get_lexer(
+            mime=mime,
+            explicit_json=self.explicit_json,
+            body=body,
+        )
 
 
 def get_lexer(mime, explicit_json=False, body=''):
