@@ -38,7 +38,6 @@ def get_requests_session():
 
 def get_response(args, config_dir):
     """Send the request and return a `request.Response`."""
-
     requests_session = get_requests_session()
     requests_session.max_redirects = args.max_redirects
 
@@ -62,6 +61,7 @@ def get_response(args, config_dir):
 def dump_request(kwargs):
     sys.stderr.write('\n>>> requests.request(**%s)\n\n'
                      % pformat(kwargs))
+
 
 
 def encode_headers(headers):

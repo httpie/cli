@@ -18,7 +18,7 @@ CLIENT_PEM = os.path.join(TESTS_ROOT, 'client_certs', 'client.pem')
 CA_BUNDLE = pytest_httpbin.certs.where()
 
 
-class TestClientSSLCertHandling(object):
+class TestClientCert:
 
     def test_cert_file_not_found(self, httpbin_secure):
         r = http(httpbin_secure + '/get',
@@ -54,7 +54,7 @@ class TestClientSSLCertHandling(object):
         assert HTTP_OK in r
 
 
-class TestServerSSLCertHandling(object):
+class TestServerCert:
 
     def test_self_signed_server_cert_by_default_raises_ssl_error(
             self, httpbin_secure):

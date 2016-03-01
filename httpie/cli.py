@@ -53,9 +53,7 @@ parser = HTTPieArgumentParser(
         https://github.com/jkbrzt/httpie/issues
 
     """),
-    usage='see http --help'
 )
-
 
 
 #######################################################################
