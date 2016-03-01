@@ -5,6 +5,7 @@ import errno
 from httpie import __version__
 from httpie.compat import is_windows
 
+
 def get_default_config_dir():
     """Returns the path to the httpie config directory.
 
@@ -15,11 +16,13 @@ def get_default_config_dir():
     elif is_windows:
         return os.path.expandvars(r'%APPDATA%\httpie')
     else:
-        config_dir = os.environ.get("XDG_CONFIG_HOME",
-                                    os.path.expanduser("~/.config/"))
+        config_dir = os.environ.get("XDG_CONFIG_HOME")
+        if not config_dir or not config_dir.startswith("/"):
+            config_dir = os.path.expanduser("~/.config/")
         return os.path.join(config_dir, "httpie")
 
 DEFAULT_CONFIG_DIR = get_default_config_dir()
+
 
 class BaseConfigDict(dict):
 
