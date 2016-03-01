@@ -5,6 +5,7 @@ Change Log
 This document records all notable changes to `HTTPie <http://httpie.org>`_.
 This project adheres to `Semantic Versioning <http://semver.org/>`_.
 
+
 `1.0.0-dev`_ (Unreleased)
 -------------------------
 
@@ -15,6 +16,8 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 * Added ``-F`` as short name for ``--follow``
 * Added JSON detection when ``--json, -j`` is used in order to correctly format
   JSON responses even when an incorrect ``Content-Type`` is returned.
+* Redirected ``stdout`` doesn't trigger an error anymore when ``--output FILE``
+  is set.
 * Changed the default color style back to ``solarized`` as it supports
   both the light and dark terminal background mode
 * Fixed ``--session`` when used with ``--download``
@@ -22,7 +25,7 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 
 
 `0.9.3`_ (2016-01-01)
--------------------------
+---------------------
 
 * Changed the default color ``--style`` from ``solarized`` to ``monokai``
 * Added basic Bash autocomplete support (need to be installed manually)

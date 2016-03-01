@@ -1,8 +1,28 @@
+import os
+from tempfile import gettempdir
+
 import pytest
 
 from utils import TestEnvironment, http, HTTP_OK, COLOR, CRLF
 from httpie import ExitStatus
+from httpie.compat import urlopen
 from httpie.output.formatters.colors import get_lexer
+
+
+@pytest.mark.parametrize('stdout_isatty', [(True,), (False,)])
+def test_output_option(httpbin, stdout_isatty):
+    output_filename = os.path.join(gettempdir(), test_output_option.__name__)
+    url = httpbin + '/robots.txt'
+
+    r = http('--output', output_filename, url,
+             env=TestEnvironment(stdout_isatty=stdout_isatty))
+    assert r == ''
+
+    expected_body = urlopen(url).read().decode()
+    with open(output_filename, 'r') as f:
+        actual_body = f.read()
+
+    assert actual_body == expected_body
 
 
 class TestVerboseFlag:

@@ -310,8 +310,9 @@ output_options.add_argument(
     dest='output_file',
     metavar='FILE',
     help="""
-    Save output to FILE. If --download is set, then only the response body is
-    saved to the file. Other parts of the HTTP exchange are printed to stderr.
+    Save output to FILE instead of stdout. If --download is also set, then only
+    the response body is saved to FILE. Other parts of the HTTP exchange are
+    printed to stderr.
 
     """
 

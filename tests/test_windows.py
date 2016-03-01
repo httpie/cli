@@ -22,7 +22,9 @@ class TestFakeWindows:
     def test_output_file_pretty_not_allowed_on_windows(self, httpbin):
         env = TestEnvironment(is_windows=True)
         output_file = os.path.join(
-            tempfile.gettempdir(), '__httpie_test_output__')
+            tempfile.gettempdir(),
+            self.test_output_file_pretty_not_allowed_on_windows.__name__
+        )
         r = http('--output', output_file,
                  '--pretty=all', 'GET', httpbin.url + '/get',
                  env=env, error_exit_ok=True)
