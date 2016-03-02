@@ -12,12 +12,12 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 * Added ``Content-Type`` of files uploaded in ``multipart/form-data`` requests
 * Added ``--ssl=<PROTOCOL>`` to specify the desired SSL/TLS protocol version
   to use for HTTPS requests.
+* Added JSON detection with ``--json, -j`` to work around incorrect
+  ``Content-Type``
 * Added ``--show-redirects, -R`` to show intermediate responses with ``--follow``
 * Added ``--max-redirects`` (default 30)
 * Added ``-A`` as short name for ``--auth-type``
 * Added ``-F`` as short name for ``--follow``
-* Added JSON detection with ``--json, -j`` to work around incorrect
-  ``Content-Type``
 * Redirected ``stdout`` doesn't trigger an error anymore when ``--output FILE``
   is set.
 * Changed the default ``--style`` back to ``solarized`` for better support

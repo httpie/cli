@@ -18,3 +18,10 @@ class ExitStatus:
     ERROR_HTTP_3XX = 3
     ERROR_HTTP_4XX = 4
     ERROR_HTTP_5XX = 5
+
+
+EXIT_STATUS_LABELS = dict(
+    (value, key)
+    for key, value in ExitStatus.__dict__.items()
+    if key.isupper()
+)

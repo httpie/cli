@@ -6,7 +6,7 @@ import time
 import json
 import tempfile
 
-import httpie
+from httpie import ExitStatus, EXIT_STATUS_LABELS
 from httpie.context import Environment
 from httpie.core import main
 from httpie.compat import bytes, str
@@ -135,6 +135,10 @@ class StrCLIResponse(str, BaseCLIResponse):
         return self._json
 
 
+class ExitStatusException(Exception):
+    pass
+
+
 def http(*args, **kwargs):
     # noinspection PyUnresolvedReferences
     """
@@ -205,7 +209,7 @@ def http(*args, **kwargs):
                 time.sleep(.5)
         except SystemExit:
             if error_exit_ok:
-                exit_status = httpie.ExitStatus.ERROR
+                exit_status = ExitStatus.ERROR
             else:
                 dump_stderr()
                 raise
@@ -214,9 +218,15 @@ def http(*args, **kwargs):
             sys.stderr.write(stderr.read())
             raise
         else:
-            if exit_status != httpie.ExitStatus.OK and not error_exit_ok:
+            if not error_exit_ok and exit_status != ExitStatus.OK:
                 dump_stderr()
-                raise Exception('Unexpected exit status: %s', exit_status)
+                raise ExitStatusException(
+                    'httpie.core.main() unexpectedly returned'
+                    ' a non-zero exit status: {0} ({1})'.format(
+                        exit_status,
+                        EXIT_STATUS_LABELS[exit_status]
+                    )
+                )
 
         stdout.seek(0)
         stderr.seek(0)
@@ -232,7 +242,7 @@ def http(*args, **kwargs):
         r.stderr = stderr.read()
         r.exit_status = exit_status
 
-        if r.exit_status != httpie.ExitStatus.OK:
+        if r.exit_status != ExitStatus.OK:
             sys.stderr.write(r.stderr)
 
         return r
