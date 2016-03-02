@@ -85,7 +85,6 @@ def dump_request(kwargs):
                      % pformat(kwargs))
 
 
-
 def encode_headers(headers):
     # This allows for unicode headers which is non-standard but practical.
     # See: https://github.com/jkbrzt/httpie/issues/212
