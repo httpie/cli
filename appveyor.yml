@@ -7,11 +7,13 @@ environment:
 init:
   - "ECHO %PYTHON%"
   - ps: "ls C:/Python*"
-#install:
+
+install:
 #  - ps: (new-object net.webclient).DownloadFile('https://bootstrap.pypa.io/get-pip.py', 'C:/get-pip.py')
 #  - "%PYTHON%/python.exe C:/get-pip.py"
 #  - "%PYTHON%/Scripts/pip.exe install -U pip setuptools"
   - "%PYTHON%/Scripts/pip.exe install -e ."
+
 test_script:
   - "%PYTHON%/Scripts/pip.exe --version"
   - "%PYTHON%/Scripts/http.exe --debug"
