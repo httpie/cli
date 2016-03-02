@@ -5,6 +5,7 @@ import pytest_httpbin.certs
 from requests.exceptions import SSLError
 
 from httpie import ExitStatus
+from httpie.input import SSL_VERSION_ARG_MAPPING
 from utils import http, HTTP_OK, TESTS_ROOT
 
 
@@ -16,6 +17,26 @@ CLIENT_PEM = os.path.join(TESTS_ROOT, 'client_certs', 'client.pem')
 # Requests without --verify=<CA_BUNDLE> will fail with a verification error.
 # See: https://github.com/kevin1024/pytest-httpbin#https-support
 CA_BUNDLE = pytest_httpbin.certs.where()
+
+
+@pytest.mark.parametrize(
+    argnames='ssl_version',
+    argvalues=SSL_VERSION_ARG_MAPPING.keys()
+)
+def test_ssl_version(httpbin_secure, ssl_version):
+    try:
+        r = http(
+            '--verify', CA_BUNDLE,
+            '--ssl', ssl_version,
+            httpbin_secure + '/get'
+        )
+        assert HTTP_OK in r
+    except SSLError as e:
+        if ssl_version == 'ssl3':
+            # pytest-httpbin doesn't support ssl3
+            assert 'SSLV3_ALERT_HANDSHAKE_FAILURE' in str(e)
+        else:
+            raise
 
 
 class TestClientCert:

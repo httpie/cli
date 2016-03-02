@@ -10,6 +10,8 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 -------------------------
 
 * Added ``Content-Type`` of files uploaded in ``multipart/form-data`` requests
+* Added ``--ssl=<PROTOCOL>`` to specify SSL/TLS the desired protocol version
+  to use for HTTPS requests.
 * Added ``--show-redirects, -R`` to show intermediate responses with ``--follow``
 * Added ``--max-redirects`` (default 30)
 * Added ``-A`` as short name for ``--auth-type``

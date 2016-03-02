@@ -730,6 +730,22 @@ path of the key file with ``--cert-key``:
     $ http --cert=client.crt --cert-key=client.key https://example.org
 
 
+-----------
+SSL version
+-----------
+
+Use the ``--ssl=<PROTOCOL>`` to specify the desired protocol version to use.
+This will default to SSL v2.3 which will negotiate the highest protocol that both
+the server and your installation of OpenSSL support. The available protocols
+are ``ssl2.3``, ``ssl3``, ``tls1``, ``tls1.1``, ```tls1.2``. (The actually
+available set of protocols may vary depending your on OpenSSL installation.)
+
+.. code-block:: bash
+
+    # Specify the vulnerable SSL v3 protocol to talk to an outdated server:
+    $ http --ssl=ssl3 https://vulnerable.example.org
+
+
 ----------------------------
 SNI (Server Name Indication)
 ----------------------------

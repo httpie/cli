@@ -20,7 +20,7 @@ from httpie.input import (HTTPieArgumentParser,
                           OUT_RESP_BODY, OUTPUT_OPTIONS,
                           OUTPUT_OPTIONS_DEFAULT, PRETTY_MAP,
                           PRETTY_STDOUT_TTY_ONLY, SessionNameValidator,
-                          readable_file_arg)
+                          readable_file_arg, SSL_VERSION_ARG_MAPPING)
 
 
 class HTTPieHelpFormatter(RawDescriptionHelpFormatter):
@@ -486,29 +486,6 @@ network.add_argument(
 )
 
 network.add_argument(
-    '--cert',
-    default=None,
-    type=readable_file_arg,
-    help="""
-    You can specify a local cert to use as client side SSL certificate.
-    This file may either contain both private key and certificate or you may
-    specify --cert-key separately.
-
-    """
-)
-
-network.add_argument(
-    '--cert-key',
-    default=None,
-    type=readable_file_arg,
-    help="""
-    The private key to use with SSL. Only needed if --cert is given and the
-    certificate file does not contain the private key.
-
-    """
-)
-
-network.add_argument(
     '--timeout',
     type=float,
     default=30,
@@ -536,6 +513,46 @@ network.add_argument(
     """
 )
 
+
+#######################################################################
+# SSL
+#######################################################################
+
+ssl = parser.add_argument_group(title='SSL')
+ssl.add_argument(
+    '--ssl',  # TODO: Maybe something more general, such as --secure-protocol?
+    dest='ssl_version',
+    choices=list(sorted(SSL_VERSION_ARG_MAPPING.keys())),
+    help="""
+    The desired protocol version to use. This will default to
+    SSL v2.3 which will negotiate the highest protocol that both
+    the server and your installation of OpenSSL support. Available protocols
+    may vary depending on OpenSSL installation (only the supported ones
+    are shown here).
+    """
+)
+ssl.add_argument(
+    '--cert',
+    default=None,
+    type=readable_file_arg,
+    help="""
+    You can specify a local cert to use as client side SSL certificate.
+    This file may either contain both private key and certificate or you may
+    specify --cert-key separately.
+
+    """
+)
+
+ssl.add_argument(
+    '--cert-key',
+    default=None,
+    type=readable_file_arg,
+    help="""
+    The private key to use with SSL. Only needed if --cert is given and the
+    certificate file does not contain the private key.
+
+    """
+)
 
 #######################################################################
 # Troubleshooting

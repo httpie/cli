@@ -3,11 +3,13 @@ import sys
 from pprint import pformat
 
 import requests
+from requests.adapters import HTTPAdapter
 from requests.packages import urllib3
 
 from httpie import sessions
 from httpie import __version__
 from httpie.compat import str
+from httpie.input import SSL_VERSION_ARG_MAPPING
 from httpie.plugins import plugin_manager
 
 
@@ -27,8 +29,23 @@ JSON = 'application/json'
 DEFAULT_UA = 'HTTPie/%s' % __version__
 
 
-def get_requests_session():
+class HTTPieHTTPAdapter(HTTPAdapter):
+
+    def __init__(self, ssl_version=None, **kwargs):
+        self._ssl_version = ssl_version
+        super(HTTPieHTTPAdapter, self).__init__(**kwargs)
+
+    def init_poolmanager(self, *args, **kwargs):
+        kwargs['ssl_version'] = self._ssl_version
+        super(HTTPieHTTPAdapter, self).init_poolmanager(*args, **kwargs)
+
+
+def get_requests_session(ssl_version):
     requests_session = requests.Session()
+    requests_session.mount(
+        'https://',
+        HTTPieHTTPAdapter(ssl_version=ssl_version)
+    )
     for cls in plugin_manager.get_transport_plugins():
         transport_plugin = cls()
         requests_session.mount(prefix=transport_plugin.prefix,
@@ -38,7 +55,12 @@ def get_requests_session():
 
 def get_response(args, config_dir):
     """Send the request and return a `request.Response`."""
-    requests_session = get_requests_session()
+
+    ssl_version = None
+    if args.ssl_version:
+        ssl_version = SSL_VERSION_ARG_MAPPING[args.ssl_version]
+
+    requests_session = get_requests_session(ssl_version)
     requests_session.max_redirects = args.max_redirects
 
     if not args.session and not args.session_read_only:
