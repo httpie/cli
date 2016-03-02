@@ -1,1 +1,1 @@
-; needs to exist otherwise `$ coveralls fails`
+; needs to exist otherwise `$ coveralls` fails

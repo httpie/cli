@@ -738,7 +738,7 @@ Use the ``--ssl=<PROTOCOL>`` to specify the desired protocol version to use.
 This will default to SSL v2.3 which will negotiate the highest protocol that both
 the server and your installation of OpenSSL support. The available protocols
 are ``ssl2.3``, ``ssl3``, ``tls1``, ``tls1.1``, ```tls1.2``. (The actually
-available set of protocols may vary depending your on OpenSSL installation.)
+available set of protocols may vary depending on your OpenSSL installation.)
 
 .. code-block:: bash
 
@@ -1348,12 +1348,14 @@ HTTPie reaches its final version ``1.0``. All changes are recorded in the
 Support
 =======
 
-* Use `GitHub issues <https://github.com/jkbr/httpie/issues>`_
+Please use the following support channels:
+
+* `GitHub issues <https://github.com/jkbr/httpie/issues>`_
   for bug reports and feature requests.
-* Ask questions and discuss features in
-  ` our Gitter chat room <https://gitter.im/jkbrzt/httpie>`_.
-* Ask questions on `StackOverflow <https://stackoverflow.com>`_
-  (please make sure to use the
+* `Our Gitter chat room <https://gitter.im/jkbrzt/httpie>`_
+  to ask questions, discuss features, and for general discussion.
+* `StackOverflow <https://stackoverflow.com>`_
+  to ask questions (please make sure to use the
   `httpie <http://stackoverflow.com/questions/tagged/httpie>`_ tag).
 * You can also tweet directly to `@jkbrzt`_.
 

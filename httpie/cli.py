@@ -475,17 +475,6 @@ network.add_argument(
 )
 
 network.add_argument(
-    '--verify',
-    default='yes',
-    help="""
-    Set to "no" to skip checking the host's SSL certificate. You can also pass
-    the path to a CA_BUNDLE file for private certs. You can also set the
-    REQUESTS_CA_BUNDLE environment variable. Defaults to "yes".
-
-    """
-)
-
-network.add_argument(
     '--timeout',
     type=float,
     default=30,
@@ -520,6 +509,16 @@ network.add_argument(
 
 ssl = parser.add_argument_group(title='SSL')
 ssl.add_argument(
+    '--verify',
+    default='yes',
+    help="""
+    Set to "no" to skip checking the host's SSL certificate. You can also pass
+    the path to a CA_BUNDLE file for private certs. You can also set the
+    REQUESTS_CA_BUNDLE environment variable. Defaults to "yes".
+
+    """
+)
+ssl.add_argument(
     '--ssl',  # TODO: Maybe something more general, such as --secure-protocol?
     dest='ssl_version',
     choices=list(sorted(SSL_VERSION_ARG_MAPPING.keys())),
@@ -529,6 +528,7 @@ ssl.add_argument(
     the server and your installation of OpenSSL support. Available protocols
     may vary depending on OpenSSL installation (only the supported ones
     are shown here).
+
     """
 )
 ssl.add_argument(
