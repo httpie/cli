@@ -1,16 +1,20 @@
 # https://ci.appveyor.com/project/jkbrzt/httpie
 build: false
+
 environment:
   matrix:
     - PYTHON: "C:/Python27"
-    - PYTHON: "C:/Python34"
+    # Python 3.4 has outdated pip
+    # - PYTHON: "C:/Python34"
     - PYTHON: "C:/Python35"
+
 init:
   - "ECHO %PYTHON%"
   - ps: "ls C:/Python*"
 
 install:
-  - "%PYTHON%/Scripts/pip.exe install -U pip setuptools"
+  # FIXME: updating pip fails with PermissionError
+  # - "%PYTHON%/Scripts/pip.exe install -U pip setuptools"
   - "%PYTHON%/Scripts/pip.exe install -e ."
 
 test_script:
