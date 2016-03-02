@@ -10,7 +10,7 @@ init:
   - ps: "ls C:/Python*"
 
 install:
-#  - "%PYTHON%/Scripts/pip.exe install -U pip setuptools"
+  - "%PYTHON%/Scripts/pip.exe install -U pip setuptools"
   - "%PYTHON%/Scripts/pip.exe install -e ."
 
 test_script:
