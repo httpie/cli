@@ -135,7 +135,7 @@ class StrCLIResponse(str, BaseCLIResponse):
         return self._json
 
 
-class ExitStatusException(Exception):
+class ExitStatusError(Exception):
     pass
 
 
@@ -220,7 +220,7 @@ def http(*args, **kwargs):
         else:
             if not error_exit_ok and exit_status != ExitStatus.OK:
                 dump_stderr()
-                raise ExitStatusException(
+                raise ExitStatusError(
                     'httpie.core.main() unexpectedly returned'
                     ' a non-zero exit status: {0} ({1})'.format(
                         exit_status,
