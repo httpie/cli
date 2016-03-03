@@ -1231,11 +1231,14 @@ HTTPie uses a simple configuration file that contains a JSON object with the
 following keys:
 
 
+------------
 ``__meta__``
 ------------
+
 HTTPie automatically stores some of its metadata here. Do not change.
 
 
+-------------------
 ``default_options``
 -------------------
 
@@ -1246,7 +1249,7 @@ For instance, you can use this option to change the default style and output
 options: ``"default_options": ["--style=fruity", "--body"]``
 
 Another useful default option is ``"--session=default"`` to make HTTPie always
-use `sessions`_.
+use `sessions`_ (one name ``default`` will automatically be created/used).
 
 Or you could change the implicit request content type from JSON to form by
 adding the ``--form``.
@@ -1254,9 +1257,6 @@ adding the ``--form``.
 Default options from config file can be unset for a particular invocation via
 ``--no-OPTION`` arguments passed on the command line (e.g., ``--no-style``
 or ``--no-session``).
-
-
-=========================     =================================================
 
 The default location of the configuration file is ``~/.httpie/config.json``
 (or ``%APPDATA%\httpie\config.json`` on Windows).
