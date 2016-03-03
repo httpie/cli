@@ -1248,7 +1248,7 @@ every invocation of HTTPie.
 For instance, you can use this option to change the default style and output
 options: ``"default_options": ["--style=fruity", "--body"]`` Another useful
 default option could be ``"--session=default"`` to make HTTPie always
-use `sessions`_ (one name ``default`` will automatically be created/used).
+use `sessions`_ (one named ``default`` will automatically be used).
 Or you could change the implicit request content type from JSON to form by
 adding ``--form`` to the list.
 
