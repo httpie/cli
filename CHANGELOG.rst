@@ -18,6 +18,8 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 * Added ``--max-redirects`` (default 30)
 * Added ``-A`` as short name for ``--auth-type``
 * Added ``-F`` as short name for ``--follow``
+* Removed the ``"implicit_content_type" config option
+  (use ``"default_options": ["--form"]`` instead)
 * Redirected ``stdout`` doesn't trigger an error anymore when ``--output FILE``
   is set
 * Changed the default ``--style`` back to ``solarized`` for better support

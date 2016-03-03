@@ -1230,31 +1230,32 @@ Config
 HTTPie uses a simple configuration file that contains a JSON object with the
 following keys:
 
-=========================     =================================================
-``__meta__``                  HTTPie automatically stores some metadata here.
-                              Do not change.
 
-``implicit_content_type``     A ``String`` specifying the implicit content type
-                              for request data. The default value for this
-                              option is ``json`` and can be changed to
-                              ``form``.
+``__meta__``
+------------
+HTTPie automatically stores some of its metadata here. Do not change.
 
-``default_options``           An ``Array`` (by default empty) of options
-                              that should be applied to every request.
 
-                              For instance, you can use this option to change
-                              the default style and output options:
-                              ``"default_options": ["--style=fruity", "--body"]``
+``default_options``
+-------------------
 
-                              Another useful default option is
-                              ``"--session=default"`` to make HTTPie always
-                              use `sessions`_.
+An ``Array`` (by default empty) of default options that should be applied to
+every invocation of HTTPie.
 
-                              Default options from config file can be unset
-                              for a particular invocation via
-                              ``--no-OPTION`` arguments passed on the
-                              command line (e.g., ``--no-style``
-                              or ``--no-session``).
+For instance, you can use this option to change the default style and output
+options: ``"default_options": ["--style=fruity", "--body"]``
+
+Another useful default option is ``"--session=default"`` to make HTTPie always
+use `sessions`_.
+
+Or you could change the implicit request content type from JSON to form by
+adding the ``--form``.
+
+Default options from config file can be unset for a particular invocation via
+``--no-OPTION`` arguments passed on the command line (e.g., ``--no-style``
+or ``--no-session``).
+
+
 =========================     =================================================
 
 The default location of the configuration file is ``~/.httpie/config.json``

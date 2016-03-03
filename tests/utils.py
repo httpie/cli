@@ -189,13 +189,14 @@ def http(*args, **kwargs):
     stderr = env.stderr
 
     args = list(args)
-    extra_args = []
-    if '--debug' not in args:
-        if '--traceback' not in args:
-            extra_args.append('--traceback')
-        if not any('--timeout' in arg for arg in args):
-            extra_args.append('--timeout=3')
-    args = extra_args + args
+    args_with_config_defaults = args + env.config.default_options
+    add_to_args = []
+    if '--debug' not in args_with_config_defaults:
+        if '--traceback' not in args_with_config_defaults:
+            add_to_args.append('--traceback')
+        if not any('--timeout' in arg for arg in args_with_config_defaults):
+            add_to_args.append('--timeout=3')
+    args = add_to_args + args
 
     def dump_stderr():
         stderr.seek(0)

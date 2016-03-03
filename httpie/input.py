@@ -142,7 +142,6 @@ class HTTPieArgumentParser(ArgumentParser):
 
         # Arguments processing and environment setup.
         self._apply_no_options(no_options)
-        self._apply_config()
         self._validate_download_options()
         self._setup_standard_streams()
         self._process_output_options()
@@ -213,11 +212,6 @@ class HTTPieArgumentParser(ArgumentParser):
                     raise
             self.env.stdout = self.args.output_file
             self.env.stdout_isatty = False
-
-    def _apply_config(self):
-        if (not self.args.json
-                and self.env.config.implicit_content_type == 'form'):
-            self.args.form = True
 
     def _process_auth(self):
         """
