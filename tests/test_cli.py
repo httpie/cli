@@ -154,7 +154,7 @@ class TestQuerystring:
         assert '"url": "%s"' % url in r
 
 
-class TestURLshorthand:
+class TestLocalhostShorthand:
     def test_expand_localhost_shorthand(self):
         args = parser.parse_args(args=[':'], env=TestEnvironment())
         assert args.url == 'http://localhost'

@@ -9,7 +9,7 @@ from httpie.compat import urlopen
 from httpie.output.formatters.colors import get_lexer
 
 
-@pytest.mark.parametrize('stdout_isatty', [(True,), (False,)])
+@pytest.mark.parametrize('stdout_isatty', [True, False])
 def test_output_option(httpbin, stdout_isatty):
     output_filename = os.path.join(gettempdir(), test_output_option.__name__)
     url = httpbin + '/robots.txt'
