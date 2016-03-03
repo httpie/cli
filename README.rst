@@ -1246,21 +1246,16 @@ An ``Array`` (by default empty) of default options that should be applied to
 every invocation of HTTPie.
 
 For instance, you can use this option to change the default style and output
-options: ``"default_options": ["--style=fruity", "--body"]``
-
-Another useful default option is ``"--session=default"`` to make HTTPie always
+options: ``"default_options": ["--style=fruity", "--body"]`` Another useful
+default option could be ``"--session=default"`` to make HTTPie always
 use `sessions`_ (one name ``default`` will automatically be created/used).
-
 Or you could change the implicit request content type from JSON to form by
-adding the ``--form``.
+adding ``--form`` to the list.
 
 Default options from config file can be unset for a particular invocation via
 ``--no-OPTION`` arguments passed on the command line (e.g., ``--no-style``
-or ``--no-session``).
-
-The default location of the configuration file is ``~/.httpie/config.json``
-(or ``%APPDATA%\httpie\config.json`` on Windows).
-
+or ``--no-session``). The default location of the configuration file is
+``~/.httpie/config.json`` (or ``%APPDATA%\httpie\config.json`` on Windows).
 The config directory location can be changed by setting the
 ``HTTPIE_CONFIG_DIR`` environment variable.
 
