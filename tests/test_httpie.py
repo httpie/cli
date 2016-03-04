@@ -11,7 +11,6 @@ def test_debug():
     r = http('--debug')
     assert r.exit_status == httpie.ExitStatus.OK
     assert 'HTTPie %s' % httpie.__version__ in r.stderr
-    assert 'HTTPie data:' in r.stderr
 
 
 def test_help():

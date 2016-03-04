@@ -24,6 +24,7 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
   is set
 * Changed the default ``--style`` back to ``solarized`` for better support
   of light and dark terminals
+* Improved ``--debug`` output
 * Fixed ``--session`` when used with ``--download``
 * Fixed handling of ``Content-Type`` with multiple ``+subtype`` parts
 

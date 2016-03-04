@@ -32,7 +32,7 @@ def test_error_traceback(get_response):
     exc.request = Request(method='GET', url='http://www.google.com')
     get_response.side_effect = exc
     with raises(ConnectionError):
-        ret = main(['--ignore-stdin', '--traceback', 'www.google.com'])
+        main(['--ignore-stdin', '--traceback', 'www.google.com'])
 
 
 @mock.patch('httpie.core.get_response')

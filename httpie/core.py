@@ -12,6 +12,7 @@ Invocation flow:
 """
 import sys
 import errno
+import platform
 
 import requests
 from requests import __version__ as requests_version
@@ -48,11 +49,14 @@ def get_exit_status(http_status, follow=False):
 def print_debug_info(env):
     env.stderr.writelines([
         'HTTPie %s\n' % httpie_version,
-        'HTTPie data: %s\n' % env.config.directory,
         'Requests %s\n' % requests_version,
         'Pygments %s\n' % pygments_version,
-        'Python %s %s\n' % (sys.version, sys.platform)
+        'Python %s\n%s\n' % (sys.version, sys.executable),
+        '%s %s' % (platform.system(), platform.release()),
     ])
+    env.stderr.write('\n\n')
+    env.stderr.write(repr(env))
+    env.stderr.write('\n')
 
 
 def decode_args(args, stdin_encoding):

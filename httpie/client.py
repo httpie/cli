@@ -11,7 +11,7 @@ from httpie import __version__
 from httpie.compat import str
 from httpie.input import SSL_VERSION_ARG_MAPPING
 from httpie.plugins import plugin_manager
-
+from httpie.utils import repr_dict_nice
 
 try:
     # https://urllib3.readthedocs.org/en/latest/security.html
@@ -82,7 +82,7 @@ def get_response(args, config_dir):
 
 def dump_request(kwargs):
     sys.stderr.write('\n>>> requests.request(**%s)\n\n'
-                     % pformat(kwargs))
+                     % repr_dict_nice(kwargs))
 
 
 def encode_headers(headers):
