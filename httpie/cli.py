@@ -251,17 +251,6 @@ output_options.add_argument(
     )
 )
 output_options.add_argument(
-    '--verbose', '-v',
-    dest='output_options',
-    action='store_const',
-    const=''.join(OUTPUT_OPTIONS),
-    help="""
-    Print the whole request as well as the response. Shortcut for --print={0}.
-
-    """
-    .format(''.join(OUTPUT_OPTIONS))
-)
-output_options.add_argument(
     '--headers', '-h',
     dest='output_options',
     action='store_const',
@@ -284,6 +273,42 @@ output_options.add_argument(
     .format(OUT_RESP_BODY)
 )
 
+output_options.add_argument(
+    '--verbose', '-v',
+    dest='verbose',
+    action='store_true',
+    help="""
+    Verbose output. Print the whole request as well as the response. Also print
+    any intermediary requests/responses (such as redirects).
+    It's a shortcut for: --all --print={0}
+
+    """
+    .format(''.join(OUTPUT_OPTIONS))
+)
+output_options.add_argument(
+    '--all',
+    default=False,
+    action='store_true',
+    help="""
+    By default, only the final request/response is shown. Use this flag to show
+    any intermediary requests/responses as well. Intermediary requests include
+    followed redirects (with --follow), the first unauthorized request when
+    Digest auth is used (--auth=digest), etc.
+
+    """
+)
+output_options.add_argument(
+    '--print-others', '-P',
+    dest='output_options_others',
+    metavar='WHAT',
+    help="""
+    The same as --print, -p but applies only to intermediary requests/responses
+    (such as redirects) when their inclusion is enabled with --all. If this
+    options is not specified, then they are formatted the same way as the final
+    response.
+
+    """
+)
 output_options.add_argument(
     '--stream', '-S',
     action='store_true',
@@ -450,16 +475,6 @@ network.add_argument(
     action='store_true',
     help="""
     Follow 30x Location redirects.
-
-    """
-)
-
-network.add_argument(
-    '--show-redirects', '-R',
-    default=False,
-    action='store_true',
-    help="""
-    Show all responses within the redirect chain (works with --follow).
 
     """
 )

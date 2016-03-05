@@ -55,15 +55,15 @@ def write_stream_with_colors_win_py3(stream, outfile, flush):
             outfile.flush()
 
 
-def build_output_stream(args, env, request, response):
+def build_output_stream(args, env, request, response, output_options):
     """Build and return a chain of iterators over the `request`-`response`
     exchange each of which yields `bytes` chunks.
 
     """
-    req_h = OUT_REQ_HEAD in args.output_options
-    req_b = OUT_REQ_BODY in args.output_options
-    resp_h = OUT_RESP_HEAD in args.output_options
-    resp_b = OUT_RESP_BODY in args.output_options
+    req_h = OUT_REQ_HEAD in output_options
+    req_b = OUT_REQ_BODY in output_options
+    resp_h = OUT_RESP_HEAD in output_options
+    resp_b = OUT_RESP_BODY in output_options
     req = req_h or req_b
     resp = resp_h or resp_b
 

@@ -636,7 +636,7 @@ response is shown. To instruct HTTPie to follow the ``Location`` header of
 ``30x`` responses and show the final response instead, use the ``--follow, -F`` option.
 
 If you additionally wish to see the intermediary requests/responses,
-then use the ``--show-redirects, -R`` option as well.
+then use the ``--all`` option as well.
 
 To change the default limit of maximum 30 redirects, use the
 ``--max-redirects=<limit>`` option.
@@ -644,7 +644,7 @@ To change the default limit of maximum 30 redirects, use the
 
 .. code-block:: bash
 
-    $ http --follow --show-redirects --max-redirects=5 httpbin.org/redirect/3
+    $ http --follow --all --max-redirects=5 httpbin.org/redirect/3
 
 
 =======
@@ -771,8 +771,8 @@ You can use the following command to test SNI support:
 Output Options
 ==============
 
-By default, HTTPie outputs the whole response message (headers as well as the
-body).
+By default, HTTPie only outputs the final response and whole response message
+is printed (headers as well as the body).
 
 You can control what should be printed via several options:
 
@@ -780,6 +780,7 @@ You can control what should be printed via several options:
 ``--headers, -h``   Only the response headers are printed.
 ``--body, -b``      Only the response body is printed.
 ``--verbose, -v``   Print the whole HTTP exchange (request and response).
+                    This option also enables ``--all`` (see bellow).
 ``--print, -p``     Selects parts of the HTTP exchange.
 =================   =====================================================
 
@@ -831,6 +832,33 @@ Print request and response headers:
 .. code-block:: bash
 
     $ http --print=Hh PUT httpbin.org/put hello=world
+
+
+---------------------------------------
+Viewing Intermediary Requests/Responses
+---------------------------------------
+
+If you'd like to see any intermediary requests/responses together with the
+final one, then use the ``--all`` option. Intermediary requests include
+followed redirects (with ``--follow``), the first unauthorized request when
+Digest auth is used (``--auth=digest``), etc. They are by default also
+formatted according to ``--print, -p`` (and its shortcuts described above),
+which can be customized with ``--print-others, -P`` which takes the same
+arguments as ``--print, -p`` but applies to the intermediary requests only.
+
+
+View all responses that lead to the final one:
+
+.. code-block:: bash
+
+    $ http --all --follow httpbin.org/redirect/3
+
+
+Print the final and the intermediary requests/responses differently:
+
+.. code-block:: bash
+
+    $ http --all --follow --print=hH --print-others=H httpbin.org/redirect/3
 
 
 -------------------------

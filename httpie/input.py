@@ -359,18 +359,32 @@ class HTTPieArgumentParser(ArgumentParser):
         The default output options are stdout-type-sensitive.
 
         """
-        if not self.args.output_options:
-            self.args.output_options = (
-                OUTPUT_OPTIONS_DEFAULT
-                if self.env.stdout_isatty
-                else OUTPUT_OPTIONS_DEFAULT_STDOUT_REDIRECTED
-            )
+        def check_options(value, option):
+            unknown = set(value) - OUTPUT_OPTIONS
+            if unknown:
+                self.error('Unknown output options: {0}={1}'.format(
+                    option,
+                    ','.join(unknown)
+                ))
 
-        unknown_output_options = set(self.args.output_options) - OUTPUT_OPTIONS
-        if unknown_output_options:
-            self.error(
-                'Unknown output options: %s' % ','.join(unknown_output_options)
-            )
+        if self.args.verbose:
+            self.args.all = True
+
+        if self.args.output_options is None:
+            if self.args.verbose:
+                self.args.output_options = ''.join(OUTPUT_OPTIONS)
+            else:
+                self.args.output_options = (
+                    OUTPUT_OPTIONS_DEFAULT
+                    if self.env.stdout_isatty
+                    else OUTPUT_OPTIONS_DEFAULT_STDOUT_REDIRECTED
+                )
+
+        if self.args.output_options_others is None:
+            self.args.output_options_others = self.args.output_options
+
+        check_options(self.args.output_options, '--print')
+        check_options(self.args.output_options_others, '--print-others')
 
         if self.args.download and OUT_RESP_BODY in self.args.output_options:
             # Response body is always downloaded with --download and it goes

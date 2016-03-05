@@ -14,7 +14,8 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
   to use for HTTPS requests.
 * Added JSON detection with ``--json, -j`` to work around incorrect
   ``Content-Type``
-* Added ``--show-redirects, -R`` to show intermediate responses with ``--follow``
+* Added ``--all`` to show intermediate responses such as redirects (with ``--follow``)
+* Added ``--print-others, -P WHAT``
 * Added ``--max-redirects`` (default 30)
 * Added ``-A`` as short name for ``--auth-type``
 * Added ``-F`` as short name for ``--follow``

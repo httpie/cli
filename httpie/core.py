@@ -96,11 +96,11 @@ def program(args, env, log_error):
             )
             downloader.pre_request(args.headers)
 
-        last_response = get_response(args, config_dir=env.config.directory)
-        if args.show_redirects:
-            responses = last_response.history + [last_response]
+        final_response = get_response(args, config_dir=env.config.directory)
+        if args.all:
+            responses = final_response.history + [final_response]
         else:
-            responses = [last_response]
+            responses = [final_response]
 
         for response in responses:
 
@@ -121,6 +121,11 @@ def program(args, env, log_error):
                     env=env,
                     request=response.request,
                     response=response,
+                    output_options=(
+                        args.output_options
+                        if response is final_response
+                        else args.output_options_others
+                    )
                 ),
                 # NOTE: `env.stdout` will in fact be `stderr` with `--download`
                 'outfile': env.stdout,
@@ -140,7 +145,7 @@ def program(args, env, log_error):
 
         if downloader and exit_status == ExitStatus.OK:
             # Last response body download.
-            download_stream, download_to = downloader.start(last_response)
+            download_stream, download_to = downloader.start(final_response)
             write_stream(
                 stream=download_stream,
                 outfile=download_to,
