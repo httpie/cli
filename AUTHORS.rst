@@ -8,6 +8,8 @@ HTTPie authors
 Patches and ideas
 -----------------
 
+`Complete list of contributors on GitHib <https://github.com/jkbrzt/httpie/graphs/contributors>`_
+
 * `Cláudia T. Delgado <https://github.com/claudiatd>`_ (logo)
 * `Hank Gay <https://github.com/gthank>`_
 * `Jake Basile <https://github.com/jakebasile>`_
@@ -34,3 +36,5 @@ Patches and ideas
 * `Dennis Brakhane <https://github.com/brakhane>`_
 * `Matt Layman <https://github.com/mblayman>`_
 * `Edward Yang <https://github.com/honorabrutroll>`_
+
+
