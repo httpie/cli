@@ -94,21 +94,21 @@ class TestDownloadUtils:
 class TestDownloads:
     # TODO: more tests
 
-    def test_actual_download(self, httpbin):
-        url = httpbin.url + '/robots.txt'
-        body = urlopen(url).read().decode()
+    def test_actual_download(self, httpbin_both, httpbin):
+        robots_txt = '/robots.txt'
+        body = urlopen(httpbin + robots_txt).read().decode()
         env = TestEnvironment(stdin_isatty=True, stdout_isatty=False)
-        r = http('--download', url, env=env)
+        r = http('--download', httpbin_both.url + robots_txt, env=env)
         assert 'Downloading' in r.stderr
         assert '[K' in r.stderr
         assert 'Done' in r.stderr
         assert body == r
 
-    def test_download_with_Content_Length(self, httpbin):
+    def test_download_with_Content_Length(self, httpbin_both):
         devnull = open(os.devnull, 'w')
         downloader = Downloader(output_file=devnull, progress_file=devnull)
         downloader.start(Response(
-            url=httpbin.url + '/',
+            url=httpbin_both.url + '/',
             headers={'Content-Length': 10}
         ))
         time.sleep(1.1)
@@ -118,20 +118,20 @@ class TestDownloads:
         downloader.finish()
         assert not downloader.interrupted
 
-    def test_download_no_Content_Length(self, httpbin):
+    def test_download_no_Content_Length(self, httpbin_both):
         devnull = open(os.devnull, 'w')
         downloader = Downloader(output_file=devnull, progress_file=devnull)
-        downloader.start(Response(url=httpbin.url + '/'))
+        downloader.start(Response(url=httpbin_both.url + '/'))
         time.sleep(1.1)
         downloader.chunk_downloaded(b'12345')
         downloader.finish()
         assert not downloader.interrupted
 
-    def test_download_interrupted(self, httpbin):
+    def test_download_interrupted(self, httpbin_both):
         devnull = open(os.devnull, 'w')
         downloader = Downloader(output_file=devnull, progress_file=devnull)
         downloader.start(Response(
-            url=httpbin.url + '/',
+            url=httpbin_both.url + '/',
             headers={'Content-Length': 5}
         ))
         downloader.chunk_downloaded(b'1234')

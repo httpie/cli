@@ -26,50 +26,50 @@ def test_version():
     assert httpie.__version__ == r.stderr.strip() + r.strip()
 
 
-def test_GET(httpbin):
-    r = http('GET', httpbin.url + '/get')
+def test_GET(httpbin_both):
+    r = http('GET', httpbin_both + '/get')
     assert HTTP_OK in r
 
 
-def test_DELETE(httpbin):
-    r = http('DELETE', httpbin.url + '/delete')
+def test_DELETE(httpbin_both):
+    r = http('DELETE', httpbin_both + '/delete')
     assert HTTP_OK in r
 
 
-def test_PUT(httpbin):
-    r = http('PUT', httpbin.url + '/put', 'foo=bar')
-    assert HTTP_OK in r
-    assert r.json['json']['foo'] == 'bar'
-
-
-def test_POST_JSON_data(httpbin):
-    r = http('POST', httpbin.url + '/post', 'foo=bar')
+def test_PUT(httpbin_both):
+    r = http('PUT', httpbin_both + '/put', 'foo=bar')
     assert HTTP_OK in r
     assert r.json['json']['foo'] == 'bar'
 
 
-def test_POST_form(httpbin):
-    r = http('--form', 'POST', httpbin.url + '/post', 'foo=bar')
+def test_POST_JSON_data(httpbin_both):
+    r = http('POST', httpbin_both + '/post', 'foo=bar')
+    assert HTTP_OK in r
+    assert r.json['json']['foo'] == 'bar'
+
+
+def test_POST_form(httpbin_both):
+    r = http('--form', 'POST', httpbin_both + '/post', 'foo=bar')
     assert HTTP_OK in r
     assert '"foo": "bar"' in r
 
 
-def test_POST_form_multiple_values(httpbin):
-    r = http('--form', 'POST', httpbin.url + '/post', 'foo=bar', 'foo=baz')
+def test_POST_form_multiple_values(httpbin_both):
+    r = http('--form', 'POST', httpbin_both + '/post', 'foo=bar', 'foo=baz')
     assert HTTP_OK in r
     assert r.json['form'] == {'foo': ['bar', 'baz']}
 
 
-def test_POST_stdin(httpbin):
+def test_POST_stdin(httpbin_both):
     with open(FILE_PATH) as f:
         env = TestEnvironment(stdin=f, stdin_isatty=False)
-        r = http('--form', 'POST', httpbin.url + '/post', env=env)
+        r = http('--form', 'POST', httpbin_both + '/post', env=env)
     assert HTTP_OK in r
     assert FILE_CONTENT in r
 
 
-def test_headers(httpbin):
-    r = http('GET', httpbin.url + '/headers', 'Foo:bar')
+def test_headers(httpbin_both):
+    r = http('GET', httpbin_both + '/headers', 'Foo:bar')
     assert HTTP_OK in r
     assert '"User-Agent": "HTTPie' in r, r
     assert '"Foo": "bar"' in r
@@ -79,8 +79,8 @@ def test_headers(httpbin):
     is_py26,
     reason='the `object_pairs_hook` arg for `json.loads()` is Py>2.6 only'
 )
-def test_json_input_preserve_order(httpbin):
-    r = http('PATCH', httpbin.url + '/patch',
+def test_json_input_preserve_order(httpbin_both):
+    r = http('PATCH', httpbin_both + '/patch',
              'order:={"map":{"1":"first","2":"second"}}')
     assert HTTP_OK in r
     assert r.json['data'] == \

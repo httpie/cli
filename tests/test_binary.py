@@ -6,6 +6,7 @@ from fixtures import BIN_FILE_PATH, BIN_FILE_CONTENT, BIN_FILE_PATH_ARG
 
 
 class TestBinaryRequestData:
+
     def test_binary_stdin(self, httpbin):
         with open(BIN_FILE_PATH, 'rb') as stdin:
             env = TestEnvironment(

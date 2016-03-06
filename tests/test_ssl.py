@@ -19,14 +19,10 @@ CLIENT_PEM = os.path.join(TESTS_ROOT, 'client_certs', 'client.pem')
 CA_BUNDLE = pytest_httpbin.certs.where()
 
 
-@pytest.mark.parametrize(
-    argnames='ssl_version',
-    argvalues=SSL_VERSION_ARG_MAPPING.keys()
-)
+@pytest.mark.parametrize('ssl_version', SSL_VERSION_ARG_MAPPING.keys())
 def test_ssl_version(httpbin_secure, ssl_version):
     try:
         r = http(
-            '--verify', CA_BUNDLE,
             '--ssl', ssl_version,
             httpbin_secure + '/get'
         )
@@ -43,20 +39,17 @@ class TestClientCert:
 
     def test_cert_and_key(self, httpbin_secure):
         r = http(httpbin_secure + '/get',
-                 '--verify', CA_BUNDLE,
                  '--cert', CLIENT_CERT,
                  '--cert-key', CLIENT_KEY)
         assert HTTP_OK in r
 
     def test_cert_pem(self, httpbin_secure):
         r = http(httpbin_secure + '/get',
-                 '--verify', CA_BUNDLE,
                  '--cert', CLIENT_PEM)
         assert HTTP_OK in r
 
     def test_cert_file_not_found(self, httpbin_secure):
         r = http(httpbin_secure + '/get',
-                 '--verify', CA_BUNDLE,
                  '--cert', '/__not_found__',
                  error_exit_ok=True)
         assert r.exit_status == ExitStatus.ERROR
@@ -65,30 +58,30 @@ class TestClientCert:
     def test_cert_file_invalid(self, httpbin_secure):
         with pytest.raises(SSLError):
             http(httpbin_secure + '/get',
-                 '--verify', CA_BUNDLE,
                  '--cert', __file__)
 
     def test_cert_ok_but_missing_key(self, httpbin_secure):
         with pytest.raises(SSLError):
             http(httpbin_secure + '/get',
-                 '--verify', CA_BUNDLE,
                  '--cert', CLIENT_CERT)
 
 
 class TestServerCert:
+
     def test_verify_no_OK(self, httpbin_secure):
         r = http(httpbin_secure.url + '/get', '--verify=no')
         assert HTTP_OK in r
 
     def test_verify_custom_ca_bundle_path(
-            self, httpbin_secure):
-        r = http(httpbin_secure.url + '/get', '--verify', CA_BUNDLE)
+            self, httpbin_secure_untrusted):
+        r = http(httpbin_secure_untrusted + '/get', '--verify', CA_BUNDLE)
         assert HTTP_OK in r
 
     def test_self_signed_server_cert_by_default_raises_ssl_error(
-            self, httpbin_secure):
+            self,
+            httpbin_secure_untrusted):
         with pytest.raises(SSLError):
-            http(httpbin_secure.url + '/get')
+            http(httpbin_secure_untrusted.url + '/get')
 
     def test_verify_custom_ca_bundle_invalid_path(self, httpbin_secure):
         with pytest.raises(SSLError):
