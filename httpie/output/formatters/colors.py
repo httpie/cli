@@ -11,14 +11,19 @@ from pygments.formatters.terminal256 import Terminal256Formatter
 from pygments.lexers.special import TextLexer
 from pygments.util import ClassNotFound
 
+from httpie.compat import is_windows
 from httpie.plugins import FormatterPlugin
 
 
-# Colors on Windows via colorama don't look that
-# great and fruity seems to give the best result there.
 AVAILABLE_STYLES = set(pygments.styles.STYLE_MAP.keys())
 AVAILABLE_STYLES.add('solarized')
-DEFAULT_STYLE = 'solarized'
+
+if is_windows:
+    # Colors on Windows via colorama don't look that
+    # great and fruity seems to give the best result there
+    DEFAULT_STYLE = 'fruity'
+else:
+    DEFAULT_STYLE = 'solarized'
 
 
 class ColorFormatter(FormatterPlugin):
