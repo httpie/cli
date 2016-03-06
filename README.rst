@@ -771,8 +771,8 @@ You can use the following command to test SNI support:
 Output Options
 ==============
 
-By default, HTTPie only outputs the final response and whole response message
-is printed (headers as well as the body).
+By default, HTTPie only outputs the final response and the whole response
+message is printed (headers as well as the body).
 
 You can control what should be printed via several options:
 
