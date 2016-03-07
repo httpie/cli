@@ -13,6 +13,7 @@ CLIENT_CERT = os.path.join(TESTS_ROOT, 'client_certs', 'client.crt')
 CLIENT_KEY = os.path.join(TESTS_ROOT, 'client_certs', 'client.key')
 CLIENT_PEM = os.path.join(TESTS_ROOT, 'client_certs', 'client.pem')
 
+# FIXME:
 # We test against a local httpbin instance which uses a self-signed cert.
 # Requests without --verify=<CA_BUNDLE> will fail with a verification error.
 # See: https://github.com/kevin1024/pytest-httpbin#https-support

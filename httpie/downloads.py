@@ -178,8 +178,8 @@ class Downloader(object):
         :type request_headers: dict
 
         """
-        # Disable content encoding so that we can resume, etc.
-        request_headers['Accept-Encoding'] = None
+        # Ask the server not to encode the content so that we can resume, etc.
+        request_headers['Accept-Encoding'] = 'identity'
         if self._resume:
             bytes_have = os.path.getsize(self._output_file.name)
             if bytes_have:
@@ -201,6 +201,8 @@ class Downloader(object):
         """
         assert not self.status.time_started
 
+        # FIXME: some servers still might sent Content-Encoding: gzip
+        # <https://github.com/jkbrzt/httpie/issues/423>
         try:
             total_size = int(response.headers['Content-Length'])
         except (KeyError, ValueError, TypeError):
@@ -299,8 +301,7 @@ class Status(object):
 
     def started(self, resumed_from=0, total_size=None):
         assert self.time_started is None
-        if total_size is not None:
-            self.total_size = total_size
+        self.total_size = total_size
         self.downloaded = self.resumed_from = resumed_from
         self.time_started = time()
 
