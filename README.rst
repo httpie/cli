@@ -1431,7 +1431,7 @@ Please see `LICENSE <https://github.com/jkbrzt/httpie/blob/master/LICENSE>`_.
 .. _claudiatd/httpie-artwork: https://github.com/claudiatd/httpie-artwork
 
 
-.. |pypi| image:: https://img.shields.io/pypi/v/httpie.svg?style=flat-square&label=latest%20version
+.. |pypi| image:: https://img.shields.io/pypi/v/httpie.svg?style=flat-square&label=latest%20stable%20version
     :target: https://pypi.python.org/pypi/httpie
     :alt: Latest version released on PyPi
 
