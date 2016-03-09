@@ -45,6 +45,13 @@ class TestVerboseFlag:
         assert HTTP_OK in r
         assert '"baz": "bar"' in r
 
+    def test_verbose_implies_all(self, httpbin):
+        r = http('--verbose', '--follow', httpbin + '/redirect/1')
+        assert 'GET /redirect/1 HTTP/1.1' in r
+        assert 'HTTP/1.1 302 FOUND' in r
+        assert 'GET /get HTTP/1.1' in r
+        assert HTTP_OK in r
+
 
 class TestColors:
 
