@@ -15,8 +15,8 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 * Added JSON detection with ``--json, -j`` to work around incorrect
   ``Content-Type``
 * Added ``--all`` to show intermediate responses such as redirects (with ``--follow``)
-* Added ``--print-others, -P WHAT``
-* Added ``--max-redirects`` (default 30)
+* Added ``--print-others, -P WHAT`` to specify formatting of intermediate responses
+* Added ``--max-redirects=N`` (default 30)
 * Added ``-A`` as short name for ``--auth-type``
 * Added ``-F`` as short name for ``--follow``
 * Removed the ``implicit_content_type`` config option

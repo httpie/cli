@@ -821,10 +821,10 @@ the HTTP exchange:
 ==========  ==================
 Character   Stands for
 ==========  ==================
-``H``       Request headers.
-``B``       Request body.
-``h``       Response headers.
-``b``       Response body.
+``H``       request headers
+``B``       request body
+``h``       response headers
+``b``       response body
 ==========  ==================
 
 Print request and response headers:
@@ -838,27 +838,27 @@ Print request and response headers:
 Viewing Intermediary Requests/Responses
 ---------------------------------------
 
-If you'd like to see any intermediary requests/responses together with the
-final one, then use the ``--all`` option. Intermediary requests include
-followed redirects (with ``--follow``), the first unauthorized request when
-Digest auth is used (``--auth=digest``), etc. They are by default also
-formatted according to ``--print, -p`` (and its shortcuts described above),
-which can be customized with ``--print-others, -P`` which takes the same
-arguments as ``--print, -p`` but applies to the intermediary requests only.
-
-
-View all responses that lead to the final one:
+To see any intermediary requests/responses together with the final one,
+use the ``--all`` option. Intermediary requests include followed redirects
+(with ``--follow``), the first unauthorized request when HTTP digest
+authentication is used (``--auth=digest``), etc.
 
 .. code-block:: bash
 
+    # Include all responses that lead to the final one:
     $ http --all --follow httpbin.org/redirect/3
 
 
-Print the final and the intermediary requests/responses differently:
+The intermediary requests/response are by default formatted according to
+``--print, -p`` (and its shortcuts described above). If you'd like to change
+that, use the ``--print-others, -P`` option. It takes the same
+arguments as ``--print, -p`` but applies to the intermediary requests only.
+
 
 .. code-block:: bash
 
-    $ http --all --follow --print=hH --print-others=H httpbin.org/redirect/3
+    # Print the intermediary requests/responses differently than the final one:
+    $ http -A digest -a foo:bar --all -p Hh -P H httpbin.org/digest-auth/auth/foo/bar
 
 
 -------------------------
