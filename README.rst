@@ -838,8 +838,9 @@ Print request and response headers:
 Viewing Intermediary Requests/Responses
 ---------------------------------------
 
-To see any intermediary requests/responses together with the final one,
-use the ``--all`` option. Intermediary requests include followed redirects
+To see *all* the HTTP communication, i.e. the final request/resposne as
+well as any possible  intermediary requests/responses, use the **``--all``**
+option. The intermediary HTTP communication include followed redirects
 (with ``--follow``), the first unauthorized request when HTTP digest
 authentication is used (``--auth=digest``), etc.
 
@@ -851,7 +852,7 @@ authentication is used (``--auth=digest``), etc.
 
 The intermediary requests/response are by default formatted according to
 ``--print, -p`` (and its shortcuts described above). If you'd like to change
-that, use the ``--print-others, -P`` option. It takes the same
+that, use the **``--print-others, -P``** option. It takes the same
 arguments as ``--print, -p`` but applies to the intermediary requests only.
 
 
