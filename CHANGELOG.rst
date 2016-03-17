@@ -27,6 +27,7 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
   of light and dark terminals
 * Improved ``--debug`` output
 * Fixed ``--session`` when used with ``--download``
+* Fixed ``--download`` to trim too long filenames before saving the file
 * Fixed handling of ``Content-Type`` with multiple ``+subtype`` parts
 
 

@@ -2,6 +2,7 @@ import os
 import time
 
 import pytest
+import mock
 from requests.structures import CaseInsensitiveDict
 
 from httpie.compat import urlopen
@@ -74,7 +75,31 @@ class TestDownloadUtils:
             content_type='x-foo/bar'
         )
 
-    def test_unique_filename(self):
+    @pytest.mark.parametrize(
+        'orig_name, unique_on_attempt, expected',
+        [
+            # Simple
+            ('foo.bar', 0, 'foo.bar'),
+            ('foo.bar', 1, 'foo.bar-1'),
+            ('foo.bar', 10, 'foo.bar-10'),
+            # Trim
+            ('A' * 20, 0, 'A' * 10),
+            ('A' * 20, 1, 'A' * 8 + '-1'),
+            ('A' * 20, 10, 'A' * 7 + '-10'),
+            # Trim before ext
+            ('A' * 20 + '.txt', 0, 'A' * 6 + '.txt'),
+            ('A' * 20 + '.txt', 1, 'A' * 4 + '.txt-1'),
+            # Trim at the end
+            ('foo.' + 'A' * 20, 0, 'foo.' + 'A' * 6),
+            ('foo.' + 'A' * 20, 1, 'foo.' + 'A' * 4 + '-1'),
+            ('foo.' + 'A' * 20, 10, 'foo.' + 'A' * 3 + '-10'),
+        ]
+    )
+    @mock.patch('httpie.downloads.get_filename_max_length')
+    def test_unique_filename(self, get_filename_max_length,
+                             orig_name, unique_on_attempt,
+                             expected):
+
         def attempts(unique_on_attempt=0):
             # noinspection PyUnresolvedReferences,PyUnusedLocal
             def exists(filename):
@@ -86,9 +111,10 @@ class TestDownloadUtils:
             exists.attempt = 0
             return exists
 
-        assert 'foo.bar' == get_unique_filename('foo.bar', attempts(0))
-        assert 'foo.bar-1' == get_unique_filename('foo.bar', attempts(1))
-        assert 'foo.bar-10' == get_unique_filename('foo.bar', attempts(10))
+        get_filename_max_length.return_value = 10
+
+        actual = get_unique_filename(orig_name, attempts(unique_on_attempt))
+        assert expected == actual
 
 
 class TestDownloads:
