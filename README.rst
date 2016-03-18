@@ -1000,7 +1000,6 @@ Also, the following formatting is applied:
 * HTTP headers are sorted by name.
 * JSON data is indented, sorted by keys, and unicode escapes are converted
   to the characters they represent.
-* XML data is indented for better readability.
 
 One of these options can be used to control output processing:
 
