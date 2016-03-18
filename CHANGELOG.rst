@@ -29,6 +29,8 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 * Fixed ``--session`` when used with ``--download``
 * Fixed ``--download`` to trim too long filenames before saving the file
 * Fixed handling of ``Content-Type`` with multiple ``+subtype`` parts
+* Removed XML formatting as the implementation suffered from multiple issues
+
 
 
 `0.9.3`_ (2016-01-01)
