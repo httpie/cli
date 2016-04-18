@@ -737,7 +737,7 @@ SSL version
 Use the ``--ssl=<PROTOCOL>`` to specify the desired protocol version to use.
 This will default to SSL v2.3 which will negotiate the highest protocol that both
 the server and your installation of OpenSSL support. The available protocols
-are ``ssl2.3``, ``ssl3``, ``tls1``, ``tls1.1``, ```tls1.2``. (The actually
+are ``ssl2.3``, ``ssl3``, ``tls1``, ``tls1.1``, ``tls1.2``. (The actually
 available set of protocols may vary depending on your OpenSSL installation.)
 
 .. code-block:: bash
