@@ -56,7 +56,7 @@ if 'bdist_wheel' not in sys.argv:
 
 # bdist_wheel
 extras_require = {
-    # http://wheel.readthedocs.org/en/latest/#defining-conditional-dependencies
+    # http://wheel.readthedocs.io/en/latest/#defining-conditional-dependencies
     ':python_version == "2.6"'
     ' or python_version == "3.0"'
     ' or python_version == "3.1" ': ['argparse>=1.2.1'],

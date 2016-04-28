@@ -14,7 +14,7 @@ from httpie.plugins import plugin_manager
 from httpie.utils import repr_dict_nice
 
 try:
-    # https://urllib3.readthedocs.org/en/latest/security.html
+    # https://urllib3.readthedocs.io/en/latest/security.html
     urllib3.disable_warnings()
 except AttributeError:
     # In some rare cases, the user may have an old version of the requests
