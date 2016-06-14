@@ -39,6 +39,10 @@ class HTTPieHTTPAdapter(HTTPAdapter):
         kwargs['ssl_version'] = self._ssl_version
         super(HTTPieHTTPAdapter, self).init_poolmanager(*args, **kwargs)
 
+def something_untested():
+    self._ssl_version = "nope"
+    
+    return True
 
 def get_requests_session(ssl_version):
     requests_session = requests.Session()
