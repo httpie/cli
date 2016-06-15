@@ -1,5 +1,4 @@
 """High-level tests."""
-import json
 import pytest
 from utils import TestEnvironment, http, HTTP_OK
 from fixtures import FILE_PATH, FILE_CONTENT
@@ -78,7 +77,3 @@ class TestHTTPie:
         assert HTTP_OK in r
         assert r.json['data'] == \
             '{"order": {"map": {"1": "first", "2": "second"}}}'
-
-    def test_websocket(self):
-        r = http('ws://echo.websocket.org/', 'foo=bar')
-        assert r == json.dumps({'foo': 'bar'})
