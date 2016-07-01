@@ -380,11 +380,11 @@ class HTTPieArgumentParser(ArgumentParser):
                     else OUTPUT_OPTIONS_DEFAULT_STDOUT_REDIRECTED
                 )
 
-        if self.args.output_options_others is None:
-            self.args.output_options_others = self.args.output_options
+        if self.args.output_options_history is None:
+            self.args.output_options_history = self.args.output_options
 
         check_options(self.args.output_options, '--print')
-        check_options(self.args.output_options_others, '--print-others')
+        check_options(self.args.output_options_history, '--history-print')
 
         if self.args.download and OUT_RESP_BODY in self.args.output_options:
             # Response body is always downloaded with --download and it goes

@@ -124,7 +124,7 @@ def program(args, env, log_error):
                     output_options=(
                         args.output_options
                         if response is final_response
-                        else args.output_options_others
+                        else args.output_options_history
                     )
                 ),
                 # NOTE: `env.stdout` will in fact be `stderr` with `--download`

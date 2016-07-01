@@ -34,7 +34,7 @@ def test_follow_redirect_output_options(httpbin):
              '--follow',
              '--all',
              '--print=h',
-             '--print-others=H',
+             '--history-print=H',
              httpbin.url + '/redirect/2')
     assert r.count('GET /') == 2
     assert 'HTTP/1.1 302 FOUND' not in r

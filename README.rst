@@ -852,7 +852,7 @@ authentication is used (``--auth=digest``), etc.
 
 The intermediary requests/response are by default formatted according to
 ``--print, -p`` (and its shortcuts described above). If you'd like to change
-that, use the **``--print-others, -P``** option. It takes the same
+that, use the ``--history-print, -P`` option. It takes the same
 arguments as ``--print, -p`` but applies to the intermediary requests only.
 
 

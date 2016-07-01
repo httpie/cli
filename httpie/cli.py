@@ -298,8 +298,8 @@ output_options.add_argument(
     """
 )
 output_options.add_argument(
-    '--print-others', '-P',
-    dest='output_options_others',
+    '--history-print', '-P',
+    dest='output_options_history',
     metavar='WHAT',
     help="""
     The same as --print, -p but applies only to intermediary requests/responses
