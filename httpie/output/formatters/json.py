@@ -10,7 +10,13 @@ DEFAULT_INDENT = 4
 class JSONFormatter(FormatterPlugin):
 
     def format_body(self, body, mime):
-        if 'json' in mime or self.kwargs['explicit_json']:
+        maybe_json = [
+            'json',
+            'javascript',
+            'text',
+        ]
+        if (any(token in mime for token in maybe_json) or
+                self.kwargs['explicit_json']):
             try:
                 obj = json.loads(body)
             except ValueError:
