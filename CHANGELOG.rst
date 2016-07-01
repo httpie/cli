@@ -9,6 +9,10 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 `1.0.0-dev`_ (Unreleased)
 -------------------------
 
+
+`0.9.4`_ (2016-07-01)
+---------------------
+
 * Added ``Content-Type`` of files uploaded in ``multipart/form-data`` requests
 * Added ``--ssl=<PROTOCOL>`` to specify the desired SSL/TLS protocol version
   to use for HTTPS requests.
@@ -28,8 +32,8 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 * Improved ``--debug`` output
 * Fixed ``--session`` when used with ``--download``
 * Fixed ``--download`` to trim too long filenames before saving the file
-* Fixed handling of ``Content-Type`` with multiple ``+subtype`` parts
-* Removed XML formatting as the implementation suffered from multiple issues
+* Fixed the handling of ``Content-Type`` with multiple ``+subtype`` parts
+* Removed the XML formatter as the implementation suffered from multiple issues
 
 
 
@@ -284,4 +288,5 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 .. _0.9.1: https://github.com/jkbrzt/httpie/compare/0.9.0...0.9.1
 .. _0.9.2: https://github.com/jkbrzt/httpie/compare/0.9.1...0.9.2
 .. _0.9.3: https://github.com/jkbrzt/httpie/compare/0.9.2...0.9.3
-.. _1.0.0-dev: https://github.com/jkbrzt/httpie/compare/0.9.3...master
+.. _0.9.4: https://github.com/jkbrzt/httpie/compare/0.9.3...0.9.4
+.. _1.0.0-dev: https://github.com/jkbrzt/httpie/compare/0.9.4...master
