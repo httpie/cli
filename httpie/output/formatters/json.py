@@ -15,8 +15,8 @@ class JSONFormatter(FormatterPlugin):
             'javascript',
             'text',
         ]
-        if (any(token in mime for token in maybe_json) or
-                self.kwargs['explicit_json']):
+        if (self.kwargs['explicit_json'] or
+                any(token in mime for token in maybe_json)):
             try:
                 obj = json.loads(body)
             except ValueError:
