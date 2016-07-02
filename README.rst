@@ -35,7 +35,7 @@ HTTPie is written in Python, and under the hood it uses the excellent
 
 
 =============
-Main Features
+Main features
 =============
 
 * Expressive and intuitive syntax
@@ -231,7 +231,7 @@ advanced usage, and also features additional examples.*
 
 
 ===========
-HTTP Method
+HTTP method
 ===========
 
 The name of the HTTP method comes right before the URL argument:
@@ -322,7 +322,7 @@ shortcuts for other protocols than HTTP:
 
 
 =============
-Request Items
+Request items
 =============
 
 There are a few different *request item* types that provide a
@@ -489,7 +489,7 @@ via the `config`_ file.
 
 
 -------------
-Regular Forms
+Regular forms
 -------------
 
 .. code-block:: bash
@@ -507,7 +507,7 @@ Regular Forms
 
 
 -----------------
-File Upload Forms
+File upload forms
 -----------------
 
 If one or more file fields is present, the serialization and content type is
@@ -533,7 +533,7 @@ Note that ``@`` is used to simulate a file upload form field, whereas
 
 
 ============
-HTTP Headers
+HTTP headers
 ============
 
 To set custom headers you can use the ``Header:Value`` notation:
@@ -648,7 +648,7 @@ Authorization information from your ``~/.netrc`` file is honored as well:
 
 
 ------------
-Auth Plugins
+Auth plugins
 ------------
 
 * `httpie-oauth <https://github.com/jkbrzt/httpie-oauth>`_: OAuth
@@ -662,7 +662,7 @@ Auth Plugins
 
 
 ==============
-HTTP Redirects
+HTTP redirects
 ==============
 
 By default, HTTP redirects are not followed and only the first
@@ -820,7 +820,7 @@ You can use the following command to test SNI support:
 
 
 ==============
-Output Options
+Output options
 ==============
 
 By default, HTTPie only outputs the final response and the whole response
@@ -887,11 +887,11 @@ Print request and response headers:
 
 
 ---------------------------------------
-Viewing Intermediary Requests/Responses
+Viewing intermediary requests/responses
 ---------------------------------------
 
-To see *all* the HTTP communication, i.e. the final request/resposne as
-well as any possible  intermediary requests/responses, use the **``--all``**
+To see *all* the HTTP communication, i.e. the final request/response as
+well as any possible  intermediary requests/responses, use the ``--all``
 option. The intermediary HTTP communication include followed redirects
 (with ``--follow``), the first unauthorized request when HTTP digest
 authentication is used (``--auth=digest``), etc.
@@ -915,7 +915,7 @@ arguments as ``--print, -p`` but applies to the intermediary requests only.
 
 
 -------------------------
-Conditional Body Download
+Conditional body download
 -------------------------
 
 As an optimization, the response body is downloaded from the server
@@ -1013,9 +1013,9 @@ To prevent HTTPie from reading ``stdin`` data you can use the
 ``--ignore-stdin`` option.
 
 
--------------------------
-Body Data From a Filename
--------------------------
+----------------------------
+Request data from a filename
+----------------------------
 
 **An alternative to redirected** ``stdin`` is specifying a filename (as
 ``@/path/to/file``) whose content is used as if it came from ``stdin``.
@@ -1031,7 +1031,7 @@ verbatim contents of that XML file with ``Content-Type: application/xml``:
 
 
 ===============
-Terminal Output
+Terminal output
 ===============
 
 HTTPie does several things by default in order to make its terminal output
@@ -1039,7 +1039,7 @@ easy to read.
 
 
 ---------------------
-Colors and Formatting
+Colors and formatting
 ---------------------
 
 Syntax highlighting is applied to HTTP headers and bodies (where it makes
@@ -1094,7 +1094,7 @@ You will nearly instantly see something like this:
 
 
 =================
-Redirected Output
+Redirected output
 =================
 
 HTTPie uses **different defaults** for redirected output than for
@@ -1145,7 +1145,7 @@ by adding the following to your ``~/.bash_profile``:
 
 
 =============
-Download Mode
+Download mode
 =============
 
 HTTPie features a download mode in which it acts similarly to ``wget``.
@@ -1202,7 +1202,7 @@ Other notes:
 
 
 ==================
-Streamed Responses
+Streamed responses
 ==================
 
 Responses are downloaded and printed in chunks, which allows for streaming
@@ -1249,7 +1249,7 @@ ones starting with ``Content-`` or ``If-``), authorization, and cookies
 to the same host.
 
 --------------
-Named Sessions
+Named sessions
 --------------
 
 Create a new session named ``user1`` for ``example.org``:
@@ -1280,7 +1280,7 @@ Named sessions' data is stored in JSON files in the directory
 (``%APPDATA%\httpie\sessions\<host>\<name>.json`` on Windows).
 
 ------------------
-Anonymous Sessions
+Anonymous sessions
 ------------------
 
 Instead of a name, you can also directly specify a path to a session file. This
@@ -1374,7 +1374,7 @@ Also, the ``--timeout`` option allows to overwrite the default 30s timeout:
 
 
 ================
-Interface Design
+Interface design
 ================
 
 The syntax of the command arguments closely corresponds to the actual HTTP
@@ -1448,28 +1448,28 @@ have contributed.
 Logo
 ====
 
-Please see `claudiatd/httpie-artwork`_
+See `claudiatd/httpie-artwork`_
 
 
 ==========
 Contribute
 ==========
 
-Please see `CONTRIBUTING <https://github.com/jkbrzt/httpie/blob/master/CONTRIBUTING.rst>`_.
+See `CONTRIBUTING <https://github.com/jkbrzt/httpie/blob/master/CONTRIBUTING.rst>`_.
 
 
 ==========
-Change Log
+Change log
 ==========
 
-Please see `CHANGELOG <https://github.com/jkbrzt/httpie/blob/master/CHANGELOG.rst>`_.
+See `CHANGELOG <https://github.com/jkbrzt/httpie/blob/master/CHANGELOG.rst>`_.
 
 
 =======
 Licence
 =======
 
-Please see `LICENSE <https://github.com/jkbrzt/httpie/blob/master/LICENSE>`_.
+See `LICENSE <https://github.com/jkbrzt/httpie/blob/master/LICENSE>`_.
 
 
 
