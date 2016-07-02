@@ -125,7 +125,7 @@ Although Python 2.6 and 2.7 are supported as well, it is recommended to install
 HTTPie against the latest Python 3.x whenever possible. That will ensure that
 some of the newer HTTP features, such as `SNI (Server Name Indication)`_,
 work out of the box.
-Python 3 is the default for Homebrew installs starting version 0.9.4.
+Python 3 is the default for Homebrew installations starting with version 0.9.4.
 To see which version HTTPie uses, run ``http --debug``.
 
 
