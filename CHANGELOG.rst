@@ -15,6 +15,8 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 * Added the ability to unset a request header with ``Header:``, and send an
   empty value with ``Header;``.
 * Added ``--default-scheme <URL_SCHEME>``.
+* Added fish shell completion (located in ``extras/httpie-completion.fish``
+  in the Github repo).
 * Changed the default JSON ``Accept`` header from ``application/json``
   to ``application/json, */*``.
 
