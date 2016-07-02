@@ -713,6 +713,7 @@ In your ``~/.bash_profile``:
  export NO_PROXY=localhost,example.com
 
 
+-----
 SOCKS
 -----
 
