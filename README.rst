@@ -117,6 +117,17 @@ The **latest development version** can be installed directly from GitHub:
     $ pip install --upgrade https://github.com/jkbrzt/httpie/archive/master.tar.gz
 
 
+--------------
+Python version
+--------------
+
+Although Python 2.6 and 2.7 are supported as well, it is recommended to install
+HTTPie against the latest Python 3.x whenever possible. That will ensure that
+some of the newer HTTP features, such as `SNI (Server Name Indication)`_,
+work out of the box.
+Python 3 is the default for Homebrew installs starting version 0.9.4.
+To see which version HTTPie uses, run ``http --debug``.
+
 
 =====
 Usage
@@ -750,8 +761,8 @@ available set of protocols may vary depending on your OpenSSL installation.)
 SNI (Server Name Indication)
 ----------------------------
 
-If you use HTTPie with Python < 2.7.9
-(can be verified with ``python --version``) and need to talk to servers that
+If you use HTTPie with `Python version`_ lower than 2.7.9
+(can be verified with ``http --debug``) and need to talk to servers that
 use **SNI (Server Name Indication)** you need to install some additional
 dependencies:
 

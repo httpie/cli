@@ -9,6 +9,10 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 `1.0.0-dev`_ (Unreleased)
 -------------------------
 
+* Added Python 3 as a dependency for Homebrew installations
+ to ensure some of the newer HTTP features work out of the box
+ for macOS users (starting with HTTPie 0.9.4.).
+
 
 `0.9.4`_ (2016-07-01)
 ---------------------
