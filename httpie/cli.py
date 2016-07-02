@@ -89,7 +89,7 @@ positional.add_argument(
     metavar='URL',
     help="""
     The scheme defaults to 'http://' if the URL does not include one.
-    (You can override this with: --default-scheme https)
+    (You can override this with: --default-scheme=https)
 
     You can also use a shorthand for localhost
 
@@ -616,7 +616,7 @@ troubleshooting.add_argument(
     '--default-scheme',
     default="http",
     help="""
-    Default scheme to use if not specified in the URL.
+    The default scheme to use if not specified in the URL.
 
     """
 )

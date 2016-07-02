@@ -318,7 +318,7 @@ shortcuts for other protocols than HTTP:
 
 .. code-block:: bash
 
-    $ alias https="http --default-scheme https"
+    $ alias https='http --default-scheme=https'
 
 
 =============
