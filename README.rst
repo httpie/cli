@@ -713,6 +713,23 @@ In your ``~/.bash_profile``:
  export NO_PROXY=localhost,example.com
 
 
+SOCKS
+-----
+
+To enable SOCKS proxy support please install ``requests[socks]`` using ``pip``:
+
+
+.. code-block::bash
+
+    $ pip install -U requests[socks]
+
+Usage is the same as for other types of `proxies`_:
+
+.. code-block::bash
+
+    $ http --proxy=http:socks5://user:pass@host:port --proxy=https:socks5://user:pass@host:port example.org
+
+
 =====
 HTTPS
 =====
