@@ -15,7 +15,8 @@ python:
   - pypy
   - 3.4
   - 3.5
-  - pypy3
+# Currently fails because of a Flask issue
+#  - pypy3
 
 matrix:
 
