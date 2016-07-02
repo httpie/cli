@@ -68,10 +68,11 @@ class TestItemParsing:
     def test_valid_items(self):
         items = input.parse_items([
             self.key_value('string=value'),
-            self.key_value('header:value'),
+            self.key_value('Header:value'),
+            self.key_value('Unset-Header:'),
+            self.key_value('Empty-Header;'),
             self.key_value('list:=["a", 1, {}, false]'),
             self.key_value('obj:={"a": "b"}'),
-            self.key_value('eh:'),
             self.key_value('ed='),
             self.key_value('bool:=true'),
             self.key_value('file@' + FILE_PATH_ARG),
@@ -83,7 +84,11 @@ class TestItemParsing:
         # Parsed headers
         # `requests.structures.CaseInsensitiveDict` => `dict`
         headers = dict(items.headers._store.values())
-        assert headers == {'header': 'value', 'eh': ''}
+        assert headers == {
+            'Header': 'value',
+            'Unset-Header': None,
+            'Empty-Header': ''
+        }
 
         # Parsed data
         raw_json_embed = items.data.pop('raw-json-embed')
