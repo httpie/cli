@@ -577,7 +577,7 @@ ssl.add_argument(
 troubleshooting = parser.add_argument_group(title='Troubleshooting')
 
 troubleshooting.add_argument(
-    '--ignore-stdin',
+    '--ignore-stdin', '-I',
     action='store_true',
     default=False,
     help="""
