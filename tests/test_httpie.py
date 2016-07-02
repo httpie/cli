@@ -1,5 +1,7 @@
 """High-level tests."""
 import pytest
+
+from httpie.input import ParseError
 from utils import TestEnvironment, http, HTTP_OK
 from fixtures import FILE_PATH, FILE_CONTENT
 
@@ -73,6 +75,27 @@ def test_headers(httpbin_both):
     assert HTTP_OK in r
     assert '"User-Agent": "HTTPie' in r, r
     assert '"Foo": "bar"' in r
+
+
+def test_headers_unset(httpbin_both):
+    r = http('GET', httpbin_both + '/headers')
+    assert 'Accept' in r.json['headers']  # default Accept present
+
+    r = http('GET', httpbin_both + '/headers', 'Accept:')
+    assert 'Accept' not in r.json['headers']   # default Accept unset
+
+
+def test_headers_empty_value(httpbin_both):
+    r = http('GET', httpbin_both + '/headers')
+    assert r.json['headers']['Accept']  # default Accept has value
+
+    r = http('GET', httpbin_both + '/headers', 'Accept;')
+    assert r.json['headers']['Accept'] == ''   # Accept has no value
+
+
+def test_headers_empty_value_with_value_gives_error(httpbin):
+    with pytest.raises(ParseError):
+        http('GET', httpbin + '/headers', 'Accept;SYNTAX_ERROR')
 
 
 @pytest.mark.skipif(

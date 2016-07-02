@@ -34,6 +34,7 @@ HTTPS = 'https://'
 
 # Various separators used in args
 SEP_HEADERS = ':'
+SEP_HEADERS_EMPTY = ';'
 SEP_CREDENTIALS = ':'
 SEP_PROXY = ':'
 SEP_DATA = '='
@@ -67,6 +68,7 @@ SEP_GROUP_RAW_JSON_ITEMS = frozenset([
 # Separators allowed in ITEM arguments
 SEP_GROUP_ALL_ITEMS = frozenset([
     SEP_HEADERS,
+    SEP_HEADERS_EMPTY,
     SEP_QUERY,
     SEP_DATA,
     SEP_DATA_RAW_JSON,
@@ -655,11 +657,20 @@ def parse_items(items,
     data = []
     files = []
     params = []
-
     for item in items:
         value = item.value
-
         if item.sep == SEP_HEADERS:
+            if value == '':
+                # No value => unset the header
+                value = None
+            target = headers
+        elif item.sep == SEP_HEADERS_EMPTY:
+            if item.value:
+                raise ParseError(
+                    'Invalid item "%s" '
+                    '(to specify an empty header use `Header;`)'
+                    % item.orig
+                )
             target = headers
         elif item.sep == SEP_QUERY:
             target = params

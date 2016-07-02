@@ -560,7 +560,23 @@ There are a couple of default headers that HTTPie sets:
     Host: <taken-from-URL>
 
 
-Any of the default headers can be overwritten.
+Any of the default headers can be overwritten and some of them unset.
+
+To unset a header that has already been specified (such a one of the default
+headers), use ``Header:``:
+
+
+.. code-block:: bash
+
+    $ http httpbin.org/headers Accept: User-Agent:
+
+
+To send a header with an empty value, use ``Header;``:
+
+
+.. code-block:: bash
+
+    $ http httpbin.org/headers 'Header;'
 
 
 ==============
