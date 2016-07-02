@@ -720,13 +720,13 @@ SOCKS
 To enable SOCKS proxy support please install ``requests[socks]`` using ``pip``:
 
 
-.. code-block::bash
+.. code-block:: bash
 
     $ pip install -U requests[socks]
 
 Usage is the same as for other types of `proxies`_:
 
-.. code-block::bash
+.. code-block:: bash
 
     $ http --proxy=http:socks5://user:pass@host:port --proxy=https:socks5://user:pass@host:port example.org
 
