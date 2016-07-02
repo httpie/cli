@@ -15,6 +15,8 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 * Added the ability to unset a request header with ``Header:``, and send an
   empty value with ``Header;``.
 * Added ``--default-scheme <URL_SCHEME>``.
+* Changed the default JSON ``Accept`` header from ``application/json``
+  to ``application/json, */*``.
 
 
 `0.9.4`_ (2016-07-01)

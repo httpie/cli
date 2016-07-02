@@ -24,8 +24,9 @@ except AttributeError:
     pass
 
 
-FORM = 'application/x-www-form-urlencoded; charset=utf-8'
-JSON = 'application/json'
+FORM_CONTENT_TYPE = 'application/x-www-form-urlencoded; charset=utf-8'
+JSON_CONTENT_TYPE = 'application/json'
+JSON_ACCEPT = '{0}, */*'.format(JSON_CONTENT_TYPE)
 DEFAULT_UA = 'HTTPie/%s' % __version__
 
 
@@ -100,16 +101,15 @@ def get_default_headers(args):
     }
 
     auto_json = args.data and not args.form
-    # FIXME: Accept is set to JSON with `http url @./file.txt`.
     if args.json or auto_json:
-        default_headers['Accept'] = 'application/json'
+        default_headers['Accept'] = JSON_ACCEPT
         if args.json or (auto_json and args.data):
-            default_headers['Content-Type'] = JSON
+            default_headers['Content-Type'] = JSON_CONTENT_TYPE
 
     elif args.form and not args.files:
         # If sending files, `requests` will set
         # the `Content-Type` for us.
-        default_headers['Content-Type'] = FORM
+        default_headers['Content-Type'] = FORM_CONTENT_TYPE
     return default_headers
 
 
