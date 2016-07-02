@@ -313,6 +313,13 @@ this command:
 
     GET /?search=HTTPie+logo&tbm=isch HTTP/1.1
 
+You can use the ``--default-scheme <URL_SCHEME>`` option to create
+shortcuts for other protocols than HTTP:
+
+.. code-block:: bash
+
+    $ alias https="http --default-scheme https"
+
 
 =============
 Request Items

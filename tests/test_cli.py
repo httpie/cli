@@ -330,8 +330,18 @@ class TestIgnoreStdin:
 
 class TestSchemes:
 
-    def test_custom_scheme(self):
+    def test_invalid_custom_scheme(self):
         # InvalidSchema is expected because HTTPie
         # shouldn't touch a formally valid scheme.
         with pytest.raises(InvalidSchema):
             http('foo+bar-BAZ.123://bah')
+
+    def test_invalid_scheme_via_via_default_scheme(self):
+        # InvalidSchema is expected because HTTPie
+        # shouldn't touch a formally valid scheme.
+        with pytest.raises(InvalidSchema):
+            http('bah', '--default=scheme=foo+bar-BAZ.123')
+
+    def test_default_scheme(self, httpbin_secure):
+        url = '{0}:{1}'.format(httpbin_secure.host, httpbin_secure.port)
+        assert HTTP_OK in http(url, '--default-scheme=https')

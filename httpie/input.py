@@ -28,8 +28,6 @@ URL_SCHEME_RE = re.compile(r'^[a-z][a-z0-9.+-]*://', re.IGNORECASE)
 
 HTTP_POST = 'POST'
 HTTP_GET = 'GET'
-HTTP = 'http://'
-HTTPS = 'https://'
 
 
 # Various separators used in args

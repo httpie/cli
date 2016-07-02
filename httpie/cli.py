@@ -614,7 +614,6 @@ troubleshooting.add_argument(
 )
 troubleshooting.add_argument(
     '--default-scheme',
-    choices=["http", "https"],
     default="http",
     help="""
     Default scheme to use if not specified in the URL.
