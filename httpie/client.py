@@ -1,6 +1,5 @@
 import json
 import sys
-from pprint import pformat
 
 import requests
 from requests.adapters import HTTPAdapter

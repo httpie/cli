@@ -14,10 +14,14 @@ is_windows = 'win32' in str(sys.platform).lower()
 
 
 if is_py2:
+    # noinspection PyShadowingBuiltins
     bytes = str
+    # noinspection PyUnresolvedReferences,PyShadowingBuiltins
     str = unicode
 elif is_py3:
+    # noinspection PyShadowingBuiltins
     str = str
+    # noinspection PyShadowingBuiltins
     bytes = bytes
 
 
@@ -32,7 +36,7 @@ try:  # pragma: no cover
     # noinspection PyCompatibility
     from urllib.request import urlopen
 except ImportError:  # pragma: no cover
-    # noinspection PyCompatibility
+    # noinspection PyCompatibility,PyUnresolvedReferences
     from urllib2 import urlopen
 
 try:  # pragma: no cover
@@ -40,10 +44,10 @@ try:  # pragma: no cover
 except ImportError:  # pragma: no cover
     # Python 2.6 OrderedDict class, needed for headers, parameters, etc .###
     # <https://pypi.python.org/pypi/ordereddict/1.1>
-    # noinspection PyCompatibility
+    # noinspection PyCompatibility,PyUnresolvedReferences
     from UserDict import DictMixin
 
-    # noinspection PyShadowingBuiltins
+    # noinspection PyShadowingBuiltins,PyCompatibility
     class OrderedDict(dict, DictMixin):
         # Copyright (c) 2009 Raymond Hettinger
         #
@@ -115,6 +119,7 @@ except ImportError:  # pragma: no cover
             if not self:
                 raise KeyError('dictionary is empty')
             if last:
+                # noinspection PyUnresolvedReferences
                 key = reversed(self).next()
             else:
                 key = iter(self).next()

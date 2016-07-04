@@ -5,6 +5,7 @@ import requests.auth
 from httpie.plugins.base import AuthPlugin
 
 
+# noinspection PyAbstractClass
 class BuiltinAuthPlugin(AuthPlugin):
 
     package_name = '(builtin)'

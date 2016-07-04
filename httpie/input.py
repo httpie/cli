@@ -309,9 +309,10 @@ class HTTPieArgumentParser(ArgumentParser):
                 self.args.url = self.args.method
                 # Infer the method
                 has_data = (
-                    (not self.args.ignore_stdin and not self.env.stdin_isatty)
-                    or any(item.sep in SEP_GROUP_DATA_ITEMS
-                           for item in self.args.items)
+                    (not self.args.ignore_stdin and
+                     not self.env.stdin_isatty) or
+                    any(item.sep in SEP_GROUP_DATA_ITEMS
+                        for item in self.args.items)
                 )
                 self.args.method = HTTP_POST if has_data else HTTP_GET
 
@@ -439,8 +440,8 @@ class SessionNameValidator(object):
 
     def __call__(self, value):
         # Session name can be a path or just a name.
-        if (os.path.sep not in value
-                and not VALID_SESSION_NAME_PATTERN.search(value)):
+        if (os.path.sep not in value and
+                not VALID_SESSION_NAME_PATTERN.search(value)):
             raise ArgumentError(None, self.error_message)
         return value
 
