@@ -1478,9 +1478,9 @@ Related projects
 ================
 
 * `jq <https://stedolan.github.io/jq/>`_ — a command-line JSON processor that
-   works great in conjunction with HTTPie
+  works great in conjunction with HTTPie
 * `http-prompt <https://github.com/eliangcs/http-prompt>`_ —  an interactive
-   shell for HTTPie featuring autocomplete and command syntax highlighting
+  shell for HTTPie featuring autocomplete and command syntax highlighting
 
 
 
