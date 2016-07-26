@@ -67,6 +67,8 @@ script:
   - |
     if [[ $TRAVIS_OS_NAME == 'linux' ]]; then
       if [[ $CODESTYLE ]]; then
+        # 241 - multiple spaces after ‘,’
+        # 501 - line too long
         pycodestyle --ignore=E241,E501
       else
         make
