@@ -45,6 +45,11 @@ matrix:
         - TOXENV=py35
         - BREW_INSTALL=python3
 
+    # Python Codestyle
+    - os: linux
+      python: 3.5
+      env: CODESTYLE=true
+
 install:
   - |
     if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
@@ -54,11 +59,20 @@ install:
       fi
       sudo pip install tox
     fi
+    if [[ $CODESTYLE ]]; then
+      pip install pycodestyle
+    fi
 
 script:
   - |
     if [[ $TRAVIS_OS_NAME == 'linux' ]]; then
-      make
+      if [[ $CODESTYLE ]]; then
+        # 241 - multiple spaces after ‘,’
+        # 501 - line too long
+        pycodestyle --ignore=E241,E501
+      else
+        make
+      fi
     else
       PATH="/usr/local/bin:$PATH" tox -e "$TOXENV"
     fi

@@ -213,7 +213,7 @@ output_processing.add_argument(
     """.format(
         default=DEFAULT_STYLE,
         available='\n'.join(
-            '{0}{1}'.format(8*' ', line.strip())
+            '{0}{1}'.format(8 * ' ', line.strip())
             for line in wrap(', '.join(sorted(AVAILABLE_STYLES)), 60)
         ).rstrip(),
     )
