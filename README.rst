@@ -84,6 +84,9 @@ system package manager, e.g.:
 
     # RPM-based distributions:
     $ yum install httpie
+    
+    # Pacman-based distributions:
+    $ pacman -S httpie
 
 
 A **universal installation method** (that works on **Windows**, Mac OS X, Linux, …,
