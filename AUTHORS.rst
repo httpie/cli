@@ -8,7 +8,7 @@ HTTPie authors
 Patches and ideas
 -----------------
 
-`Complete list of contributors on GitHib <https://github.com/jkbrzt/httpie/graphs/contributors>`_
+`Complete list of contributors on GitHub <https://github.com/jkbrzt/httpie/graphs/contributors>`_
 
 * `Cláudia T. Delgado <https://github.com/claudiatd>`_ (logo)
 * `Hank Gay <https://github.com/gthank>`_
