@@ -97,4 +97,4 @@ uninstall-all: uninstall-httpie
 
 
 homebrew-formula-vars:
-	extras/get-homebrew-formula-variables.py
+	extras/get-homebrew-formula-vars.py

@@ -42,14 +42,14 @@ packages = {
 
 httpie_info = packages.pop('httpie')
 print("""
-    url "{url}"
-    sha256 "{sha256}"
+  url "{url}"
+  sha256 "{sha256}"
 """.format(**httpie_info))
 
 
 for package_info in packages.values():
     print("""
-    resource "{name}" do
-        url "{url}"
-        sha256 "{sha256}"
-    end""".format(**package_info))
+  resource "{name}" do
+    url "{url}"
+    sha256 "{sha256}"
+  end""".format(**package_info))
