@@ -35,9 +35,10 @@ tests_require = [
 
 
 install_requires = [
-    'requests>=2.10.0',
+    'requests>=2.11.0',
     'Pygments>=1.5'
 ]
+
 
 # Conditional dependencies:
 

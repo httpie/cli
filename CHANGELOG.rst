@@ -9,12 +9,17 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 `1.0.0-dev`_ (Unreleased)
 -------------------------
 
+
+`0.9.5`_ (2016-08-13)
+---------------------
+
 * Added Python 3 as a dependency for Homebrew installations
   to ensure some of the newer HTTP features work out of the box
   for macOS users (starting with HTTPie 0.9.4.).
 * Added the ability to unset a request header with ``Header:``, and send an
   empty value with ``Header;``.
-* Added ``--default-scheme <URL_SCHEME>``.
+* Added ``--default-scheme <URL_SCHEME>`` to enable things like
+  ``$ alias https='http --default-scheme=https``.
 * Added ``-I`` as a shortcut for ``--ignore-stdin``.
 * Added fish shell completion (located in ``extras/httpie-completion.fish``
   in the Github repo).
@@ -22,6 +27,8 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
   ``pip install requests[socks]``.
 * Changed the default JSON ``Accept`` header from ``application/json``
   to ``application/json, */*``.
+* Changed the pre-processing of request HTTP headers so that any leading
+  and trailing whitespace is removed.
 
 
 `0.9.4`_ (2016-07-01)
@@ -303,4 +310,5 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 .. _0.9.2: https://github.com/jkbrzt/httpie/compare/0.9.1...0.9.2
 .. _0.9.3: https://github.com/jkbrzt/httpie/compare/0.9.2...0.9.3
 .. _0.9.4: https://github.com/jkbrzt/httpie/compare/0.9.3...0.9.4
+.. _0.9.5: https://github.com/jkbrzt/httpie/compare/0.9.3...0.9.5
 .. _1.0.0-dev: https://github.com/jkbrzt/httpie/compare/0.9.4...master

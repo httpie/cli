@@ -57,10 +57,12 @@ test-bdist-wheel: clean uninstall-httpie
 test-all: uninstall-all clean init test test-tox test-dist
 
 
-publish: test-all
+publish: test-all publish-no-test
+
+publish-no-test:
 	@echo $(TAG)Testing wheel build an installation$(END)
 	@echo "$(VERSION)"
-	@echo "$(VERSION)" | grep -q "dev"  && echo "!!!Not publishing dev version!!!" && exit 1
+	@echo "$(VERSION)" | grep -q "dev" && echo '!!!Not publishing dev version!!!' && exit 1 || echo ok
 	python setup.py register
 	python setup.py sdist upload
 	python setup.py bdist_wheel upload
@@ -92,3 +94,7 @@ uninstall-all: uninstall-httpie
 
 	@echo $(TAG)Uninstalling development requirements$(END)
 	- pip uninstall --yes -r $(REQUIREMENTS)
+
+
+homebrew-formula-vars:
+	extras/get-homebrew-formula-variables.py
