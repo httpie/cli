@@ -10,7 +10,7 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 -------------------------
 
 
-`0.9.5`_ (2016-08-13)
+`0.9.6`_ (2016-08-13)
 ---------------------
 
 * Added Python 3 as a dependency for Homebrew installations
@@ -310,5 +310,5 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 .. _0.9.2: https://github.com/jkbrzt/httpie/compare/0.9.1...0.9.2
 .. _0.9.3: https://github.com/jkbrzt/httpie/compare/0.9.2...0.9.3
 .. _0.9.4: https://github.com/jkbrzt/httpie/compare/0.9.3...0.9.4
-.. _0.9.5: https://github.com/jkbrzt/httpie/compare/0.9.3...0.9.5
+.. _0.9.6: https://github.com/jkbrzt/httpie/compare/0.9.3...0.9.6
 .. _1.0.0-dev: https://github.com/jkbrzt/httpie/compare/0.9.4...master
