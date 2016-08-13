@@ -85,13 +85,23 @@ def dump_request(kwargs):
                      % repr_dict_nice(kwargs))
 
 
-def encode_headers(headers):
-    # This allows for unicode headers which is non-standard but practical.
-    # See: https://github.com/jkbrzt/httpie/issues/212
-    return dict(
-        (name, value.encode('utf8') if isinstance(value, str) else value)
-        for name, value in headers.items()
-    )
+def finalize_headers(headers):
+    final_headers = {}
+    for name, value in headers.items():
+        if value is not None:
+
+            # >leading or trailing LWS MAY be removed without
+            # >changing the semantics of the field value"
+            # -https://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html
+            # Also, requests raises `InvalidHeader` for leading spaces.
+            value = value.strip()
+
+            if isinstance(value, str):
+                # See: https://github.com/jkbrzt/httpie/issues/212
+                value = value.encode('utf8')
+
+        final_headers[name] = value
+    return final_headers
 
 
 def get_default_headers(args):
@@ -133,7 +143,7 @@ def get_requests_kwargs(args, base_headers=None):
     if base_headers:
         headers.update(base_headers)
     headers.update(args.headers)
-    headers = encode_headers(headers)
+    headers = finalize_headers(headers)
 
     credentials = None
     if args.auth:
