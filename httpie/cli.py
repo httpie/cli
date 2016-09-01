@@ -102,6 +102,7 @@ positional.add_argument(
     'items',
     metavar='REQUEST_ITEM',
     nargs=ZERO_OR_MORE,
+    default=None,
     type=KeyValueArgType(*SEP_GROUP_ALL_ITEMS),
     help=r"""
     Optional key-value pairs to be included in the request. The separator used
