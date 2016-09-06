@@ -9,6 +9,9 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 `1.0.0-dev`_ (Unreleased)
 -------------------------
 
+* Added support for ``curses``-less Python installations.
+* Fixed ``REQUEST_ITEM`` arg incorrectly being reported as required.
+
 
 `0.9.6`_ (2016-08-13)
 ---------------------
