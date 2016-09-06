@@ -1,4 +1,8 @@
 import sys
+try:
+    import curses
+except ImportError:
+    curses = None  # Compiled w/o curses
 
 from httpie.compat import is_windows
 from httpie.config import DEFAULT_CONFIG_DIR, Config
@@ -28,17 +32,12 @@ class Environment(object):
     stderr_isatty = stderr.isatty()
     colors = 256
     if not is_windows:
-        import curses
-        try:
-            curses.setupterm()
+        if curses:
             try:
+                curses.setupterm()
                 colors = curses.tigetnum('colors')
-            except TypeError:
-                # pypy3 (2.4.0)
-                colors = curses.tigetnum(b'colors')
-        except curses.error:
-            pass
-        del curses
+            except curses.error:
+                pass
     else:
         # noinspection PyUnresolvedReferences
         import colorama.initialise
