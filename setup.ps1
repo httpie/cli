@@ -1,4 +1,4 @@
-#requires -version 3.0
+ï»¿#requires -version 3.0
 
 # PowerShell Variables
 $PSVersionMinimum = "3"
@@ -26,8 +26,8 @@ function Add-Path() {
 	if ($ENV:PATH | Select-String -SimpleMatch $AddedFolder){ Return 'Folder already within $ENV:PATH' }
 	
 	# Set the New Path
-	$NewPath=$OldPath+’;’+$AddedFolder
-	Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH –Value $newPath
+	$NewPath=$OldPath+';'+$AddedFolder
+	Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH â€“Value $newPath
 }
 
 	
@@ -90,7 +90,7 @@ if (!([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]
 				
 				Write-Host "`n- Installing HTTPie..."
 				python -m pip install --upgrade httpie
-Add-Path $chocoPath\lib\python3\tools\Scripts\http.exe
+				Add-Path $chocoPath\lib\python3\tools\Scripts\http.exe
 				
 				Write-Host "`n`n----- HTTPie Installed! -----`n"
 				
