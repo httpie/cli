@@ -1,37 +1,40 @@
-****************************************
+########################################
 HTTPie: a CLI, cURL-like tool for humans
-****************************************
+########################################
 
-HTTPie (pronounced *aitch-tee-tee-pie*) is a **command line HTTP client**.
-Its goal is to make CLI interaction with web services as **human-friendly**
-as possible. It provides a simple ``http`` command that allows for sending
-arbitrary HTTP requests using a simple and natural syntax, and displays
-colorized output. HTTPie can be used for **testing, debugging**, and
-generally **interacting** with HTTP servers.
+.. class:: no-web
 
-
-.. image:: https://raw.githubusercontent.com/jkbrzt/httpie/master/httpie.png
-    :alt: HTTPie compared to cURL
-    :width: 679
-    :height: 781
-    :align: center
+    HTTPie (pronounced *aitch-tee-tee-pie*) is a **command line HTTP client**.
+    Its goal is to make CLI interaction with web services as **human-friendly**
+    as possible. It provides a simple ``http`` command that allows for sending
+    arbitrary HTTP requests using a simple and natural syntax, and displays
+    colorized output. HTTPie can be used for **testing, debugging**, and
+    generally **interacting** with HTTP servers.
 
 
-HTTPie is written in Python, and under the hood it uses the excellent
-`Requests`_ and `Pygments`_ libraries.
+    .. image:: https://raw.githubusercontent.com/jkbrzt/httpie/master/httpie.png
+        :alt: HTTPie compared to cURL
+        :width: 100%
+        :align: center
+
+    HTTPie is written in Python, and under the hood it uses the excellent
+    `Requests`_ and `Pygments`_ libraries.
 
 
------
+
+.. class:: no-web no-pdf
 
 |pypi| |unix_build| |windows_build| |coverage| |gitter|
 
------
 
 
 .. contents::
-    :local:
-    :depth: 1
-    :backlinks: none
+
+.. section-numbering::
+
+.. raw:: pdf
+
+   PageBreak oneColumn
 
 
 =============
@@ -84,7 +87,7 @@ system package manager, e.g.:
 
     # RPM-based distributions:
     $ yum install httpie
-    
+
     # Arch Linux
     $ pacman -S httpie
 
@@ -1472,7 +1475,7 @@ See `CHANGELOG <https://github.com/jkbrzt/httpie/blob/master/CHANGELOG.rst>`_.
 Licence
 =======
 
-See `LICENSE <https://github.com/jkbrzt/httpie/blob/master/LICENSE>`_.
+BSD-3-Clause: `LICENSE <https://github.com/jkbrzt/httpie/blob/master/LICENSE>`_.
 
 
 
