@@ -1313,20 +1313,22 @@ See also `Config`_.
 Config
 ======
 
-HTTPie uses a simple configuration file that contains a JSON object with the
-following keys:
+HTTPie uses a simple JSON config file. The default location of the
+configuration file is ``~/.httpie/config.json``
+(or ``%APPDATA%\httpie\config.json`` on Windows). The config directory
+location can be changed by setting the
+``HTTPIE_CONFIG_DIR`` environment variable.
+
+--------------------
+Configurable options
+--------------------
+
+The JSON file contains an object with the following keys:
 
 
-------------
-``__meta__``
-------------
-
-HTTPie automatically stores some of its metadata here. Do not change.
-
-
--------------------
 ``default_options``
--------------------
+~~~~~~~~~~~~~~~~~~~
+
 
 An ``Array`` (by default empty) of default options that should be applied to
 every invocation of HTTPie.
@@ -1338,12 +1340,22 @@ use `sessions`_ (one named ``default`` will automatically be used).
 Or you could change the implicit request content type from JSON to form by
 adding ``--form`` to the list.
 
-Default options from config file can be unset for a particular invocation via
-``--no-OPTION`` arguments passed on the command line (e.g., ``--no-style``
-or ``--no-session``). The default location of the configuration file is
-``~/.httpie/config.json`` (or ``%APPDATA%\httpie\config.json`` on Windows).
-The config directory location can be changed by setting the
-``HTTPIE_CONFIG_DIR`` environment variable.
+
+``__meta__``
+~~~~~~~~~~~~
+
+HTTPie automatically stores some of its metadata here. Please do not change.
+
+
+
+---------------------------------------
+Un-setting previously specified options
+---------------------------------------
+
+Default options from the config file, or specified any other way,
+can be unset for a particular invocation via ``--no-OPTION`` arguments passed
+on the command line (e.g., ``--no-style`` or ``--no-session``).
+
 
 
 =========
