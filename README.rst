@@ -1379,9 +1379,13 @@ Also, the ``--timeout`` option allows to overwrite the default 30s timeout:
     fi
 
 
-================
+====
+Meta
+====
+
+----------------
 Interface design
-================
+----------------
 
 The syntax of the command arguments closely corresponds to the actual HTTP
 requests sent over the wire. It has the advantage  that it's easy to remember
@@ -1426,9 +1430,9 @@ HTTPie reaches its final version ``1.0``. All changes are recorded in the
 
 
 
-=======
-Support
-=======
+------------
+User support
+------------
 
 Please use the following support channels:
 
@@ -1441,47 +1445,45 @@ Please use the following support channels:
   `httpie <http://stackoverflow.com/questions/tagged/httpie>`_ tag).
 * You can also tweet directly to `@jkbrzt`_.
 
-=======
-Authors
-=======
 
-
-`Jakub Roztocil`_  (`@jkbrzt`_) created HTTPie and `these fine people`_
-have contributed.
-
-
-====
-Logo
-====
-
-See `claudiatd/httpie-artwork`_
-
-
-==========
+----------
 Contribute
-==========
+----------
 
 See `CONTRIBUTING <https://github.com/jkbrzt/httpie/blob/master/CONTRIBUTING.rst>`_.
 
 
-==========
+----------
 Change log
-==========
+----------
 
 See `CHANGELOG <https://github.com/jkbrzt/httpie/blob/master/CHANGELOG.rst>`_.
 
 
-=======
+-------
+Artwork
+-------
+
+See `claudiatd/httpie-artwork`_
+
+
+-------
 Licence
-=======
+-------
 
 BSD-3-Clause: `LICENSE <https://github.com/jkbrzt/httpie/blob/master/LICENSE>`_.
 
 
+-------
+Authors
+-------
 
-================
+`Jakub Roztocil`_  (`@jkbrzt`_) created HTTPie and `these fine people`_
+have contributed.
+
+----------------
 Related projects
-================
+----------------
 
 * `jq <https://stedolan.github.io/jq/>`_ — a command-line JSON processor that
   works great in conjunction with HTTPie
