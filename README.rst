@@ -1313,11 +1313,19 @@ See also `Config`_.
 Config
 ======
 
-HTTPie uses a simple JSON config file. The default location of the
-configuration file is ``~/.httpie/config.json``
+HTTPie uses a simple JSON config file.
+
+
+
+--------------------
+Config file location
+--------------------
+
+
+The default location of the configuration file is ``~/.httpie/config.json``
 (or ``%APPDATA%\httpie\config.json`` on Windows). The config directory
-location can be changed by setting the
-``HTTPIE_CONFIG_DIR`` environment variable.
+location can be changed by setting the ``HTTPIE_CONFIG_DIR``
+environment variable. To view the exact location run ``http --debug``.
 
 --------------------
 Configurable options
