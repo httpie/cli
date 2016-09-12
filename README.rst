@@ -414,7 +414,7 @@ both of which can be overwritten:
 You can use ``--json, -j`` to explicitly set ``Accept``
 to ``application/json`` regardless of whether you are sending data
 (it's a shortcut for setting the header via the usual header notation –
-``http url Accept:application/json, */*``). Additionally,
+``http url Accept:'application/json, */*'``). Additionally,
 HTTPie will try to detect JSON responses even when the
 ``Content-Type`` is incorrectly ``text/plain`` or unknown.
 
