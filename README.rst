@@ -499,8 +499,7 @@ Regular forms
 
 .. code-block:: bash
 
-    $ http --form POST api.example.org/person/1 name='John Smith' \
-        email=john@example.org cv=@~/Documents/cv.txt
+    $ http --form POST api.example.org/person/1 name='John Smith'
 
 
 .. code-block:: http
@@ -508,7 +507,7 @@ Regular forms
     POST /person/1 HTTP/1.1
     Content-Type: application/x-www-form-urlencoded; charset=utf-8
 
-    name=John+Smith&email=john%40example.org&cv=John's+CV+...
+    name=John+Smith
 
 
 -----------------
