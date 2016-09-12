@@ -17,8 +17,7 @@ HTTPie: a CLI, cURL-like tool for humans
         :width: 100%
         :align: center
 
-    HTTPie is written in Python, and under the hood it uses the excellent
-    `Requests`_ and `Pygments`_ libraries.
+
 
 
 
@@ -1466,6 +1465,29 @@ Please use the following support channels:
 * You can also tweet directly to `@jkbrzt`_.
 
 
+----------------
+Related projects
+----------------
+
+Dependencies
+~~~~~~~~~~~~
+
+* `Requests <http://python-requests.org>`_
+  — Python HTTP library for humans
+* `Pygments <http://pygments.org/>`_
+  — Python syntax highlighter
+
+Friends
+~~~~~~~
+
+* `jq <https://stedolan.github.io/jq/>`_
+  — CLI JSON processor that
+  works great in conjunction with HTTPie
+* `http-prompt <https://github.com/eliangcs/http-prompt>`_
+  —  interactive shell for HTTPie featuring autocomplete
+  and command syntax highlighting
+
+
 ----------
 Contribute
 ----------
@@ -1494,6 +1516,7 @@ Licence
 BSD-3-Clause: `LICENSE <https://github.com/jkbrzt/httpie/blob/master/LICENSE>`_.
 
 
+
 -------
 Authors
 -------
@@ -1501,19 +1524,7 @@ Authors
 `Jakub Roztocil`_  (`@jkbrzt`_) created HTTPie and `these fine people`_
 have contributed.
 
-----------------
-Related projects
-----------------
 
-* `jq <https://stedolan.github.io/jq/>`_ — a command-line JSON processor that
-  works great in conjunction with HTTPie
-* `http-prompt <https://github.com/eliangcs/http-prompt>`_ —  an interactive
-  shell for HTTPie featuring autocomplete and command syntax highlighting
-
-
-
-.. _Requests: http://python-requests.org
-.. _Pygments: http://pygments.org/
 .. _pip: http://www.pip-installer.org/en/latest/index.html
 .. _Github API: http://developer.github.com/v3/issues/comments/#create-a-comment
 .. _these fine people: https://github.com/jkbrzt/httpie/contributors
