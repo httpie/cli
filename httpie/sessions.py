@@ -75,7 +75,7 @@ def get_response(requests_session, session_name,
 
 
 class Session(BaseConfigDict):
-    helpurl = 'https://github.com/jkbrzt/httpie#sessions'
+    helpurl = 'https://httpie.org/docs#sessions'
     about = 'HTTPie session file'
 
     def __init__(self, path, *args, **kwargs):

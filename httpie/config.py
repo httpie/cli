@@ -80,7 +80,7 @@ class BaseConfigDict(dict):
 class Config(BaseConfigDict):
 
     name = 'config'
-    helpurl = 'https://github.com/jkbrzt/httpie#config'
+    helpurl = 'https://httpie.org/docs#config'
     about = 'HTTPie configuration file'
 
     DEFAULTS = {
