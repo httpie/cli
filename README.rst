@@ -1054,8 +1054,9 @@ values).
 Also, the following formatting is applied:
 
 * HTTP headers are sorted by name.
-* JSON data is indented, sorted by keys, and unicode escapes are converted
-  to the characters they represent.
+* JSON data is indented, and unicode escapes are converted to the characters
+  they represent. Objects will retain their key ordering from the response body,
+  except on Python 2.6 where keys will be sorted alphabetically.
 
 One of these options can be used to control output processing:
 
@@ -1551,4 +1552,3 @@ have contributed.
 .. |gitter| image:: https://badges.gitter.im/jkbrzt/httpie.svg
     :target: https://gitter.im/jkbrzt/httpie
     :alt: Chat on Gitter
-
