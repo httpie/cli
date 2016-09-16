@@ -3,6 +3,7 @@ import json
 
 from httpie.compat import is_py26, OrderedDict
 
+
 def load_json_preserve_order(s):
     if is_py26:
         return json.loads(s)
