@@ -1,7 +1,7 @@
 from __future__ import absolute_import
-import json
 
 from httpie.plugins import FormatterPlugin
+from httpie.utils import load_json_preserve_order, pretty_print_json
 
 
 DEFAULT_INDENT = 4
@@ -18,16 +18,9 @@ class JSONFormatter(FormatterPlugin):
         if (self.kwargs['explicit_json'] or
                 any(token in mime for token in maybe_json)):
             try:
-                obj = json.loads(body)
+                obj = load_json_preserve_order(body)
             except ValueError:
                 pass  # Invalid JSON, ignore.
             else:
-                # Indent, sort keys by name, and avoid
-                # unicode escapes to improve readability.
-                body = json.dumps(
-                    obj=obj,
-                    sort_keys=True,
-                    ensure_ascii=False,
-                    indent=DEFAULT_INDENT
-                )
+                body = pretty_print_json(obj, DEFAULT_INDENT)
         return body

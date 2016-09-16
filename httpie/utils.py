@@ -3,11 +3,21 @@ import json
 
 from httpie.compat import is_py26, OrderedDict
 
-
 def load_json_preserve_order(s):
     if is_py26:
         return json.loads(s)
     return json.loads(s, object_pairs_hook=OrderedDict)
+
+
+def pretty_print_json(obj, indent):
+    # Indent, sort keys by name, and avoid
+    # unicode escapes to improve readability.
+    return json.dumps(
+        obj=obj,
+        sort_keys=is_py26,
+        ensure_ascii=False,
+        indent=indent
+    )
 
 
 def repr_dict_nice(d):
