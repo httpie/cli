@@ -1461,6 +1461,7 @@ Please use the following support channels:
 * `StackOverflow <https://stackoverflow.com>`_
   to ask questions (please make sure to use the
   `httpie <http://stackoverflow.com/questions/tagged/httpie>`_ tag).
+* Tweet directly to `@clihttp <https://twitter.com/clihttp>`_.
 * You can also tweet directly to `@jkbrzt`_.
 
 
