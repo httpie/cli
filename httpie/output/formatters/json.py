@@ -17,6 +17,9 @@ class JSONFormatter(FormatterPlugin):
         ]
         if (self.kwargs['explicit_json'] or
                 any(token in mime for token in maybe_json)):
+            xssi_prefix = self.kwargs["xssi_prefix"]
+            if xssi_prefix and body.startswith(xssi_prefix):
+                body = body[len(xssi_prefix):]
             try:
                 obj = json.loads(body)
             except ValueError:

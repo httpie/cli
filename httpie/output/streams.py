@@ -117,6 +117,7 @@ def get_stream_type(env, args):
                 groups=args.prettify,
                 color_scheme=args.style,
                 explicit_json=args.json,
+                xssi_prefix=args.xssi_prefix
             ),
         )
     else:

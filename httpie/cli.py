@@ -223,6 +223,17 @@ output_processing.add_argument(
         ).rstrip(),
     )
 )
+output_processing.add_argument(
+    '--xssi', '-x',
+    dest='xssi_prefix',
+    metavar='PREFIX',
+    default='',
+    help="""
+    (default) Assumes incoming JSON has no XSSI Prefix
+    Allows Specifying a particular XSSI Prefix for the incoming JSON.
+
+    """
+)
 
 
 #######################################################################
