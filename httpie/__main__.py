@@ -10,7 +10,8 @@ def main():
         from .core import main
         sys.exit(main())
     except KeyboardInterrupt:
-        sys.exit(1)
+        from . import ExitStatus
+        sys.exit(ExitStatus.ERROR_CTRL_C)
 
 
 if __name__ == '__main__':

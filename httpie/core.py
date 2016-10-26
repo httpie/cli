@@ -212,7 +212,7 @@ def main(args=sys.argv[1:], env=Environment(), custom_log_error=None):
         env.stderr.write('\n')
         if include_traceback:
             raise
-        exit_status = ExitStatus.ERROR
+        exit_status = ExitStatus.ERROR_CTRL_C
     except SystemExit as e:
         if e.code != ExitStatus.OK:
             env.stderr.write('\n')
@@ -230,7 +230,7 @@ def main(args=sys.argv[1:], env=Environment(), custom_log_error=None):
             env.stderr.write('\n')
             if include_traceback:
                 raise
-            exit_status = ExitStatus.ERROR
+            exit_status = ExitStatus.ERROR_CTRL_C
         except SystemExit as e:
             if e.code != ExitStatus.OK:
                 env.stderr.write('\n')

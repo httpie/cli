@@ -192,7 +192,7 @@ def http(*args, **kwargs):
     args_with_config_defaults = args + env.config.default_options
     add_to_args = []
     if '--debug' not in args_with_config_defaults:
-        if '--traceback' not in args_with_config_defaults:
+        if not error_exit_ok and '--traceback' not in args_with_config_defaults:
             add_to_args.append('--traceback')
         if not any('--timeout' in arg for arg in args_with_config_defaults):
             add_to_args.append('--timeout=3')
