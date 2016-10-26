@@ -5,9 +5,13 @@
 import sys
 
 
-if __name__ == '__main__':
+def main():
     try:
         from .core import main
         sys.exit(main())
     except KeyboardInterrupt:
         sys.exit(1)
+
+
+if __name__ == '__main__':
+    main()
