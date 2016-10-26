@@ -11,7 +11,8 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 
 * Added support for ``curses``-less Python installations.
 * Fixed ``REQUEST_ITEM`` arg incorrectly being reported as required.
-* Changed the exit status code to ``130`` for CTRL-C keyboard interrupts.
+* Improved ``CTRL-C`` interrupt handling.
+* Added the standard exit status code ``130`` for keyboard interrupts.
 
 
 `0.9.6`_ (2016-08-13)
