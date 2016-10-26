@@ -3,8 +3,11 @@
 
 """
 import sys
-from .core import main
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    try:
+        from .core import main
+        sys.exit(main())
+    except KeyboardInterrupt:
+        sys.exit(1)
