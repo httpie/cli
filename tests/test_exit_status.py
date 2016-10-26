@@ -7,14 +7,14 @@ from utils import TestEnvironment, http, HTTP_OK
 def test_keyboard_interrupt_during_arg_parsing_exit_status(httpbin):
     with mock.patch('httpie.cli.parser.parse_args',
                     side_effect=KeyboardInterrupt()):
-        r = http('GET', httpbin.url + '/status/200', error_exit_ok=True)
+        r = http('GET', httpbin.url + '/get', error_exit_ok=True)
         assert r.exit_status == ExitStatus.ERROR_CTRL_C
 
 
 def test_keyboard_interrupt_in_program_exit_status(httpbin):
     with mock.patch('httpie.core.program',
                     side_effect=KeyboardInterrupt()):
-        r = http('GET', httpbin.url + '/status/200', error_exit_ok=True)
+        r = http('GET', httpbin.url + '/get', error_exit_ok=True)
         assert r.exit_status == ExitStatus.ERROR_CTRL_C
 
 
