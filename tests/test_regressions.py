@@ -11,7 +11,7 @@ def test_Host_header_overwrite(httpbin):
 
     """
     host = 'httpbin.org'
-    url = httpbin.url + '/set?k2=v2&k1=v1'
+    url = httpbin.url + '/get'
     r = http('--print=hH', url, 'host:{0}'.format(host))
     assert HTTP_OK in r
     assert r.lower().count('host:') == 1
