@@ -146,9 +146,14 @@ def get_requests_kwargs(args, base_headers=None):
     headers = finalize_headers(headers)
 
     credentials = None
-    if args.auth:
+    if args.auth_type:
         auth_plugin = plugin_manager.get_auth_plugin(args.auth_type)()
-        credentials = auth_plugin.get_auth(args.auth.key, args.auth.value)
+
+        if args.auth:
+            credentials = auth_plugin.get_auth(args.auth.key, args.auth.value)
+        elif args.auth_type not in ('basic', 'digest'):
+            # Some plugins like to load these from filesystem or env vars.
+            credentials = auth_plugin.get_auth(None, None)
 
     cert = None
     if args.cert:

@@ -563,13 +563,14 @@ class AuthCredentialsArgType(KeyValueArgType):
     def __call__(self, string):
         """Parse credentials from `string`.
 
-        ("username" or "username:password").
+        ("username" or "username:password" or nothing).
 
         """
         try:
             return super(AuthCredentialsArgType, self).__call__(string)
         except ArgumentTypeError:
-            # No password provided, will prompt for it later.
+            # Username provided but no password provided.
+            # In this case we will prompt for password (later).
             return self.key_value_class(
                 key=string,
                 value=None,
