@@ -218,7 +218,7 @@ class HTTPieArgumentParser(ArgumentParser):
         # TODO: refactor
         self.args.auth_plugin = None
         default_auth_plugin = plugin_manager.get_auth_plugins()[0]
-        auth_type_set = self.args.auth_type != default_auth_plugin.auth_type
+        auth_type_set = self.args.auth_type is not None
         url = urlsplit(self.args.url)
 
         if self.args.auth is None and not auth_type_set:
@@ -234,6 +234,8 @@ class HTTPieArgumentParser(ArgumentParser):
                 )
 
         if self.args.auth is not None or auth_type_set:
+            if not self.args.auth_type:
+                self.args.auth_type = default_auth_plugin.auth_type
             plugin = plugin_manager.get_auth_plugin(self.args.auth_type)()
 
             if plugin.auth_require and self.args.auth is None:

@@ -442,7 +442,7 @@ _auth_plugins = plugin_manager.get_auth_plugins()
 auth.add_argument(
     '--auth-type', '-A',
     choices=_AuthTypeLazyChoices(),
-    default=_auth_plugins[0].auth_type,
+    default=None,
     help="""
     The authentication mechanism to be used. Defaults to "{default}".
 

@@ -1,11 +1,17 @@
+from mock import mock
+
 from utils import http, HTTP_OK
+from httpie.input import SEP_CREDENTIALS
 from httpie.plugins import AuthPlugin, plugin_manager
 
 # TODO: run all these tests in session mode as well
 
-# Basic auth encoded 'username' and 'password'
-BASIC_AUTH_HEADER_VALUE = 'Basic dXNlcm5hbWU6cGFzc3dvcmQ='
-BASIC_AUTH_URL = '/basic-auth/username/password'
+USERNAME = 'user'
+PASSWORD = 'password'
+# Basic auth encoded `USERNAME` and `PASSWORD`
+BASIC_AUTH_HEADER_VALUE = 'Basic dXNlcjpwYXNzd29yZA=='
+BASIC_AUTH_URL = '/basic-auth/{}/{}'.format(USERNAME, PASSWORD)
+AUTH_OK = {'authenticated': True, 'user': USERNAME}
 
 
 def dummy_auth(auth_header=BASIC_AUTH_HEADER_VALUE):
@@ -19,7 +25,7 @@ def dummy_auth(auth_header=BASIC_AUTH_HEADER_VALUE):
 
 def test_auth_plugin_parse_auth_false(httpbin):
 
-    class ParseFalseAuthPlugin(AuthPlugin):
+    class Plugin(AuthPlugin):
         auth_type = 'parse-false'
         auth_parse = False
 
@@ -29,21 +35,24 @@ def test_auth_plugin_parse_auth_false(httpbin):
             assert self.raw_auth == BASIC_AUTH_HEADER_VALUE
             return dummy_auth(self.raw_auth)
 
-    plugin_manager.register(ParseFalseAuthPlugin)
+    plugin_manager.register(Plugin)
     try:
         r = http(
             httpbin + BASIC_AUTH_URL,
-            '--auth-type', 'parse-false',
-            '--auth', BASIC_AUTH_HEADER_VALUE
+            '--auth-type',
+            Plugin.auth_type,
+            '--auth',
+            BASIC_AUTH_HEADER_VALUE,
         )
         assert HTTP_OK in r
+        assert r.json == AUTH_OK
     finally:
-        plugin_manager.unregister(ParseFalseAuthPlugin)
+        plugin_manager.unregister(Plugin)
 
 
 def test_auth_plugin_require_auth_false(httpbin):
 
-    class RequireFalseAuthPlugin(AuthPlugin):
+    class Plugin(AuthPlugin):
         auth_type = 'require-false'
         auth_require = False
 
@@ -53,37 +62,71 @@ def test_auth_plugin_require_auth_false(httpbin):
             assert password is None
             return dummy_auth()
 
-    plugin_manager.register(RequireFalseAuthPlugin)
+    plugin_manager.register(Plugin)
     try:
         r = http(
             httpbin + BASIC_AUTH_URL,
-            '--auth-type', 'require-false',
+            '--auth-type',
+            Plugin.auth_type,
         )
         assert HTTP_OK in r
+        assert r.json == AUTH_OK
     finally:
-        plugin_manager.unregister(RequireFalseAuthPlugin)
+        plugin_manager.unregister(Plugin)
 
 
+def test_auth_plugin_require_auth_false_and_auth_provided(httpbin):
+
+    class Plugin(AuthPlugin):
+        auth_type = 'require-false-yet-provided'
+        auth_require = False
+
+        def get_auth(self, username=None, password=None):
+            assert self.raw_auth == USERNAME + SEP_CREDENTIALS + PASSWORD
+            assert username == USERNAME
+            assert password == PASSWORD
+            return dummy_auth()
+
+    plugin_manager.register(Plugin)
+    try:
+        r = http(
+            httpbin + BASIC_AUTH_URL,
+            '--auth-type',
+            Plugin.auth_type,
+            '--auth',
+            USERNAME + SEP_CREDENTIALS + PASSWORD,
+        )
+        assert HTTP_OK in r
+        assert r.json == AUTH_OK
+    finally:
+        plugin_manager.unregister(Plugin)
+
+
+@mock.patch('httpie.input.AuthCredentials._getpass',
+            new=lambda self, prompt: 'unexpected prompt response')
 def test_auth_plugin_prompt_password_false(httpbin):
 
-    class PromptFalseAuthPlugin(AuthPlugin):
+    class Plugin(AuthPlugin):
         auth_type = 'prompt-false'
         prompt_password = False
 
         def get_auth(self, username=None, password=None):
-            assert self.raw_auth == 'username:'
-            assert username == 'username'
-            assert password == ''
+            assert self.raw_auth == USERNAME
+            assert username == USERNAME
+            assert password is None
             return dummy_auth()
 
-    plugin_manager.register(PromptFalseAuthPlugin)
+    plugin_manager.register(Plugin)
 
     try:
         r = http(
             httpbin + BASIC_AUTH_URL,
-            '--auth-type', 'prompt-false',
-            '--auth', 'username:'
+            '--auth-type',
+            Plugin.auth_type,
+            '--auth',
+            USERNAME,
         )
         assert HTTP_OK in r
+        assert r.json == AUTH_OK
     finally:
-        plugin_manager.unregister(PromptFalseAuthPlugin)
+        plugin_manager.unregister(Plugin)

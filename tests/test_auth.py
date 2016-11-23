@@ -62,3 +62,14 @@ def test_only_username_in_url(url):
     assert args.auth
     assert args.auth.username == 'username'
     assert args.auth.password == ''
+
+
+def test_missing_auth(httpbin):
+    r = http(
+        '--auth-type=basic',
+        'GET',
+        httpbin + '/basic-auth/user/password',
+        error_exit_ok=True
+    )
+    assert HTTP_OK not in r
+    assert '--auth required' in r.stderr
