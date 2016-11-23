@@ -60,5 +60,5 @@ def test_only_username_in_url(url):
     """
     args = httpie.cli.parser.parse_args(args=[url], env=TestEnvironment())
     assert args.auth
-    assert args.auth.key == 'username'
-    assert args.auth.value == ''
+    assert args.auth.username == 'username'
+    assert args.auth.password == ''

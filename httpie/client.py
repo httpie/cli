@@ -145,11 +145,6 @@ def get_requests_kwargs(args, base_headers=None):
     headers.update(args.headers)
     headers = finalize_headers(headers)
 
-    credentials = None
-    if args.auth:
-        auth_plugin = plugin_manager.get_auth_plugin(args.auth_type)()
-        credentials = auth_plugin.get_auth(args.auth.key, args.auth.value)
-
     cert = None
     if args.cert:
         cert = args.cert
@@ -168,7 +163,7 @@ def get_requests_kwargs(args, base_headers=None):
         }.get(args.verify, args.verify),
         'cert': cert,
         'timeout': args.timeout,
-        'auth': credentials,
+        'auth': args.auth,
         'proxies': dict((p.key, p.value) for p in args.proxy),
         'files': args.files,
         'allow_redirects': args.follow,

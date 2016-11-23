@@ -24,6 +24,9 @@ class PluginManager(object):
         for plugin in plugins:
             self._plugins.append(plugin)
 
+    def unregister(self, plugin):
+        self._plugins.remove(plugin)
+
     def load_installed_plugins(self):
         for entry_point_name in ENTRY_POINT_NAMES:
             for entry_point in iter_entry_points(entry_point_name):

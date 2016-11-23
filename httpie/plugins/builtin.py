@@ -36,6 +36,7 @@ class BasicAuthPlugin(BuiltinAuthPlugin):
     name = 'Basic HTTP auth'
     auth_type = 'basic'
 
+    # noinspection PyMethodOverriding
     def get_auth(self, username, password):
         return HTTPBasicAuth(username, password)
 
@@ -45,5 +46,6 @@ class DigestAuthPlugin(BuiltinAuthPlugin):
     name = 'Digest HTTP auth'
     auth_type = 'digest'
 
+    # noinspection PyMethodOverriding
     def get_auth(self, username, password):
         return requests.auth.HTTPDigestAuth(username, password)

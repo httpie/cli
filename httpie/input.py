@@ -15,6 +15,7 @@ from argparse import ArgumentParser, ArgumentTypeError, ArgumentError
 
 # TODO: Use MultiDict for headers once added to `requests`.
 # https://github.com/jkbrzt/httpie/issues/130
+from httpie.plugins import plugin_manager
 from requests.structures import CaseInsensitiveDict
 
 from httpie.compat import OrderedDict, urlsplit, str, is_pypy, is_py27
@@ -214,31 +215,56 @@ class HTTPieArgumentParser(ArgumentParser):
             self.env.stdout_isatty = False
 
     def _process_auth(self):
-        """
-        If only a username provided via --auth, then ask for a password.
-        Or, take credentials from the URL, if provided.
-
-        """
+        # TODO: refactor
+        self.args.auth_plugin = None
+        default_auth_plugin = plugin_manager.get_auth_plugins()[0]
+        auth_type_set = self.args.auth_type != default_auth_plugin.auth_type
         url = urlsplit(self.args.url)
 
-        if self.args.auth:
-            if not self.args.auth.has_password():
-                # Stdin already read (if not a tty) so it's save to prompt.
-                if self.args.ignore_stdin:
-                    self.error('Unable to prompt for passwords because'
-                               ' --ignore-stdin is set.')
-                self.args.auth.prompt_password(url.netloc)
+        if self.args.auth is None and not auth_type_set:
+            if url.username is not None:
+                # Handle http://username:password@hostname/
+                username = url.username
+                password = url.password or ''
+                self.args.auth = AuthCredentials(
+                    key=username,
+                    value=password,
+                    sep=SEP_CREDENTIALS,
+                    orig=SEP_CREDENTIALS.join([username, password])
+                )
 
-        elif url.username is not None:
-            # Handle http://username:password@hostname/
-            username = url.username
-            password = url.password or ''
-            self.args.auth = AuthCredentials(
-                key=username,
-                value=password,
-                sep=SEP_CREDENTIALS,
-                orig=SEP_CREDENTIALS.join([username, password])
-            )
+        if self.args.auth is not None or auth_type_set:
+            plugin = plugin_manager.get_auth_plugin(self.args.auth_type)()
+
+            if plugin.auth_require and self.args.auth is None:
+                self.error('--auth required')
+
+            plugin.raw_auth = self.args.auth
+            self.args.auth_plugin = plugin
+            already_parsed = isinstance(self.args.auth, AuthCredentials)
+
+            if self.args.auth is None or not plugin.auth_parse:
+                self.args.auth = plugin.get_auth()
+            else:
+                if already_parsed:
+                    # from the URL
+                    credentials = self.args.auth
+                else:
+                    credentials = parse_auth(self.args.auth)
+
+                if (not credentials.has_password()
+                        and plugin.prompt_password):
+                    if self.args.ignore_stdin:
+                        # Non-tty stdin read by now
+                        self.error(
+                            'Unable to prompt for passwords because'
+                            ' --ignore-stdin is set.'
+                        )
+                    credentials.prompt_password(url.netloc)
+                self.args.auth = plugin.get_auth(
+                    username=credentials.key,
+                    password=credentials.value,
+                )
 
     def _apply_no_options(self, no_options):
         """For every `--no-OPTION` in `no_options`, set `args.OPTION` to
@@ -576,6 +602,9 @@ class AuthCredentialsArgType(KeyValueArgType):
                 sep=SEP_CREDENTIALS,
                 orig=string
             )
+
+
+parse_auth = AuthCredentialsArgType(SEP_CREDENTIALS)
 
 
 class RequestItemsDict(OrderedDict):

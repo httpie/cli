@@ -9,6 +9,7 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 `1.0.0-dev`_ (Unreleased)
 -------------------------
 
+* Extended auth plugin API.
 * Added support for ``curses``-less Python installations.
 * Fixed ``REQUEST_ITEM`` arg incorrectly being reported as required.
 * Improved ``CTRL-C`` interrupt handling.

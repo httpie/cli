@@ -51,11 +51,10 @@ def get_response(requests_session, session_name,
         dump_request(kwargs)
     session.update_headers(kwargs['headers'])
 
-    if args.auth:
+    if args.auth_plugin:
         session.auth = {
-            'type': args.auth_type,
-            'username': args.auth.key,
-            'password': args.auth.value,
+            'type': args.auth_plugin.auth_type,
+            'raw_auth': args.auth_plugin.raw_auth,
         }
     elif session.auth:
         kwargs['auth'] = session.auth
@@ -147,10 +146,31 @@ class Session(BaseConfigDict):
         auth = self.get('auth', None)
         if not auth or not auth['type']:
             return
-        auth_plugin = plugin_manager.get_auth_plugin(auth['type'])()
-        return auth_plugin.get_auth(auth['username'], auth['password'])
+
+        plugin = plugin_manager.get_auth_plugin(auth['type'])()
+
+        credentials = {'username': None, 'password': None}
+        try:
+            # New style
+            plugin.raw_auth = auth['raw_auth']
+        except KeyError:
+            # Old style
+            credentials = {
+                'username': auth['username'],
+                'password': auth['password'],
+            }
+        else:
+            if plugin.auth_parse:
+                from httpie.input import parse_auth
+                parsed = parse_auth(plugin.raw_auth)
+                credentials = {
+                    'username': parsed.key,
+                    'password': parsed.value,
+                }
+
+        return plugin.get_auth(**credentials)
 
     @auth.setter
     def auth(self, auth):
-        assert set(['type', 'username', 'password']) == set(auth.keys())
+        assert set(['type', 'raw_auth']) == set(auth.keys())
         self['auth'] = auth
