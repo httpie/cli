@@ -1,14 +1,15 @@
 from mock import mock
 
-from utils import http, HTTP_OK
 from httpie.input import SEP_CREDENTIALS
 from httpie.plugins import AuthPlugin, plugin_manager
+from utils import http, HTTP_OK
 
 # TODO: run all these tests in session mode as well
 
 USERNAME = 'user'
 PASSWORD = 'password'
 # Basic auth encoded `USERNAME` and `PASSWORD`
+# noinspection SpellCheckingInspection
 BASIC_AUTH_HEADER_VALUE = 'Basic dXNlcjpwYXNzd29yZA=='
 BASIC_AUTH_URL = '/basic-auth/{0}/{1}'.format(USERNAME, PASSWORD)
 AUTH_OK = {'authenticated': True, 'user': USERNAME}

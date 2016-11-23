@@ -3,18 +3,14 @@
 NOTE: the CLI interface may change before reaching v1.0.
 
 """
-from textwrap import dedent, wrap
 # noinspection PyCompatibility
 from argparse import (
     RawDescriptionHelpFormatter, FileType,
     OPTIONAL, ZERO_OR_MORE, SUPPRESS
 )
+from textwrap import dedent, wrap
 
 from httpie import __doc__, __version__
-from httpie.plugins.builtin import BuiltinAuthPlugin
-from httpie.plugins import plugin_manager
-from httpie.sessions import DEFAULT_SESSIONS_DIR
-from httpie.output.formatters.colors import AVAILABLE_STYLES, DEFAULT_STYLE
 from httpie.input import (
     HTTPieArgumentParser, KeyValueArgType,
     SEP_PROXY, SEP_GROUP_ALL_ITEMS,
@@ -24,6 +20,10 @@ from httpie.input import (
     PRETTY_STDOUT_TTY_ONLY, SessionNameValidator,
     readable_file_arg, SSL_VERSION_ARG_MAPPING
 )
+from httpie.output.formatters.colors import AVAILABLE_STYLES, DEFAULT_STYLE
+from httpie.plugins import plugin_manager
+from httpie.plugins.builtin import BuiltinAuthPlugin
+from httpie.sessions import DEFAULT_SESSIONS_DIR
 
 
 class HTTPieHelpFormatter(RawDescriptionHelpFormatter):
