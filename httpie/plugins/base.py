@@ -47,6 +47,9 @@ class AuthPlugin(BasePlugin):
         If `auth_parse` is set to `True`, then `username`
         and `password` contain the parsed credentials.
 
+        Use `self.raw_auth` to access the raw value passed through
+        `--auth, -a`.
+
         Return a ``requests.auth.AuthBase`` subclass instance.
 
         """

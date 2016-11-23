@@ -17,7 +17,7 @@ def dummy_auth(auth_header=BASIC_AUTH_HEADER_VALUE):
     return inner
 
 
-def test_auth_plugin_parse_false(httpbin):
+def test_auth_plugin_parse_auth_false(httpbin):
 
     class ParseFalseAuthPlugin(AuthPlugin):
         auth_type = 'parse-false'
@@ -41,7 +41,7 @@ def test_auth_plugin_parse_false(httpbin):
         plugin_manager.unregister(ParseFalseAuthPlugin)
 
 
-def test_auth_plugin_require_false(httpbin):
+def test_auth_plugin_require_auth_false(httpbin):
 
     class RequireFalseAuthPlugin(AuthPlugin):
         auth_type = 'require-false'
@@ -64,7 +64,7 @@ def test_auth_plugin_require_false(httpbin):
         plugin_manager.unregister(RequireFalseAuthPlugin)
 
 
-def test_auth_plugin_prompt_false(httpbin):
+def test_auth_plugin_prompt_password_false(httpbin):
 
     class PromptFalseAuthPlugin(AuthPlugin):
         auth_type = 'prompt-false'
