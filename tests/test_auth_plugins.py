@@ -10,7 +10,7 @@ USERNAME = 'user'
 PASSWORD = 'password'
 # Basic auth encoded `USERNAME` and `PASSWORD`
 BASIC_AUTH_HEADER_VALUE = 'Basic dXNlcjpwYXNzd29yZA=='
-BASIC_AUTH_URL = '/basic-auth/{}/{}'.format(USERNAME, PASSWORD)
+BASIC_AUTH_URL = '/basic-auth/{0}/{1}'.format(USERNAME, PASSWORD)
 AUTH_OK = {'authenticated': True, 'user': USERNAME}
 
 
