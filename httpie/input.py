@@ -254,8 +254,8 @@ class HTTPieArgumentParser(ArgumentParser):
                 else:
                     credentials = parse_auth(self.args.auth)
 
-                if (not credentials.has_password()
-                        and plugin.prompt_password):
+                if (not credentials.has_password() and
+                        plugin.prompt_password):
                     if self.args.ignore_stdin:
                         # Non-tty stdin read by now
                         self.error(
