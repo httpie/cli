@@ -14,10 +14,10 @@ BASIC_AUTH_URL = '/basic-auth/{}/{}'.format(USERNAME, PASSWORD)
 AUTH_OK = {'authenticated': True, 'user': USERNAME}
 
 
-def dummy_auth(auth_header=BASIC_AUTH_HEADER_VALUE):
+def basic_auth(header=BASIC_AUTH_HEADER_VALUE):
 
     def inner(r):
-        r.headers['Authorization'] = auth_header
+        r.headers['Authorization'] = header
         return r
 
     return inner
@@ -26,14 +26,14 @@ def dummy_auth(auth_header=BASIC_AUTH_HEADER_VALUE):
 def test_auth_plugin_parse_auth_false(httpbin):
 
     class Plugin(AuthPlugin):
-        auth_type = 'parse-false'
+        auth_type = 'test-parse-false'
         auth_parse = False
 
         def get_auth(self, username=None, password=None):
             assert username is None
             assert password is None
             assert self.raw_auth == BASIC_AUTH_HEADER_VALUE
-            return dummy_auth(self.raw_auth)
+            return basic_auth(self.raw_auth)
 
     plugin_manager.register(Plugin)
     try:
@@ -53,14 +53,14 @@ def test_auth_plugin_parse_auth_false(httpbin):
 def test_auth_plugin_require_auth_false(httpbin):
 
     class Plugin(AuthPlugin):
-        auth_type = 'require-false'
+        auth_type = 'test-require-false'
         auth_require = False
 
         def get_auth(self, username=None, password=None):
             assert self.raw_auth is None
             assert username is None
             assert password is None
-            return dummy_auth()
+            return basic_auth()
 
     plugin_manager.register(Plugin)
     try:
@@ -78,14 +78,14 @@ def test_auth_plugin_require_auth_false(httpbin):
 def test_auth_plugin_require_auth_false_and_auth_provided(httpbin):
 
     class Plugin(AuthPlugin):
-        auth_type = 'require-false-yet-provided'
+        auth_type = 'test-require-false-yet-provided'
         auth_require = False
 
         def get_auth(self, username=None, password=None):
             assert self.raw_auth == USERNAME + SEP_CREDENTIALS + PASSWORD
             assert username == USERNAME
             assert password == PASSWORD
-            return dummy_auth()
+            return basic_auth()
 
     plugin_manager.register(Plugin)
     try:
@@ -103,18 +103,18 @@ def test_auth_plugin_require_auth_false_and_auth_provided(httpbin):
 
 
 @mock.patch('httpie.input.AuthCredentials._getpass',
-            new=lambda self, prompt: 'unexpected prompt response')
+            new=lambda self, prompt: 'UNEXPECTED_PROMPT_RESPONSE')
 def test_auth_plugin_prompt_password_false(httpbin):
 
     class Plugin(AuthPlugin):
-        auth_type = 'prompt-false'
+        auth_type = 'test-prompt-false'
         prompt_password = False
 
         def get_auth(self, username=None, password=None):
             assert self.raw_auth == USERNAME
             assert username == USERNAME
             assert password is None
-            return dummy_auth()
+            return basic_auth()
 
     plugin_manager.register(Plugin)
 
