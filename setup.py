@@ -69,6 +69,7 @@ def long_description():
     with codecs.open('README.rst', encoding='utf8') as f:
         return f.read()
 
+
 setup(
     name='httpie',
     version=httpie.__version__,
