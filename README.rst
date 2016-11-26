@@ -671,7 +671,7 @@ HTTP redirects
 
 By default, HTTP redirects are not followed and only the first
 response is shown. To instruct HTTPie to follow the ``Location`` header of
-``30x`` responses and show the final response instead, use the ``--follow, -F`` option.
+``30x`` responses and show the final response instead, use the ``--follow`` option.
 
 If you additionally wish to see the intermediary requests/responses,
 then use the ``--all`` option as well.
