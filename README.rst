@@ -446,7 +446,7 @@ both of which can be overwritten:
 ================    =======================================
 
 
-Enforced JSON
+Explicit JSON
 -------------
 
 You can use ``--json, -j`` to explicitly set ``Accept``
