@@ -1448,16 +1448,11 @@ on the command line (e.g., ``--no-style`` or ``--no-session``).
 Scripting
 =========
 
-When using HTTPie from **shell scripts**, it can be handy to set the
+When using HTTPie from shell scripts, it can be handy to set the
 ``--check-status`` flag. It instructs HTTPie to exit with an error if the
 HTTP status is one of ``3xx``, ``4xx``, or ``5xx``. The exit status will
 be ``3`` (unless ``--follow`` is set), ``4``, or ``5``,
 respectively.
-
-The ``--ignore-stdin`` option prevents HTTPie from reading data from ``stdin``,
-which is usually not desirable during non-interactive invocations.
-
-Also, the ``--timeout`` option allows to overwrite the default 30s timeout:
 
 .. code-block:: bash
 
@@ -1475,6 +1470,26 @@ Also, the ``--timeout`` option allows to overwrite the default 30s timeout:
             *) echo 'Other Error!' ;;
         esac
     fi
+
+
+Best practices
+--------------
+
+The default behaviour of automatically reading ``stdin`` is typically not
+desirable during non-interactive invocations. You most likely want
+use the ``--ignore-stdin`` option to disable it.
+
+It is a common gotcha that without this option HTTPie seemingly hangs.
+What happens is that when HTTPie is invoked for example from a cron job,
+``stdin`` is not connected to a terminal.
+Therefore, rules for `redirected input`_ apply, i.e., HTTPie starts to read it
+expecting that the request body will be passed through.
+And since there's no data nor ``EOF``, it will be stuck. So unless you're
+piping some data to HTTPie, this flag should be used in scripts.
+
+Also, it's might be good to override the default ``30`` second ``--timeout`` to
+something that suits you.
+
 
 
 Meta
