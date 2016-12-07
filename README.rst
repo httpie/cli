@@ -1,24 +1,20 @@
-########################################
 HTTPie: a CLI, cURL-like tool for humans
 ########################################
 
+HTTPie (pronounced *aitch-tee-tee-pie*) is a command line HTTP client.
+Its goal is to make CLI interaction with web services as human-friendly
+as possible. It provides a simple ``http`` command that allows for sending
+arbitrary HTTP requests using a simple and natural syntax, and displays
+colorized output. HTTPie can be used for testing, debugging, and
+generally interacting with HTTP servers.
+
+
 .. class:: no-web
-
-    HTTPie (pronounced *aitch-tee-tee-pie*) is a **command line HTTP client**.
-    Its goal is to make CLI interaction with web services as **human-friendly**
-    as possible. It provides a simple ``http`` command that allows for sending
-    arbitrary HTTP requests using a simple and natural syntax, and displays
-    colorized output. HTTPie can be used for **testing, debugging**, and
-    generally **interacting** with HTTP servers.
-
 
     .. image:: https://raw.githubusercontent.com/jkbrzt/httpie/master/httpie.png
         :alt: HTTPie compared to cURL
         :width: 100%
         :align: center
-
-
-
 
 
 .. class:: no-web no-pdf
@@ -36,7 +32,6 @@ HTTPie: a CLI, cURL-like tool for humans
    PageBreak oneColumn
 
 
-=============
 Main features
 =============
 
@@ -56,12 +51,15 @@ Main features
 * Test coverage
 
 
-============
 Installation
 ============
 
 
-On **Mac OS X**, HTTPie can be installed via `Homebrew <http://brew.sh/>`_
+macOS
+-----
+
+
+On macOS, HTTPie can be installed via `Homebrew <http://brew.sh/>`_
 (recommended):
 
 .. code-block:: bash
@@ -75,8 +73,10 @@ A MacPorts *port* is also available:
 
     $ port install httpie
 
+Linux
+-----
 
-Most **Linux** distributions provide a package that can be installed using the
+Most Linux distributions provide a package that can be installed using the
 system package manager, e.g.:
 
 .. code-block:: bash
@@ -91,8 +91,11 @@ system package manager, e.g.:
     $ pacman -S httpie
 
 
-A **universal installation method** (that works on **Windows**, Mac OS X, Linux, …,
-and provides the latest version) is to use `pip`_:
+Windows, etc.
+-------------
+
+A universal installation method (that works on Windows, Mac OS X, Linux, …,
+and always provides the latest version) is to use `pip`_:
 
 
 .. code-block:: bash
@@ -107,11 +110,10 @@ and provides the latest version) is to use `pip`_:
 ``easy_install httpie`` as a fallback.)
 
 
--------------------
 Development version
 -------------------
 
-The **latest development version** can be installed directly from GitHub:
+The latest development version can be installed directly from GitHub:
 
 .. code-block:: bash
 
@@ -122,7 +124,6 @@ The **latest development version** can be installed directly from GitHub:
     $ pip install --upgrade https://github.com/jkbrzt/httpie/archive/master.tar.gz
 
 
---------------
 Python version
 --------------
 
@@ -134,7 +135,6 @@ Python 3 is the default for Homebrew installations starting with version 0.9.4.
 To see which version HTTPie uses, run ``http --debug``.
 
 
-=====
 Usage
 =====
 
@@ -157,7 +157,6 @@ Synopsis:
 See also ``http --help``.
 
 
---------
 Examples
 --------
 
@@ -229,13 +228,7 @@ Set a custom ``Host`` header to work around missing DNS records:
 
 ..
 
---------
 
-*What follows is a detailed documentation. It covers the command syntax,
-advanced usage, and also features additional examples.*
-
-
-===========
 HTTP method
 ===========
 
@@ -253,17 +246,49 @@ Which looks similar to the actual ``Request-Line`` that is sent:
     DELETE /todos/7 HTTP/1.1
 
 
-When the ``METHOD`` argument is **omitted** from the command, HTTPie defaults to
+When the ``METHOD`` argument is omitted from the command, HTTPie defaults to
 either ``GET`` (with no request data) or ``POST`` (with request data).
 
 
-===========
 Request URL
 ===========
 
 The only information HTTPie needs to perform a request is a URL.
 The default scheme is, somewhat unsurprisingly, ``http://``,
 and can be omitted from the argument – ``http example.org`` works just fine.
+
+
+Querystring parameters
+----------------------
+
+If you find yourself manually constructing URLs with
+on the terminal, you may appreciate the ``param==value`` syntax for appending
+URL parameters. With that, you don't have to worry about escaping the ``&``
+separators for your shell. Also, special characters in parameter values,
+will also automatically escaped (HTTPie otherwise expects the URL to be
+already escaped). To search for ``HTTPie logo`` on Google Images you could use
+this command:
+
+.. code-block:: bash
+
+    $ http www.google.com search=='HTTPie logo' tbm==isch
+
+
+.. code-block:: http
+
+    GET /?search=HTTPie+logo&tbm=isch HTTP/1.1
+
+You can use the ``--default-scheme <URL_SCHEME>`` option to create
+shortcuts for other protocols than HTTP:
+
+.. code-block:: bash
+
+    $ alias https='http --default-scheme=https'
+
+
+
+URL shortcuts for ``localhost``
+-------------------------------
 
 Additionally, curl-like shorthand for localhost is supported.
 This means that, for example ``:3000`` would expand to ``http://localhost:3000``
@@ -301,32 +326,8 @@ If the port is omitted, then port 80 is assumed.
     GET / HTTP/1.1
     Host: localhost
 
-If you find yourself manually constructing URLs with **querystring parameters**
-on the terminal, you may appreciate the ``param==value`` syntax for appending
-URL parameters. With that, you don't have to worry about escaping the ``&``
-separators for your shell. Also, special characters in parameter values,
-will also automatically escaped (HTTPie otherwise expects the URL to be
-already escaped). To search for ``HTTPie logo`` on Google Images you could use
-this command:
-
-.. code-block:: bash
-
-    $ http www.google.com search=='HTTPie logo' tbm==isch
 
 
-.. code-block:: http
-
-    GET /?search=HTTPie+logo&tbm=isch HTTP/1.1
-
-You can use the ``--default-scheme <URL_SCHEME>`` option to create
-shortcuts for other protocols than HTTP:
-
-.. code-block:: bash
-
-    $ alias https='http --default-scheme=https'
-
-
-=============
 Request items
 =============
 
@@ -367,6 +368,14 @@ their type is distinguished only by the separator used:
 +-----------------------+-----------------------------------------------------+
 
 
+Note that data fields aren't the only way to specify request data:
+`Redirected input`_ is a mechanism for passing arbitrary data request
+request.
+
+
+Escaping rules
+--------------
+
 You can use ``\`` to escape characters that shouldn't be used as separators
 (or parts thereof). For instance, ``foo\==bar`` will become a data key/value
 pair (``foo=`` and ``bar``) instead of a URL parameter.
@@ -379,44 +388,26 @@ token ``--`` to prevent confusion with ``--arguments``:
 
 .. code-block:: bash
 
-    $ http httpbin.org/post  --  -name-starting-with-dash=foo --Weird-Header:bar
+    $ http httpbin.org/post  --  -name-starting-with-dash=foo -Unusual-Header:bar
 
 .. code-block:: http
 
     POST /post HTTP/1.1
-    --Weird-Header: bar
+    -Unusual-Header: bar
+    Content-Type: application/json
 
     {
         "-name-starting-with-dash": "value"
     }
 
-Note that data fields aren't the only way to specify request data:
-`Redirected input`_ allows for passing arbitrary data to be sent with the
-request.
 
 
-====
 JSON
 ====
 
 JSON is the *lingua franca* of modern web services and it is also the
-**implicit content type** HTTPie by default uses:
+**implicit content type** HTTPie by default uses.
 
-If your command includes some data items, they are serialized as a JSON
-object by default. HTTPie also automatically sets the following headers,
-both of which can be overwritten:
-
-================    =======================================
-``Content-Type``    ``application/json``
-``Accept``          ``application/json, */*``
-================    =======================================
-
-You can use ``--json, -j`` to explicitly set ``Accept``
-to ``application/json`` regardless of whether you are sending data
-(it's a shortcut for setting the header via the usual header notation –
-``http url Accept:'application/json, */*'``). Additionally,
-HTTPie will try to detect JSON responses even when the
-``Content-Type`` is incorrectly ``text/plain`` or unknown.
 
 Simple example:
 
@@ -437,6 +428,35 @@ Simple example:
         "email": "john@example.org"
     }
 
+
+Default behaviour
+-----------------
+
+
+If your command includes some data `request items`_, they are serialized as a JSON
+object by default. HTTPie also automatically sets the following headers,
+both of which can be overwritten:
+
+================    =======================================
+``Content-Type``    ``application/json``
+``Accept``          ``application/json, */*``
+================    =======================================
+
+
+Enforced JSON
+-------------
+
+You can use ``--json, -j`` to explicitly set ``Accept``
+to ``application/json`` regardless of whether you are sending data
+(it's a shortcut for setting the header via the usual header notation:
+``http url Accept:'application/json, */*'``). Additionally,
+HTTPie will try to detect JSON responses even when the
+``Content-Type`` is incorrectly ``text/plain`` or unknown.
+
+
+
+Non-string JSON fields
+----------------------
 
 Non-string fields use the ``:=`` separator, which allows you to embed raw JSON
 into the resulting object. Text and raw JSON files can also be embedded into
@@ -473,27 +493,25 @@ fields using ``=@`` and ``:=@``:
     }
 
 
-Send JSON data stored in a file (see `redirected input`_ for more examples):
+Please note that with this syntax the command gets unwieldy when sending
+complex data. In that case it's always better to use `redirected input`_:
 
 .. code-block:: bash
 
     $ http POST api.example.com/person/1 < person.json
 
 
-=====
 Forms
 =====
 
 Submitting forms is very similar to sending `JSON`_ requests. Often the only
 difference is in adding the ``--form, -f`` option, which ensures that
 data fields are serialized as, and ``Content-Type`` is set to,
-``application/x-www-form-urlencoded; charset=utf-8``.
-
-It is possible to make form data the implicit content type instead of JSON
+``application/x-www-form-urlencoded; charset=utf-8``. It is possible to make
+form data the implicit content type instead of JSON
 via the `config`_ file.
 
 
--------------
 Regular forms
 -------------
 
@@ -510,7 +528,6 @@ Regular forms
     name=John+Smith
 
 
------------------
 File upload forms
 -----------------
 
@@ -536,7 +553,6 @@ Note that ``@`` is used to simulate a file upload form field, whereas
 ``=@`` just embeds the file content as a regular text field value.
 
 
-============
 HTTP headers
 ============
 
@@ -560,6 +576,9 @@ To set custom headers you can use the ``Header:Value`` notation:
     X-Foo: Bar
 
 
+Default request headers
+-----------------------
+
 There are a couple of default headers that HTTPie sets:
 
 .. code-block:: http
@@ -571,10 +590,16 @@ There are a couple of default headers that HTTPie sets:
     Host: <taken-from-URL>
 
 
-Any of the default headers can be overwritten and some of them unset.
 
-To unset a header that has already been specified (such a one of the default
-headers), use ``Header:``:
+Any of those—except for ``Host``—can be overwritten and some of them unset.
+
+
+
+Empty headers and header un-setting
+-----------------------------------
+
+To unset a previously specified header
+(such a one of the default headers), use ``Header:``:
 
 
 .. code-block:: bash
@@ -590,7 +615,6 @@ To send a header with an empty value, use ``Header;``:
     $ http httpbin.org/headers 'Header;'
 
 
-==============
 Authentication
 ==============
 
@@ -614,7 +638,8 @@ The currently supported authentication schemes are Basic and Digest
 
 
 
-Basic auth:
+Basic auth
+----------
 
 
 .. code-block:: bash
@@ -622,7 +647,8 @@ Basic auth:
     $ http -a username:password example.org
 
 
-Digest auth:
+Digest auth
+-----------
 
 
 .. code-block:: bash
@@ -630,12 +656,16 @@ Digest auth:
     $ http -A digest -a username:password example.org
 
 
-With password prompt:
+Password prompt
+---------------
 
 .. code-block:: bash
 
     $ http -a username example.org
 
+
+``.netrc``
+----------
 
 Authorization information from your ``~/.netrc`` file is honored as well:
 
@@ -651,9 +681,12 @@ Authorization information from your ``~/.netrc`` file is honored as well:
     [...]
 
 
-------------
 Auth plugins
 ------------
+
+Additional authentication mechanism can be installed as plugins.
+They can be found on the `Python Package Index <https://pypi.python.org/pypi?action=search&term=httpie>`_.
+Here's a few picks:
 
 * `httpie-oauth <https://github.com/jkbrzt/httpie-oauth>`_: OAuth
 * `httpie-hmac-auth <https://github.com/guardian/httpie-hmac-auth>`_: HMAC
@@ -665,19 +698,50 @@ Auth plugins
 * `httpie-jwt-auth <https://github.com/teracyhq/httpie-jwt-auth>`_: JWTAuth (JSON Web Tokens)
 
 
-==============
+
+
 HTTP redirects
 ==============
 
 By default, HTTP redirects are not followed and only the first
-response is shown. To instruct HTTPie to follow the ``Location`` header of
-``30x`` responses and show the final response instead, use the ``--follow, -F`` option.
+response is shown:
+
+
+.. code-block:: bash
+
+    $ http httpbin.org/redirect/3
+
+
+Follow ``Location``
+-------------------
+
+To instruct HTTPie to follow the ``Location`` header of ``30x`` responses
+and show the final response instead, use the ``--follow, -F`` option:
+
+
+.. code-block:: bash
+
+    $ http --follow httpbin.org/redirect/3
+
+
+Showing intermediary redirect responses
+---------------------------------------
 
 If you additionally wish to see the intermediary requests/responses,
-then use the ``--all`` option as well.
+then use the ``--all`` option as well:
 
-To change the default limit of maximum 30 redirects, use the
-``--max-redirects=<limit>`` option.
+
+.. code-block:: bash
+
+    $ http --follow --all httpbin.org/redirect/3
+
+
+
+Limiting maximum redirects followed
+-----------------------------------
+
+To change the default limit of maximum ``30`` redirects, use the
+``--max-redirects=<limit>`` option:
 
 
 .. code-block:: bash
@@ -685,7 +749,6 @@ To change the default limit of maximum 30 redirects, use the
     $ http --follow --all --max-redirects=5 httpbin.org/redirect/3
 
 
-=======
 Proxies
 =======
 
@@ -703,6 +766,10 @@ With Basic authentication:
 
     $ http --proxy=http:http://user:pass@10.10.1.10:3128 example.org
 
+
+Environment variables
+---------------------
+
 You can also configure proxies by environment variables ``HTTP_PROXY`` and
 ``HTTPS_PROXY``, and the underlying Requests library will pick them up as well.
 If you want to disable proxies configured through the environment variables for
@@ -717,7 +784,6 @@ In your ``~/.bash_profile``:
  export NO_PROXY=localhost,example.com
 
 
------
 SOCKS
 -----
 
@@ -735,42 +801,35 @@ Usage is the same as for other types of `proxies`_:
     $ http --proxy=http:socks5://user:pass@host:port --proxy=https:socks5://user:pass@host:port example.org
 
 
-=====
 HTTPS
 =====
 
------------------------------------
+
 Server SSL certificate verification
 -----------------------------------
 
-To skip the **host's SSL certificate verification,** you can pass
-``--verify=no`` (default is ``yes``):
+To skip the host's SSL certificate verification, you can pass ``--verify=no``
+(default is ``yes``):
 
 .. code-block:: bash
 
     $ http --verify=no https://example.org
 
 
-You can also use ``--verify=<CA_BUNDLE_PATH>`` to set a **custom CA bundle**
-path:
+Custom CA bundle
+----------------
+
+You can also use ``--verify=<CA_BUNDLE_PATH>`` to set a custom CA bundle path:
 
 .. code-block:: bash
 
     $ http --verify=/ssl/custom_ca_bundle https://example.org
 
 
-The path can also be configured via the environment variable
-``REQUESTS_CA_BUNDLE`` (picked up by the underlying python-requests library):
 
-.. code-block:: bash
-
-    $ REQUESTS_CA_BUNDLE=/ssl/custom_ca_bundle http https://example.org
-
-
----------------------------
 Client side SSL certificate
 ---------------------------
-To use a **client side certificate** for the SSL communication, you can pass
+To use a client side certificate for the SSL communication, you can pass
 the path of the cert file with ``--cert``:
 
 .. code-block:: bash
@@ -778,7 +837,7 @@ the path of the cert file with ``--cert``:
     $ http --cert=client.pem https://example.org
 
 
-If the **private key** is not contained in the cert file you may pass the
+If the private key is not contained in the cert file you may pass the
 path of the key file with ``--cert-key``:
 
 .. code-block:: bash
@@ -786,7 +845,6 @@ path of the key file with ``--cert-key``:
     $ http --cert=client.crt --cert-key=client.key https://example.org
 
 
------------
 SSL version
 -----------
 
@@ -802,18 +860,17 @@ available set of protocols may vary depending on your OpenSSL installation.)
     $ http --ssl=ssl3 https://vulnerable.example.org
 
 
-----------------------------
 SNI (Server Name Indication)
 ----------------------------
 
 If you use HTTPie with `Python version`_ lower than 2.7.9
 (can be verified with ``http --debug``) and need to talk to servers that
-use **SNI (Server Name Indication)** you need to install some additional
+use SNI (Server Name Indication) you need to install some additional
 dependencies:
 
 .. code-block:: bash
 
-    $ pip install --upgrade pyopenssl pyasn1 ndg-httpsclient
+    $ pip install --upgrade requests[security]
 
 
 You can use the following command to test SNI support:
@@ -823,14 +880,12 @@ You can use the following command to test SNI support:
     $ http https://sni.velox.ch
 
 
-==============
 Output options
 ==============
 
 By default, HTTPie only outputs the final response and the whole response
-message is printed (headers as well as the body).
-
-You can control what should be printed via several options:
+message is printed (headers as well as the body). You can control what should
+be printed via several options:
 
 =================   =====================================================
 ``--headers, -h``   Only the response headers are printed.
@@ -870,9 +925,12 @@ documentation examples:
     }
 
 
-All the other options are just a shortcut for ``--print, -p``.
-It accepts a string of characters each of which represents a specific part of
-the HTTP exchange:
+What parts of the HTTP exchange should be printed
+-------------------------------------------------
+
+All the other `output options`_ are under the hood just shortcuts for
+the more powerful ``--print, -p``. It accepts a string of characters each
+of which represents a specific part of the HTTP exchange:
 
 ==========  ==================
 Character   Stands for
@@ -890,11 +948,10 @@ Print request and response headers:
     $ http --print=Hh PUT httpbin.org/put hello=world
 
 
----------------------------------------
 Viewing intermediary requests/responses
 ---------------------------------------
 
-To see *all* the HTTP communication, i.e. the final request/response as
+To see all the HTTP communication, i.e. the final request/response as
 well as any possible  intermediary requests/responses, use the ``--all``
 option. The intermediary HTTP communication include followed redirects
 (with ``--follow``), the first unauthorized request when HTTP digest
@@ -918,7 +975,6 @@ arguments as ``--print, -p`` but applies to the intermediary requests only.
     $ http -A digest -a foo:bar --all -p Hh -P H httpbin.org/digest-auth/auth/foo/bar
 
 
--------------------------
 Conditional body download
 -------------------------
 
@@ -938,19 +994,17 @@ status code after an update:
 Since we are only printing the HTTP headers here, the connection to the server
 is closed as soon as all the response headers have been received.
 Therefore, bandwidth and time isn't wasted downloading the body
-which you don't care about.
-
-The response headers are downloaded always, even if they are not part of
-the output
+which you don't care about. The response headers are downloaded always,
+even if they are not part of the output
 
 
-================
 Redirected Input
 ================
 
-**A universal method for passing request data is through redirected** ``stdin``
-(standard input). Such data is buffered and then with no further processing
-used as the request body. There are multiple useful ways to use piping:
+The universal method for passing request data is through redirected ``stdin``
+(standard input)—piping. Such data is buffered and then with no further
+processing used as the request body. There are multiple useful ways to use
+piping:
 
 Redirect from a file:
 
@@ -1017,15 +1071,14 @@ To prevent HTTPie from reading ``stdin`` data you can use the
 ``--ignore-stdin`` option.
 
 
-----------------------------
 Request data from a filename
 ----------------------------
 
-**An alternative to redirected** ``stdin`` is specifying a filename (as
+An alternative to redirected ``stdin`` is specifying a filename (as
 ``@/path/to/file``) whose content is used as if it came from ``stdin``.
 
-It has the advantage that **the** ``Content-Type``
-**header is automatically set** to the appropriate value based on the
+It has the advantage that the ``Content-Type``
+header is automatically set to the appropriate value based on the
 filename extension. For example, the following request sends the
 verbatim contents of that XML file with ``Content-Type: application/xml``:
 
@@ -1034,7 +1087,6 @@ verbatim contents of that XML file with ``Content-Type: application/xml``:
     $ http PUT httpbin.org/put @/data/file.xml
 
 
-===============
 Terminal output
 ===============
 
@@ -1042,7 +1094,6 @@ HTTPie does several things by default in order to make its terminal output
 easy to read.
 
 
----------------------
 Colors and formatting
 ---------------------
 
@@ -1068,7 +1119,6 @@ One of these options can be used to control output processing:
                        Default for redirected output.
 ====================   ========================================================
 
------------
 Binary data
 -----------
 
@@ -1097,12 +1147,11 @@ You will nearly instantly see something like this:
     +-----------------------------------------+
 
 
-=================
 Redirected output
 =================
 
-HTTPie uses **different defaults** for redirected output than for
-`terminal output`_:
+HTTPie uses a different set of defaults for redirected output than for
+`terminal output`_. The differences being:
 
 * Formatting and colors aren't applied (unless ``--pretty`` is specified).
 * Only the response body is printed (unless one of the `output options`_ is set).
@@ -1148,7 +1197,6 @@ by adding the following to your ``~/.bash_profile``:
     }
 
 
-=============
 Download mode
 =============
 
@@ -1173,10 +1221,17 @@ is being saved to a file.
     Done. 251.30 kB in 2.73862s (91.76 kB/s)
 
 
+Downloaded file name
+--------------------
+
 If not provided via ``--output, -o``, the output filename will be determined
 from ``Content-Disposition`` (if available), or from the URL and
 ``Content-Type``. If the guessed filename already exists, HTTPie adds a unique
 suffix to it.
+
+
+Piping while downloading
+------------------------
 
 You can also redirect the response body to another program while the response
 headers and progress are still shown in the terminal:
@@ -1185,6 +1240,10 @@ headers and progress are still shown in the terminal:
 
     $ http -d https://github.com/jkbrzt/httpie/archive/master.tar.gz |  tar zxf -
 
+
+
+Resuming downloads
+------------------
 
 If ``--output, -o`` is specified, you can resume a partial download using the
 ``--continue, -c`` option. This only works with servers that support
@@ -1195,7 +1254,8 @@ support that, the whole file will simply be downloaded:
 
     $ http -dco file.zip example.org/file
 
-Other notes:
+Other notes
+-----------
 
 * The ``--download`` option only changes how the response body is treated.
 * You can still set custom headers, use sessions, ``--verbose, -v``, etc.
@@ -1205,26 +1265,31 @@ Other notes:
 * ``Accept-Encoding`` cannot be set with ``--download``.
 
 
-==================
 Streamed responses
 ==================
 
-Responses are downloaded and printed in chunks, which allows for streaming
-and large file downloads without using too much RAM. However, when
+Responses are downloaded and printed in chunks which allows for streaming
+and large file downloads without using too much memory. However, when
 `colors and formatting`_ is applied, the whole response is buffered and only
 then processed at once.
 
 
+Disabling buffering
+-------------------
+
 You can use the ``--stream, -S`` flag to make two things happen:
 
-1. The output is flushed in **much smaller chunks** without any buffering,
+1. The output is flushed in much smaller chunks without any buffering,
    which makes HTTPie behave kind of like ``tail -f`` for URLs.
 
 2. Streaming becomes enabled even when the output is prettified: It will be
-   applied to **each line** of the response and flushed immediately. This makes
+   applied to each line of the response and flushed immediately. This makes
    it possible to have a nice output for long-lived requests, such as one
    to the Twitter streaming API.
 
+
+Examples use cases
+------------------
 
 Prettified streamed response:
 
@@ -1242,28 +1307,50 @@ Streamed output by small chunks alá ``tail -f``:
     $ http --stream -f -a YOUR-TWITTER-NAME https://stream.twitter.com/1/statuses/filter.json track=Apple \
     | while read tweet; do echo "$tweet" | http POST example.org/tweets ; done
 
-========
 Sessions
 ========
 
-By default, every request is completely independent of any previous ones.
-HTTPie also supports persistent sessions, where custom headers (except for the
-ones starting with ``Content-`` or ``If-``), authorization, and cookies
+By default, every request HTTPie makes is completely independent of any
+previous ones to the same host.
+
+
+However, HTTPie also supports persistent
+sessions via the ``--session=SESSION_NAME_OR_PATH`` option. In a session,
+custom headers—except for the ones starting with ``Content-`` or ``If-``—,
+authorization, and cookies
 (manually specified or sent by the server) persist between requests
 to the same host.
 
---------------
+
+.. code-block:: bash
+
+    # Create a new session
+    $ http --session=/tmp/session.json example.org API-Token:123
+
+    # Re-use an existing session — API-Token will be set:
+    $ http --session=/tmp/session.json example.org
+
+
+
+All session data, including credentials, cookie data,
+and custom headers are stored in plain text.
+That means session files can also be created and edited manually in a text
+editor—they are regular JSON.
+
 Named sessions
 --------------
 
-Create a new session named ``user1`` for ``example.org``:
+
+You can create one or more named session per host. For example, this is how
+you can create a new session named ``user1`` for ``example.org``:
 
 .. code-block:: bash
 
     $ http --session=user1 -a user1:password example.org X-Foo:Bar
 
-Now you can refer to the session by its name, and the previously used
-authorization and HTTP headers will automatically be set:
+From now onw, you can refer to the session by its name. When you choose to
+use the session again, any the previously used authorization and HTTP headers
+will automatically be set:
 
 .. code-block:: bash
 
@@ -1275,15 +1362,11 @@ To create or reuse a different session, simple specify a different name:
 
     $ http --session=user2 -a user2:password example.org X-Bar:Foo
 
-To use a session without updating it from the request/response exchange
-once it is created, specify the session name via
-``--session-read-only=SESSION_NAME`` instead.
-
 Named sessions' data is stored in JSON files in the directory
 ``~/.httpie/sessions/<host>/<name>.json``
 (``%APPDATA%\httpie\sessions\<host>\<name>.json`` on Windows).
 
-------------------
+
 Anonymous sessions
 ------------------
 
@@ -1298,16 +1381,14 @@ allows for sessions to be re-used across multiple hosts:
     $ http --session-read-only=/tmp/session.json example.org
 
 
-**Warning:** All session data, including credentials, cookie data,
-and custom headers are stored in plain text.
+Readonly session
+----------------
 
-Note that session files can also be created and edited manually in a text
-editor; they are plain JSON.
+To use an existing session file without updating it from the request/response
+exchange once it is created, specify the session name via
+``--session-read-only=SESSION_NAME_OR_PATH`` instead.
 
-See also `Config`_.
 
-
-======
 Config
 ======
 
@@ -1315,7 +1396,6 @@ HTTPie uses a simple JSON config file.
 
 
 
---------------------
 Config file location
 --------------------
 
@@ -1325,7 +1405,6 @@ The default location of the configuration file is ``~/.httpie/config.json``
 location can be changed by setting the ``HTTPIE_CONFIG_DIR``
 environment variable. To view the exact location run ``http --debug``.
 
---------------------
 Configurable options
 --------------------
 
@@ -1354,7 +1433,6 @@ HTTPie automatically stores some of its metadata here. Please do not change.
 
 
 
----------------------------------------
 Un-setting previously specified options
 ---------------------------------------
 
@@ -1364,7 +1442,6 @@ on the command line (e.g., ``--no-style`` or ``--no-session``).
 
 
 
-=========
 Scripting
 =========
 
@@ -1397,11 +1474,9 @@ Also, the ``--timeout`` option allows to overwrite the default 30s timeout:
     fi
 
 
-====
 Meta
 ====
 
-----------------
 Interface design
 ----------------
 
@@ -1448,7 +1523,6 @@ HTTPie reaches its final version ``1.0``. All changes are recorded in the
 
 
 
-------------
 User support
 ------------
 
@@ -1465,20 +1539,24 @@ Please use the following support channels:
 * You can also tweet directly to `@jkbrzt`_.
 
 
-----------------
 Related projects
 ----------------
 
 Dependencies
 ~~~~~~~~~~~~
 
+Under the hood, HTTPie uses these two amazing libraries:
+
 * `Requests <http://python-requests.org>`_
   — Python HTTP library for humans
 * `Pygments <http://pygments.org/>`_
   — Python syntax highlighter
 
-Friends
-~~~~~~~
+
+HTTPie friends
+~~~~~~~~~~~~~~
+
+HTTPie plays exceptionally well with the following tools:
 
 * `jq <https://stedolan.github.io/jq/>`_
   — CLI JSON processor that
@@ -1488,28 +1566,24 @@ Friends
   and command syntax highlighting
 
 
-----------
-Contribute
-----------
+Contributing
+------------
 
-See `CONTRIBUTING <https://github.com/jkbrzt/httpie/blob/master/CONTRIBUTING.rst>`_.
+See `CONTRIBUTING.rst <https://github.com/jkbrzt/httpie/blob/master/CONTRIBUTING.rst>`_.
 
 
-----------
 Change log
 ----------
 
 See `CHANGELOG <https://github.com/jkbrzt/httpie/blob/master/CHANGELOG.rst>`_.
 
 
--------
 Artwork
 -------
 
 See `claudiatd/httpie-artwork`_
 
 
--------
 Licence
 -------
 
@@ -1517,7 +1591,6 @@ BSD-3-Clause: `LICENSE <https://github.com/jkbrzt/httpie/blob/master/LICENSE>`_.
 
 
 
--------
 Authors
 -------
 
