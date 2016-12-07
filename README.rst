@@ -278,13 +278,6 @@ this command:
 
     GET /?search=HTTPie+logo&tbm=isch HTTP/1.1
 
-You can use the ``--default-scheme <URL_SCHEME>`` option to create
-shortcuts for other protocols than HTTP:
-
-.. code-block:: bash
-
-    $ alias https='http --default-scheme=https'
-
 
 
 URL shortcuts for ``localhost``
@@ -326,6 +319,16 @@ If the port is omitted, then port 80 is assumed.
     GET / HTTP/1.1
     Host: localhost
 
+
+Custom default scheme
+---------------------
+
+You can use the ``--default-scheme <URL_SCHEME>`` option to create
+shortcuts for other protocols than HTTP:
+
+.. code-block:: bash
+
+    $ alias https='http --default-scheme=https'
 
 
 Request items
