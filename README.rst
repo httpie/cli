@@ -688,7 +688,7 @@ Auth plugins
 ------------
 
 Additional authentication mechanism can be installed as plugins.
-They can be found on the `Python Package Index <https://pypi.python.org/pypi?action=search&term=httpie>`_.
+They can be found on the `Python Package Index <https://pypi.python.org/pypi?%3Aaction=search&term=httpie&submit=search>`_.
 Here's a few picks:
 
 * `httpie-oauth <https://github.com/jkbrzt/httpie-oauth>`_: OAuth
