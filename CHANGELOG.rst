@@ -6,10 +6,14 @@ This document records all notable changes to `HTTPie <http://httpie.org>`_.
 This project adheres to `Semantic Versioning <http://semver.org/>`_.
 
 
+`1.0.0-dev`_ (unreleased)
+-------------------------
+
 `0.9.7`_ (2016-12-08)
 ---------------------
 
 * Extended auth plugin API.
+* Added exit status code ``7`` for plugin errors.
 * Added support for ``curses``-less Python installations.
 * Fixed ``REQUEST_ITEM`` arg incorrectly being reported as required.
 * Improved ``CTRL-C`` interrupt handling.
