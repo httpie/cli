@@ -692,7 +692,7 @@ They can be found on the `Python Package Index <https://pypi.python.org/pypi?%3A
 Here's a few picks:
 
 * `httpie-api-auth <https://github.com/pd/httpie-api-auth>`_: ApiAuth
-* `httpie-aws-auth <https://github.com/jkbrzt/httpie-aws-auth>`_: AWS / Amazon S3
+* `httpie-aws-auth <https://github.com/httpie/httpie-aws-auth>`_: AWS / Amazon S3
 * `httpie-edgegrid <https://github.com/akamai-open/httpie-edgegrid>`_: EdgeGrid
 * `httpie-hmac-auth <https://github.com/guardian/httpie-hmac-auth>`_: HMAC
 * `httpie-jwt-auth <https://github.com/teracyhq/httpie-jwt-auth>`_: JWTAuth (JSON Web Tokens)
