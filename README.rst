@@ -697,8 +697,8 @@ Here's a few picks:
 * `httpie-hmac-auth <https://github.com/guardian/httpie-hmac-auth>`_: HMAC
 * `httpie-jwt-auth <https://github.com/teracyhq/httpie-jwt-auth>`_: JWTAuth (JSON Web Tokens)
 * `httpie-negotiate <https://github.com/ndzou/httpie-negotiate>`_: SPNEGO (GSS Negotiate)
-* `httpie-ntlm <https://github.com/jkbrzt/httpie-ntlm>`_: NTLM (NT LAN Manager)
-* `httpie-oauth <https://github.com/jkbrzt/httpie-oauth>`_: OAuth
+* `httpie-ntlm <https://github.com/httpie/httpie-ntlm>`_: NTLM (NT LAN Manager)
+* `httpie-oauth <https://github.com/httpie/httpie-oauth>`_: OAuth
 * `requests-hawk <https://github.com/mozilla-services/requests-hawk>`_: Hawk
 
 
