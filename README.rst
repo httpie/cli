@@ -691,14 +691,15 @@ Additional authentication mechanism can be installed as plugins.
 They can be found on the `Python Package Index <https://pypi.python.org/pypi?%3Aaction=search&term=httpie&submit=search>`_.
 Here's a few picks:
 
-* `httpie-oauth <https://github.com/jkbrzt/httpie-oauth>`_: OAuth
-* `httpie-hmac-auth <https://github.com/guardian/httpie-hmac-auth>`_: HMAC
-* `httpie-ntlm <https://github.com/jkbrzt/httpie-ntlm>`_: NTLM (NT LAN Manager)
-* `httpie-negotiate <https://github.com/ndzou/httpie-negotiate>`_: SPNEGO (GSS Negotiate)
-* `requests-hawk <https://github.com/mozilla-services/requests-hawk>`_: Hawk
 * `httpie-api-auth <https://github.com/pd/httpie-api-auth>`_: ApiAuth
+* `httpie-aws-auth <https://github.com/jkbrzt/httpie-aws-auth>`_: ApiAuth
 * `httpie-edgegrid <https://github.com/akamai-open/httpie-edgegrid>`_: EdgeGrid
+* `httpie-hmac-auth <https://github.com/guardian/httpie-hmac-auth>`_: HMAC
 * `httpie-jwt-auth <https://github.com/teracyhq/httpie-jwt-auth>`_: JWTAuth (JSON Web Tokens)
+* `httpie-negotiate <https://github.com/ndzou/httpie-negotiate>`_: SPNEGO (GSS Negotiate)
+* `httpie-ntlm <https://github.com/jkbrzt/httpie-ntlm>`_: NTLM (NT LAN Manager)
+* `httpie-oauth <https://github.com/jkbrzt/httpie-oauth>`_: OAuth
+* `requests-hawk <https://github.com/mozilla-services/requests-hawk>`_: Hawk
 
 
 

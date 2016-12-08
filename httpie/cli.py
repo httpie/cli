@@ -435,7 +435,7 @@ class _AuthTypeLazyChoices(object):
         return item in plugin_manager.get_auth_plugin_mapping()
 
     def __iter__(self):
-        return iter(plugin_manager.get_auth_plugins())
+        return iter(sorted(plugin_manager.get_auth_plugin_mapping().keys()))
 
 
 _auth_plugins = plugin_manager.get_auth_plugins()
