@@ -1,5 +1,6 @@
 # The latest Homebrew formula as submitted to Homebrew/homebrew-core.
 # Only useful for testing until it gets accepted by homebrew maintainers.
+# (It will need to be updated from the repo version before next release.)
 #
 # https://github.com/Homebrew/homebrew-core/blob/master/Formula/httpie.rb
 #
