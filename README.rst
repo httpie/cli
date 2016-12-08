@@ -27,9 +27,6 @@ generally interacting with HTTP servers.
 
 .. section-numbering::
 
-.. raw:: pdf
-
-   PageBreak oneColumn
 
 
 Main features
