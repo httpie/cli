@@ -1,7 +1,7 @@
 tox
 mock==2.0.0
 pytest==3.0.5
-pytest-cov
+pytest-cov==2.4.0
 pytest-httpbin>=0.0.6
 docutils==0.13.1
 wheel==0.29.0
