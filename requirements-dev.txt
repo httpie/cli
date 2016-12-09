@@ -1,5 +1,5 @@
 tox
-mock
+mock==2.0.0
 pytest==3.0.5
 pytest-cov
 pytest-httpbin>=0.0.6
