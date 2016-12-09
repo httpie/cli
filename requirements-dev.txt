@@ -1,6 +1,6 @@
 tox
 mock
-pytest
+pytest==3.0.5
 pytest-cov
 pytest-httpbin>=0.0.6
 docutils
