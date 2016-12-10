@@ -74,15 +74,19 @@ Linux
 -----
 
 Most Linux distributions provide a package that can be installed using the
-system package manager, e.g.:
+system package manager, for example:
 
 .. code-block:: bash
 
-    # Debian-based distributions such as Ubuntu:
+    # Debian, Ubuntu, etc.
     $ apt-get install httpie
 
-    # RPM-based distributions:
+.. code-block:: bash
+
+    # Fedora, CentOS, RHEL, …
     $ yum install httpie
+
+.. code-block:: bash
 
     # Arch Linux
     $ pacman -S httpie
@@ -107,20 +111,6 @@ and always provides the latest version) is to use `pip`_:
 ``easy_install httpie`` as a fallback.)
 
 
-Development version
--------------------
-
-The latest development version can be installed directly from GitHub:
-
-.. code-block:: bash
-
-    # Mac OS X via Homebrew
-    $ brew install httpie --HEAD
-
-    # Universal
-    $ pip install --upgrade https://github.com/jkbrzt/httpie/archive/master.tar.gz
-
-
 Python version
 --------------
 
@@ -130,6 +120,41 @@ some of the newer HTTP features, such as `SNI (Server Name Indication)`_,
 work out of the box.
 Python 3 is the default for Homebrew installations starting with version 0.9.4.
 To see which version HTTPie uses, run ``http --debug``.
+
+
+Unstable version
+----------------
+
+You can also instead of the latest the latest unreleased development version
+directly from the ``master`` branch on GitHub.
+It is a work-in-progress of a future stable release so the experience
+might be not as smooth.
+
+|unix_build| |windows_build|
+
+
+On macOS you can install it with Homebrew:
+
+.. code-block:: bash
+
+    $ brew install httpie --HEAD
+
+
+Otherwise with ``pip``:
+
+.. code-block:: bash
+
+    $ pip install --upgrade https://github.com/jkbrzt/httpie/archive/master.tar.gz
+
+
+Verify that now we have the
+`current development version identifier <https://github.com/jkbrzt/httpie/blob/0af6ae1be444588bbc4747124e073423151178a0/httpie/__init__.py#L5>`_
+with the ``-dev`` suffix, for example:
+
+.. code-block:: bash
+
+    $ http --version
+    1.0.0-dev
 
 
 Usage
@@ -258,7 +283,7 @@ and can be omitted from the argument – ``http example.org`` works just fine.
 Querystring parameters
 ----------------------
 
-If you find yourself manually constructing URLs with
+If you find yourself manually constructing URLs with querystring parameters
 on the terminal, you may appreciate the ``param==value`` syntax for appending
 URL parameters. With that, you don't have to worry about escaping the ``&``
 separators for your shell. Also, special characters in parameter values,
