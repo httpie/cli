@@ -1607,6 +1607,13 @@ HTTPie plays exceptionally well with the following tools:
   and command syntax highlighting
 
 
+Related
+~~~~~~~
+
+* `httpcat <https://github.com/jkbrzt/httpcat>`_ — a lower-level sister utility
+  of HTTPie for constructing raw HTTP requests on the command line.
+
+
 Contributing
 ------------
 
