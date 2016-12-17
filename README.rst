@@ -1607,11 +1607,13 @@ HTTPie plays exceptionally well with the following tools:
   and command syntax highlighting
 
 
-Related
-~~~~~~~
+Alternatives
+~~~~~~~~~~~~
 
 * `httpcat <https://github.com/jkbrzt/httpcat>`_ — a lower-level sister utility
   of HTTPie for constructing raw HTTP requests on the command line.
+* `curl <https://curl.haxx.se>`_ — a "Swiss knife" command line tool and
+  an exceptional library for transferring data with URLs.
 
 
 Contributing
