@@ -6,7 +6,7 @@ environment:
     - PYTHON: "C:/Python27"
     # Python 3.4 has outdated pip
     # - PYTHON: "C:/Python34"
-    - PYTHON: "C:/Python35"
+    - PYTHON: "C:/Python36"
 
 init:
   - "ECHO %PYTHON%"
