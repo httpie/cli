@@ -7,7 +7,7 @@ os:
 
 env:
   global:
-    - NEWEST_PYTHON=3.5
+    - NEWEST_PYTHON=3.6
 
 python:
   - 2.6
@@ -15,6 +15,7 @@ python:
   - pypy
   - 3.4
   - 3.5
+  - 3.6
 # Currently fails because of a Flask issue
 #  - pypy3
 
@@ -42,12 +43,12 @@ matrix:
     - os: osx
       language: generic
       env:
-        - TOXENV=py35
+        - TOXENV=py36
         - BREW_INSTALL=python3
 
     # Python Codestyle
     - os: linux
-      python: 3.5
+      python: 3.6
       env: CODESTYLE=true
 
 install:
