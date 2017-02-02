@@ -1374,7 +1374,7 @@ you can create a new session named ``user1`` for ``example.org``:
 
     $ http --session=user1 -a user1:password example.org X-Foo:Bar
 
-From now onw, you can refer to the session by its name. When you choose to
+From now on, you can refer to the session by its name. When you choose to
 use the session again, any the previously used authorization and HTTP headers
 will automatically be set:
 
