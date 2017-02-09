@@ -1648,7 +1648,7 @@ Authors
 have contributed.
 
 
-.. _pip: http://www.pip-installer.org/en/latest/index.html
+.. _pip: https://pip.pypa.io/en/stable/installing/
 .. _Github API: http://developer.github.com/v3/issues/comments/#create-a-comment
 .. _these fine people: https://github.com/jkbrzt/httpie/contributors
 .. _Jakub Roztocil: http://roztocil.co
