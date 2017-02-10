@@ -159,8 +159,10 @@ def get_requests_kwargs(args, base_headers=None):
         'data': data,
         'verify': {
             'yes': True,
-            'no': False
-        }.get(args.verify, args.verify),
+            'true': True,
+            'no': False,
+            'false': False,
+        }.get(args.verify.lower(), args.verify),
         'cert': cert,
         'timeout': args.timeout,
         'auth': args.auth,
