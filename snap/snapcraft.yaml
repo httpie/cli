@@ -1,0 +1,23 @@
+name: httpie
+version: master
+summary: Modern command line HTTP client
+description: |
+  HTTPie (pronounced aitch-tee-tee-pie) is a command line HTTP client. Its goal
+  is to make CLI interaction with web services as human-friendly as possible.
+  It provides a simple http command that allows for sending arbitrary HTTP
+  requests using a simple and natural syntax, and displays colorized output.
+  HTTPie can be used for testing, debugging, and generally interacting with HTTP servers.
+
+grade: devel # must be 'stable' to release into candidate/stable channels
+confinement: strict
+
+apps:
+  http:
+    command: http
+    plugs: [network, home]
+    aliases: [http]
+
+parts:
+  httpie:
+    source: .
+    plugin: python
