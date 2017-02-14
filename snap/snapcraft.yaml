@@ -1,4 +1,4 @@
-name: httpie
+name: http
 version: master
 summary: Modern command line HTTP client
 description: |
@@ -15,7 +15,6 @@ apps:
   http:
     command: http
     plugs: [network, home]
-    aliases: [http]
 
 parts:
   httpie:
