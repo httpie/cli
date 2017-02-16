@@ -544,10 +544,10 @@ ssl.add_argument(
     '--verify',
     default='yes',
     help="""
-    Set to "no" to skip checking the host's SSL certificate. You can also pass
-    the path to a CA_BUNDLE file for private certs. You can also set the
-    REQUESTS_CA_BUNDLE environment variable. Defaults to "yes".
-
+    Set to "no" (or "false") to skip checking the host's SSL certificate.
+    Defaults to "yes" ("true"). You can also pass the path to a CA_BUNDLE file
+    for private certs. (Or you can set the REQUESTS_CA_BUNDLE environment
+    variable instead.)
     """
 )
 ssl.add_argument(
