@@ -813,7 +813,7 @@ In your ``~/.bash_profile``:
 SOCKS
 -----
 
-To enable SOCKS proxy support please install ``requests[socks]`` using ``pip``:
+Homebrew-installed HTTPie comes with SOCKS proxy support out of the box. To enable SOCKS proxy support for non-Homebrew  installations, you'll need to install ``requests[socks]`` manually using ``pip``:
 
 
 .. code-block:: bash
