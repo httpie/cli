@@ -1,6 +1,7 @@
 """Tests for dealing with binary request and response data."""
+import requests
+
 from fixtures import BIN_FILE_PATH, BIN_FILE_CONTENT, BIN_FILE_PATH_ARG
-from httpie.compat import urlopen
 from httpie.output.streams import BINARY_SUPPRESSED_NOTICE
 from utils import TestEnvironment, http
 
@@ -31,25 +32,20 @@ class TestBinaryRequestData:
 
 
 class TestBinaryResponseData:
-    url = 'http://www.google.com/favicon.ico'
 
-    @property
-    def bindata(self):
-        if not hasattr(self, '_bindata'):
-            self._bindata = urlopen(self.url).read()
-        return self._bindata
-
-    def test_binary_suppresses_when_terminal(self):
-        r = http('GET', self.url)
+    def test_binary_suppresses_when_terminal(self, httpbin):
+        r = http('GET', httpbin + '/bytes/1024')
         assert BINARY_SUPPRESSED_NOTICE.decode() in r
 
-    def test_binary_suppresses_when_not_terminal_but_pretty(self):
+    def test_binary_suppresses_when_not_terminal_but_pretty(self, httpbin):
         env = TestEnvironment(stdin_isatty=True, stdout_isatty=False)
-        r = http('--pretty=all', 'GET', self.url,
+        r = http('--pretty=all', 'GET', httpbin + '/bytes/1024',
                  env=env)
         assert BINARY_SUPPRESSED_NOTICE.decode() in r
 
-    def test_binary_included_and_correct_when_suitable(self):
+    def test_binary_included_and_correct_when_suitable(self, httpbin):
         env = TestEnvironment(stdin_isatty=True, stdout_isatty=False)
-        r = http('GET', self.url, env=env)
-        assert r == self.bindata
+        url = httpbin + '/bytes/1024?seed=1'
+        r = http('GET', url, env=env)
+        expected = requests.get(url).content
+        assert r == expected
