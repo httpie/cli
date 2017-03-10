@@ -226,11 +226,7 @@ class ArgParser(ArgumentParser):
 
         return
 
-        if self.args.data:
-            self.error(
-                'Request body (from stdin or a file) and request '
-                'data (key=value) cannot be mixed.'
-            )
+        # XXX: Stream upload WIP.
         f = getattr(fd, 'buffer', fd)
         if not self.args.chunked:
             data = f

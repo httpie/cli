@@ -96,6 +96,7 @@ def program(args, env, log_error):
             )
             downloader.pre_request(args.headers)
 
+        # XXX: Stream upload WIP.
         def response_hook(response, **kwargs):
             return
             write_stream_kwargs = {
@@ -125,7 +126,6 @@ def program(args, env, log_error):
                     env.stderr.write('\n')
                 else:
                     raise
-
         # final_response = get_response(
         #     args=args,
         #     config_dir=env.config.directory,
@@ -134,7 +134,11 @@ def program(args, env, log_error):
         #     }
         # )
 
-        final_response = get_response(args, config_dir=env.config.directory, hooks=None)
+        final_response = get_response(
+            args=args,
+            config_dir=env.config.directory,
+            hooks=None,
+        )
         if args.all:
             responses = final_response.history + [final_response]
         else:

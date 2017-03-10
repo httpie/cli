@@ -123,6 +123,7 @@ class RequestItems:
             raise ParseError('"%s": %s' % (item.orig, e))
 
         return
+        # XXX: Stream upload WIP.
         try:
             path = (
                 os.path.basename(item.value),
