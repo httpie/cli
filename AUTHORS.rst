@@ -2,13 +2,13 @@
 HTTPie authors
 ==============
 
-* `Jakub Roztocil <https://github.com/jkbrzt>`_
+* `Jakub Roztocil <https://github.com/jakubroztocil>`_
 
 
 Patches and ideas
 -----------------
 
-`Complete list of contributors on GitHub <https://github.com/jkbrzt/httpie/graphs/contributors>`_
+`Complete list of contributors on GitHub <https://github.com/jakubroztocil/httpie/graphs/contributors>`_
 
 * `Cláudia T. Delgado <https://github.com/claudiatd>`_ (logo)
 * `Hank Gay <https://github.com/gthank>`_

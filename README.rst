@@ -11,7 +11,7 @@ generally interacting with HTTP servers.
 
 .. class:: no-web
 
-    .. image:: https://raw.githubusercontent.com/jkbrzt/httpie/master/httpie.png
+    .. image:: https://raw.githubusercontent.com/jakubroztocil/httpie/master/httpie.png
         :alt: HTTPie compared to cURL
         :width: 100%
         :align: center
@@ -144,11 +144,11 @@ Otherwise with ``pip``:
 
 .. code-block:: bash
 
-    $ pip install --upgrade https://github.com/jkbrzt/httpie/archive/master.tar.gz
+    $ pip install --upgrade https://github.com/jakubroztocil/httpie/archive/master.tar.gz
 
 
 Verify that now we have the
-`current development version identifier <https://github.com/jkbrzt/httpie/blob/0af6ae1be444588bbc4747124e073423151178a0/httpie/__init__.py#L5>`_
+`current development version identifier <https://github.com/jakubroztocil/httpie/blob/0af6ae1be444588bbc4747124e073423151178a0/httpie/__init__.py#L5>`_
 with the ``-dev`` suffix, for example:
 
 .. code-block:: bash
@@ -204,12 +204,12 @@ See the request that is being sent using one of the `output options`_:
 
 
 Use `Github API`_ to post a comment on an
-`issue <https://github.com/jkbrzt/httpie/issues/83>`_
+`issue <https://github.com/jakubroztocil/httpie/issues/83>`_
 with `authentication`_:
 
 .. code-block:: bash
 
-    $ http -a USERNAME POST https://api.github.com/repos/jkbrzt/httpie/issues/83/comments body='HTTPie is awesome! :heart:'
+    $ http -a USERNAME POST https://api.github.com/repos/jakubroztocil/httpie/issues/83/comments body='HTTPie is awesome! :heart:'
 
 
 Upload a file using `redirected input`_:
@@ -1057,7 +1057,7 @@ You can even pipe web services together using HTTPie:
 
 .. code-block:: bash
 
-    $ http GET https://api.github.com/repos/jkbrzt/httpie | http POST httpbin.org/post
+    $ http GET https://api.github.com/repos/jakubroztocil/httpie | http POST httpbin.org/post
 
 
 You can use ``cat`` to enter multiline data on the terminal:
@@ -1234,7 +1234,7 @@ is being saved to a file.
 
 .. code-block:: bash
 
-    $ http --download https://github.com/jkbrzt/httpie/archive/master.tar.gz
+    $ http --download https://github.com/jakubroztocil/httpie/archive/master.tar.gz
 
 .. code-block:: http
 
@@ -1264,7 +1264,7 @@ headers and progress are still shown in the terminal:
 
 .. code-block:: bash
 
-    $ http -d https://github.com/jkbrzt/httpie/archive/master.tar.gz |  tar zxf -
+    $ http -d https://github.com/jakubroztocil/httpie/archive/master.tar.gz |  tar zxf -
 
 
 
@@ -1571,13 +1571,13 @@ Please use the following support channels:
 
 * `GitHub issues <https://github.com/jkbr/httpie/issues>`_
   for bug reports and feature requests.
-* `Our Gitter chat room <https://gitter.im/jkbrzt/httpie>`_
+* `Our Gitter chat room <https://gitter.im/jakubroztocil/httpie>`_
   to ask questions, discuss features, and for general discussion.
 * `StackOverflow <https://stackoverflow.com>`_
   to ask questions (please make sure to use the
   `httpie <http://stackoverflow.com/questions/tagged/httpie>`_ tag).
 * Tweet directly to `@clihttp <https://twitter.com/clihttp>`_.
-* You can also tweet directly to `@jkbrzt`_.
+* You can also tweet directly to `@jakubroztocil`_.
 
 
 Related projects
@@ -1610,7 +1610,7 @@ HTTPie plays exceptionally well with the following tools:
 Alternatives
 ~~~~~~~~~~~~
 
-* `httpcat <https://github.com/jkbrzt/httpcat>`_ — a lower-level sister utility
+* `httpcat <https://github.com/jakubroztocil/httpcat>`_ — a lower-level sister utility
   of HTTPie for constructing raw HTTP requests on the command line.
 * `curl <https://curl.haxx.se>`_ — a "Swiss knife" command line tool and
   an exceptional library for transferring data with URLs.
@@ -1619,13 +1619,13 @@ Alternatives
 Contributing
 ------------
 
-See `CONTRIBUTING.rst <https://github.com/jkbrzt/httpie/blob/master/CONTRIBUTING.rst>`_.
+See `CONTRIBUTING.rst <https://github.com/jakubroztocil/httpie/blob/master/CONTRIBUTING.rst>`_.
 
 
 Change log
 ----------
 
-See `CHANGELOG <https://github.com/jkbrzt/httpie/blob/master/CHANGELOG.rst>`_.
+See `CHANGELOG <https://github.com/jakubroztocil/httpie/blob/master/CHANGELOG.rst>`_.
 
 
 Artwork
@@ -1637,22 +1637,22 @@ See `claudiatd/httpie-artwork`_
 Licence
 -------
 
-BSD-3-Clause: `LICENSE <https://github.com/jkbrzt/httpie/blob/master/LICENSE>`_.
+BSD-3-Clause: `LICENSE <https://github.com/jakubroztocil/httpie/blob/master/LICENSE>`_.
 
 
 
 Authors
 -------
 
-`Jakub Roztocil`_  (`@jkbrzt`_) created HTTPie and `these fine people`_
+`Jakub Roztocil`_  (`@jakubroztocil`_) created HTTPie and `these fine people`_
 have contributed.
 
 
 .. _pip: https://pip.pypa.io/en/stable/installing/
 .. _Github API: http://developer.github.com/v3/issues/comments/#create-a-comment
-.. _these fine people: https://github.com/jkbrzt/httpie/contributors
+.. _these fine people: https://github.com/jakubroztocil/httpie/contributors
 .. _Jakub Roztocil: http://roztocil.co
-.. _@jkbrzt: https://twitter.com/jkbrzt
+.. _@jakubroztocil: https://twitter.com/jakubroztocil
 .. _claudiatd/httpie-artwork: https://github.com/claudiatd/httpie-artwork
 
 
@@ -1660,19 +1660,19 @@ have contributed.
     :target: https://pypi.python.org/pypi/httpie
     :alt: Latest version released on PyPi
 
-.. |coverage| image:: https://img.shields.io/coveralls/jkbrzt/httpie/master.svg?style=flat-square&label=coverage
-    :target: https://coveralls.io/r/jkbrzt/httpie?branch=master
+.. |coverage| image:: https://img.shields.io/coveralls/jakubroztocil/httpie/master.svg?style=flat-square&label=coverage
+    :target: https://coveralls.io/r/jakubroztocil/httpie?branch=master
     :alt: Test coverage
 
-.. |unix_build| image:: https://img.shields.io/travis/jkbrzt/httpie/master.svg?style=flat-square&label=unix%20build
-    :target: http://travis-ci.org/jkbrzt/httpie
+.. |unix_build| image:: https://img.shields.io/travis/jakubroztocil/httpie/master.svg?style=flat-square&label=unix%20build
+    :target: http://travis-ci.org/jakubroztocil/httpie
     :alt: Build status of the master branch on Mac/Linux
 
 .. |windows_build|  image:: https://img.shields.io/appveyor/ci/jkbrzt/httpie.svg?style=flat-square&label=windows%20build
     :target: https://ci.appveyor.com/project/jkbrzt/httpie
     :alt: Build status of the master branch on Windows
 
-.. |gitter| image:: https://img.shields.io/gitter/room/jkbrzt/httpie.svg?style=flat-square
-    :target: https://gitter.im/jkbrzt/httpie
+.. |gitter| image:: https://img.shields.io/gitter/room/jakubroztocil/httpie.svg?style=flat-square
+    :target: https://gitter.im/jakubroztocil/httpie
     :alt: Chat on Gitter
 

@@ -18,7 +18,7 @@ def test_debug():
 def test_help():
     r = http('--help', error_exit_ok=True)
     assert r.exit_status == httpie.ExitStatus.OK
-    assert 'https://github.com/jkbrzt/httpie/issues' in r
+    assert 'https://github.com/jakubroztocil/httpie/issues' in r
 
 
 def test_version():

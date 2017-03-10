@@ -55,7 +55,7 @@ def test_credentials_in_url_auth_flag_has_priority(httpbin_both):
 ])
 def test_only_username_in_url(url):
     """
-    https://github.com/jkbrzt/httpie/issues/242
+    https://github.com/jakubroztocil/httpie/issues/242
 
     """
     args = httpie.cli.parser.parse_args(args=[url], env=TestEnvironment())

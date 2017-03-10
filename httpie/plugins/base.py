@@ -15,7 +15,7 @@ class AuthPlugin(BasePlugin):
     """
     Base auth plugin class.
 
-    See <https://github.com/jkbrzt/httpie-ntlm> for an example auth plugin.
+    See <https://github.com/httpie/httpie-ntlm> for an example auth plugin.
 
     See also `test_auth_plugins.py`
 

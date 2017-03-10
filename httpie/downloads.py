@@ -105,7 +105,7 @@ def filename_from_content_disposition(content_disposition):
     :return: the filename if present and valid, otherwise `None`
 
     """
-    # attachment; filename=jkbrzt-httpie-0.4.1-20-g40bd8f6.tar.gz
+    # attachment; filename=jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz
 
     msg = Message('Content-Disposition: %s' % content_disposition)
     filename = msg.get_filename()
@@ -238,7 +238,7 @@ class Downloader(object):
         assert not self.status.time_started
 
         # FIXME: some servers still might sent Content-Encoding: gzip
-        # <https://github.com/jkbrzt/httpie/issues/423>
+        # <https://github.com/jakubroztocil/httpie/issues/423>
         try:
             total_size = int(response.headers['Content-Length'])
         except (KeyError, ValueError, TypeError):

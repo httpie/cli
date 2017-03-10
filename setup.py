@@ -76,7 +76,7 @@ setup(
     description=httpie.__doc__.strip(),
     long_description=long_description(),
     url='http://httpie.org/',
-    download_url='https://github.com/jkbrzt/httpie',
+    download_url='https://github.com/jakubroztocil/httpie',
     author=httpie.__author__,
     author_email='jakub@roztocil.co',
     license=httpie.__licence__,

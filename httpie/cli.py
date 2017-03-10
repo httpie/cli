@@ -54,7 +54,7 @@ parser = HTTPieArgumentParser(
 
     Suggestions and bug reports are greatly appreciated:
 
-        https://github.com/jkbrzt/httpie/issues
+        https://github.com/jakubroztocil/httpie/issues
 
     """),
 )

@@ -11,7 +11,7 @@ class Httpie < Formula
   url "https://pypi.python.org/packages/85/95/7ccea3ae7fd1185e21629f6d14fa9c896d6250bb15fb492efa91edc741a2/httpie-0.9.8.tar.gz"
   sha256 "515870b15231530f56fe2164190581748e8799b66ef0fe36ec9da3396f0df6e1"
 
-  head "https://github.com/jkbrzt/httpie.git"
+  head "https://github.com/jakubroztocil/httpie.git"
 
   depends_on :python3
 

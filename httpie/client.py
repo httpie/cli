@@ -97,7 +97,7 @@ def finalize_headers(headers):
             value = value.strip()
 
             if isinstance(value, str):
-                # See: https://github.com/jkbrzt/httpie/issues/212
+                # See: https://github.com/jakubroztocil/httpie/issues/212
                 value = value.encode('utf8')
 
         final_headers[name] = value

@@ -1,4 +1,4 @@
-# https://travis-ci.org/jkbrzt/httpie
+# https://travis-ci.org/jakubroztocil/httpie
 sudo: false
 
 language: python
