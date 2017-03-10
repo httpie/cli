@@ -10,25 +10,25 @@ Invocation flow:
   5. Exit.
 
 """
-import sys
 import errno
 import platform
+import sys
 
 import requests
-from requests import __version__ as requests_version
 from pygments import __version__ as pygments_version
+from requests import __version__ as requests_version
 
 from httpie import __version__ as httpie_version, ExitStatus
-from httpie.compat import str, bytes, is_py3
 from httpie.client import get_response
-from httpie.downloads import Downloader
+from httpie.compat import str, bytes, is_py3
 from httpie.context import Environment
-from httpie.plugins import plugin_manager
+from httpie.downloads import Downloader
 from httpie.output.streams import (
     build_output_stream,
     write_stream,
     write_stream_with_colors_win_py3
 )
+from httpie.plugins import plugin_manager
 
 
 def get_exit_status(http_status, follow=False):
@@ -96,7 +96,45 @@ def program(args, env, log_error):
             )
             downloader.pre_request(args.headers)
 
-        final_response = get_response(args, config_dir=env.config.directory)
+        def response_hook(response, **kwargs):
+            return
+            write_stream_kwargs = {
+                'stream': build_output_stream(
+                    args=args,
+                    env=env,
+                    request=response.request,
+                    response=response,
+                    output_options=(
+                        args.output_options
+                        # if response is final_response
+                        # else args.output_options_history
+                    )
+                ),
+                # NOTE: `env.stdout` will in fact be `stderr` with `--download`
+                'outfile': env.stdout,
+                'flush': env.stdout_isatty or args.stream
+            }
+            try:
+                if env.is_windows and is_py3 and 'colors' in args.prettify:
+                    write_stream_with_colors_win_py3(**write_stream_kwargs)
+                else:
+                    write_stream(**write_stream_kwargs)
+            except IOError as e:
+                if not show_traceback and e.errno == errno.EPIPE:
+                    # Ignore broken pipes unless --traceback.
+                    env.stderr.write('\n')
+                else:
+                    raise
+
+        # final_response = get_response(
+        #     args=args,
+        #     config_dir=env.config.directory,
+        #     hooks={
+        #         'response': response_hook
+        #     }
+        # )
+
+        final_response = get_response(args, config_dir=env.config.directory, hooks=None)
         if args.all:
             responses = final_response.history + [final_response]
         else:
@@ -188,7 +226,7 @@ def main(args=sys.argv[1:], env=Environment(), custom_log_error=None):
         assert level in ['error', 'warning']
         env.stderr.write('\nhttp: %s: %s\n' % (level, msg))
 
-    from httpie.cli import parser
+    from httpie.input.cli import parser
 
     if env.config.default_options:
         args = env.config.default_options + args

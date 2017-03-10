@@ -5,7 +5,7 @@ import pytest_httpbin.certs
 from requests.exceptions import SSLError
 
 from httpie import ExitStatus
-from httpie.input import SSL_VERSION_ARG_MAPPING
+from httpie.input.ssl import SSL_VERSION_ARG_MAPPING
 from utils import http, HTTP_OK, TESTS_ROOT
 
 

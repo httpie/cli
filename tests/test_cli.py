@@ -1,25 +1,26 @@
 """CLI argument parsing related tests."""
-import json
-# noinspection PyCompatibility
 import argparse
+import json
 
 import pytest
 from requests.exceptions import InvalidSchema
 
-from httpie import input
-from httpie.input import KeyValue, KeyValueArgType, DataDict
-from httpie import ExitStatus
-from httpie.cli import parser
-from utils import TestEnvironment, http, HTTP_OK
+import httpie.input.constants
+import httpie.input.requestitems
 from fixtures import (
     FILE_PATH_ARG, JSON_FILE_PATH_ARG,
     JSON_FILE_CONTENT, FILE_CONTENT, FILE_PATH
 )
+from httpie import ExitStatus
+from httpie.input import argparser
+from httpie.input.argtypes import KeyValue, KeyValueArgType
+from httpie.input.cli import parser
+from utils import TestEnvironment, http, HTTP_OK
 
 
 class TestItemParsing:
 
-    key_value = KeyValueArgType(*input.SEP_GROUP_ALL_ITEMS)
+    key_value = KeyValueArgType(*httpie.input.constants.SEP_GROUP_ALL_ITEMS)
 
     def test_invalid_items(self):
         items = ['no-separator']
@@ -27,7 +28,7 @@ class TestItemParsing:
             pytest.raises(argparse.ArgumentTypeError, self.key_value, item)
 
     def test_escape_separator(self):
-        items = input.parse_items([
+        items = httpie.input.requestitems.parse_items([
             # headers
             self.key_value(r'foo\:bar:baz'),
             self.key_value(r'jack\@jill:hill'),
@@ -60,13 +61,13 @@ class TestItemParsing:
         assert actual == expected
 
     def test_escape_longsep(self):
-        items = input.parse_items([
+        items = httpie.input.requestitems.parse_items([
             self.key_value(r'bob\:==foo'),
         ])
         assert items.params == {'bob:': 'foo'}
 
     def test_valid_items(self):
-        items = input.parse_items([
+        items = httpie.input.requestitems.parse_items([
             self.key_value('string=value'),
             self.key_value('Header:value'),
             self.key_value('Unset-Header:'),
@@ -112,17 +113,17 @@ class TestItemParsing:
                 decode('utf8') == FILE_CONTENT)
 
     def test_multiple_file_fields_with_same_field_name(self):
-        items = input.parse_items([
+        items = httpie.input.requestitems.parse_items([
             self.key_value('file_field@' + FILE_PATH_ARG),
             self.key_value('file_field@' + FILE_PATH_ARG),
         ])
         assert len(items.files['file_field']) == 2
 
     def test_multiple_text_fields_with_same_field_name(self):
-        items = input.parse_items(
+        items = httpie.input.requestitems.parse_items(
             [self.key_value('text_field=a'),
              self.key_value('text_field=b')],
-            data_class=DataDict
+            is_form=True
         )
         assert items.data['text_field'] == ['a', 'b']
         assert list(items.data.items()) == [
@@ -206,7 +207,7 @@ class TestLocalhostShorthand:
 class TestArgumentParser:
 
     def setup_method(self, method):
-        self.parser = input.HTTPieArgumentParser()
+        self.parser = argparser.ArgParser()
 
     def test_guess_when_method_set_and_valid(self):
         self.parser.args = argparse.Namespace()
@@ -217,7 +218,7 @@ class TestArgumentParser:
 
         self.parser.env = TestEnvironment()
 
-        self.parser._guess_method()
+        self.parser._process_method()
 
         assert self.parser.args.method == 'GET'
         assert self.parser.args.url == 'http://example.com/'
@@ -231,7 +232,7 @@ class TestArgumentParser:
         self.parser.args.ignore_stdin = False
         self.parser.env = TestEnvironment()
 
-        self.parser._guess_method()
+        self.parser._process_method()
 
         assert self.parser.args.method == 'GET'
         assert self.parser.args.url == 'http://example.com/'
@@ -244,7 +245,7 @@ class TestArgumentParser:
         self.parser.args.items = []
         self.parser.args.ignore_stdin = False
         self.parser.env = TestEnvironment()
-        self.parser._guess_method()
+        self.parser._process_method()
 
         assert self.parser.args.method == 'POST'
         assert self.parser.args.url == 'http://example.com/'
@@ -264,7 +265,7 @@ class TestArgumentParser:
 
         self.parser.env = TestEnvironment()
 
-        self.parser._guess_method()
+        self.parser._process_method()
 
         assert self.parser.args.method == 'GET'
         assert self.parser.args.url == 'http://example.com/'
@@ -287,7 +288,7 @@ class TestArgumentParser:
 
         self.parser.env = TestEnvironment()
 
-        self.parser._guess_method()
+        self.parser._process_method()
 
         assert self.parser.args.items, [
             KeyValue(key='new_item', value='a', sep='=', orig='new_item=a'),

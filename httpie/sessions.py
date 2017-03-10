@@ -21,7 +21,7 @@ SESSION_IGNORED_HEADER_PREFIXES = ['Content-', 'If-']
 
 
 def get_response(requests_session, session_name,
-                 config_dir, args, read_only=False):
+                 config_dir, args, hooks, read_only=False):
     """Like `client.get_responses`, but applies permanent
     aspects of the session to the request.
 
@@ -161,7 +161,7 @@ class Session(BaseConfigDict):
             }
         else:
             if plugin.auth_parse:
-                from httpie.input import parse_auth
+                from httpie.input.argtypes import parse_auth
                 parsed = parse_auth(plugin.raw_auth)
                 credentials = {
                     'username': parsed.key,

@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from httpie.input import ParseError
+from httpie.input.exceptions import ParseError
 from utils import TestEnvironment, http, HTTP_OK
 from fixtures import FILE_PATH_ARG, FILE_PATH, FILE_CONTENT
 

@@ -5,22 +5,42 @@ NOTE: the CLI interface may change before reaching v1.0.
 """
 # noinspection PyCompatibility
 from argparse import (
-    RawDescriptionHelpFormatter, FileType,
-    OPTIONAL, ZERO_OR_MORE, SUPPRESS
+    RawDescriptionHelpFormatter,
+    FileType,
+    OPTIONAL,
+    ZERO_OR_MORE,
+    SUPPRESS,
 )
 from textwrap import dedent, wrap
 
 from httpie import __doc__, __version__
-from httpie.input import (
-    HTTPieArgumentParser, KeyValueArgType,
-    SEP_PROXY, SEP_GROUP_ALL_ITEMS,
-    OUT_REQ_HEAD, OUT_REQ_BODY, OUT_RESP_HEAD,
-    OUT_RESP_BODY, OUTPUT_OPTIONS,
-    OUTPUT_OPTIONS_DEFAULT, PRETTY_MAP,
-    PRETTY_STDOUT_TTY_ONLY, SessionNameValidator,
-    readable_file_arg, SSL_VERSION_ARG_MAPPING
+from httpie.input.argtypes import (
+    KeyValueArgType,
+    SessionNameValidator,
+    readable_file_arg,
 )
-from httpie.output.formatters.colors import AVAILABLE_STYLES, DEFAULT_STYLE
+from httpie.input.argparser import (
+    ArgParser,
+)
+from httpie.input.constants import (
+    OUT_REQ_BODY,
+    OUT_REQ_HEAD,
+    OUT_RESP_HEAD,
+    OUT_RESP_BODY,
+    OUTPUT_OPTIONS,
+    OUTPUT_OPTIONS_DEFAULT,
+    PRETTY_MAP,
+    PRETTY_STDOUT_TTY_ONLY,
+    SEP_PROXY,
+    SEP_GROUP_ALL_ITEMS,
+)
+from httpie.input.ssl import (
+    SSL_VERSION_ARG_MAPPING,
+)
+from httpie.output.formatters.colors import (
+    AVAILABLE_STYLES,
+    DEFAULT_STYLE,
+)
 from httpie.plugins import plugin_manager
 from httpie.plugins.builtin import BuiltinAuthPlugin
 from httpie.sessions import DEFAULT_SESSIONS_DIR
@@ -45,7 +65,7 @@ class HTTPieHelpFormatter(RawDescriptionHelpFormatter):
         return text.splitlines()
 
 
-parser = HTTPieArgumentParser(
+parser = ArgParser(
     formatter_class=HTTPieHelpFormatter,
     description='%s <http://httpie.org>' % __doc__.strip(),
     epilog=dedent("""
@@ -472,6 +492,15 @@ auth.add_argument(
 #######################################################################
 
 network = parser.add_argument_group(title='Network')
+
+network.add_argument(
+    '--chunked',
+    default=False,
+    action='store_true',
+    help="""
+
+    """
+)
 
 network.add_argument(
     '--proxy',

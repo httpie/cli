@@ -2,9 +2,9 @@
 import mock
 import pytest
 
+import httpie.input.cli
+import httpie.input.argparser
 from utils import http, add_auth, HTTP_OK, TestEnvironment
-import httpie.input
-import httpie.cli
 
 
 def test_basic_auth(httpbin_both):
@@ -22,7 +22,7 @@ def test_digest_auth(httpbin_both, argument_name):
     assert r.json == {'authenticated': True, 'user': 'user'}
 
 
-@mock.patch('httpie.input.AuthCredentials._getpass',
+@mock.patch('httpie.input.argtypes.AuthCredentials._getpass',
             new=lambda self, prompt: 'password')
 def test_password_prompt(httpbin):
     r = http('--auth', 'user',
@@ -58,7 +58,7 @@ def test_only_username_in_url(url):
     https://github.com/jakubroztocil/httpie/issues/242
 
     """
-    args = httpie.cli.parser.parse_args(args=[url], env=TestEnvironment())
+    args = httpie.input.cli.parser.parse_args(args=[url], env=TestEnvironment())
     assert args.auth
     assert args.auth.username == 'username'
     assert args.auth.password == ''

@@ -1,13 +1,16 @@
-from itertools import chain
 from functools import partial
+from itertools import chain
 
 from httpie.compat import str
 from httpie.context import Environment
+from httpie.input.constants import (
+    OUT_REQ_HEAD,
+    OUT_REQ_BODY,
+    OUT_RESP_HEAD,
+    OUT_RESP_BODY,
+)
 from httpie.models import HTTPRequest, HTTPResponse
-from httpie.input import (OUT_REQ_BODY, OUT_REQ_HEAD,
-                          OUT_RESP_HEAD, OUT_RESP_BODY)
 from httpie.output.processing import Formatting, Conversion
-
 
 BINARY_SUPPRESSED_NOTICE = (
     b'\n'

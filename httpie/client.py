@@ -5,10 +5,10 @@ import requests
 from requests.adapters import HTTPAdapter
 from requests.packages import urllib3
 
-from httpie import sessions
 from httpie import __version__
+from httpie import sessions
 from httpie.compat import str
-from httpie.input import SSL_VERSION_ARG_MAPPING
+from httpie.input.ssl import SSL_VERSION_ARG_MAPPING
 from httpie.plugins import plugin_manager
 from httpie.utils import repr_dict_nice
 
@@ -53,7 +53,7 @@ def get_requests_session(ssl_version):
     return requests_session
 
 
-def get_response(args, config_dir):
+def get_response(args, config_dir, hooks):
     """Send the request and return a `request.Response`."""
 
     ssl_version = None
@@ -67,7 +67,7 @@ def get_response(args, config_dir):
         kwargs = get_requests_kwargs(args)
         if args.debug:
             dump_request(kwargs)
-        response = requests_session.request(**kwargs)
+        response = requests_session.request(**kwargs, hooks=hooks)
     else:
         response = sessions.get_response(
             requests_session=requests_session,
@@ -75,6 +75,7 @@ def get_response(args, config_dir):
             config_dir=config_dir,
             session_name=args.session or args.session_read_only,
             read_only=bool(args.session_read_only),
+            hooks = hooks
         )
 
     return response
