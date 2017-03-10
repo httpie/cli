@@ -67,7 +67,7 @@ def get_response(args, config_dir, hooks):
         kwargs = get_requests_kwargs(args)
         if args.debug:
             dump_request(kwargs)
-        response = requests_session.request(**kwargs, hooks=hooks)
+        response = requests_session.request(hooks=hooks, **kwargs)
     else:
         response = sessions.get_response(
             requests_session=requests_session,
@@ -75,7 +75,7 @@ def get_response(args, config_dir, hooks):
             config_dir=config_dir,
             session_name=args.session or args.session_read_only,
             read_only=bool(args.session_read_only),
-            hooks = hooks
+            hooks=hooks
         )
 
     return response
