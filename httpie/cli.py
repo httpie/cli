@@ -20,7 +20,7 @@ from httpie.input import (
     PRETTY_STDOUT_TTY_ONLY, SessionNameValidator,
     readable_file_arg, SSL_VERSION_ARG_MAPPING
 )
-from httpie.output.formatters.colors import AVAILABLE_STYLES
+from httpie.output.formatters.colors import AVAILABLE_STYLES, DEFAULT_STYLE
 from httpie.plugins import plugin_manager
 from httpie.plugins.builtin import BuiltinAuthPlugin
 from httpie.sessions import DEFAULT_SESSIONS_DIR
@@ -204,9 +204,10 @@ output_processing.add_argument(
     '--style', '-s',
     dest='style',
     metavar='STYLE',
+    default=DEFAULT_STYLE,
     choices=AVAILABLE_STYLES,
     help="""
-    Output coloring style. One of:
+    Output coloring style (default is "{default}"). One of:
 
 {available}
 
@@ -215,6 +216,7 @@ output_processing.add_argument(
     (e.g., via `export TERM=xterm-256color' in your ~/.bashrc).
 
     """.format(
+        default=DEFAULT_STYLE,
         available='\n'.join(
             '{0}{1}'.format(8 * ' ', line.strip())
             for line in wrap(', '.join(sorted(AVAILABLE_STYLES)), 60)
