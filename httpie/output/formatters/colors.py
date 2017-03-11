@@ -20,8 +20,8 @@ AVAILABLE_STYLES = set(pygments.styles.STYLE_MAP.keys())
 AVAILABLE_STYLES.add('solarized')
 
 # This is the native style provided by the terminal emulator color scheme
-PRESET_STYLE = 'preset';
-AVAILABLE_STYLES.add(PRESET_STYLE);
+PRESET_STYLE = 'preset'
+AVAILABLE_STYLES.add(PRESET_STYLE)
 
 if is_windows:
     # Colors on Windows via colorama don't look that
@@ -63,7 +63,7 @@ class ColorFormatter(FormatterPlugin):
         self.formatter = fmt_class(style=style_class)
 
         if color_scheme == PRESET_STYLE:
-            self.http_lexer = PygmentsHttpLexer();
+            self.http_lexer = PygmentsHttpLexer()
         else:
             self.http_lexer = HTTPLexer()
 
