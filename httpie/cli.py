@@ -20,7 +20,7 @@ from httpie.input import (
     PRETTY_STDOUT_TTY_ONLY, SessionNameValidator,
     readable_file_arg, SSL_VERSION_ARG_MAPPING
 )
-from httpie.output.formatters.colors import AVAILABLE_STYLES, DEFAULT_STYLE
+from httpie.output.formatters.colors import AVAILABLE_STYLES, DEFAULT_STYLE, PRESET_STYLE
 from httpie.plugins import plugin_manager
 from httpie.plugins.builtin import BuiltinAuthPlugin
 from httpie.sessions import DEFAULT_SESSIONS_DIR
