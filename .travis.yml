@@ -18,6 +18,7 @@ python:
   - 3.6
 # Currently fails because of a Flask issue
 #  - pypy3
+cache: pip
 
 matrix:
 
