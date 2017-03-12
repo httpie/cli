@@ -1571,7 +1571,7 @@ Please use the following support channels:
 
 * `GitHub issues <https://github.com/jkbr/httpie/issues>`_
   for bug reports and feature requests.
-* `Our Gitter chat room <https://gitter.im/jakubroztocil/httpie>`_
+* `Our Gitter chat room <https://gitter.im/jkbrzt/httpie>`_
   to ask questions, discuss features, and for general discussion.
 * `StackOverflow <https://stackoverflow.com>`_
   to ask questions (please make sure to use the
