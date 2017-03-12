@@ -1,4 +1,4 @@
-tox
+tox==2.5.0
 mock
 pytest
 pytest-cov
