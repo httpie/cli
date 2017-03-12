@@ -9,6 +9,7 @@ import pygments.style
 from pygments.formatters.terminal import TerminalFormatter
 from pygments.formatters.terminal256 import Terminal256Formatter
 from pygments.lexers.special import TextLexer
+from pygments.lexers.text import HttpLexer as PygmentsHttpLexer
 from pygments.util import ClassNotFound
 
 from httpie.compat import is_windows
@@ -17,6 +18,10 @@ from httpie.plugins import FormatterPlugin
 
 AVAILABLE_STYLES = set(pygments.styles.STYLE_MAP.keys())
 AVAILABLE_STYLES.add('solarized')
+
+# This is the native style provided by the terminal emulator color scheme
+PRESET_STYLE = 'preset'
+AVAILABLE_STYLES.add(PRESET_STYLE)
 
 if is_windows:
     # Colors on Windows via colorama don't look that
@@ -51,14 +56,19 @@ class ColorFormatter(FormatterPlugin):
         except ClassNotFound:
             style_class = Solarized256Style
 
-        if env.colors == 256:
+        if color_scheme != PRESET_STYLE and env.colors == 256:
             fmt_class = Terminal256Formatter
         else:
             fmt_class = TerminalFormatter
         self.formatter = fmt_class(style=style_class)
 
+        if color_scheme == PRESET_STYLE:
+            self.http_lexer = PygmentsHttpLexer()
+        else:
+            self.http_lexer = HTTPLexer()
+
     def format_headers(self, headers):
-        return pygments.highlight(headers, HTTPLexer(), self.formatter).strip()
+        return pygments.highlight(headers, self.http_lexer, self.formatter).strip()
 
     def format_body(self, body, mime):
         lexer = self.get_lexer(mime, body)
