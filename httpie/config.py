@@ -66,7 +66,8 @@ class BaseConfigDict(dict):
             self['__meta__']['about'] = self.about
 
         with open(self.path, 'w') as f:
-            json.dump(self, f, indent=4, sort_keys=True, ensure_ascii=True)
+            json.dump(self, f, indent=4, sort_keys=True,
+                      ensure_ascii=True, separators=(',', ': '))
             f.write('\n')
 
     def delete(self):
