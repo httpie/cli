@@ -12,6 +12,7 @@ from httpie.plugins.builtin import BasicAuthPlugin, DigestAuthPlugin
 from httpie.output.formatters.headers import HeadersFormatter
 from httpie.output.formatters.json import JSONFormatter
 from httpie.output.formatters.colors import ColorFormatter
+from httpie.output.converters.msgpack import MsgpackConverter
 
 
 plugin_manager = PluginManager()
@@ -20,3 +21,4 @@ plugin_manager.register(BasicAuthPlugin,
 plugin_manager.register(HeadersFormatter,
                         JSONFormatter,
                         ColorFormatter)
+plugin_manager.register(MsgpackConverter)
