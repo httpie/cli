@@ -83,7 +83,7 @@ setup(
     packages=find_packages(),
     entry_points={
         'console_scripts': [
-            'http = httpie.__main__:main',
+            'httpie = httpie.__main__:main',
         ],
     },
     extras_require=extras_require,
