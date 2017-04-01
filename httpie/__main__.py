@@ -6,7 +6,7 @@ import sys
 
 if sys.platform.startswith('win') and sys.version_info[0] == 2:
     # https://github.com/jakubroztocil/httpie/issues/572
-    
+
     # https://stackoverflow.com/questions/846850/read-unicode-characters-from-command-line-arguments-in-python-2-x-on-windows/846931#846931
     def win32_unicode_argv():
         """Use shell32.GetCommandLineArgvW to get sys.argv as a list of
@@ -44,7 +44,7 @@ else:
 def main(argv):
     try:
         from .core import main
-        sys.exit(main(argv))
+        sys.exit(main(argv[1:]))
     except KeyboardInterrupt:
         from . import ExitStatus
         sys.exit(ExitStatus.ERROR_CTRL_C)
