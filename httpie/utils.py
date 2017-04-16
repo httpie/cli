@@ -37,9 +37,9 @@ def humanize_bytes(n, precision=2):
     >>> humanize_bytes(1)
     '1 B'
     >>> humanize_bytes(1024, precision=1)
-    '1.0 kB'
+    '1.0 KB'
     >>> humanize_bytes(1024 * 123, precision=1)
-    '123.0 kB'
+    '123.0 KB'
     >>> humanize_bytes(1024 * 12342, precision=1)
     '12.1 MB'
     >>> humanize_bytes(1024 * 12342, precision=2)
@@ -57,7 +57,7 @@ def humanize_bytes(n, precision=2):
         (1 << 40, 'TB'),
         (1 << 30, 'GB'),
         (1 << 20, 'MB'),
-        (1 << 10, 'kB'),
+        (1 << 10, 'KB'),
         (1, 'B')
     ]
 
