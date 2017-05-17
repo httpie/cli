@@ -90,7 +90,8 @@ class TestServerCert:
             http(httpbin_secure_untrusted.url + '/get')
 
     def test_verify_custom_ca_bundle_invalid_path(self, httpbin_secure):
-        with pytest.raises(SSLError):
+        # since 2.14.0 requests raises IOError
+        with pytest.raises((SSLError, IOError)):
             http(httpbin_secure.url + '/get', '--verify', '/__not_found__')
 
     def test_verify_custom_ca_bundle_invalid_bundle(self, httpbin_secure):
