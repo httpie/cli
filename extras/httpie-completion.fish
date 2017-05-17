@@ -30,7 +30,7 @@ function __fish_httpie_styles
   echo "xcode"
 end
 
-complete -x -c http -s s -l style        -d 'Output coloring style (default is "monokai")' -A -a "autumn borland bw colorful default emacs friendly fruity igor manni monokai murphy native paraiso-dark paraiso-light pastie perldoc rrt solarized tango trac vim vs xcode"
+complete -x -c http -s s -l style        -d 'Output coloring style (default is "monokai")' -A -a '(__fish_httpie_styles)'
 complete    -c http -s f -l form         -d 'Data items from the command line are serialized as form fields'
 complete    -c http -s j -l json         -d '(default) Data items from the command line are serialized as a JSON object'
 complete -x -c http      -l pretty       -d 'Controls output processing' -a "all colors format none" -A
