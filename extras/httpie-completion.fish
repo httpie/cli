@@ -34,7 +34,6 @@ complete -x -c http -s s -l style        -d 'Output coloring style (default is "
 complete    -c http -s f -l form         -d 'Data items from the command line are serialized as form fields'
 complete    -c http -s j -l json         -d '(default) Data items from the command line are serialized as a JSON object'
 complete -x -c http      -l pretty       -d 'Controls output processing' -a "all colors format none" -A
-complete -x -c http -s s -l style        -d 'Output coloring style (default is "monokai")' -A -a "autumn borland bw colorful default emacs friendly fruity igor manni monokai murphy native paraiso-dark paraiso-light pastie perldoc rrt solarized tango trac vim vs xcode"
 complete -x -c http -s p -l print        -d 'String specifying what the output should contain'
 complete    -c http -s v -l verbose      -d 'Print the whole request as well as the response'
 complete    -c http -s h -l headers      -d 'Print only the response headers'
