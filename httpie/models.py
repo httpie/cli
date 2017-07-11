@@ -80,7 +80,9 @@ class HTTPResponse(HTTPMessage):
 
     @property
     def encoding(self):
-        return self._orig.encoding or 'utf8'
+        # requests use 'ISO-8859-1' as fallback, but we choose 'UTF-8'.
+        # see discussion in https://github.com/requests/requests/issues/2086
+        return self._orig.encoding if 'charset=' in self.content_type else 'utf8'
 
     @property
     def body(self):
