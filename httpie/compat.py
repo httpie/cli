@@ -13,17 +13,11 @@ is_pypy = 'pypy' in sys.version.lower()
 is_windows = 'win32' in str(sys.platform).lower()
 
 
-if is_py2:
-    # noinspection PyShadowingBuiltins
+try:
+    str = unicode  # Python 2
     bytes = str
-    # noinspection PyUnresolvedReferences,PyShadowingBuiltins
-    str = unicode
-elif is_py3:
-    # noinspection PyShadowingBuiltins
-    str = str
-    # noinspection PyShadowingBuiltins
-    bytes = bytes
-
+except NameError:
+    pass           # Python 3
 
 try:  # pragma: no cover
     # noinspection PyUnresolvedReferences,PyCompatibility
