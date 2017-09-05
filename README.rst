@@ -1672,7 +1672,7 @@ have contributed.
     :target: https://ci.appveyor.com/project/jkbrzt/httpie
     :alt: Build status of the master branch on Windows
 
-.. |gitter| image:: https://img.shields.io/gitter/room/jakubroztocil/httpie.svg?style=flat-square
-    :target: https://gitter.im/jakubroztocil/httpie
+.. |gitter| image:: https://img.shields.io/gitter/room/jkbrzt/httpie.svg?style=flat-square
+    :target: https://gitter.im/jkbrzt/httpie
     :alt: Chat on Gitter
 
