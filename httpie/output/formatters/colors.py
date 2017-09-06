@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 import json
+import random
 
 import pygments.lexer
 import pygments.token
@@ -18,6 +19,7 @@ from httpie.plugins import FormatterPlugin
 
 AVAILABLE_STYLES = set(pygments.styles.STYLE_MAP.keys())
 AVAILABLE_STYLES.add('solarized')
+AVAILABLE_STYLES.add('random')
 
 # This is the native style provided by the terminal emulator color scheme
 PRESET_STYLE = 'preset'
@@ -50,6 +52,9 @@ class ColorFormatter(FormatterPlugin):
 
         # --json, -j
         self.explicit_json = explicit_json
+
+        if color_scheme == 'random':
+            color_scheme = random.choice(list(pygments.styles.STYLE_MAP.keys()))
 
         try:
             style_class = pygments.styles.get_style_by_name(color_scheme)
