@@ -1668,8 +1668,8 @@ have contributed.
     :target: http://travis-ci.org/jakubroztocil/httpie
     :alt: Build status of the master branch on Mac/Linux
 
-.. |windows_build|  image:: https://img.shields.io/appveyor/ci/jkbrzt/httpie.svg?style=flat-square&label=windows%20build
-    :target: https://ci.appveyor.com/project/jkbrzt/httpie
+.. |windows_build|  image:: https://img.shields.io/appveyor/ci/jakubroztocil/httpie.svg?style=flat-square&label=windows%20build
+    :target: https://ci.appveyor.com/project/jakubroztocil/httpie
     :alt: Build status of the master branch on Windows
 
 .. |gitter| image:: https://img.shields.io/gitter/room/jkbrzt/httpie.svg?style=flat-square
