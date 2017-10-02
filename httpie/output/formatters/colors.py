@@ -24,6 +24,16 @@ AVAILABLE_STYLES.add('random')
 # This is the native style provided by the terminal emulator color scheme
 PRESET_STYLE = 'preset'
 AVAILABLE_STYLES.add(PRESET_STYLE)
+STYLES_KEYS_EXCLUDED = [
+    'murphy',
+    'borland',
+    'colorful',
+    'manni',
+    'xcode',
+    'trac',
+    'friendly',
+    'tango'
+]
 
 if is_windows:
     # Colors on Windows via colorama don't look that
@@ -54,8 +64,12 @@ class ColorFormatter(FormatterPlugin):
         self.explicit_json = explicit_json
 
         if color_scheme == 'random':
-            color_scheme = random.choice(list(pygments.styles.STYLE_MAP.keys()))
-
+            # color_scheme = random.choice(['native', 'vim', 'paraiso-dark'])
+            color_scheme = random.choice(list(filter(
+                lambda a: a not in STYLES_KEYS_EXCLUDED,
+                list(pygments.styles.STYLE_MAP.keys())
+            )))
+            print("Style: %s\n---" % color_scheme)
         try:
             style_class = pygments.styles.get_style_by_name(color_scheme)
         except ClassNotFound:
