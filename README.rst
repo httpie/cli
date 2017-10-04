@@ -83,7 +83,12 @@ system package manager, for example:
 
 .. code-block:: bash
 
-    # Fedora, CentOS, RHEL, …
+    # Fedora
+    $ dnf install httpie
+
+.. code-block:: bash
+
+    # CentOS, RHEL, ...
     $ yum install httpie
 
 .. code-block:: bash
