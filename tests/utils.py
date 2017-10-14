@@ -33,7 +33,7 @@ def add_auth(url, auth):
     return proto + '://' + auth + '@' + rest
 
 
-class TestEnvironment(Environment):
+class _TestEnvironment(Environment):
     """Environment subclass with reasonable defaults for testing."""
     colors = 0
     stdin_isatty = True,
@@ -51,7 +51,7 @@ class TestEnvironment(Environment):
                 mode='w+t',
                 prefix='httpie_stderr'
             )
-        super(TestEnvironment, self).__init__(**kwargs)
+        super(_TestEnvironment, self).__init__(**kwargs)
         self._delete_config_dir = False
 
     @property
@@ -59,7 +59,7 @@ class TestEnvironment(Environment):
         if not self.config_dir.startswith(tempfile.gettempdir()):
             self.config_dir = mk_config_dir()
             self._delete_config_dir = True
-        return super(TestEnvironment, self).config
+        return super(_TestEnvironment, self).config
 
     def cleanup(self):
         if self._delete_config_dir:
@@ -183,7 +183,7 @@ def http(*args, **kwargs):
     error_exit_ok = kwargs.pop('error_exit_ok', False)
     env = kwargs.get('env')
     if not env:
-        env = kwargs['env'] = TestEnvironment()
+        env = kwargs['env'] = _TestEnvironment()
 
     stdout = env.stdout
     stderr = env.stderr

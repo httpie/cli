@@ -1,8 +1,8 @@
-from utils import TestEnvironment, http
+from utils import _TestEnvironment, http
 
 
 def test_default_options(httpbin):
-    env = TestEnvironment()
+    env = _TestEnvironment()
     env.config['default_options'] = ['--form']
     env.config.save()
     r = http(httpbin.url + '/post', 'foo=bar', env=env)
@@ -10,7 +10,7 @@ def test_default_options(httpbin):
 
 
 def test_default_options_overwrite(httpbin):
-    env = TestEnvironment()
+    env = _TestEnvironment()
     env.config['default_options'] = ['--form']
     env.config.save()
     r = http('--json', httpbin.url + '/post', 'foo=bar', env=env)
@@ -18,7 +18,7 @@ def test_default_options_overwrite(httpbin):
 
 
 def test_migrate_implicit_content_type():
-    config = TestEnvironment().config
+    config = _TestEnvironment().config
 
     config['implicit_content_type'] = 'json'
     config.save()

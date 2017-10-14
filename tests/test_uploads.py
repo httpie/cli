@@ -3,7 +3,7 @@ import os
 import pytest
 
 from httpie.input import ParseError
-from utils import TestEnvironment, http, HTTP_OK
+from utils import _TestEnvironment, http, HTTP_OK
 from fixtures import FILE_PATH_ARG, FILE_PATH, FILE_CONTENT
 
 
@@ -62,14 +62,14 @@ class TestRequestBodyFromFilePath:
 
     def test_request_body_from_file_by_path_no_field_name_allowed(
             self, httpbin):
-        env = TestEnvironment(stdin_isatty=True)
+        env = _TestEnvironment(stdin_isatty=True)
         r = http('POST', httpbin.url + '/post', 'field-name@' + FILE_PATH_ARG,
                  env=env, error_exit_ok=True)
         assert 'perhaps you meant --form?' in r.stderr
 
     def test_request_body_from_file_by_path_no_data_items_allowed(
             self, httpbin):
-        env = TestEnvironment(stdin_isatty=False)
+        env = _TestEnvironment(stdin_isatty=False)
         r = http('POST', httpbin.url + '/post', '@' + FILE_PATH_ARG, 'foo=bar',
                  env=env, error_exit_ok=True)
         assert 'cannot be mixed' in r.stderr
