@@ -4,7 +4,7 @@ import tempfile
 import pytest
 from httpie.context import Environment
 
-from utils import TestEnvironment, http
+from utils import _TestEnvironment, http
 from httpie.compat import is_windows
 
 
@@ -20,7 +20,7 @@ class TestWindowsOnly:
 
 class TestFakeWindows:
     def test_output_file_pretty_not_allowed_on_windows(self, httpbin):
-        env = TestEnvironment(is_windows=True)
+        env = _TestEnvironment(is_windows=True)
         output_file = os.path.join(
             tempfile.gettempdir(),
             self.test_output_file_pretty_not_allowed_on_windows.__name__

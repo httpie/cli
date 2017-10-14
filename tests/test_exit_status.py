@@ -1,7 +1,7 @@
 import mock
 
 from httpie import ExitStatus
-from utils import TestEnvironment, http, HTTP_OK
+from utils import _TestEnvironment, http, HTTP_OK
 
 
 def test_keyboard_interrupt_during_arg_parsing_exit_status(httpbin):
@@ -40,7 +40,7 @@ def test_timeout_exit_status(httpbin):
 
 def test_3xx_check_status_exits_3_and_stderr_when_stdout_redirected(
         httpbin):
-    env = TestEnvironment(stdout_isatty=False)
+    env = _TestEnvironment(stdout_isatty=False)
     r = http('--check-status', '--headers',
              'GET', httpbin.url + '/status/301',
              env=env, error_exit_ok=True)

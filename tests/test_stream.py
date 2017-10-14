@@ -2,7 +2,7 @@ import pytest
 
 from httpie.compat import is_windows
 from httpie.output.streams import BINARY_SUPPRESSED_NOTICE
-from utils import http, TestEnvironment
+from utils import http, _TestEnvironment
 from fixtures import BIN_FILE_CONTENT, BIN_FILE_PATH
 
 
@@ -14,7 +14,7 @@ from fixtures import BIN_FILE_CONTENT, BIN_FILE_PATH
 def test_pretty_redirected_stream(httpbin):
     """Test that --stream works with prettified redirected output."""
     with open(BIN_FILE_PATH, 'rb') as f:
-        env = TestEnvironment(colors=256, stdin=f,
+        env = _TestEnvironment(colors=256, stdin=f,
                               stdin_isatty=False,
                               stdout_isatty=False)
         r = http('--verbose', '--pretty=all', '--stream', 'GET',
@@ -26,7 +26,7 @@ def test_encoded_stream(httpbin):
     """Test that --stream works with non-prettified
     redirected terminal output."""
     with open(BIN_FILE_PATH, 'rb') as f:
-        env = TestEnvironment(stdin=f, stdin_isatty=False)
+        env = _TestEnvironment(stdin=f, stdin_isatty=False)
         r = http('--pretty=none', '--stream', '--verbose', 'GET',
                  httpbin.url + '/get', env=env)
     assert BINARY_SUPPRESSED_NOTICE.decode() in r
@@ -36,7 +36,7 @@ def test_redirected_stream(httpbin):
     """Test that --stream works with non-prettified
     redirected terminal output."""
     with open(BIN_FILE_PATH, 'rb') as f:
-        env = TestEnvironment(stdout_isatty=False,
+        env = _TestEnvironment(stdout_isatty=False,
                               stdin_isatty=False,
                               stdin=f)
         r = http('--pretty=none', '--stream', '--verbose', 'GET',
