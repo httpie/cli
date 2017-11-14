@@ -10,7 +10,6 @@ env:
     - NEWEST_PYTHON=3.6
 
 python:
-  - 2.6
   - 2.7
   - pypy
   - 3.4
