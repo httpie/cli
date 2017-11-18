@@ -1,4 +1,6 @@
+from httpie import __version__
 from utils import TestEnvironment, http
+from httpie.context import Environment
 
 
 def test_default_options(httpbin):
@@ -31,3 +33,8 @@ def test_migrate_implicit_content_type():
     config.load()
     assert 'implicit_content_type' not in config
     assert config['default_options'] == ['--form']
+
+
+def test_current_version():
+    version = Environment().config['__meta__']['httpie']
+    assert version == __version__
