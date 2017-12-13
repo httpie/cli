@@ -47,7 +47,7 @@ Go to https://github.com/jakubroztocil/httpie and fork the project repository.
 
     # Install dev. requirements and also HTTPie (in editable mode
     # so that the `http' command will point to your working copy):
-    make
+    make init
 
 
 Making Changes
@@ -71,11 +71,8 @@ Running all tests:
 
 .. code-block:: bash
 
-    # Run all tests on the current Python interpreter
+    # Run all tests on the current Python interpreter with coverage
     make test
-
-    # Run all tests on the current Python with coverage
-    make test-cover
 
     # Run all tests in all of the supported and available Pythons via Tox
     make test-tox
