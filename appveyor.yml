@@ -13,8 +13,7 @@ init:
   - ps: "ls C:/Python*"
 
 install:
-  # FIXME: updating pip fails with PermissionError
-  # - "%PYTHON%/Scripts/pip.exe install -U pip setuptools"
+  - "%PYTHON%/python.exe -m pip install -U pip"
   - "%PYTHON%/Scripts/pip.exe install -e ."
 
 test_script:
