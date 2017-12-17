@@ -42,7 +42,7 @@ Main features
 * Persistent sessions
 * Wget-like downloads
 * Python 2.6, 2.7 and 3.x support
-* Linux, Mac OS X and Windows support
+* Linux, macOS and Windows support
 * Plugins
 * Documentation
 * Test coverage
@@ -1656,7 +1656,7 @@ have contributed.
 .. _pip: https://pip.pypa.io/en/stable/installing/
 .. _Github API: http://developer.github.com/v3/issues/comments/#create-a-comment
 .. _these fine people: https://github.com/jakubroztocil/httpie/contributors
-.. _Jakub Roztocil: http://roztocil.co
+.. _Jakub Roztocil: https://roztocil.co
 .. _@jakubroztocil: https://twitter.com/jakubroztocil
 .. _claudiatd/httpie-artwork: https://github.com/claudiatd/httpie-artwork
 
