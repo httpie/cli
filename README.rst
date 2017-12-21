@@ -399,8 +399,7 @@ their type is distinguished only by the separator used:
 
 
 Note that data fields aren't the only way to specify request data:
-`Redirected input`_ is a mechanism for passing arbitrary data request
-request.
+`Redirected input`_ is a mechanism for passing arbitrary request data.
 
 
 Escaping rules
