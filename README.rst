@@ -19,7 +19,7 @@ generally interacting with HTTP servers.
 
 .. class:: no-web no-pdf
 
-|pypi| |unix_build| |windows_build| |coverage| |gitter|
+|pypi| |unix_build| |coverage| |gitter|
 
 
 
