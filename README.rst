@@ -1675,4 +1675,3 @@ have contributed.
 .. |gitter| image:: https://img.shields.io/gitter/room/jkbrzt/httpie.svg?style=flat-square
     :target: https://gitter.im/jkbrzt/httpie
     :alt: Chat on Gitter
-
