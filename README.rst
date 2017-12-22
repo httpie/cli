@@ -135,7 +135,7 @@ directly from the ``master`` branch on GitHub.
 It is a work-in-progress of a future stable release so the experience
 might be not as smooth.
 
-|unix_build| |windows_build|
+|unix_build|
 
 
 On macOS you can install it with Homebrew:
