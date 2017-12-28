@@ -3,7 +3,7 @@ Tests for the provided defaults regarding HTTP method, and --json vs. --form.
 
 """
 from httpie.client import JSON_ACCEPT
-from utils import TestEnvironment, http, HTTP_OK
+from utils import MockEnvironment, http, HTTP_OK
 from fixtures import FILE_PATH
 
 
@@ -29,7 +29,7 @@ class TestImplicitHTTPMethod:
 
     def test_implicit_POST_stdin(self, httpbin):
         with open(FILE_PATH) as f:
-            env = TestEnvironment(stdin_isatty=False, stdin=f)
+            env = MockEnvironment(stdin_isatty=False, stdin=f)
             r = http('--form', httpbin.url + '/post', env=env)
         assert HTTP_OK in r
 
@@ -97,11 +97,11 @@ class TestAutoContentTypeAndAcceptHeaders:
         assert '"Content-Type": "application/xml"' in r
 
     def test_print_only_body_when_stdout_redirected_by_default(self, httpbin):
-        env = TestEnvironment(stdin_isatty=True, stdout_isatty=False)
+        env = MockEnvironment(stdin_isatty=True, stdout_isatty=False)
         r = http('GET', httpbin.url + '/get', env=env)
         assert 'HTTP/' not in r
 
     def test_print_overridable_when_stdout_redirected(self, httpbin):
-        env = TestEnvironment(stdin_isatty=True, stdout_isatty=False)
+        env = MockEnvironment(stdin_isatty=True, stdout_isatty=False)
         r = http('--print=h', 'GET', httpbin.url + '/get', env=env)
         assert HTTP_OK in r

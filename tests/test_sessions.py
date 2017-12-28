@@ -7,7 +7,7 @@ from tempfile import gettempdir
 import pytest
 
 from httpie.plugins.builtin import HTTPBasicAuth
-from utils import TestEnvironment, mk_config_dir, http, HTTP_OK
+from utils import MockEnvironment, mk_config_dir, http, HTTP_OK
 from fixtures import UNICODE
 
 
@@ -29,7 +29,7 @@ class SessionTestBase(object):
         for session files being reused.
 
         """
-        return TestEnvironment(config_dir=self.config_dir)
+        return MockEnvironment(config_dir=self.config_dir)
 
 
 class TestSessionFlow(SessionTestBase):

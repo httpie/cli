@@ -2,7 +2,7 @@
 import mock
 import pytest
 
-from utils import http, add_auth, HTTP_OK, TestEnvironment
+from utils import http, add_auth, HTTP_OK, MockEnvironment
 import httpie.input
 import httpie.cli
 
@@ -58,7 +58,7 @@ def test_only_username_in_url(url):
     https://github.com/jakubroztocil/httpie/issues/242
 
     """
-    args = httpie.cli.parser.parse_args(args=[url], env=TestEnvironment())
+    args = httpie.cli.parser.parse_args(args=[url], env=MockEnvironment())
     assert args.auth
     assert args.auth.username == 'username'
     assert args.auth.password == ''

@@ -10,7 +10,7 @@ from httpie.downloads import (
     parse_content_range, filename_from_content_disposition, filename_from_url,
     get_unique_filename, ContentRangeError, Downloader,
 )
-from utils import http, TestEnvironment
+from utils import http, MockEnvironment
 
 
 class Response(object):
@@ -123,7 +123,7 @@ class TestDownloads:
     def test_actual_download(self, httpbin_both, httpbin):
         robots_txt = '/robots.txt'
         body = urlopen(httpbin + robots_txt).read().decode()
-        env = TestEnvironment(stdin_isatty=True, stdout_isatty=False)
+        env = MockEnvironment(stdin_isatty=True, stdout_isatty=False)
         r = http('--download', httpbin_both.url + robots_txt, env=env)
         assert 'Downloading' in r.stderr
         assert '[K' in r.stderr

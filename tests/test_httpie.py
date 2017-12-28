@@ -2,7 +2,7 @@
 import pytest
 
 from httpie.input import ParseError
-from utils import TestEnvironment, http, HTTP_OK
+from utils import MockEnvironment, http, HTTP_OK
 from fixtures import FILE_PATH, FILE_CONTENT
 
 import httpie
@@ -63,7 +63,7 @@ def test_POST_form_multiple_values(httpbin_both):
 
 def test_POST_stdin(httpbin_both):
     with open(FILE_PATH) as f:
-        env = TestEnvironment(stdin=f, stdin_isatty=False)
+        env = MockEnvironment(stdin=f, stdin_isatty=False)
         r = http('--form', 'POST', httpbin_both + '/post', env=env)
     assert HTTP_OK in r
     assert FILE_CONTENT in r

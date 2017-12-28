@@ -3,7 +3,7 @@ from tempfile import gettempdir
 
 import pytest
 
-from utils import TestEnvironment, http, HTTP_OK, COLOR, CRLF
+from utils import MockEnvironment, http, HTTP_OK, COLOR, CRLF
 from httpie import ExitStatus
 from httpie.compat import urlopen
 from httpie.output.formatters.colors import get_lexer
@@ -15,7 +15,7 @@ def test_output_option(httpbin, stdout_isatty):
     url = httpbin + '/robots.txt'
 
     r = http('--output', output_filename, url,
-             env=TestEnvironment(stdout_isatty=stdout_isatty))
+             env=MockEnvironment(stdout_isatty=stdout_isatty))
     assert r == ''
 
     expected_body = urlopen(url).read().decode()
@@ -86,7 +86,7 @@ class TestPrettyOptions:
     """Test the --pretty flag handling."""
 
     def test_pretty_enabled_by_default(self, httpbin):
-        env = TestEnvironment(colors=256)
+        env = MockEnvironment(colors=256)
         r = http('GET', httpbin.url + '/get', env=env)
         assert COLOR in r
 
@@ -95,7 +95,7 @@ class TestPrettyOptions:
         assert COLOR not in r
 
     def test_force_pretty(self, httpbin):
-        env = TestEnvironment(stdout_isatty=False, colors=256)
+        env = MockEnvironment(stdout_isatty=False, colors=256)
         r = http('--pretty=all', 'GET', httpbin.url + '/get', env=env, )
         assert COLOR in r
 
@@ -108,13 +108,13 @@ class TestPrettyOptions:
         match any lexer.
 
         """
-        env = TestEnvironment(colors=256)
+        env = MockEnvironment(colors=256)
         r = http('--print=B', '--pretty=all', httpbin.url + '/post',
                  'Content-Type:text/foo+json', 'a=b', env=env)
         assert COLOR in r
 
     def test_colors_option(self, httpbin):
-        env = TestEnvironment(colors=256)
+        env = MockEnvironment(colors=256)
         r = http('--print=B', '--pretty=colors',
                  'GET', httpbin.url + '/get', 'a=b',
                  env=env)
@@ -123,7 +123,7 @@ class TestPrettyOptions:
         assert COLOR in r
 
     def test_format_option(self, httpbin):
-        env = TestEnvironment(colors=256)
+        env = MockEnvironment(colors=256)
         r = http('--print=B', '--pretty=format',
                  'GET', httpbin.url + '/get', 'a=b',
                  env=env)

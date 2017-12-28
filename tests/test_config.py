@@ -1,10 +1,10 @@
 from httpie import __version__
-from utils import TestEnvironment, http
+from utils import MockEnvironment, http
 from httpie.context import Environment
 
 
 def test_default_options(httpbin):
-    env = TestEnvironment()
+    env = MockEnvironment()
     env.config['default_options'] = ['--form']
     env.config.save()
     r = http(httpbin.url + '/post', 'foo=bar', env=env)
@@ -12,7 +12,7 @@ def test_default_options(httpbin):
 
 
 def test_default_options_overwrite(httpbin):
-    env = TestEnvironment()
+    env = MockEnvironment()
     env.config['default_options'] = ['--form']
     env.config.save()
     r = http('--json', httpbin.url + '/post', 'foo=bar', env=env)
@@ -20,7 +20,7 @@ def test_default_options_overwrite(httpbin):
 
 
 def test_migrate_implicit_content_type():
-    config = TestEnvironment().config
+    config = MockEnvironment().config
 
     config['implicit_content_type'] = 'json'
     config.save()
