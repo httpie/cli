@@ -25,8 +25,8 @@ class ExitStatus:
     ERROR_HTTP_5XX = 5
 
 
-EXIT_STATUS_LABELS = dict(
-    (value, key)
+EXIT_STATUS_LABELS = {
+    value: key
     for key, value in ExitStatus.__dict__.items()
     if key.isupper()
-)
+}

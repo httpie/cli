@@ -136,10 +136,10 @@ class Session(BaseConfigDict):
         stored_attrs = ['value', 'path', 'secure', 'expires']
         self['cookies'] = {}
         for cookie in jar:
-            self['cookies'][cookie.name] = dict(
-                (attname, getattr(cookie, attname))
+            self['cookies'][cookie.name] = {
+                attname: getattr(cookie, attname)
                 for attname in stored_attrs
-            )
+            }
 
     @property
     def auth(self):

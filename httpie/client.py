@@ -166,7 +166,7 @@ def get_requests_kwargs(args, base_headers=None):
         'cert': cert,
         'timeout': args.timeout,
         'auth': args.auth,
-        'proxies': dict((p.key, p.value) for p in args.proxy),
+        'proxies': {p.key: p.value for p in args.proxy},
         'files': args.files,
         'allow_redirects': args.follow,
         'params': args.params,
