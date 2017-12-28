@@ -3,7 +3,6 @@ import sys
 
 import requests
 from requests.adapters import HTTPAdapter
-from requests.packages import urllib3
 
 from httpie import sessions
 from httpie import __version__
@@ -14,8 +13,10 @@ from httpie.utils import repr_dict_nice
 
 try:
     # https://urllib3.readthedocs.io/en/latest/security.html
+    # noinspection PyPackageRequirements
+    import urllib3
     urllib3.disable_warnings()
-except AttributeError:
+except (ImportError, AttributeError):
     # In some rare cases, the user may have an old version of the requests
     # or urllib3, and there is no method called "disable_warnings." In these
     # cases, we don't need to call the method.
