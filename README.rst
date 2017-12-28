@@ -41,7 +41,7 @@ Main features
 * Custom headers
 * Persistent sessions
 * Wget-like downloads
-* Python 2.6, 2.7 and 3.x support
+* Python 2.7 and 3.x support
 * Linux, macOS and Windows support
 * Plugins
 * Documentation
@@ -119,10 +119,10 @@ and always provides the latest version) is to use `pip`_:
 Python version
 --------------
 
-Although Python 2.6 and 2.7 are supported as well, it is recommended to install
-HTTPie against the latest Python 3.x whenever possible. That will ensure that
-some of the newer HTTP features, such as `SNI (Server Name Indication)`_,
-work out of the box.
+Although Python 2.7 is supported as well, it is strongly recommended to
+install HTTPie against the latest Python 3.x whenever possible. That will
+ensure that some of the newer HTTP features, such as
+`SNI (Server Name Indication)`_, work out of the box.
 Python 3 is the default for Homebrew installations starting with version 0.9.4.
 To see which version HTTPie uses, run ``http --debug``.
 

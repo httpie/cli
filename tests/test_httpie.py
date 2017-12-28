@@ -6,7 +6,6 @@ from utils import TestEnvironment, http, HTTP_OK
 from fixtures import FILE_PATH, FILE_CONTENT
 
 import httpie
-from httpie.compat import is_py26
 
 
 def test_debug():
@@ -107,10 +106,6 @@ def test_headers_empty_value_with_value_gives_error(httpbin):
         http('GET', httpbin + '/headers', 'Accept;SYNTAX_ERROR')
 
 
-@pytest.mark.skipif(
-    is_py26,
-    reason='the `object_pairs_hook` arg for `json.loads()` is Py>2.6 only'
-)
 def test_json_input_preserve_order(httpbin_both):
     r = http('PATCH', httpbin_both + '/patch',
              'order:={"map":{"1":"first","2":"second"}}')

@@ -9,7 +9,7 @@ import errno
 import mimetypes
 import getpass
 from io import BytesIO
-from collections import namedtuple, Iterable
+from collections import namedtuple, Iterable, OrderedDict
 # noinspection PyCompatibility
 from argparse import ArgumentParser, ArgumentTypeError, ArgumentError
 
@@ -18,7 +18,7 @@ from argparse import ArgumentParser, ArgumentTypeError, ArgumentError
 from httpie.plugins import plugin_manager
 from requests.structures import CaseInsensitiveDict
 
-from httpie.compat import OrderedDict, urlsplit, str, is_pypy, is_py27
+from httpie.compat import urlsplit, str, is_pypy, is_py27
 from httpie.sessions import VALID_SESSION_NAME_PATTERN
 from httpie.utils import load_json_preserve_order
 
