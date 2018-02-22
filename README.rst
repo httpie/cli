@@ -1149,6 +1149,8 @@ One of these options can be used to control output processing:
                        Default for redirected output.
 ====================   ========================================================
 
+Note that when using colored output, the keys are re-ordered alphabetically.
+
 Binary data
 -----------
 
