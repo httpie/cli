@@ -7,6 +7,21 @@ from utils import MockEnvironment, http, HTTP_OK
 from fixtures import FILE_PATH
 
 
+def test_default_headers_case_insensitive(httpbin):
+    """
+    <https://github.com/jakubroztocil/httpie/issues/644>
+    """
+    r = http(
+        '--debug',
+        '--print=H',
+        httpbin.url + '/post',
+        'CONTENT-TYPE:application/json-patch+json',
+        'a=b',
+    )
+    assert 'CONTENT-TYPE: application/json-patch+json' in r
+    assert 'Content-Type' not in r
+
+
 class TestImplicitHTTPMethod:
     def test_implicit_GET(self, httpbin):
         r = http(httpbin.url + '/get')

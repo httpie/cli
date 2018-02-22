@@ -9,9 +9,11 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 `1.0.0-dev`_ (unreleased)
 -------------------------
 
+* Added ``true``/``false`` as valid values for ``--verify``
+  (in addition to ``yes``/``no``) and the boolean value is case-insensitive.
+* Fixed default headers being incorrectly case-sensitive.
 * Removed Python 2.6 support.
-* ``--verify`` now accepts ``true``/``false`` in addition to ``yes``/``no``
-  and the boolean value is case-insensitive.
+
 
 
 `0.9.8`_ (2016-12-08)

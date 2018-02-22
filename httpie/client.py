@@ -3,6 +3,7 @@ import sys
 
 import requests
 from requests.adapters import HTTPAdapter
+from requests.structures import CaseInsensitiveDict
 
 from httpie import sessions
 from httpie import __version__
@@ -106,9 +107,9 @@ def finalize_headers(headers):
 
 
 def get_default_headers(args):
-    default_headers = {
+    default_headers = CaseInsensitiveDict({
         'User-Agent': DEFAULT_UA
-    }
+    })
 
     auto_json = args.data and not args.form
     if args.json or auto_json:
