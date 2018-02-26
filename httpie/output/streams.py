@@ -8,6 +8,7 @@ from httpie.input import (OUT_REQ_BODY, OUT_REQ_HEAD,
                           OUT_RESP_HEAD, OUT_RESP_BODY)
 from httpie.output.processing import Formatting, Conversion
 
+from coverage_tool import has_branched, write_info
 
 BINARY_SUPPRESSED_NOTICE = (
     b'\n'
@@ -70,23 +71,28 @@ def build_output_stream(args, env, request, response, output_options):
     output = []
     Stream = get_stream_type(env, args)
 
+    write_info('build_output_stream', 'Total: 20')
     if req:
+        has_branched('build_output_stream', 1)
         output.append(Stream(
             msg=HTTPRequest(request),
             with_headers=req_h,
             with_body=req_b))
 
     if req_b and resp:
+        has_branched('build_output_stream', 2)
         # Request/Response separator.
         output.append([b'\n\n'])
 
     if resp:
+        has_branched('build_output_stream', 3)
         output.append(Stream(
             msg=HTTPResponse(response),
             with_headers=resp_h,
             with_body=resp_b))
 
     if env.stdout_isatty and resp_b:
+        has_branched('build_output_stream', 4)
         # Ensure a blank line after the response body.
         # For terminal output only.
         output.append([b'\n\n'])
