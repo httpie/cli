@@ -236,7 +236,7 @@ class Downloader(object):
         :return: RawStream, output_file
 
         """
-        write_info('start', 'Total: 10')
+        write_info('start', 'Total: 11')
         assert not self.status.time_started
 
         # FIXME: some servers still might sent Content-Encoding: gzip
@@ -249,33 +249,35 @@ class Downloader(object):
 
         if self._output_file:
             has_branched('start', 2)
-            if self._resume and response.status_code == PARTIAL_CONTENT:
+            if self._resume:
                 has_branched('start', 3)
-                total_size = parse_content_range(
-                    response.headers.get('Content-Range'),
-                    self._resumed_from
-                )
+                if response.status_code == PARTIAL_CONTENT:
+                    has_branched('start', 4)
+                    total_size = parse_content_range(
+                        response.headers.get('Content-Range'),
+                        self._resumed_from
+                    )
 
             else:
-                has_branched('start', 4)
+                has_branched('start', 5)
                 self._resumed_from = 0
                 try:
                     self._output_file.seek(0)
                     self._output_file.truncate()
                 except IOError:
-                    has_branched('start', 5)
+                    has_branched('start', 6)
                     pass  # stdout
         else:
-            has_branched('start', 6)
+            has_branched('start', 7)
             # TODO: Should the filename be taken from response.history[0].url?
             # Output file not specified. Pick a name that doesn't exist yet.
             filename = None
             if 'Content-Disposition' in response.headers:
-                has_branched('start', 7)
+                has_branched('start', 8)
                 filename = filename_from_content_disposition(
                     response.headers['Content-Disposition'])
             if not filename:
-                has_branched('start', 8)
+                has_branched('start', 9)
                 filename = filename_from_url(
                     url=response.url,
                     content_type=response.headers.get('Content-Type'),
@@ -304,9 +306,9 @@ class Downloader(object):
             )
         )
         if total_size is not None:
-            has_branched('start', 9)
-        else:
             has_branched('start', 10)
+        else:
+            has_branched('start', 11)
 
         self._progress_reporter.start()
 
