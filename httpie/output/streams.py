@@ -71,7 +71,7 @@ def build_output_stream(args, env, request, response, output_options):
     output = []
     Stream = get_stream_type(env, args)
 
-    write_info('build_output_stream', 'Total: 20')
+    write_info('build_output_stream', 'Total: 4')
     if req:
         has_branched('build_output_stream', 1)
         output.append(Stream(
