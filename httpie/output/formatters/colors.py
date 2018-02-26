@@ -87,7 +87,7 @@ class ColorFormatter(FormatterPlugin):
 
 
 def get_lexer(mime, explicit_json=False, body=''):
-    write_info('get_lexer','Total: 12')
+    write_info('get_lexer','Total: 13')
     # Build candidate mime type and lexer names.
     mime_types, lexer_names = [mime], []
     type_, subtype = mime.split('/', 1)
@@ -128,14 +128,15 @@ def get_lexer(mime, explicit_json=False, body=''):
                 pass
 
     if explicit_json and body and (not lexer or isinstance(lexer, TextLexer)):
+        has_branched('get_lexer', 11)
         # JSON response with an incorrect Content-Type?
         try:
             json.loads(body)  # FIXME: the body also gets parsed in json.py
         except ValueError:
-            has_branched('get_lexer', 11)
+            has_branched('get_lexer', 12)
             pass  # Nope
         else:
-            has_branched('get_lexer', 12)
+            has_branched('get_lexer', 13)
             lexer = pygments.lexers.get_lexer_by_name('json')
     # For if-statement above
     if explicit_json:
