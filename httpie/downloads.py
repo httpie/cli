@@ -70,11 +70,12 @@ def parse_content_range(content_range, resumed_from):
     content_range_dict = match.groupdict()
     first_byte_pos = int(content_range_dict['first_byte_pos'])
     last_byte_pos = int(content_range_dict['last_byte_pos'])
-    instance_length = (
-        int(content_range_dict['instance_length'])
-        if content_range_dict['instance_length']
-        else None
-    )
+    
+    if content_range_dict['instance_length']:
+        instance_length = int(content_range_dict['instance_length'])
+    else:
+        instance_length = None
+    
     if content_range_dict['instance_length']:
         has_branched('parse_content_range', 3)
     else:
@@ -86,16 +87,19 @@ def parse_content_range(content_range, resumed_from):
     # last-byte-pos value, is invalid. The recipient of an invalid
     # byte-content-range- spec MUST ignore it and any content
     # transferred along with it."
-    if (first_byte_pos >= last_byte_pos or
-            (instance_length is not None and
-             instance_length <= last_byte_pos)):
+    if first_byte_pos >= last_byte_pos:
         has_branched('parse_content_range', 5)
         raise ContentRangeError(
             'Invalid Content-Range returned: %r' % content_range)
-
-    if (first_byte_pos != resumed_from or
-            (instance_length is not None and
-             last_byte_pos + 1 != instance_length)):
+    elif instance_length is not None:
+        has_branched('parse_content_range', 6)
+        if instance_length <= last_byte_pos:
+            has_branched('parse_content_range', 7)
+            raise ContentRangeError(
+                'Invalid Content-Range returned: %r' % content_range)
+        
+    
+    if first_byte_pos != resumed_from:
         has_branched('parse_content_range', 6)
         # Not what we asked for.
         raise ContentRangeError(
@@ -103,6 +107,14 @@ def parse_content_range(content_range, resumed_from):
             ' for the requested Range ("bytes=%d-")'
             % (content_range, resumed_from)
         )
+    elif instance_length is not None:
+        has_branched('parse_content_range', 6)
+        if last_byte_pos + 1 != instance_length:
+            raise ContentRangeError(
+                'Unexpected Content-Range returned (%r)'
+                ' for the requested Range ("bytes=%d-")'
+                % (content_range, resumed_from)
+            )            
 
     return last_byte_pos + 1
 
