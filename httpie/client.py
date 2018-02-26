@@ -108,24 +108,35 @@ def finalize_headers(headers):
 
 
 def get_default_headers(args):
-    write_info('get_default_headers', 'Total: 3')
+    write_info('get_default_headers', 'Total: 7')
     default_headers = {
         'User-Agent': DEFAULT_UA
     }
 
     auto_json = args.data and not args.form
     if args.json or auto_json:
-        has_branched('get_default_headers', 1)
-        default_headers['Accept'] = JSON_ACCEPT
-        if args.json or (auto_json and args.data):
+        if args.json:
+            has_branched('get_default_headers', 1)
+        elif auto_json:
             has_branched('get_default_headers', 2)
+        default_headers['Accept'] = JSON_ACCEPT
+        if args.json:
+            has_branched('get_default_headers', 3)
             default_headers['Content-Type'] = JSON_CONTENT_TYPE
+        elif auto_json:
+            has_branched('get_default_headers', 4)
+            if args.data:
+                has_branched('get_default_headers', 5)
+                default_headers['Content-Type'] = JSON_CONTENT_TYPE
 
-    elif args.form and not args.files:
-        has_branched('get_default_headers', 3)
-        # If sending files, `requests` will set
-        # the `Content-Type` for us.
-        default_headers['Content-Type'] = FORM_CONTENT_TYPE
+    elif args.form:
+        has_branched('get_default_headers', 6)
+        if not args.files:
+            has_branched('get_default_headers', 7)
+
+            # If sending files, `requests` will set
+            # the `Content-Type` for us.
+            default_headers['Content-Type'] = FORM_CONTENT_TYPE
     return default_headers
 
 
