@@ -18,6 +18,7 @@ from httpie.models import HTTPResponse
 from httpie.utils import humanize_bytes
 from httpie.compat import urlsplit
 
+from coverage_tool import has_branched, write_info
 
 PARTIAL_CONTENT = 206
 
@@ -50,7 +51,9 @@ def parse_content_range(content_range, resumed_from):
     :return: total size of the response body when fully downloaded.
 
     """
+    write_info('parse_content_range', 'Total: 6')
     if content_range is None:
+        has_branched('parse_content_range', 1)
         raise ContentRangeError('Missing Content-Range')
 
     pattern = (
@@ -60,6 +63,7 @@ def parse_content_range(content_range, resumed_from):
     match = re.match(pattern, content_range)
 
     if not match:
+        has_branched('parse_content_range', 2)
         raise ContentRangeError(
             'Invalid Content-Range format %r' % content_range)
 
@@ -71,6 +75,10 @@ def parse_content_range(content_range, resumed_from):
         if content_range_dict['instance_length']
         else None
     )
+    if content_range_dict['instance_length']:
+        has_branched('parse_content_range', 3)
+    else:
+        has_branched('parse_content_range', 4)
 
     # "A byte-content-range-spec with a byte-range-resp-spec whose
     # last- byte-pos value is less than its first-byte-pos value,
@@ -81,12 +89,14 @@ def parse_content_range(content_range, resumed_from):
     if (first_byte_pos >= last_byte_pos or
             (instance_length is not None and
              instance_length <= last_byte_pos)):
+        has_branched('parse_content_range', 5)
         raise ContentRangeError(
             'Invalid Content-Range returned: %r' % content_range)
 
     if (first_byte_pos != resumed_from or
             (instance_length is not None and
              last_byte_pos + 1 != instance_length)):
+        has_branched('parse_content_range', 6)
         # Not what we asked for.
         raise ContentRangeError(
             'Unexpected Content-Range returned (%r)'
