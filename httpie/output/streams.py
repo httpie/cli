@@ -71,7 +71,7 @@ def build_output_stream(args, env, request, response, output_options):
     output = []
     Stream = get_stream_type(env, args)
 
-    write_info('build_output_stream', 'Total: 4')
+    write_info('build_output_stream', 'Total: 6')
     if req:
         has_branched('build_output_stream', 1)
         output.append(Stream(
@@ -79,23 +79,27 @@ def build_output_stream(args, env, request, response, output_options):
             with_headers=req_h,
             with_body=req_b))
 
-    if req_b and resp:
+    if req_b:
         has_branched('build_output_stream', 2)
-        # Request/Response separator.
-        output.append([b'\n\n'])
+        if resp:
+            has_branched('build_output_stream', 3)
+            # Request/Response separator.
+            output.append([b'\n\n'])
 
     if resp:
-        has_branched('build_output_stream', 3)
+        has_branched('build_output_stream', 4)
         output.append(Stream(
             msg=HTTPResponse(response),
             with_headers=resp_h,
             with_body=resp_b))
 
-    if env.stdout_isatty and resp_b:
-        has_branched('build_output_stream', 4)
-        # Ensure a blank line after the response body.
-        # For terminal output only.
-        output.append([b'\n\n'])
+    if env.stdout_isatty:
+        has_branched('build_output_stream', 5)
+        if resp_b:
+            has_branched('build_output_stream', 6)
+            # Ensure a blank line after the response body.
+            # For terminal output only.
+            output.append([b'\n\n'])
 
     return chain(*output)
 
