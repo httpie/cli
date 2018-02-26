@@ -11,6 +11,8 @@ from httpie.input import SSL_VERSION_ARG_MAPPING
 from httpie.plugins import plugin_manager
 from httpie.utils import repr_dict_nice
 
+from coverage_tool import has_branched, write_info
+
 try:
     # https://urllib3.readthedocs.io/en/latest/security.html
     # noinspection PyPackageRequirements
@@ -128,13 +130,24 @@ def get_requests_kwargs(args, base_headers=None):
     Translate our `args` into `requests.request` keyword arguments.
 
     """
+    write_info('get_requests_kwargs','Total: 9')
     # Serialize JSON data, if needed.
     data = args.data
     auto_json = data and not args.form
+    if isinstance(data, dict):
+        has_branched('get_requests_kwargs', 1)
+        if args.json:
+            has_branched('get_requests_kwargs', 2)
+        if auto_json:
+            has_branched('get_requests_kwargs', 3)
+
     if (args.json or auto_json) and isinstance(data, dict):
+        has_branched('get_requests_kwargs', 4)
         if data:
+            has_branched('get_requests_kwargs', 5)
             data = json.dumps(data)
         else:
+            has_branched('get_requests_kwargs', 6)
             # We need to set data to an empty string to prevent requests
             # from assigning an empty list to `response.request.data`.
             data = ''
@@ -142,14 +155,17 @@ def get_requests_kwargs(args, base_headers=None):
     # Finalize headers.
     headers = get_default_headers(args)
     if base_headers:
+        has_branched('get_requests_kwargs', 7)
         headers.update(base_headers)
     headers.update(args.headers)
     headers = finalize_headers(headers)
 
     cert = None
     if args.cert:
+        has_branched('get_requests_kwargs', 8)
         cert = args.cert
         if args.cert_key:
+            has_branched('get_requests_kwargs', 9)
             cert = cert, args.cert_key
 
     kwargs = {
