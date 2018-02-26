@@ -22,6 +22,7 @@ from httpie.compat import urlsplit, str, is_pypy, is_py27
 from httpie.sessions import VALID_SESSION_NAME_PATTERN
 from httpie.utils import load_json_preserve_order
 
+from coverage_tool import has_branched, write_info
 
 # ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
 # <http://tools.ietf.org/html/rfc3986#section-3.1>
@@ -311,16 +312,21 @@ class HTTPieArgumentParser(ArgumentParser):
         based on whether the request has data or not.
 
         """
+        write_info('guess_method', 'Total: 13')
         if self.args.method is None:
+            has_branched('guess_method', 1)
             # Invoked as `http URL'.
             assert not self.args.items
             if not self.args.ignore_stdin and not self.env.stdin_isatty:
+                has_branched('guess_method', 2)
                 self.args.method = HTTP_POST
             else:
+                has_branched('guess_method', 3)
                 self.args.method = HTTP_GET
 
         # FIXME: False positive, e.g., "localhost" matches but is a valid URL.
         elif not re.match('^[a-zA-Z]+$', self.args.method):
+            has_branched('guess_method', 4)
             # Invoked as `http URL item+'. The URL is now in `args.method`
             # and the first ITEM is now incorrectly in `args.url`.
             try:
@@ -329,11 +335,14 @@ class HTTPieArgumentParser(ArgumentParser):
                     *SEP_GROUP_ALL_ITEMS).__call__(self.args.url))
 
             except ArgumentTypeError as e:
+                has_branched('guess_method', 5)
                 if self.args.traceback:
+                    has_branched('guess_method', 6)
                     raise
                 self.error(e.args[0])
 
             else:
+                has_branched('guess_method', 7)
                 # Set the URL correctly
                 self.args.url = self.args.method
                 # Infer the method
@@ -343,7 +352,26 @@ class HTTPieArgumentParser(ArgumentParser):
                     any(item.sep in SEP_GROUP_DATA_ITEMS
                         for item in self.args.items)
                 )
+                if (not self.args.ignore_stdin):
+                    has_branched('guess_method', 8)
+                    if (not self.env.stdin_isatty):
+                        has_branched('guess_method', 9)
+                    else:
+                        has_branched('guess_method', 10)
+                        if (any(item.sep in SEP_GROUP_DATA_ITEMS
+                            for item in self.args.items)):
+                            has_branched('guess_method', 11)
+                else:
+                    has_branched('guess_method', 10)
+                    if (any(item.sep in SEP_GROUP_DATA_ITEMS
+                        for item in self.args.items)):
+                        has_branched('guess_method', 11)
+
                 self.args.method = HTTP_POST if has_data else HTTP_GET
+                if has_data:
+                    has_branched('guess_method', 12)
+                else:
+                    has_branched('guess_method', 13)
 
     def _parse_items(self):
         """Parse `args.items` into `args.headers`, `args.data`, `args.params`,
