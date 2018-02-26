@@ -51,7 +51,7 @@ def parse_content_range(content_range, resumed_from):
     :return: total size of the response body when fully downloaded.
 
     """
-    write_info('parse_content_range', 'Total: 8')
+    write_info('parse_content_range', 'Total: 10')
     if content_range is None:
         has_branched('parse_content_range', 1)
         raise ContentRangeError('Missing Content-Range')
