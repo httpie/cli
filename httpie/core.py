@@ -30,6 +30,7 @@ from httpie.output.streams import (
     write_stream_with_colors_win_py3
 )
 
+from coverage_tool import has_branched, write_info
 
 def get_exit_status(http_status, follow=False):
     """Translate HTTP status code to exit status code."""
@@ -190,10 +191,13 @@ def main(args=sys.argv[1:], env=Environment(), custom_log_error=None):
 
     from httpie.cli import parser
 
+    write_info('main','Total: 20')
     if env.config.default_options:
+        has_branched('main', 1)
         args = env.config.default_options + args
 
     if custom_log_error:
+        has_branched('main', 2)
         log_error = custom_log_error
 
     include_debug_info = '--debug' in args
@@ -201,7 +205,9 @@ def main(args=sys.argv[1:], env=Environment(), custom_log_error=None):
 
     if include_debug_info:
         print_debug_info(env)
+        has_branched('main', 3)
         if args == ['--debug']:
+            has_branched('main', 4)
             return ExitStatus.OK
 
     exit_status = ExitStatus.OK
@@ -209,14 +215,19 @@ def main(args=sys.argv[1:], env=Environment(), custom_log_error=None):
     try:
         parsed_args = parser.parse_args(args=args, env=env)
     except KeyboardInterrupt:
+        has_branched('main', 5)
         env.stderr.write('\n')
         if include_traceback:
+            has_branched('main', 6)
             raise
         exit_status = ExitStatus.ERROR_CTRL_C
     except SystemExit as e:
+        has_branched('main', 7)
         if e.code != ExitStatus.OK:
+            has_branched('main', 8)
             env.stderr.write('\n')
             if include_traceback:
+                has_branched('main', 9)
                 raise
             exit_status = ExitStatus.ERROR
     else:
@@ -227,33 +238,44 @@ def main(args=sys.argv[1:], env=Environment(), custom_log_error=None):
                 log_error=log_error,
             )
         except KeyboardInterrupt:
+            has_branched('main', 10)
             env.stderr.write('\n')
             if include_traceback:
+                has_branched('main', 11)
                 raise
             exit_status = ExitStatus.ERROR_CTRL_C
         except SystemExit as e:
+            has_branched('main', 12)
             if e.code != ExitStatus.OK:
+                has_branched('main', 13)
                 env.stderr.write('\n')
                 if include_traceback:
+                    has_branched('main', 14)
                     raise
                 exit_status = ExitStatus.ERROR
         except requests.Timeout:
+            has_branched('main', 15)
             exit_status = ExitStatus.ERROR_TIMEOUT
             log_error('Request timed out (%ss).', parsed_args.timeout)
         except requests.TooManyRedirects:
+            has_branched('main', 16)
             exit_status = ExitStatus.ERROR_TOO_MANY_REDIRECTS
             log_error('Too many redirects (--max-redirects=%s).',
                       parsed_args.max_redirects)
         except Exception as e:
+            has_branched('main', 17)
             # TODO: Further distinction between expected and unexpected errors.
             msg = str(e)
             if hasattr(e, 'request'):
+                has_branched('main', 18)
                 request = e.request
                 if hasattr(request, 'url'):
+                    has_branched('main', 19)
                     msg += ' while doing %s request to URL: %s' % (
                         request.method, request.url)
             log_error('%s: %s', type(e).__name__, msg)
             if include_traceback:
+                has_branched('main', 20)
                 raise
             exit_status = ExitStatus.ERROR
 
