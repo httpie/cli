@@ -11,6 +11,8 @@ from httpie.input import SSL_VERSION_ARG_MAPPING
 from httpie.plugins import plugin_manager
 from httpie.utils import repr_dict_nice
 
+from coverage_tool import has_branched, write_info
+
 try:
     # https://urllib3.readthedocs.io/en/latest/security.html
     # noinspection PyPackageRequirements
@@ -106,17 +108,21 @@ def finalize_headers(headers):
 
 
 def get_default_headers(args):
+    write_info('get_default_headers', 'Total: 3')
     default_headers = {
         'User-Agent': DEFAULT_UA
     }
 
     auto_json = args.data and not args.form
     if args.json or auto_json:
+        has_branched('get_default_headers', 1)
         default_headers['Accept'] = JSON_ACCEPT
         if args.json or (auto_json and args.data):
+            has_branched('get_default_headers', 2)
             default_headers['Content-Type'] = JSON_CONTENT_TYPE
 
     elif args.form and not args.files:
+        has_branched('get_default_headers', 3)
         # If sending files, `requests` will set
         # the `Content-Type` for us.
         default_headers['Content-Type'] = FORM_CONTENT_TYPE
