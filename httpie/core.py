@@ -191,7 +191,7 @@ def main(args=sys.argv[1:], env=Environment(), custom_log_error=None):
 
     from httpie.cli import parser
 
-    write_info('main','Total: 20')
+    write_info('main','Total: 21')
     if env.config.default_options:
         has_branched('main', 1)
         args = env.config.default_options + args
@@ -231,6 +231,7 @@ def main(args=sys.argv[1:], env=Environment(), custom_log_error=None):
                 raise
             exit_status = ExitStatus.ERROR
     else:
+        has_branched('main', 10)
         try:
             exit_status = program(
                 args=parsed_args,
@@ -238,44 +239,44 @@ def main(args=sys.argv[1:], env=Environment(), custom_log_error=None):
                 log_error=log_error,
             )
         except KeyboardInterrupt:
-            has_branched('main', 10)
+            has_branched('main', 11)
             env.stderr.write('\n')
             if include_traceback:
-                has_branched('main', 11)
+                has_branched('main', 12)
                 raise
             exit_status = ExitStatus.ERROR_CTRL_C
         except SystemExit as e:
-            has_branched('main', 12)
+            has_branched('main', 13)
             if e.code != ExitStatus.OK:
-                has_branched('main', 13)
+                has_branched('main', 14)
                 env.stderr.write('\n')
                 if include_traceback:
-                    has_branched('main', 14)
+                    has_branched('main', 15)
                     raise
                 exit_status = ExitStatus.ERROR
         except requests.Timeout:
-            has_branched('main', 15)
+            has_branched('main', 16)
             exit_status = ExitStatus.ERROR_TIMEOUT
             log_error('Request timed out (%ss).', parsed_args.timeout)
         except requests.TooManyRedirects:
-            has_branched('main', 16)
+            has_branched('main', 17)
             exit_status = ExitStatus.ERROR_TOO_MANY_REDIRECTS
             log_error('Too many redirects (--max-redirects=%s).',
                       parsed_args.max_redirects)
         except Exception as e:
-            has_branched('main', 17)
+            has_branched('main', 18)
             # TODO: Further distinction between expected and unexpected errors.
             msg = str(e)
             if hasattr(e, 'request'):
-                has_branched('main', 18)
+                has_branched('main', 19)
                 request = e.request
                 if hasattr(request, 'url'):
-                    has_branched('main', 19)
+                    has_branched('main', 20)
                     msg += ' while doing %s request to URL: %s' % (
                         request.method, request.url)
             log_error('%s: %s', type(e).__name__, msg)
             if include_traceback:
-                has_branched('main', 20)
+                has_branched('main', 21)
                 raise
             exit_status = ExitStatus.ERROR
 
