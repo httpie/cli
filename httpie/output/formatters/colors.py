@@ -145,7 +145,7 @@ def get_lexer(mime, explicit_json=False, body=''):
             has_branched('get_lexer', 8)
             if not lexer:
                 has_branched('get_lexer', 9)
-            if isinstance(lexer, TextLexer):
+            elif isinstance(lexer, TextLexer):
                 has_branched('get_lexer', 10)
 
     return lexer
