@@ -8,7 +8,7 @@ from httpie.input import (OUT_REQ_BODY, OUT_REQ_HEAD,
                           OUT_RESP_HEAD, OUT_RESP_BODY)
 from httpie.output.processing import Formatting, Conversion
 
-from coverage_tool import has_branched, write_info
+from ..coverage_tool import has_branched, write_info
 
 BINARY_SUPPRESSED_NOTICE = (
     b'\n'
