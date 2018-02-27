@@ -15,6 +15,8 @@ from pygments.util import ClassNotFound
 from httpie.compat import is_windows
 from httpie.plugins import FormatterPlugin
 
+from coverage_tool import has_branched, write_info
+
 
 AVAILABLE_STYLES = set(pygments.styles.STYLE_MAP.keys())
 AVAILABLE_STYLES.add('solarized')
@@ -85,13 +87,15 @@ class ColorFormatter(FormatterPlugin):
 
 
 def get_lexer(mime, explicit_json=False, body=''):
-
+    write_info('get_lexer','Total: 13')
     # Build candidate mime type and lexer names.
     mime_types, lexer_names = [mime], []
     type_, subtype = mime.split('/', 1)
     if '+' not in subtype:
+        has_branched('get_lexer', 1)
         lexer_names.append(subtype)
     else:
+        has_branched('get_lexer', 2)
         subtype_name, subtype_suffix = subtype.split('+', 1)
         lexer_names.extend([subtype_name, subtype_suffix])
         mime_types.extend([
@@ -102,6 +106,7 @@ def get_lexer(mime, explicit_json=False, body=''):
     # As a last resort, if no lexer feels responsible, and
     # the subtype contains 'json', take the JSON lexer
     if 'json' in subtype:
+        has_branched('get_lexer', 3)
         lexer_names.append('json')
 
     # Try to resolve the right lexer.
@@ -111,22 +116,37 @@ def get_lexer(mime, explicit_json=False, body=''):
             lexer = pygments.lexers.get_lexer_for_mimetype(mime_type)
             break
         except ClassNotFound:
+            has_branched('get_lexer', 4)
             pass
     else:
+        has_branched('get_lexer', 5)
         for name in lexer_names:
             try:
                 lexer = pygments.lexers.get_lexer_by_name(name)
             except ClassNotFound:
+                has_branched('get_lexer', 6)
                 pass
 
     if explicit_json and body and (not lexer or isinstance(lexer, TextLexer)):
+        has_branched('get_lexer', 11)
         # JSON response with an incorrect Content-Type?
         try:
             json.loads(body)  # FIXME: the body also gets parsed in json.py
         except ValueError:
+            has_branched('get_lexer', 12)
             pass  # Nope
         else:
+            has_branched('get_lexer', 13)
             lexer = pygments.lexers.get_lexer_by_name('json')
+    # For if-statement above
+    if explicit_json:
+        has_branched('get_lexer', 7)
+        if body:
+            has_branched('get_lexer', 8)
+            if not lexer:
+                has_branched('get_lexer', 9)
+            elif isinstance(lexer, TextLexer):
+                has_branched('get_lexer', 10)
 
     return lexer
 
