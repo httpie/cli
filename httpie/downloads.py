@@ -51,7 +51,9 @@ def parse_content_range(content_range, resumed_from):
     :return: total size of the response body when fully downloaded.
 
     """
+    write_info('parse_content_range', 'Total: 10')
     if content_range is None:
+        has_branched('parse_content_range', 1)
         raise ContentRangeError('Missing Content-Range')
 
     pattern = (
@@ -61,17 +63,20 @@ def parse_content_range(content_range, resumed_from):
     match = re.match(pattern, content_range)
 
     if not match:
+        has_branched('parse_content_range', 2)
         raise ContentRangeError(
             'Invalid Content-Range format %r' % content_range)
 
     content_range_dict = match.groupdict()
     first_byte_pos = int(content_range_dict['first_byte_pos'])
     last_byte_pos = int(content_range_dict['last_byte_pos'])
-    instance_length = (
-        int(content_range_dict['instance_length'])
-        if content_range_dict['instance_length']
-        else None
-    )
+
+    if content_range_dict['instance_length']:
+        has_branched('parse_content_range', 3)
+        instance_length = int(content_range_dict['instance_length'])
+    else:
+        has_branched('parse_content_range', 4)
+        instance_length = None
 
     # "A byte-content-range-spec with a byte-range-resp-spec whose
     # last- byte-pos value is less than its first-byte-pos value,
@@ -82,12 +87,28 @@ def parse_content_range(content_range, resumed_from):
     if (first_byte_pos >= last_byte_pos or
             (instance_length is not None and
              instance_length <= last_byte_pos)):
+        # Check branch taken in compund if statement above
+        if first_byte_pos >= last_byte_pos:
+            has_branched('parse_content_range', 5)
+        elif instance_length is not None:
+            has_branched('parse_content_range', 6)
+            if instance_length <= last_byte_pos:
+                has_branched('parse_content_range', 7)
+
         raise ContentRangeError(
             'Invalid Content-Range returned: %r' % content_range)
 
     if (first_byte_pos != resumed_from or
             (instance_length is not None and
              last_byte_pos + 1 != instance_length)):
+        # Check branch taken in compund if statement above
+        if first_byte_pos != resumed_from:
+            has_branched('parse_content_range', 8)
+        elif instance_length is not None:
+            has_branched('parse_content_range', 9)
+            if last_byte_pos + 1 != instance_length:
+                has_branched('parse_content_range', 10)
+
         # Not what we asked for.
         raise ContentRangeError(
             'Unexpected Content-Range returned (%r)'
