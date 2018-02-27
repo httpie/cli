@@ -15,8 +15,7 @@ from pygments.util import ClassNotFound
 from httpie.compat import is_windows
 from httpie.plugins import FormatterPlugin
 
-from coverage_tool import has_branched, write_info
-
+from httpie.coverage_tool import has_branched, write_info
 
 AVAILABLE_STYLES = set(pygments.styles.STYLE_MAP.keys())
 AVAILABLE_STYLES.add('solarized')
