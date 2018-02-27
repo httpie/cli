@@ -77,11 +77,6 @@ def parse_content_range(content_range, resumed_from):
     else:
         has_branched('parse_content_range', 4)
         instance_length = None
-    
-    if content_range_dict['instance_length']:
-        has_branched('parse_content_range', 5)
-    else:
-        has_branched('parse_content_range', 6)
 
     # "A byte-content-range-spec with a byte-range-resp-spec whose
     # last- byte-pos value is less than its first-byte-pos value,
@@ -90,19 +85,19 @@ def parse_content_range(content_range, resumed_from):
     # byte-content-range- spec MUST ignore it and any content
     # transferred along with it."
     if first_byte_pos >= last_byte_pos:
-        has_branched('parse_content_range', 7)
+        has_branched('parse_content_range', 5)
         raise ContentRangeError(
             'Invalid Content-Range returned: %r' % content_range)
     elif instance_length is not None:
-        has_branched('parse_content_range', 7)
+        has_branched('parse_content_range', 6)
         if instance_length <= last_byte_pos:
-            has_branched('parse_content_range', 8)
+            has_branched('parse_content_range', 7)
             raise ContentRangeError(
                 'Invalid Content-Range returned: %r' % content_range)
         
     
     if first_byte_pos != resumed_from:
-        has_branched('parse_content_range', 9)
+        has_branched('parse_content_range', 8)
         # Not what we asked for.
         raise ContentRangeError(
             'Unexpected Content-Range returned (%r)'
