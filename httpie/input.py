@@ -216,66 +216,81 @@ class HTTPieArgumentParser(ArgumentParser):
             self.env.stdout_isatty = False
 
     def _process_auth(self):
-        write_info('process_auth', 'Total: 11')
+        write_info('process_auth', 'Total: 16')
         # TODO: refactor
         self.args.auth_plugin = None
         default_auth_plugin = plugin_manager.get_auth_plugins()[0]
         auth_type_set = self.args.auth_type is not None
         url = urlsplit(self.args.url)
 
-        if self.args.auth is None and not auth_type_set:
+        if self.args.auth is None:
             has_branched('process_auth', 1)
-            if url.username is not None:
+            if not auth_type_set:
                 has_branched('process_auth', 2)
-                # Handle http://username:password@hostname/
-                username = url.username
-                password = url.password or ''
-                self.args.auth = AuthCredentials(
-                    key=username,
-                    value=password,
-                    sep=SEP_CREDENTIALS,
-                    orig=SEP_CREDENTIALS.join([username, password])
-                )
+                if url.username is not None:
+                    has_branched('process_auth', 3)
+                    # Handle http://username:password@hostname/
+                    username = url.username
+                    password = url.password or ''
+                    self.args.auth = AuthCredentials(
+                        key=username,
+                        value=password,
+                        sep=SEP_CREDENTIALS,
+                        orig=SEP_CREDENTIALS.join([username, password])
+                    )
 
         if self.args.auth is not None or auth_type_set:
-            has_branched('process_auth', 3)
-            if not self.args.auth_type:
+            # Check branch taken in compund OR above
+            if self.args.auth is not None:
                 has_branched('process_auth', 4)
+            elif auth_type_set:
+                has_branched('process_auth', 5)
+
+            if not self.args.auth_type:
+                has_branched('process_auth', 6)
                 self.args.auth_type = default_auth_plugin.auth_type
             plugin = plugin_manager.get_auth_plugin(self.args.auth_type)()
 
-            if plugin.auth_require and self.args.auth is None:
-                has_branched('process_auth', 5)
-                self.error('--auth required')
+            if plugin.auth_require:
+                has_branched('process_auth', 7)
+                if self.args.auth is None:
+                    has_branched('process_auth', 8)
+                    self.error('--auth required')
 
             plugin.raw_auth = self.args.auth
             self.args.auth_plugin = plugin
             already_parsed = isinstance(self.args.auth, AuthCredentials)
 
             if self.args.auth is None or not plugin.auth_parse:
-                has_branched('process_auth', 6)
+                # Check branch taken in compund OR above
+                if self.args.auth is None:
+                    has_branched('process_auth', 9)
+                elif not plugin.auth_parse:
+                    has_branched('process_auth', 10)
+
                 self.args.auth = plugin.get_auth()
             else:
-                has_branched('process_auth', 7)
+                has_branched('process_auth', 11)
                 if already_parsed:
-                    has_branched('process_auth', 8)
+                    has_branched('process_auth', 12)
                     # from the URL
                     credentials = self.args.auth
                 else:
-                    has_branched('process_auth', 9)
+                    has_branched('process_auth', 13)
                     credentials = parse_auth(self.args.auth)
 
-                if (not credentials.has_password() and
-                        plugin.prompt_password):
-                    has_branched('process_auth', 10)
-                    if self.args.ignore_stdin:
-                        has_branched('process_auth', 11)
-                        # Non-tty stdin read by now
-                        self.error(
-                            'Unable to prompt for passwords because'
-                            ' --ignore-stdin is set.'
-                        )
-                    credentials.prompt_password(url.netloc)
+                if not credentials.has_password():
+                    has_branched('process_auth', 14)
+                    if plugin.prompt_password:
+                        has_branched('process_auth', 15)
+                        if self.args.ignore_stdin:
+                            has_branched('process_auth', 16)
+                            # Non-tty stdin read by now
+                            self.error(
+                                'Unable to prompt for passwords because'
+                                ' --ignore-stdin is set.'
+                            )
+                        credentials.prompt_password(url.netloc)
                 self.args.auth = plugin.get_auth(
                     username=credentials.key,
                     password=credentials.value,
