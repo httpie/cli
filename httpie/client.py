@@ -150,11 +150,11 @@ def get_requests_kwargs(args, base_headers=None):
     data = args.data
     auto_json = data and not args.form
     if isinstance(data, dict):
-        has_branched('get_request_kwargs', 1)
+        has_branched('get_requests_kwargs', 1)
         if args.json:
             has_branched('get_requests_kwargs', 2)
         elif auto_json:
-            has_branched('get_request_kwargs', 3)
+            has_branched('get_requests_kwargs', 3)
 
     if (args.json or auto_json) and isinstance(data, dict):
         if data:
