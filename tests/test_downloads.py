@@ -163,3 +163,13 @@ class TestDownloads:
         downloader.chunk_downloaded(b'1234')
         downloader.finish()
         assert downloader.interrupted
+        
+    def test_download_no_file(self, httpbin_both):
+        downloader = Downloader()
+        downloader.start(Response(
+            url=httpbin_both.url + '/',
+            headers={'Content-Disposition': 1234}
+        ))
+        downloader.chunk_downloaded(b'1234')
+        downloader.finish()
+        assert downloader._output_file is not None
