@@ -130,48 +130,42 @@ def get_requests_kwargs(args, base_headers=None):
     Translate our `args` into `requests.request` keyword arguments.
 
     """
-    write_info('get_requests_kwargs','Total: 10')
+    write_info('get_requests_kwargs','Total: 9')
     # Serialize JSON data, if needed.
     data = args.data
     auto_json = data and not args.form
     if isinstance(data, dict):
-        has_branched('get_requests_kwargs', 1)
+        has_branched('get_request_kwargs', 1)
         if args.json:
             has_branched('get_requests_kwargs', 2)
         if auto_json:
-            has_branched('get_requests_kwargs', 3)
-
-    if args.json or auto_json:
-        if args.json:
-            has_branched('get_requests_kwargs', 4)
+            has_branched('get_request_kwargs', 3)
+    
+    if (args.json or auto_json) and isinstance(data, dict):
+        has_branched('get_request_kwargs', 4)
+        if data:
+            has_branched('get_requests_kwargs', 5)
+            data = json.dumps(data)
+        else:
+            has_branched('get_requests_kwargs', 6)
+            # We need to set data to an empty string to prevent requests
+            # from assigning an empty list to `response.request.data`.
+            data = ''
         
-        if auto_json:
-            has_branched('get_request_kwargs', 5)
-        
-        if isinstance(data, dict):
-            if data:
-                has_branched('get_requests_kwargs', 6)
-                data = json.dumps(data)
-            else:
-                has_branched('get_requests_kwargs', 7)
-                # We need to set data to an empty string to prevent requests
-                # from assigning an empty list to `response.request.data`.
-                data = ''
-
     # Finalize headers.
     headers = get_default_headers(args)
     if base_headers:
-        has_branched('get_requests_kwargs', 8)
+        has_branched('get_requests_kwargs', 7)
         headers.update(base_headers)
     headers.update(args.headers)
     headers = finalize_headers(headers)
 
     cert = None
     if args.cert:
-        has_branched('get_requests_kwargs', 9)
+        has_branched('get_requests_kwargs', 8)
         cert = args.cert
         if args.cert_key:
-            has_branched('get_requests_kwargs', 10)
+            has_branched('get_requests_kwargs', 9)
             cert = cert, args.cert_key
 
     kwargs = {
