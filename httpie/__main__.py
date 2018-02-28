@@ -10,7 +10,7 @@ from . import httpmessage
 from . import cliparse
 from . import cli
 from . import pretty
-
+from . import resolve
 
 TYPE_FORM = 'application/x-www-form-urlencoded; charset=utf-8'
 TYPE_JSON = 'application/json; charset=utf-8'
@@ -115,8 +115,9 @@ def main(args=None,
          stdout=sys.stdout, stdout_isatty=sys.stdout.isatty()):
     parser = cli.parser
     args = parser.parse_args(args if args is not None else sys.argv[1:])
-    response = _get_response(parser, args, stdin, stdin_isatty)
-    output = _get_output(args, stdout_isatty, response)
+    with resolve.CustomResolver(args.resolve):
+        response = _get_response(parser, args, stdin, stdin_isatty)
+        output = _get_output(args, stdout_isatty, response)
     output_bytes = output.encode('utf8')
     f = (stdout.buffer if hasattr(stdout, 'buffer') else stdout)
     f.write(output_bytes)

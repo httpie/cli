@@ -108,7 +108,7 @@ Most of the flags mirror the arguments understood by ``requests.request``. See `
                        [--print OUTPUT_OPTIONS | --verbose | --headers | --body]
                        [--style STYLE] [--auth AUTH] [--auth-type {basic,digest}]
                        [--verify VERIFY] [--proxy PROXY] [--allow-redirects]
-                       [--timeout TIMEOUT]
+                       [--timeout TIMEOUT] [--resolve HOST:PORT:ADDRESS]
                        [METHOD] URL [ITEM [ITEM ...]]
 
     HTTPie - cURL for humans. <http://httpie.org>
@@ -180,6 +180,15 @@ Most of the flags mirror the arguments understood by ``requests.request``. See `
                             POST-ing of data at new ``Location``)
       --timeout TIMEOUT     Float describes the timeout of the request (Use
                             socket.setdefaulttimeout() as fallback).
+      --resolve HOST:PORT:ADDRESS
+                            Force resolve of HOST:PORT to ADDRESS bypassing hosts
+                            file (e.g. http --resolve "www.foo.com:127.0.0.1" GET
+                            www.foo.com/whatever). ADDRESS is a comma-separated
+                            list of IP addresses, both IPv4 and IPv6 with or
+                            without bracket notation are supported (e.g. --resolve
+                            example.org:80:[::2],[::1],127.0.0.1 is allowed). This
+                            is similar to cURL --resolve option.
+
 
 
 Contribute

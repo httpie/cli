@@ -3,9 +3,18 @@ import os
 import sys
 import unittest
 import argparse
-from requests.compat import is_py26
+try:
+    from requests.compat import is_py26
+except ImportError:
+    is_py26 = (sys.version_info[0] == 2 and sys.version_info[1] == 6)
 import tempfile
-
+try:
+    from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+except:
+    from http.server import BaseHTTPRequestHandler, HTTPServer
+import socket
+import threading
+import time
 
 TESTS_ROOT = os.path.dirname(__file__)
 sys.path.insert(0, os.path.realpath(os.path.join(TESTS_ROOT, '..')))
@@ -227,6 +236,76 @@ class TestAuth(BaseTest):
                  'GET', 'httpbin.org/digest-auth/auth/user/password')
         self.assertIn('"authenticated": true', r)
         self.assertIn('"user": "user"', r)
+
+
+class MockHTTPServer:
+    class MockHTTPRequestHandler(BaseHTTPRequestHandler):
+        def do_GET(self):
+            self.send_response(200, 'GOOD')
+
+    def __init__(self, ipv):
+        if ipv == 4:
+            self.host = '127.0.0.1'
+            self.address_family = socket.AF_INET
+        elif ipv == 6:
+            self.host = '::1'
+            self.address_family = socket.AF_INET6
+        else:
+            raise ValueError('Invalid ipv (%s), expected 4 or 6' % ipv)
+        self.port = self.get_free_port()
+
+        class _HTTPServer(HTTPServer):
+            address_family = self.address_family
+
+        self.mock_server = _HTTPServer((self.host, self.port), self.MockHTTPRequestHandler)
+        self.thread = threading.Thread(target=self._start)
+
+    def _start(self):
+        self.mock_server.serve_forever()
+
+    def get_free_port(self):
+        s = socket.socket(self.address_family, type=socket.SOCK_STREAM)
+        s.bind(('localhost', 0))
+        r = s.getsockname()
+        s.close()
+        return r[1]
+
+    def __enter__(self):
+        self.thread.setDaemon(True)
+        self.thread.start()
+        time.sleep(1.0)
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if self.thread:
+            self.thread.join(1.0)
+
+
+class TestResolve(BaseTest):
+    def test_resolve_ipv4(self):
+        with MockHTTPServer(4) as mock_http_server:
+            r = http('http://httpbin.org:%s/' % mock_http_server.port,
+                     '--resolve', 'httpbin.org:%s:%s' % (mock_http_server.port, mock_http_server.host))
+            self.assertIn('200 GOOD', r)
+
+    def test_resolve_ipv6(self):
+        with MockHTTPServer(6) as mock_http_server:
+            r = http('http://httpbin.org:%s/' % mock_http_server.port,
+                     '--resolve', 'httpbin.org:%s:%s' % (mock_http_server.port, mock_http_server.host))
+            self.assertIn('200 GOOD', r)
+
+    def test_resolve_ipv6_and_ipv6(self):
+        with MockHTTPServer(6) as mock_http_server:
+            r = http('http://httpbin.org:%s/' % mock_http_server.port,
+                     '--resolve', 'httpbin.org:%s:[::2],%s' % (mock_http_server.port, mock_http_server.host))
+            self.assertIn('200 GOOD', r)
+
+    def test_resolve_ipv6_and_ipv4(self):
+        with MockHTTPServer(4) as mock_http_server:
+            r = http('http://httpbin.org:%s/' % mock_http_server.port,
+                     '--resolve', 'httpbin.org:%s:[::2],%s' % (mock_http_server.port, mock_http_server.host))
+            self.assertIn('200 GOOD', r)
+
 
 
 if __name__ == '__main__':
