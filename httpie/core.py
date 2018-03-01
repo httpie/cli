@@ -29,6 +29,7 @@ from httpie.output.streams import (
     write_stream,
     write_stream_with_colors_win_py3
 )
+from httpie.resolve import CustomResolver
 
 
 def get_exit_status(http_status, follow=False):
@@ -96,7 +97,9 @@ def program(args, env, log_error):
             )
             downloader.pre_request(args.headers)
 
-        final_response = get_response(args, config_dir=env.config.directory)
+        with CustomResolver(args.resolve):
+            final_response = get_response(args, config_dir=env.config.directory)
+
         if args.all:
             responses = final_response.history + [final_response]
         else:

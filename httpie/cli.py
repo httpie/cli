@@ -533,7 +533,20 @@ network.add_argument(
 
     """
 )
-
+network.add_argument(
+    '--resolve',
+    default=[],
+    action='append',
+    metavar='HOST:PORT:ADDRESS',
+    help="""
+    Force resolve of HOST:PORT to ADDRESS bypassing hosts file
+    (e.g. http --resolve "www.foo.com:127.0.0.1" GET www.foo.com/whatever).
+    ADDRESS is a comma-separated list of IP addresses, both IPv4 and IPv6
+    with or without bracket notation are supported
+    (e.g. --resolve example.org:80:[::2],[::1],127.0.0.1 is allowed).
+    This is similar to cURL --resolve option.
+    """
+)
 
 #######################################################################
 # SSL
