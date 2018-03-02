@@ -77,6 +77,7 @@ class TestItemParsing:
             self.key_value('bool:=true'),
             self.key_value('file@' + FILE_PATH_ARG),
             self.key_value('query==value'),
+            self.key_value('query-embed==@' + FILE_PATH_ARG),
             self.key_value('string-embed=@' + FILE_PATH_ARG),
             self.key_value('raw-json-embed:=@' + JSON_FILE_PATH_ARG),
         ])
@@ -104,7 +105,10 @@ class TestItemParsing:
         }
 
         # Parsed query string parameters
-        assert items.params == {'query': 'value'}
+        assert items.params == {
+            'query': 'value',
+            'query-embed': FILE_CONTENT,
+        }
 
         # Parsed file fields
         assert 'file' in items.files

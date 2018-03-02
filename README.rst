@@ -368,7 +368,7 @@ form data, files, and URL parameters.
 They are key/value pairs specified after the URL. All have in
 common that they become part of the actual request that is sent and that
 their type is distinguished only by the separator used:
-``:``, ``=``, ``:=``, ``==``, ``@``, ``=@``, and ``:=@``. The ones with an
+``:``, ``=``, ``:=``, ``==``, ``@``, ``=@``, ``:=@``, and ``==@``. The ones with an
 ``@`` expect a file path as value.
 
 +-----------------------+-----------------------------------------------------+
@@ -396,7 +396,12 @@ their type is distinguished only by the separator used:
 |                       | The presence of a file field results                |
 |                       | in a ``multipart/form-data`` request.               |
 +-----------------------+-----------------------------------------------------+
-
+| URL parameters        | Reads the content of the ``file.txt``,              |
+| from file             | removes all trailing new lines characters           |
+| ``name==@file.txt``   | and appends the name/content pair as a query        |
+|                       | string parameter to the URL.                        |
+|                       | The ``==@`` separator is used.                      |
++-----------------------+-----------------------------------------------------+
 
 Note that data fields aren't the only way to specify request data:
 `Redirected input`_ is a mechanism for passing arbitrary request data.

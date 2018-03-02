@@ -42,6 +42,7 @@ SEP_FILES = '@'
 SEP_DATA_EMBED_FILE = '=@'
 SEP_DATA_EMBED_RAW_JSON_FILE = ':=@'
 SEP_QUERY = '=='
+SEP_QUERY_EMBED_FILE = '==@'
 
 # Separators that become request data
 SEP_GROUP_DATA_ITEMS = frozenset([
@@ -69,6 +70,7 @@ SEP_GROUP_ALL_ITEMS = frozenset([
     SEP_HEADERS,
     SEP_HEADERS_EMPTY,
     SEP_QUERY,
+    SEP_QUERY_EMBED_FILE,
     SEP_DATA,
     SEP_DATA_RAW_JSON,
     SEP_FILES,
@@ -675,6 +677,20 @@ def get_content_type(filename):
         return content_type
 
 
+def read_unicode_file(item, filename):
+    try:
+        with open(os.path.expanduser(filename), 'rb') as f:
+            return f.read().decode('utf8')
+    except IOError as e:
+        raise ParseError('"%s": %s' % (item.orig, e))
+    except UnicodeDecodeError:
+        raise ParseError(
+            '"%s": cannot embed the content of "%s",'
+            ' not a UTF8 or ASCII-encoded text file'
+            % (item.orig, item.value)
+        )
+
+
 def parse_items(items,
                 headers_class=CaseInsensitiveDict,
                 data_class=OrderedDict,
@@ -705,6 +721,9 @@ def parse_items(items,
             target = headers
         elif item.sep == SEP_QUERY:
             target = params
+        elif item.sep == SEP_QUERY_EMBED_FILE:
+            value = read_unicode_file(item, value).rstrip('\n')
+            target = params
         elif item.sep == SEP_FILES:
             try:
                 with open(os.path.expanduser(value), 'rb') as f:
@@ -718,17 +737,7 @@ def parse_items(items,
         elif item.sep in SEP_GROUP_DATA_ITEMS:
 
             if item.sep in SEP_GROUP_DATA_EMBED_ITEMS:
-                try:
-                    with open(os.path.expanduser(value), 'rb') as f:
-                        value = f.read().decode('utf8')
-                except IOError as e:
-                    raise ParseError('"%s": %s' % (item.orig, e))
-                except UnicodeDecodeError:
-                    raise ParseError(
-                        '"%s": cannot embed the content of "%s",'
-                        ' not a UTF8 or ASCII-encoded text file'
-                        % (item.orig, item.value)
-                    )
+                value = read_unicode_file(item, value)
 
             if item.sep in SEP_GROUP_RAW_JSON_ITEMS:
                 try:
