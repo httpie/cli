@@ -55,23 +55,22 @@ class MockHTTPServer:
             self.thread.join(1.0)
 
 
-@pytest.mark.parametrize('args,expected', [
+@pytest.mark.parametrize('arg,expected', [
     (
-        ['a:80:127.0.0.1'],
-        {('a', 80): ['127.0.0.1']}
+        'a:80:127.0.0.1',
+        ('a', 80, ['127.0.0.1']),
     ),
     (
-        ['a:127.0.0.1'],
-        {('a', None): ['127.0.0.1']}
+        'a:127.0.0.1',
+        ('a', None, ['127.0.0.1']),
     ),
     (
-        ['a:::1'],
-        {('a', None): ['::1']}
+        'a:::1',
+        ('a', None, ['::1']),
     ),
 ])
-def test_resolve_arg_parse(args, expected):
-    custom_resolver = CustomResolver(args)
-    assert custom_resolver.entries == expected
+def test_resolve_arg_parse(arg, expected):
+    assert CustomResolver.parse_resolve_entry(arg) == expected
 
 
 class TestResolve:

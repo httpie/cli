@@ -2,31 +2,35 @@ import socket
 
 
 class CustomResolver:
+    @staticmethod
+    def parse_resolve_entry(entry):
+        """
+        :param entry:
+        :return: host, port (or `None` if absent) and
+        """
+        host, port_and_addresses = entry.split(':', 1)
+        try:
+            # If port is not absent, e.g. 'example.org:80:127.0.0.1'
+            port, addresses = port_and_addresses.split(':', 1)
+            port = int(port)
+        except ValueError:
+            port = None
+            addresses = port_and_addresses
+
+        return host, port, [
+            a[1:-1] if a.startswith('[') and a.endswith(']') else a
+            for a in addresses.split(',')
+        ]
+
     def __init__(self, resolve):
         """
         :param resolve: A list of HOST[:PORT]:ADDRESS[:ADDRESS]? records
         :type resolve: list[str]
         """
-        self.entries = {}
-        for entry in resolve:
-            host, port_and_addresses = entry.split(':', 1)
-            if ':' in port_and_addresses:
-                port, addresses = port_and_addresses.split(':', 1)
-                try:
-                    port = int(port)
-                except ValueError:
-                    port = None
-                    addresses = port_and_addresses
-            else:
-                port = None
-                addresses = port_and_addresses
-
-            final_addresses = []
-            for address in addresses.split(','):
-                if address[:1] == '[' and address[-1:] == ']':
-                    address = address[1:-1]
-                final_addresses.append(address)
-            self.entries[(host, port)] = final_addresses
+        self.entries = {
+            (host, port): addresses
+            for host, port, addresses in map(self.parse_resolve_entry, resolve)
+        }
 
     def getaddrinfo(self, host, port, family=None, socktype=None, proto=None, flags=None):
         for key in [(host, port), (host, None)]:
