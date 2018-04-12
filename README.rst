@@ -1346,7 +1346,7 @@ previous ones to the same host.
 
 However, HTTPie also supports persistent
 sessions via the ``--session=SESSION_NAME_OR_PATH`` option. In a session,
-custom headers—except for the ones starting with ``Content-`` or ``If-``—,
+custom headers (except for the ones starting with ``Content-`` or ``If-``),
 authorization, and cookies
 (manually specified or sent by the server) persist between requests
 to the same host.
