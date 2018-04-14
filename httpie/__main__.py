@@ -12,6 +12,9 @@ def main():
     except KeyboardInterrupt:
         from . import ExitStatus
         sys.exit(ExitStatus.ERROR_CTRL_C)
+    except ModuleNotFoundError:
+        from core import main
+        sys.exit(main())
 
 
 if __name__ == '__main__':
