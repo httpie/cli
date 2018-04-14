@@ -16,7 +16,7 @@ from httpie.compat import is_windows
 from httpie.plugins import FormatterPlugin
 
 
-AVAILABLE_STYLES = set(pygments.styles.STYLE_MAP.keys())
+AVAILABLE_STYLES = set(pygments.styles.get_all_styles())
 AVAILABLE_STYLES.add('solarized')
 
 # This is the native style provided by the terminal emulator color scheme
