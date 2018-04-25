@@ -49,3 +49,13 @@ class DigestAuthPlugin(BuiltinAuthPlugin):
     # noinspection PyMethodOverriding
     def get_auth(self, username, password):
         return requests.auth.HTTPDigestAuth(username, password)
+
+
+class DisableAuthPlugin(BuiltinAuthPlugin):
+
+    name = 'Disable HTTP auth'
+    auth_type = 'disabled'
+
+    # noinspection PyMethodOverriding
+    def get_auth(self, username=None, password=None):
+        return None
