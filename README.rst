@@ -743,7 +743,7 @@ Password prompt
 ``.netrc``
 ----------
 
-Authorization information from your ``~/.netrc`` file is honored as well:
+Authentication information from your ``~/.netrc`` file is honored as well:
 
 .. code-block:: bash
 
@@ -1393,8 +1393,8 @@ previous ones to the same host.
 
 However, HTTPie also supports persistent
 sessions via the ``--session=SESSION_NAME_OR_PATH`` option. In a session,
-custom headers (except for the ones starting with ``Content-`` or ``If-``),
-authorization, and cookies
+custom `HTTP headers`_ (except for the ones starting with ``Content-`` or ``If-``),
+`authentication`_, and `cookies`_
 (manually specified or sent by the server) persist between requests
 to the same host.
 
@@ -1408,11 +1408,12 @@ to the same host.
     $ http --session=/tmp/session.json example.org
 
 
-
 All session data, including credentials, cookie data,
 and custom headers are stored in plain text.
 That means session files can also be created and edited manually in a text
-editor—they are regular JSON.
+editor—they are regular JSON. It also means that they can be read by anyone
+who has access to the session file.
+
 
 Named sessions
 --------------
@@ -1426,7 +1427,7 @@ you can create a new session named ``user1`` for ``example.org``:
     $ http --session=user1 -a user1:password example.org X-Foo:Bar
 
 From now on, you can refer to the session by its name. When you choose to
-use the session again, any previously specified authorization or HTTP headers
+use the session again, any previously specified authentication or HTTP headers
 will automatically be set:
 
 .. code-block:: bash
