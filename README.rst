@@ -652,13 +652,40 @@ HTTPie does not offer any special syntax for specifying cookies — the usual
 ``Header:Value`` notation is used:
 
 
+Send a single cookie:
+
 .. code-block:: bash
 
-    # Send a single cookie:
     $ http example.org Cookie:sessionid=foo
 
-    # Send multiple cookies (quoted to prevent the shell from interpreting the ';'):
+.. code-block:: http
+
+    GET / HTTP/1.1
+    Accept: */*
+    Accept-Encoding: gzip, deflate
+    Connection: keep-alive
+    Cookie: sessionid=foo
+    Host: example.org
+    User-Agent: HTTPie/0.9.9
+
+
+Send multiple cookies
+(note the header is quoted to prevent the shell from interpreting the ``;``):
+
+.. code-block:: bash
+
     $ http example.org 'Cookie:sessionid=foo;another-cookie=bar'
+
+.. code-block:: http
+
+    GET / HTTP/1.1
+    Accept: */*
+    Accept-Encoding: gzip, deflate
+    Connection: keep-alive
+    Cookie: sessionid=foo;another-cookie=bar
+    Host: example.org
+    User-Agent: HTTPie/0.9.9
+
 
 If you often deal with cookies in your requests, then chances are you'd appreciate
 the `sessions`_ feature.
