@@ -605,26 +605,6 @@ To set custom headers you can use the ``Header:Value`` notation:
     X-Foo: Bar
 
 
-Cookies
-=======
-
-HTTP clients send cookies to the server as regular `HTTP headers`_. That means,
-HTTPie does not offer any special syntax for specifying cookies — the usual
-``Header:Value`` notation is used:
-
-
-.. code-block:: bash
-
-    # Send a single cookie:
-    $ http example.org Cookie:sessionid=foo
-
-    # Send multiple cookies (quoted to prevent the shell from interpreting the ';'):
-    $ http example.org 'Cookie:sessionid=foo;another-cookie=bar'
-
-If you often deal with cookies in your requests, then chances are you'd appreciate
-the `sessions`_ feature.
-
-
 Default request headers
 -----------------------
 
@@ -662,6 +642,26 @@ To send a header with an empty value, use ``Header;``:
 .. code-block:: bash
 
     $ http httpbin.org/headers 'Header;'
+
+
+Cookies
+=======
+
+HTTP clients send cookies to the server as regular `HTTP headers`_. That means,
+HTTPie does not offer any special syntax for specifying cookies — the usual
+``Header:Value`` notation is used:
+
+
+.. code-block:: bash
+
+    # Send a single cookie:
+    $ http example.org Cookie:sessionid=foo
+
+    # Send multiple cookies (quoted to prevent the shell from interpreting the ';'):
+    $ http example.org 'Cookie:sessionid=foo;another-cookie=bar'
+
+If you often deal with cookies in your requests, then chances are you'd appreciate
+the `sessions`_ feature.
 
 
 Authentication
