@@ -1,14 +1,10 @@
 import pytest
-from pytest_httpbin.plugin import httpbin_ca_bundle
+from pytest_httpbin import certs
 
 
-# Make httpbin's CA trusted by default
-pytest.fixture(autouse=True)(httpbin_ca_bundle)
-
-
-@pytest.fixture(scope='function')
+@pytest.fixture(scope='function', autouse=True)
 def httpbin_secure_untrusted(monkeypatch, httpbin_secure):
     """Like the `httpbin_secure` fixture, but without the
     make-CA-trusted-by-default"""
-    monkeypatch.delenv('REQUESTS_CA_BUNDLE')
+    monkeypatch.setenv('REQUESTS_CA_BUNDLE', certs.where())
     return httpbin_secure

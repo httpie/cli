@@ -85,7 +85,9 @@ class TestServerCert:
 
     def test_self_signed_server_cert_by_default_raises_ssl_error(
             self,
+            monkeypatch,
             httpbin_secure_untrusted):
+        monkeypatch.delenv('REQUESTS_CA_BUNDLE')
         with pytest.raises(SSLError):
             http(httpbin_secure_untrusted.url + '/get')
 
