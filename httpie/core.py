@@ -61,7 +61,7 @@ def print_debug_info(env):
 
 def decode_args(args, stdin_encoding):
     """
-    Convert all bytes args to str
+    Convert all bytes ags to str
     by decoding them using stdin encoding.
 
     """
