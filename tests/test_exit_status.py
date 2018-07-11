@@ -33,7 +33,7 @@ def test_error_response_exits_0_without_check_status(httpbin):
 
 def test_timeout_exit_status(httpbin):
 
-    r = http('--timeout=0.01', 'GET', httpbin.url + '/delay/0.02',
+    r = http('--timeout=0.01', 'GET', httpbin.url + '/delay/0.5',
              error_exit_ok=True)
     assert r.exit_status == ExitStatus.ERROR_TIMEOUT
 
