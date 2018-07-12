@@ -44,28 +44,28 @@ matrix:
       env: CODESTYLE_ONLY=true
 install:
     - |
-    if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
-        sudo pip install tox
-        if [[ -n "$BREW_PYTHON_PACKAGE" ]]; then
-            brew install "$BREW_PYTHON_PACKAGE"
-        fi
-    fi
+      if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
+          sudo pip install tox
+          if [[ -n "$BREW_PYTHON_PACKAGE" ]]; then
+              brew install "$BREW_PYTHON_PACKAGE"
+          fi
+      fi
 script:
     - |
-    if [[ $TRAVIS_OS_NAME == 'linux' ]]; then
-        if [[ $CODESTYLE_ONLY ]]; then
-            make pycodestyle
-        else
-            make test
-        fi
-    else
-        PATH="/usr/local/bin:$PATH" tox -e "$TOXENV"
-    fi
+      if [[ $TRAVIS_OS_NAME == 'linux' ]]; then
+          if [[ $CODESTYLE_ONLY ]]; then
+              make pycodestyle
+          else
+              make test
+          fi
+      else
+          PATH="/usr/local/bin:$PATH" tox -e "$TOXENV"
+      fi
 after_success:
     - |
-    if [[ $TRAVIS_PYTHON_VERSION == $NEWEST_PYTHON && $TRAVIS_OS_NAME == 'linux' ]]; then
-        make coveralls
-    fi
+      if [[ $TRAVIS_PYTHON_VERSION == $NEWEST_PYTHON && $TRAVIS_OS_NAME == 'linux' ]]; then
+          make coveralls
+      fi
 notifications:
   webhooks:
     # options: [always|never|change] default: always
