@@ -81,8 +81,8 @@ class TestSessionFlow(SessionTestBase):
         assert HTTP_OK in r4
         assert r4.json['headers']['Hello'] == 'World2'
         assert r4.json['headers']['Cookie'] == 'hello=world2'
-        assert (r2.json['headers']['Authorization'] !=
-                r4.json['headers']['Authorization'])
+        assert (r2.json['headers']['Authorization']
+                != r4.json['headers']['Authorization'])
 
     def test_session_read_only(self, httpbin):
         self.start_session(httpbin)
@@ -157,8 +157,8 @@ class TestSession(SessionTestBase):
         assert HTTP_OK in r2
 
         # FIXME: Authorization *sometimes* is not present on Python3
-        assert (r2.json['headers']['Authorization'] ==
-                HTTPBasicAuth.make_header(u'test', UNICODE))
+        assert (r2.json['headers']['Authorization']
+                == HTTPBasicAuth.make_header(u'test', UNICODE))
         # httpbin doesn't interpret utf8 headers
         assert UNICODE in r2
 

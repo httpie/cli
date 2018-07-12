@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 Generate URLs and file hashes to be included in the Homebrew formula
-after a new release of HTTPie is published on PyPi.
+after a new release of HTTPie has been published on PyPi.
 
 https://github.com/Homebrew/homebrew-core/blob/master/Formula/httpie.rb
 
@@ -17,7 +17,7 @@ PACKAGES = [
 ]
 
 
-def get_info(package_name):
+def get_package_meta(package_name):
     api_url = 'https://pypi.python.org/pypi/{}/json'.format(package_name)
     resp = requests.get(api_url).json()
     hasher = hashlib.sha256()
@@ -35,21 +35,23 @@ def get_info(package_name):
             '{}: download not found: {}'.format(package_name, resp))
 
 
-packages = {
-    package_name: get_info(package_name) for package_name in PACKAGES
-}
+def main():
+    package_meta_map = {
+        package_name: get_package_meta(package_name)
+        for package_name in PACKAGES
+    }
+    httpie_meta = package_meta_map.pop('httpie')
+    print()
+    print('  url "{url}"'.format(url=httpie_meta['url']))
+    print('  sha256 "{sha256}"'.format(sha256=httpie_meta['sha256']))
+    print()
+    for dep_meta in package_meta_map.values():
+        print('  resource "{name}" do'.format(name=dep_meta['name']))
+        print('    url "{url}"'.format(url=dep_meta['url']))
+        print('    sha256 "{sha256}"'.format(sha256=dep_meta['sha256']))
+        print('  end')
+        print()
 
 
-httpie_info = packages.pop('httpie')
-print("""
-  url "{url}"
-  sha256 "{sha256}"
-""".format(**httpie_info))
-
-
-for package_info in packages.values():
-    print("""
-  resource "{name}" do
-    url "{url}"
-    sha256 "{sha256}"
-  end""".format(**package_info))
+if __name__ == '__main__':
+    main()

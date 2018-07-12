@@ -2,12 +2,12 @@
 .idea/
 __pycache__/
 dist/
-httpie.egg-info/
 build/
 *.egg-info
 .cache/
-.tox
+.tox/
 .coverage
 *.pyc
 *.egg
 htmlcov
+.pytest_cache/

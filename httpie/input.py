@@ -254,8 +254,8 @@ class HTTPieArgumentParser(ArgumentParser):
                 else:
                     credentials = parse_auth(self.args.auth)
 
-                if (not credentials.has_password() and
-                        plugin.prompt_password):
+                if (not credentials.has_password()
+                        and plugin.prompt_password):
                     if self.args.ignore_stdin:
                         # Non-tty stdin read by now
                         self.error(
@@ -338,10 +338,11 @@ class HTTPieArgumentParser(ArgumentParser):
                 self.args.url = self.args.method
                 # Infer the method
                 has_data = (
-                    (not self.args.ignore_stdin and
-                     not self.env.stdin_isatty) or
-                    any(item.sep in SEP_GROUP_DATA_ITEMS
-                        for item in self.args.items)
+                    (not self.args.ignore_stdin and not self.env.stdin_isatty)
+                    or any(
+                        item.sep in SEP_GROUP_DATA_ITEMS
+                        for item in self.args.items
+                    )
                 )
                 self.args.method = HTTP_POST if has_data else HTTP_GET
 
@@ -426,8 +427,8 @@ class HTTPieArgumentParser(ArgumentParser):
         if self.args.prettify == PRETTY_STDOUT_TTY_ONLY:
             self.args.prettify = PRETTY_MAP[
                 'all' if self.env.stdout_isatty else 'none']
-        elif (self.args.prettify and self.env.is_windows and
-              self.args.output_file):
+        elif (self.args.prettify and self.env.is_windows
+                and self.args.output_file):
             self.error('Only terminal output can be colorized on Windows.')
         else:
             # noinspection PyTypeChecker
@@ -469,8 +470,8 @@ class SessionNameValidator(object):
 
     def __call__(self, value):
         # Session name can be a path or just a name.
-        if (os.path.sep not in value and
-                not VALID_SESSION_NAME_PATTERN.search(value)):
+        if (os.path.sep not in value
+                and not VALID_SESSION_NAME_PATTERN.search(value)):
             raise ArgumentError(None, self.error_message)
         return value
 
@@ -505,7 +506,7 @@ class KeyValueArgType(object):
             """Represents an escaped character."""
 
         def tokenize(string):
-            """Tokenize `string`. There are only two token types - strings
+            r"""Tokenize `string`. There are only two token types - strings
             and escaped characters:
 
             tokenize(r'foo\=bar\\baz')

@@ -49,9 +49,9 @@ class TestItemParsing:
         assert 'bar@baz' in items.files
 
     @pytest.mark.parametrize(('string', 'key', 'sep', 'value'), [
-        ('path=c:\windows', 'path', '=', 'c:\windows'),
-        ('path=c:\windows\\', 'path', '=', 'c:\windows\\'),
-        ('path\==c:\windows', 'path=', '=', 'c:\windows'),
+        ('path=c:\\windows', 'path', '=', 'c:\\windows'),
+        ('path=c:\\windows\\', 'path', '=', 'c:\\windows\\'),
+        ('path\\==c:\\windows', 'path=', '=', 'c:\\windows'),
     ])
     def test_backslash_before_non_special_character_does_not_escape(
             self, string, key, sep, value):

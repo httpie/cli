@@ -1,95 +1,77 @@
-# https://travis-ci.org/jakubroztocil/httpie
+# <https://travis-ci.org/jakubroztocil/httpie>
 sudo: false
-
 language: python
 os:
   - linux
-
 env:
   global:
-    - NEWEST_PYTHON=3.6
-
+    - NEWEST_PYTHON=3.7
 python:
   - 2.7
-  - pypy
   - 3.4
   - 3.5
   - 3.6
-# Currently fails because of a Flask issue
-#  - pypy3
+  - 3.7
+  - pypy
+  # pypy3 currently fails because of a Flask issue
+  # - pypy3
 cache: pip
-
 matrix:
-
   include:
-
-    # Manually defined OS X builds
-    # https://docs.travis-ci.com/user/multi-os/#Python-example-(unsupported-languages)
-
-    # Stock OSX Python
+    # Add manually defined OS X builds
+    # <https://docs.travis-ci.com/user/multi-os/#Python-example-(unsupported-languages)>
     - os: osx
       language: generic
       env:
+        # Stock OSX Python
         - TOXENV=py27
-
-    # Latest Python 2.x from Homebrew
+        - BREW_PYTHON_PACKAGE=
     - os: osx
       language: generic
       env:
+        # Latest Python 2.7 from Homebrew
         - TOXENV=py27
-        - BREW_INSTALL=python
-
-    # Latest Python 3.x from Homebrew
+        - BREW_PYTHON_PACKAGE=python@2
     - os: osx
       language: generic
       env:
-        - TOXENV=py36
-        - BREW_INSTALL=python3
-
-    # Python Codestyle
+        # Latest Python 3.x from Homebrew
+        - TOXENV=py37  # <= needs to be kept up-to-date to reflect latest minor version
+        - BREW_PYTHON_PACKAGE=python@3
+    # Add a codestyle-only build
     - os: linux
       python: 3.6
-      env: CODESTYLE=true
-
+      env: CODESTYLE_ONLY=true
 install:
-  - |
+    - |
     if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
-      if [[ -n "$BREW_INSTALL" ]]; then
-        brew update
-        brew install "$BREW_INSTALL"
-      fi
-      sudo pip install tox
+        sudo pip install tox
+        if [[ -n "$BREW_PYTHON_PACKAGE" ]]; then
+            brew install "$BREW_PYTHON_PACKAGE"
+        fi
     fi
-    if [[ $CODESTYLE ]]; then
-      pip install pycodestyle
-    fi
-
 script:
-  - |
+    - |
     if [[ $TRAVIS_OS_NAME == 'linux' ]]; then
-      if [[ $CODESTYLE ]]; then
-        # 241 - multiple spaces after ‘,’
-        # 501 - line too long
-        pycodestyle --ignore=E241,E501
-      else
-        make
-      fi
+        if [[ $CODESTYLE_ONLY ]]; then
+            make pycodestyle
+        else
+            make test
+        fi
     else
-      PATH="/usr/local/bin:$PATH" tox -e "$TOXENV"
+        PATH="/usr/local/bin:$PATH" tox -e "$TOXENV"
     fi
-
 after_success:
-  - |
+    - |
     if [[ $TRAVIS_PYTHON_VERSION == $NEWEST_PYTHON && $TRAVIS_OS_NAME == 'linux' ]]; then
-      pip install python-coveralls && coveralls
+        make coveralls
     fi
-
 notifications:
-
   webhooks:
+    # options: [always|never|change] default: always
+    on_success: always
+    on_failure: always
+    on_start: always
     urls:
       # https://gitter.im/jkbrzt/httpie
       - https://webhooks.gitter.im/e/c42fcd359a110d02830b
-    on_success: always  # options: [always|never|change] default: always
-    on_failure: always  # options: [always|never|change] default: always
-    on_start: always     # options: [always|never|change] default: always

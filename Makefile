@@ -1,6 +1,6 @@
-#
+###############################################################################
 # See ./CONTRIBUTING.rst
-#
+###############################################################################
 
 VERSION=$(shell grep __version__ httpie/__init__.py)
 REQUIREMENTS="requirements-dev.txt"
@@ -20,6 +20,17 @@ init: uninstall-httpie
 
 	@echo
 
+clean:
+	@echo $(TAG)Cleaning up$(END)
+	rm -rf .tox *.egg dist build .coverage .cache .pytest_cache httpie.egg-info
+	find . -name '__pycache__' -delete -print -o -name '*.pyc' -delete -print
+	@echo
+
+
+###############################################################################
+# Testing
+###############################################################################
+
 
 test: init
 	@echo $(TAG)Running tests on the current Python interpreter with coverage $(END)
@@ -27,13 +38,18 @@ test: init
 	@echo
 
 
-test-tox: init
-	@echo $(TAG)Running tests on all Pythons via Tox$(END)
-	tox
+# test-all is meant to test everything — even this Makefile
+test-all: uninstall-all clean init test test-tox test-dist pycodestyle
 	@echo
 
 
 test-dist: test-sdist test-bdist-wheel
+	@echo
+
+
+test-tox: init
+	@echo $(TAG)Running tests on all Pythons via Tox$(END)
+	tox
 	@echo
 
 
@@ -53,11 +69,25 @@ test-bdist-wheel: clean uninstall-httpie
 	@echo
 
 
-# This tests everything, even this Makefile.
-test-all: uninstall-all clean init test test-tox test-dist
+pycodestyle:
+	which pycodestyle || pip install pycodestyle
+	pycodestyle
+	@echo
+
+
+coveralls:
+	which coveralls || pip install python-coveralls
+	coveralls
+	@echo
+
+
+###############################################################################
+# Publishing to PyPi
+###############################################################################
 
 
 publish: test-all publish-no-test
+
 
 publish-no-test:
 	@echo $(TAG)Testing wheel build an installation$(END)
@@ -69,12 +99,10 @@ publish-no-test:
 	@echo
 
 
-clean:
-	@echo $(TAG)Cleaning up$(END)
-	rm -rf .tox *.egg dist build .coverage
-	find . -name '__pycache__' -delete -print -o -name '*.pyc' -delete -print
-	@echo
 
+###############################################################################
+# Uninstalling
+###############################################################################
 
 uninstall-httpie:
 	@echo $(TAG)Uninstalling httpie$(END)
@@ -94,6 +122,11 @@ uninstall-all: uninstall-httpie
 
 	@echo $(TAG)Uninstalling development requirements$(END)
 	- pip uninstall --yes -r $(REQUIREMENTS)
+
+
+###############################################################################
+# Utils
+###############################################################################
 
 
 homebrew-formula-vars:

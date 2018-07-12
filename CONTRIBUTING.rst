@@ -53,7 +53,8 @@ Go to https://github.com/jakubroztocil/httpie and fork the project repository.
 Making Changes
 --------------
 
-Please make sure your changes conform to `Style Guide for Python Code`_ (PEP8).
+Please make sure your changes conform to `Style Guide for Python Code`_ (PEP8)
+and that ``make pycodestyle`` passes.
 
 
 Testing
@@ -80,6 +81,9 @@ Running all tests:
     # Run all tests for code as well as packaging, etc.
     make test-all
 
+    # Test PEP8 compliance
+    make pycodestyle
+
 
 Running specific tests:
 ***********************
@@ -92,10 +96,10 @@ Running specific tests:
     py.test tests/test_uploads.py::TestMultipartFormDataFileUpload::test_upload_ok
 
     # Run specific tests on the on all Pythons via Tox
+    # (change to `tox -e py37' to limit Python version)
     tox -- tests/test_uploads.py --verbose
     tox -- tests/test_uploads.py::TestMultipartFormDataFileUpload --verbose
     tox -- tests/test_uploads.py::TestMultipartFormDataFileUpload::test_upload_ok --verbose
-
 
 -----
 
