@@ -5,7 +5,7 @@ os:
   - linux
 env:
   global:
-    - NEWEST_PYTHON=3.7-dev # Final Python 3.7 no available as of now
+    - NEWEST_PYTHON=3.6 # Final Python 3.7 unavailable as of now (and -dev fails)
 python:
   # <https://docs.travis-ci.com/user/languages/python/>
 
@@ -17,7 +17,8 @@ python:
   # - 3.4
 
   - 3.6
-  - 3.7-dev  # Final Python 3.7 no available as of now
+  # Final Python 3.7 unavailable as of now (and -dev fails)
+  # - 3.7
   - pypy
 
   # pypy3 currently fails because of a Flask issue
@@ -54,6 +55,7 @@ install:
     - |
       if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
           if [[ -n "$BREW_PYTHON_PACKAGE" ]]; then
+              brew update
               brew install "$BREW_PYTHON_PACKAGE"
           fi
           sudo pip install tox
