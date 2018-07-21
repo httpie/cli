@@ -5,20 +5,19 @@ os:
   - linux
 env:
   global:
-    - NEWEST_PYTHON=3.6 # Final Python 3.7 unavailable as of now (and -dev fails)
+    - NEWEST_PYTHON=3.7 # Final Python 3.7 unavailable as of now (and -dev fails)
 python:
   # <https://docs.travis-ci.com/user/languages/python/>
 
   - 2.7
-  - 3.5
 
   # Python 3.4 fails installing packages
   # <https://travis-ci.org/jakubroztocil/httpie/jobs/403263566#L636>
   # - 3.4
 
+  - 3.5
   - 3.6
-  # Final Python 3.7 unavailable as of now (and -dev fails)
-  # - 3.7
+  # - 3.7  # is done in the matrix below as described in travis-ci/travis-ci#9069
   - pypy
 
   # pypy3 currently fails because of a Flask issue
@@ -47,6 +46,12 @@ matrix:
         # Latest Python 3.x from Homebrew
         - TOXENV=py37  # <= needs to be kept up-to-date to reflect latest minor version
         - BREW_PYTHON_PACKAGE=python@3
+    # Travis Python 3.7 must run sudo on 
+    - os: linux
+      python: 3.7
+      env: TOXENV=py37
+      sudo: true    # Required for Python 3.7
+      dist: xenial  # Required for Python 3.7
     # Add a codestyle-only build
     - os: linux
       python: 3.6
