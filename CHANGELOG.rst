@@ -16,6 +16,12 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 
 
 
+`0.9.9`_ (2016-12-08)
+---------------------
+
+* Fixed README.
+
+
 `0.9.8`_ (2016-12-08)
 ---------------------
 
