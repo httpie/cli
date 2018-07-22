@@ -22,7 +22,15 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 * Fixed README.
 
 
-`0.9.8`_ (2016-12-08)
+
+`0.9.9` (2016-12-08)
+--------------------
+
+* Released on `PyPI
+  <https://pypi.python.org/pypi/httpie/0.9.9>`_ without functional changes.
+
+
+0.9.8 (2016-12-08)
 ---------------------
 
 * Extended auth plugin API.
