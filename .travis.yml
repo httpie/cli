@@ -5,7 +5,7 @@ os:
   - linux
 env:
   global:
-    - NEWEST_PYTHON=3.7 # Final Python 3.7 unavailable as of now (and -dev fails)
+    - NEWEST_PYTHON=3.7
 python:
   # <https://docs.travis-ci.com/user/languages/python/>
 
