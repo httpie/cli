@@ -12,6 +12,8 @@ from httpie.input import SSL_VERSION_ARG_MAPPING
 from httpie.plugins import plugin_manager
 from httpie.utils import repr_dict_nice
 
+import zlib
+
 try:
     # https://urllib3.readthedocs.io/en/latest/security.html
     # noinspection PyPackageRequirements
@@ -41,13 +43,34 @@ class HTTPieHTTPAdapter(HTTPAdapter):
         kwargs['ssl_version'] = self._ssl_version
         super(HTTPieHTTPAdapter, self).init_poolmanager(*args, **kwargs)
 
+class ContentCompressionHttpAdapter(HTTPAdapter):
 
-def get_requests_session(ssl_version):
+    def __init__(self, compress, **kwargs):
+        self.compress = compress
+        super(ContentCompressionHttpAdapter, self).__init__(**kwargs)
+
+    def send(self, request, **kwargs):
+        if request.body and self.compress > 0:
+            deflater = zlib.compressobj()
+            deflated_data = deflater.compress(request.body)
+            deflated_data += deflater.flush()
+            if len(deflated_data) < len(request.body) or self.compress > 1:
+                request.body = deflated_data
+                request.headers['Content-Encoding'] = 'deflate'
+                request.headers['Content-Length'] = str(len(deflated_data))
+        return super(ContentCompressionHttpAdapter, self).send(request, **kwargs)
+
+
+def get_requests_session(ssl_version, compress):
     requests_session = requests.Session()
     requests_session.mount(
         'https://',
         HTTPieHTTPAdapter(ssl_version=ssl_version)
     )
+    if compress:
+        adapter = ContentCompressionHttpAdapter(compress)
+        for prefix in ['http://', 'https://']:
+            requests_session.mount(prefix, adapter)
     for cls in plugin_manager.get_transport_plugins():
         transport_plugin = cls()
         requests_session.mount(prefix=transport_plugin.prefix,
@@ -62,7 +85,7 @@ def get_response(args, config_dir):
     if args.ssl_version:
         ssl_version = SSL_VERSION_ARG_MAPPING[args.ssl_version]
 
-    requests_session = get_requests_session(ssl_version)
+    requests_session = get_requests_session(ssl_version, args.compress)
     requests_session.max_redirects = args.max_redirects
 
     if not args.session and not args.session_read_only:
