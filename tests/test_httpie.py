@@ -49,10 +49,26 @@ def test_POST_JSON_data(httpbin_both):
     assert r.json['json']['foo'] == 'bar'
 
 
+def test_POST_JSON_data_compressed(httpbin_both):
+    r = http('--compress', '--compress', 'POST', httpbin_both + '/post', 'foo=bar')
+    assert HTTP_OK in r
+    assert r.json['headers']['Content-Encoding'] == 'deflate'
+    assert r.json['data'].startswith('data:application/octet-stream;')
+    assert r.json['json'] is None
+
+
 def test_POST_form(httpbin_both):
     r = http('--form', 'POST', httpbin_both + '/post', 'foo=bar')
     assert HTTP_OK in r
     assert '"foo": "bar"' in r
+
+
+def test_POST_form_compressed(httpbin_both):
+    r = http('--form', '--compress', '--compress', 'POST', httpbin_both + '/post', 'foo=bar')
+    assert HTTP_OK in r
+    assert r.json['headers']['Content-Encoding'] == 'deflate'
+    assert r.json['data'] == ""
+    assert '"foo": "bar"' not in r
 
 
 def test_POST_form_multiple_values(httpbin_both):
@@ -67,6 +83,31 @@ def test_POST_stdin(httpbin_both):
         r = http('--form', 'POST', httpbin_both + '/post', env=env)
     assert HTTP_OK in r
     assert FILE_CONTENT in r
+
+
+def test_POST_stdin_compressed(httpbin_both):
+    with open(FILE_PATH) as f:
+        env = MockEnvironment(stdin=f, stdin_isatty=False)
+        r = http('--form', '--compress', '--compress', 'POST', httpbin_both + '/post', env=env)
+    assert HTTP_OK in r
+    assert r.json['headers']['Content-Encoding'] == 'deflate'
+    assert r.json['data'] == ""
+    assert FILE_CONTENT not in r
+
+
+def test_POST_file(httpbin_both):
+    r = http('--form', 'POST', httpbin_both + '/post', 'file@' + FILE_PATH)
+    assert HTTP_OK in r
+    assert FILE_CONTENT in r
+
+
+def test_POST_file_compressed(httpbin_both):
+    r = http('--form', '--compress', '--compress', 'POST', httpbin_both + '/post', 'file@' + FILE_PATH)
+    assert HTTP_OK in r
+    assert r.json['headers']['Content-Encoding'] == 'deflate'
+    assert r.json['headers']['Content-Type'].startswith('multipart/form-data; boundary=')
+    assert r.json['files'] == {}
+    assert FILE_CONTENT not in r
 
 
 def test_headers(httpbin_both):
