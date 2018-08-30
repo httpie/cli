@@ -53,7 +53,11 @@ class ContentCompressionHttpAdapter(HTTPAdapter):
     def send(self, request, **kwargs):
         if request.body and self.compress > 0:
             deflater = zlib.compressobj()
-            deflated_data = deflater.compress(request.body)
+            print(">>>> " + str(type(request.body)))
+            if isinstance(request.body, bytes):
+                deflated_data = deflater.compress(request.body)
+            else:
+                deflated_data = deflater.compress(request.body.encode())
             deflated_data += deflater.flush()
             if len(deflated_data) < len(request.body) or self.compress > 1:
                 request.body = deflated_data
