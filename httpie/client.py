@@ -43,6 +43,7 @@ class HTTPieHTTPAdapter(HTTPAdapter):
         kwargs['ssl_version'] = self._ssl_version
         super(HTTPieHTTPAdapter, self).init_poolmanager(*args, **kwargs)
 
+
 class ContentCompressionHttpAdapter(HTTPAdapter):
 
     def __init__(self, compress, **kwargs):

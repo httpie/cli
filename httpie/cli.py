@@ -197,9 +197,9 @@ content_processing.add_argument(
     help="""
     Content compressed (encoded) with Deflate algorithm.
     The Content-Encoding header is set to deflate.
-    
+
     Compression is skipped if it appears that compression ratio is
-    negative. Compression can be forced by repeating the argument. 
+    negative. Compression can be forced by repeating the argument.
 
     """
 )
