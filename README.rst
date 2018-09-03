@@ -426,7 +426,7 @@ token ``--`` to prevent confusion with ``--arguments``:
     Content-Type: application/json
 
     {
-        "-name-starting-with-dash": "value"
+        "-name-starting-with-dash": "foo"
     }
 
 
