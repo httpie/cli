@@ -417,7 +417,7 @@ token ``--`` to prevent confusion with ``--arguments``:
 
 .. code-block:: bash
 
-    $ http httpbin.org/post  --  -name-starting-with-dash=foo -Unusual-Header:bar
+    $ http httpbin.org/post  --  -name-starting-with-dash=value -Unusual-Header:bar
 
 .. code-block:: http
 
