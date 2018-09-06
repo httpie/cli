@@ -27,12 +27,19 @@ class PluginManager(object):
     def unregister(self, plugin):
         self._plugins.remove(plugin)
 
-    def load_installed_plugins(self):
+    def load_installed_plugins(self, debug_stream):
+        loaded_any_plugins = False
         for entry_point_name in ENTRY_POINT_NAMES:
             for entry_point in iter_entry_points(entry_point_name):
+                if debug_stream:
+                    debug_stream.write("Loading plugin '{}' from '{}' ...\n".format(
+                        entry_point.dist, entry_point.dist.location))
+                loaded_any_plugins = True
                 plugin = entry_point.load()
                 plugin.package_name = entry_point.dist.key
                 self.register(entry_point.load())
+        if debug_stream and loaded_any_plugins:
+            debug_stream.write('\n')
 
     # Auth
     def get_auth_plugins(self):

@@ -84,7 +84,8 @@ class Config(BaseConfigDict):
     about = 'HTTPie configuration file'
 
     DEFAULTS = {
-        'default_options': []
+        'default_options': [],
+        'extra_site_dirs': [],
     }
 
     def __init__(self, directory=DEFAULT_CONFIG_DIR):

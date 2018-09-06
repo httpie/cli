@@ -34,7 +34,7 @@ clean:
 
 test: init
 	@echo $(TAG)Running tests on the current Python interpreter with coverage $(END)
-	py.test --cov ./httpie --cov ./tests --doctest-modules --verbose ./httpie ./tests
+	py.test --cov ./httpie --cov ./tests --doctest-modules --verbose --ignore=./tests/test_plugins ./httpie ./tests
 	@echo
 
 

@@ -12,8 +12,11 @@ Invocation flow:
 """
 import sys
 import errno
+import os
 import platform
+import site
 
+from pkg_resources import working_set
 import requests
 from requests import __version__ as requests_version
 from pygments import __version__ as pygments_version
@@ -56,6 +59,10 @@ def print_debug_info(env):
     ])
     env.stderr.write('\n\n')
     env.stderr.write(repr(env))
+    env.stderr.write('\n\n')
+    env.stderr.write('Looking for plugins in these directories:\n')
+    for p in sys.path:
+        env.stderr.write('  %s\n' % p)
     env.stderr.write('\n')
 
 
@@ -180,7 +187,26 @@ def main(args=sys.argv[1:], env=Environment(), custom_log_error=None):
 
     """
     args = decode_args(args, env.stdin_encoding)
-    plugin_manager.load_installed_plugins()
+
+    sys_path_length = len(sys.path)
+
+    for sitedir in env.config.extra_site_dirs:
+        parts = sitedir.split(os.sep)
+        if parts[0].startswith('~'):
+            parts[0] = os.path.expanduser(parts[0])
+        env.stderr.write('addsitedir ' + os.sep.join(parts) + '\n')
+        site.addsitedir(os.sep.join(parts))
+
+    for new_path in sys.path[sys_path_length:]:
+        env.stderr.write('add_entry ' + new_path + '\n')
+        working_set.add_entry(new_path)
+
+    include_debug_info = '--debug' in args
+
+    if include_debug_info:
+        print_debug_info(env)
+
+    plugin_manager.load_installed_plugins(env.stderr if include_debug_info else None)
 
     def log_error(msg, *args, **kwargs):
         msg = msg % args
@@ -196,13 +222,10 @@ def main(args=sys.argv[1:], env=Environment(), custom_log_error=None):
     if custom_log_error:
         log_error = custom_log_error
 
-    include_debug_info = '--debug' in args
     include_traceback = include_debug_info or '--traceback' in args
 
-    if include_debug_info:
-        print_debug_info(env)
-        if args == ['--debug']:
-            return ExitStatus.OK
+    if args == ['--debug']:
+        return ExitStatus.OK
 
     exit_status = ExitStatus.OK
 

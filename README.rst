@@ -774,7 +774,8 @@ Here's a few picks:
 * `httpie-oauth <https://github.com/httpie/httpie-oauth>`_: OAuth
 * `requests-hawk <https://github.com/mozilla-services/requests-hawk>`_: Hawk
 
-
+If HTTPie is not finding your installed plugins then you may need to set the `extra_site_dirs`_
+config option.
 
 
 HTTP redirects
@@ -1502,6 +1503,30 @@ default option could be ``"--session=default"`` to make HTTPie always
 use `sessions`_ (one named ``default`` will automatically be used).
 Or you could change the implicit request content type from JSON to form by
 adding ``--form`` to the list.
+
+
+``extra_site_dirs``
+~~~~~~~~~~~~~~~~~~~
+
+An ``Array`` (by default empty) of directories that will be appended to Pythons
+``sys.path``. This is helpful when you want to use a plugin from outside the
+default ``sys.path``.
+
+Perhaps the most common use will be on macOS when HTTPie is installed via
+Homebrew and plugins are installed via ``pip``, you'll need to set
+``extra_site_dirs`` to something like the example below so that HTTPie can find
+your plugins:
+
+.. code-block:: json
+
+    "extra_site_dirs": [
+        "/usr/local/lib/python3.7/site-packages",
+        "~/Library/Python/3.7/lib/python/site-packages"
+    ]
+
+If you are having trouble with HTTPie not finding your plugins then run
+``http --debug`` to see the list of dirs being searched, the list of loaded
+plugins and what dir each comes from.
 
 
 ``__meta__``

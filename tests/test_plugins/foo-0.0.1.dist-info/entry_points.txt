@@ -1,0 +1,2 @@
+[httpie.plugins.auth.v1]
+foo = foo:FooPlugin
