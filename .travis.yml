@@ -67,6 +67,8 @@ install:
       fi
 script:
     - |
+      echo "Using python2.7 from:"
+      which python2.7
       if [[ $TRAVIS_OS_NAME == 'linux' ]]; then
           if [[ $CODESTYLE_ONLY ]]; then
               make pycodestyle
