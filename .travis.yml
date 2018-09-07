@@ -59,20 +59,14 @@ matrix:
 install:
     - |
       if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
-          echo "brew pythons:"
-          brew ls --versions python
           if [[ -n "$BREW_PYTHON_PACKAGE" ]]; then
               brew update
               brew install "$BREW_PYTHON_PACKAGE"
           fi
-          echo "brew pythons:"
-          brew ls --versions python
           sudo pip2 install tox
       fi
 script:
     - |
-      echo "Using python2.7 from:"
-      which python2.7
       if [[ $TRAVIS_OS_NAME == 'linux' ]]; then
           if [[ $CODESTYLE_ONLY ]]; then
               make pycodestyle
