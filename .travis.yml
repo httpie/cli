@@ -61,11 +61,7 @@ install:
       if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
           if [[ -n "$BREW_PYTHON_PACKAGE" ]]; then
               brew update
-              if ! brew list --versions "$BREW_PYTHON_PACKAGE" >/dev/null; then
-                  brew install "$BREW_PYTHON_PACKAGE"
-              elif ! brew outdated "$BREW_PYTHON_PACKAGE"; then
-                  brew upgrade "$BREW_PYTHON_PACKAGE"
-              fi
+              brew install "$BREW_PYTHON_PACKAGE"
           fi
           sudo pip2 install tox
       fi
