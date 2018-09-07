@@ -32,7 +32,7 @@ matrix:
       language: generic
       env:
         # Stock OSX Python
-        - TOXENV=py27
+        - TOXENV=py27-osx-builtin
         - BREW_PYTHON_PACKAGE=
     - os: osx
       language: generic
