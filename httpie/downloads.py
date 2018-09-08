@@ -17,6 +17,7 @@ from httpie.output.streams import RawStream
 from httpie.models import HTTPResponse
 from httpie.utils import humanize_bytes
 from httpie.compat import urlsplit
+from datetime import timedelta
 
 
 PARTIAL_CONTENT = 206
@@ -30,7 +31,7 @@ PROGRESS = (
     ' {eta: >8} ETA'
 )
 PROGRESS_NO_CONTENT_LENGTH = '{downloaded: >10} {speed: >10}/s'
-SUMMARY = 'Done. {downloaded} in {time:0.5f}s ({speed}/s)\n'
+SUMMARY = 'Done. {downloaded} in {time} ({speed}/s)\n'
 SPINNER = '|/-\\'
 
 
@@ -180,6 +181,26 @@ def get_unique_filename(filename, exists=os.path.exists):
         attempt += 1
 
 
+def friendly_time(time):
+    '''
+    Takes in time in seconds and returns a more human friendly time.
+    '''
+    time_string = str(timedelta(seconds=time))
+    if 'day' in time_string or 'days' in time_string:  # Downloads for more than a day
+        time_split = time_string.split(', ')
+        hour_split = time_split[1].split(':')
+        hour_split[2] = float(hour_split[2])
+        return "{0} {1[0]}h {1[1]}m {1[2]:.2f}s".format(time_split[0], hour_split)
+    else:
+        time_split = time_string.split(':')
+        time_split[2] = float(time_split[2])
+        if int(time_split[0]):  # More than 1 hour but not a day
+            return "{0[0]}h {0[1]}m {0[2]:.2f}s".format(time_split)
+        elif int(time_split[1]):  # More than 1 minute but not an hour
+            return "{0[1]}m {0[2]:.2f}s".format(time_split)
+        return "{0[2]:.2f}s".format(time_split)  # Less than a min
+
+
 class Downloader(object):
 
     def __init__(self, output_file=None,
@@ -326,7 +347,7 @@ class Downloader(object):
 
 
 class Status(object):
-    """Holds details about the downland status."""
+    """Holds details about the download status."""
 
     def __init__(self):
         self.downloaded = 0
@@ -466,6 +487,6 @@ class ProgressReporterThread(threading.Thread):
             total=(self.status.total_size
                    and humanize_bytes(self.status.total_size)),
             speed=humanize_bytes(speed),
-            time=time_taken,
+            time=friendly_time(time_taken),
         ))
         self.output.flush()

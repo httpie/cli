@@ -8,7 +8,7 @@ from requests.structures import CaseInsensitiveDict
 from httpie.compat import urlopen
 from httpie.downloads import (
     parse_content_range, filename_from_content_disposition, filename_from_url,
-    get_unique_filename, ContentRangeError, Downloader,
+    get_unique_filename, ContentRangeError, Downloader, friendly_time
 )
 from utils import http, MockEnvironment
 
@@ -115,6 +115,15 @@ class TestDownloadUtils:
 
         actual = get_unique_filename(orig_name, attempts(unique_on_attempt))
         assert expected == actual
+
+    def test_friendly_time(self):
+        '''
+        Tests friendly time function for some random time taken
+        '''
+        assert friendly_time(1) == '1.00s'
+        assert friendly_time(120) == '02m 0.00s'
+        assert friendly_time(13021) == '3h 37m 1.00s'
+        assert friendly_time(762312) == '8 days 19h 45m 12.00s'
 
 
 class TestDownloads:
