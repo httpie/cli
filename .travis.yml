@@ -32,7 +32,7 @@ matrix:
       language: generic
       env:
         # Stock OSX Python
-        - TOXENV=py27
+        - TOXENV=py27-osx-builtin
         - BREW_PYTHON_PACKAGE=
     - os: osx
       language: generic
@@ -61,7 +61,11 @@ install:
       if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
           if [[ -n "$BREW_PYTHON_PACKAGE" ]]; then
               brew update
-              brew install "$BREW_PYTHON_PACKAGE"
+              if ! brew list --versions "$BREW_PYTHON_PACKAGE" >/dev/null; then
+                  brew install "$BREW_PYTHON_PACKAGE"
+              elif ! brew outdated "$BREW_PYTHON_PACKAGE"; then
+                  brew upgrade "$BREW_PYTHON_PACKAGE"
+              fi
           fi
           sudo pip2 install tox
       fi
