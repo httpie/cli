@@ -194,11 +194,9 @@ def main(args=sys.argv[1:], env=Environment(), custom_log_error=None):
         parts = sitedir.split(os.sep)
         if parts[0].startswith('~'):
             parts[0] = os.path.expanduser(parts[0])
-        env.stderr.write('addsitedir ' + os.sep.join(parts) + '\n')
         site.addsitedir(os.sep.join(parts))
 
     for new_path in sys.path[sys_path_length:]:
-        env.stderr.write('add_entry ' + new_path + '\n')
         working_set.add_entry(new_path)
 
     include_debug_info = '--debug' in args
