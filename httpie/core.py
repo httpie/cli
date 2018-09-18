@@ -143,7 +143,7 @@ def program(args, env, log_error):
                 else:
                     raise
 
-        if downloader and exit_status == ExitStatus.OK:
+        if downloader:
             # Last response body download.
             download_stream, download_to = downloader.start(final_response)
             write_stream(
