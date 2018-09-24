@@ -133,12 +133,9 @@ def get_requests_kwargs(args, base_headers=None):
     data = args.data
     auto_json = data and not args.form
     if (args.json or auto_json) and isinstance(data, dict):
-        if data:
-            data = json.dumps(data)
-        else:
-            # We need to set data to an empty string to prevent requests
-            # from assigning an empty list to `response.request.data`.
-            data = ''
+        # We need to set data to an empty string to prevent requests
+        # from assigning an empty list to `response.request.data`.
+        data = json.dumps(data) if data else ''
 
     # Finalize headers.
     headers = get_default_headers(args)
