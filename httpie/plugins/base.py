@@ -29,6 +29,10 @@ class AuthPlugin(BasePlugin):
     # through `--auth, -a`.
     auth_require = True
 
+    # Set to `True` to make it possible for this auth
+    # plugin to acquire credentials from netrc
+    netrc_parse = False
+
     # By default the `-a` argument is parsed for `username:password`.
     # Set this to `False` to disable the parsing and error handling.
     auth_parse = True

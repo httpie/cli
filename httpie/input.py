@@ -6,6 +6,7 @@ import ssl
 import sys
 import re
 import errno
+import netrc
 import mimetypes
 import getpass
 from io import BytesIO
@@ -237,6 +238,20 @@ class HTTPieArgumentParser(ArgumentParser):
             if not self.args.auth_type:
                 self.args.auth_type = default_auth_plugin.auth_type
             plugin = plugin_manager.get_auth_plugin(self.args.auth_type)()
+
+            if plugin.auth_require and self.args.auth is None \
+                    and plugin.netrc_parse:
+                # Authentication required, no credentials provided and
+                # plugin allows netrc parsing
+                netrc_entries = netrc.netrc()
+                if url.netloc in netrc_entries.hosts:
+                    login, account, password = netrc_entries.authenticators(url.netloc)
+                    self.args.auth = plugin.get_auth(
+                        username=login,
+                        password=password,
+                    )
+                    # Break early, we have acquired netrc credentials
+                    return
 
             if plugin.auth_require and self.args.auth is None:
                 self.error('--auth required')
