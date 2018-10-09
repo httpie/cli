@@ -36,5 +36,6 @@ Patches and ideas
 * `Dennis Brakhane <https://github.com/brakhane>`_
 * `Matt Layman <https://github.com/mblayman>`_
 * `Edward Yang <https://github.com/honorabrutroll>`_
+* `Rohit Sehgal <https://github.com/r0hi7>`_
 
 
