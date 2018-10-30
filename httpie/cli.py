@@ -46,6 +46,7 @@ class HTTPieHelpFormatter(RawDescriptionHelpFormatter):
 
 
 parser = HTTPieArgumentParser(
+    prog='http',
     formatter_class=HTTPieHelpFormatter,
     description='%s <http://httpie.org>' % __doc__.strip(),
     epilog=dedent("""
