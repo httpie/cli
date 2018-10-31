@@ -25,7 +25,7 @@ to your bug report, e.g.:
 
 Before working on a new feature or a bug, please browse `existing issues`_
 to see whether it has been previously discussed. If the change in question
-is a bigger one, it's always good to discuss before your starting working on
+is a bigger one, it's always good to discuss before you start working on
 it.
 
 

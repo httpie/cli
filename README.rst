@@ -130,10 +130,9 @@ To see which version HTTPie uses, run ``http --debug``.
 Unstable version
 ----------------
 
-You can also instead of the latest the latest unreleased development version
-directly from the ``master`` branch on GitHub.
-It is a work-in-progress of a future stable release so the experience
-might be not as smooth.
+You can also install the latest unreleased development version directly from
+the ``master`` branch on GitHub.  It is a work-in-progress of a future stable
+release so the experience might be not as smooth.
 
 |unix_build|
 
@@ -435,7 +434,7 @@ JSON
 ====
 
 JSON is the *lingua franca* of modern web services and it is also the
-**implicit content type** HTTPie by default uses.
+**implicit content type** HTTPie uses by default.
 
 
 Simple example:
@@ -620,7 +619,7 @@ There are a couple of default headers that HTTPie sets:
 
 
 
-Any of those—except for ``Host``—can be overwritten and some of them unset.
+Any of these except ``Host`` can be overwritten and some of them unset.
 
 
 
