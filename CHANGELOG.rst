@@ -6,7 +6,7 @@ This document records all notable changes to `HTTPie <http://httpie.org>`_.
 This project adheres to `Semantic Versioning <http://semver.org/>`_.
 
 
-`1.0.0`_ (2018-10-02)
+`1.0.0`_ (2018-11-02)
 -------------------------
 
 * Added ``--style=auto`` which follows the terminal ANSI color styles.
