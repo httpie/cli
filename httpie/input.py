@@ -111,6 +111,7 @@ SSL_VERSION_ARG_MAPPING = {
     'tls1': 'PROTOCOL_TLSv1',
     'tls1.1': 'PROTOCOL_TLSv1_1',
     'tls1.2': 'PROTOCOL_TLSv1_2',
+    'tls1.3': 'PROTOCOL_TLSv1_3',
 }
 SSL_VERSION_ARG_MAPPING = {
     cli_arg: getattr(ssl, ssl_constant)
