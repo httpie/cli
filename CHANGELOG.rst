@@ -10,9 +10,11 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 -------------------------
 
 * Added ``--style=auto`` which follows the terminal ANSI color styles.
+* Added support for selecting TLS 1.3 via ``--ssl=tls1.3``
+  (available once implemented in upstream libraries).
 * Added ``true``/``false`` as valid values for ``--verify``
   (in addition to ``yes``/``no``) and the boolean value is case-insensitive.
-* Changed the default ``--style`` from ``solarized`` to ``auto`` (except for Windows).
+* Changed the default ``--style`` from ``solarized`` to ``auto`` (on Windows it stays ``fruity``).
 * Fixed default headers being incorrectly case-sensitive.
 * Removed Python 2.6 support.
 
