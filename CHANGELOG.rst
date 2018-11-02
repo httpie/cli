@@ -9,8 +9,10 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 `1.0.0-dev`_ (unreleased)
 -------------------------
 
+* Added ``--style=auto`` which follows the terminal ANSI color styles.
 * Added ``true``/``false`` as valid values for ``--verify``
   (in addition to ``yes``/``no``) and the boolean value is case-insensitive.
+* Changed the default ``--style`` from ``solarized`` to ``auto`` (except for Windows).
 * Fixed default headers being incorrectly case-sensitive.
 * Removed Python 2.6 support.
 
