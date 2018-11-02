@@ -43,7 +43,7 @@ def get_exit_status(http_status, follow=False):
         # Server Error
         return ExitStatus.ERROR_HTTP_5XX
     else:
-        return ExitStatus.OK
+        return ExitStatus.SUCCESS
 
 
 def print_debug_info(env):
@@ -82,7 +82,7 @@ def program(args, env, log_error):
     :return: status code
 
     """
-    exit_status = ExitStatus.OK
+    exit_status = ExitStatus.SUCCESS
     downloader = None
     show_traceback = args.debug or args.traceback
 
@@ -109,7 +109,7 @@ def program(args, env, log_error):
                     http_status=response.status_code,
                     follow=args.follow
                 )
-                if not env.stdout_isatty and exit_status != ExitStatus.OK:
+                if not env.stdout_isatty and exit_status != ExitStatus.SUCCESS:
                     log_error(
                         'HTTP %s %s', response.raw.status, response.raw.reason,
                         level='warning'
@@ -143,7 +143,7 @@ def program(args, env, log_error):
                 else:
                     raise
 
-        if downloader and exit_status == ExitStatus.OK:
+        if downloader and exit_status == ExitStatus.SUCCESS:
             # Last response body download.
             download_stream, download_to = downloader.start(final_response)
             write_stream(
@@ -202,9 +202,9 @@ def main(args=sys.argv[1:], env=Environment(), custom_log_error=None):
     if include_debug_info:
         print_debug_info(env)
         if args == ['--debug']:
-            return ExitStatus.OK
+            return ExitStatus.SUCCESS
 
-    exit_status = ExitStatus.OK
+    exit_status = ExitStatus.SUCCESS
 
     try:
         parsed_args = parser.parse_args(args=args, env=env)
@@ -214,7 +214,7 @@ def main(args=sys.argv[1:], env=Environment(), custom_log_error=None):
             raise
         exit_status = ExitStatus.ERROR_CTRL_C
     except SystemExit as e:
-        if e.code != ExitStatus.OK:
+        if e.code != ExitStatus.SUCCESS:
             env.stderr.write('\n')
             if include_traceback:
                 raise
@@ -232,7 +232,7 @@ def main(args=sys.argv[1:], env=Environment(), custom_log_error=None):
                 raise
             exit_status = ExitStatus.ERROR_CTRL_C
         except SystemExit as e:
-            if e.code != ExitStatus.OK:
+            if e.code != ExitStatus.SUCCESS:
                 env.stderr.write('\n')
                 if include_traceback:
                     raise

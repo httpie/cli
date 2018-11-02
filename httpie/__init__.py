@@ -8,8 +8,8 @@ __licence__ = 'BSD'
 
 
 class ExitStatus:
-    """Exit status code constants."""
-    OK = 0
+    """Program exit code constants."""
+    SUCCESS = 0
     ERROR = 1
     PLUGIN_ERROR = 7
 
