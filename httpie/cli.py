@@ -214,9 +214,9 @@ output_processing.add_argument(
 
 {available_styles}
 
-    The "{auto_style}" style follows your terminal’s ANSI color styles.
+    The "{auto_style}" style follows your terminal's ANSI color styles.
 
-    For non-{auto_style} styles to work properly, please make sure that the 
+    For non-{auto_style} styles to work properly, please make sure that the
     $TERM environment variable is set to "xterm-256color" or similar
     (e.g., via `export TERM=xterm-256color' in your ~/.bashrc).
 

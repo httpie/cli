@@ -51,8 +51,8 @@ class ColorFormatter(FormatterPlugin):
         use_auto_style = color_scheme == AUTO_STYLE
         has_256_colors = env.colors == 256
         if use_auto_style or not has_256_colors:
-            formatter = TerminalFormatter()
             http_lexer = PygmentsHttpLexer()
+            formatter = TerminalFormatter()
         else:
             http_lexer = SimplifiedHTTPLexer()
             formatter = Terminal256Formatter(
