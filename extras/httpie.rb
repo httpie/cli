@@ -9,12 +9,19 @@ class Httpie < Formula
 
   desc "User-friendly cURL replacement (command-line HTTP client)"
   homepage "https://httpie.org/"
-  head "https://github.com/jakubroztocil/httpie.git"
-
   url "https://files.pythonhosted.org/packages/44/ee/7177b743400d7f82a69bf30cb3c24ea4bb1f4aea68878bc540f732bf4940/httpie-1.0.0.tar.gz"
   sha256 "1650342d2eca2622092196bf106ab8f68ea2dbb2ed265d37191185618e159a25"
+  head "https://github.com/jakubroztocil/httpie.git"
 
-  depends_on "python"
+  bottle do
+    cellar :any_skip_relocation
+    sha256 "7e9db255e324dd63b66106ca62ed7e4e81f6634c624dec3ff49c293aba1072a6" => :mojave
+    sha256 "437504a11416284b17d3a801c267d0fd5e15416f38cff3abf7ed99b096b4828a" => :high_sierra
+    sha256 "10b25fc787076719b1f1f9c242c5e9d872ebd1c7a6d83e6f1af983a17cd8ca55" => :sierra
+    sha256 "1bd35480d1ef401bdad9c322e7c1624aefc9b5056530ab990e327d0bc397e4fb" => :el_capitan
+  end
+
+  depends_on "python" ["3.6.5_1"]
 
   resource "pygments" do
     url "https://files.pythonhosted.org/packages/71/2a/2e4e77803a8bd6408a2903340ac498cb0a2181811af7c9ec92cb70b0308a/Pygments-2.2.0.tar.gz"
@@ -50,7 +57,6 @@ class Httpie < Formula
     url "https://files.pythonhosted.org/packages/53/12/6bf1d764f128636cef7408e8156b7235b150ea31650d0260969215bb8e7d/PySocks-1.6.8.tar.gz"
     sha256 "3fe52c55890a248676fd69dc9e3c4e811718b777834bcaab7a8125cf9deac672"
   end
-
 
   def install
     virtualenv_install_with_resources
