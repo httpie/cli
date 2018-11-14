@@ -6,6 +6,12 @@ This document records all notable changes to `HTTPie <http://httpie.org>`_.
 This project adheres to `Semantic Versioning <http://semver.org/>`_.
 
 
+`1.0.2-dev`_ (unreleased)
+-------------------------
+
+* Fixed tests for installation with pyOpenSSL.
+
+
 `1.0.1`_ (2018-11-14)
 -------------------------
 
@@ -348,3 +354,4 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 .. _0.9.9: https://github.com/jakubroztocil/httpie/compare/0.9.8...0.9.9
 .. _1.0.0: https://github.com/jakubroztocil/httpie/compare/0.9.9...1.0.0
 .. _1.0.1: https://github.com/jakubroztocil/httpie/compare/1.0.0...1.0.1
+.. _1.0.2-dev: https://github.com/jakubroztocil/httpie/compare/1.0.1...master
