@@ -347,3 +347,4 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 .. _0.9.8: https://github.com/jakubroztocil/httpie/compare/0.9.6...0.9.8
 .. _0.9.9: https://github.com/jakubroztocil/httpie/compare/0.9.8...0.9.9
 .. _1.0.0: https://github.com/jakubroztocil/httpie/compare/0.9.9...1.0.0
+.. _1.0.1: https://github.com/jakubroztocil/httpie/compare/1.0.0...1.0.1
