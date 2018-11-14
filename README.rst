@@ -134,6 +134,9 @@ You can also install the latest unreleased development version directly from
 the ``master`` branch on GitHub.  It is a work-in-progress of a future stable
 release so the experience might be not as smooth.
 
+
+.. class:: no-pdf
+
 |unix_build|
 
 
