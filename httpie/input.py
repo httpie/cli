@@ -239,8 +239,8 @@ class HTTPieArgumentParser(ArgumentParser):
                 self.args.auth_type = default_auth_plugin.auth_type
             plugin = plugin_manager.get_auth_plugin(self.args.auth_type)()
 
-            if plugin.auth_require and self.args.auth is None \
-                    and plugin.netrc_parse:
+            if (plugin.auth_require and self.args.auth is None
+                    and plugin.netrc_parse):
                 # Authentication required, no credentials provided and
                 # plugin allows netrc parsing
                 netrc_entries = netrc.netrc()
