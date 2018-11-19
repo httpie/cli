@@ -13,6 +13,7 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
   (in addition to ``yes``/``no``) and the boolean value is case-insensitive.
 * Fixed default headers being incorrectly case-sensitive.
 * Removed Python 2.6 support.
+* Load credentials from netrc for auth plugins if user requests it.
 
 
 
