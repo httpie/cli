@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 Generate URLs and file hashes to be included in the Homebrew formula
 after a new release of HTTPie has been published on PyPi.
@@ -12,8 +12,13 @@ import requests
 
 PACKAGES = [
     'httpie',
-    'requests',
     'pygments',
+    'requests',
+    'certifi',
+    'urllib3',
+    'idna',
+    'chardet',
+    'PySocks',
 ]
 
 
@@ -50,7 +55,7 @@ def main():
         print('    url "{url}"'.format(url=dep_meta['url']))
         print('    sha256 "{sha256}"'.format(sha256=dep_meta['sha256']))
         print('  end')
-        print()
+        print('')
 
 
 if __name__ == '__main__':

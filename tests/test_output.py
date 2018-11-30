@@ -161,7 +161,7 @@ class TestLineEndings:
 
     def test_CRLF_formatted_response(self, httpbin):
         r = http('--pretty=format', 'GET', httpbin.url + '/get')
-        assert r.exit_status == ExitStatus.OK
+        assert r.exit_status == ExitStatus.SUCCESS
         self._validate_crlf(r)
 
     def test_CRLF_ugly_request(self, httpbin):

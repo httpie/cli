@@ -219,7 +219,7 @@ def http(*args, **kwargs):
             sys.stderr.write(stderr.read())
             raise
         else:
-            if not error_exit_ok and exit_status != ExitStatus.OK:
+            if not error_exit_ok and exit_status != ExitStatus.SUCCESS:
                 dump_stderr()
                 raise ExitStatusError(
                     'httpie.core.main() unexpectedly returned'
@@ -243,7 +243,7 @@ def http(*args, **kwargs):
         r.stderr = stderr.read()
         r.exit_status = exit_status
 
-        if r.exit_status != ExitStatus.OK:
+        if r.exit_status != ExitStatus.SUCCESS:
             sys.stderr.write(r.stderr)
 
         return r

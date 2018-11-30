@@ -16,19 +16,18 @@ from httpie.compat import is_windows
 from httpie.plugins import FormatterPlugin
 
 
-AVAILABLE_STYLES = set(pygments.styles.get_all_styles())
-AVAILABLE_STYLES.add('solarized')
-
-# This is the native style provided by the terminal emulator color scheme
-PRESET_STYLE = 'preset'
-AVAILABLE_STYLES.add(PRESET_STYLE)
-
+AUTO_STYLE = 'auto'  # Follows terminal ANSI color styles
+DEFAULT_STYLE = AUTO_STYLE
+SOLARIZED_STYLE = 'solarized'  # Bundled here
 if is_windows:
     # Colors on Windows via colorama don't look that
-    # great and fruity seems to give the best result there
+    # great and fruity seems to give the best result there.
     DEFAULT_STYLE = 'fruity'
-else:
-    DEFAULT_STYLE = 'solarized'
+
+
+AVAILABLE_STYLES = set(pygments.styles.get_all_styles())
+AVAILABLE_STYLES.add(SOLARIZED_STYLE)
+AVAILABLE_STYLES.add(AUTO_STYLE)
 
 
 class ColorFormatter(FormatterPlugin):
@@ -44,44 +43,55 @@ class ColorFormatter(FormatterPlugin):
     def __init__(self, env, explicit_json=False,
                  color_scheme=DEFAULT_STYLE, **kwargs):
         super(ColorFormatter, self).__init__(**kwargs)
+
         if not env.colors:
             self.enabled = False
             return
 
-        # --json, -j
-        self.explicit_json = explicit_json
-
-        try:
-            style_class = pygments.styles.get_style_by_name(color_scheme)
-        except ClassNotFound:
-            style_class = Solarized256Style
-
-        if color_scheme != PRESET_STYLE and env.colors == 256:
-            fmt_class = Terminal256Formatter
+        use_auto_style = color_scheme == AUTO_STYLE
+        has_256_colors = env.colors == 256
+        if use_auto_style or not has_256_colors:
+            http_lexer = PygmentsHttpLexer()
+            formatter = TerminalFormatter()
         else:
-            fmt_class = TerminalFormatter
-        self.formatter = fmt_class(style=style_class)
+            http_lexer = SimplifiedHTTPLexer()
+            formatter = Terminal256Formatter(
+                style=self.get_style_class(color_scheme)
+            )
 
-        if color_scheme == PRESET_STYLE:
-            self.http_lexer = PygmentsHttpLexer()
-        else:
-            self.http_lexer = HTTPLexer()
+        self.explicit_json = explicit_json  # --json
+        self.formatter = formatter
+        self.http_lexer = http_lexer
 
     def format_headers(self, headers):
-        return pygments.highlight(headers, self.http_lexer, self.formatter).strip()
+        return pygments.highlight(
+            code=headers,
+            lexer=self.http_lexer,
+            formatter=self.formatter,
+        ).strip()
 
     def format_body(self, body, mime):
-        lexer = self.get_lexer(mime, body)
+        lexer = self.get_lexer_for_body(mime, body)
         if lexer:
-            body = pygments.highlight(body, lexer, self.formatter)
+            body = pygments.highlight(
+                code=body,
+                lexer=lexer,
+                formatter=self.formatter,
+            )
         return body.strip()
 
-    def get_lexer(self, mime, body):
+    def get_lexer_for_body(self, mime, body):
         return get_lexer(
             mime=mime,
             explicit_json=self.explicit_json,
             body=body,
         )
+
+    def get_style_class(self, color_scheme):
+        try:
+            return pygments.styles.get_style_by_name(color_scheme)
+        except ClassNotFound:
+            return Solarized256Style
 
 
 def get_lexer(mime, explicit_json=False, body=''):
@@ -131,7 +141,7 @@ def get_lexer(mime, explicit_json=False, body=''):
     return lexer
 
 
-class HTTPLexer(pygments.lexer.RegexLexer):
+class SimplifiedHTTPLexer(pygments.lexer.RegexLexer):
     """Simplified HTTP lexer for Pygments.
 
     It only operates on headers and provides a stronger contrast between
