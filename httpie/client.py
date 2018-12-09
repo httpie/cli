@@ -52,7 +52,7 @@ class HTTPieRequestsSession(requests.Session):
     def __init__(self, args):
         super(HTTPieRequestsSession, self).__init__()
         self.httpie_current_rule = None
-        self.httpie_follow_rules = args.follow_rules_dict
+        self.httpie_follow_rules = args.follow_rule_dict
         self.httpie_orig_cookies = None
         self.httpie_orig_response_status_code = None
         self.max_redirects = args.max_redirects

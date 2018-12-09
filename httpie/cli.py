@@ -512,7 +512,6 @@ network.add_argument(
 )
 network.add_argument(
     '--follow-rule',
-    dest='follow_rules',
     action='append',
     metavar='CODE:METHOD[:nodata][:samecookies]',
     type=FollowRule,
