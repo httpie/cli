@@ -146,6 +146,7 @@ class HTTPieArgumentParser(ArgumentParser):
         self._apply_no_options(no_options)
         self._validate_download_options()
         self._setup_standard_streams()
+        self._process_follow_rules()
         self._process_output_options()
         self._process_pretty_options()
         self._guess_method()
@@ -385,6 +386,21 @@ class HTTPieArgumentParser(ArgumentParser):
                 if content_type:
                     self.args.headers['Content-Type'] = content_type
 
+    def _process_follow_rules(self):
+        if self.args.post301:
+            self.args.follow_rules.append(FollowRule('301:POST'))
+        if self.args.post302:
+            self.args.follow_rules.append(FollowRule('302:POST'))
+        if self.args.post303:
+            self.args.follow_rules.append(FollowRule('303:POST'))
+        if self.args.follow_rules:
+            self.args.follow = True
+        rule_dict = self.args.follow_rules_dict = {}
+        for r in self.args.follow_rules:
+            if r.code in rule_dict:
+                self.error('--follow-rule for %s specified more than once' % r.code)
+            rule_dict[r.code] = r
+
     def _process_output_options(self):
         """Apply defaults to output options, or validate the provided ones.
 
@@ -610,6 +626,28 @@ class AuthCredentialsArgType(KeyValueArgType):
 
 
 parse_auth = AuthCredentialsArgType(SEP_CREDENTIALS)
+
+FOLLOW_RULE_RE = re.compile(r'^(\d+):([a-zA-Z]+)(:nodata|:samecookies)*$', re.IGNORECASE)
+
+
+class FollowRule(object):
+    """A single follow-rule parsed from CLI"""
+
+    def __init__(self, arg):
+        match = FOLLOW_RULE_RE.match(arg)
+        if not match:
+            raise ArgumentTypeError("'%s' is not a valid value" % arg)
+        opt = match.group(3).split(':') if match.group(3) else []
+        self.code = int(match.group(1))
+        self.method = match.group(2)
+        self.nodata = 'nodata' in opt
+        self.samecookies = 'samecookies' in opt
+
+    def __eq__(self, other):
+        return self.__dict__ == other.__dict__
+
+    def __repr__(self):
+        return repr(self.__dict__)
 
 
 class RequestItemsDict(OrderedDict):

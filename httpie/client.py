@@ -3,6 +3,7 @@ import sys
 
 import requests
 from requests.adapters import HTTPAdapter
+from requests.status_codes import codes
 from requests.structures import CaseInsensitiveDict
 
 from httpie import sessions
@@ -42,28 +43,68 @@ class HTTPieHTTPAdapter(HTTPAdapter):
         super(HTTPieHTTPAdapter, self).init_poolmanager(*args, **kwargs)
 
 
-def get_requests_session(ssl_version):
-    requests_session = requests.Session()
-    requests_session.mount(
-        'https://',
-        HTTPieHTTPAdapter(ssl_version=ssl_version)
-    )
-    for cls in plugin_manager.get_transport_plugins():
-        transport_plugin = cls()
-        requests_session.mount(prefix=transport_plugin.prefix,
-                               adapter=transport_plugin.get_adapter())
-    return requests_session
+REMOVE_BODY = 0
+KEEP_BODY = codes.temporary_redirect
+
+
+class HTTPieRequestsSession(requests.Session):
+
+    def __init__(self, args):
+        super(HTTPieRequestsSession, self).__init__()
+        self.httpie_current_rule = None
+        self.httpie_follow_rules = args.follow_rules_dict
+        self.httpie_orig_cookies = None
+        self.httpie_orig_response_status_code = None
+        self.max_redirects = args.max_redirects
+
+        self.mount(
+            'https://',
+            HTTPieHTTPAdapter(ssl_version=SSL_VERSION_ARG_MAPPING[args.ssl_version] if args.ssl_version else None)
+        )
+
+        for cls in plugin_manager.get_transport_plugins():
+            transport_plugin = cls()
+            self.mount(prefix=transport_plugin.prefix,
+                       adapter=transport_plugin.get_adapter())
+
+    def get_redirect_target(self, resp):
+        if self.httpie_follow_rules and 'location' in resp.headers:
+            redirect = resp.status_code in self.httpie_follow_rules
+
+            # Monkey patch Response.is_redirect
+            # see https://stackoverflow.com/questions/31590152/monkey-patching-a-property
+            class PatchedResponse(requests.Response):
+                is_redirect = redirect
+            resp.__class__ = PatchedResponse
+
+        return super().get_redirect_target(resp)
+
+    def rebuild_method(self, prepared_request, response):
+        rule = self.httpie_current_rule = self.httpie_follow_rules.get(response.status_code)
+        if rule:
+            prepared_request.method = rule.method
+            self.httpie_orig_cookies = prepared_request.headers.get('Cookie')
+            self.httpie_orig_response_status_code = response.status_code
+            # kludge so that Session.resolve_redirects() keeps or removes the request body
+            response.status_code = REMOVE_BODY if rule.nodata else KEEP_BODY
+        else:
+            super().rebuild_method(prepared_request, response)
+
+    def rebuild_auth(self, prepared_request, response):
+        if self.httpie_current_rule:
+            if self.httpie_current_rule.samecookies:
+                prepared_request.headers['Cookie'] = self.httpie_orig_cookies
+            response.status_code = self.httpie_orig_response_status_code
+            self.httpie_current_rule = None
+            self.httpie_orig_cookies = None
+            self.httpie_orig_response_status_code = None
+        super().rebuild_auth(prepared_request, response)
 
 
 def get_response(args, config_dir):
     """Send the request and return a `request.Response`."""
 
-    ssl_version = None
-    if args.ssl_version:
-        ssl_version = SSL_VERSION_ARG_MAPPING[args.ssl_version]
-
-    requests_session = get_requests_session(ssl_version)
-    requests_session.max_redirects = args.max_redirects
+    requests_session = HTTPieRequestsSession(args)
 
     if not args.session and not args.session_read_only:
         kwargs = get_requests_kwargs(args)

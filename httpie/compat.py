@@ -26,6 +26,13 @@ elif is_py3:
 
 try:  # pragma: no cover
     # noinspection PyUnresolvedReferences,PyCompatibility
+    from urllib.parse import urlencode
+except ImportError:  # pragma: no cover
+    # noinspection PyUnresolvedReferences,PyCompatibility
+    from urllib import urlencode
+
+try:  # pragma: no cover
+    # noinspection PyUnresolvedReferences,PyCompatibility
     from urllib.parse import urlsplit
 except ImportError:  # pragma: no cover
     # noinspection PyUnresolvedReferences,PyCompatibility

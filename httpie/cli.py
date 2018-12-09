@@ -12,7 +12,7 @@ from textwrap import dedent, wrap
 
 from httpie import __doc__, __version__
 from httpie.input import (
-    HTTPieArgumentParser, KeyValueArgType,
+    FollowRule, HTTPieArgumentParser, KeyValueArgType,
     SEP_PROXY, SEP_GROUP_ALL_ITEMS,
     OUT_REQ_HEAD, OUT_REQ_BODY, OUT_RESP_HEAD,
     OUT_RESP_BODY, OUTPUT_OPTIONS,
@@ -499,9 +499,63 @@ network.add_argument(
     help="""
     Follow 30x Location redirects.
 
+    Unless overridden via --follow-rule, HTTPie will:
+    * Follow only 301, 302, 303, 307 and 308.
+    * Resend request data only for 307 and 308.
+    * Never resend cookies specified on the command line.
+    * Use the original request method in the follow request except for these
+      cases which will use GET:
+          - The response was 301 and the original request was POST.
+          - The response was 302 or 303 and the original request was not HEAD.
+
     """
 )
+network.add_argument(
+    '--follow-rule',
+    dest='follow_rules',
+    default=[],
+    action='append',
+    metavar='CODE:METHOD[:nodata][:samecookies]',
+    type=FollowRule,
+    help="""
+    Specify what is sent in requests following a Location redirect
+    e.g. 301:POST means a POST will be sent after receiving a 301. You can
+    specify multiple rules with different codes. Request data will be resent
+    unless "nodata" is specified. "samecookies" means exactly the same cookies
+    will be resent.
+         
+    When --follow-rule is used, HTTPie will only follow the codes that have a
+    specified rule and you do not need to use --follow as it is implied.
 
+    """
+)
+network.add_argument(
+    '--post301',
+    action='store_true',
+    default=False,
+    help="""
+    Shorthand for --follow-rule 301:POST
+     
+    """
+)
+network.add_argument(
+    '--post302',
+    action='store_true',
+    default=False,
+    help="""
+    Shorthand for --follow-rule 302:POST
+     
+    """
+)
+network.add_argument(
+    '--post303',
+    action='store_true',
+    default=False,
+    help="""
+    Shorthand for --follow-rule 303:POST
+     
+    """
+)
 network.add_argument(
     '--max-redirects',
     type=int,

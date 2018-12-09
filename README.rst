@@ -828,6 +828,21 @@ To change the default limit of maximum ``30`` redirects, use the
     $ http --follow --all --max-redirects=5 httpbin.org/redirect/3
 
 
+Customizing follow behaviour
+----------------------------
+
+To control which response codes are followed and what is sent in
+the follow requests, use the ``--follow-rule`` option:
+
+
+.. code-block:: bash
+
+    $ http --follow-rule 302:POST --all POST httpbin.org/redirect-to?url=/post
+
+
+``--post301``, ``--post302`` and ``--post303`` are shorthand for ``--follow-rule 301:POST`` etc.
+
+
 Proxies
 =======
 
