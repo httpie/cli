@@ -45,10 +45,11 @@ class TestSessionFlow(SessionTestBase):
 
         """
         super(TestSessionFlow, self).start_session(httpbin)
-        r1 = http('--follow', '--session=test', '--auth=username:password',
+        r1 = http('-v', '--follow', '--session=test', '--auth=username:password',
                   'GET', httpbin.url + '/cookies/set?hello=world',
                   'Hello:World',
                   env=self.env())
+        print(r1)
         assert HTTP_OK in r1
 
     def test_session_created_and_reused(self, httpbin):
