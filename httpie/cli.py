@@ -513,10 +513,10 @@ network.add_argument(
 network.add_argument(
     '--follow-rule',
     dest='follow_rules',
-    default=[],
     action='append',
     metavar='CODE:METHOD[:nodata][:samecookies]',
     type=FollowRule,
+    default=None,
     help="""
     Specify what is sent in requests following a Location redirect
     e.g. 301:POST means a POST will be sent after receiving a 301. You can

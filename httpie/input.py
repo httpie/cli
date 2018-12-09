@@ -387,19 +387,20 @@ class HTTPieArgumentParser(ArgumentParser):
                     self.args.headers['Content-Type'] = content_type
 
     def _process_follow_rules(self):
+        rules = self.args.follow_rules or []
         if self.args.post301:
-            self.args.follow_rules.append(FollowRule('301:POST'))
+            rules.append(FollowRule('301:POST'))
         if self.args.post302:
-            self.args.follow_rules.append(FollowRule('302:POST'))
+            rules.append(FollowRule('302:POST'))
         if self.args.post303:
-            self.args.follow_rules.append(FollowRule('303:POST'))
-        if self.args.follow_rules:
+            rules.append(FollowRule('303:POST'))
+        if rules:
             self.args.follow = True
-        rule_dict = self.args.follow_rules_dict = {}
-        for r in self.args.follow_rules:
-            if r.code in rule_dict:
+        rules_dict = self.args.follow_rules_dict = {}
+        for r in rules:
+            if r.code in rules_dict:
                 self.error('--follow-rule for %s specified more than once' % r.code)
-            rule_dict[r.code] = r
+            rules_dict[r.code] = r
 
     def _process_output_options(self):
         """Apply defaults to output options, or validate the provided ones.

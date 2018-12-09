@@ -77,7 +77,7 @@ class HTTPieRequestsSession(requests.Session):
                 is_redirect = redirect
             resp.__class__ = PatchedResponse
 
-        return super().get_redirect_target(resp)
+        return super(HTTPieRequestsSession, self).get_redirect_target(resp)
 
     def rebuild_method(self, prepared_request, response):
         rule = self.httpie_current_rule = self.httpie_follow_rules.get(response.status_code)
@@ -88,7 +88,7 @@ class HTTPieRequestsSession(requests.Session):
             # kludge so that Session.resolve_redirects() keeps or removes the request body
             response.status_code = REMOVE_BODY if rule.nodata else KEEP_BODY
         else:
-            super().rebuild_method(prepared_request, response)
+            super(HTTPieRequestsSession, self).rebuild_method(prepared_request, response)
 
     def rebuild_auth(self, prepared_request, response):
         if self.httpie_current_rule:
@@ -98,7 +98,7 @@ class HTTPieRequestsSession(requests.Session):
             self.httpie_current_rule = None
             self.httpie_orig_cookies = None
             self.httpie_orig_response_status_code = None
-        super().rebuild_auth(prepared_request, response)
+        super(HTTPieRequestsSession, self).rebuild_auth(prepared_request, response)
 
 
 def get_response(args, config_dir):
