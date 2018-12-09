@@ -523,7 +523,7 @@ network.add_argument(
     specify multiple rules with different codes. Request data will be resent
     unless "nodata" is specified. "samecookies" means exactly the same cookies
     will be resent.
-         
+
     When --follow-rule is used, HTTPie will only follow the codes that have a
     specified rule and you do not need to use --follow as it is implied.
 
@@ -535,7 +535,7 @@ network.add_argument(
     default=False,
     help="""
     Shorthand for --follow-rule 301:POST
-     
+
     """
 )
 network.add_argument(
@@ -544,7 +544,7 @@ network.add_argument(
     default=False,
     help="""
     Shorthand for --follow-rule 302:POST
-     
+
     """
 )
 network.add_argument(
@@ -553,7 +553,7 @@ network.add_argument(
     default=False,
     help="""
     Shorthand for --follow-rule 303:POST
-     
+
     """
 )
 network.add_argument(
