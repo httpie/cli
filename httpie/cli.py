@@ -513,18 +513,24 @@ network.add_argument(
 network.add_argument(
     '--follow-rule',
     action='append',
-    metavar='CODE:METHOD[:nodata][:samecookies]',
+    # Maybe nicer to put the exact syntax in metavar but we cannot because of a Python bug that is
+    # not fixed in all the versions we support (https://github.com/python/cpython/pull/1826)
+    metavar='RULE',
     type=FollowRule,
     default=None,
     help="""
-    Specify what is sent in requests following a Location redirect
-    e.g. 301:POST means a POST will be sent after receiving a 301. You can
-    specify multiple rules with different codes. Request data will be resent
-    unless "nodata" is specified. "samecookies" means exactly the same cookies
-    will be resent.
+    String specifying how to follow a Location redirect:
 
-    When --follow-rule is used, HTTPie will only follow the codes that have a
-    specified rule and you do not need to use --follow as it is implied.
+        CODE:METHOD[:nodata][:samecookies]
+
+    e.g. "301:POST" means a POST will be sent after receiving a 301.
+
+        "nodata":   Do not resend the request data (by default it is resent).
+        "samecookies":  Send exactly the same cookies as the original request.
+
+    You can specify multiple rules with different codes. When this option is
+    used, --follow is implied and HTTPie will only follow codes that have a
+    matching rule.
 
     """
 )

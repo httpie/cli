@@ -69,18 +69,18 @@ class HTTPieRequestsSession(requests.Session):
 
     def get_redirect_target(self, resp):
         if self.httpie_follow_rules and 'location' in resp.headers:
-            redirect = resp.status_code in self.httpie_follow_rules
+            rule = self.httpie_current_rule = self.httpie_follow_rules.get(resp.status_code)
 
             # Monkey patch Response.is_redirect
             # see https://stackoverflow.com/questions/31590152/monkey-patching-a-property
             class PatchedResponse(requests.Response):
-                is_redirect = redirect
+                is_redirect = rule is not None
             resp.__class__ = PatchedResponse
 
         return super(HTTPieRequestsSession, self).get_redirect_target(resp)
 
     def rebuild_method(self, prepared_request, response):
-        rule = self.httpie_current_rule = self.httpie_follow_rules.get(response.status_code)
+        rule = self.httpie_current_rule
         if rule:
             prepared_request.method = rule.method
             self.httpie_orig_cookies = prepared_request.headers.get('Cookie')
@@ -91,8 +91,9 @@ class HTTPieRequestsSession(requests.Session):
             super(HTTPieRequestsSession, self).rebuild_method(prepared_request, response)
 
     def rebuild_auth(self, prepared_request, response):
-        if self.httpie_current_rule:
-            if self.httpie_current_rule.samecookies:
+        rule = self.httpie_current_rule
+        if rule:
+            if rule.samecookies:
                 prepared_request.headers['Cookie'] = self.httpie_orig_cookies
             response.status_code = self.httpie_orig_response_status_code
             self.httpie_current_rule = None

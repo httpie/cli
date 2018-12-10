@@ -18,7 +18,7 @@ from argparse import ArgumentParser, ArgumentTypeError, ArgumentError
 from httpie.plugins import plugin_manager
 from requests.structures import CaseInsensitiveDict
 
-from httpie.compat import urlsplit, str, is_pypy, is_py27
+from httpie.compat import bytes, urlsplit, str, is_pypy, is_py27
 from httpie.sessions import VALID_SESSION_NAME_PATTERN
 from httpie.utils import load_json_preserve_order
 
@@ -638,9 +638,9 @@ class FollowRule(object):
         match = FOLLOW_RULE_RE.match(arg)
         if not match:
             raise ArgumentTypeError("'%s' is not a valid value" % arg)
-        opt = match.group(3).split(':') if match.group(3) else []
-        self.code = int(match.group(1))
-        self.method = match.group(2)
+        opt = match.group(3).lower().split(':') if match.group(3) else []
+        self.code = int(match.group(1))  # we deliberately allow any integer here, even values that are not proper http!
+        self.method = bytes(match.group(2)) if is_py27 else match.group(2)
         self.nodata = 'nodata' in opt
         self.samecookies = 'samecookies' in opt
 

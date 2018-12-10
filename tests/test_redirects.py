@@ -14,7 +14,7 @@ REDIRECT_CODES_TO_TEST = range(300, 310)
 
 
 def redirect_to(status_code, url):
-    return '/redirect-to?' + urlencode({'status_code': status_code, 'url': url})
+    return '/redirect-to?' + urlencode([('status_code', status_code), ('url', url)])
 
 
 def test_follow_all_redirects_shown(httpbin):
@@ -55,7 +55,7 @@ def test_follow_redirect_output_options(httpbin):
 
 @pytest.mark.parametrize('code', REDIRECT_CODES_TO_TEST)
 @pytest.mark.parametrize('method', METHODS_TO_TEST)
-def test_follow_redirected_requests(httpbin, code, method):
+def test_follow_default_redirect_behaviour(httpbin, code, method):
     # The various behaviours here are simply what the requests library does by default,
     # we detail them in our docs so if nothing else this test is at least checking our
     # docs are accurate
