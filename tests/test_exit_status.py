@@ -21,13 +21,13 @@ def test_keyboard_interrupt_in_program_exit_status(httpbin):
 def test_ok_response_exits_0(httpbin):
     r = http('GET', httpbin.url + '/get')
     assert HTTP_OK in r
-    assert r.exit_status == ExitStatus.OK
+    assert r.exit_status == ExitStatus.SUCCESS
 
 
 def test_error_response_exits_0_without_check_status(httpbin):
     r = http('GET', httpbin.url + '/status/500')
-    assert '500 INTERNAL SERVER ERRO' in r
-    assert r.exit_status == ExitStatus.OK
+    assert '500 INTERNAL SERVER ERROR' in r
+    assert r.exit_status == ExitStatus.SUCCESS
     assert not r.stderr
 
 
@@ -55,7 +55,7 @@ def test_3xx_check_status_redirects_allowed_exits_0(httpbin):
              error_exit_ok=True)
     # The redirect will be followed so 200 is expected.
     assert HTTP_OK in r
-    assert r.exit_status == ExitStatus.OK
+    assert r.exit_status == ExitStatus.SUCCESS
 
 
 def test_4xx_check_status_exits_4(httpbin):

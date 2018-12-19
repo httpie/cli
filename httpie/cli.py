@@ -20,7 +20,9 @@ from httpie.input import (
     PRETTY_STDOUT_TTY_ONLY, SessionNameValidator,
     readable_file_arg, SSL_VERSION_ARG_MAPPING
 )
-from httpie.output.formatters.colors import AVAILABLE_STYLES, DEFAULT_STYLE, PRESET_STYLE
+from httpie.output.formatters.colors import (
+    AVAILABLE_STYLES, DEFAULT_STYLE, AUTO_STYLE
+)
 from httpie.plugins import plugin_manager
 from httpie.plugins.builtin import BuiltinAuthPlugin
 from httpie.sessions import DEFAULT_SESSIONS_DIR
@@ -46,6 +48,7 @@ class HTTPieHelpFormatter(RawDescriptionHelpFormatter):
 
 
 parser = HTTPieArgumentParser(
+    prog='http',
     formatter_class=HTTPieHelpFormatter,
     description='%s <http://httpie.org>' % __doc__.strip(),
     epilog=dedent("""
@@ -232,18 +235,21 @@ output_processing.add_argument(
     help="""
     Output coloring style (default is "{default}"). One of:
 
-{available}
+{available_styles}
 
-    For this option to work properly, please make sure that the $TERM
-    environment variable is set to "xterm-256color" or similar
+    The "{auto_style}" style follows your terminal's ANSI color styles.
+
+    For non-{auto_style} styles to work properly, please make sure that the
+    $TERM environment variable is set to "xterm-256color" or similar
     (e.g., via `export TERM=xterm-256color' in your ~/.bashrc).
 
     """.format(
         default=DEFAULT_STYLE,
-        available='\n'.join(
+        available_styles='\n'.join(
             '{0}{1}'.format(8 * ' ', line.strip())
             for line in wrap(', '.join(sorted(AVAILABLE_STYLES)), 60)
         ).rstrip(),
+        auto_style=AUTO_STYLE,
     )
 )
 

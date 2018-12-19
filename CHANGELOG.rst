@@ -6,11 +6,33 @@ This document records all notable changes to `HTTPie <http://httpie.org>`_.
 This project adheres to `Semantic Versioning <http://semver.org/>`_.
 
 
-`1.0.0-dev`_ (unreleased)
+`1.0.3-dev`_ (unreleased)
 -------------------------
 
+* No changes yet.
+
+
+`1.0.2`_ (2018-11-14)
+-------------------------
+
+* Fixed tests for installation with pyOpenSSL.
+
+
+`1.0.1`_ (2018-11-14)
+-------------------------
+
+* Removed external URL calls from tests.
+
+
+`1.0.0`_ (2018-11-02)
+-------------------------
+
+* Added ``--style=auto`` which follows the terminal ANSI color styles.
+* Added support for selecting TLS 1.3 via ``--ssl=tls1.3``
+  (available once implemented in upstream libraries).
 * Added ``true``/``false`` as valid values for ``--verify``
   (in addition to ``yes``/``no``) and the boolean value is case-insensitive.
+* Changed the default ``--style`` from ``solarized`` to ``auto`` (on Windows it stays ``fruity``).
 * Fixed default headers being incorrectly case-sensitive.
 * Removed Python 2.6 support.
 
@@ -304,13 +326,13 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 * Many improvements and bug fixes
 
 
-`0.1`_ (2012-02-25)
--------------------
+`0.1.0`_ (2012-02-25)
+---------------------
 
 * Initial public release
 
 
-.. _`0.1`: https://github.com/jakubroztocil/httpie/commit/b966efa
+.. _`0.1.0`: https://github.com/jakubroztocil/httpie/commit/b966efa
 .. _0.1.4: https://github.com/jakubroztocil/httpie/compare/b966efa...0.1.4
 .. _0.1.5: https://github.com/jakubroztocil/httpie/compare/0.1.4...0.1.5
 .. _0.1.6: https://github.com/jakubroztocil/httpie/compare/0.1.5...0.1.6
@@ -336,4 +358,7 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 .. _0.9.6: https://github.com/jakubroztocil/httpie/compare/0.9.4...0.9.6
 .. _0.9.8: https://github.com/jakubroztocil/httpie/compare/0.9.6...0.9.8
 .. _0.9.9: https://github.com/jakubroztocil/httpie/compare/0.9.8...0.9.9
-.. _1.0.0-dev: https://github.com/jakubroztocil/httpie/compare/0.9.8...master
+.. _1.0.0: https://github.com/jakubroztocil/httpie/compare/0.9.9...1.0.0
+.. _1.0.1: https://github.com/jakubroztocil/httpie/compare/1.0.0...1.0.1
+.. _1.0.2: https://github.com/jakubroztocil/httpie/compare/1.0.1...1.0.2
+.. _1.0.3-dev: https://github.com/jakubroztocil/httpie/compare/1.0.2...master
