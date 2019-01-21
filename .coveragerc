@@ -1,0 +1,15 @@
+[run]
+branch = True
+source =
+    httpie
+omit = httpie/tests/*
+
+[report]
+exclude_lines =
+    pragma: no cover
+    except ImportError:
+    def __repr__
+    def __str__
+    raise NotImplementedError
+    def __getattr__
+    raise ValueError
