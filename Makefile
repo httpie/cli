@@ -144,5 +144,11 @@ pdf:
 ###############################################################################
 
 
-homebrew-formula-vars:
+brew-vars:
 	extras/get-homebrew-formula-vars.py
+
+brew-test:
+	- brew uninstall httpie
+	brew install --build-from-source ./extras/httpie.rb
+	brew test httpie
+	brew audit --strict httpie
