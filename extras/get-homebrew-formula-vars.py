@@ -12,7 +12,7 @@ import requests
 
 PACKAGES = [
     'httpie',
-    'pygments',
+    'Pygments',
     'requests',
     'certifi',
     'urllib3',

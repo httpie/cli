@@ -35,8 +35,8 @@ tests_require = [
 
 
 install_requires = [
-    'requests>=2.18.4',
-    'Pygments>=2.1.3'
+    'requests>=2.21.0',
+    'Pygments>=2.3.1'
 ]
 
 
