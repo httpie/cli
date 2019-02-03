@@ -11,6 +11,12 @@ generally interacting with HTTP servers.
 
 .. class:: no-web
 
+    .. image:: https://raw.githubusercontent.com/jakubroztocil/httpie/master/httpie.gif
+        :alt: HTTPie in action
+        :width: 100%
+        :align: center
+
+
     .. image:: https://raw.githubusercontent.com/jakubroztocil/httpie/master/httpie.png
         :alt: HTTPie compared to cURL
         :width: 100%
@@ -1685,7 +1691,9 @@ See `CHANGELOG <https://github.com/jakubroztocil/httpie/blob/master/CHANGELOG.rs
 Artwork
 -------
 
-See `claudiatd/httpie-artwork`_
+* `Logo <https://github.com/claudiatd/httpie-artwork>`_ by `Cláudia Delgado <https://github.com/claudiatd>`_.
+* `Animation <https://raw.githubusercontent.com/jakubroztocil/httpie/master/httpie.gif>`_ by `Allen Smith <https://github.com/loranallensmith>`_ of GitHub.
+
 
 
 Licence
@@ -1707,7 +1715,6 @@ have contributed.
 .. _these fine people: https://github.com/jakubroztocil/httpie/contributors
 .. _Jakub Roztocil: https://roztocil.co
 .. _@jakubroztocil: https://twitter.com/jakubroztocil
-.. _claudiatd/httpie-artwork: https://github.com/claudiatd/httpie-artwork
 
 
 .. |pypi| image:: https://img.shields.io/pypi/v/httpie.svg?style=flat-square&label=latest%20stable%20version
