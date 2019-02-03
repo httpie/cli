@@ -140,12 +140,11 @@ pdf:
 
 
 ###############################################################################
-# Utils
+# Homebrew
 ###############################################################################
 
-
-brew-vars:
-	extras/get-homebrew-formula-vars.py
+brew-deps:
+	extras/brew-deps.py
 
 brew-test:
 	- brew uninstall httpie
