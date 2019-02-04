@@ -131,35 +131,38 @@ class TestDownloads:
         assert body == r
 
     def test_download_with_Content_Length(self, httpbin_both):
-        devnull = open(os.devnull, 'w')
-        downloader = Downloader(output_file=devnull, progress_file=devnull)
-        downloader.start(Response(
-            url=httpbin_both.url + '/',
-            headers={'Content-Length': 10}
-        ))
-        time.sleep(1.1)
-        downloader.chunk_downloaded(b'12345')
-        time.sleep(1.1)
-        downloader.chunk_downloaded(b'12345')
-        downloader.finish()
-        assert not downloader.interrupted
+        with open(os.devnull, 'w') as devnull:
+            downloader = Downloader(output_file=devnull, progress_file=devnull)
+            downloader.start(Response(
+                url=httpbin_both.url + '/',
+                headers={'Content-Length': 10}
+            ))
+            time.sleep(1.1)
+            downloader.chunk_downloaded(b'12345')
+            time.sleep(1.1)
+            downloader.chunk_downloaded(b'12345')
+            downloader.finish()
+            assert not downloader.interrupted
+            downloader._progress_reporter.join()
 
     def test_download_no_Content_Length(self, httpbin_both):
-        devnull = open(os.devnull, 'w')
-        downloader = Downloader(output_file=devnull, progress_file=devnull)
-        downloader.start(Response(url=httpbin_both.url + '/'))
-        time.sleep(1.1)
-        downloader.chunk_downloaded(b'12345')
-        downloader.finish()
-        assert not downloader.interrupted
+        with open(os.devnull, 'w') as devnull:
+            downloader = Downloader(output_file=devnull, progress_file=devnull)
+            downloader.start(Response(url=httpbin_both.url + '/'))
+            time.sleep(1.1)
+            downloader.chunk_downloaded(b'12345')
+            downloader.finish()
+            assert not downloader.interrupted
+            downloader._progress_reporter.join()
 
     def test_download_interrupted(self, httpbin_both):
-        devnull = open(os.devnull, 'w')
-        downloader = Downloader(output_file=devnull, progress_file=devnull)
-        downloader.start(Response(
-            url=httpbin_both.url + '/',
-            headers={'Content-Length': 5}
-        ))
-        downloader.chunk_downloaded(b'1234')
-        downloader.finish()
-        assert downloader.interrupted
+        with open(os.devnull, 'w') as devnull:
+            downloader = Downloader(output_file=devnull, progress_file=devnull)
+            downloader.start(Response(
+                url=httpbin_both.url + '/',
+                headers={'Content-Length': 5}
+            ))
+            downloader.chunk_downloaded(b'1234')
+            downloader.finish()
+            assert downloader.interrupted
+            downloader._progress_reporter.join()

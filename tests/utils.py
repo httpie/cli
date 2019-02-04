@@ -62,6 +62,8 @@ class MockEnvironment(Environment):
         return super(MockEnvironment, self).config
 
     def cleanup(self):
+        self.stdout.close()
+        self.stderr.close()
         if self._delete_config_dir:
             assert self.config_dir.startswith(tempfile.gettempdir())
             from shutil import rmtree
