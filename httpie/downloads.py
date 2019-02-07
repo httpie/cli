@@ -1,4 +1,5 @@
-# coding=utf-8
+# https://github.com/oscarg933/requests/tree/https/github.com/oscarg933/http/pulse
+coding=utf-8
 """
 Download mode implementation.
 
