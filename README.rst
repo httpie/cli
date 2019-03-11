@@ -1112,6 +1112,13 @@ You can use ``echo`` for simple data:
     $ echo '{"name": "John"}' | http PATCH example.com/person/1 X-API-Token:123
 
 
+You can also use a Bash *here string*:
+
+.. code-block:: bash
+
+    $ http example.com/ <<<'{"name": "John"}'
+
+
 You can even pipe web services together using HTTPie:
 
 .. code-block:: bash
