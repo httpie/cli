@@ -48,7 +48,7 @@ Main features
 * Persistent sessions
 * Wget-like downloads
 * Python 2.7 and 3.x support
-* Linux, macOS and Windows support
+* FreeBSD, Linux, macOS and Windows support
 * Plugins
 * Documentation
 * Test coverage
@@ -101,6 +101,18 @@ system package manager, for example:
 
     # Arch Linux
     $ pacman -S httpie
+
+
+FreeBSD
+-------
+
+On FreeBSD, HTTPie is available in the ports collection. A prebuilt package
+can be installed via `pkg(8) <https://man.freebsd.org/pkg/8>`_:
+
+.. code-block:: sh
+
+    # The prefix may change as new Python versions are released.
+    $ pkg py36-httpie
 
 
 Windows, etc.
