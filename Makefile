@@ -34,7 +34,7 @@ clean:
 
 test: init
 	@echo $(TAG)Running tests on the current Python interpreter with coverage $(END)
-	py.test --cov ./httpie --cov ./tests --doctest-modules --verbose ./httpie ./tests
+	py.test --cov ./httpie --cov ./tests --doctest-modules --verbose ./httpie ./tests $(ADDITIONAL_TEST_PARAMS)
 	@echo
 
 
@@ -49,7 +49,7 @@ test-dist: test-sdist test-bdist-wheel
 
 test-tox: init
 	@echo $(TAG)Running tests on all Pythons via Tox$(END)
-	tox
+	tox $(ADDITIONAL_TOX_PARAMS)
 	@echo
 
 
@@ -107,7 +107,7 @@ uninstall-httpie:
 	@echo $(TAG)Uninstalling httpie$(END)
 	- pip uninstall --yes httpie &2>/dev/null
 
-	@echo "Verifying…"
+	@echo "Verifying..."
 	cd .. && ! python -m httpie --version &2>/dev/null
 
 	@echo "Done"

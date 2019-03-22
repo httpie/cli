@@ -1,0 +1,81 @@
+trigger:
+- master
+- azure-pipelines
+
+variables:
+  VMIMAGE: 'vs2017-win2016'
+
+strategy:
+  matrix:
+    py37-linux:
+      TOXENV: 'py37'
+      PYVERSION: '3.7'
+      VMIMAGE: 'ubuntu-16.04'
+    py37-mac:
+      TOXENV: 'py37'
+      PYVERSION: '3.7'
+      VMIMAGE: 'macos-10.13'
+    py37-windows:
+      TOXENV: 'py37'
+      PYVERSION: '3.7'
+    py36-windows:
+      TOXENV: 'py36'
+      PYVERSION: '3.6'
+    py35-windows:
+      TOXENV: 'py35'
+      PYVERSION: '3.5'
+    py27-linux:
+      TOXENV: 'py27'
+      PYVERSION: '2.7'
+      VMIMAGE: 'ubuntu-16.04'
+    py27-windows:
+      TOXENV: 'py27'
+      PYVERSION: '2.7'
+
+pool:
+  vmImage: $(VMIMAGE)
+
+steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: $(PYVERSION)
+
+- bash: python -m pip install -U pip setuptools wheel
+  displayName: Latest pip and friends
+
+- bash: |
+    make test ADDITIONAL_TEST_PARAMS='--junitxml=test-results.xml'
+
+    if [ $? -ne 0 ]; then
+      echo "##vso[task.logissue type=error]failed test(s) in '$AGENT_JOBNAME / $TASK_DISPLAYNAME'"
+      echo "##vso[task.complete result=Failed]DONE"
+    fi
+  displayName: make test
+  continueOnError: true
+
+- bash: |
+    make test-tox ADDITIONAL_TOX_PARAMS='-- --junitxml=test-tox-results.xml'
+
+    if [ $? -ne 0 ]; then
+      echo "##vso[task.logissue type=error]failed test(s) in '$AGENT_JOBNAME / $TASK_DISPLAYNAME'"
+      echo "##vso[task.complete result=Failed]DONE"
+    fi
+  displayName: make test-tox
+  continueOnError: true
+  env:
+    TOX_TESTENV_PASSENV: 'APPDATA'
+
+- bash: make pycodestyle
+  displayName: make pycodestyle
+  continueOnError: true
+
+- bash: make test-dist
+  displayName: make test-dist
+  continueOnError: true
+
+- task: PublishTestResults@2
+  inputs:
+    testResultsFiles: '**/test-*results.xml'
+    testRunTitle: '$(Agent.JobName)'
+    mergeTestResults: true
+  condition: succeededOrFailed()
