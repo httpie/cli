@@ -179,7 +179,7 @@ Hello World:
 
 .. code-block:: bash
 
-    $ http httpie.org
+    $ http PUT httpbin.org/put hello=world
 
 
 Synopsis:
