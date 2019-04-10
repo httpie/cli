@@ -1566,7 +1566,7 @@ Best practices
 --------------
 
 The default behaviour of automatically reading ``stdin`` is typically not
-desirable during non-interactive invocations. You most likely want
+desirable during non-interactive invocations. You most likely want to 
 use the ``--ignore-stdin`` option to disable it.
 
 It is a common gotcha that without this option HTTPie seemingly hangs.
