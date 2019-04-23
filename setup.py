@@ -10,7 +10,7 @@ import httpie
 
 
 class PyTest(TestCommand):
-    # `$ python setup.py test' simply installs minimal requirements.
+    # `$ python setup.py test' simply installs minimal requirements..
     # and runs the tests with no fancy stuff like parallel execution.
     def finalize_options(self):
         TestCommand.finalize_options(self)
