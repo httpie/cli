@@ -137,7 +137,7 @@ class HTTPieArgumentParser(ArgumentParser):
 
         self.env = env
         self.args, no_options = super(HTTPieArgumentParser, self)\
-            .parse_known_args(args, namespace)
+            .parse_known_args(self._sub_init(args), namespace)
 
         if self.args.debug:
             self.args.traceback = True
@@ -169,6 +169,23 @@ class HTTPieArgumentParser(ArgumentParser):
         self._process_auth()
 
         return self.args
+
+    def _sub_init(self, args):
+        buf = dict()
+        res = list()
+        for arg in args:
+            if ':' in arg:
+                key, value = arg.split(':')
+                if key in buf:
+                    buf[key] += ',{!s}'.format(value)
+                else:
+                    buf[key] = value
+            else:
+                res.append(arg)
+        for key, value in buf.items():
+            res.append('{!s}:{!s}'.format(key, value))
+        return res
+
 
     # noinspection PyShadowingBuiltins
     def _print_message(self, message, file=None):
