@@ -90,6 +90,13 @@ OUTPUT_OPTIONS = frozenset([
     OUT_RESP_BODY
 ])
 
+MERGE_KEYS = {
+    'cookie': '',
+    'content-language': '',
+    'te': '',
+    'accept-encoding': ''
+}
+
 # Pretty
 PRETTY_MAP = {
     'all': ['format', 'colors'],
@@ -132,6 +139,23 @@ class HTTPieArgumentParser(ArgumentParser):
         kwargs['add_help'] = False
         super(HTTPieArgumentParser, self).__init__(*args, **kwargs)
 
+    def _sub_init(self, args):
+        result = list()
+        for arg in args:
+            splits = arg.split(':')
+            key = splits[0].lower()
+            if key in MERGE_KEYS:
+                if MERGE_KEYS[key]:
+                    MERGE_KEYS[key] = ('{!s}, {!s}'.format(MERGE_KEYS[key], *splits[1:]))
+                else:
+                    MERGE_KEYS[key] = ('{!s}'.format(*splits[1:]))
+            else:
+                result.append(arg)
+        for key, value in MERGE_KEYS.items():
+            if value:
+                result.append('{!s}:{!s}'.format(key.title(), value))
+        return result
+
     # noinspection PyMethodOverriding
     def parse_args(self, env, args=None, namespace=None):
 
@@ -169,23 +193,6 @@ class HTTPieArgumentParser(ArgumentParser):
         self._process_auth()
 
         return self.args
-
-    def _sub_init(self, args):
-        buf = dict()
-        res = list()
-        for arg in args:
-            if ':' in arg:
-                key, value = arg.split(':')
-                if key in buf:
-                    buf[key] += ',{!s}'.format(value)
-                else:
-                    buf[key] = value
-            else:
-                res.append(arg)
-        for key, value in buf.items():
-            res.append('{!s}:{!s}'.format(key, value))
-        return res
-
 
     # noinspection PyShadowingBuiltins
     def _print_message(self, message, file=None):

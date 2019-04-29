@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env pythonpython
 """The main entry point. Invoke as `http' or `python -m httpie'.
 
 """
