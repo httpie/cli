@@ -121,8 +121,6 @@ SSL_VERSION_ARG_MAPPING = {
 
 MERGE_KEYS = {
     'cookie': '',
-    'content-language': '',
-    'te': '',
     'accept-encoding': ''
 }
 
@@ -184,7 +182,7 @@ class HTTPieArgumentParser(ArgumentParser):
             key = splits[0].lower()
             if key in MERGE_KEYS:
                 if MERGE_KEYS[key]:
-                    MERGE_KEYS[key] = ('{!s}, {!s}'.format(MERGE_KEYS[key], *splits[1:]))
+                    MERGE_KEYS[key] = ('{!s}:{!s}'.format(MERGE_KEYS[key], *splits[1:]))
                 else:
                     MERGE_KEYS[key] = ('{!s}'.format(*splits[1:]))
             else:
