@@ -752,7 +752,7 @@ def parse_items(items,
 
 def readable_file_arg(filename):
     try:
-        with open(filename, 'rb'):
-            return filename
+        open(filename, 'rb')
     except IOError as ex:
         raise ArgumentTypeError('%s: %s' % (filename, ex.args[1]))
+    return filename
