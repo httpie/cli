@@ -248,7 +248,7 @@ class Downloader(object):
             self._output_file = self._get_output_file_from_response(
                 final_response)
         else:
-            # `--continue, -c` provided
+            # `--output, -o` provided
             if self._resume and final_response.status_code == PARTIAL_CONTENT:
                 total_size = parse_content_range(
                     final_response.headers.get('Content-Range'),
