@@ -9,7 +9,9 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 `1.0.3-dev`_ (unreleased)
 -------------------------
 
-* No changes yet.
+* Changed the way the output filename is generated for ``--download`` requests
+  without ``--output`` and with a redirect — now only the initial URL is
+  considered, not the final one.
 
 
 `1.0.2`_ (2018-11-14)

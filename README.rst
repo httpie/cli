@@ -1316,10 +1316,22 @@ is being saved to a file.
 Downloaded file name
 --------------------
 
-If not provided via ``--output, -o``, the output filename will be determined
-from ``Content-Disposition`` (if available), or from the URL and
-``Content-Type``. If the guessed filename already exists, HTTPie adds a unique
-suffix to it.
+There are three mutually exclusive ways through which HTTPie determines
+the output file name (with decreasing priority):
+
+1. You can explicitly provide the exact output file name via ``--output, -o``.
+   The file gets overwritten if it already exists
+   (or appended to with ``--continue, -c``).
+2. The server may specify the file name in the optional ``Content-Disposition``
+   response header. Any leading dots are stripped from a server-provided filename.
+3. The last resort HTTPie uses is to generate the filename from a combination
+   of the request URL and the response ``Content-Type``.
+   The initial URL is always used as the basis for
+   the generated filename — even if there has been one or more redirects.
+
+
+To prevent data loss, HTTPie adds a unique numerical suffix to the
+filename, unless the name has been explicitly provided via ``--output, -o``.
 
 
 Piping while downloading

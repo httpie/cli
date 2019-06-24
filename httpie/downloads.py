@@ -224,13 +224,13 @@ class Downloader(object):
                 request_headers['Range'] = 'bytes=%d-' % bytes_have
                 self._resumed_from = bytes_have
 
-    def start(self, response):
+    def start(self, final_response):
         """
         Initiate and return a stream for `response` body  with progress
         callback attached. Can be called only once.
 
-        :param response: Initiated response object with headers already fetched
-        :type response: requests.models.Response
+        :param final_response: Initiated response object with headers already fetched
+        :type final_response: requests.models.Response
 
         :return: RawStream, output_file
 
@@ -240,14 +240,18 @@ class Downloader(object):
         # FIXME: some servers still might sent Content-Encoding: gzip
         # <https://github.com/jakubroztocil/httpie/issues/423>
         try:
-            total_size = int(response.headers['Content-Length'])
+            total_size = int(final_response.headers['Content-Length'])
         except (KeyError, ValueError, TypeError):
             total_size = None
 
-        if self._output_file:
-            if self._resume and response.status_code == PARTIAL_CONTENT:
+        if not self._output_file:
+            self._output_file = self._get_output_file_from_response(
+                final_response)
+        else:
+            # `--continue, -c` provided
+            if self._resume and final_response.status_code == PARTIAL_CONTENT:
                 total_size = parse_content_range(
-                    response.headers.get('Content-Range'),
+                    final_response.headers.get('Content-Range'),
                     self._resumed_from
                 )
 
@@ -258,19 +262,6 @@ class Downloader(object):
                     self._output_file.truncate()
                 except IOError:
                     pass  # stdout
-        else:
-            # TODO: Should the filename be taken from response.history[0].url?
-            # Output file not specified. Pick a name that doesn't exist yet.
-            filename = None
-            if 'Content-Disposition' in response.headers:
-                filename = filename_from_content_disposition(
-                    response.headers['Content-Disposition'])
-            if not filename:
-                filename = filename_from_url(
-                    url=response.url,
-                    content_type=response.headers.get('Content-Type'),
-                )
-            self._output_file = open(get_unique_filename(filename), mode='a+b')
 
         self.status.started(
             resumed_from=self._resumed_from,
@@ -278,7 +269,7 @@ class Downloader(object):
         )
 
         stream = RawStream(
-            msg=HTTPResponse(response),
+            msg=HTTPResponse(final_response),
             with_headers=False,
             with_body=True,
             on_body_chunk_downloaded=self.chunk_downloaded,
@@ -323,6 +314,25 @@ class Downloader(object):
 
         """
         self.status.chunk_downloaded(len(chunk))
+
+    @staticmethod
+    def _get_output_file_from_response(final_response):
+        # Output file not specified. Pick a name that doesn't exist yet.
+        filename = None
+        if 'Content-Disposition' in final_response.headers:
+            filename = filename_from_content_disposition(
+                final_response.headers['Content-Disposition'])
+        if not filename:
+            initial_response = (
+                final_response.history[0] if final_response.history
+                else final_response
+            )
+            filename = filename_from_url(
+                url=initial_response.url,
+                content_type=final_response.headers.get('Content-Type'),
+            )
+        unique_filename = get_unique_filename(filename)
+        return open(unique_filename, mode='a+b')
 
 
 class Status(object):
