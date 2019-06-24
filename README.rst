@@ -1313,16 +1313,16 @@ is being saved to a file.
     Done. 251.30 kB in 2.73862s (91.76 kB/s)
 
 
-Downloaded file name
+Downloaded filename
 --------------------
 
 There are three mutually exclusive ways through which HTTPie determines
-the output file name (with decreasing priority):
+the output filename (with decreasing priority):
 
-1. You can explicitly provide the exact output file name via ``--output, -o``.
+1. You can explicitly provide it via ``--output, -o``.
    The file gets overwritten if it already exists
    (or appended to with ``--continue, -c``).
-2. The server may specify the file name in the optional ``Content-Disposition``
+2. The server may specify the filename in the optional ``Content-Disposition``
    response header. Any leading dots are stripped from a server-provided filename.
 3. The last resort HTTPie uses is to generate the filename from a combination
    of the request URL and the response ``Content-Type``.
@@ -1330,8 +1330,8 @@ the output file name (with decreasing priority):
    the generated filename — even if there has been one or more redirects.
 
 
-To prevent data loss, HTTPie adds a unique numerical suffix to the
-filename, unless the name has been explicitly provided via ``--output, -o``.
+To prevent data loss by overwriting, HTTPie adds a unique numerical suffix to the
+filename when necessary (unless specified with ``--output, -o``).
 
 
 Piping while downloading
@@ -1578,7 +1578,7 @@ Best practices
 --------------
 
 The default behaviour of automatically reading ``stdin`` is typically not
-desirable during non-interactive invocations. You most likely want to 
+desirable during non-interactive invocations. You most likely want to
 use the ``--ignore-stdin`` option to disable it.
 
 It is a common gotcha that without this option HTTPie seemingly hangs.
