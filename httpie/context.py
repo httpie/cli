@@ -20,6 +20,23 @@ class Environment(object):
     is used by the test suite to simulate various scenarios.
 
     """
+
+    # Attempt to be helpful if stdout or stderr are closed.
+    if sys.stdout is None:
+        if sys.stderr is None:
+            sys.exit(1)
+        else:
+            sys.stderr.write(
+                'httpie requires an open stdout fd, but it is closed.\n'
+            )
+            sys.exit(1)
+    else:
+        if sys.stderr is None:
+            sys.stdout.write(
+                'httpie requires an open stderr fd, but it is closed.\n'
+            )
+            sys.exit(1)
+
     is_windows = is_windows
     config_dir = DEFAULT_CONFIG_DIR
     stdin = sys.stdin
