@@ -36,5 +36,5 @@ Patches and ideas
 * `Dennis Brakhane <https://github.com/brakhane>`_
 * `Matt Layman <https://github.com/mblayman>`_
 * `Edward Yang <https://github.com/honorabrutroll>`_
-
+* `Mustafa Emir TAN <https://github.com/mustafaemirtan>`_
 
