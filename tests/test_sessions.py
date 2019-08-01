@@ -24,7 +24,7 @@ class SessionTestBase(object):
         """
         Return an environment.
 
-        Each environment created withing a test method
+        Each environment created within a test method
         will share the same config_dir. It is necessary
         for session files being reused.
 
