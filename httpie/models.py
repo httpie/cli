@@ -42,6 +42,10 @@ class HTTPMessage(object):
 class HTTPResponse(HTTPMessage):
     """A :class:`requests.models.Response` wrapper."""
 
+    def __init__(self, orig):
+        super(HTTPResponse, self).__init__(orig)
+        self._encoding = self._orig.apparent_encoding
+
     def iter_body(self, chunk_size=1):
         return self._orig.iter_content(chunk_size=chunk_size)
 
@@ -80,7 +84,7 @@ class HTTPResponse(HTTPMessage):
 
     @property
     def encoding(self):
-        return self._orig.encoding or 'utf8'
+        return self._encoding or 'utf8'
 
     @property
     def body(self):
