@@ -18,7 +18,7 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
   1. A ``--download`` request with no explicit ``--output`` is made (e.g.,
      ``$ http -d example.org/file.txt``), instructing httpie to
      `generate the output filename <https://httpie.org/doc#downloaded-filename>`_
-     from the ``Content-Disposition`` response, or from the URL if the header
+     from the ``Content-Disposition`` response header, or from the URL if the header
      is not provided.
   2. The server handling the request has been modified by an attacker and
      instead of the expected response the URL returns a redirect to another
