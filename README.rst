@@ -25,7 +25,7 @@ generally interacting with HTTP servers.
 
 .. class:: no-web no-pdf
 
-|pypi| |unix_build| |coverage| |gitter|
+|pypi| |unix_build| |coverage| |downloads| |gitter|
 
 
 
@@ -1751,3 +1751,8 @@ have contributed.
 .. |gitter| image:: https://img.shields.io/gitter/room/jkbrzt/httpie.svg?style=flat-square
     :target: https://gitter.im/jkbrzt/httpie
     :alt: Chat on Gitter
+
+.. |downloads| image:: https://pepy.tech/badge/httpie
+    :target: https://pepy.tech/project/httpie
+    :alt: Download count
+    
