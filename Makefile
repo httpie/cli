@@ -93,9 +93,8 @@ publish-no-test:
 	@echo $(TAG)Testing wheel build an installation$(END)
 	@echo "$(VERSION)"
 	@echo "$(VERSION)" | grep -q "dev" && echo '!!!Not publishing dev version!!!' && exit 1 || echo ok
-	python setup.py register
-	python setup.py sdist upload
-	python setup.py bdist_wheel upload
+	python setup.py sdist bdist_wheel
+	twine upload dist/*
 	@echo
 
 

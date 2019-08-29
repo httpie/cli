@@ -6,12 +6,32 @@ This document records all notable changes to `HTTPie <http://httpie.org>`_.
 This project adheres to `Semantic Versioning <http://semver.org/>`_.
 
 
-`1.0.3-dev`_ (unreleased)
+`1.0.3`_ (2019-08-26)
 -------------------------
 
-* Changed the way the output filename is generated for ``--download`` requests
-  without ``--output`` and with a redirect — now only the initial URL is
-  considered, not the final one. Thanks to Raul Onitza of Snyk for bringing this up.
+* Fixed CVE-2019-10751 — the way the output filename is generated for
+  ``--download`` requests without ``--output`` resulting in a redirect has
+  been changed to only consider the initial URL as the base for the generated
+  filename, and not the final one. This fixes a potential security issue under
+  the following scenario:
+
+  1. A ``--download`` request with no explicit ``--output`` is made (e.g.,
+     ``$ http -d example.org/file.txt``), instructing httpie to
+     `generate the output filename <https://httpie.org/doc#downloaded-filename>`_
+     from the ``Content-Disposition`` response header, or from the URL if the header
+     is not provided.
+  2. The server handling the request has been modified by an attacker and
+     instead of the expected response the URL returns a redirect to another
+     URL, e.g., ``attacker.example.org/.bash_profile``, whose response does
+     not provide  a ``Content-Disposition`` header (i.e., the base for the
+     generated filename becomes ``.bash_profile`` instead of ``file.txt``).
+  3. Your current directory doesn’t already contain ``.bash_profile``
+     (i.e., no unique suffix is added to the generated filename).
+  4. You don’t notice the potentially unexpected output filename
+     as reported by httpie in the console output
+     (e.g., ``Downloading 100.00 B to ".bash_profile"``).
+
+  Reported by Raul Onitza and Giulio Comi.
 
 
 `1.0.2`_ (2018-11-14)
@@ -363,4 +383,4 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 .. _1.0.0: https://github.com/jakubroztocil/httpie/compare/0.9.9...1.0.0
 .. _1.0.1: https://github.com/jakubroztocil/httpie/compare/1.0.0...1.0.1
 .. _1.0.2: https://github.com/jakubroztocil/httpie/compare/1.0.1...1.0.2
-.. _1.0.3-dev: https://github.com/jakubroztocil/httpie/compare/1.0.2...master
+.. _1.0.3: https://github.com/jakubroztocil/httpie/compare/1.0.2...1.0.3

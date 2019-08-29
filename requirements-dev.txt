@@ -7,3 +7,4 @@ docutils
 wheel
 pycodestyle
 pyOpenSSL
+twine
