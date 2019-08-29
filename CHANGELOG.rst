@@ -6,6 +6,10 @@ This document records all notable changes to `HTTPie <http://httpie.org>`_.
 This project adheres to `Semantic Versioning <http://semver.org/>`_.
 
 
+`2.0.0-dev`_ (unreleased)
+-------------------------
+* Removed Python 2.7 support (`EOL Jan 2020 <https://www.python.org/dev/peps/pep-0373/>`_).
+
 `1.0.3`_ (2019-08-26)
 -------------------------
 
@@ -384,3 +388,4 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 .. _1.0.1: https://github.com/jakubroztocil/httpie/compare/1.0.0...1.0.1
 .. _1.0.2: https://github.com/jakubroztocil/httpie/compare/1.0.1...1.0.2
 .. _1.0.3: https://github.com/jakubroztocil/httpie/compare/1.0.2...1.0.3
+.. _2.0.0-dev: https://github.com/jakubroztocil/httpie/compare/1.0.3...master
