@@ -513,6 +513,17 @@ network.add_argument(
 )
 
 network.add_argument(
+    '--max-headers',
+    type=int,
+    default=0,
+    help="""
+    The maximum number of response headers to be read before giving up
+    (default 0, i.e., no limit).
+
+    """
+)
+
+network.add_argument(
     '--timeout',
     type=float,
     default=30,

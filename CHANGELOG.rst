@@ -9,6 +9,9 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 `2.0.0-dev`_ (unreleased)
 -------------------------
 * Removed Python 2.7 support (`EOL Jan 2020 <https://www.python.org/dev/peps/pep-0373/>`_).
+* Removed Python’s default limit of 100 response headers.
+* Added ``--max-headers`` to allow setting the max header limit.
+
 
 `1.0.3`_ (2019-08-26)
 -------------------------

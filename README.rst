@@ -646,6 +646,19 @@ To send a header with an empty value, use ``Header;``:
     $ http httpbin.org/headers 'Header;'
 
 
+Limiting response headers
+-------------------------
+
+The ``--max-headers=n`` options allows you to control the number of headers
+HTTPie tries reads before giving up (the default 0, i.e., there’s no limit).
+
+
+.. code-block:: bash
+
+    $ http --max-headers=100 httpbin.org/get
+
+
+
 Cookies
 =======
 

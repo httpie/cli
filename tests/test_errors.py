@@ -5,6 +5,8 @@ from requests.exceptions import ConnectionError
 
 from httpie import ExitStatus
 from httpie.core import main
+from utils import http, HTTP_OK
+
 
 error_msg = None
 
@@ -47,3 +49,13 @@ def test_timeout(get_response):
     ret = main(['--ignore-stdin', 'www.google.com'], custom_log_error=error)
     assert ret == ExitStatus.ERROR_TIMEOUT
     assert error_msg == 'Request timed out (30s).'
+
+
+def test_max_headers_limit(httpbin_both):
+    with raises(ConnectionError) as e:
+        http('--max-headers=1', httpbin_both + '/get')
+    assert 'got more than 1 headers' in str(e.value)
+
+
+def test_max_headers_no_limit(httpbin_both):
+    assert HTTP_OK in http('--max-headers=0', httpbin_both + '/get')
