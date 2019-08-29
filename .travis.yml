@@ -56,7 +56,7 @@ install:
                   brew upgrade "$BREW_PYTHON_PACKAGE"
               fi
           fi
-          sudo pip2 install tox
+          pip3 install tox
       fi
 script:
     - |
