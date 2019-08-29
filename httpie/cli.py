@@ -186,6 +186,29 @@ content_type.add_argument(
 
 
 #######################################################################
+# Content processing.
+#######################################################################
+
+content_processing = parser.add_argument_group(
+    title='Content Processing Options',
+    description=None
+)
+
+content_processing.add_argument(
+    '--compress', '-x',
+    action='count',
+    help="""
+    Content compressed (encoded) with Deflate algorithm.
+    The Content-Encoding header is set to deflate.
+
+    Compression is skipped if it appears that compression ratio is
+    negative. Compression can be forced by repeating the argument.
+
+    """
+)
+
+
+#######################################################################
 # Output processing
 #######################################################################
 
