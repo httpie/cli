@@ -37,7 +37,6 @@ tests_require = [
 install_requires = [
     'requests>=2.21.0',
     'Pygments>=2.3.1',
-    'pyOpenSSL>=19.0.0'
 ]
 
 
