@@ -66,6 +66,7 @@ install:
     - |
       if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
           if [[ -n "$BREW_PYTHON_PACKAGE" ]]; then
+              export HOMEBREW_NO_INSTALL_CLEANUP=1
               brew update
               if ! brew list --versions "$BREW_PYTHON_PACKAGE" >/dev/null; then
                   brew install "$BREW_PYTHON_PACKAGE"

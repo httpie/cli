@@ -7,6 +7,7 @@ from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 
 import httpie
+from httpie.compat import is_py27
 
 
 class PyTest(TestCommand):
@@ -32,6 +33,9 @@ tests_require = [
     'pytest',
     'mock',
 ]
+
+if is_py27:
+    tests_require.append('pyOpenSSL')
 
 
 install_requires = [
