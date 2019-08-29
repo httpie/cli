@@ -37,20 +37,6 @@ def test_error_traceback(get_response):
         main(['--ignore-stdin', '--traceback', 'www.google.com'])
 
 
-@mock.patch('httpie.core.get_response')
-def test_timeout(get_response):
-    def error(msg, *args, **kwargs):
-        global error_msg
-        error_msg = msg % args
-
-    exc = Timeout('Request timed out')
-    exc.request = Request(method='GET', url='http://www.google.com')
-    get_response.side_effect = exc
-    ret = main(['--ignore-stdin', 'www.google.com'], custom_log_error=error)
-    assert ret == ExitStatus.ERROR_TIMEOUT
-    assert error_msg == 'Request timed out (30s).'
-
-
 def test_max_headers_limit(httpbin_both):
     with raises(ConnectionError) as e:
         http('--max-headers=1', httpbin_both + '/get')

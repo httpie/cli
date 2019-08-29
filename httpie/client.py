@@ -180,7 +180,7 @@ def get_requests_kwargs(args, base_headers=None):
             'false': False,
         }.get(args.verify.lower(), args.verify),
         'cert': cert,
-        'timeout': args.timeout,
+        'timeout': args.timeout or None,
         'auth': args.auth,
         'proxies': {p.key: p.value for p in args.proxy},
         'files': args.files,
