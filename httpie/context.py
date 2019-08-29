@@ -1,4 +1,7 @@
 import sys
+from typing import Union, IO, Optional
+
+
 try:
     import curses
 except ImportError:
@@ -22,7 +25,7 @@ class Environment(object):
     """
     is_windows = is_windows
     config_dir = DEFAULT_CONFIG_DIR
-    stdin = sys.stdin
+    stdin: Optional[IO] = sys.stdin  # `None` when closed fd (#791)
     stdin_isatty = stdin.isatty() if stdin else False
     stdin_encoding = None
     stdout = sys.stdout

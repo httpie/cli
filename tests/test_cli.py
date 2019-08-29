@@ -310,7 +310,7 @@ class TestNoOptions:
         assert 'GET /get HTTP/1.1' not in r
 
 
-class TestIgnoreStdin:
+class TestStdin:
 
     def test_ignore_stdin(self, httpbin):
         with open(FILE_PATH) as f:
@@ -326,6 +326,10 @@ class TestIgnoreStdin:
                  error_exit_ok=True)
         assert r.exit_status == ExitStatus.ERROR
         assert 'because --ignore-stdin' in r.stderr
+
+    def test_stdin_closed(self, httpbin):
+        r = http(httpbin + '/get', env=MockEnvironment(stdin=None))
+        assert HTTP_OK in r
 
 
 class TestSchemes:

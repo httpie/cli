@@ -126,7 +126,7 @@ and always provides the latest version) is to use `pip`_:
 Python version
 --------------
 
-Starting with version 2.0.0 (currently under development) Python 3.5+ is required.
+Starting with version 2.0.0 (currently under development) Python 3.6+ is required.
 
 
 Unstable version

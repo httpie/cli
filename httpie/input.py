@@ -134,6 +134,7 @@ class HTTPieArgumentParser(ArgumentParser):
         super(HTTPieArgumentParser, self).__init__(*args, **kwargs)
         self.env = None
         self.args = None
+        self.has_stdin_data = False
 
     # noinspection PyMethodOverriding
     def parse_args(self, env, program_name='http', args=None, namespace=None):
