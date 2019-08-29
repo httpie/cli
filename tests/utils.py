@@ -140,7 +140,7 @@ class ExitStatusError(Exception):
     pass
 
 
-def http(*args, **kwargs):
+def http(*args, program_name='http', **kwargs):
     # noinspection PyUnresolvedReferences
     """
     Run HTTPie and capture stderr/out and exit status.
@@ -197,7 +197,8 @@ def http(*args, **kwargs):
             add_to_args.append('--traceback')
         if not any('--timeout' in arg for arg in args_with_config_defaults):
             add_to_args.append('--timeout=3')
-    args = add_to_args + args
+
+    complete_args = [program_name, *add_to_args, *args]
 
     def dump_stderr():
         stderr.seek(0)
@@ -205,7 +206,7 @@ def http(*args, **kwargs):
 
     try:
         try:
-            exit_status = main(args=args, **kwargs)
+            exit_status = main(args=complete_args, **kwargs)
             if '--download' in args:
                 # Let the progress reporter thread finish.
                 time.sleep(.5)

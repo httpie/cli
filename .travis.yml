@@ -7,9 +7,6 @@ env:
   global:
     - NEWEST_PYTHON=3.7
 python:
-  # Python 3.4 fails installing packages
-  # <https://travis-ci.org/jakubroztocil/httpie/jobs/403263566#L636>
-  # - 3.4
   - 3.5
   - 3.6
   # - 3.7  # is done in the matrix below as described in travis-ci/travis-ci#9069

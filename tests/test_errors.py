@@ -20,7 +20,7 @@ def test_error(get_response):
     exc = ConnectionError('Connection aborted')
     exc.request = Request(method='GET', url='http://www.google.com')
     get_response.side_effect = exc
-    ret = main(['--ignore-stdin', 'www.google.com'], custom_log_error=error)
+    ret = main(['http', '--ignore-stdin', 'www.google.com'], custom_log_error=error)
     assert ret == ExitStatus.ERROR
     assert error_msg == (
         'ConnectionError: '
@@ -34,7 +34,7 @@ def test_error_traceback(get_response):
     exc.request = Request(method='GET', url='http://www.google.com')
     get_response.side_effect = exc
     with raises(ConnectionError):
-        main(['--ignore-stdin', '--traceback', 'www.google.com'])
+        main(['http', '--ignore-stdin', '--traceback', 'www.google.com'])
 
 
 def test_max_headers_limit(httpbin_both):

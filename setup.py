@@ -82,6 +82,7 @@ setup(
     entry_points={
         'console_scripts': [
             'http = httpie.__main__:main',
+            'https = httpie.__main__:main',
         ],
     },
     extras_require=extras_require,
@@ -91,11 +92,6 @@ setup(
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.1',
-        'Programming Language :: Python :: 3.2',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',

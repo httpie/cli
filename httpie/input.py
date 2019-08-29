@@ -132,13 +132,14 @@ class HTTPieArgumentParser(ArgumentParser):
     def __init__(self, *args, **kwargs):
         kwargs['add_help'] = False
         super(HTTPieArgumentParser, self).__init__(*args, **kwargs)
+        self.env = None
+        self.args = None
 
     # noinspection PyMethodOverriding
-    def parse_args(self, env, args=None, namespace=None):
-
+    def parse_args(self, env, program_name='http', args=None, namespace=None):
         self.env = env
-        self.args, no_options = super(HTTPieArgumentParser, self)\
-            .parse_known_args(args, namespace)
+        self.args, no_options = super(
+            HTTPieArgumentParser, self).parse_known_args(args, namespace)
 
         if self.args.debug:
             self.args.traceback = True
@@ -154,7 +155,10 @@ class HTTPieArgumentParser(ArgumentParser):
         if not self.args.ignore_stdin and not env.stdin_isatty:
             self._body_from_file(self.env.stdin)
         if not URL_SCHEME_RE.match(self.args.url):
-            scheme = self.args.default_scheme + "://"
+            if os.path.basename(program_name) == 'https':
+                scheme = 'https://'
+            else:
+                scheme = self.args.default_scheme + "://"
 
             # See if we're using curl style shorthand for localhost (:3000/foo)
             shorthand = re.match(r'^:(?!:)(\d*)(/?.*)$', self.args.url)

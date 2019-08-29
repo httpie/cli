@@ -168,7 +168,7 @@ def program(args, env, log_error):
             args.output_file.close()
 
 
-def main(args=sys.argv[1:], env=Environment(), custom_log_error=None):
+def main(args=sys.argv, env=Environment(), custom_log_error=None):
     """
     The main function.
 
@@ -179,6 +179,7 @@ def main(args=sys.argv[1:], env=Environment(), custom_log_error=None):
 
     """
     args = decode_args(args, env.stdin_encoding)
+    program_name, *args = args
     plugin_manager.load_installed_plugins()
 
     def log_error(msg, *args, **kwargs):
@@ -206,7 +207,11 @@ def main(args=sys.argv[1:], env=Environment(), custom_log_error=None):
     exit_status = ExitStatus.SUCCESS
 
     try:
-        parsed_args = parser.parse_args(args=args, env=env)
+        parsed_args = parser.parse_args(
+            args=args,
+            program_name=program_name,
+            env=env,
+        )
     except KeyboardInterrupt:
         env.stderr.write('\n')
         if include_traceback:

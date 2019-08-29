@@ -126,7 +126,7 @@ and always provides the latest version) is to use `pip`_:
 Python version
 --------------
 
-Starting with version 2.0.0 (currently under development) Python 3.x is required.
+Starting with version 2.0.0 (currently under development) Python 3.5+ is required.
 
 
 Unstable version
@@ -351,16 +351,32 @@ If the port is omitted, then port 80 is assumed.
     Host: localhost
 
 
-Custom default scheme
+Other default schemes
 ---------------------
 
-You can use the ``--default-scheme <URL_SCHEME>`` option to create
-shortcuts for other protocols than HTTP:
+When HTTPie is invoked as ``https`` then the default scheme is ``https://``
+(``$ https example.org`` will make a request to ``https://example.org``).
+
+You can also use the ``--default-scheme <URL_SCHEME>`` option to create
+shortcuts for other protocols than HTTP (possibly supported via plugins).
+Example for the `httpie-unixsocket <https://github.com/httpie/httpie-unixsocket>`_ plugin:
 
 .. code-block:: bash
 
-    $ alias https='http --default-scheme=https'
+    # Before
+    $ http http+unix://%2Fvar%2Frun%2Fdocker.sock/info
 
+
+.. code-block:: bash
+
+    # Create an alias
+    $ alias http-unix='http --default-scheme="http+unix"'
+
+
+.. code-block:: bash
+
+    # Now the scheme can be omitted
+    $ http-unix %2Fvar%2Frun%2Fdocker.sock/info
 
 Request items
 =============

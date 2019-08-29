@@ -13,6 +13,7 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 * Removed Python’s default limit of 100 response headers.
 * Added ``--max-headers`` to allow setting the max header limit.
 * Added ``--compress``.
+* Added ``https`` alias command with ``https://`` as the default scheme.
 
 
 `1.0.3`_ (2019-08-26)

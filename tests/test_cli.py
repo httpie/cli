@@ -342,6 +342,10 @@ class TestSchemes:
         with pytest.raises(InvalidSchema):
             http('bah', '--default=scheme=foo+bar-BAZ.123')
 
-    def test_default_scheme(self, httpbin_secure):
+    def test_default_scheme_option(self, httpbin_secure):
         url = '{0}:{1}'.format(httpbin_secure.host, httpbin_secure.port)
         assert HTTP_OK in http(url, '--default-scheme=https')
+
+    def test_scheme_when_invoked_as_https(self, httpbin_secure):
+        url = '{0}:{1}'.format(httpbin_secure.host, httpbin_secure.port)
+        assert HTTP_OK in http(url, program_name='https')
