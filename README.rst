@@ -9,18 +9,17 @@ colorized output. HTTPie can be used for testing, debugging, and
 generally interacting with HTTP servers.
 
 
-.. class:: no-web
+.. class:: no-web no-pdf
 
-    .. image:: https://raw.githubusercontent.com/jakubroztocil/httpie/master/httpie.png
-        :alt: HTTPie compared to cURL
-        :width: 100%
-        :align: center
+    |pypi| |unix_build| |coverage| |downloads| |gitter|
 
 
 .. class:: no-web no-pdf
 
-|pypi| |unix_build| |coverage| |gitter|
-
+    .. image:: https://raw.githubusercontent.com/jakubroztocil/httpie/master/httpie.gif
+        :alt: HTTPie in action
+        :width: 100%
+        :align: center
 
 
 .. contents::
@@ -32,6 +31,7 @@ generally interacting with HTTP servers.
 Main features
 =============
 
+
 * Expressive and intuitive syntax
 * Formatted and colorized terminal output
 * Built-in JSON support
@@ -41,11 +41,18 @@ Main features
 * Custom headers
 * Persistent sessions
 * Wget-like downloads
-* Python 2.7 and 3.x support
 * Linux, macOS and Windows support
 * Plugins
 * Documentation
 * Test coverage
+
+
+.. class:: no-web
+
+    .. image:: https://raw.githubusercontent.com/jakubroztocil/httpie/master/httpie.png
+        :alt: HTTPie compared to cURL
+        :width: 100%
+        :align: center
 
 
 Installation
@@ -119,12 +126,7 @@ and always provides the latest version) is to use `pip`_:
 Python version
 --------------
 
-Although Python 2.7 is supported as well, it is strongly recommended to
-install HTTPie against the latest Python 3.x whenever possible. That will
-ensure that some of the newer HTTP features, such as
-`SNI (Server Name Indication)`_, work out of the box.
-Python 3 is the default for Homebrew installations starting with version 0.9.4.
-To see which version HTTPie uses, run ``http --debug``.
+Starting with version 2.0.0 (currently under development) Python 3.x is required.
 
 
 Unstable version
@@ -646,6 +648,19 @@ To send a header with an empty value, use ``Header;``:
     $ http httpbin.org/headers 'Header;'
 
 
+Limiting response headers
+-------------------------
+
+The ``--max-headers=n`` options allows you to control the number of headers
+HTTPie reads before giving up (the default ``0``, i.e., there’s no limit).
+
+
+.. code-block:: bash
+
+    $ http --max-headers=100 httpbin.org/get
+
+
+
 Cookies
 =======
 
@@ -939,26 +954,6 @@ available set of protocols may vary depending on your OpenSSL installation.)
     $ http --ssl=ssl3 https://vulnerable.example.org
 
 
-SNI (Server Name Indication)
-----------------------------
-
-If you use HTTPie with `Python version`_ lower than 2.7.9
-(can be verified with ``http --debug``) and need to talk to servers that
-use SNI (Server Name Indication) you need to install some additional
-dependencies:
-
-.. code-block:: bash
-
-    $ pip install --upgrade requests[security]
-
-
-You can use the following command to test SNI support:
-
-.. code-block:: bash
-
-    $ http https://sni.velox.ch
-
-
 Output options
 ==============
 
@@ -1104,6 +1099,13 @@ You can use ``echo`` for simple data:
 .. code-block:: bash
 
     $ echo '{"name": "John"}' | http PATCH example.com/person/1 X-API-Token:123
+
+
+You can also use a Bash *here string*:
+
+.. code-block:: bash
+
+    $ http example.com/ <<<'{"name": "John"}'
 
 
 You can even pipe web services together using HTTPie:
@@ -1300,13 +1302,25 @@ is being saved to a file.
     Done. 251.30 kB in 2.73862s (91.76 kB/s)
 
 
-Downloaded file name
+Downloaded filename
 --------------------
 
-If not provided via ``--output, -o``, the output filename will be determined
-from ``Content-Disposition`` (if available), or from the URL and
-``Content-Type``. If the guessed filename already exists, HTTPie adds a unique
-suffix to it.
+There are three mutually exclusive ways through which HTTPie determines
+the output filename (with decreasing priority):
+
+1. You can explicitly provide it via ``--output, -o``.
+   The file gets overwritten if it already exists
+   (or appended to with ``--continue, -c``).
+2. The server may specify the filename in the optional ``Content-Disposition``
+   response header. Any leading dots are stripped from a server-provided filename.
+3. The last resort HTTPie uses is to generate the filename from a combination
+   of the request URL and the response ``Content-Type``.
+   The initial URL is always used as the basis for
+   the generated filename — even if there has been one or more redirects.
+
+
+To prevent data loss by overwriting, HTTPie adds a unique numerical suffix to the
+filename when necessary (unless specified with ``--output, -o``).
 
 
 Piping while downloading
@@ -1553,7 +1567,7 @@ Best practices
 --------------
 
 The default behaviour of automatically reading ``stdin`` is typically not
-desirable during non-interactive invocations. You most likely want
+desirable during non-interactive invocations. You most likely want to
 use the ``--ignore-stdin`` option to disable it.
 
 It is a common gotcha that without this option HTTPie seemingly hangs.
@@ -1564,8 +1578,8 @@ expecting that the request body will be passed through.
 And since there's no data nor ``EOF``, it will be stuck. So unless you're
 piping some data to HTTPie, this flag should be used in scripts.
 
-Also, it might be good to override the default ``30`` second ``--timeout`` to
-something that suits you.
+Also, it might be good to set a connection ``--timeout`` limit to prevent
+your program from hanging if the server never responds.
 
 
 
@@ -1685,7 +1699,9 @@ See `CHANGELOG <https://github.com/jakubroztocil/httpie/blob/master/CHANGELOG.rs
 Artwork
 -------
 
-See `claudiatd/httpie-artwork`_
+* `Logo <https://github.com/claudiatd/httpie-artwork>`_ by `Cláudia Delgado <https://github.com/claudiatd>`_.
+* `Animation <https://raw.githubusercontent.com/jakubroztocil/httpie/master/httpie.gif>`_ by `Allen Smith <https://github.com/loranallensmith>`_ of GitHub.
+
 
 
 Licence
@@ -1707,7 +1723,6 @@ have contributed.
 .. _these fine people: https://github.com/jakubroztocil/httpie/contributors
 .. _Jakub Roztocil: https://roztocil.co
 .. _@jakubroztocil: https://twitter.com/jakubroztocil
-.. _claudiatd/httpie-artwork: https://github.com/claudiatd/httpie-artwork
 
 
 .. |pypi| image:: https://img.shields.io/pypi/v/httpie.svg?style=flat-square&label=latest%20stable%20version
@@ -1725,3 +1740,8 @@ have contributed.
 .. |gitter| image:: https://img.shields.io/gitter/room/jkbrzt/httpie.svg?style=flat-square
     :target: https://gitter.im/jkbrzt/httpie
     :alt: Chat on Gitter
+
+.. |downloads| image:: https://pepy.tech/badge/httpie
+    :target: https://pepy.tech/project/httpie
+    :alt: Download count
+

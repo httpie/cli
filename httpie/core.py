@@ -19,7 +19,6 @@ from requests import __version__ as requests_version
 from pygments import __version__ as pygments_version
 
 from httpie import __version__ as httpie_version, ExitStatus
-from httpie.compat import str, bytes, is_py3
 from httpie.client import get_response
 from httpie.downloads import Downloader
 from httpie.context import Environment
@@ -132,7 +131,7 @@ def program(args, env, log_error):
                 'flush': env.stdout_isatty or args.stream
             }
             try:
-                if env.is_windows and is_py3 and 'colors' in args.prettify:
+                if env.is_windows and 'colors' in args.prettify:
                     write_stream_with_colors_win_py3(**write_stream_kwargs)
                 else:
                     write_stream(**write_stream_kwargs)

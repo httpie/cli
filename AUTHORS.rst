@@ -37,4 +37,6 @@ Patches and ideas
 * `Matt Layman <https://github.com/mblayman>`_
 * `Edward Yang <https://github.com/honorabrutroll>`_
 * `Aleksandr Vinokurov <https://github.com/aleksandr-vin>`_
+* `Jeff Byrnes <https://github.com/jeffbyrnes>`_
+
 

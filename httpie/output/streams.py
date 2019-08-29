@@ -1,7 +1,6 @@
 from itertools import chain
 from functools import partial
 
-from httpie.compat import str
 from httpie.context import Environment
 from httpie.models import HTTPRequest, HTTPResponse
 from httpie.input import (OUT_REQ_BODY, OUT_REQ_HEAD,

@@ -1,13 +1,14 @@
 import json
 import sys
 
+import http.client
 import requests
+from decorator import contextmanager
 from requests.adapters import HTTPAdapter
 from requests.structures import CaseInsensitiveDict
 
 from httpie import sessions
 from httpie import __version__
-from httpie.compat import str
 from httpie.input import SSL_VERSION_ARG_MAPPING
 from httpie.plugins import plugin_manager
 from httpie.utils import repr_dict_nice
@@ -31,6 +32,18 @@ FORM_CONTENT_TYPE = 'application/x-www-form-urlencoded; charset=utf-8'
 JSON_CONTENT_TYPE = 'application/json'
 JSON_ACCEPT = '{0}, */*'.format(JSON_CONTENT_TYPE)
 DEFAULT_UA = 'HTTPie/%s' % __version__
+
+
+# noinspection PyProtectedMember
+@contextmanager
+def max_headers(limit):
+    # <https://github.com/jakubroztocil/httpie/issues/802>
+    orig = http.client._MAXHEADERS
+    http.client._MAXHEADERS = limit or float('Inf')
+    try:
+        yield
+    finally:
+        http.client._MAXHEADERS = orig
 
 
 class HTTPieHTTPAdapter(HTTPAdapter):
@@ -92,19 +105,20 @@ def get_response(args, config_dir):
     requests_session = get_requests_session(ssl_version, args.compress)
     requests_session.max_redirects = args.max_redirects
 
-    if not args.session and not args.session_read_only:
-        kwargs = get_requests_kwargs(args)
-        if args.debug:
-            dump_request(kwargs)
-        response = requests_session.request(**kwargs)
-    else:
-        response = sessions.get_response(
-            requests_session=requests_session,
-            args=args,
-            config_dir=config_dir,
-            session_name=args.session or args.session_read_only,
-            read_only=bool(args.session_read_only),
-        )
+    with max_headers(args.max_headers):
+        if not args.session and not args.session_read_only:
+            kwargs = get_requests_kwargs(args)
+            if args.debug:
+                dump_request(kwargs)
+            response = requests_session.request(**kwargs)
+        else:
+            response = sessions.get_response(
+                requests_session=requests_session,
+                args=args,
+                config_dir=config_dir,
+                session_name=args.session or args.session_read_only,
+                read_only=bool(args.session_read_only),
+            )
 
     return response
 
@@ -193,7 +207,7 @@ def get_requests_kwargs(args, base_headers=None):
             'false': False,
         }.get(args.verify.lower(), args.verify),
         'cert': cert,
-        'timeout': args.timeout,
+        'timeout': args.timeout or None,
         'auth': args.auth,
         'proxies': {p.key: p.value for p in args.proxy},
         'files': args.files,

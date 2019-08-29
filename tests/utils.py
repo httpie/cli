@@ -9,7 +9,6 @@ import tempfile
 from httpie import ExitStatus, EXIT_STATUS_LABELS
 from httpie.context import Environment
 from httpie.core import main
-from httpie.compat import bytes, str
 
 
 TESTS_ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -62,6 +61,8 @@ class MockEnvironment(Environment):
         return super(MockEnvironment, self).config
 
     def cleanup(self):
+        self.stdout.close()
+        self.stderr.close()
         if self._delete_config_dir:
             assert self.config_dir.startswith(tempfile.gettempdir())
             from shutil import rmtree

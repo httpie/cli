@@ -93,9 +93,8 @@ publish-no-test:
 	@echo $(TAG)Testing wheel build an installation$(END)
 	@echo "$(VERSION)"
 	@echo "$(VERSION)" | grep -q "dev" && echo '!!!Not publishing dev version!!!' && exit 1 || echo ok
-	python setup.py register
-	python setup.py sdist upload
-	python setup.py bdist_wheel upload
+	python setup.py sdist bdist_wheel
+	twine upload dist/*
 	@echo
 
 
@@ -140,9 +139,14 @@ pdf:
 
 
 ###############################################################################
-# Utils
+# Homebrew
 ###############################################################################
 
+brew-deps:
+	extras/brew-deps.py
 
-homebrew-formula-vars:
-	extras/get-homebrew-formula-vars.py
+brew-test:
+	- brew uninstall httpie
+	brew install --build-from-source ./extras/httpie.rb
+	brew test httpie
+	brew audit --strict httpie

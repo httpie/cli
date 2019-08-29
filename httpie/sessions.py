@@ -3,10 +3,10 @@
 """
 import re
 import os
+from urllib.parse import urlsplit
 
 from requests.cookies import RequestsCookieJar, create_cookie
 
-from httpie.compat import urlsplit
 from httpie.config import BaseConfigDict, DEFAULT_CONFIG_DIR
 from httpie.plugins import plugin_manager
 

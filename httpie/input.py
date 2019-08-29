@@ -15,10 +15,11 @@ from argparse import ArgumentParser, ArgumentTypeError, ArgumentError
 
 # TODO: Use MultiDict for headers once added to `requests`.
 # https://github.com/jakubroztocil/httpie/issues/130
+from urllib.parse import urlsplit
+
 from httpie.plugins import plugin_manager
 from requests.structures import CaseInsensitiveDict
 
-from httpie.compat import urlsplit, str, is_pypy, is_py27
 from httpie.sessions import VALID_SESSION_NAME_PATTERN
 from httpie.utils import load_json_preserve_order
 
@@ -615,17 +616,6 @@ parse_auth = AuthCredentialsArgType(SEP_CREDENTIALS)
 class RequestItemsDict(OrderedDict):
     """Multi-value dict for URL parameters and form data."""
 
-    if is_pypy and is_py27:
-        # Manually set keys when initialized with an iterable as PyPy
-        # doesn't call __setitem__ in such case (pypy3 does).
-        def __init__(self, *args, **kwargs):
-            if len(args) == 1 and isinstance(args[0], Iterable):
-                super(RequestItemsDict, self).__init__(**kwargs)
-                for k, v in args[0]:
-                    self[k] = v
-            else:
-                super(RequestItemsDict, self).__init__(*args, **kwargs)
-
     # noinspection PyMethodOverriding
     def __setitem__(self, key, value):
         """ If `key` is assigned more than once, `self[key]` holds a
@@ -752,7 +742,7 @@ def parse_items(items,
 
 def readable_file_arg(filename):
     try:
-        open(filename, 'rb')
+        with open(filename, 'rb'):
+            return filename
     except IOError as ex:
         raise ArgumentTypeError('%s: %s' % (filename, ex.args[1]))
-    return filename

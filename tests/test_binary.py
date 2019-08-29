@@ -34,12 +34,12 @@ class TestBinaryRequestData:
 class TestBinaryResponseData:
 
     def test_binary_suppresses_when_terminal(self, httpbin):
-        r = http('GET', httpbin + '/bytes/1024')
+        r = http('GET', httpbin + '/bytes/1024?seed=1')
         assert BINARY_SUPPRESSED_NOTICE.decode() in r
 
     def test_binary_suppresses_when_not_terminal_but_pretty(self, httpbin):
         env = MockEnvironment(stdin_isatty=True, stdout_isatty=False)
-        r = http('--pretty=all', 'GET', httpbin + '/bytes/1024', env=env)
+        r = http('--pretty=all', 'GET', httpbin + '/bytes/1024?seed=1', env=env)
         assert BINARY_SUPPRESSED_NOTICE.decode() in r
 
     def test_binary_included_and_correct_when_suitable(self, httpbin):
