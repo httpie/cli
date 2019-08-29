@@ -8,32 +8,32 @@ env:
     - NEWEST_PYTHON=3.7
 python:
   # <https://docs.travis-ci.com/user/languages/python/>
-
   - 2.7
-
   # Python 3.4 fails installing packages
   # <https://travis-ci.org/jakubroztocil/httpie/jobs/403263566#L636>
   # - 3.4
-
   - 3.5
   - 3.6
   # - 3.7  # is done in the matrix below as described in travis-ci/travis-ci#9069
   - pypy
-
   # pypy3 currently fails because of a Flask issue
   # - pypy3
 
 cache: pip
 matrix:
   include:
-    # Add manually defined OS X builds
+
+    # Manually defined macOS builds
     # <https://docs.travis-ci.com/user/multi-os/#Python-example-(unsupported-languages)>
-    - os: osx
-      language: generic
-      env:
-        # Stock OSX Python
-        - TOXENV=py27-osx-builtin
-        - BREW_PYTHON_PACKAGE=
+
+    # FIXME: stock macOS python fails with InterpreterNotFound
+    # <https://travis-ci.org/jakubroztocil/httpie/jobs/578189209>
+    # - os: osx
+    #   language: generic
+    #   env:
+    #     # Stock macOS Python
+    #     - TOXENV=py27-osx-builtin
+    #     - BREW_PYTHON_PACKAGE=
     - os: osx
       language: generic
       env:
@@ -46,16 +46,22 @@ matrix:
         # Latest Python 3.x from Homebrew
         - TOXENV=py37  # <= needs to be kept up-to-date to reflect latest minor version
         - BREW_PYTHON_PACKAGE=python@3
-    # Travis Python 3.7 must run sudo on 
+
+
+    # Travis Python 3.7 must run sudo on
     - os: linux
       python: 3.7
       env: TOXENV=py37
       sudo: true    # Required for Python 3.7
       dist: xenial  # Required for Python 3.7
+
+
     # Add a codestyle-only build
     - os: linux
       python: 3.6
       env: CODESTYLE_ONLY=true
+
+
 install:
     - |
       if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
