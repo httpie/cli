@@ -1576,8 +1576,8 @@ expecting that the request body will be passed through.
 And since there's no data nor ``EOF``, it will be stuck. So unless you're
 piping some data to HTTPie, this flag should be used in scripts.
 
-Also, it might be good to override the default ``30`` second ``--timeout`` to
-something that suits you.
+Also, it might be good to set a connection ``--timeout`` limit to prevent
+your program from hanging if the server never responds.
 
 
 
