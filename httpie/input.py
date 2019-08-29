@@ -144,6 +144,12 @@ class HTTPieArgumentParser(ArgumentParser):
         if self.args.debug:
             self.args.traceback = True
 
+        self.has_stdin_data = (
+            self.env.stdin
+            and not self.args.ignore_stdin
+            and not self.env.stdin_isatty
+        )
+
         # Arguments processing and environment setup.
         self._apply_no_options(no_options)
         self._validate_download_options()
@@ -152,7 +158,8 @@ class HTTPieArgumentParser(ArgumentParser):
         self._process_pretty_options()
         self._guess_method()
         self._parse_items()
-        if not self.args.ignore_stdin and not env.stdin_isatty:
+
+        if self.has_stdin_data:
             self._body_from_file(self.env.stdin)
         if not URL_SCHEME_RE.match(self.args.url):
             if os.path.basename(program_name) == 'https':
@@ -320,7 +327,7 @@ class HTTPieArgumentParser(ArgumentParser):
         if self.args.method is None:
             # Invoked as `http URL'.
             assert not self.args.items
-            if not self.args.ignore_stdin and not self.env.stdin_isatty:
+            if self.has_stdin_data:
                 self.args.method = HTTP_POST
             else:
                 self.args.method = HTTP_GET
@@ -344,7 +351,7 @@ class HTTPieArgumentParser(ArgumentParser):
                 self.args.url = self.args.method
                 # Infer the method
                 has_data = (
-                    (not self.args.ignore_stdin and not self.env.stdin_isatty)
+                    self.has_stdin_data
                     or any(
                         item.sep in SEP_GROUP_DATA_ITEMS
                         for item in self.args.items

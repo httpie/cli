@@ -23,7 +23,7 @@ class Environment(object):
     is_windows = is_windows
     config_dir = DEFAULT_CONFIG_DIR
     stdin = sys.stdin
-    stdin_isatty = stdin.isatty()
+    stdin_isatty = stdin.isatty() if stdin else False
     stdin_encoding = None
     stdout = sys.stdout
     stdout_isatty = stdout.isatty()
@@ -61,7 +61,7 @@ class Environment(object):
         self.__dict__.update(**kwargs)
 
         # Keyword arguments > stream.encoding > default utf8
-        if self.stdin_encoding is None:
+        if self.stdin and self.stdin_encoding is None:
             self.stdin_encoding = getattr(
                 self.stdin, 'encoding', None) or 'utf8'
         if self.stdout_encoding is None:
