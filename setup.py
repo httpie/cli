@@ -7,7 +7,6 @@ from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 
 import httpie
-from httpie.compat import is_py27
 
 
 class PyTest(TestCommand):
@@ -33,9 +32,6 @@ tests_require = [
     'pytest',
     'mock',
 ]
-
-if is_py27:
-    tests_require.append('pyOpenSSL')
 
 
 install_requires = [
@@ -77,7 +73,7 @@ setup(
     version=httpie.__version__,
     description=httpie.__doc__.strip(),
     long_description=long_description(),
-    url='http://httpie.org/',
+    url='https://httpie.org/',
     download_url='https://github.com/jakubroztocil/httpie',
     author=httpie.__author__,
     author_email='jakub@roztocil.co',
@@ -95,7 +91,6 @@ setup(
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.1',
         'Programming Language :: Python :: 3.2',
@@ -103,6 +98,7 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Environment :: Console',
         'Intended Audience :: Developers',
         'Intended Audience :: System Administrators',

@@ -47,7 +47,6 @@ Main features
 * Custom headers
 * Persistent sessions
 * Wget-like downloads
-* Python 2.7 and 3.x support
 * Linux, macOS and Windows support
 * Plugins
 * Documentation
@@ -125,12 +124,7 @@ and always provides the latest version) is to use `pip`_:
 Python version
 --------------
 
-Although Python 2.7 is supported as well, it is strongly recommended to
-install HTTPie against the latest Python 3.x whenever possible. That will
-ensure that some of the newer HTTP features, such as
-`SNI (Server Name Indication)`_, work out of the box.
-Python 3 is the default for Homebrew installations starting with version 0.9.4.
-To see which version HTTPie uses, run ``http --debug``.
+Starting with version 2.0.0 (currently under development) Python 3.x is required.
 
 
 Unstable version
@@ -945,26 +939,6 @@ available set of protocols may vary depending on your OpenSSL installation.)
     $ http --ssl=ssl3 https://vulnerable.example.org
 
 
-SNI (Server Name Indication)
-----------------------------
-
-If you use HTTPie with `Python version`_ lower than 2.7.9
-(can be verified with ``http --debug``) and need to talk to servers that
-use SNI (Server Name Indication) you need to install some additional
-dependencies:
-
-.. code-block:: bash
-
-    $ pip install --upgrade requests[security]
-
-
-You can use the following command to test SNI support:
-
-.. code-block:: bash
-
-    $ http https://sni.velox.ch
-
-
 Output options
 ==============
 
@@ -1755,4 +1729,4 @@ have contributed.
 .. |downloads| image:: https://pepy.tech/badge/httpie
     :target: https://pepy.tech/project/httpie
     :alt: Download count
-    
+

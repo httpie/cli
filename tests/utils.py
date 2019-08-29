@@ -9,7 +9,6 @@ import tempfile
 from httpie import ExitStatus, EXIT_STATUS_LABELS
 from httpie.context import Environment
 from httpie.core import main
-from httpie.compat import bytes, str
 
 
 TESTS_ROOT = os.path.abspath(os.path.dirname(__file__))

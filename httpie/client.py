@@ -7,7 +7,6 @@ from requests.structures import CaseInsensitiveDict
 
 from httpie import sessions
 from httpie import __version__
-from httpie.compat import str
 from httpie.input import SSL_VERSION_ARG_MAPPING
 from httpie.plugins import plugin_manager
 from httpie.utils import repr_dict_nice
