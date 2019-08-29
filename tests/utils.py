@@ -108,7 +108,7 @@ class StrCLIResponse(str, BaseCLIResponse):
     def json(self):
         """
         Return deserialized JSON body, if one included in the output
-        and is parseable.
+        and is parsable.
 
         """
         if not hasattr(self, '_json'):

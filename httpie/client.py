@@ -3,7 +3,7 @@ import sys
 
 import http.client
 import requests
-from decorator import contextmanager
+from contextlib import contextmanager
 from requests.adapters import HTTPAdapter
 from requests.structures import CaseInsensitiveDict
 
