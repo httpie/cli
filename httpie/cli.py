@@ -529,12 +529,12 @@ network.add_argument(
     default=0,
     metavar='SECONDS',
     help="""
-    The connection timeout of the request in seconds. 
+    The connection timeout of the request in seconds.
     The default value is 0, i.e., there is no timeout limit.
     This is not a time limit on the entire response download;
-    rather, an error is reported if the server has not issued a response for 
+    rather, an error is reported if the server has not issued a response for
     timeout seconds (more precisely, if no bytes have been received on
-    the underlying socket for timeout seconds). 
+    the underlying socket for timeout seconds).
 
     """
 )
