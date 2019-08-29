@@ -82,7 +82,7 @@ class Environment(object):
         if not hasattr(self, '_config'):
             self._config = Config(directory=self.config_dir)
             if self._config.is_new():
-                self._config.save()
+                self._config.save(fail_silently=True)
             else:
                 self._config.load()
         return self._config

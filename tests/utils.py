@@ -39,7 +39,8 @@ class MockEnvironment(Environment):
     stdout_isatty = True
     is_windows = False
 
-    def __init__(self, **kwargs):
+    def __init__(self, create_temp_config_dir=True, **kwargs):
+        self.create_temp_config_dir = create_temp_config_dir
         if 'stdout' not in kwargs:
             kwargs['stdout'] = tempfile.TemporaryFile(
                 mode='w+b',
@@ -55,7 +56,8 @@ class MockEnvironment(Environment):
 
     @property
     def config(self):
-        if not self.config_dir.startswith(tempfile.gettempdir()):
+        if (self.create_temp_config_dir
+                and not self.config_dir.startswith(tempfile.gettempdir())):
             self.config_dir = mk_config_dir()
             self._delete_config_dir = True
         return super(MockEnvironment, self).config

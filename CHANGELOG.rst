@@ -14,11 +14,12 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 * Added ``--max-headers`` to allow setting the max header limit.
 * Added ``--compress``.
 * Added ``https`` alias command with ``https://`` as the default scheme.
-* Fixed an exception when ``stdin`` was a closed fd.
+* Fixed an error when ``stdin`` was a closed fd.
+* Fixed an error when the config directory was not writeable.
 
 
 `1.0.3`_ (2019-08-26)
--------------------------
+---------------------
 
 * Fixed CVE-2019-10751 — the way the output filename is generated for
   ``--download`` requests without ``--output`` resulting in a redirect has

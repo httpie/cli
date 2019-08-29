@@ -55,7 +55,7 @@ class BaseConfigDict(dict):
             if e.errno != errno.ENOENT:
                 raise
 
-    def save(self):
+    def save(self, fail_silently=False):
         self['__meta__'] = {
             'httpie': __version__
         }
@@ -65,9 +65,13 @@ class BaseConfigDict(dict):
         if self.about:
             self['__meta__']['about'] = self.about
 
-        with open(self.path, 'w') as f:
-            json.dump(self, f, indent=4, sort_keys=True, ensure_ascii=True)
-            f.write('\n')
+        try:
+            with open(self.path, 'w') as f:
+                json.dump(self, f, indent=4, sort_keys=True, ensure_ascii=True)
+                f.write('\n')
+        except IOError:
+            if not fail_silently:
+                raise
 
     def delete(self):
         try:
@@ -92,21 +96,5 @@ class Config(BaseConfigDict):
         self.update(self.DEFAULTS)
         self.directory = directory
 
-    def load(self):
-        super(Config, self).load()
-        self._migrate_implicit_content_type()
-
     def _get_path(self):
         return os.path.join(self.directory, self.name + '.json')
-
-    def _migrate_implicit_content_type(self):
-        """Migrate the removed implicit_content_type config option"""
-        try:
-            implicit_content_type = self.pop('implicit_content_type')
-        except KeyError:
-            self.save()
-        else:
-            if implicit_content_type == 'form':
-                self['default_options'].insert(0, '--form')
-            self.save()
-            self.load()
