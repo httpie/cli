@@ -9,24 +9,17 @@ colorized output. HTTPie can be used for testing, debugging, and
 generally interacting with HTTP servers.
 
 
-.. class:: no-web
+.. class:: no-web no-pdf
+
+    |pypi| |unix_build| |coverage| |downloads| |gitter|
+
+
+.. class:: no-web no-pdf
 
     .. image:: https://raw.githubusercontent.com/jakubroztocil/httpie/master/httpie.gif
         :alt: HTTPie in action
         :width: 100%
         :align: center
-
-
-    .. image:: https://raw.githubusercontent.com/jakubroztocil/httpie/master/httpie.png
-        :alt: HTTPie compared to cURL
-        :width: 100%
-        :align: center
-
-
-.. class:: no-web no-pdf
-
-|pypi| |unix_build| |coverage| |downloads| |gitter|
-
 
 
 .. contents::
@@ -37,6 +30,7 @@ generally interacting with HTTP servers.
 
 Main features
 =============
+
 
 * Expressive and intuitive syntax
 * Formatted and colorized terminal output
@@ -51,6 +45,14 @@ Main features
 * Plugins
 * Documentation
 * Test coverage
+
+
+.. class:: no-web
+
+    .. image:: https://raw.githubusercontent.com/jakubroztocil/httpie/master/httpie.png
+        :alt: HTTPie compared to cURL
+        :width: 100%
+        :align: center
 
 
 Installation
