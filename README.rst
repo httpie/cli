@@ -652,7 +652,7 @@ Limiting response headers
 -------------------------
 
 The ``--max-headers=n`` options allows you to control the number of headers
-HTTPie reads before giving up (the default 0, i.e., there’s no limit).
+HTTPie reads before giving up (the default ``0``, i.e., there’s no limit).
 
 
 .. code-block:: bash
