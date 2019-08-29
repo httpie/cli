@@ -5,6 +5,7 @@ import pytest_httpbin.certs
 import requests.exceptions
 
 from httpie import ExitStatus
+from httpie.compat import is_pypy
 from httpie.input import SSL_VERSION_ARG_MAPPING
 from utils import HTTP_OK, TESTS_ROOT, http
 
@@ -43,8 +44,8 @@ def test_ssl_version(httpbin_secure, ssl_version):
         )
         assert HTTP_OK in r
     except ssl_errors as e:
-        if ssl_version == 'ssl3':
-            # pytest-httpbin doesn't support ssl3
+        if ssl_version == 'ssl3' and not is_pypy:
+            # pytest-httpbin doesn't support ssl3 (unless on pypy)
             assert 'SSLV3_ALERT_HANDSHAKE_FAILURE' in str(e)
         else:
             raise
