@@ -11,7 +11,7 @@ from utils import MockEnvironment, mk_config_dir, http, HTTP_OK
 from fixtures import UNICODE
 
 
-class SessionTestBase(object):
+class SessionTestBase:
 
     def start_session(self, httpbin):
         """Create and reuse a unique config dir for each test."""
@@ -44,7 +44,7 @@ class TestSessionFlow(SessionTestBase):
         authorization, and response cookies.
 
         """
-        super(TestSessionFlow, self).start_session(httpbin)
+        super().start_session(httpbin)
         r1 = http('--follow', '--session=test', '--auth=username:password',
                   'GET', httpbin.url + '/cookies/set?hello=world',
                   'Hello:World',
@@ -130,12 +130,12 @@ class TestSession(SessionTestBase):
 
     def test_session_by_path(self, httpbin):
         self.start_session(httpbin)
-        session_path = os.path.join(self.config_dir, 'session-by-path.json')
-        r1 = http('--session=' + session_path, 'GET', httpbin.url + '/get',
+        session_path = self.config_dir / 'session-by-path.json'
+        r1 = http('--session', str(session_path), 'GET', httpbin.url + '/get',
                   'Foo:Bar', env=self.env())
         assert HTTP_OK in r1
 
-        r2 = http('--session=' + session_path, 'GET', httpbin.url + '/get',
+        r2 = http('--session', str(session_path), 'GET', httpbin.url + '/get',
                   env=self.env())
         assert HTTP_OK in r2
         assert r2.json['headers']['Foo'] == 'Bar'

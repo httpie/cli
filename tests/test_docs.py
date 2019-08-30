@@ -9,7 +9,7 @@ from utils import TESTS_ROOT
 
 def has_docutils():
     try:
-        # noinspection PyUnresolvedReferences
+        # noinspection PyUnresolvedReferences,PyPackageRequirements
         import docutils
         return True
     except ImportError:
@@ -17,6 +17,7 @@ def has_docutils():
 
 
 def rst_filenames():
+    # noinspection PyShadowingNames
     for root, dirnames, filenames in os.walk(os.path.dirname(TESTS_ROOT)):
         if '.tox' not in root:
             for filename in fnmatch.filter(filenames, '*.rst'):

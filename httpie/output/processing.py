@@ -11,7 +11,7 @@ def is_valid_mime(mime):
     return mime and MIME_RE.match(mime)
 
 
-class Conversion(object):
+class Conversion:
 
     def get_converter(self, mime):
         if is_valid_mime(mime):
@@ -20,7 +20,7 @@ class Conversion(object):
                     return converter_class(mime)
 
 
-class Formatting(object):
+class Formatting:
     """A delegate class that invokes the actual processors."""
 
     def __init__(self, groups, env=Environment(), **kwargs):

@@ -124,7 +124,7 @@ def get_stream_type(env, args):
     return Stream
 
 
-class BaseStream(object):
+class BaseStream:
     """Base HTTP message output stream class."""
 
     def __init__(self, msg, with_headers=True, with_body=True,
@@ -174,7 +174,7 @@ class RawStream(BaseStream):
     CHUNK_SIZE_BY_LINE = 1
 
     def __init__(self, chunk_size=CHUNK_SIZE, **kwargs):
-        super(RawStream, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.chunk_size = chunk_size
 
     def iter_body(self):
@@ -193,7 +193,7 @@ class EncodedStream(BaseStream):
 
     def __init__(self, env=Environment(), **kwargs):
 
-        super(EncodedStream, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
         if env.stdout_isatty:
             # Use the encoding supported by the terminal.
@@ -228,7 +228,7 @@ class PrettyStream(EncodedStream):
     CHUNK_SIZE = 1
 
     def __init__(self, conversion, formatting, **kwargs):
-        super(PrettyStream, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.formatting = formatting
         self.conversion = conversion
         self.mime = self.msg.content_type.split(';')[0]

@@ -305,7 +305,7 @@ class TestNoOptions:
     def test_invalid_no_options(self, httpbin):
         r = http('--no-war', 'GET', httpbin.url + '/get',
                  error_exit_ok=True)
-        assert r.exit_status == 1
+        assert r.exit_status == ExitStatus.ERROR
         assert 'unrecognized arguments: --no-war' in r.stderr
         assert 'GET /get HTTP/1.1' not in r
 

@@ -1,37 +1,38 @@
+from typing import Iterable, Optional
 from urllib.parse import urlsplit
 
 
-class HTTPMessage(object):
+class HTTPMessage:
     """Abstract class for HTTP messages."""
 
     def __init__(self, orig):
         self._orig = orig
 
-    def iter_body(self, chunk_size):
+    def iter_body(self, chunk_size: int) -> Iterable[bytes]:
         """Return an iterator over the body."""
         raise NotImplementedError()
 
-    def iter_lines(self, chunk_size):
+    def iter_lines(self, chunk_size: int) -> Iterable[bytes]:
         """Return an iterator over the body yielding (`line`, `line_feed`)."""
         raise NotImplementedError()
 
     @property
-    def headers(self):
+    def headers(self) -> str:
         """Return a `str` with the message's headers."""
         raise NotImplementedError()
 
     @property
-    def encoding(self):
+    def encoding(self) -> Optional[str]:
         """Return a `str` with the message's encoding, if known."""
         raise NotImplementedError()
 
     @property
-    def body(self):
+    def body(self) -> bytes:
         """Return a `bytes` with the message's body."""
         raise NotImplementedError()
 
     @property
-    def content_type(self):
+    def content_type(self) -> str:
         """Return the message content type."""
         ct = self._orig.headers.get('Content-Type', '')
         if not isinstance(ct, str):

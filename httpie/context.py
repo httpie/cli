@@ -1,4 +1,5 @@
 import sys
+from pathlib import Path
 from typing import Union, IO, Optional
 
 
@@ -13,7 +14,7 @@ from httpie.config import DEFAULT_CONFIG_DIR, Config
 from httpie.utils import repr_dict_nice
 
 
-class Environment(object):
+class Environment:
     """
     Information about the execution context
     (standard streams, config directory, etc).
@@ -23,16 +24,16 @@ class Environment(object):
     is used by the test suite to simulate various scenarios.
 
     """
-    is_windows = is_windows
-    config_dir = DEFAULT_CONFIG_DIR
+    is_windows: bool = is_windows
+    config_dir: Path = DEFAULT_CONFIG_DIR
     stdin: Optional[IO] = sys.stdin  # `None` when closed fd (#791)
-    stdin_isatty = stdin.isatty() if stdin else False
-    stdin_encoding = None
-    stdout = sys.stdout
-    stdout_isatty = stdout.isatty()
-    stdout_encoding = None
-    stderr = sys.stderr
-    stderr_isatty = stderr.isatty()
+    stdin_isatty: bool = stdin.isatty() if stdin else False
+    stdin_encoding: str = None
+    stdout: IO = sys.stdout
+    stdout_isatty: bool = stdout.isatty()
+    stdout_encoding: str = None
+    stderr: IO = sys.stderr
+    stderr_isatty: bool = stderr.isatty()
     colors = 256
     if not is_windows:
         if curses:
@@ -73,12 +74,13 @@ class Environment(object):
                 # noinspection PyUnresolvedReferences
                 from colorama import AnsiToWin32
                 if isinstance(self.stdout, AnsiToWin32):
+                    # noinspection PyUnresolvedReferences
                     actual_stdout = self.stdout.wrapped
             self.stdout_encoding = getattr(
                 actual_stdout, 'encoding', None) or 'utf8'
 
     @property
-    def config(self):
+    def config(self) -> Config:
         if not hasattr(self, '_config'):
             self._config = Config(directory=self.config_dir)
             if self._config.is_new():

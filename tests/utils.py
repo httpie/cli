@@ -5,8 +5,11 @@ import sys
 import time
 import json
 import tempfile
+from pathlib import Path
+from typing import Optional
 
-from httpie import ExitStatus, EXIT_STATUS_LABELS
+from httpie import ExitStatus
+from httpie.config import Config
 from httpie.context import Environment
 from httpie.core import main
 
@@ -22,9 +25,9 @@ HTTP_OK_COLOR = (
 )
 
 
-def mk_config_dir():
+def mk_config_dir() -> Path:
     dirname = tempfile.mkdtemp(prefix='httpie_config_')
-    return dirname
+    return Path(dirname)
 
 
 def add_auth(url, auth):
@@ -40,7 +43,6 @@ class MockEnvironment(Environment):
     is_windows = False
 
     def __init__(self, create_temp_config_dir=True, **kwargs):
-        self.create_temp_config_dir = create_temp_config_dir
         if 'stdout' not in kwargs:
             kwargs['stdout'] = tempfile.TemporaryFile(
                 mode='w+b',
@@ -51,22 +53,24 @@ class MockEnvironment(Environment):
                 mode='w+t',
                 prefix='httpie_stderr'
             )
-        super(MockEnvironment, self).__init__(**kwargs)
+        super().__init__(**kwargs)
+        self._create_temp_config_dir = create_temp_config_dir
         self._delete_config_dir = False
+        self._temp_dir = Path(tempfile.gettempdir())
 
     @property
-    def config(self):
-        if (self.create_temp_config_dir
-                and not self.config_dir.startswith(tempfile.gettempdir())):
+    def config(self) -> Config:
+        if (self._create_temp_config_dir
+                and self._temp_dir not in self.config_dir.parents):
             self.config_dir = mk_config_dir()
             self._delete_config_dir = True
-        return super(MockEnvironment, self).config
+        return super().config
 
     def cleanup(self):
         self.stdout.close()
         self.stderr.close()
         if self._delete_config_dir:
-            assert self.config_dir.startswith(tempfile.gettempdir())
+            assert self._temp_dir in self.config_dir.parents
             from shutil import rmtree
             rmtree(self.config_dir)
 
@@ -77,7 +81,7 @@ class MockEnvironment(Environment):
             pass
 
 
-class BaseCLIResponse(object):
+class BaseCLIResponse:
     """
     Represents the result of simulated `$ http' invocation  via `http()`.
 
@@ -88,9 +92,9 @@ class BaseCLIResponse(object):
         - exit_status output: print(self.exit_status)
 
     """
-    stderr = None
-    json = None
-    exit_status = None
+    stderr: str = None
+    json: dict = None
+    exit_status: ExitStatus = None
 
 
 class BytesCLIResponse(bytes, BaseCLIResponse):
@@ -107,7 +111,7 @@ class BytesCLIResponse(bytes, BaseCLIResponse):
 class StrCLIResponse(str, BaseCLIResponse):
 
     @property
-    def json(self):
+    def json(self) -> Optional[dict]:
         """
         Return deserialized JSON body, if one included in the output
         and is parsable.
@@ -132,6 +136,7 @@ class StrCLIResponse(str, BaseCLIResponse):
                     pass
                 else:
                     try:
+                        # noinspection PyAttributeOutsideInit
                         self._json = json.loads(j)
                     except ValueError:
                         pass
@@ -174,7 +179,7 @@ def http(*args, program_name='http', **kwargs):
         >>> type(r) == StrCLIResponse
         True
         >>> r.exit_status
-        0
+        <ExitStatus.SUCCESS: 0>
         >>> r.stderr
         ''
         >>> 'HTTP/1.1 200 OK' in r
@@ -227,10 +232,7 @@ def http(*args, program_name='http', **kwargs):
                 dump_stderr()
                 raise ExitStatusError(
                     'httpie.core.main() unexpectedly returned'
-                    ' a non-zero exit status: {0} ({1})'.format(
-                        exit_status,
-                        EXIT_STATUS_LABELS[exit_status]
-                    )
+                    f' a non-zero exit status: {exit_status}'
                 )
 
         stdout.seek(0)
@@ -239,10 +241,8 @@ def http(*args, program_name='http', **kwargs):
         try:
             output = output.decode('utf8')
         except UnicodeDecodeError:
-            # noinspection PyArgumentList
             r = BytesCLIResponse(output)
         else:
-            # noinspection PyArgumentList
             r = StrCLIResponse(output)
         r.stderr = stderr.read()
         r.exit_status = exit_status

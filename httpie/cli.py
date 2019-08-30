@@ -1,9 +1,7 @@
-"""CLI arguments definition.
-
-NOTE: the CLI interface may change before reaching v1.0.
+"""
+CLI arguments definition.
 
 """
-# noinspection PyCompatibility
 from argparse import (
     RawDescriptionHelpFormatter, FileType,
     OPTIONAL, ZERO_OR_MORE, SUPPRESS
@@ -40,7 +38,7 @@ class HTTPieHelpFormatter(RawDescriptionHelpFormatter):
     def __init__(self, max_help_position=6, *args, **kwargs):
         # A smaller indent for args help.
         kwargs['max_help_position'] = max_help_position
-        super(HTTPieHelpFormatter, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def _split_lines(self, text, width):
         text = dedent(text).strip() + '\n\n'
@@ -457,7 +455,7 @@ auth.add_argument(
 )
 
 
-class _AuthTypeLazyChoices(object):
+class _AuthTypeLazyChoices:
     # Needed for plugin testing
 
     def __contains__(self, item):

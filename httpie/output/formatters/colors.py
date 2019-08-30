@@ -42,7 +42,7 @@ class ColorFormatter(FormatterPlugin):
 
     def __init__(self, env, explicit_json=False,
                  color_scheme=DEFAULT_STYLE, **kwargs):
-        super(ColorFormatter, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
         if not env.colors:
             self.enabled = False

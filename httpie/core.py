@@ -10,27 +10,29 @@ Invocation flow:
   5. Exit.
 
 """
-import sys
+import argparse
 import errno
 import platform
+import sys
+from typing import Callable, List, Union
 
 import requests
-from requests import __version__ as requests_version
 from pygments import __version__ as pygments_version
+from requests import __version__ as requests_version
 
-from httpie import __version__ as httpie_version, ExitStatus
+from httpie import ExitStatus, __version__ as httpie_version
 from httpie.client import get_response
-from httpie.downloads import Downloader
 from httpie.context import Environment
-from httpie.plugins import plugin_manager
+from httpie.downloads import Downloader
 from httpie.output.streams import (
     build_output_stream,
     write_stream,
-    write_stream_with_colors_win_py3
+    write_stream_with_colors_win_py3,
 )
+from httpie.plugins import plugin_manager
 
 
-def get_exit_status(http_status, follow=False):
+def get_exit_status(http_status: int, follow=False) -> ExitStatus:
     """Translate HTTP status code to exit status code."""
     if 300 <= http_status <= 399 and not follow:
         # Redirect
@@ -45,7 +47,7 @@ def get_exit_status(http_status, follow=False):
         return ExitStatus.SUCCESS
 
 
-def print_debug_info(env):
+def print_debug_info(env: Environment):
     env.stderr.writelines([
         'HTTPie %s\n' % httpie_version,
         'Requests %s\n' % requests_version,
@@ -58,7 +60,10 @@ def print_debug_info(env):
     env.stderr.write('\n')
 
 
-def decode_args(args, stdin_encoding):
+def decode_args(
+    args: List[Union[str, bytes]],
+    stdin_encoding: str
+) -> List[str]:
     """
     Convert all bytes args to str
     by decoding them using stdin encoding.
@@ -71,7 +76,11 @@ def decode_args(args, stdin_encoding):
     ]
 
 
-def program(args, env, log_error):
+def program(
+    args: argparse.Namespace,
+    env: Environment,
+    log_error: Callable
+) -> ExitStatus:
     """
     The main program without error handling
 
@@ -168,7 +177,11 @@ def program(args, env, log_error):
             args.output_file.close()
 
 
-def main(args=sys.argv, env=Environment(), custom_log_error=None):
+def main(
+    args: List[Union[str, bytes]] = sys.argv,
+    env=Environment(),
+    custom_log_error: Callable = None
+) -> ExitStatus:
     """
     The main function.
 
@@ -218,7 +231,7 @@ def main(args=sys.argv, env=Environment(), custom_log_error=None):
             raise
         exit_status = ExitStatus.ERROR_CTRL_C
     except SystemExit as e:
-        if e.code != ExitStatus.SUCCESS:
+        if e.code != ExitStatus.SUCCESS.value:
             env.stderr.write('\n')
             if include_traceback:
                 raise
@@ -236,7 +249,7 @@ def main(args=sys.argv, env=Environment(), custom_log_error=None):
                 raise
             exit_status = ExitStatus.ERROR_CTRL_C
         except SystemExit as e:
-            if e.code != ExitStatus.SUCCESS:
+            if e.code != ExitStatus.SUCCESS.value:
                 env.stderr.write('\n')
                 if include_traceback:
                     raise

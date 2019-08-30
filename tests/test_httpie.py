@@ -24,7 +24,7 @@ def test_version():
     r = http('--version', error_exit_ok=True)
     assert r.exit_status == httpie.ExitStatus.SUCCESS
     # FIXME: py3 has version in stdout, py2 in stderr
-    assert httpie.__version__ == r.stderr.strip() + r.strip()
+    assert httpie.__version__ == r.strip()
 
 
 def test_GET(httpbin_both):

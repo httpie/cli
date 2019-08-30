@@ -1,4 +1,4 @@
-class BasePlugin(object):
+class BasePlugin:
 
     # The name of the plugin, eg. "My auth".
     name = None
@@ -75,7 +75,7 @@ class TransportPlugin(BasePlugin):
         raise NotImplementedError()
 
 
-class ConverterPlugin(object):
+class ConverterPlugin:
 
     def __init__(self, mime):
         self.mime = mime
@@ -88,7 +88,7 @@ class ConverterPlugin(object):
         raise NotImplementedError
 
 
-class FormatterPlugin(object):
+class FormatterPlugin:
 
     def __init__(self, **kwargs):
         """

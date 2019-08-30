@@ -12,7 +12,7 @@ ENTRY_POINT_NAMES = [
 ]
 
 
-class PluginManager(object):
+class PluginManager:
 
     def __init__(self):
         self._plugins = []

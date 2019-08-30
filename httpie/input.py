@@ -9,14 +9,15 @@ import errno
 import mimetypes
 import getpass
 from io import BytesIO
-from collections import namedtuple, Iterable, OrderedDict
+from collections import namedtuple, OrderedDict
 # noinspection PyCompatibility
-from argparse import ArgumentParser, ArgumentTypeError, ArgumentError
+import argparse
 
 # TODO: Use MultiDict for headers once added to `requests`.
 # https://github.com/jakubroztocil/httpie/issues/130
 from urllib.parse import urlsplit
 
+from httpie.context import Environment
 from httpie.plugins import plugin_manager
 from requests.structures import CaseInsensitiveDict
 
@@ -121,7 +122,7 @@ SSL_VERSION_ARG_MAPPING = {
 }
 
 
-class HTTPieArgumentParser(ArgumentParser):
+class HTTPieArgumentParser(argparse.ArgumentParser):
     """Adds additional logic to `argparse.ArgumentParser`.
 
     Handles all input (CLI args, file args, stdin), applies defaults,
@@ -131,16 +132,21 @@ class HTTPieArgumentParser(ArgumentParser):
 
     def __init__(self, *args, **kwargs):
         kwargs['add_help'] = False
-        super(HTTPieArgumentParser, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.env = None
         self.args = None
         self.has_stdin_data = False
 
     # noinspection PyMethodOverriding
-    def parse_args(self, env, program_name='http', args=None, namespace=None):
+    def parse_args(
+        self,
+        env: Environment,
+        program_name='http',
+        args=None,
+        namespace=None
+    ) -> argparse.Namespace:
         self.env = env
-        self.args, no_options = super(
-            HTTPieArgumentParser, self).parse_known_args(args, namespace)
+        self.args, no_options = super().parse_known_args(args, namespace)
 
         if self.args.debug:
             self.args.traceback = True
@@ -193,7 +199,7 @@ class HTTPieArgumentParser(ArgumentParser):
         }.get(file, file)
         if not hasattr(file, 'buffer') and isinstance(message, str):
             message = message.encode(self.env.stdout_encoding)
-        super(HTTPieArgumentParser, self)._print_message(message, file)
+        super()._print_message(message, file)
 
     def _setup_standard_streams(self):
         """
@@ -342,7 +348,7 @@ class HTTPieArgumentParser(ArgumentParser):
                 self.args.items.insert(0, KeyValueArgType(
                     *SEP_GROUP_ALL_ITEMS).__call__(self.args.url))
 
-            except ArgumentTypeError as e:
+            except argparse.ArgumentTypeError as e:
                 if self.args.traceback:
                     raise
                 self.error(e.args[0])
@@ -461,7 +467,7 @@ class ParseError(Exception):
     pass
 
 
-class KeyValue(object):
+class KeyValue:
     """Base key-value pair parsed from CLI."""
 
     def __init__(self, key, value, sep, orig):
@@ -477,7 +483,7 @@ class KeyValue(object):
         return repr(self.__dict__)
 
 
-class SessionNameValidator(object):
+class SessionNameValidator:
 
     def __init__(self, error_message):
         self.error_message = error_message
@@ -486,11 +492,11 @@ class SessionNameValidator(object):
         # Session name can be a path or just a name.
         if (os.path.sep not in value
                 and not VALID_SESSION_NAME_PATTERN.search(value)):
-            raise ArgumentError(None, self.error_message)
+            raise argparse.ArgumentError(None, self.error_message)
         return value
 
 
-class KeyValueArgType(object):
+class KeyValueArgType:
     """A key-value pair argument type used with `argparse`.
 
     Parses a key-value arg and constructs a `KeyValue` instance.
@@ -573,7 +579,7 @@ class KeyValueArgType(object):
                 break
 
         else:
-            raise ArgumentTypeError(
+            raise argparse.ArgumentTypeError(
                 u'"%s" is not a valid value' % string)
 
         return self.key_value_class(
@@ -611,8 +617,8 @@ class AuthCredentialsArgType(KeyValueArgType):
 
         """
         try:
-            return super(AuthCredentialsArgType, self).__call__(string)
-        except ArgumentTypeError:
+            return super().__call__(string)
+        except argparse.ArgumentTypeError:
             # No password provided, will prompt for it later.
             return self.key_value_class(
                 key=string,
@@ -639,10 +645,10 @@ class RequestItemsDict(OrderedDict):
         """
         assert not isinstance(value, list)
         if key not in self:
-            super(RequestItemsDict, self).__setitem__(key, value)
+            super().__setitem__(key, value)
         else:
             if not isinstance(self[key], list):
-                super(RequestItemsDict, self).__setitem__(key, [self[key]])
+                super().__setitem__(key, [self[key]])
             self[key].append(value)
 
 
@@ -653,7 +659,7 @@ class ParamsDict(RequestItemsDict):
 class DataDict(RequestItemsDict):
 
     def items(self):
-        for key, values in super(RequestItemsDict, self).items():
+        for key, values in super().items():
             if not isinstance(values, list):
                 values = [values]
             for value in values:
@@ -757,4 +763,4 @@ def readable_file_arg(filename):
         with open(filename, 'rb'):
             return filename
     except IOError as ex:
-        raise ArgumentTypeError('%s: %s' % (filename, ex.args[1]))
+        raise argparse.ArgumentTypeError('%s: %s' % (filename, ex.args[1]))

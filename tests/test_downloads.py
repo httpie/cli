@@ -14,7 +14,7 @@ from httpie.downloads import (
 from utils import http, MockEnvironment
 
 
-class Response(object):
+class Response:
     # noinspection PyDefaultArgument
     def __init__(self, url, headers={}, status_code=200):
         self.url = url

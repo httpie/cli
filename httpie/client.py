@@ -50,18 +50,18 @@ class HTTPieHTTPAdapter(HTTPAdapter):
 
     def __init__(self, ssl_version=None, **kwargs):
         self._ssl_version = ssl_version
-        super(HTTPieHTTPAdapter, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def init_poolmanager(self, *args, **kwargs):
         kwargs['ssl_version'] = self._ssl_version
-        super(HTTPieHTTPAdapter, self).init_poolmanager(*args, **kwargs)
+        super().init_poolmanager(*args, **kwargs)
 
 
 class ContentCompressionHttpAdapter(HTTPAdapter):
 
     def __init__(self, compress, **kwargs):
         self.compress = compress
-        super(ContentCompressionHttpAdapter, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def send(self, request, **kwargs):
         if request.body and self.compress > 0:
@@ -75,7 +75,7 @@ class ContentCompressionHttpAdapter(HTTPAdapter):
                 request.body = deflated_data
                 request.headers['Content-Encoding'] = 'deflate'
                 request.headers['Content-Length'] = str(len(deflated_data))
-        return super(ContentCompressionHttpAdapter, self).send(request, **kwargs)
+        return super().send(request, **kwargs)
 
 
 def get_requests_session(ssl_version, compress):

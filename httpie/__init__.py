@@ -2,12 +2,15 @@
 HTTPie - a CLI, cURL-like tool for humans.
 
 """
+from enum import Enum
+
+
 __version__ = '2.0.0-dev'
 __author__ = 'Jakub Roztocil'
 __licence__ = 'BSD'
 
 
-class ExitStatus:
+class ExitStatus(Enum):
     """Program exit code constants."""
     SUCCESS = 0
     ERROR = 1
@@ -23,10 +26,3 @@ class ExitStatus:
     ERROR_HTTP_3XX = 3
     ERROR_HTTP_4XX = 4
     ERROR_HTTP_5XX = 5
-
-
-EXIT_STATUS_LABELS = {
-    value: key
-    for key, value in ExitStatus.__dict__.items()
-    if key.isupper()
-}

@@ -4,23 +4,26 @@ Download mode implementation.
 
 """
 from __future__ import division
+
+import errno
+import mimetypes
 import os
 import re
 import sys
-import errno
-import mimetypes
 import threading
-from time import sleep, time
 from mailbox import Message
+from time import sleep, time
+from typing import IO, Optional, Tuple
 from urllib.parse import urlsplit
 
-from httpie.output.streams import RawStream
+import requests
+
 from httpie.models import HTTPResponse
+from httpie.output.streams import RawStream
 from httpie.utils import humanize_bytes
 
 
 PARTIAL_CONTENT = 206
-
 
 CLEAR_LINE = '\r\033[K'
 PROGRESS = (
@@ -38,7 +41,7 @@ class ContentRangeError(ValueError):
     pass
 
 
-def parse_content_range(content_range, resumed_from):
+def parse_content_range(content_range: str, resumed_from: int) -> int:
     """
     Parse and validate Content-Range header.
 
@@ -79,14 +82,14 @@ def parse_content_range(content_range, resumed_from):
     # byte-content-range- spec MUST ignore it and any content
     # transferred along with it."
     if (first_byte_pos >= last_byte_pos
-            or (instance_length is not None
-                and instance_length <= last_byte_pos)):
+        or (instance_length is not None
+            and instance_length <= last_byte_pos)):
         raise ContentRangeError(
             'Invalid Content-Range returned: %r' % content_range)
 
     if (first_byte_pos != resumed_from
-            or (instance_length is not None
-                and last_byte_pos + 1 != instance_length)):
+        or (instance_length is not None
+            and last_byte_pos + 1 != instance_length)):
         # Not what we asked for.
         raise ContentRangeError(
             'Unexpected Content-Range returned (%r)'
@@ -97,7 +100,9 @@ def parse_content_range(content_range, resumed_from):
     return last_byte_pos + 1
 
 
-def filename_from_content_disposition(content_disposition):
+def filename_from_content_disposition(
+    content_disposition: str
+) -> Optional[str]:
     """
     Extract and validate filename from a Content-Disposition header.
 
@@ -116,7 +121,7 @@ def filename_from_content_disposition(content_disposition):
             return filename
 
 
-def filename_from_url(url, content_type):
+def filename_from_url(url: str, content_type: str) -> str:
     fn = urlsplit(url).path.rstrip('/')
     fn = os.path.basename(fn) if fn else 'index'
     if '.' not in fn and content_type:
@@ -136,7 +141,7 @@ def filename_from_url(url, content_type):
     return fn
 
 
-def trim_filename(filename, max_len):
+def trim_filename(filename: str, max_len: int) -> str:
     if len(filename) > max_len:
         trim_by = len(filename) - max_len
         name, ext = os.path.splitext(filename)
@@ -147,7 +152,7 @@ def trim_filename(filename, max_len):
     return filename
 
 
-def get_filename_max_length(directory):
+def get_filename_max_length(directory: str) -> int:
     max_len = 255
     try:
         pathconf = os.pathconf
@@ -162,14 +167,14 @@ def get_filename_max_length(directory):
     return max_len
 
 
-def trim_filename_if_needed(filename, directory='.', extra=0):
+def trim_filename_if_needed(filename: str, directory='.', extra=0) -> str:
     max_len = get_filename_max_length(directory) - extra
     if len(filename) > max_len:
         filename = trim_filename(filename, max_len)
     return filename
 
 
-def get_unique_filename(filename, exists=os.path.exists):
+def get_unique_filename(filename: str, exists=os.path.exists) -> str:
     attempt = 0
     while True:
         suffix = '-' + str(attempt) if attempt > 0 else ''
@@ -180,10 +185,14 @@ def get_unique_filename(filename, exists=os.path.exists):
         attempt += 1
 
 
-class Downloader(object):
+class Downloader:
 
-    def __init__(self, output_file=None,
-                 resume=False, progress_file=sys.stderr):
+    def __init__(
+        self,
+        output_file: IO = None,
+        resume: bool = False,
+        progress_file: IO = sys.stderr
+    ):
         """
         :param resume: Should the download resume if partial download
                        already exists.
@@ -195,23 +204,20 @@ class Downloader(object):
         :param progress_file: Where to report download progress.
 
         """
+        self.finished = False
+        self.status = DownloadStatus()
         self._output_file = output_file
         self._resume = resume
         self._resumed_from = 0
-        self.finished = False
-
-        self.status = Status()
         self._progress_reporter = ProgressReporterThread(
             status=self.status,
             output=progress_file
         )
 
-    def pre_request(self, request_headers):
+    def pre_request(self, request_headers: dict):
         """Called just before the HTTP request is sent.
 
         Might alter `request_headers`.
-
-        :type request_headers: dict
 
         """
         # Ask the server not to encode the content so that we can resume, etc.
@@ -224,13 +230,12 @@ class Downloader(object):
                 request_headers['Range'] = 'bytes=%d-' % bytes_have
                 self._resumed_from = bytes_have
 
-    def start(self, final_response):
+    def start(self, final_response: requests.Response) -> Tuple[RawStream, IO]:
         """
         Initiate and return a stream for `response` body  with progress
         callback attached. Can be called only once.
 
         :param final_response: Initiated response object with headers already fetched
-        :type final_response: requests.models.Response
 
         :return: RawStream, output_file
 
@@ -297,14 +302,14 @@ class Downloader(object):
         self._progress_reporter.stop()
 
     @property
-    def interrupted(self):
+    def interrupted(self) -> bool:
         return (
             self.finished
             and self.status.total_size
             and self.status.total_size != self.status.downloaded
         )
 
-    def chunk_downloaded(self, chunk):
+    def chunk_downloaded(self, chunk: bytes):
         """
         A download progress callback.
 
@@ -316,7 +321,9 @@ class Downloader(object):
         self.status.chunk_downloaded(len(chunk))
 
     @staticmethod
-    def _get_output_file_from_response(final_response):
+    def _get_output_file_from_response(
+        final_response: requests.Response
+    ) -> IO:
         # Output file not specified. Pick a name that doesn't exist yet.
         filename = None
         if 'Content-Disposition' in final_response.headers:
@@ -335,7 +342,7 @@ class Downloader(object):
         return open(unique_filename, mode='a+b')
 
 
-class Status(object):
+class DownloadStatus:
     """Holds details about the downland status."""
 
     def __init__(self):
@@ -372,13 +379,15 @@ class ProgressReporterThread(threading.Thread):
     Uses threading to periodically update the status (speed, ETA, etc.).
 
     """
-    def __init__(self, status, output, tick=.1, update_interval=1):
-        """
 
-        :type status: Status
-        :type output: file
-        """
-        super(ProgressReporterThread, self).__init__()
+    def __init__(
+        self,
+        status: DownloadStatus,
+        output: IO,
+        tick=.1,
+        update_interval=1
+    ):
+        super().__init__()
         self.status = status
         self.output = output
         self._tick = tick

@@ -28,5 +28,5 @@ def test_default_options_overwrite(httpbin):
 
 
 def test_current_version():
-    version = Environment().config['__meta__']['httpie']
+    version = MockEnvironment().config['__meta__']['httpie']
     assert version == __version__

@@ -1,12 +1,14 @@
-import os
-import json
 import errno
+import json
+import os
+from pathlib import Path
+from typing import Union
 
 from httpie import __version__
 from httpie.compat import is_windows
 
 
-DEFAULT_CONFIG_DIR = str(os.environ.get(
+DEFAULT_CONFIG_DIR = Path(os.environ.get(
     'HTTPIE_CONFIG_DIR',
     os.path.expanduser('~/.httpie') if not is_windows else
     os.path.expandvars(r'%APPDATA%\\httpie')
@@ -14,41 +16,36 @@ DEFAULT_CONFIG_DIR = str(os.environ.get(
 
 
 class BaseConfigDict(dict):
-
     name = None
     helpurl = None
     about = None
 
-    def __getattr__(self, item):
-        return self[item]
-
-    def _get_path(self):
+    def _get_path(self) -> Path:
         """Return the config file path without side-effects."""
         raise NotImplementedError()
 
-    @property
-    def path(self):
+    def path(self) -> Path:
         """Return the config file path creating basedir, if needed."""
         path = self._get_path()
         try:
-            os.makedirs(os.path.dirname(path), mode=0o700)
+            path.parent.mkdir(mode=0o700, parents=True)
         except OSError as e:
             if e.errno != errno.EEXIST:
                 raise
         return path
 
-    def is_new(self):
-        return not os.path.exists(self._get_path())
+    def is_new(self) -> bool:
+        return not self._get_path().exists()
 
     def load(self):
         try:
-            with open(self.path, 'rt') as f:
+            with self.path().open('rt') as f:
                 try:
                     data = json.load(f)
                 except ValueError as e:
                     raise ValueError(
                         'Invalid %s JSON: %s [%s]' %
-                        (type(self).__name__, str(e), self.path)
+                        (type(self).__name__, str(e), self.path())
                     )
                 self.update(data)
         except IOError as e:
@@ -66,7 +63,7 @@ class BaseConfigDict(dict):
             self['__meta__']['about'] = self.about
 
         try:
-            with open(self.path, 'w') as f:
+            with self.path().open('w') as f:
                 json.dump(self, f, indent=4, sort_keys=True, ensure_ascii=True)
                 f.write('\n')
         except IOError:
@@ -75,26 +72,28 @@ class BaseConfigDict(dict):
 
     def delete(self):
         try:
-            os.unlink(self.path)
+            self.path().unlink()
         except OSError as e:
             if e.errno != errno.ENOENT:
                 raise
 
 
 class Config(BaseConfigDict):
-
     name = 'config'
     helpurl = 'https://httpie.org/doc#config'
     about = 'HTTPie configuration file'
-
     DEFAULTS = {
         'default_options': []
     }
 
-    def __init__(self, directory=DEFAULT_CONFIG_DIR):
-        super(Config, self).__init__()
+    def __init__(self, directory: Union[str, Path] = DEFAULT_CONFIG_DIR):
+        super().__init__()
         self.update(self.DEFAULTS)
-        self.directory = directory
+        self.directory = Path(directory)
 
-    def _get_path(self):
-        return os.path.join(self.directory, self.name + '.json')
+    def _get_path(self) -> Path:
+        return self.directory / (self.name + '.json')
+
+    @property
+    def default_options(self) -> list:
+        return self['default_options']
