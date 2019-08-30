@@ -172,5 +172,5 @@ class Session(BaseConfigDict):
 
     @auth.setter
     def auth(self, auth):
-        assert set(['type', 'raw_auth']) == set(auth.keys())
+        assert {'type', 'raw_auth'} == auth.keys()
         self['auth'] = auth
