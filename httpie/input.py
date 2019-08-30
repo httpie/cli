@@ -25,7 +25,7 @@ from httpie.utils import load_json_preserve_order
 
 
 # ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
-# <http://tools.ietf.org/html/rfc3986#section-3.1>
+# <https://tools.ietf.org/html/rfc3986#section-3.1>
 URL_SCHEME_RE = re.compile(r'^[a-z][a-z0-9.+-]*://', re.IGNORECASE)
 
 HTTP_POST = 'POST'

@@ -26,7 +26,7 @@ def repr_dict_nice(d):
 def humanize_bytes(n, precision=2):
     # Author: Doug Latornell
     # Licence: MIT
-    # URL: http://code.activestate.com/recipes/577081/
+    # URL: https://code.activestate.com/recipes/577081/
     """Return a humanized string representation of a number of bytes.
 
     Assumes `from __future__ import division`.

@@ -63,7 +63,7 @@ macOS
 -----
 
 
-On macOS, HTTPie can be installed via `Homebrew <http://brew.sh/>`_
+On macOS, HTTPie can be installed via `Homebrew <https://brew.sh/>`_
 (recommended):
 
 .. code-block:: bash
@@ -537,7 +537,7 @@ fields using ``=@`` and ``:=@``:
         "married": false,
         "name": "John",
         "bookmarks": {
-            "HTTPie": "http://httpie.org",
+            "HTTPie": "https://httpie.org",
         }
     }
 
@@ -610,7 +610,7 @@ To set custom headers you can use the ``Header:Value`` notation:
 .. code-block:: bash
 
     $ http example.org  User-Agent:Bacon/1.0  'Cookie:valued-visitor=yes;foo=bar'  \
-        X-Foo:Bar  Referer:http://httpie.org/
+        X-Foo:Bar  Referer:https://httpie.org/
 
 
 .. code-block:: http
@@ -620,7 +620,7 @@ To set custom headers you can use the ``Header:Value`` notation:
     Accept-Encoding: gzip, deflate
     Cookie: valued-visitor=yes;foo=bar
     Host: example.org
-    Referer: http://httpie.org/
+    Referer: https://httpie.org/
     User-Agent: Bacon/1.0
     X-Foo: Bar
 
@@ -1659,7 +1659,7 @@ Please use the following support channels:
   to ask questions, discuss features, and for general discussion.
 * `StackOverflow <https://stackoverflow.com>`_
   to ask questions (please make sure to use the
-  `httpie <http://stackoverflow.com/questions/tagged/httpie>`_ tag).
+  `httpie <https://stackoverflow.com/questions/tagged/httpie>`_ tag).
 * Tweet directly to `@clihttp <https://twitter.com/clihttp>`_.
 * You can also tweet directly to `@jakubroztocil`_.
 
@@ -1672,9 +1672,9 @@ Dependencies
 
 Under the hood, HTTPie uses these two amazing libraries:
 
-* `Requests <http://python-requests.org>`_
+* `Requests <https://python-requests.org>`_
   — Python HTTP library for humans
-* `Pygments <http://pygments.org/>`_
+* `Pygments <https://pygments.org/>`_
   — Python syntax highlighter
 
 
@@ -1735,7 +1735,7 @@ have contributed.
 
 
 .. _pip: https://pip.pypa.io/en/stable/installing/
-.. _Github API: http://developer.github.com/v3/issues/comments/#create-a-comment
+.. _Github API: https://developer.github.com/v3/issues/comments/#create-a-comment
 .. _these fine people: https://github.com/jakubroztocil/httpie/contributors
 .. _Jakub Roztocil: https://roztocil.co
 .. _@jakubroztocil: https://twitter.com/jakubroztocil
@@ -1750,7 +1750,7 @@ have contributed.
     :alt: Test coverage
 
 .. |unix_build| image:: https://img.shields.io/travis/jakubroztocil/httpie/master.svg?style=flat-square&label=unix%20build
-    :target: http://travis-ci.org/jakubroztocil/httpie
+    :target: https://travis-ci.org/jakubroztocil/httpie
     :alt: Build status of the master branch on Mac/Linux
 
 .. |gitter| image:: https://img.shields.io/gitter/room/jkbrzt/httpie.svg?style=flat-square

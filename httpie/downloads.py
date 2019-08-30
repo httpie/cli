@@ -42,7 +42,7 @@ def parse_content_range(content_range, resumed_from):
     """
     Parse and validate Content-Range header.
 
-    <http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html>
+    <https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html>
 
     :param content_range: the value of a Content-Range response header
                           eg. "bytes 21010-47021/47022"

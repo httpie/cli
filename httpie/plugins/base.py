@@ -59,7 +59,7 @@ class AuthPlugin(BasePlugin):
 class TransportPlugin(BasePlugin):
     """
 
-    http://docs.python-requests.org/en/latest/user/advanced/#transport-adapters
+    https://2.python-requests.org/en/latest/user/advanced/#transport-adapters
 
     """
 
