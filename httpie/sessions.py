@@ -48,8 +48,8 @@ def get_response(
         # host:port => host_port
         hostname = hostname.replace(':', '_')
         path = (
-            config_dir / SESSIONS_DIR_NAME / hostname /
-            (session_name + '.json')
+            config_dir / SESSIONS_DIR_NAME / hostname
+            / (session_name + '.json')
         )
 
     session = Session(path)
