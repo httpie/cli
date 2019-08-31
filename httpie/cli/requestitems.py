@@ -144,7 +144,7 @@ def load_text_file(item) -> str:
     path = item.value
     try:
         with open(os.path.expanduser(path), 'rb') as f:
-            return f.read().decode('utf8')
+            return f.read().decode()
     except IOError as e:
         raise ParseError('"%s": %s' % (item.orig, e))
     except UnicodeDecodeError:

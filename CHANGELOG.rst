@@ -16,9 +16,9 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 * Added ``--ignore-netrc`` to allow bypassing credentials from ``.netrc``.
 * Added ``https`` alias command with ``https://`` as the default scheme.
 * Added ``$ALL_PROXY`` documentation.
-* Improved ``--debug`` output formatting.
 * Fixed an error when ``stdin`` was a closed fd.
 * Fixed an error when the config directory was not writeable.
+* Improved ``--debug`` output formatting.
 
 
 `1.0.3`_ (2019-08-26)

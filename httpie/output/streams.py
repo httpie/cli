@@ -1,11 +1,15 @@
+import argparse
 from itertools import chain
-from functools import partial
+from typing import Callable, IO, Iterable, TextIO, Tuple, Type, Union
 
-from httpie.context import Environment
-from httpie.models import HTTPRequest, HTTPResponse
+import requests
+
 from httpie.cli.constants import (
-    OUT_REQ_BODY, OUT_REQ_HEAD, OUT_RESP_HEAD, OUT_RESP_BODY)
-from httpie.output.processing import Formatting, Conversion
+    OUT_REQ_BODY, OUT_REQ_HEAD, OUT_RESP_BODY, OUT_RESP_HEAD,
+)
+from httpie.context import Environment
+from httpie.models import HTTPMessage, HTTPRequest, HTTPResponse
+from httpie.output.processing import Conversion, Formatting
 
 
 BINARY_SUPPRESSED_NOTICE = (
@@ -23,7 +27,11 @@ class BinarySuppressedError(Exception):
     message = BINARY_SUPPRESSED_NOTICE
 
 
-def write_stream(stream, outfile, flush):
+def write_stream(
+    stream: 'BaseStream',
+    outfile: Union[IO, TextIO],
+    flush: bool
+):
     """Write the output stream."""
     try:
         # Writing bytes so we use the buffer interface (Python 3).
@@ -37,7 +45,11 @@ def write_stream(stream, outfile, flush):
             outfile.flush()
 
 
-def write_stream_with_colors_win_py3(stream, outfile, flush):
+def write_stream_with_colors_win_py3(
+    stream: 'BaseStream',
+    outfile: TextIO,
+    flush: bool
+):
     """Like `write`, but colorized chunks are written as text
     directly to `outfile` to ensure it gets processed by colorama.
     Applies only to Windows with Python 3 and colorized terminal output.
@@ -54,7 +66,13 @@ def write_stream_with_colors_win_py3(stream, outfile, flush):
             outfile.flush()
 
 
-def build_output_stream(args, env, request, response, output_options):
+def build_output_stream(
+    args: argparse.Namespace,
+    env: Environment,
+    request: requests.Request,
+    response: requests.Response,
+    output_options: str
+) -> Iterable[bytes]:
     """Build and return a chain of iterators over the `request`-`response`
     exchange each of which yields `bytes` chunks.
 
@@ -67,23 +85,32 @@ def build_output_stream(args, env, request, response, output_options):
     resp = resp_h or resp_b
 
     output = []
-    Stream = get_stream_type(env, args)
+    stream_class, stream_kwargs = get_stream_type_and_kwargs(
+        env=env, args=args)
 
     if req:
-        output.append(Stream(
-            msg=HTTPRequest(request),
-            with_headers=req_h,
-            with_body=req_b))
+        output.append(
+            stream_class(
+                msg=HTTPRequest(request),
+                with_headers=req_h,
+                with_body=req_b,
+                **stream_kwargs,
+            )
+        )
 
     if req_b and resp:
         # Request/Response separator.
         output.append([b'\n\n'])
 
     if resp:
-        output.append(Stream(
-            msg=HTTPResponse(response),
-            with_headers=resp_h,
-            with_body=resp_b))
+        output.append(
+            stream_class(
+                msg=HTTPResponse(response),
+                with_headers=resp_h,
+                with_body=resp_b,
+                **stream_kwargs,
+            )
+        )
 
     if env.stdout_isatty and resp_b:
         # Ensure a blank line after the response body.
@@ -93,42 +120,52 @@ def build_output_stream(args, env, request, response, output_options):
     return chain(*output)
 
 
-def get_stream_type(env, args):
-    """Pick the right stream type based on `env` and `args`.
-    Wrap it in a partial with the type-specific args so that
-    we don't need to think what stream we are dealing with.
+def get_stream_type_and_kwargs(
+    env: Environment,
+    args: argparse.Namespace
+) -> Tuple[Type['BaseStream'], dict]:
+    """Pick the right stream type and kwargs for it based on `env` and `args`.
 
     """
     if not env.stdout_isatty and not args.prettify:
-        Stream = partial(
-            RawStream,
-            chunk_size=RawStream.CHUNK_SIZE_BY_LINE
-            if args.stream
-            else RawStream.CHUNK_SIZE
-        )
+        stream_class = RawStream
+        stream_kwargs = {
+            'chunk_size': (
+                RawStream.CHUNK_SIZE_BY_LINE
+                if args.stream
+                else RawStream.CHUNK_SIZE
+            )
+        }
     elif args.prettify:
-        Stream = partial(
-            PrettyStream if args.stream else BufferedPrettyStream,
-            env=env,
-            conversion=Conversion(),
-            formatting=Formatting(
+        stream_class = PrettyStream if args.stream else BufferedPrettyStream
+        stream_kwargs = {
+            'env': env,
+            'conversion': Conversion(),
+            'formatting': Formatting(
                 env=env,
                 groups=args.prettify,
                 color_scheme=args.style,
                 explicit_json=args.json,
-            ),
-        )
+            )
+        }
     else:
-        Stream = partial(EncodedStream, env=env)
+        stream_class = EncodedStream
+        stream_kwargs = {
+            'env': env
+        }
 
-    return Stream
+    return stream_class, stream_kwargs
 
 
 class BaseStream:
     """Base HTTP message output stream class."""
 
-    def __init__(self, msg, with_headers=True, with_body=True,
-                 on_body_chunk_downloaded=None):
+    def __init__(
+        self,
+        msg: HTTPMessage,
+        with_headers=True, with_body=True,
+        on_body_chunk_downloaded: Callable[[bytes], None] = None
+    ):
         """
         :param msg: a :class:`models.HTTPMessage` subclass
         :param with_headers: if `True`, headers will be included
@@ -141,15 +178,15 @@ class BaseStream:
         self.with_body = with_body
         self.on_body_chunk_downloaded = on_body_chunk_downloaded
 
-    def get_headers(self):
+    def get_headers(self) -> bytes:
         """Return the headers' bytes."""
         return self.msg.headers.encode('utf8')
 
-    def iter_body(self):
+    def iter_body(self) -> Iterable[bytes]:
         """Return an iterator over the message body."""
         raise NotImplementedError()
 
-    def __iter__(self):
+    def __iter__(self) -> Iterable[bytes]:
         """Return an iterator over `self.msg`."""
         if self.with_headers:
             yield self.get_headers()
@@ -177,7 +214,7 @@ class RawStream(BaseStream):
         super().__init__(**kwargs)
         self.chunk_size = chunk_size
 
-    def iter_body(self):
+    def iter_body(self) -> Iterable[bytes]:
         return self.msg.iter_body(self.chunk_size)
 
 
@@ -192,26 +229,20 @@ class EncodedStream(BaseStream):
     CHUNK_SIZE = 1
 
     def __init__(self, env=Environment(), **kwargs):
-
         super().__init__(**kwargs)
-
         if env.stdout_isatty:
             # Use the encoding supported by the terminal.
             output_encoding = env.stdout_encoding
         else:
             # Preserve the message encoding.
             output_encoding = self.msg.encoding
-
         # Default to utf8 when unsure.
         self.output_encoding = output_encoding or 'utf8'
 
-    def iter_body(self):
-
+    def iter_body(self) -> Iterable[bytes]:
         for line, lf in self.msg.iter_lines(self.CHUNK_SIZE):
-
             if b'\0' in line:
                 raise BinarySuppressedError()
-
             yield line.decode(self.msg.encoding) \
                       .encode(self.output_encoding, 'replace') + lf
 
@@ -227,17 +258,21 @@ class PrettyStream(EncodedStream):
 
     CHUNK_SIZE = 1
 
-    def __init__(self, conversion, formatting, **kwargs):
+    def __init__(
+        self, conversion: Conversion,
+        formatting: Formatting,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
         self.formatting = formatting
         self.conversion = conversion
         self.mime = self.msg.content_type.split(';')[0]
 
-    def get_headers(self):
+    def get_headers(self) -> bytes:
         return self.formatting.format_headers(
             self.msg.headers).encode(self.output_encoding)
 
-    def iter_body(self):
+    def iter_body(self) -> Iterable[bytes]:
         first_chunk = True
         iter_lines = self.msg.iter_lines(self.CHUNK_SIZE)
         for line, lf in iter_lines:
@@ -258,7 +293,7 @@ class PrettyStream(EncodedStream):
             yield self.process_body(line) + lf
             first_chunk = False
 
-    def process_body(self, chunk):
+    def process_body(self, chunk: Union[str, bytes]) -> bytes:
         if not isinstance(chunk, str):
             # Text when a converter has been used,
             # otherwise it will always be bytes.
@@ -277,7 +312,7 @@ class BufferedPrettyStream(PrettyStream):
 
     CHUNK_SIZE = 1024 * 10
 
-    def iter_body(self):
+    def iter_body(self) -> Iterable[bytes]:
         # Read the whole body before prettifying it,
         # but bail out immediately if the body is binary.
         converter = None
