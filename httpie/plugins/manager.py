@@ -26,7 +26,7 @@ class PluginManager:
         for plugin in plugins:
             self._plugins.append(plugin)
 
-    def unregister(self, plugin: BasePlugin):
+    def unregister(self, plugin: Type[BasePlugin]):
         self._plugins.remove(plugin)
 
     def load_installed_plugins(self):
