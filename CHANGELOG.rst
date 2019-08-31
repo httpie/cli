@@ -15,6 +15,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 * Added ``--compress`` to allow request body compression.
 * Added ``--ignore-netrc`` to allow bypassing credentials from ``.netrc``.
 * Added ``https`` alias command with ``https://`` as the default scheme.
+* Added ``$ALL_PROXY`` documentation.
 * Fixed an error when ``stdin`` was a closed fd.
 * Fixed an error when the config directory was not writeable.
 
