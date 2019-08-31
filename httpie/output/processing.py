@@ -40,12 +40,12 @@ class Formatting:
                 if p.enabled:
                     self.enabled_plugins.append(p)
 
-    def format_headers(self, headers):
+    def format_headers(self, headers: str) -> str:
         for p in self.enabled_plugins:
             headers = p.format_headers(headers)
         return headers
 
-    def format_body(self, content, mime):
+    def format_body(self, content: str, mime: str) -> str:
         if is_valid_mime(mime):
             for p in self.enabled_plugins:
                 content = p.format_body(content, mime)

@@ -3,7 +3,7 @@ from httpie.plugins import FormatterPlugin
 
 class HeadersFormatter(FormatterPlugin):
 
-    def format_headers(self, headers):
+    def format_headers(self, headers: str) -> str:
         """
         Sorts headers by name while retaining relative
         order of multiple headers with the same name.

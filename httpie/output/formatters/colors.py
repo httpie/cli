@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 import json
+from typing import Type
 
 import pygments.lexer
 import pygments.token
@@ -13,6 +14,7 @@ from pygments.lexers.text import HttpLexer as PygmentsHttpLexer
 from pygments.util import ClassNotFound
 
 from httpie.compat import is_windows
+from httpie.context import Environment
 from httpie.plugins import FormatterPlugin
 
 
@@ -40,8 +42,13 @@ class ColorFormatter(FormatterPlugin):
     """
     group_name = 'colors'
 
-    def __init__(self, env, explicit_json=False,
-                 color_scheme=DEFAULT_STYLE, **kwargs):
+    def __init__(
+        self,
+        env: Environment,
+        explicit_json=False,
+        color_scheme=DEFAULT_STYLE,
+        **kwargs
+    ):
         super().__init__(**kwargs)
 
         if not env.colors:
@@ -63,14 +70,14 @@ class ColorFormatter(FormatterPlugin):
         self.formatter = formatter
         self.http_lexer = http_lexer
 
-    def format_headers(self, headers):
+    def format_headers(self, headers: str) -> str:
         return pygments.highlight(
             code=headers,
             lexer=self.http_lexer,
             formatter=self.formatter,
         ).strip()
 
-    def format_body(self, body, mime):
+    def format_body(self, body: str, mime: str) -> str:
         lexer = self.get_lexer_for_body(mime, body)
         if lexer:
             body = pygments.highlight(
@@ -80,21 +87,29 @@ class ColorFormatter(FormatterPlugin):
             )
         return body.strip()
 
-    def get_lexer_for_body(self, mime, body):
+    def get_lexer_for_body(
+        self, mime: str,
+        body: str
+    ) -> Type[pygments.lexer.Lexer]:
         return get_lexer(
             mime=mime,
             explicit_json=self.explicit_json,
             body=body,
         )
 
-    def get_style_class(self, color_scheme):
+    @staticmethod
+    def get_style_class(color_scheme: str) -> Type[pygments.style.Style]:
         try:
             return pygments.styles.get_style_by_name(color_scheme)
         except ClassNotFound:
             return Solarized256Style
 
 
-def get_lexer(mime, explicit_json=False, body=''):
+def get_lexer(
+    mime: str,
+    explicit_json=False,
+    body=''
+) -> Type[pygments.lexer.Lexer]:
 
     # Build candidate mime type and lexer names.
     mime_types, lexer_names = [mime], []
