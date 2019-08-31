@@ -517,7 +517,8 @@ network.add_argument(
     help="""
     String mapping protocol to the URL of the proxy
     (e.g. http:http://foo.bar:3128). You can specify multiple proxies with
-    different protocols.
+    different protocols. The environment variables $ALL_PROXY, $HTTP_PROXY,
+    and $HTTPS_proxy are supported as well.
 
     """
 )

@@ -893,10 +893,10 @@ With Basic authentication:
 Environment variables
 ---------------------
 
-You can also configure proxies by environment variables ``HTTP_PROXY`` and
-``HTTPS_PROXY``, and the underlying Requests library will pick them up as well.
-If you want to disable proxies configured through the environment variables for
-certain hosts, you can specify them in ``NO_PROXY``.
+You can also configure proxies by environment variables ``ALL_PROXY``,
+``HTTP_PROXY`` and ``HTTPS_PROXY``, and the underlying Requests library will
+pick them up as well. If you want to disable proxies configured through
+the environment variables for certain hosts, you can specify them in ``NO_PROXY``.
 
 In your ``~/.bash_profile``:
 
@@ -910,7 +910,9 @@ In your ``~/.bash_profile``:
 SOCKS
 -----
 
-Homebrew-installed HTTPie comes with SOCKS proxy support out of the box. To enable SOCKS proxy support for non-Homebrew  installations, you'll need to install ``requests[socks]`` manually using ``pip``:
+Homebrew-installed HTTPie comes with SOCKS proxy support out of the box.
+To enable SOCKS proxy support for non-Homebrew  installations, you'll
+might need to install ``requests[socks]`` manually using ``pip``:
 
 
 .. code-block:: bash
