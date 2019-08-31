@@ -2,6 +2,7 @@ from __future__ import division
 import json
 import mimetypes
 from collections import OrderedDict
+from pprint import pformat
 
 import requests.auth
 
@@ -10,20 +11,8 @@ def load_json_preserve_order(s):
     return json.loads(s, object_pairs_hook=OrderedDict)
 
 
-def repr_dict_nice(d):
-    def prepare_dict(d):
-        for k, v in d.items():
-            if isinstance(v, dict):
-                v = dict(prepare_dict(v))
-            elif isinstance(v, bytes):
-                v = v.decode('utf8')
-            elif not isinstance(v, (int, str)):
-                v = repr(v)
-            yield k, v
-    return json.dumps(
-        dict(prepare_dict(d)),
-        indent=4, sort_keys=True,
-    )
+def repr_dict(d: dict) -> str:
+    return pformat(d)
 
 
 def humanize_bytes(n, precision=2):

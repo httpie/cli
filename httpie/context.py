@@ -11,7 +11,7 @@ except ImportError:
 from httpie.compat import is_windows
 from httpie.config import DEFAULT_CONFIG_DIR, Config
 
-from httpie.utils import repr_dict_nice
+from httpie.utils import repr_dict
 
 
 class Environment:
@@ -94,11 +94,11 @@ class Environment:
         actual = dict(defaults)
         actual.update(self.__dict__)
         actual['config'] = self.config
-        return repr_dict_nice(dict(
-            (key, value)
+        return repr_dict({
+            key: value
             for key, value in actual.items()
-            if not key.startswith('_'))
-        )
+            if not key.startswith('_')
+        })
 
     def __repr__(self):
         return f'<{type(self).__name__} {self}>'

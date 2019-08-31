@@ -13,7 +13,7 @@ from httpie import __version__, sessions
 from httpie.cli.constants import SSL_VERSION_ARG_MAPPING
 from httpie.cli.dicts import RequestHeadersDict
 from httpie.plugins import plugin_manager
-from httpie.utils import repr_dict_nice
+from httpie.utils import repr_dict
 
 
 try:
@@ -122,8 +122,8 @@ def get_response(
 
 
 def dump_request(kwargs: dict):
-    sys.stderr.write('\n>>> requests.request(**%s)\n\n'
-                     % repr_dict_nice(kwargs))
+    sys.stderr.write(
+        f'\n>>> requests.request(**{repr_dict(kwargs)})\n\n')
 
 
 def finalize_headers(headers: RequestHeadersDict) -> RequestHeadersDict:
