@@ -3,8 +3,8 @@ from functools import partial
 
 from httpie.context import Environment
 from httpie.models import HTTPRequest, HTTPResponse
-from httpie.input import (OUT_REQ_BODY, OUT_REQ_HEAD,
-                          OUT_RESP_HEAD, OUT_RESP_BODY)
+from httpie.cli.constants import (
+    OUT_REQ_BODY, OUT_REQ_HEAD, OUT_RESP_HEAD, OUT_RESP_BODY)
 from httpie.output.processing import Formatting, Conversion
 
 

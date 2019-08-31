@@ -1,5 +1,6 @@
 from __future__ import division
 import json
+import mimetypes
 from collections import OrderedDict
 
 import requests.auth
@@ -78,3 +79,18 @@ class ExplicitNullAuth(requests.auth.AuthBase):
 
     def __call__(self, r):
         return r
+
+
+def get_content_type(filename):
+    """
+    Return the content type for ``filename`` in format appropriate
+    for Content-Type headers, or ``None`` if the file type is unknown
+    to ``mimetypes``.
+
+    """
+    mime, encoding = mimetypes.guess_type(filename, strict=False)
+    if mime:
+        content_type = mime
+        if encoding:
+            content_type = '%s; charset=%s' % (mime, encoding)
+        return content_type

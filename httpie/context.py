@@ -101,4 +101,4 @@ class Environment:
         )
 
     def __repr__(self):
-        return '<{0} {1}>'.format(type(self).__name__, str(self))
+        return f'<{type(self).__name__} {self}>'

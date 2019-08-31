@@ -1,7 +1,7 @@
 """High-level tests."""
 import pytest
 
-from httpie.input import ParseError
+from httpie.cli.exceptions import ParseError
 from utils import MockEnvironment, http, HTTP_OK
 from fixtures import FILE_PATH, FILE_CONTENT
 

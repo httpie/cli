@@ -9,7 +9,7 @@ from requests.structures import CaseInsensitiveDict
 
 from httpie import sessions
 from httpie import __version__
-from httpie.input import SSL_VERSION_ARG_MAPPING
+from httpie.cli.constants import SSL_VERSION_ARG_MAPPING
 from httpie.plugins import plugin_manager
 from httpie.utils import repr_dict_nice
 
@@ -30,7 +30,7 @@ except (ImportError, AttributeError):
 
 FORM_CONTENT_TYPE = 'application/x-www-form-urlencoded; charset=utf-8'
 JSON_CONTENT_TYPE = 'application/json'
-JSON_ACCEPT = '{0}, */*'.format(JSON_CONTENT_TYPE)
+JSON_ACCEPT = f'{JSON_CONTENT_TYPE}, */*'
 DEFAULT_UA = 'HTTPie/%s' % __version__
 
 

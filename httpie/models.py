@@ -61,11 +61,7 @@ class HTTPResponse(HTTPMessage):
             20: '2',
         }[original.version]
 
-        status_line = 'HTTP/{version} {status} {reason}'.format(
-            version=version,
-            status=original.status,
-            reason=original.reason
-        )
+        status_line = f'HTTP/{version} {original.status} {original.reason}'
         headers = [status_line]
         try:
             # `original.msg` is a `http.client.HTTPMessage` on Python 3

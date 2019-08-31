@@ -25,7 +25,7 @@ PACKAGES = [
 
 
 def get_package_meta(package_name):
-    api_url = 'https://pypi.python.org/pypi/{}/json'.format(package_name)
+    api_url = f'https://pypi.python.org/pypi/{package_name}/json'
     resp = requests.get(api_url).json()
     hasher = hashlib.sha256()
     for release in resp['urls']:
@@ -38,8 +38,7 @@ def get_package_meta(package_name):
                 'sha256': hasher.hexdigest(),
             }
     else:
-        raise RuntimeError(
-            '{}: download not found: {}'.format(package_name, resp))
+        raise RuntimeError(f'{package_name}: download not found: {resp}')
 
 
 def main():

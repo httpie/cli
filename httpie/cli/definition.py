@@ -2,52 +2,29 @@
 CLI arguments definition.
 
 """
-from argparse import (
-    RawDescriptionHelpFormatter, FileType,
-    OPTIONAL, ZERO_OR_MORE, SUPPRESS
-)
+from argparse import (FileType, OPTIONAL, SUPPRESS, ZERO_OR_MORE)
 from textwrap import dedent, wrap
 
 from httpie import __doc__, __version__
-from httpie.input import (
-    HTTPieArgumentParser, KeyValueArgType,
-    SEP_PROXY, SEP_GROUP_ALL_ITEMS,
-    OUT_REQ_HEAD, OUT_REQ_BODY, OUT_RESP_HEAD,
-    OUT_RESP_BODY, OUTPUT_OPTIONS,
-    OUTPUT_OPTIONS_DEFAULT, PRETTY_MAP,
-    PRETTY_STDOUT_TTY_ONLY, SessionNameValidator,
-    readable_file_arg, SSL_VERSION_ARG_MAPPING
+from httpie.cli.argparser import HTTPieArgumentParser
+from httpie.cli.argtypes import (
+    KeyValueArgType, SessionNameValidator, readable_file_arg,
+)
+from httpie.cli.constants import (
+    OUTPUT_OPTIONS, OUTPUT_OPTIONS_DEFAULT, OUT_REQ_BODY, OUT_REQ_HEAD,
+    OUT_RESP_BODY, OUT_RESP_HEAD, PRETTY_MAP, PRETTY_STDOUT_TTY_ONLY,
+    SEPARATOR_GROUP_ALL_ITEMS, SEPARATOR_PROXY, SSL_VERSION_ARG_MAPPING,
 )
 from httpie.output.formatters.colors import (
-    AVAILABLE_STYLES, DEFAULT_STYLE, AUTO_STYLE
+    AUTO_STYLE, AVAILABLE_STYLES, DEFAULT_STYLE,
 )
 from httpie.plugins import plugin_manager
 from httpie.plugins.builtin import BuiltinAuthPlugin
 from httpie.sessions import DEFAULT_SESSIONS_DIR
 
 
-class HTTPieHelpFormatter(RawDescriptionHelpFormatter):
-    """A nicer help formatter.
-
-    Help for arguments can be indented and contain new lines.
-    It will be de-dented and arguments in the help
-    will be separated by a blank line for better readability.
-
-
-    """
-    def __init__(self, max_help_position=6, *args, **kwargs):
-        # A smaller indent for args help.
-        kwargs['max_help_position'] = max_help_position
-        super().__init__(*args, **kwargs)
-
-    def _split_lines(self, text, width):
-        text = dedent(text).strip() + '\n\n'
-        return text.splitlines()
-
-
 parser = HTTPieArgumentParser(
     prog='http',
-    formatter_class=HTTPieHelpFormatter,
     description='%s <http://httpie.org>' % __doc__.strip(),
     epilog=dedent("""
     For every --OPTION there is also a --no-OPTION that reverts OPTION
@@ -59,7 +36,6 @@ parser = HTTPieArgumentParser(
 
     """),
 )
-
 
 #######################################################################
 # Positional arguments.
@@ -74,7 +50,7 @@ positional = parser.add_argument_group(
     """)
 )
 positional.add_argument(
-    'method',
+    dest='method',
     metavar='METHOD',
     nargs=OPTIONAL,
     default=None,
@@ -90,7 +66,7 @@ positional.add_argument(
     """
 )
 positional.add_argument(
-    'url',
+    dest='url',
     metavar='URL',
     help="""
     The scheme defaults to 'http://' if the URL does not include one.
@@ -104,11 +80,11 @@ positional.add_argument(
     """
 )
 positional.add_argument(
-    'items',
+    dest='request_items',
     metavar='REQUEST_ITEM',
     nargs=ZERO_OR_MORE,
     default=None,
-    type=KeyValueArgType(*SEP_GROUP_ALL_ITEMS),
+    type=KeyValueArgType(*SEPARATOR_GROUP_ALL_ITEMS),
     help=r"""
     Optional key-value pairs to be included in the request. The separator used
     determines the type:
@@ -149,7 +125,6 @@ positional.add_argument(
     """
 )
 
-
 #######################################################################
 # Content type.
 #######################################################################
@@ -182,7 +157,6 @@ content_type.add_argument(
     """
 )
 
-
 #######################################################################
 # Content processing.
 #######################################################################
@@ -204,7 +178,6 @@ content_processing.add_argument(
 
     """
 )
-
 
 #######################################################################
 # Output processing
@@ -251,7 +224,6 @@ output_processing.add_argument(
     )
 )
 
-
 #######################################################################
 # Output options
 #######################################################################
@@ -261,49 +233,40 @@ output_options.add_argument(
     '--print', '-p',
     dest='output_options',
     metavar='WHAT',
-    help="""
+    help=f"""
     String specifying what the output should contain:
 
-        '{req_head}' request headers
-        '{req_body}' request body
-        '{res_head}' response headers
-        '{res_body}' response body
+        '{OUT_REQ_HEAD}' request headers
+        '{OUT_REQ_BODY}' request body
+        '{OUT_RESP_HEAD}' response headers
+        '{OUT_RESP_BODY}' response body
 
-    The default behaviour is '{default}' (i.e., the response headers and body
-    is printed), if standard output is not redirected. If the output is piped
-    to another program or to a file, then only the response body is printed
-    by default.
+    The default behaviour is '{OUTPUT_OPTIONS_DEFAULT}' (i.e., the response
+    headers and body is printed), if standard output is not redirected.
+    If the output is piped to another program or to a file, then only the
+    response body is printed by default.
 
     """
-    .format(
-        req_head=OUT_REQ_HEAD,
-        req_body=OUT_REQ_BODY,
-        res_head=OUT_RESP_HEAD,
-        res_body=OUT_RESP_BODY,
-        default=OUTPUT_OPTIONS_DEFAULT,
-    )
 )
 output_options.add_argument(
     '--headers', '-h',
     dest='output_options',
     action='store_const',
     const=OUT_RESP_HEAD,
-    help="""
-    Print only the response headers. Shortcut for --print={0}.
+    help=f"""
+    Print only the response headers. Shortcut for --print={OUT_RESP_HEAD}.
 
     """
-    .format(OUT_RESP_HEAD)
 )
 output_options.add_argument(
     '--body', '-b',
     dest='output_options',
     action='store_const',
     const=OUT_RESP_BODY,
-    help="""
-    Print only the response body. Shortcut for --print={0}.
+    help=f"""
+    Print only the response body. Shortcut for --print={OUT_RESP_BODY}.
 
     """
-    .format(OUT_RESP_BODY)
 )
 
 output_options.add_argument(
@@ -315,8 +278,7 @@ output_options.add_argument(
     any intermediary requests/responses (such as redirects).
     It's a shortcut for: --all --print={0}
 
-    """
-    .format(''.join(OUTPUT_OPTIONS))
+    """.format(''.join(OUTPUT_OPTIONS))
 )
 output_options.add_argument(
     '--all',
@@ -398,13 +360,12 @@ output_options.add_argument(
     """
 )
 
-
 #######################################################################
 # Sessions
 #######################################################################
 
-sessions = parser.add_argument_group(title='Sessions')\
-                 .add_mutually_exclusive_group(required=False)
+sessions = parser.add_argument_group(title='Sessions') \
+    .add_mutually_exclusive_group(required=False)
 
 session_name_validator = SessionNameValidator(
     'Session name contains invalid characters.'
@@ -414,17 +375,16 @@ sessions.add_argument(
     '--session',
     metavar='SESSION_NAME_OR_PATH',
     type=session_name_validator,
-    help="""
+    help=f"""
     Create, or reuse and update a session. Within a session, custom headers,
     auth credential, as well as any cookies sent by the server persist between
     requests.
 
     Session files are stored in:
 
-        {session_dir}/<HOST>/<SESSION_NAME>.json.
+        {DEFAULT_SESSIONS_DIR}/<HOST>/<SESSION_NAME>.json.
 
     """
-    .format(session_dir=DEFAULT_SESSIONS_DIR)
 )
 sessions.add_argument(
     '--session-read-only',
@@ -475,8 +435,7 @@ auth.add_argument(
 
     {types}
 
-    """
-    .format(default=_auth_plugins[0].auth_type, types='\n    '.join(
+    """.format(default=_auth_plugins[0].auth_type, types='\n    '.join(
         '"{type}": {name}{package}{description}'.format(
             type=plugin.auth_type,
             name=plugin.name,
@@ -513,7 +472,7 @@ network.add_argument(
     default=[],
     action='append',
     metavar='PROTOCOL:PROXY_URL',
-    type=KeyValueArgType(SEP_PROXY),
+    type=KeyValueArgType(SEPARATOR_PROXY),
     help="""
     String mapping protocol to the URL of the proxy
     (e.g. http:http://foo.bar:3128). You can specify multiple proxies with
@@ -584,7 +543,6 @@ network.add_argument(
 
     """
 )
-
 
 #######################################################################
 # SSL

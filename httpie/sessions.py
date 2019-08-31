@@ -1,6 +1,7 @@
 """Persistent, JSON-serialized sessions.
 
 """
+import argparse
 import re
 import os
 from pathlib import Path
@@ -28,7 +29,7 @@ def get_response(
     requests_session: requests.Session,
     session_name: str,
     config_dir: Path,
-    args,
+    args: argparse.Namespace,
     read_only=False,
 ) -> requests.Response:
     """Like `client.get_responses`, but applies permanent
@@ -167,7 +168,7 @@ class Session(BaseConfigDict):
             }
         else:
             if plugin.auth_parse:
-                from httpie.input import parse_auth
+                from httpie.cli.argtypes import parse_auth
                 parsed = parse_auth(plugin.raw_auth)
                 credentials = {
                     'username': parsed.key,
