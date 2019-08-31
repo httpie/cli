@@ -2,6 +2,8 @@ from __future__ import division
 import json
 from collections import OrderedDict
 
+import requests.auth
+
 
 def load_json_preserve_order(s):
     return json.loads(s, object_pairs_hook=OrderedDict)
@@ -67,3 +69,12 @@ def humanize_bytes(n, precision=2):
 
     # noinspection PyUnboundLocalVariable
     return '%.*f %s' % (precision, n / factor, suffix)
+
+
+class ExplicitNullAuth(requests.auth.AuthBase):
+    """Forces requests to ignore the ``.netrc``.
+    <https://github.com/psf/requests/issues/2773#issuecomment-174312831>
+    """
+
+    def __call__(self, r):
+        return r

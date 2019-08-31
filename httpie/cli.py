@@ -492,7 +492,15 @@ auth.add_argument(
         for plugin in _auth_plugins
     )),
 )
+auth.add_argument(
+    '--ignore-netrc',
+    default=False,
+    action='store_true',
+    help="""
+    Ignore credentials from .netrc.
 
+    """,
+)
 
 #######################################################################
 # Network

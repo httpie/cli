@@ -2,6 +2,7 @@
 import mock
 import pytest
 
+from httpie.utils import ExplicitNullAuth
 from utils import http, add_auth, HTTP_OK, MockEnvironment
 import httpie.input
 import httpie.cli
@@ -73,3 +74,27 @@ def test_missing_auth(httpbin):
     )
     assert HTTP_OK not in r
     assert '--auth required' in r.stderr
+
+
+def test_netrc(httpbin_both):
+    with mock.patch('requests.sessions.get_netrc_auth') as get_netrc_auth:
+        get_netrc_auth.return_value = ('httpie', 'password')
+        r = http(httpbin_both + '/basic-auth/httpie/password')
+        assert get_netrc_auth.call_count == 1
+        assert HTTP_OK in r
+
+
+def test_ignore_netrc(httpbin_both):
+    with mock.patch('requests.sessions.get_netrc_auth') as get_netrc_auth:
+        get_netrc_auth.return_value = ('httpie', 'password')
+        r = http('--ignore-netrc', httpbin_both + '/basic-auth/httpie/password')
+        assert get_netrc_auth.call_count == 0
+        assert 'HTTP/1.1 401 UNAUTHORIZED' in r
+
+
+def test_ignore_netrc_null_auth():
+    args = httpie.cli.parser.parse_args(
+        args=['--ignore-netrc', 'example.org'],
+        env=MockEnvironment(),
+    )
+    assert isinstance(args.auth, ExplicitNullAuth)

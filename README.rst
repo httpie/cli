@@ -776,7 +776,10 @@ Password prompt
 ``.netrc``
 ----------
 
-Authentication information from your ``~/.netrc`` file is honored as well:
+Authentication information from your ``~/.netrc``
+file is by default honored as well.
+
+For example:
 
 .. code-block:: bash
 
@@ -785,8 +788,18 @@ Authentication information from your ``~/.netrc`` file is honored as well:
     login httpie
     password test
 
+.. code-block:: bash
+
     $ http httpbin.org/basic-auth/httpie/test
     HTTP/1.1 200 OK
+    [...]
+
+This can be disable with the ``--ignore-netrc`` option:
+
+.. code-block:: bash
+
+    $ http --ignore-netrc httpbin.org/basic-auth/httpie/test
+    HTTP/1.1 401 UNAUTHORIZED
     [...]
 
 

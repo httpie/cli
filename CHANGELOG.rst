@@ -12,7 +12,8 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 * Removed the default 30-second connection ``--timeout`` limit.
 * Removed Python’s default limit of 100 response headers.
 * Added ``--max-headers`` to allow setting the max header limit.
-* Added ``--compress``.
+* Added ``--compress`` to allow request body compression.
+* Added ``--ignore-netrc`` to allow bypassing credentials from ``.netrc``.
 * Added ``https`` alias command with ``https://`` as the default scheme.
 * Fixed an error when ``stdin`` was a closed fd.
 * Fixed an error when the config directory was not writeable.

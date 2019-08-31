@@ -22,7 +22,7 @@ from httpie.plugins import plugin_manager
 from requests.structures import CaseInsensitiveDict
 
 from httpie.sessions import VALID_SESSION_NAME_PATTERN
-from httpie.utils import load_json_preserve_order
+from httpie.utils import load_json_preserve_order, ExplicitNullAuth
 
 
 # ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
@@ -287,6 +287,10 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
                     username=credentials.key,
                     password=credentials.value,
                 )
+        if not self.args.auth and self.args.ignore_netrc:
+            # Set a no-op auth to force requests to ignore .netrc
+            # <https://github.com/psf/requests/issues/2773#issuecomment-174312831>
+            self.args.auth = ExplicitNullAuth()
 
     def _apply_no_options(self, no_options):
         """For every `--no-OPTION` in `no_options`, set `args.OPTION` to
