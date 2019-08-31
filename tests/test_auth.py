@@ -2,6 +2,7 @@
 import mock
 import pytest
 
+from httpie.plugins.builtin import HTTPBasicAuth
 from httpie.utils import ExplicitNullAuth
 from utils import http, add_auth, HTTP_OK, MockEnvironment
 import httpie.input
@@ -98,3 +99,11 @@ def test_ignore_netrc_null_auth():
         env=MockEnvironment(),
     )
     assert isinstance(args.auth, ExplicitNullAuth)
+
+
+def test_ignore_netrc_together_with_auth():
+    args = httpie.cli.parser.parse_args(
+        args=['--ignore-netrc', '--auth=username:password', 'example.org'],
+        env=MockEnvironment(),
+    )
+    assert isinstance(args.auth, HTTPBasicAuth)
