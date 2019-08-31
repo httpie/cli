@@ -75,7 +75,7 @@ class TransportPlugin(BasePlugin):
         raise NotImplementedError()
 
 
-class ConverterPlugin:
+class ConverterPlugin(BasePlugin):
 
     def __init__(self, mime):
         self.mime = mime
@@ -88,7 +88,7 @@ class ConverterPlugin:
         raise NotImplementedError
 
 
-class FormatterPlugin:
+class FormatterPlugin(BasePlugin):
 
     def __init__(self, **kwargs):
         """
@@ -100,7 +100,7 @@ class FormatterPlugin:
         self.enabled = True
         self.kwargs = kwargs
 
-    def format_headers(self, headers):
+    def format_headers(self, headers: str) -> str:
         """Return processed `headers`
 
         :param headers: The headers as text.
@@ -108,7 +108,7 @@ class FormatterPlugin:
         """
         return headers
 
-    def format_body(self, content, mime):
+    def format_body(self, content: str, mime: str) -> str:
         """Return processed `content`.
 
         :param mime: E.g., 'application/atom+xml'.

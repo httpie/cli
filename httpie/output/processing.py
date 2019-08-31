@@ -1,6 +1,7 @@
 import re
+from typing import Optional, List
 
-from httpie.plugins import plugin_manager
+from httpie.plugins import plugin_manager, ConverterPlugin
 from httpie.context import Environment
 
 
@@ -13,7 +14,8 @@ def is_valid_mime(mime):
 
 class Conversion:
 
-    def get_converter(self, mime):
+    @staticmethod
+    def get_converter(mime: str) -> Optional[ConverterPlugin]:
         if is_valid_mime(mime):
             for converter_class in plugin_manager.get_converters():
                 if converter_class.supports(mime):
@@ -23,7 +25,7 @@ class Conversion:
 class Formatting:
     """A delegate class that invokes the actual processors."""
 
-    def __init__(self, groups, env=Environment(), **kwargs):
+    def __init__(self, groups: List[str], env=Environment(), **kwargs):
         """
         :param groups: names of processor groups to be applied
         :param env: Environment
