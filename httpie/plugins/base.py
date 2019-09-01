@@ -89,6 +89,7 @@ class ConverterPlugin(BasePlugin):
 
 
 class FormatterPlugin(BasePlugin):
+    group_name = 'format'
 
     def __init__(self, **kwargs):
         """

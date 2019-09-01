@@ -1,4 +1,5 @@
 from itertools import groupby
+from operator import attrgetter
 from typing import Dict, List, Type
 
 from pkg_resources import iter_entry_points
@@ -51,12 +52,11 @@ class PluginManager(list):
         return self.filter(FormatterPlugin)
 
     def get_formatters_grouped(self) -> Dict[str, List[Type[FormatterPlugin]]]:
-        groups = {}
-        for group_name, group in groupby(
-            self.get_formatters(),
-            key=lambda p: getattr(p, 'group_name', 'format')):
-            groups[group_name] = list(group)
-        return groups
+        return {
+            group_name: list(group)
+            for group_name, group
+            in groupby(self.get_formatters(), key=attrgetter('group_name'))
+        }
 
     def get_converters(self) -> List[Type[ConverterPlugin]]:
         return self.filter(ConverterPlugin)
