@@ -12,6 +12,7 @@ from requests.auth import AuthBase
 from requests.cookies import RequestsCookieJar, create_cookie
 import requests
 
+from httpie.cli.dicts import RequestHeadersDict
 from httpie.config import BaseConfigDict, DEFAULT_CONFIG_DIR
 from httpie.plugins import plugin_manager
 
@@ -101,14 +102,13 @@ class Session(BaseConfigDict):
     def _get_path(self) -> Path:
         return self._path
 
-    def update_headers(self, request_headers: dict):
+    def update_headers(self, request_headers: RequestHeadersDict):
         """
         Update the session headers with the request ones while ignoring
         certain name prefixes.
 
-        :type request_headers: dict
-
         """
+        headers = self.headers
         for name, value in request_headers.items():
 
             if value is None:
@@ -122,11 +122,13 @@ class Session(BaseConfigDict):
                 if name.lower().startswith(prefix.lower()):
                     break
             else:
-                self['headers'][name] = value
+                headers[name] = value
+
+        self['headers'] = dict(headers)
 
     @property
-    def headers(self) -> dict:
-        return self['headers']
+    def headers(self) -> RequestHeadersDict:
+        return RequestHeadersDict(self['headers'])
 
     @property
     def cookies(self) -> RequestsCookieJar:

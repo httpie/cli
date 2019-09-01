@@ -19,6 +19,8 @@ from httpie.utils import repr_dict
 try:
     # noinspection PyPackageRequirements
     import urllib3
+
+
     # <https://urllib3.readthedocs.io/en/latest/security.html>
     urllib3.disable_warnings()
 except (ImportError, AttributeError):
@@ -181,7 +183,10 @@ def make_default_headers(args: argparse.Namespace) -> RequestHeadersDict:
     return default_headers
 
 
-def make_requests_kwargs(args: argparse.Namespace, base_headers=None) -> dict:
+def make_requests_kwargs(
+    args: argparse.Namespace,
+    base_headers: RequestHeadersDict = None
+) -> dict:
     """
     Translate our `args` into `requests.request` keyword arguments.
 
