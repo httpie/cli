@@ -17,17 +17,12 @@ from httpie.utils import repr_dict
 
 
 try:
-    # https://urllib3.readthedocs.io/en/latest/security.html
     # noinspection PyPackageRequirements
     import urllib3
+    # <https://urllib3.readthedocs.io/en/latest/security.html>
     urllib3.disable_warnings()
 except (ImportError, AttributeError):
-    # In some rare cases, the user may have an old version of the requests
-    # or urllib3, and there is no method called "disable_warnings." In these
-    # cases, we don't need to call the method.
-    # They may get some noisy output but execution shouldn't die. Move on.
     pass
-
 
 FORM_CONTENT_TYPE = 'application/x-www-form-urlencoded; charset=utf-8'
 JSON_CONTENT_TYPE = 'application/json'
@@ -49,9 +44,16 @@ def max_headers(limit):
 
 class HTTPieHTTPAdapter(HTTPAdapter):
 
-    def __init__(self, ssl_version=None, compress=0, **kwargs):
+    def __init__(
+        self,
+        ssl_version=None,
+        compression_enabled=False,
+        compress_always=False,
+        **kwargs,
+    ):
         self._ssl_version = ssl_version
-        self._compress = compress
+        self._compression_enabled = compression_enabled
+        self._compress_always = compress_always
         super().__init__(**kwargs)
 
     def init_poolmanager(self, *args, **kwargs):
@@ -59,34 +61,50 @@ class HTTPieHTTPAdapter(HTTPAdapter):
         super().init_poolmanager(*args, **kwargs)
 
     def send(self, request: requests.PreparedRequest, **kwargs):
-        if self._compress and request.body:
-            self._compress_body(request, self._compress)
+        if request.body and self._compression_enabled:
+            self._compress_body(request, always=self._compress_always)
         return super().send(request, **kwargs)
 
     @staticmethod
-    def _compress_body(request: requests.PreparedRequest, compress: int):
+    def _compress_body(request: requests.PreparedRequest, always: bool):
         deflater = zlib.compressobj()
-        if isinstance(request.body, bytes):
-            deflated_data = deflater.compress(request.body)
-        else:
-            deflated_data = deflater.compress(request.body.encode())
+        body_bytes = (
+            request.body
+            if isinstance(request.body, bytes)
+            else request.body.encode()
+        )
+        deflated_data = deflater.compress(body_bytes)
         deflated_data += deflater.flush()
-        if len(deflated_data) < len(request.body) or compress > 1:
+        is_economical = len(deflated_data) < len(body_bytes)
+        if is_economical or always:
             request.body = deflated_data
             request.headers['Content-Encoding'] = 'deflate'
             request.headers['Content-Length'] = str(len(deflated_data))
 
 
-def get_requests_session(ssl_version: str, compress: int) -> requests.Session:
+def build_requests_session(
+    ssl_version: str,
+    compress_arg: int,
+) -> requests.Session:
     requests_session = requests.Session()
-    adapter = HTTPieHTTPAdapter(ssl_version=ssl_version, compress=compress)
-    for prefix in ['http://', 'https://']:
-        requests_session.mount(prefix, adapter)
 
-    for cls in plugin_manager.get_transport_plugins():
-        transport_plugin = cls()
-        requests_session.mount(prefix=transport_plugin.prefix,
-                               adapter=transport_plugin.get_adapter())
+    # Install our adapter.
+    adapter = HTTPieHTTPAdapter(
+        ssl_version=ssl_version,
+        compression_enabled=compress_arg > 0,
+        compress_always=compress_arg > 1,
+    )
+    requests_session.mount('http://', adapter)
+    requests_session.mount('https://', adapter)
+
+    # Install adapters from plugins.
+    for plugin_cls in plugin_manager.get_transport_plugins():
+        transport_plugin = plugin_cls()
+        requests_session.mount(
+            prefix=transport_plugin.prefix,
+            adapter=transport_plugin.get_adapter(),
+        )
+
     return requests_session
 
 
@@ -100,12 +118,15 @@ def get_response(
     if args.ssl_version:
         ssl_version = SSL_VERSION_ARG_MAPPING[args.ssl_version]
 
-    requests_session = get_requests_session(ssl_version, args.compress)
+    requests_session = build_requests_session(
+        ssl_version=ssl_version,
+        compress_arg=args.compress
+    )
     requests_session.max_redirects = args.max_redirects
 
     with max_headers(args.max_headers):
         if not args.session and not args.session_read_only:
-            kwargs = get_requests_kwargs(args)
+            kwargs = make_requests_kwargs(args)
             if args.debug:
                 dump_request(kwargs)
             response = requests_session.request(**kwargs)
@@ -142,7 +163,7 @@ def finalize_headers(headers: RequestHeadersDict) -> RequestHeadersDict:
     return final_headers
 
 
-def get_default_headers(args: argparse.Namespace) -> RequestHeadersDict:
+def make_default_headers(args: argparse.Namespace) -> RequestHeadersDict:
     default_headers = RequestHeadersDict({
         'User-Agent': DEFAULT_UA
     })
@@ -160,7 +181,7 @@ def get_default_headers(args: argparse.Namespace) -> RequestHeadersDict:
     return default_headers
 
 
-def get_requests_kwargs(args: argparse.Namespace, base_headers=None) -> dict:
+def make_requests_kwargs(args: argparse.Namespace, base_headers=None) -> dict:
     """
     Translate our `args` into `requests.request` keyword arguments.
 
@@ -177,7 +198,7 @@ def get_requests_kwargs(args: argparse.Namespace, base_headers=None) -> dict:
             data = ''
 
     # Finalize headers.
-    headers = get_default_headers(args)
+    headers = make_default_headers(args)
     if base_headers:
         headers.update(base_headers)
     headers.update(args.headers)

@@ -169,6 +169,7 @@ content_processing = parser.add_argument_group(
 content_processing.add_argument(
     '--compress', '-x',
     action='count',
+    default=0,
     help="""
     Content compressed (encoded) with Deflate algorithm.
     The Content-Encoding header is set to deflate.

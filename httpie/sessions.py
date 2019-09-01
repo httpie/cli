@@ -36,7 +36,7 @@ def get_response(
     aspects of the session to the request.
 
     """
-    from .client import get_requests_kwargs, dump_request
+    from .client import make_requests_kwargs, dump_request
     if os.path.sep in session_name:
         path = os.path.expanduser(session_name)
     else:
@@ -56,7 +56,7 @@ def get_response(
     session = Session(path)
     session.load()
 
-    kwargs = get_requests_kwargs(args, base_headers=session.headers)
+    kwargs = make_requests_kwargs(args, base_headers=session.headers)
     if args.debug:
         dump_request(kwargs)
     session.update_headers(kwargs['headers'])
