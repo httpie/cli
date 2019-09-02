@@ -1,14 +1,16 @@
 from __future__ import absolute_import
+
 import json
-from typing import Type
+from typing import Optional, Type
 
 import pygments.lexer
-import pygments.token
-import pygments.styles
 import pygments.lexers
 import pygments.style
+import pygments.styles
+import pygments.token
 from pygments.formatters.terminal import TerminalFormatter
 from pygments.formatters.terminal256 import Terminal256Formatter
+from pygments.lexer import Lexer
 from pygments.lexers.special import TextLexer
 from pygments.lexers.text import HttpLexer as PygmentsHttpLexer
 from pygments.util import ClassNotFound
@@ -25,7 +27,6 @@ if is_windows:
     # Colors on Windows via colorama don't look that
     # great and fruity seems to give the best result there.
     DEFAULT_STYLE = 'fruity'
-
 
 AVAILABLE_STYLES = set(pygments.styles.get_all_styles())
 AVAILABLE_STYLES.add(SOLARIZED_STYLE)
@@ -90,7 +91,7 @@ class ColorFormatter(FormatterPlugin):
     def get_lexer_for_body(
         self, mime: str,
         body: str
-    ) -> Type[pygments.lexer.Lexer]:
+    ) -> Optional[Type[Lexer]]:
         return get_lexer(
             mime=mime,
             explicit_json=self.explicit_json,
@@ -109,8 +110,7 @@ def get_lexer(
     mime: str,
     explicit_json=False,
     body=''
-) -> Type[pygments.lexer.Lexer]:
-
+) -> Optional[Type[Lexer]]:
     # Build candidate mime type and lexer names.
     mime_types, lexer_names = [mime], []
     type_, subtype = mime.split('/', 1)

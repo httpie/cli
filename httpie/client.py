@@ -19,8 +19,6 @@ from httpie.utils import repr_dict
 try:
     # noinspection PyPackageRequirements
     import urllib3
-
-
     # <https://urllib3.readthedocs.io/en/latest/security.html>
     urllib3.disable_warnings()
 except (ImportError, AttributeError):
@@ -128,10 +126,10 @@ def get_response(
 
     with max_headers(args.max_headers):
         if not args.session and not args.session_read_only:
-            kwargs = make_requests_kwargs(args)
+            requests_kwargs = make_requests_kwargs(args)
             if args.debug:
-                dump_request(kwargs)
-            response = requests_session.request(**kwargs)
+                dump_request(requests_kwargs)
+            response = requests_session.request(**requests_kwargs)
         else:
             response = sessions.get_response(
                 requests_session=requests_session,
