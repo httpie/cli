@@ -23,6 +23,8 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 * Added ``https`` alias command with ``https://`` as the default scheme.
 * Added ``$ALL_PROXY`` documentation.
 * Added type annotations throughout the codebase.
+* Added ``tests/`` to PyPi package for the convenience of
+  downstream package maintainers’.
 * Fixed an error when ``stdin`` was a closed fd.
 * Fixed an error when the config directory was not writeable.
 * Improved ``--debug`` output formatting.
