@@ -303,7 +303,7 @@ class TestNoOptions:
 
     def test_invalid_no_options(self, httpbin):
         r = http('--no-war', 'GET', httpbin.url + '/get',
-                 error_exit_ok=True)
+                 tolerate_error_exit_status=True)
         assert r.exit_status == ExitStatus.ERROR
         assert 'unrecognized arguments: --no-war' in r.stderr
         assert 'GET /get HTTP/1.1' not in r
@@ -322,7 +322,7 @@ class TestStdin:
 
     def test_ignore_stdin_cannot_prompt_password(self, httpbin):
         r = http('--ignore-stdin', '--auth=no-password', httpbin.url + '/get',
-                 error_exit_ok=True)
+                 tolerate_error_exit_status=True)
         assert r.exit_status == ExitStatus.ERROR
         assert 'because --ignore-stdin' in r.stderr
 

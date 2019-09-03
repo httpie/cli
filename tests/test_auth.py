@@ -71,7 +71,7 @@ def test_missing_auth(httpbin):
         '--auth-type=basic',
         'GET',
         httpbin + '/basic-auth/user/password',
-        error_exit_ok=True
+        tolerate_error_exit_status=True
     )
     assert HTTP_OK not in r
     assert '--auth required' in r.stderr

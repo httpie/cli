@@ -167,7 +167,7 @@ def http(*args, program_name='http', **kwargs):
 
     Exceptions are propagated.
 
-    If you pass ``error_exit_ok=True``, then error exit statuses
+    If you pass ``tolerate_error_exit_status=True``, then error exit statuses
     won't result into an exception.
 
     Example:
@@ -188,7 +188,7 @@ def http(*args, program_name='http', **kwargs):
         True
 
     """
-    error_exit_ok = kwargs.pop('error_exit_ok', False)
+    tolerate_error_exit_status = kwargs.pop('tolerate_error_exit_status', False)
     env = kwargs.get('env')
     if not env:
         env = kwargs['env'] = MockEnvironment()
@@ -200,7 +200,7 @@ def http(*args, program_name='http', **kwargs):
     args_with_config_defaults = args + env.config.default_options
     add_to_args = []
     if '--debug' not in args_with_config_defaults:
-        if not error_exit_ok and '--traceback' not in args_with_config_defaults:
+        if not tolerate_error_exit_status and '--traceback' not in args_with_config_defaults:
             add_to_args.append('--traceback')
         if not any('--timeout' in arg for arg in args_with_config_defaults):
             add_to_args.append('--timeout=3')
@@ -218,7 +218,7 @@ def http(*args, program_name='http', **kwargs):
                 # Let the progress reporter thread finish.
                 time.sleep(.5)
         except SystemExit:
-            if error_exit_ok:
+            if tolerate_error_exit_status:
                 exit_status = ExitStatus.ERROR
             else:
                 dump_stderr()
@@ -228,7 +228,7 @@ def http(*args, program_name='http', **kwargs):
             sys.stderr.write(stderr.read())
             raise
         else:
-            if not error_exit_ok and exit_status != ExitStatus.SUCCESS:
+            if not tolerate_error_exit_status and exit_status != ExitStatus.SUCCESS:
                 dump_stderr()
                 raise ExitStatusError(
                     'httpie.core.main() unexpectedly returned'

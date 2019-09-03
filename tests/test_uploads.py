@@ -64,12 +64,17 @@ class TestRequestBodyFromFilePath:
             self, httpbin):
         env = MockEnvironment(stdin_isatty=True)
         r = http('POST', httpbin.url + '/post', 'field-name@' + FILE_PATH_ARG,
-                 env=env, error_exit_ok=True)
+                 env=env, tolerate_error_exit_status=True)
         assert 'perhaps you meant --form?' in r.stderr
 
     def test_request_body_from_file_by_path_no_data_items_allowed(
             self, httpbin):
         env = MockEnvironment(stdin_isatty=False)
-        r = http('POST', httpbin.url + '/post', '@' + FILE_PATH_ARG, 'foo=bar',
-                 env=env, error_exit_ok=True)
+        r = http(
+            'POST',
+            httpbin.url + '/post',
+            '@' + FILE_PATH_ARG, 'foo=bar',
+            env=env,
+            tolerate_error_exit_status=True,
+        )
         assert 'cannot be mixed' in r.stderr

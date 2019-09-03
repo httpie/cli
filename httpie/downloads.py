@@ -121,7 +121,7 @@ def filename_from_content_disposition(
             return filename
 
 
-def filename_from_url(url: str, content_type: str) -> str:
+def filename_from_url(url: str, content_type: Optional[str]) -> str:
     fn = urlsplit(url).path.rstrip('/')
     fn = os.path.basename(fn) if fn else 'index'
     if '.' not in fn and content_type:
@@ -230,11 +230,16 @@ class Downloader:
                 request_headers['Range'] = 'bytes=%d-' % bytes_have
                 self._resumed_from = bytes_have
 
-    def start(self, final_response: requests.Response) -> Tuple[RawStream, IO]:
+    def start(
+        self,
+        initial_url: str,
+        final_response: requests.Response
+    ) -> Tuple[RawStream, IO]:
         """
         Initiate and return a stream for `response` body  with progress
         callback attached. Can be called only once.
 
+        :param initial_url: The original requested URL
         :param final_response: Initiated response object with headers already fetched
 
         :return: RawStream, output_file
@@ -251,7 +256,9 @@ class Downloader:
 
         if not self._output_file:
             self._output_file = self._get_output_file_from_response(
-                final_response)
+                initial_url=initial_url,
+                final_response=final_response,
+            )
         else:
             # `--output, -o` provided
             if self._resume and final_response.status_code == PARTIAL_CONTENT:
@@ -322,7 +329,8 @@ class Downloader:
 
     @staticmethod
     def _get_output_file_from_response(
-        final_response: requests.Response
+        initial_url: str,
+        final_response: requests.Response,
     ) -> IO:
         # Output file not specified. Pick a name that doesn't exist yet.
         filename = None
@@ -330,12 +338,8 @@ class Downloader:
             filename = filename_from_content_disposition(
                 final_response.headers['Content-Disposition'])
         if not filename:
-            initial_response = (
-                final_response.history[0] if final_response.history
-                else final_response
-            )
             filename = filename_from_url(
-                url=initial_response.url,
+                url=initial_url,
                 content_type=final_response.headers.get('Content-Type'),
             )
         unique_filename = get_unique_filename(filename)

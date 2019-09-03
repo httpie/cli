@@ -1,14 +1,8 @@
-import argparse
 from itertools import chain
-from typing import Callable, IO, Iterable, TextIO, Tuple, Type, Union
+from typing import Callable, Iterable, Union
 
-import requests
-
-from httpie.cli.constants import (
-    OUT_REQ_BODY, OUT_REQ_HEAD, OUT_RESP_BODY, OUT_RESP_HEAD,
-)
 from httpie.context import Environment
-from httpie.models import HTTPMessage, HTTPRequest, HTTPResponse
+from httpie.models import HTTPMessage
 from httpie.output.processing import Conversion, Formatting
 
 
@@ -27,143 +21,14 @@ class BinarySuppressedError(Exception):
     message = BINARY_SUPPRESSED_NOTICE
 
 
-def write_stream(
-    stream: 'BaseStream',
-    outfile: Union[IO, TextIO],
-    flush: bool
-):
-    """Write the output stream."""
-    try:
-        # Writing bytes so we use the buffer interface (Python 3).
-        buf = outfile.buffer
-    except AttributeError:
-        buf = outfile
-
-    for chunk in stream:
-        buf.write(chunk)
-        if flush:
-            outfile.flush()
-
-
-def write_stream_with_colors_win_py3(
-    stream: 'BaseStream',
-    outfile: TextIO,
-    flush: bool
-):
-    """Like `write`, but colorized chunks are written as text
-    directly to `outfile` to ensure it gets processed by colorama.
-    Applies only to Windows with Python 3 and colorized terminal output.
-
-    """
-    color = b'\x1b['
-    encoding = outfile.encoding
-    for chunk in stream:
-        if color in chunk:
-            outfile.write(chunk.decode(encoding))
-        else:
-            outfile.buffer.write(chunk)
-        if flush:
-            outfile.flush()
-
-
-def build_output_stream(
-    args: argparse.Namespace,
-    env: Environment,
-    request: requests.Request,
-    response: requests.Response,
-    output_options: str
-) -> Iterable[bytes]:
-    """Build and return a chain of iterators over the `request`-`response`
-    exchange each of which yields `bytes` chunks.
-
-    """
-    req_h = OUT_REQ_HEAD in output_options
-    req_b = OUT_REQ_BODY in output_options
-    resp_h = OUT_RESP_HEAD in output_options
-    resp_b = OUT_RESP_BODY in output_options
-    req = req_h or req_b
-    resp = resp_h or resp_b
-
-    output = []
-    stream_class, stream_kwargs = get_stream_type_and_kwargs(
-        env=env, args=args)
-
-    if req:
-        output.append(
-            stream_class(
-                msg=HTTPRequest(request),
-                with_headers=req_h,
-                with_body=req_b,
-                **stream_kwargs,
-            )
-        )
-
-    if req_b and resp:
-        # Request/Response separator.
-        output.append([b'\n\n'])
-
-    if resp:
-        output.append(
-            stream_class(
-                msg=HTTPResponse(response),
-                with_headers=resp_h,
-                with_body=resp_b,
-                **stream_kwargs,
-            )
-        )
-
-    if env.stdout_isatty and resp_b:
-        # Ensure a blank line after the response body.
-        # For terminal output only.
-        output.append([b'\n\n'])
-
-    return chain(*output)
-
-
-def get_stream_type_and_kwargs(
-    env: Environment,
-    args: argparse.Namespace
-) -> Tuple[Type['BaseStream'], dict]:
-    """Pick the right stream type and kwargs for it based on `env` and `args`.
-
-    """
-    if not env.stdout_isatty and not args.prettify:
-        stream_class = RawStream
-        stream_kwargs = {
-            'chunk_size': (
-                RawStream.CHUNK_SIZE_BY_LINE
-                if args.stream
-                else RawStream.CHUNK_SIZE
-            )
-        }
-    elif args.prettify:
-        stream_class = PrettyStream if args.stream else BufferedPrettyStream
-        stream_kwargs = {
-            'env': env,
-            'conversion': Conversion(),
-            'formatting': Formatting(
-                env=env,
-                groups=args.prettify,
-                color_scheme=args.style,
-                explicit_json=args.json,
-            )
-        }
-    else:
-        stream_class = EncodedStream
-        stream_kwargs = {
-            'env': env
-        }
-
-    return stream_class, stream_kwargs
-
-
 class BaseStream:
     """Base HTTP message output stream class."""
 
     def __init__(
         self,
         msg: HTTPMessage,
-        with_headers=True, with_body=True,
+        with_headers=True,
+        with_body=True,
         on_body_chunk_downloaded: Callable[[bytes], None] = None
     ):
         """

@@ -66,7 +66,7 @@ class TestClientCert:
     def test_cert_file_not_found(self, httpbin_secure):
         r = http(httpbin_secure + '/get',
                  '--cert', '/__not_found__',
-                 error_exit_ok=True)
+                 tolerate_error_exit_status=True)
         assert r.exit_status == ExitStatus.ERROR
         assert 'No such file or directory' in r.stderr
 

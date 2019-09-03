@@ -135,10 +135,13 @@ class TestDownloads:
     def test_download_with_Content_Length(self, httpbin_both):
         with open(os.devnull, 'w') as devnull:
             downloader = Downloader(output_file=devnull, progress_file=devnull)
-            downloader.start(Response(
-                url=httpbin_both.url + '/',
-                headers={'Content-Length': 10}
-            ))
+            downloader.start(
+                initial_url='/',
+                final_response=Response(
+                    url=httpbin_both.url + '/',
+                    headers={'Content-Length': 10}
+                )
+            )
             time.sleep(1.1)
             downloader.chunk_downloaded(b'12345')
             time.sleep(1.1)
@@ -150,7 +153,10 @@ class TestDownloads:
     def test_download_no_Content_Length(self, httpbin_both):
         with open(os.devnull, 'w') as devnull:
             downloader = Downloader(output_file=devnull, progress_file=devnull)
-            downloader.start(Response(url=httpbin_both.url + '/'))
+            downloader.start(
+                final_response=Response(url=httpbin_both.url + '/'),
+                initial_url='/'
+            )
             time.sleep(1.1)
             downloader.chunk_downloaded(b'12345')
             downloader.finish()
@@ -160,10 +166,13 @@ class TestDownloads:
     def test_download_interrupted(self, httpbin_both):
         with open(os.devnull, 'w') as devnull:
             downloader = Downloader(output_file=devnull, progress_file=devnull)
-            downloader.start(Response(
-                url=httpbin_both.url + '/',
-                headers={'Content-Length': 5}
-            ))
+            downloader.start(
+                final_response=Response(
+                    url=httpbin_both.url + '/',
+                    headers={'Content-Length': 5}
+                ),
+                initial_url='/'
+            )
             downloader.chunk_downloaded(b'1234')
             downloader.finish()
             assert downloader.interrupted

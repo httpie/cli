@@ -469,6 +469,14 @@ auth.add_argument(
 network = parser.add_argument_group(title='Network')
 
 network.add_argument(
+    '--offline',
+    default=False,
+    action='store_true',
+    help="""
+    Build the request and print it but don’t actually send it.
+    """
+)
+network.add_argument(
     '--proxy',
     default=[],
     action='append',

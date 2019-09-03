@@ -27,5 +27,5 @@ class TestFakeWindows:
         )
         r = http('--output', output_file,
                  '--pretty=all', 'GET', httpbin.url + '/get',
-                 env=env, error_exit_ok=True)
+                 env=env, tolerate_error_exit_status=True)
         assert 'Only terminal output can be colorized on Windows' in r.stderr

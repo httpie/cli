@@ -13,6 +13,7 @@ from httpie.cli.constants import (
     OUTPUT_OPTIONS_DEFAULT_STDOUT_REDIRECTED, OUT_RESP_BODY, PRETTY_MAP,
     PRETTY_STDOUT_TTY_ONLY, SEPARATOR_CREDENTIALS, SEPARATOR_GROUP_ALL_ITEMS,
     SEPARATOR_GROUP_DATA_ITEMS, URL_SCHEME_RE,
+    OUTPUT_OPTIONS_DEFAULT_OFFLINE,
 )
 from httpie.cli.exceptions import ParseError
 from httpie.cli.requestitems import RequestItems
@@ -348,12 +349,12 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
         if self.args.output_options is None:
             if self.args.verbose:
                 self.args.output_options = ''.join(OUTPUT_OPTIONS)
+            elif self.args.offline:
+                self.args.output_options = OUTPUT_OPTIONS_DEFAULT_OFFLINE
+            elif not self.env.stdout_isatty:
+                self.args.output_options = OUTPUT_OPTIONS_DEFAULT_STDOUT_REDIRECTED
             else:
-                self.args.output_options = (
-                    OUTPUT_OPTIONS_DEFAULT
-                    if self.env.stdout_isatty
-                    else OUTPUT_OPTIONS_DEFAULT_STDOUT_REDIRECTED
-                )
+                self.args.output_options = OUTPUT_OPTIONS_DEFAULT
 
         if self.args.output_options_history is None:
             self.args.output_options_history = self.args.output_options

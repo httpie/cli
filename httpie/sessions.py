@@ -1,16 +1,14 @@
 """Persistent, JSON-serialized sessions.
 
 """
-import argparse
-import re
 import os
+import re
 from pathlib import Path
 from typing import Optional, Union
 from urllib.parse import urlsplit
 
 from requests.auth import AuthBase
 from requests.cookies import RequestsCookieJar, create_cookie
-import requests
 
 from httpie.cli.dicts import RequestHeadersDict
 from httpie.config import BaseConfigDict, DEFAULT_CONFIG_DIR
@@ -26,23 +24,16 @@ VALID_SESSION_NAME_PATTERN = re.compile('^[a-zA-Z0-9_.-]+$')
 SESSION_IGNORED_HEADER_PREFIXES = ['Content-', 'If-']
 
 
-def get_response(
-    requests_session: requests.Session,
-    session_name: str,
+def get_httpie_session(
     config_dir: Path,
-    args: argparse.Namespace,
-    read_only=False,
-) -> requests.Response:
-    """Like `client.get_responses`, but applies permanent
-    aspects of the session to the request.
-
-    """
-    from .client import make_requests_kwargs, dump_request
+    session_name: str,
+    host: Optional[str],
+    url: str,
+) -> 'Session':
     if os.path.sep in session_name:
         path = os.path.expanduser(session_name)
     else:
-        hostname = (args.headers.get('Host', None)
-                    or urlsplit(args.url).netloc.split('@')[-1])
+        hostname = host or urlsplit(url).netloc.split('@')[-1]
         if not hostname:
             # HACK/FIXME: httpie-unixsocket's URLs have no hostname.
             hostname = 'localhost'
@@ -50,38 +41,11 @@ def get_response(
         # host:port => host_port
         hostname = hostname.replace(':', '_')
         path = (
-            config_dir / SESSIONS_DIR_NAME / hostname
-            / (session_name + '.json')
+            config_dir / SESSIONS_DIR_NAME / hostname / f'{session_name}.json'
         )
-
     session = Session(path)
     session.load()
-
-    kwargs = make_requests_kwargs(args, base_headers=session.headers)
-    if args.debug:
-        dump_request(kwargs)
-    session.update_headers(kwargs['headers'])
-
-    if args.auth_plugin:
-        session.auth = {
-            'type': args.auth_plugin.auth_type,
-            'raw_auth': args.auth_plugin.raw_auth,
-        }
-    elif session.auth:
-        kwargs['auth'] = session.auth
-
-    requests_session.cookies = session.cookies
-
-    try:
-        response = requests_session.request(**kwargs)
-    except Exception:
-        raise
-    else:
-        # Existing sessions with `read_only=True` don't get updated.
-        if session.is_new() or not read_only:
-            session.cookies = requests_session.cookies
-            session.save()
-        return response
+    return session
 
 
 class Session(BaseConfigDict):

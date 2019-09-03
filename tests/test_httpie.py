@@ -15,13 +15,13 @@ def test_debug():
 
 
 def test_help():
-    r = http('--help', error_exit_ok=True)
+    r = http('--help', tolerate_error_exit_status=True)
     assert r.exit_status == httpie.ExitStatus.SUCCESS
     assert 'https://github.com/jakubroztocil/httpie/issues' in r
 
 
 def test_version():
-    r = http('--version', error_exit_ok=True)
+    r = http('--version', tolerate_error_exit_status=True)
     assert r.exit_status == httpie.ExitStatus.SUCCESS
     # FIXME: py3 has version in stdout, py2 in stderr
     assert httpie.__version__ == r.strip()

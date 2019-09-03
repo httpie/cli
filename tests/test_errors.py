@@ -1,17 +1,17 @@
 import mock
 from pytest import raises
-from requests import Request, Timeout
+from requests import Request
 from requests.exceptions import ConnectionError
 
 from httpie import ExitStatus
 from httpie.core import main
-from utils import http, HTTP_OK
+from utils import HTTP_OK, http
 
 
 error_msg = None
 
 
-@mock.patch('httpie.core.get_response')
+@mock.patch('httpie.core.program')
 def test_error(get_response):
     def error(msg, *args, **kwargs):
         global error_msg
@@ -24,11 +24,11 @@ def test_error(get_response):
     assert ret == ExitStatus.ERROR
     assert error_msg == (
         'ConnectionError: '
-        'Connection aborted while doing GET request to URL: '
+        'Connection aborted while doing a GET request to URL: '
         'http://www.google.com')
 
 
-@mock.patch('httpie.core.get_response')
+@mock.patch('httpie.core.program')
 def test_error_traceback(get_response):
     exc = ConnectionError('Connection aborted')
     exc.request = Request(method='GET', url='http://www.google.com')
