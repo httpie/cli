@@ -21,16 +21,6 @@ strategy:
     py36-windows:
       TOXENV: 'py36'
       PYVERSION: '3.6'
-    py35-windows:
-      TOXENV: 'py35'
-      PYVERSION: '3.5'
-    py27-linux:
-      TOXENV: 'py27'
-      PYVERSION: '2.7'
-      VMIMAGE: 'ubuntu-16.04'
-    py27-windows:
-      TOXENV: 'py27'
-      PYVERSION: '2.7'
 
 pool:
   vmImage: $(VMIMAGE)
