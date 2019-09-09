@@ -8,7 +8,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 `2.0.0-dev`_ (unreleased)
 -------------------------
-* Removed Python 2.7 support (`EOL Jan 2020 <https://www.python.org/dev/peps/pep-0373/>`_).
+* Removed Python 2.7 support (`EOL Jan 2020 <https://www.python.org/doc/sunset-python-2/>`_).
 * Removed the default 30-second connection ``--timeout`` limit.
 * Removed Python’s default limit of 100 response headers.
 * Replaced the old collect-all-then-process handling of HTTP communication
