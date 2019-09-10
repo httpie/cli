@@ -17,8 +17,15 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
+    - name: upgrade pip
+      run: python -m pip install --upgrade pip
+    - name: install
+      run: make install
     - name: test
       run: make test
+    - name: pycodestyle
+      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.7'
+      run: make pycodestyle
+    - name: coveralls
+      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.7'
+      run: make coveralls

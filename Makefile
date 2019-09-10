@@ -8,10 +8,10 @@ TAG="\n\n\033[0;32m\#\#\# "
 END=" \#\#\# \033[0m\n"
 
 
-all: test
+all: uninstall-httpie install test
 
 
-init: uninstall-httpie
+install:
 	@echo $(TAG)Installing dev requirements$(END)
 	pip install --upgrade -r $(REQUIREMENTS)
 
@@ -32,14 +32,14 @@ clean:
 ###############################################################################
 
 
-test: init
+test:
 	@echo $(TAG)Running tests on the current Python interpreter with coverage $(END)
 	py.test --cov ./httpie --cov ./tests --doctest-modules --verbose ./httpie ./tests
 	@echo
 
 
 # test-all is meant to test everything — even this Makefile
-test-all: uninstall-all clean init test test-tox test-dist pycodestyle
+test-all: uninstall-all clean install test test-tox test-dist pycodestyle
 	@echo
 
 
@@ -47,7 +47,7 @@ test-dist: test-sdist test-bdist-wheel
 	@echo
 
 
-test-tox: init
+test-tox: uninstall-httpie install
 	@echo $(TAG)Running tests on all Pythons via Tox$(END)
 	tox
 	@echo
