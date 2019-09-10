@@ -5,11 +5,12 @@ on: [push]
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [2.7, 3.5, 3.6, 3.7]
+        os: [macOS-latest, windows-latest, ubuntu-latest]
+        python-version: [3.6, 3.7]
 
     steps:
     - uses: actions/checkout@v1
