@@ -29,3 +29,5 @@ jobs:
     - name: coveralls
       if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.7'
       run: make coveralls
+      env:
+        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
