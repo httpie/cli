@@ -19,4 +19,4 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: make test
-      run: make test     
+      run: pytest     
