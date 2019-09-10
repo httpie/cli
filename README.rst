@@ -1764,8 +1764,8 @@ have contributed.
     :target: https://coveralls.io/r/jakubroztocil/httpie?branch=master
     :alt: Test coverage
 
-.. |build| image::![](https://github.com/jakubroztocil/httpie/workflows/.github/workflows/build.yml/badge.svg)
-    :target: https://travis-ci.org/jakubroztocil/httpie
+.. |build| image:: https://github.com/jakubroztocil/httpie/workflows/Build/badge.svg
+    :target: https://github.com/jakubroztocil/httpie/actions
     :alt: Build status of the master branch on Mac/Linux/Windows
 
 .. |gitter| image:: https://img.shields.io/gitter/room/jkbrzt/httpie.svg?style=flat-square
