@@ -3,7 +3,7 @@ name: Python package
 on: [push]
 
 jobs:
-  test:
+  build:
     runs-on: ${{ matrix.os }}
     strategy:
       max-parallel: 4
@@ -16,20 +16,18 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python-version }}
-    - run: python -m pip install --upgrade pip
-    - run: make install
-    - run: make test
-  pycodestyle:
-    runs-on: ubuntu-latest
-    python-version: 3.7
-    steps:
-      - name: pycodestyle
-        run: make pycodestyle
-  coveralls:
-    runs-on: ubuntu-latest
-    python-version: 3.7
-    steps:
-      - name: coveralls
-        run: make coveralls
-        env:
-          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+    - name: upgrade pip
+      run: python -m pip install --upgrade pip
+    - name: install
+      run: make install
+    - name: test
+      run: make test
+    - name: pycodestyle
+      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.7'
+      run: make pycodestyle
+    - name: coveralls
+      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.7'
+      run: make coveralls
+      env:
+        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+
