@@ -139,7 +139,7 @@ release so the experience might be not as smooth.
 
 .. class:: no-pdf
 
-|unix_build|
+|build|
 
 
 On macOS you can install it with Homebrew:

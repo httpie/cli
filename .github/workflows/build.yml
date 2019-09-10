@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
 
-  test-extras:
+  extras:
     # Run coverage and extra tests only once
     runs-on: ubuntu-latest
     strategy:
@@ -23,7 +23,7 @@ jobs:
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
 
-  test-core:
+  test:
     # Run core HTTPie tests everywhere
     runs-on: ${{ matrix.os }}
     strategy:
