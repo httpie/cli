@@ -3,25 +3,9 @@ name: Python package
 on: [push]
 
 jobs:
-  test:
-    # run core httpie tests everywhere
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macOS-latest, windows-latest]
-        python-version: [3.6, 3.7]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v1
-        with:
-          python-version: ${{ matrix.python-version }}
-      - run: python -m pip install --upgrade pip
-      - run: pip install --upgrade --editable .
-      - run: python setup.py test
 
   test-extras:
-    # coverage and extra tests only once
+    # Run coverage and extra tests only once
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -39,3 +23,20 @@ jobs:
       - run: make coveralls
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+
+  test-core:
+    # Run core httpie tests everywhere
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+        python-version: [3.6, 3.7]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: python -m pip install --upgrade pip
+      - run: pip install --upgrade --editable .
+      - run: python setup.py test
