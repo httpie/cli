@@ -3,7 +3,6 @@ name: Python package
 on: [push]
 
 jobs:
-  name: tests
   test:
     # run core httpie tests everywhere
     runs-on: ${{ matrix.os }}
