@@ -27,6 +27,7 @@ jobs:
     strategy:
       matrix:
         python-version: [3.7]
+    steps:
     - run: make install
     - run: make test
     - run: make test-dist
