@@ -3,6 +3,7 @@ name: Python package
 on: [push]
 
 jobs:
+  name: tests
   test:
     # run core httpie tests everywhere
     runs-on: ${{ matrix.os }}
@@ -22,7 +23,7 @@ jobs:
 
   test-extras:
     # coverage and extra tests only once
-    - runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [3.7]
