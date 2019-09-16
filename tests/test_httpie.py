@@ -1,7 +1,7 @@
 """High-level tests."""
 import pytest
 
-import httpie.status
+from httpie.status import ExitStatus
 from httpie.cli.exceptions import ParseError
 from utils import MockEnvironment, http, HTTP_OK
 from fixtures import FILE_PATH, FILE_CONTENT
@@ -11,19 +11,19 @@ import httpie
 
 def test_debug():
     r = http('--debug')
-    assert r.exit_status == httpie.status.ExitStatus.SUCCESS
+    assert r.exit_status == ExitStatus.SUCCESS
     assert 'HTTPie %s' % httpie.__version__ in r.stderr
 
 
 def test_help():
     r = http('--help', tolerate_error_exit_status=True)
-    assert r.exit_status == httpie.status.ExitStatus.SUCCESS
+    assert r.exit_status == ExitStatus.SUCCESS
     assert 'https://github.com/jakubroztocil/httpie/issues' in r
 
 
 def test_version():
     r = http('--version', tolerate_error_exit_status=True)
-    assert r.exit_status == httpie.status.ExitStatus.SUCCESS
+    assert r.exit_status == ExitStatus.SUCCESS
     # FIXME: py3 has version in stdout, py2 in stderr
     assert httpie.__version__ == r.strip()
 
