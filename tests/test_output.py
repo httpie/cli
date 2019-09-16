@@ -5,7 +5,7 @@ from urllib.request import urlopen
 import pytest
 
 from utils import MockEnvironment, http, HTTP_OK, COLOR, CRLF
-from httpie import ExitStatus
+from httpie.status import ExitStatus
 from httpie.output.formatters.colors import get_lexer
 
 

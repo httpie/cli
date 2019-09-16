@@ -7,7 +7,8 @@ import requests
 from pygments import __version__ as pygments_version
 from requests import __version__ as requests_version
 
-from httpie import ExitStatus, __version__ as httpie_version
+from httpie import __version__ as httpie_version
+from httpie.status import ExitStatus, http_status_to_exit_status
 from httpie.client import collect_messages
 from httpie.context import Environment
 from httpie.downloads import Downloader
@@ -154,7 +155,7 @@ def program(
             else:
                 final_response = message
                 if args.check_status or downloader:
-                    exit_status = get_exit_status(
+                    exit_status = http_status_to_exit_status(
                         http_status=message.status_code,
                         follow=args.follow
                     )
@@ -191,21 +192,6 @@ def program(
         if (not isinstance(args, list) and args.output_file
                 and args.output_file_specified):
             args.output_file.close()
-
-
-def get_exit_status(http_status: int, follow=False) -> ExitStatus:
-    """Translate HTTP status code to exit status code."""
-    if 300 <= http_status <= 399 and not follow:
-        # Redirect
-        return ExitStatus.ERROR_HTTP_3XX
-    elif 400 <= http_status <= 499:
-        # Client Error
-        return ExitStatus.ERROR_HTTP_4XX
-    elif 500 <= http_status <= 599:
-        # Server Error
-        return ExitStatus.ERROR_HTTP_5XX
-    else:
-        return ExitStatus.SUCCESS
 
 
 def print_debug_info(env: Environment):

@@ -10,7 +10,7 @@ from fixtures import (
     FILE_CONTENT, FILE_PATH, FILE_PATH_ARG, JSON_FILE_CONTENT,
     JSON_FILE_PATH_ARG,
 )
-from httpie import ExitStatus
+from httpie.status import ExitStatus
 from httpie.cli import constants
 from httpie.cli.definition import parser
 from httpie.cli.argtypes import KeyValueArg, KeyValueArgType

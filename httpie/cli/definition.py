@@ -25,7 +25,7 @@ from httpie.sessions import DEFAULT_SESSIONS_DIR
 
 parser = HTTPieArgumentParser(
     prog='http',
-    description='%s <http://httpie.org>' % __doc__.strip(),
+    description='%s <https://httpie.org>' % __doc__.strip(),
     epilog=dedent("""
     For every --OPTION there is also a --no-OPTION that reverts OPTION
     to its default value.

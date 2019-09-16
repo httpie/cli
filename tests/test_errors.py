@@ -3,7 +3,7 @@ from pytest import raises
 from requests import Request
 from requests.exceptions import ConnectionError
 
-from httpie import ExitStatus
+from httpie.status import ExitStatus
 from httpie.core import main
 from utils import HTTP_OK, http
 

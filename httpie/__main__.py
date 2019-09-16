@@ -10,7 +10,7 @@ def main():
         from .core import main
         exit_status = main()
     except KeyboardInterrupt:
-        from . import ExitStatus
+        from httpie.status import ExitStatus
         exit_status = ExitStatus.ERROR_CTRL_C
 
     sys.exit(exit_status.value)

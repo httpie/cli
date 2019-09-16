@@ -8,7 +8,7 @@ import tempfile
 from pathlib import Path
 from typing import Optional
 
-from httpie import ExitStatus
+from httpie.status import ExitStatus
 from httpie.config import Config
 from httpie.context import Environment
 from httpie.core import main

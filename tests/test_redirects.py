@@ -1,7 +1,7 @@
 """High-level tests."""
 import pytest
 
-from httpie import ExitStatus
+from httpie.status import ExitStatus
 from utils import http, HTTP_OK
 
 
