@@ -2,7 +2,7 @@ import argparse
 import getpass
 import os
 import sys
-from typing import Union, List
+from typing import Union, List, Optional
 
 from httpie.cli.constants import SEPARATOR_CREDENTIALS
 from httpie.sessions import VALID_SESSION_NAME_PATTERN
@@ -11,13 +11,13 @@ from httpie.sessions import VALID_SESSION_NAME_PATTERN
 class KeyValueArg:
     """Base key-value pair parsed from CLI."""
 
-    def __init__(self, key, value, sep, orig):
+    def __init__(self, key: str, value: Optional[str], sep: str, orig: str):
         self.key = key
         self.value = value
         self.sep = sep
         self.orig = orig
 
-    def __eq__(self, other):
+    def __eq__(self, other: 'KeyValueArg'):
         return self.__dict__ == other.__dict__
 
     def __repr__(self):
@@ -26,10 +26,10 @@ class KeyValueArg:
 
 class SessionNameValidator:
 
-    def __init__(self, error_message):
+    def __init__(self, error_message: str):
         self.error_message = error_message
 
-    def __call__(self, value):
+    def __call__(self, value: str) -> str:
         # Session name can be a path or just a name.
         if (os.path.sep not in value
                 and not VALID_SESSION_NAME_PATTERN.search(value)):
@@ -54,14 +54,14 @@ class KeyValueArgType:
 
     key_value_class = KeyValueArg
 
-    def __init__(self, *separators):
+    def __init__(self, *separators: str):
         self.separators = separators
         self.special_characters = set('\\')
         for separator in separators:
             self.special_characters.update(separator)
 
-    def __call__(self, string) -> KeyValueArg:
-        """Parse `string` and return `self.key_value_class()` instance.
+    def __call__(self, s: str) -> KeyValueArg:
+        """Parse raw string arg  and return `self.key_value_class` instance.
 
         The best of `self.separators` is determined (first found, longest).
         Back slash escaped characters aren't considered as separators
@@ -69,7 +69,7 @@ class KeyValueArgType:
         as well (r'\\').
 
         """
-        tokens = self.tokenize(string)
+        tokens = self.tokenize(s)
 
         # Sorting by length ensures that the longest one will be
         # chosen as it will overwrite any shorter ones starting
@@ -102,11 +102,9 @@ class KeyValueArgType:
                 break
 
         else:
-            raise argparse.ArgumentTypeError(
-                u'"%s" is not a valid value' % string)
+            raise argparse.ArgumentTypeError(f'{s!r} is not a valid value')
 
-        return self.key_value_class(
-            key=key, value=value, sep=sep, orig=string)
+        return self.key_value_class(key=key, value=value, sep=sep, orig=s)
 
     def tokenize(self, s: str) -> List[Union[str, Escaped]]:
         r"""Tokenize the raw arg string
@@ -134,20 +132,21 @@ class KeyValueArgType:
 class AuthCredentials(KeyValueArg):
     """Represents parsed credentials."""
 
-    def _getpass(self, prompt):
-        # To allow mocking.
-        return getpass.getpass(str(prompt))
-
-    def has_password(self):
+    def has_password(self) -> bool:
         return self.value is not None
 
-    def prompt_password(self, host):
+    def prompt_password(self, host: str):
+        prompt_text = f'http: password for {self.key}@{host}: '
         try:
-            self.value = self._getpass(
-                'http: password for %s@%s: ' % (self.key, host))
+            self.value = self._getpass(prompt_text)
         except (EOFError, KeyboardInterrupt):
             sys.stderr.write('\n')
             sys.exit(0)
+
+    @staticmethod
+    def _getpass(prompt):
+        # To allow easy mocking.
+        return getpass.getpass(str(prompt))
 
 
 class AuthCredentialsArgType(KeyValueArgType):
@@ -155,21 +154,21 @@ class AuthCredentialsArgType(KeyValueArgType):
 
     key_value_class = AuthCredentials
 
-    def __call__(self, string):
-        """Parse credentials from `string`.
+    def __call__(self, s):
+        """Parse credentials from `s`.
 
         ("username" or "username:password").
 
         """
         try:
-            return super().__call__(string)
+            return super().__call__(s)
         except argparse.ArgumentTypeError:
             # No password provided, will prompt for it later.
             return self.key_value_class(
-                key=string,
+                key=s,
                 value=None,
                 sep=SEPARATOR_CREDENTIALS,
-                orig=string
+                orig=s
             )
 
 
@@ -181,4 +180,4 @@ def readable_file_arg(filename):
         with open(filename, 'rb'):
             return filename
     except IOError as ex:
-        raise argparse.ArgumentTypeError('%s: %s' % (filename, ex.args[1]))
+        raise argparse.ArgumentTypeError(f'{filename}: {ex.args[1]}')
