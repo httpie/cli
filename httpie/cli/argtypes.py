@@ -2,6 +2,7 @@ import argparse
 import getpass
 import os
 import sys
+from typing import Union, List
 
 from httpie.cli.constants import SEPARATOR_CREDENTIALS
 from httpie.sessions import VALID_SESSION_NAME_PATTERN
@@ -39,11 +40,14 @@ class SessionNameValidator:
 class Escaped(str):
     """Represents an escaped character."""
 
+    def __repr__(self):
+        return f"Escaped({repr(str(self))})"
+
 
 class KeyValueArgType:
     """A key-value pair argument type used with `argparse`.
 
-    Parses a key-value arg and constructs a `KeyValuArge` instance.
+    Parses a key-value arg and constructs a `KeyValueArg` instance.
     Used for headers, form data, and other key-value pair types.
 
     """
@@ -65,29 +69,7 @@ class KeyValueArgType:
         as well (r'\\').
 
         """
-
-        def tokenize(string):
-            r"""Tokenize `string`. There are only two token types - strings
-            and escaped characters:
-
-            tokenize(r'foo\=bar\\baz')
-            => ['foo', Escaped('='), 'bar', Escaped('\\'), 'baz']
-
-            """
-            tokens = ['']
-            characters = iter(string)
-            for char in characters:
-                if char == '\\':
-                    char = next(characters, '')
-                    if char not in self.special_characters:
-                        tokens[-1] += '\\' + char
-                    else:
-                        tokens.extend([Escaped(char), ''])
-                else:
-                    tokens[-1] += char
-            return tokens
-
-        tokens = tokenize(string)
+        tokens = self.tokenize(string)
 
         # Sorting by length ensures that the longest one will be
         # chosen as it will overwrite any shorter ones starting
@@ -125,6 +107,28 @@ class KeyValueArgType:
 
         return self.key_value_class(
             key=key, value=value, sep=sep, orig=string)
+
+    def tokenize(self, s: str) -> List[Union[str, Escaped]]:
+        r"""Tokenize the raw arg string
+
+        There are only two token types - strings and escaped characters:
+
+        >>> KeyValueArgType('=').tokenize(r'foo\=bar\\baz')
+        ['foo', Escaped('='), 'bar', Escaped('\\'), 'baz']
+
+        """
+        tokens = ['']
+        characters = iter(s)
+        for char in characters:
+            if char == '\\':
+                char = next(characters, '')
+                if char not in self.special_characters:
+                    tokens[-1] += '\\' + char
+                else:
+                    tokens.extend([Escaped(char), ''])
+            else:
+                tokens[-1] += char
+        return tokens
 
 
 class AuthCredentials(KeyValueArg):

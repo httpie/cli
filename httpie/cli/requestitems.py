@@ -140,7 +140,7 @@ def process_data_raw_json_embed_arg(arg: KeyValueArg) -> JSONType:
     return value
 
 
-def load_text_file(item) -> str:
+def load_text_file(item: KeyValueArg) -> str:
     path = item.value
     try:
         with open(os.path.expanduser(path), 'rb') as f:
