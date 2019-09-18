@@ -1760,8 +1760,8 @@ have contributed.
     :target: https://pypi.python.org/pypi/httpie
     :alt: Latest version released on PyPi
 
-.. |coverage| image:: https://img.shields.io/coveralls/jakubroztocil/httpie/master.svg?style=flat-square&label=coverage
-    :target: https://coveralls.io/r/jakubroztocil/httpie?branch=master
+.. |coverage| image:: https://img.shields.io/codecov/c/github/jakubroztocil/httpie?style=flat-square
+    :target: https://codecov.io/gh/jakubroztocil/httpie
     :alt: Test coverage
 
 .. |build| image:: https://github.com/jakubroztocil/httpie/workflows/Build/badge.svg

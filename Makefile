@@ -75,9 +75,9 @@ pycodestyle:
 	@echo
 
 
-coveralls:
-	which coveralls || pip install python-coveralls
-	coveralls
+codecov:
+	which codecov || pip install codecov
+	codecov
 	@echo
 
 

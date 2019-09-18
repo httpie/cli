@@ -16,9 +16,9 @@ jobs:
       - run: make test
       - run: make test-dist
       - run: make pycodestyle
-      - run: make coveralls
+      - run: make codecov
         env:
-          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+          CODECOV_TOKEN: ${{ secrets.CODECOV_REPO_TOKEN }}
 
   test:
     # Run core HTTPie tests everywhere
