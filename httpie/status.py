@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import IntEnum
 
 
-class ExitStatus(Enum):
+class ExitStatus(IntEnum):
     """Program exit code constants."""
     SUCCESS = 0
     ERROR = 1

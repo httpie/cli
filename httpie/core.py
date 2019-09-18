@@ -68,7 +68,7 @@ def main(
             raise
         exit_status = ExitStatus.ERROR_CTRL_C
     except SystemExit as e:
-        if e.code != ExitStatus.SUCCESS.value:
+        if e.code != ExitStatus.SUCCESS:
             env.stderr.write('\n')
             if include_traceback:
                 raise
@@ -86,7 +86,7 @@ def main(
                 raise
             exit_status = ExitStatus.ERROR_CTRL_C
         except SystemExit as e:
-            if e.code != ExitStatus.SUCCESS.value:
+            if e.code != ExitStatus.SUCCESS:
                 env.stderr.write('\n')
                 if include_traceback:
                     raise
