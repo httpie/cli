@@ -1,12 +1,34 @@
 """High-level tests."""
+import io
+from unittest import mock
+
 import pytest
 
+import httpie.__main__
+from httpie.context import Environment
 from httpie.status import ExitStatus
 from httpie.cli.exceptions import ParseError
 from utils import MockEnvironment, http, HTTP_OK
 from fixtures import FILE_PATH, FILE_CONTENT
 
 import httpie
+
+
+def test_main_entry_point():
+    # Patch stdin to bypass pytest capture
+    with mock.patch.object(Environment, 'stdin', io.StringIO()):
+        with pytest.raises(SystemExit) as e:
+            httpie.__main__.main()
+        assert e.value.code == ExitStatus.ERROR
+
+
+@mock.patch('httpie.core.main')
+def test_main_entry_point_keyboard_interrupt(main):
+    main.side_effect = KeyboardInterrupt()
+    with mock.patch.object(Environment, 'stdin', io.StringIO()):
+        with pytest.raises(SystemExit) as e:
+            httpie.__main__.main()
+        assert e.value.code == ExitStatus.ERROR_CTRL_C
 
 
 def test_debug():
