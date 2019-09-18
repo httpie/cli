@@ -77,7 +77,7 @@ pycodestyle:
 
 codecov:
 	which codecov || pip install codecov
-	codecov
+	codecov --required
 	@echo
 
 
