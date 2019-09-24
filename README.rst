@@ -103,6 +103,11 @@ system package manager, for example:
     # Arch Linux
     $ pacman -S httpie
 
+.. code-block:: bash
+
+    # openSUSE
+    $ zypper install python3-httpie
+
 
 Windows, etc.
 -------------
