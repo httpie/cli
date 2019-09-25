@@ -122,7 +122,11 @@ and always provides the latest version) is to use `pip`_:
 (If ``pip`` installation fails for some reason, you can try
 ``easy_install httpie`` as a fallback.)
 
+Or you can use the following command to install it :
 
+    $ pip install -U httpie 
+    
+    
 Python version
 --------------
 
