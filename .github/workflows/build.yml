@@ -12,6 +12,7 @@ jobs:
       - uses: actions/setup-python@v1
         with:
           python-version: 3.7
+      - run: pip install --upgrade pip
       - run: make install
       - run: make pycodestyle
       - run: make test
