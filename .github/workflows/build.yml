@@ -1,9 +1,6 @@
 name: Build
-
 on: [push]
-
 jobs:
-
   extras:
     # Run coverage and extra tests only once
     runs-on: ubuntu-latest
@@ -20,7 +17,6 @@ jobs:
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_REPO_TOKEN }}
       - run: make test-dist
-
   test:
     # Run core HTTPie tests everywhere
     runs-on: ${{ matrix.os }}
