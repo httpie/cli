@@ -1,7 +1,11 @@
 from itertools import groupby
+from operator import attrgetter
+from typing import Dict, List, Type
+
 from pkg_resources import iter_entry_points
-from httpie.plugins import AuthPlugin, FormatterPlugin, ConverterPlugin
-from httpie.plugins.base import TransportPlugin
+
+from httpie.plugins import AuthPlugin, ConverterPlugin, FormatterPlugin
+from httpie.plugins.base import BasePlugin, TransportPlugin
 
 
 ENTRY_POINT_NAMES = [
@@ -12,20 +16,17 @@ ENTRY_POINT_NAMES = [
 ]
 
 
-class PluginManager(object):
+class PluginManager(list):
 
-    def __init__(self):
-        self._plugins = []
-
-    def __iter__(self):
-        return iter(self._plugins)
-
-    def register(self, *plugins):
+    def register(self, *plugins: Type[BasePlugin]):
         for plugin in plugins:
-            self._plugins.append(plugin)
+            self.append(plugin)
 
-    def unregister(self, plugin):
-        self._plugins.remove(plugin)
+    def unregister(self, plugin: Type[BasePlugin]):
+        self.remove(plugin)
+
+    def filter(self, by_type=Type[BasePlugin]):
+        return [plugin for plugin in self if issubclass(plugin, by_type)]
 
     def load_installed_plugins(self, debug_stream):
         loaded_any_plugins = False
@@ -42,33 +43,34 @@ class PluginManager(object):
             debug_stream.write('\n')
 
     # Auth
-    def get_auth_plugins(self):
-        return [plugin for plugin in self if issubclass(plugin, AuthPlugin)]
+    def get_auth_plugins(self) -> List[Type[AuthPlugin]]:
+        return self.filter(AuthPlugin)
 
-    def get_auth_plugin_mapping(self):
-        return {plugin.auth_type: plugin for plugin in self.get_auth_plugins()}
+    def get_auth_plugin_mapping(self) -> Dict[str, Type[AuthPlugin]]:
+        return {
+            plugin.auth_type: plugin for plugin in self.get_auth_plugins()
+        }
 
-    def get_auth_plugin(self, auth_type):
+    def get_auth_plugin(self, auth_type: str) -> Type[AuthPlugin]:
         return self.get_auth_plugin_mapping()[auth_type]
 
     # Output processing
-    def get_formatters(self):
-        return [plugin for plugin in self
-                if issubclass(plugin, FormatterPlugin)]
+    def get_formatters(self) -> List[Type[FormatterPlugin]]:
+        return self.filter(FormatterPlugin)
 
-    def get_formatters_grouped(self):
-        groups = {}
-        for group_name, group in groupby(
-                self.get_formatters(),
-                key=lambda p: getattr(p, 'group_name', 'format')):
-            groups[group_name] = list(group)
-        return groups
+    def get_formatters_grouped(self) -> Dict[str, List[Type[FormatterPlugin]]]:
+        return {
+            group_name: list(group)
+            for group_name, group
+            in groupby(self.get_formatters(), key=attrgetter('group_name'))
+        }
 
-    def get_converters(self):
-        return [plugin for plugin in self
-                if issubclass(plugin, ConverterPlugin)]
+    def get_converters(self) -> List[Type[ConverterPlugin]]:
+        return self.filter(ConverterPlugin)
 
     # Adapters
-    def get_transport_plugins(self):
-        return [plugin for plugin in self
-                if issubclass(plugin, TransportPlugin)]
+    def get_transport_plugins(self) -> List[Type[TransportPlugin]]:
+        return self.filter(TransportPlugin)
+
+    def __repr__(self):
+        return f'<PluginManager: {list(self)}>'

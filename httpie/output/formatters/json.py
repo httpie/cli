@@ -9,7 +9,7 @@ DEFAULT_INDENT = 4
 
 class JSONFormatter(FormatterPlugin):
 
-    def format_body(self, body, mime):
+    def format_body(self, body: str, mime: str) -> str:
         maybe_json = [
             'json',
             'javascript',

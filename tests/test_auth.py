@@ -2,9 +2,11 @@
 import mock
 import pytest
 
+from httpie.plugins.builtin import HTTPBasicAuth
+from httpie.utils import ExplicitNullAuth
 from utils import http, add_auth, HTTP_OK, MockEnvironment
-import httpie.input
-import httpie.cli
+import httpie.cli.constants
+import httpie.cli.definition
 
 
 def test_basic_auth(httpbin_both):
@@ -22,7 +24,7 @@ def test_digest_auth(httpbin_both, argument_name):
     assert r.json == {'authenticated': True, 'user': 'user'}
 
 
-@mock.patch('httpie.input.AuthCredentials._getpass',
+@mock.patch('httpie.cli.argtypes.AuthCredentials._getpass',
             new=lambda self, prompt: 'password')
 def test_password_prompt(httpbin):
     r = http('--auth', 'user',
@@ -58,7 +60,7 @@ def test_only_username_in_url(url):
     https://github.com/jakubroztocil/httpie/issues/242
 
     """
-    args = httpie.cli.parser.parse_args(args=[url], env=MockEnvironment())
+    args = httpie.cli.definition.parser.parse_args(args=[url], env=MockEnvironment())
     assert args.auth
     assert args.auth.username == 'username'
     assert args.auth.password == ''
@@ -69,7 +71,39 @@ def test_missing_auth(httpbin):
         '--auth-type=basic',
         'GET',
         httpbin + '/basic-auth/user/password',
-        error_exit_ok=True
+        tolerate_error_exit_status=True
     )
     assert HTTP_OK not in r
     assert '--auth required' in r.stderr
+
+
+def test_netrc(httpbin_both):
+    with mock.patch('requests.sessions.get_netrc_auth') as get_netrc_auth:
+        get_netrc_auth.return_value = ('httpie', 'password')
+        r = http(httpbin_both + '/basic-auth/httpie/password')
+        assert get_netrc_auth.call_count == 1
+        assert HTTP_OK in r
+
+
+def test_ignore_netrc(httpbin_both):
+    with mock.patch('requests.sessions.get_netrc_auth') as get_netrc_auth:
+        get_netrc_auth.return_value = ('httpie', 'password')
+        r = http('--ignore-netrc', httpbin_both + '/basic-auth/httpie/password')
+        assert get_netrc_auth.call_count == 0
+        assert 'HTTP/1.1 401 UNAUTHORIZED' in r
+
+
+def test_ignore_netrc_null_auth():
+    args = httpie.cli.definition.parser.parse_args(
+        args=['--ignore-netrc', 'example.org'],
+        env=MockEnvironment(),
+    )
+    assert isinstance(args.auth, ExplicitNullAuth)
+
+
+def test_ignore_netrc_together_with_auth():
+    args = httpie.cli.definition.parser.parse_args(
+        args=['--ignore-netrc', '--auth=username:password', 'example.org'],
+        env=MockEnvironment(),
+    )
+    assert isinstance(args.auth, HTTPBasicAuth)

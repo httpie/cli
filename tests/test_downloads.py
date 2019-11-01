@@ -1,11 +1,12 @@
 import os
+import tempfile
 import time
+from urllib.request import urlopen
 
 import pytest
 import mock
 from requests.structures import CaseInsensitiveDict
 
-from httpie.compat import urlopen
 from httpie.downloads import (
     parse_content_range, filename_from_content_disposition, filename_from_url,
     get_unique_filename, ContentRangeError, Downloader,
@@ -13,7 +14,7 @@ from httpie.downloads import (
 from utils import http, MockEnvironment
 
 
-class Response(object):
+class Response:
     # noinspection PyDefaultArgument
     def __init__(self, url, headers={}, status_code=200):
         self.url = url
@@ -22,6 +23,7 @@ class Response(object):
 
 
 class TestDownloadUtils:
+
     def test_Content_Range_parsing(self):
         parse = parse_content_range
 
@@ -131,35 +133,59 @@ class TestDownloads:
         assert body == r
 
     def test_download_with_Content_Length(self, httpbin_both):
-        devnull = open(os.devnull, 'w')
-        downloader = Downloader(output_file=devnull, progress_file=devnull)
-        downloader.start(Response(
-            url=httpbin_both.url + '/',
-            headers={'Content-Length': 10}
-        ))
-        time.sleep(1.1)
-        downloader.chunk_downloaded(b'12345')
-        time.sleep(1.1)
-        downloader.chunk_downloaded(b'12345')
-        downloader.finish()
-        assert not downloader.interrupted
+        with open(os.devnull, 'w') as devnull:
+            downloader = Downloader(output_file=devnull, progress_file=devnull)
+            downloader.start(
+                initial_url='/',
+                final_response=Response(
+                    url=httpbin_both.url + '/',
+                    headers={'Content-Length': 10}
+                )
+            )
+            time.sleep(1.1)
+            downloader.chunk_downloaded(b'12345')
+            time.sleep(1.1)
+            downloader.chunk_downloaded(b'12345')
+            downloader.finish()
+            assert not downloader.interrupted
+            downloader._progress_reporter.join()
 
     def test_download_no_Content_Length(self, httpbin_both):
-        devnull = open(os.devnull, 'w')
-        downloader = Downloader(output_file=devnull, progress_file=devnull)
-        downloader.start(Response(url=httpbin_both.url + '/'))
-        time.sleep(1.1)
-        downloader.chunk_downloaded(b'12345')
-        downloader.finish()
-        assert not downloader.interrupted
+        with open(os.devnull, 'w') as devnull:
+            downloader = Downloader(output_file=devnull, progress_file=devnull)
+            downloader.start(
+                final_response=Response(url=httpbin_both.url + '/'),
+                initial_url='/'
+            )
+            time.sleep(1.1)
+            downloader.chunk_downloaded(b'12345')
+            downloader.finish()
+            assert not downloader.interrupted
+            downloader._progress_reporter.join()
 
     def test_download_interrupted(self, httpbin_both):
-        devnull = open(os.devnull, 'w')
-        downloader = Downloader(output_file=devnull, progress_file=devnull)
-        downloader.start(Response(
-            url=httpbin_both.url + '/',
-            headers={'Content-Length': 5}
-        ))
-        downloader.chunk_downloaded(b'1234')
-        downloader.finish()
-        assert downloader.interrupted
+        with open(os.devnull, 'w') as devnull:
+            downloader = Downloader(output_file=devnull, progress_file=devnull)
+            downloader.start(
+                final_response=Response(
+                    url=httpbin_both.url + '/',
+                    headers={'Content-Length': 5}
+                ),
+                initial_url='/'
+            )
+            downloader.chunk_downloaded(b'1234')
+            downloader.finish()
+            assert downloader.interrupted
+            downloader._progress_reporter.join()
+
+    def test_download_with_redirect_original_url_used_for_filename(self, httpbin):
+        # Redirect from `/redirect/1` to `/get`.
+        expected_filename = '1.json'
+        orig_cwd = os.getcwd()
+        os.chdir(tempfile.mkdtemp(prefix='httpie_download_test_'))
+        try:
+            assert os.listdir('.') == []
+            http('--download', httpbin.url + '/redirect/1')
+            assert os.listdir('.') == [expected_filename]
+        finally:
+            os.chdir(orig_cwd)

@@ -1,11 +1,11 @@
 import os
 from tempfile import gettempdir
+from urllib.request import urlopen
 
 import pytest
 
 from utils import MockEnvironment, http, HTTP_OK, COLOR, CRLF
-from httpie import ExitStatus
-from httpie.compat import urlopen
+from httpie.status import ExitStatus
 from httpie.output.formatters.colors import get_lexer
 
 

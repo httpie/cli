@@ -1,6 +1,6 @@
 from mock import mock
 
-from httpie.input import SEP_CREDENTIALS
+from httpie.cli.constants import SEPARATOR_CREDENTIALS
 from httpie.plugins import AuthPlugin, plugin_manager
 from utils import http, HTTP_OK
 
@@ -83,7 +83,7 @@ def test_auth_plugin_require_auth_false_and_auth_provided(httpbin):
         auth_require = False
 
         def get_auth(self, username=None, password=None):
-            assert self.raw_auth == USERNAME + SEP_CREDENTIALS + PASSWORD
+            assert self.raw_auth == USERNAME + SEPARATOR_CREDENTIALS + PASSWORD
             assert username == USERNAME
             assert password == PASSWORD
             return basic_auth()
@@ -95,7 +95,7 @@ def test_auth_plugin_require_auth_false_and_auth_provided(httpbin):
             '--auth-type',
             Plugin.auth_type,
             '--auth',
-            USERNAME + SEP_CREDENTIALS + PASSWORD,
+            USERNAME + SEPARATOR_CREDENTIALS + PASSWORD,
         )
         assert HTTP_OK in r
         assert r.json == AUTH_OK
@@ -103,7 +103,7 @@ def test_auth_plugin_require_auth_false_and_auth_provided(httpbin):
         plugin_manager.unregister(Plugin)
 
 
-@mock.patch('httpie.input.AuthCredentials._getpass',
+@mock.patch('httpie.cli.argtypes.AuthCredentials._getpass',
             new=lambda self, prompt: 'UNEXPECTED_PROMPT_RESPONSE')
 def test_auth_plugin_prompt_password_false(httpbin):
 

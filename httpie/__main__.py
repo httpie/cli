@@ -8,10 +8,12 @@ import sys
 def main():
     try:
         from .core import main
-        sys.exit(main())
+        exit_status = main()
     except KeyboardInterrupt:
-        from . import ExitStatus
-        sys.exit(ExitStatus.ERROR_CTRL_C)
+        from httpie.status import ExitStatus
+        exit_status = ExitStatus.ERROR_CTRL_C
+
+    sys.exit(exit_status.value)
 
 
 if __name__ == '__main__':

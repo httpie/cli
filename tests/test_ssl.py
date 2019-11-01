@@ -4,8 +4,8 @@ import pytest
 import pytest_httpbin.certs
 import requests.exceptions
 
-from httpie import ExitStatus
-from httpie.input import SSL_VERSION_ARG_MAPPING
+from httpie.status import ExitStatus
+from httpie.cli.constants import SSL_VERSION_ARG_MAPPING
 from utils import HTTP_OK, TESTS_ROOT, http
 
 
@@ -45,7 +45,7 @@ def test_ssl_version(httpbin_secure, ssl_version):
     except ssl_errors as e:
         if ssl_version == 'ssl3':
             # pytest-httpbin doesn't support ssl3
-            assert 'SSLV3_ALERT_HANDSHAKE_FAILURE' in str(e)
+            pass
         else:
             raise
 
@@ -66,7 +66,7 @@ class TestClientCert:
     def test_cert_file_not_found(self, httpbin_secure):
         r = http(httpbin_secure + '/get',
                  '--cert', '/__not_found__',
-                 error_exit_ok=True)
+                 tolerate_error_exit_status=True)
         assert r.exit_status == ExitStatus.ERROR
         assert 'No such file or directory' in r.stderr
 

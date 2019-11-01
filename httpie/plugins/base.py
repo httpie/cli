@@ -1,4 +1,4 @@
-class BasePlugin(object):
+class BasePlugin:
 
     # The name of the plugin, eg. "My auth".
     name = None
@@ -59,7 +59,7 @@ class AuthPlugin(BasePlugin):
 class TransportPlugin(BasePlugin):
     """
 
-    http://docs.python-requests.org/en/latest/user/advanced/#transport-adapters
+    https://2.python-requests.org/en/latest/user/advanced/#transport-adapters
 
     """
 
@@ -75,7 +75,7 @@ class TransportPlugin(BasePlugin):
         raise NotImplementedError()
 
 
-class ConverterPlugin(object):
+class ConverterPlugin(BasePlugin):
 
     def __init__(self, mime):
         self.mime = mime
@@ -88,7 +88,8 @@ class ConverterPlugin(object):
         raise NotImplementedError
 
 
-class FormatterPlugin(object):
+class FormatterPlugin(BasePlugin):
+    group_name = 'format'
 
     def __init__(self, **kwargs):
         """
@@ -100,7 +101,7 @@ class FormatterPlugin(object):
         self.enabled = True
         self.kwargs = kwargs
 
-    def format_headers(self, headers):
+    def format_headers(self, headers: str) -> str:
         """Return processed `headers`
 
         :param headers: The headers as text.
@@ -108,7 +109,7 @@ class FormatterPlugin(object):
         """
         return headers
 
-    def format_body(self, content, mime):
+    def format_body(self, content: str, mime: str) -> str:
         """Return processed `content`.
 
         :param mime: E.g., 'application/atom+xml'.

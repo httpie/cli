@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """
-Generate URLs and file hashes to be included in the Homebrew formula
-after a new release of HTTPie has been published on PyPi.
+Generate Ruby code with URLs and file hashes for packages from PyPi
+(i.e., httpie itself as well as its dependencies) to be included
+in the Homebrew formula after a new release of HTTPie has been published
+on PyPi.
 
-https://github.com/Homebrew/homebrew-core/blob/master/Formula/httpie.rb
+<https://github.com/Homebrew/homebrew-core/blob/master/Formula/httpie.rb>
 
 """
 import hashlib
@@ -12,7 +14,7 @@ import requests
 
 PACKAGES = [
     'httpie',
-    'pygments',
+    'Pygments',
     'requests',
     'certifi',
     'urllib3',
@@ -23,7 +25,7 @@ PACKAGES = [
 
 
 def get_package_meta(package_name):
-    api_url = 'https://pypi.python.org/pypi/{}/json'.format(package_name)
+    api_url = f'https://pypi.python.org/pypi/{package_name}/json'
     resp = requests.get(api_url).json()
     hasher = hashlib.sha256()
     for release in resp['urls']:
@@ -36,8 +38,7 @@ def get_package_meta(package_name):
                 'sha256': hasher.hexdigest(),
             }
     else:
-        raise RuntimeError(
-            '{}: download not found: {}'.format(package_name, resp))
+        raise RuntimeError(f'{package_name}: download not found: {resp}')
 
 
 def main():

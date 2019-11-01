@@ -112,6 +112,6 @@ Don't forget to add yourself to `AUTHORS`_!
 .. _existing issues: https://github.com/jakubroztocil/httpie/issues?state=open
 .. _AUTHORS: https://github.com/jakubroztocil/httpie/blob/master/AUTHORS.rst
 .. _Makefile: https://github.com/jakubroztocil/httpie/blob/master/Makefile
-.. _pytest: http://pytest.org/
-.. _Style Guide for Python Code: http://python.org/dev/peps/pep-0008/
+.. _pytest: https://pytest.org/
+.. _Style Guide for Python Code: https://python.org/dev/peps/pep-0008/
 .. _test suite: https://github.com/jakubroztocil/httpie/tree/master/tests

@@ -1,32 +1,24 @@
 from __future__ import division
 import json
+import mimetypes
 from collections import OrderedDict
+from pprint import pformat
+
+import requests.auth
 
 
 def load_json_preserve_order(s):
     return json.loads(s, object_pairs_hook=OrderedDict)
 
 
-def repr_dict_nice(d):
-    def prepare_dict(d):
-        for k, v in d.items():
-            if isinstance(v, dict):
-                v = dict(prepare_dict(v))
-            elif isinstance(v, bytes):
-                v = v.decode('utf8')
-            elif not isinstance(v, (int, str)):
-                v = repr(v)
-            yield k, v
-    return json.dumps(
-        dict(prepare_dict(d)),
-        indent=4, sort_keys=True,
-    )
+def repr_dict(d: dict) -> str:
+    return pformat(d)
 
 
 def humanize_bytes(n, precision=2):
     # Author: Doug Latornell
     # Licence: MIT
-    # URL: http://code.activestate.com/recipes/577081/
+    # URL: https://code.activestate.com/recipes/577081/
     """Return a humanized string representation of a number of bytes.
 
     Assumes `from __future__ import division`.
@@ -67,3 +59,27 @@ def humanize_bytes(n, precision=2):
 
     # noinspection PyUnboundLocalVariable
     return '%.*f %s' % (precision, n / factor, suffix)
+
+
+class ExplicitNullAuth(requests.auth.AuthBase):
+    """Forces requests to ignore the ``.netrc``.
+    <https://github.com/psf/requests/issues/2773#issuecomment-174312831>
+    """
+
+    def __call__(self, r):
+        return r
+
+
+def get_content_type(filename):
+    """
+    Return the content type for ``filename`` in format appropriate
+    for Content-Type headers, or ``None`` if the file type is unknown
+    to ``mimetypes``.
+
+    """
+    mime, encoding = mimetypes.guess_type(filename, strict=False)
+    if mime:
+        content_type = mime
+        if encoding:
+            content_type = '%s; charset=%s' % (mime, encoding)
+        return content_type

@@ -1,18 +1,22 @@
 from __future__ import absolute_import
+
 import json
+from typing import Optional, Type
 
 import pygments.lexer
-import pygments.token
-import pygments.styles
 import pygments.lexers
 import pygments.style
+import pygments.styles
+import pygments.token
 from pygments.formatters.terminal import TerminalFormatter
 from pygments.formatters.terminal256 import Terminal256Formatter
+from pygments.lexer import Lexer
 from pygments.lexers.special import TextLexer
 from pygments.lexers.text import HttpLexer as PygmentsHttpLexer
 from pygments.util import ClassNotFound
 
 from httpie.compat import is_windows
+from httpie.context import Environment
 from httpie.plugins import FormatterPlugin
 
 
@@ -23,7 +27,6 @@ if is_windows:
     # Colors on Windows via colorama don't look that
     # great and fruity seems to give the best result there.
     DEFAULT_STYLE = 'fruity'
-
 
 AVAILABLE_STYLES = set(pygments.styles.get_all_styles())
 AVAILABLE_STYLES.add(SOLARIZED_STYLE)
@@ -40,9 +43,14 @@ class ColorFormatter(FormatterPlugin):
     """
     group_name = 'colors'
 
-    def __init__(self, env, explicit_json=False,
-                 color_scheme=DEFAULT_STYLE, **kwargs):
-        super(ColorFormatter, self).__init__(**kwargs)
+    def __init__(
+        self,
+        env: Environment,
+        explicit_json=False,
+        color_scheme=DEFAULT_STYLE,
+        **kwargs
+    ):
+        super().__init__(**kwargs)
 
         if not env.colors:
             self.enabled = False
@@ -63,14 +71,14 @@ class ColorFormatter(FormatterPlugin):
         self.formatter = formatter
         self.http_lexer = http_lexer
 
-    def format_headers(self, headers):
+    def format_headers(self, headers: str) -> str:
         return pygments.highlight(
             code=headers,
             lexer=self.http_lexer,
             formatter=self.formatter,
         ).strip()
 
-    def format_body(self, body, mime):
+    def format_body(self, body: str, mime: str) -> str:
         lexer = self.get_lexer_for_body(mime, body)
         if lexer:
             body = pygments.highlight(
@@ -80,22 +88,29 @@ class ColorFormatter(FormatterPlugin):
             )
         return body.strip()
 
-    def get_lexer_for_body(self, mime, body):
+    def get_lexer_for_body(
+        self, mime: str,
+        body: str
+    ) -> Optional[Type[Lexer]]:
         return get_lexer(
             mime=mime,
             explicit_json=self.explicit_json,
             body=body,
         )
 
-    def get_style_class(self, color_scheme):
+    @staticmethod
+    def get_style_class(color_scheme: str) -> Type[pygments.style.Style]:
         try:
             return pygments.styles.get_style_by_name(color_scheme)
         except ClassNotFound:
             return Solarized256Style
 
 
-def get_lexer(mime, explicit_json=False, body=''):
-
+def get_lexer(
+    mime: str,
+    explicit_json=False,
+    body=''
+) -> Optional[Type[Lexer]]:
     # Build candidate mime type and lexer names.
     mime_types, lexer_names = [mime], []
     type_, subtype = mime.split('/', 1)

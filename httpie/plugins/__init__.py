@@ -1,6 +1,6 @@
 """
 WARNING: The plugin API is still work in progress and will
-         probably be completely reworked by v1.0.0.
+         probably be completely reworked in the future.
 
 """
 from httpie.plugins.base import (
@@ -15,8 +15,10 @@ from httpie.output.formatters.colors import ColorFormatter
 
 
 plugin_manager = PluginManager()
-plugin_manager.register(BasicAuthPlugin,
-                        DigestAuthPlugin)
-plugin_manager.register(HeadersFormatter,
-                        JSONFormatter,
-                        ColorFormatter)
+plugin_manager.register(
+    BasicAuthPlugin,
+    DigestAuthPlugin,
+    HeadersFormatter,
+    JSONFormatter,
+    ColorFormatter,
+)

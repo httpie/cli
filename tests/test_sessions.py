@@ -11,7 +11,7 @@ from utils import MockEnvironment, mk_config_dir, http, HTTP_OK
 from fixtures import UNICODE
 
 
-class SessionTestBase(object):
+class SessionTestBase:
 
     def start_session(self, httpbin):
         """Create and reuse a unique config dir for each test."""
@@ -44,11 +44,16 @@ class TestSessionFlow(SessionTestBase):
         authorization, and response cookies.
 
         """
-        super(TestSessionFlow, self).start_session(httpbin)
-        r1 = http('--follow', '--session=test', '--auth=username:password',
-                  'GET', httpbin.url + '/cookies/set?hello=world',
-                  'Hello:World',
-                  env=self.env())
+        super().start_session(httpbin)
+        r1 = http(
+            '--follow',
+            '--session=test',
+            '--auth=username:password',
+            'GET',
+            httpbin.url + '/cookies/set?hello=world',
+            'Hello:World',
+            env=self.env()
+        )
         assert HTTP_OK in r1
 
     def test_session_created_and_reused(self, httpbin):
@@ -130,20 +135,16 @@ class TestSession(SessionTestBase):
 
     def test_session_by_path(self, httpbin):
         self.start_session(httpbin)
-        session_path = os.path.join(self.config_dir, 'session-by-path.json')
-        r1 = http('--session=' + session_path, 'GET', httpbin.url + '/get',
+        session_path = self.config_dir / 'session-by-path.json'
+        r1 = http('--session', str(session_path), 'GET', httpbin.url + '/get',
                   'Foo:Bar', env=self.env())
         assert HTTP_OK in r1
 
-        r2 = http('--session=' + session_path, 'GET', httpbin.url + '/get',
+        r2 = http('--session', str(session_path), 'GET', httpbin.url + '/get',
                   env=self.env())
         assert HTTP_OK in r2
         assert r2.json['headers']['Foo'] == 'Bar'
 
-    @pytest.mark.skipif(
-        sys.version_info >= (3,),
-        reason="This test fails intermittently on Python 3 - "
-               "see https://github.com/jakubroztocil/httpie/issues/282")
     def test_session_unicode(self, httpbin):
         self.start_session(httpbin)
 

@@ -1,0 +1,2 @@
+class ParseError(Exception):
+    pass

@@ -8,10 +8,10 @@ TAG="\n\n\033[0;32m\#\#\# "
 END=" \#\#\# \033[0m\n"
 
 
-all: test
+all: uninstall-httpie install test
 
 
-init: uninstall-httpie
+install:
 	@echo $(TAG)Installing dev requirements$(END)
 	pip install --upgrade -r $(REQUIREMENTS)
 
@@ -32,14 +32,14 @@ clean:
 ###############################################################################
 
 
-test: init
+test:
 	@echo $(TAG)Running tests on the current Python interpreter with coverage $(END)
 	py.test --cov ./httpie --cov ./tests --doctest-modules --verbose --ignore=./tests/test_plugins ./httpie ./tests
 	@echo
 
 
 # test-all is meant to test everything — even this Makefile
-test-all: uninstall-all clean init test test-tox test-dist pycodestyle
+test-all: uninstall-all clean install test test-tox test-dist pycodestyle
 	@echo
 
 
@@ -47,7 +47,7 @@ test-dist: test-sdist test-bdist-wheel
 	@echo
 
 
-test-tox: init
+test-tox: uninstall-httpie install
 	@echo $(TAG)Running tests on all Pythons via Tox$(END)
 	tox
 	@echo
@@ -75,9 +75,9 @@ pycodestyle:
 	@echo
 
 
-coveralls:
-	which coveralls || pip install python-coveralls
-	coveralls
+codecov:
+	which codecov || pip install codecov
+	codecov --required
 	@echo
 
 
@@ -93,9 +93,8 @@ publish-no-test:
 	@echo $(TAG)Testing wheel build an installation$(END)
 	@echo "$(VERSION)"
 	@echo "$(VERSION)" | grep -q "dev" && echo '!!!Not publishing dev version!!!' && exit 1 || echo ok
-	python setup.py register
-	python setup.py sdist upload
-	python setup.py bdist_wheel upload
+	python setup.py sdist bdist_wheel
+	twine upload dist/*
 	@echo
 
 
@@ -140,9 +139,14 @@ pdf:
 
 
 ###############################################################################
-# Utils
+# Homebrew
 ###############################################################################
 
+brew-deps:
+	extras/brew-deps.py
 
-homebrew-formula-vars:
-	extras/get-homebrew-formula-vars.py
+brew-test:
+	- brew uninstall httpie
+	brew install --build-from-source ./extras/httpie.rb
+	brew test httpie
+	brew audit --strict httpie

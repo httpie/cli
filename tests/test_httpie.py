@@ -1,30 +1,53 @@
 """High-level tests."""
+import io
+from unittest import mock
+
 import pytest
 
-from httpie.input import ParseError
+import httpie.__main__
+from httpie.context import Environment
+from httpie.status import ExitStatus
+from httpie.cli.exceptions import ParseError
 from utils import MockEnvironment, http, HTTP_OK
 from fixtures import FILE_PATH, FILE_CONTENT
 
 import httpie
 
 
+def test_main_entry_point():
+    # Patch stdin to bypass pytest capture
+    with mock.patch.object(Environment, 'stdin', io.StringIO()):
+        with pytest.raises(SystemExit) as e:
+            httpie.__main__.main()
+        assert e.value.code == ExitStatus.ERROR
+
+
+@mock.patch('httpie.core.main')
+def test_main_entry_point_keyboard_interrupt(main):
+    main.side_effect = KeyboardInterrupt()
+    with mock.patch.object(Environment, 'stdin', io.StringIO()):
+        with pytest.raises(SystemExit) as e:
+            httpie.__main__.main()
+        assert e.value.code == ExitStatus.ERROR_CTRL_C
+
+
 def test_debug():
     r = http('--debug')
-    assert r.exit_status == httpie.ExitStatus.SUCCESS
+    assert r.exit_status == ExitStatus.SUCCESS
     assert 'HTTPie %s' % httpie.__version__ in r.stderr
 
 
 def test_help():
-    r = http('--help', error_exit_ok=True)
-    assert r.exit_status == httpie.ExitStatus.SUCCESS
+    r = http('--help', tolerate_error_exit_status=True)
+    assert r.exit_status == ExitStatus.SUCCESS
     assert 'https://github.com/jakubroztocil/httpie/issues' in r
 
 
 def test_version():
-    r = http('--version', error_exit_ok=True)
-    assert r.exit_status == httpie.ExitStatus.SUCCESS
+    r = http('--version', tolerate_error_exit_status=True)
+    assert r.exit_status == ExitStatus.SUCCESS
     # FIXME: py3 has version in stdout, py2 in stderr
-    assert httpie.__version__ == r.stderr.strip() + r.strip()
+    assert httpie.__version__ == r.strip()
 
 
 def test_GET(httpbin_both):
@@ -65,6 +88,12 @@ def test_POST_stdin(httpbin_both):
     with open(FILE_PATH) as f:
         env = MockEnvironment(stdin=f, stdin_isatty=False)
         r = http('--form', 'POST', httpbin_both + '/post', env=env)
+    assert HTTP_OK in r
+    assert FILE_CONTENT in r
+
+
+def test_POST_file(httpbin_both):
+    r = http('--form', 'POST', httpbin_both + '/post', 'file@' + FILE_PATH)
     assert HTTP_OK in r
     assert FILE_CONTENT in r
 

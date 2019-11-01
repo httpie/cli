@@ -1,42 +1,42 @@
 """CLI argument parsing related tests."""
-import json
-# noinspection PyCompatibility
 import argparse
+import json
 
 import pytest
 from requests.exceptions import InvalidSchema
 
-from httpie import input
-from httpie.input import KeyValue, KeyValueArgType, DataDict
-from httpie import ExitStatus
-from httpie.cli import parser
-from utils import MockEnvironment, http, HTTP_OK
+import httpie.cli.argparser
 from fixtures import (
-    FILE_PATH_ARG, JSON_FILE_PATH_ARG,
-    JSON_FILE_CONTENT, FILE_CONTENT, FILE_PATH
+    FILE_CONTENT, FILE_PATH, FILE_PATH_ARG, JSON_FILE_CONTENT,
+    JSON_FILE_PATH_ARG,
 )
+from httpie.status import ExitStatus
+from httpie.cli import constants
+from httpie.cli.definition import parser
+from httpie.cli.argtypes import KeyValueArg, KeyValueArgType
+from httpie.cli.requestitems import RequestItems
+from utils import HTTP_OK, MockEnvironment, http
 
 
 class TestItemParsing:
-
-    key_value = KeyValueArgType(*input.SEP_GROUP_ALL_ITEMS)
+    key_value_arg = KeyValueArgType(*constants.SEPARATOR_GROUP_ALL_ITEMS)
 
     def test_invalid_items(self):
         items = ['no-separator']
         for item in items:
-            pytest.raises(argparse.ArgumentTypeError, self.key_value, item)
+            pytest.raises(argparse.ArgumentTypeError, self.key_value_arg, item)
 
     def test_escape_separator(self):
-        items = input.parse_items([
+        items = RequestItems.from_args([
             # headers
-            self.key_value(r'foo\:bar:baz'),
-            self.key_value(r'jack\@jill:hill'),
+            self.key_value_arg(r'foo\:bar:baz'),
+            self.key_value_arg(r'jack\@jill:hill'),
 
             # data
-            self.key_value(r'baz\=bar=foo'),
+            self.key_value_arg(r'baz\=bar=foo'),
 
             # files
-            self.key_value(r'bar\@baz@%s' % FILE_PATH_ARG),
+            self.key_value_arg(r'bar\@baz@%s' % FILE_PATH_ARG),
         ])
         # `requests.structures.CaseInsensitiveDict` => `dict`
         headers = dict(items.headers._store.values())
@@ -45,7 +45,9 @@ class TestItemParsing:
             'foo:bar': 'baz',
             'jack@jill': 'hill',
         }
-        assert items.data == {'baz=bar': 'foo'}
+        assert items.data == {
+            'baz=bar': 'foo'
+        }
         assert 'bar@baz' in items.files
 
     @pytest.mark.parametrize(('string', 'key', 'sep', 'value'), [
@@ -54,31 +56,34 @@ class TestItemParsing:
         ('path\\==c:\\windows', 'path=', '=', 'c:\\windows'),
     ])
     def test_backslash_before_non_special_character_does_not_escape(
-            self, string, key, sep, value):
-        expected = KeyValue(orig=string, key=key, sep=sep, value=value)
-        actual = self.key_value(string)
+        self, string, key, sep, value
+    ):
+        expected = KeyValueArg(orig=string, key=key, sep=sep, value=value)
+        actual = self.key_value_arg(string)
         assert actual == expected
 
     def test_escape_longsep(self):
-        items = input.parse_items([
-            self.key_value(r'bob\:==foo'),
+        items = RequestItems.from_args([
+            self.key_value_arg(r'bob\:==foo'),
         ])
-        assert items.params == {'bob:': 'foo'}
+        assert items.params == {
+            'bob:': 'foo'
+        }
 
     def test_valid_items(self):
-        items = input.parse_items([
-            self.key_value('string=value'),
-            self.key_value('Header:value'),
-            self.key_value('Unset-Header:'),
-            self.key_value('Empty-Header;'),
-            self.key_value('list:=["a", 1, {}, false]'),
-            self.key_value('obj:={"a": "b"}'),
-            self.key_value('ed='),
-            self.key_value('bool:=true'),
-            self.key_value('file@' + FILE_PATH_ARG),
-            self.key_value('query==value'),
-            self.key_value('string-embed=@' + FILE_PATH_ARG),
-            self.key_value('raw-json-embed:=@' + JSON_FILE_PATH_ARG),
+        items = RequestItems.from_args([
+            self.key_value_arg('string=value'),
+            self.key_value_arg('Header:value'),
+            self.key_value_arg('Unset-Header:'),
+            self.key_value_arg('Empty-Header;'),
+            self.key_value_arg('list:=["a", 1, {}, false]'),
+            self.key_value_arg('obj:={"a": "b"}'),
+            self.key_value_arg('ed='),
+            self.key_value_arg('bool:=true'),
+            self.key_value_arg('file@' + FILE_PATH_ARG),
+            self.key_value_arg('query==value'),
+            self.key_value_arg('string-embed=@' + FILE_PATH_ARG),
+            self.key_value_arg('raw-json-embed:=@' + JSON_FILE_PATH_ARG),
         ])
 
         # Parsed headers
@@ -99,12 +104,16 @@ class TestItemParsing:
             "string": "value",
             "bool": True,
             "list": ["a", 1, {}, False],
-            "obj": {"a": "b"},
+            "obj": {
+                "a": "b"
+            },
             "string-embed": FILE_CONTENT,
         }
 
         # Parsed query string parameters
-        assert items.params == {'query': 'value'}
+        assert items.params == {
+            'query': 'value'
+        }
 
         # Parsed file fields
         assert 'file' in items.files
@@ -112,17 +121,19 @@ class TestItemParsing:
                 decode('utf8') == FILE_CONTENT)
 
     def test_multiple_file_fields_with_same_field_name(self):
-        items = input.parse_items([
-            self.key_value('file_field@' + FILE_PATH_ARG),
-            self.key_value('file_field@' + FILE_PATH_ARG),
+        items = RequestItems.from_args([
+            self.key_value_arg('file_field@' + FILE_PATH_ARG),
+            self.key_value_arg('file_field@' + FILE_PATH_ARG),
         ])
         assert len(items.files['file_field']) == 2
 
     def test_multiple_text_fields_with_same_field_name(self):
-        items = input.parse_items(
-            [self.key_value('text_field=a'),
-             self.key_value('text_field=b')],
-            data_class=DataDict
+        items = RequestItems.from_args(
+            request_item_args=[
+                self.key_value_arg('text_field=a'),
+                self.key_value_arg('text_field=b')
+            ],
+            as_form=True,
         )
         assert items.data['text_field'] == ['a', 'b']
         assert list(items.data.items()) == [
@@ -206,92 +217,80 @@ class TestLocalhostShorthand:
 class TestArgumentParser:
 
     def setup_method(self, method):
-        self.parser = input.HTTPieArgumentParser()
+        self.parser = httpie.cli.argparser.HTTPieArgumentParser()
 
     def test_guess_when_method_set_and_valid(self):
         self.parser.args = argparse.Namespace()
         self.parser.args.method = 'GET'
         self.parser.args.url = 'http://example.com/'
-        self.parser.args.items = []
+        self.parser.args.request_items = []
         self.parser.args.ignore_stdin = False
-
         self.parser.env = MockEnvironment()
-
         self.parser._guess_method()
-
         assert self.parser.args.method == 'GET'
         assert self.parser.args.url == 'http://example.com/'
-        assert self.parser.args.items == []
+        assert self.parser.args.request_items == []
 
     def test_guess_when_method_not_set(self):
         self.parser.args = argparse.Namespace()
         self.parser.args.method = None
         self.parser.args.url = 'http://example.com/'
-        self.parser.args.items = []
+        self.parser.args.request_items = []
         self.parser.args.ignore_stdin = False
         self.parser.env = MockEnvironment()
-
         self.parser._guess_method()
-
         assert self.parser.args.method == 'GET'
         assert self.parser.args.url == 'http://example.com/'
-        assert self.parser.args.items == []
+        assert self.parser.args.request_items == []
 
     def test_guess_when_method_set_but_invalid_and_data_field(self):
         self.parser.args = argparse.Namespace()
         self.parser.args.method = 'http://example.com/'
         self.parser.args.url = 'data=field'
-        self.parser.args.items = []
+        self.parser.args.request_items = []
         self.parser.args.ignore_stdin = False
         self.parser.env = MockEnvironment()
         self.parser._guess_method()
-
         assert self.parser.args.method == 'POST'
         assert self.parser.args.url == 'http://example.com/'
-        assert self.parser.args.items == [
-            KeyValue(key='data',
-                     value='field',
-                     sep='=',
-                     orig='data=field')
+        assert self.parser.args.request_items == [
+            KeyValueArg(key='data',
+                        value='field',
+                        sep='=',
+                        orig='data=field')
         ]
 
     def test_guess_when_method_set_but_invalid_and_header_field(self):
         self.parser.args = argparse.Namespace()
         self.parser.args.method = 'http://example.com/'
         self.parser.args.url = 'test:header'
-        self.parser.args.items = []
+        self.parser.args.request_items = []
         self.parser.args.ignore_stdin = False
-
         self.parser.env = MockEnvironment()
-
         self.parser._guess_method()
-
         assert self.parser.args.method == 'GET'
         assert self.parser.args.url == 'http://example.com/'
-        assert self.parser.args.items, [
-            KeyValue(key='test',
-                     value='header',
-                     sep=':',
-                     orig='test:header')
+        assert self.parser.args.request_items, [
+            KeyValueArg(key='test',
+                        value='header',
+                        sep=':',
+                        orig='test:header')
         ]
 
     def test_guess_when_method_set_but_invalid_and_item_exists(self):
         self.parser.args = argparse.Namespace()
         self.parser.args.method = 'http://example.com/'
         self.parser.args.url = 'new_item=a'
-        self.parser.args.items = [
-            KeyValue(
+        self.parser.args.request_items = [
+            KeyValueArg(
                 key='old_item', value='b', sep='=', orig='old_item=b')
         ]
         self.parser.args.ignore_stdin = False
-
         self.parser.env = MockEnvironment()
-
         self.parser._guess_method()
-
-        assert self.parser.args.items, [
-            KeyValue(key='new_item', value='a', sep='=', orig='new_item=a'),
-            KeyValue(
+        assert self.parser.args.request_items, [
+            KeyValueArg(key='new_item', value='a', sep='=', orig='new_item=a'),
+            KeyValueArg(
                 key='old_item', value='b', sep='=', orig='old_item=b'),
         ]
 
@@ -304,13 +303,13 @@ class TestNoOptions:
 
     def test_invalid_no_options(self, httpbin):
         r = http('--no-war', 'GET', httpbin.url + '/get',
-                 error_exit_ok=True)
-        assert r.exit_status == 1
+                 tolerate_error_exit_status=True)
+        assert r.exit_status == ExitStatus.ERROR
         assert 'unrecognized arguments: --no-war' in r.stderr
         assert 'GET /get HTTP/1.1' not in r
 
 
-class TestIgnoreStdin:
+class TestStdin:
 
     def test_ignore_stdin(self, httpbin):
         with open(FILE_PATH) as f:
@@ -323,9 +322,13 @@ class TestIgnoreStdin:
 
     def test_ignore_stdin_cannot_prompt_password(self, httpbin):
         r = http('--ignore-stdin', '--auth=no-password', httpbin.url + '/get',
-                 error_exit_ok=True)
+                 tolerate_error_exit_status=True)
         assert r.exit_status == ExitStatus.ERROR
         assert 'because --ignore-stdin' in r.stderr
+
+    def test_stdin_closed(self, httpbin):
+        r = http(httpbin + '/get', env=MockEnvironment(stdin=None))
+        assert HTTP_OK in r
 
 
 class TestSchemes:
@@ -342,6 +345,10 @@ class TestSchemes:
         with pytest.raises(InvalidSchema):
             http('bah', '--default=scheme=foo+bar-BAZ.123')
 
-    def test_default_scheme(self, httpbin_secure):
+    def test_default_scheme_option(self, httpbin_secure):
         url = '{0}:{1}'.format(httpbin_secure.host, httpbin_secure.port)
         assert HTTP_OK in http(url, '--default-scheme=https')
+
+    def test_scheme_when_invoked_as_https(self, httpbin_secure):
+        url = '{0}:{1}'.format(httpbin_secure.host, httpbin_secure.port)
+        assert HTTP_OK in http(url, program_name='https')

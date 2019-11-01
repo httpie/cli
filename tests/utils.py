@@ -5,11 +5,13 @@ import sys
 import time
 import json
 import tempfile
+from pathlib import Path
+from typing import Optional
 
-from httpie import ExitStatus, EXIT_STATUS_LABELS
+from httpie.status import ExitStatus
+from httpie.config import Config
 from httpie.context import Environment
 from httpie.core import main
-from httpie.compat import bytes, str
 
 
 TESTS_ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -23,9 +25,9 @@ HTTP_OK_COLOR = (
 )
 
 
-def mk_config_dir():
+def mk_config_dir() -> Path:
     dirname = tempfile.mkdtemp(prefix='httpie_config_')
-    return dirname
+    return Path(dirname)
 
 
 def add_auth(url, auth):
@@ -40,7 +42,7 @@ class MockEnvironment(Environment):
     stdout_isatty = True
     is_windows = False
 
-    def __init__(self, **kwargs):
+    def __init__(self, create_temp_config_dir=True, **kwargs):
         if 'stdout' not in kwargs:
             kwargs['stdout'] = tempfile.TemporaryFile(
                 mode='w+b',
@@ -51,19 +53,24 @@ class MockEnvironment(Environment):
                 mode='w+t',
                 prefix='httpie_stderr'
             )
-        super(MockEnvironment, self).__init__(**kwargs)
+        super().__init__(**kwargs)
+        self._create_temp_config_dir = create_temp_config_dir
         self._delete_config_dir = False
+        self._temp_dir = Path(tempfile.gettempdir())
 
     @property
-    def config(self):
-        if not self.config_dir.startswith(tempfile.gettempdir()):
+    def config(self) -> Config:
+        if (self._create_temp_config_dir
+                and self._temp_dir not in self.config_dir.parents):
             self.config_dir = mk_config_dir()
             self._delete_config_dir = True
-        return super(MockEnvironment, self).config
+        return super().config
 
     def cleanup(self):
+        self.stdout.close()
+        self.stderr.close()
         if self._delete_config_dir:
-            assert self.config_dir.startswith(tempfile.gettempdir())
+            assert self._temp_dir in self.config_dir.parents
             from shutil import rmtree
             rmtree(self.config_dir)
 
@@ -74,7 +81,7 @@ class MockEnvironment(Environment):
             pass
 
 
-class BaseCLIResponse(object):
+class BaseCLIResponse:
     """
     Represents the result of simulated `$ http' invocation  via `http()`.
 
@@ -85,9 +92,9 @@ class BaseCLIResponse(object):
         - exit_status output: print(self.exit_status)
 
     """
-    stderr = None
-    json = None
-    exit_status = None
+    stderr: str = None
+    json: dict = None
+    exit_status: ExitStatus = None
 
 
 class BytesCLIResponse(bytes, BaseCLIResponse):
@@ -104,10 +111,10 @@ class BytesCLIResponse(bytes, BaseCLIResponse):
 class StrCLIResponse(str, BaseCLIResponse):
 
     @property
-    def json(self):
+    def json(self) -> Optional[dict]:
         """
         Return deserialized JSON body, if one included in the output
-        and is parseable.
+        and is parsable.
 
         """
         if not hasattr(self, '_json'):
@@ -129,6 +136,7 @@ class StrCLIResponse(str, BaseCLIResponse):
                     pass
                 else:
                     try:
+                        # noinspection PyAttributeOutsideInit
                         self._json = json.loads(j)
                     except ValueError:
                         pass
@@ -139,7 +147,7 @@ class ExitStatusError(Exception):
     pass
 
 
-def http(*args, **kwargs):
+def http(*args, program_name='http', **kwargs):
     # noinspection PyUnresolvedReferences
     """
     Run HTTPie and capture stderr/out and exit status.
@@ -159,7 +167,7 @@ def http(*args, **kwargs):
 
     Exceptions are propagated.
 
-    If you pass ``error_exit_ok=True``, then error exit statuses
+    If you pass ``tolerate_error_exit_status=True``, then error exit statuses
     won't result into an exception.
 
     Example:
@@ -171,7 +179,7 @@ def http(*args, **kwargs):
         >>> type(r) == StrCLIResponse
         True
         >>> r.exit_status
-        0
+        <ExitStatus.SUCCESS: 0>
         >>> r.stderr
         ''
         >>> 'HTTP/1.1 200 OK' in r
@@ -180,7 +188,7 @@ def http(*args, **kwargs):
         True
 
     """
-    error_exit_ok = kwargs.pop('error_exit_ok', False)
+    tolerate_error_exit_status = kwargs.pop('tolerate_error_exit_status', False)
     env = kwargs.get('env')
     if not env:
         env = kwargs['env'] = MockEnvironment()
@@ -192,11 +200,12 @@ def http(*args, **kwargs):
     args_with_config_defaults = args + env.config.default_options
     add_to_args = []
     if '--debug' not in args_with_config_defaults:
-        if not error_exit_ok and '--traceback' not in args_with_config_defaults:
+        if not tolerate_error_exit_status and '--traceback' not in args_with_config_defaults:
             add_to_args.append('--traceback')
         if not any('--timeout' in arg for arg in args_with_config_defaults):
             add_to_args.append('--timeout=3')
-    args = add_to_args + args
+
+    complete_args = [program_name, *add_to_args, *args]
 
     def dump_stderr():
         stderr.seek(0)
@@ -204,12 +213,12 @@ def http(*args, **kwargs):
 
     try:
         try:
-            exit_status = main(args=args, **kwargs)
+            exit_status = main(args=complete_args, **kwargs)
             if '--download' in args:
                 # Let the progress reporter thread finish.
                 time.sleep(.5)
         except SystemExit:
-            if error_exit_ok:
+            if tolerate_error_exit_status:
                 exit_status = ExitStatus.ERROR
             else:
                 dump_stderr()
@@ -219,14 +228,11 @@ def http(*args, **kwargs):
             sys.stderr.write(stderr.read())
             raise
         else:
-            if not error_exit_ok and exit_status != ExitStatus.SUCCESS:
+            if not tolerate_error_exit_status and exit_status != ExitStatus.SUCCESS:
                 dump_stderr()
                 raise ExitStatusError(
                     'httpie.core.main() unexpectedly returned'
-                    ' a non-zero exit status: {0} ({1})'.format(
-                        exit_status,
-                        EXIT_STATUS_LABELS[exit_status]
-                    )
+                    f' a non-zero exit status: {exit_status}'
                 )
 
         stdout.seek(0)
@@ -235,10 +241,8 @@ def http(*args, **kwargs):
         try:
             output = output.decode('utf8')
         except UnicodeDecodeError:
-            # noinspection PyArgumentList
             r = BytesCLIResponse(output)
         else:
-            # noinspection PyArgumentList
             r = StrCLIResponse(output)
         r.stderr = stderr.read()
         r.exit_status = exit_status
