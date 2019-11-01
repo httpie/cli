@@ -98,3 +98,7 @@ class Config(BaseConfigDict):
     @property
     def default_options(self) -> list:
         return self['default_options']
+
+    @property
+    def extra_site_dirs(self) -> list:
+        return self['extra_site_dirs']
