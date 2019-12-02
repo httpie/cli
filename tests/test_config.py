@@ -1,3 +1,6 @@
+import pytest
+
+from httpie.compat import is_windows
 from httpie.config import Config
 from utils import HTTP_OK, MockEnvironment, http
 
@@ -23,7 +26,8 @@ def test_config_file_not_valid(httpbin):
     assert 'invalid config file' in r.stderr
 
 
-def test_config_file_not_inaccessible(httpbin):
+@pytest.mark.skipif(is_windows, reason='cannot chmod 000 on Windows')
+def test_config_file_inaccessible(httpbin):
     env = MockEnvironment()
     env.create_temp_config_dir()
     config_path = env.config_dir / Config.FILENAME
