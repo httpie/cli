@@ -1,6 +1,5 @@
-from httpie import __version__
-from utils import MockEnvironment, http, HTTP_OK
-from httpie.context import Environment
+from httpie.config import Config
+from utils import HTTP_OK, MockEnvironment, http
 
 
 def test_default_options(httpbin):
@@ -8,15 +7,33 @@ def test_default_options(httpbin):
     env.config['default_options'] = ['--form']
     env.config.save()
     r = http(httpbin.url + '/post', 'foo=bar', env=env)
-    assert r.json['form'] == {"foo": "bar"}
+    assert r.json['form'] == {
+        "foo": "bar"
+    }
 
 
-def test_config_dir_not_writeable(httpbin):
-    r = http(httpbin + '/get', env=MockEnvironment(
-        config_dir='/',
-        create_temp_config_dir=False,
-    ))
+def test_config_file_not_valid(httpbin):
+    env = MockEnvironment()
+    env.create_temp_config_dir()
+    with (env.config_dir / Config.FILENAME).open('w') as f:
+        f.write('{invalid json}')
+    r = http(httpbin + '/get', env=env)
     assert HTTP_OK in r
+    assert 'http: warning' in r.stderr
+    assert 'invalid config file' in r.stderr
+
+
+def test_config_file_not_inaccessible(httpbin):
+    env = MockEnvironment()
+    env.create_temp_config_dir()
+    config_path = env.config_dir / Config.FILENAME
+    assert not config_path.exists()
+    config_path.touch(0o000)
+    assert config_path.exists()
+    r = http(httpbin + '/get', env=env)
+    assert HTTP_OK in r
+    assert 'http: warning' in r.stderr
+    assert 'cannot read config file' in r.stderr
 
 
 def test_default_options_overwrite(httpbin):
@@ -24,9 +41,6 @@ def test_default_options_overwrite(httpbin):
     env.config['default_options'] = ['--form']
     env.config.save()
     r = http('--json', httpbin.url + '/post', 'foo=bar', env=env)
-    assert r.json['json'] == {"foo": "bar"}
-
-
-def test_current_version():
-    version = MockEnvironment().config['__meta__']['httpie']
-    assert version == __version__
+    assert r.json['json'] == {
+        "foo": "bar"
+    }

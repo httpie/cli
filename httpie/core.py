@@ -1,25 +1,25 @@
 import argparse
+import os
 import platform
 import sys
-from typing import Callable, List, Union
+from typing import List, Union
 
 import requests
 from pygments import __version__ as pygments_version
 from requests import __version__ as requests_version
 
 from httpie import __version__ as httpie_version
-from httpie.status import ExitStatus, http_status_to_exit_status
 from httpie.client import collect_messages
 from httpie.context import Environment
 from httpie.downloads import Downloader
 from httpie.output.writer import write_message, write_stream
 from httpie.plugins import plugin_manager
+from httpie.status import ExitStatus, http_status_to_exit_status
 
 
 def main(
     args: List[Union[str, bytes]] = sys.argv,
     env=Environment(),
-    custom_log_error: Callable = None
 ) -> ExitStatus:
     """
     The main function.
@@ -30,21 +30,15 @@ def main(
     Return exit status code.
 
     """
-    args = decode_raw_args(args, env.stdin_encoding)
     program_name, *args = args
+    env.program_name = os.path.basename(program_name)
+    args = decode_raw_args(args, env.stdin_encoding)
     plugin_manager.load_installed_plugins()
-
-    def log_error(msg, level='error'):
-        assert level in ['error', 'warning']
-        env.stderr.write(f'\n{program_name}: {level}: {msg}\n')
 
     from httpie.cli.definition import parser
 
     if env.config.default_options:
         args = env.config.default_options + args
-
-    if custom_log_error:
-        log_error = custom_log_error
 
     include_debug_info = '--debug' in args
     include_traceback = include_debug_info or '--traceback' in args
@@ -59,7 +53,6 @@ def main(
     try:
         parsed_args = parser.parse_args(
             args=args,
-            program_name=program_name,
             env=env,
         )
     except KeyboardInterrupt:
@@ -78,7 +71,6 @@ def main(
             exit_status = program(
                 args=parsed_args,
                 env=env,
-                log_error=log_error,
             )
         except KeyboardInterrupt:
             env.stderr.write('\n')
@@ -93,10 +85,10 @@ def main(
                 exit_status = ExitStatus.ERROR
         except requests.Timeout:
             exit_status = ExitStatus.ERROR_TIMEOUT
-            log_error(f'Request timed out ({parsed_args.timeout}s).')
+            env.log_error(f'Request timed out ({parsed_args.timeout}s).')
         except requests.TooManyRedirects:
             exit_status = ExitStatus.ERROR_TOO_MANY_REDIRECTS
-            log_error(
+            env.log_error(
                 f'Too many redirects'
                 f' (--max-redirects=parsed_args.max_redirects).'
             )
@@ -110,7 +102,7 @@ def main(
                         f'{msg} while doing a {request.method}'
                         f' request to URL: {request.url}'
                     )
-            log_error(f'{type(e).__name__}: {msg}')
+            env.log_error(f'{type(e).__name__}: {msg}')
             if include_traceback:
                 raise
             exit_status = ExitStatus.ERROR
@@ -121,7 +113,6 @@ def main(
 def program(
     args: argparse.Namespace,
     env: Environment,
-    log_error: Callable
 ) -> ExitStatus:
     """
     The main program without error handling.
@@ -159,8 +150,9 @@ def program(
                         http_status=message.status_code,
                         follow=args.follow
                     )
-                    if not env.stdout_isatty and exit_status != ExitStatus.SUCCESS:
-                        log_error(
+                    if (not env.stdout_isatty
+                            and exit_status != ExitStatus.SUCCESS):
+                        env.log_error(
                             f'HTTP {message.raw.status} {message.raw.reason}',
                             level='warning'
                         )
@@ -179,10 +171,11 @@ def program(
             downloader.finish()
             if downloader.interrupted:
                 exit_status = ExitStatus.ERROR
-                log_error('Incomplete download: size=%d; downloaded=%d' % (
-                    downloader.status.total_size,
-                    downloader.status.downloaded
-                ))
+                env.log_error(
+                    'Incomplete download: size=%d; downloaded=%d' % (
+                        downloader.status.total_size,
+                        downloader.status.downloaded
+                    ))
         return exit_status
 
     finally:
@@ -196,11 +189,11 @@ def program(
 
 def print_debug_info(env: Environment):
     env.stderr.writelines([
-        'HTTPie %s\n' % httpie_version,
-        'Requests %s\n' % requests_version,
-        'Pygments %s\n' % pygments_version,
-        'Python %s\n%s\n' % (sys.version, sys.executable),
-        '%s %s' % (platform.system(), platform.release()),
+        f'HTTPie {httpie_version}\n',
+        f'Requests {requests_version}\n',
+        f'Pygments {pygments_version}\n',
+        f'Python {sys.version}\n{sys.executable}\n',
+        f'{platform.system()} {platform.release()}',
     ])
     env.stderr.write('\n\n')
     env.stderr.write(repr(env))

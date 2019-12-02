@@ -61,7 +61,6 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
     def parse_args(
         self,
         env: Environment,
-        program_name='http',
         args=None,
         namespace=None
     ) -> argparse.Namespace:
@@ -89,7 +88,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
         if self.has_stdin_data:
             self._body_from_file(self.env.stdin)
         if not URL_SCHEME_RE.match(self.args.url):
-            if os.path.basename(program_name) == 'https':
+            if os.path.basename(env.program_name) == 'https':
                 scheme = 'https://'
             else:
                 scheme = self.args.default_scheme + "://"

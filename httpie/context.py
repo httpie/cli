@@ -1,3 +1,4 @@
+import os
 import sys
 from pathlib import Path
 from typing import Union, IO, Optional
@@ -9,7 +10,7 @@ except ImportError:
     curses = None  # Compiled w/o curses
 
 from httpie.compat import is_windows
-from httpie.config import DEFAULT_CONFIG_DIR, Config
+from httpie.config import DEFAULT_CONFIG_DIR, Config, ConfigFileError
 
 from httpie.utils import repr_dict
 
@@ -35,6 +36,7 @@ class Environment:
     stderr: IO = sys.stderr
     stderr_isatty: bool = stderr.isatty()
     colors = 256
+    program_name: str = 'http'
     if not is_windows:
         if curses:
             try:
@@ -79,16 +81,6 @@ class Environment:
             self.stdout_encoding = getattr(
                 actual_stdout, 'encoding', None) or 'utf8'
 
-    @property
-    def config(self) -> Config:
-        if not hasattr(self, '_config'):
-            self._config = Config(directory=self.config_dir)
-            if self._config.is_new():
-                self._config.save(fail_silently=True)
-            else:
-                self._config.load()
-        return self._config
-
     def __str__(self):
         defaults = dict(type(self).__dict__)
         actual = dict(defaults)
@@ -102,3 +94,21 @@ class Environment:
 
     def __repr__(self):
         return f'<{type(self).__name__} {self}>'
+
+    _config: Config = None
+
+    @property
+    def config(self) -> Config:
+        config = self._config
+        if not config:
+            self._config = config = Config(directory=self.config_dir)
+            if not config.is_new():
+                try:
+                    config.load()
+                except ConfigFileError as e:
+                    self.log_error(e, level='warning')
+        return config
+
+    def log_error(self, msg, level='error'):
+        assert level in ['error', 'warning']
+        self.stderr.write(f'\n{self.program_name}: {level}: {msg}\n\n')

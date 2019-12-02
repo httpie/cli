@@ -6,7 +6,7 @@ import time
 import json
 import tempfile
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Union
 
 from httpie.status import ExitStatus
 from httpie.config import Config
@@ -18,6 +18,7 @@ TESTS_ROOT = os.path.abspath(os.path.dirname(__file__))
 CRLF = '\r\n'
 COLOR = '\x1b['
 HTTP_OK = '200 OK'
+# noinspection GrazieInspection
 HTTP_OK_COLOR = (
     'HTTP\x1b[39m\x1b[38;5;245m/\x1b[39m\x1b'
     '[38;5;37m1.1\x1b[39m\x1b[38;5;245m \x1b[39m\x1b[38;5;37m200'
@@ -62,9 +63,12 @@ class MockEnvironment(Environment):
     def config(self) -> Config:
         if (self._create_temp_config_dir
                 and self._temp_dir not in self.config_dir.parents):
-            self.config_dir = mk_config_dir()
-            self._delete_config_dir = True
+            self.create_temp_config_dir()
         return super().config
+
+    def create_temp_config_dir(self):
+        self.config_dir = mk_config_dir()
+        self._delete_config_dir = True
 
     def cleanup(self):
         self.stdout.close()
@@ -75,6 +79,7 @@ class MockEnvironment(Environment):
             rmtree(self.config_dir)
 
     def __del__(self):
+        # noinspection PyBroadException
         try:
             self.cleanup()
         except Exception:
@@ -83,7 +88,7 @@ class MockEnvironment(Environment):
 
 class BaseCLIResponse:
     """
-    Represents the result of simulated `$ http' invocation  via `http()`.
+    Represents the result of simulated `$ http' invocation via `http()`.
 
     Holds and provides access to:
 
@@ -113,8 +118,8 @@ class StrCLIResponse(str, BaseCLIResponse):
     @property
     def json(self) -> Optional[dict]:
         """
-        Return deserialized JSON body, if one included in the output
-        and is parsable.
+        Return deserialized the request or response JSON body,
+        if one (and only one) included in the output and is parsable.
 
         """
         if not hasattr(self, '_json'):
@@ -147,7 +152,12 @@ class ExitStatusError(Exception):
     pass
 
 
-def http(*args, program_name='http', **kwargs):
+def http(
+    *args,
+    program_name='http',
+    tolerate_error_exit_status=False,
+    **kwargs,
+) -> Union[StrCLIResponse, BytesCLIResponse]:
     # noinspection PyUnresolvedReferences
     """
     Run HTTPie and capture stderr/out and exit status.
@@ -188,7 +198,6 @@ def http(*args, program_name='http', **kwargs):
         True
 
     """
-    tolerate_error_exit_status = kwargs.pop('tolerate_error_exit_status', False)
     env = kwargs.get('env')
     if not env:
         env = kwargs['env'] = MockEnvironment()
@@ -200,7 +209,8 @@ def http(*args, program_name='http', **kwargs):
     args_with_config_defaults = args + env.config.default_options
     add_to_args = []
     if '--debug' not in args_with_config_defaults:
-        if not tolerate_error_exit_status and '--traceback' not in args_with_config_defaults:
+        if (not tolerate_error_exit_status
+                and '--traceback' not in args_with_config_defaults):
             add_to_args.append('--traceback')
         if not any('--timeout' in arg for arg in args_with_config_defaults):
             add_to_args.append('--timeout=3')
@@ -228,7 +238,8 @@ def http(*args, program_name='http', **kwargs):
             sys.stderr.write(stderr.read())
             raise
         else:
-            if not tolerate_error_exit_status and exit_status != ExitStatus.SUCCESS:
+            if (not tolerate_error_exit_status
+                    and exit_status != ExitStatus.SUCCESS):
                 dump_stderr()
                 raise ExitStatusError(
                     'httpie.core.main() unexpectedly returned'

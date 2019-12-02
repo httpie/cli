@@ -15,42 +15,43 @@ DEFAULT_CONFIG_DIR = Path(os.environ.get(
 ))
 
 
+class ConfigFileError(Exception):
+    pass
+
+
 class BaseConfigDict(dict):
     name = None
     helpurl = None
     about = None
 
-    def _get_path(self) -> Path:
-        """Return the config file path without side-effects."""
-        raise NotImplementedError()
+    def __init__(self, path: Path):
+        super().__init__()
+        self.path = path
 
-    def path(self) -> Path:
-        """Return the config file path creating basedir, if needed."""
-        path = self._get_path()
+    def ensure_directory(self):
         try:
-            path.parent.mkdir(mode=0o700, parents=True)
+            self.path.parent.mkdir(mode=0o700, parents=True)
         except OSError as e:
             if e.errno != errno.EEXIST:
                 raise
-        return path
 
     def is_new(self) -> bool:
-        return not self._get_path().exists()
+        return not self.path.exists()
 
     def load(self):
+        config_type = type(self).__name__.lower()
         try:
-            with self.path().open('rt') as f:
+            with self.path.open('rt') as f:
                 try:
                     data = json.load(f)
                 except ValueError as e:
-                    raise ValueError(
-                        'Invalid %s JSON: %s [%s]' %
-                        (type(self).__name__, str(e), self.path())
+                    raise ConfigFileError(
+                        f'invalid {config_type} file: {e} [{self.path}]'
                     )
                 self.update(data)
         except IOError as e:
             if e.errno != errno.ENOENT:
-                raise
+                raise ConfigFileError(f'cannot read {config_type} file: {e}')
 
     def save(self, fail_silently=False):
         self['__meta__'] = {
@@ -62,9 +63,17 @@ class BaseConfigDict(dict):
         if self.about:
             self['__meta__']['about'] = self.about
 
+        self.ensure_directory()
+
         try:
-            with self.path().open('w') as f:
-                json.dump(self, f, indent=4, sort_keys=True, ensure_ascii=True)
+            with self.path.open('w') as f:
+                json.dump(
+                    obj=self,
+                    fp=f,
+                    indent=4,
+                    sort_keys=True,
+                    ensure_ascii=True,
+                )
                 f.write('\n')
         except IOError:
             if not fail_silently:
@@ -72,27 +81,22 @@ class BaseConfigDict(dict):
 
     def delete(self):
         try:
-            self.path().unlink()
+            self.path.unlink()
         except OSError as e:
             if e.errno != errno.ENOENT:
                 raise
 
 
 class Config(BaseConfigDict):
-    name = 'config'
-    helpurl = 'https://httpie.org/doc#config'
-    about = 'HTTPie configuration file'
+    FILENAME = 'config.json'
     DEFAULTS = {
         'default_options': []
     }
 
     def __init__(self, directory: Union[str, Path] = DEFAULT_CONFIG_DIR):
-        super().__init__()
-        self.update(self.DEFAULTS)
         self.directory = Path(directory)
-
-    def _get_path(self) -> Path:
-        return self.directory / (self.name + '.json')
+        super().__init__(path=self.directory / self.FILENAME)
+        self.update(self.DEFAULTS)
 
     @property
     def default_options(self) -> list:

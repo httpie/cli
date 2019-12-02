@@ -4,37 +4,30 @@ from requests import Request
 from requests.exceptions import ConnectionError
 
 from httpie.status import ExitStatus
-from httpie.core import main
 from utils import HTTP_OK, http
 
 
-error_msg = None
+@mock.patch('httpie.core.program')
+def test_error(program):
+    exc = ConnectionError('Connection aborted')
+    exc.request = Request(method='GET', url='http://www.google.com')
+    program.side_effect = exc
+    r = http('www.google.com', tolerate_error_exit_status=True)
+    assert r.exit_status == ExitStatus.ERROR
+    assert (
+               'ConnectionError: '
+               'Connection aborted while doing a GET request to URL: '
+               'http://www.google.com'
+           ) in r.stderr
 
 
 @mock.patch('httpie.core.program')
-def test_error(get_response):
-    def error(msg, *args, **kwargs):
-        global error_msg
-        error_msg = msg % args
-
+def test_error_traceback(program):
     exc = ConnectionError('Connection aborted')
     exc.request = Request(method='GET', url='http://www.google.com')
-    get_response.side_effect = exc
-    ret = main(['http', '--ignore-stdin', 'www.google.com'], custom_log_error=error)
-    assert ret == ExitStatus.ERROR
-    assert error_msg == (
-        'ConnectionError: '
-        'Connection aborted while doing a GET request to URL: '
-        'http://www.google.com')
-
-
-@mock.patch('httpie.core.program')
-def test_error_traceback(get_response):
-    exc = ConnectionError('Connection aborted')
-    exc.request = Request(method='GET', url='http://www.google.com')
-    get_response.side_effect = exc
+    program.side_effect = exc
     with raises(ConnectionError):
-        main(['http', '--ignore-stdin', '--traceback', 'www.google.com'])
+        http('--traceback', 'www.google.com')
 
 
 def test_max_headers_limit(httpbin_both):

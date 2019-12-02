@@ -1487,7 +1487,8 @@ To create or reuse a different session, simple specify a different name:
 
     $ http --session=user2 -a user2:password example.org X-Bar:Foo
 
-Named sessions' data is stored in JSON files in the directory
+Named sessions’s data is stored in JSON files in the the ``sessions``
+subdirectory of the `config`_ directory:
 ``~/.httpie/sessions/<host>/<name>.json``
 (``%APPDATA%\httpie\sessions\<host>\<name>.json`` on Windows).
 
@@ -1517,45 +1518,60 @@ exchange once it is created, specify the session name via
 Config
 ======
 
-HTTPie uses a simple JSON config file.
+HTTPie uses a simple ``config.json`` file. The file doesn’t exist by default
+but you can create it manually.
 
 
-
-Config file location
---------------------
-
+Config file directory
+---------------------
 
 The default location of the configuration file is ``~/.httpie/config.json``
-(or ``%APPDATA%\httpie\config.json`` on Windows). The config directory
-location can be changed by setting the ``HTTPIE_CONFIG_DIR``
-environment variable. To view the exact location run ``http --debug``.
+(or ``%APPDATA%\httpie\config.json`` on Windows).
+
+The config directory can be changed by setting the ``$HTTPIE_CONFIG_DIR``
+environment variable:
+
+.. code-block:: bash
+
+    $ export HTTPIE_CONFIG_DIR=/tmp/httpie
+    $ http example.org
+
+To view the exact location run ``http --debug``.
+
 
 Configurable options
 --------------------
 
-The JSON file contains an object with the following keys:
+Currently HTTPie offers a single configurable option:
 
 
 ``default_options``
 ~~~~~~~~~~~~~~~~~~~
 
-
 An ``Array`` (by default empty) of default options that should be applied to
 every invocation of HTTPie.
 
-For instance, you can use this option to change the default style and output
-options: ``"default_options": ["--style=fruity", "--body"]`` Another useful
-default option could be ``"--session=default"`` to make HTTPie always
-use `sessions`_ (one named ``default`` will automatically be used).
-Or you could change the implicit request content type from JSON to form by
-adding ``--form`` to the list.
+For instance, you can use this config option to change your default color theme:
 
 
-``__meta__``
-~~~~~~~~~~~~
+.. code-block:: bash
 
-HTTPie automatically stores some of its metadata here. Please do not change.
+    $ cat ~/.httpie/config.json
 
+
+.. code-block:: json
+
+    {
+        "default_options": [
+          "--style=fruity"
+        ]
+    }
+
+
+Even though it is technically possible to include there any of HTTPie’s
+options, it is not recommended to modify the default behaviour in a way
+that would break your compatibility with the wider world as that can
+generate a lot of confusion.
 
 
 Un-setting previously specified options

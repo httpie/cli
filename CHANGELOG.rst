@@ -11,6 +11,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 * Removed Python 2.7 support (`EOL Jan 2020 <https://www.python.org/doc/sunset-python-2/>`_).
 * Removed the default 30-second connection ``--timeout`` limit.
 * Removed Python’s default limit of 100 response headers.
+* Removed automatic config file creation to avoid concurrency issues.
 * Replaced the old collect-all-then-process handling of HTTP communication
   with one-by-one processing of each HTTP request or response as they become
   available. This means that you can see headers immediately,
@@ -26,7 +27,6 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 * Added ``tests/`` to the PyPi package for the convenience of
   downstream package maintainers.
 * Fixed an error when ``stdin`` was a closed fd.
-* Fixed an error when the config directory was not writeable.
 * Improved ``--debug`` output formatting.
 
 

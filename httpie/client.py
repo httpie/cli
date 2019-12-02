@@ -35,7 +35,7 @@ DEFAULT_UA = f'HTTPie/{__version__}'
 
 def collect_messages(
     args: argparse.Namespace,
-    config_dir: Path
+    config_dir: Path,
 ) -> Iterable[Union[requests.PreparedRequest, requests.Response]]:
     httpie_session = None
     httpie_session_headers = None

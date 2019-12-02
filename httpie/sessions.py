@@ -1,4 +1,5 @@
-"""Persistent, JSON-serialized sessions.
+"""
+Persistent, JSON-serialized sessions.
 
 """
 import os
@@ -53,8 +54,7 @@ class Session(BaseConfigDict):
     about = 'HTTPie session file'
 
     def __init__(self, path: Union[str, Path]):
-        super().__init__()
-        self._path = Path(path)
+        super().__init__(path=Path(path))
         self['headers'] = {}
         self['cookies'] = {}
         self['auth'] = {
@@ -62,9 +62,6 @@ class Session(BaseConfigDict):
             'username': None,
             'password': None
         }
-
-    def _get_path(self) -> Path:
-        return self._path
 
     def update_headers(self, request_headers: RequestHeadersDict):
         """
