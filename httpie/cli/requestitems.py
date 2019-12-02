@@ -5,10 +5,8 @@ from typing import Callable, Dict, IO, List, Optional, Tuple, Union
 from httpie.cli.argtypes import KeyValueArg
 from httpie.cli.constants import (
     SEPARATOR_DATA_EMBED_FILE_CONTENTS, SEPARATOR_DATA_EMBED_RAW_JSON_FILE,
-    SEPARATOR_DATA_RAW_JSON,
-    SEPARATOR_DATA_STRING, SEPARATOR_FILE_UPLOAD, SEPARATOR_HEADER,
-    SEPARATOR_HEADER_EMPTY,
-    SEPARATOR_QUERY_PARAM,
+    SEPARATOR_DATA_RAW_JSON, SEPARATOR_DATA_STRING, SEPARATOR_FILE_UPLOAD,
+    SEPARATOR_HEADER, SEPARATOR_HEADER_EMPTY, SEPARATOR_QUERY_PARAM,
 )
 from httpie.cli.dicts import (
     RequestDataDict, RequestFilesDict, RequestHeadersDict, RequestJSONDataDict,
@@ -34,7 +32,7 @@ class RequestItems:
         as_form=False,
         chunked=False
     ) -> 'RequestItems':
-        instance = RequestItems(as_form=as_form, chunked=chunked)
+        instance = cls(as_form=as_form, chunked=chunked)
         rules: Dict[str, Tuple[Callable, dict]] = {
             SEPARATOR_HEADER: (
                 process_header_arg,
