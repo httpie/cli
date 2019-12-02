@@ -76,7 +76,7 @@ class MockEnvironment(Environment):
         if self._delete_config_dir:
             assert self._temp_dir in self.config_dir.parents
             from shutil import rmtree
-            rmtree(self.config_dir)
+            rmtree(self.config_dir, ignore_errors=True)
 
     def __del__(self):
         # noinspection PyBroadException
