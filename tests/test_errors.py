@@ -14,11 +14,12 @@ def test_error(program):
     program.side_effect = exc
     r = http('www.google.com', tolerate_error_exit_status=True)
     assert r.exit_status == ExitStatus.ERROR
-    assert (
-               'ConnectionError: '
-               'Connection aborted while doing a GET request to URL: '
-               'http://www.google.com'
-           ) in r.stderr
+    error_msg = (
+        'ConnectionError: '
+        'Connection aborted while doing a GET request to URL: '
+        'http://www.google.com'
+    )
+    assert error_msg in r.stderr
 
 
 @mock.patch('httpie.core.program')
