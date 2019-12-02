@@ -794,7 +794,7 @@ For example:
     HTTP/1.1 200 OK
     [...]
 
-This can be disable with the ``--ignore-netrc`` option:
+This can be disabled with the ``--ignore-netrc`` option:
 
 .. code-block:: bash
 
