@@ -294,20 +294,22 @@ Querystring parameters
 
 If you find yourself manually constructing URLs with querystring parameters
 on the terminal, you may appreciate the ``param==value`` syntax for appending
-URL parameters. With that, you don't have to worry about escaping the ``&``
-separators for your shell. Also, special characters in parameter values,
-will also automatically escaped (HTTPie otherwise expects the URL to be
-already escaped). To search for ``HTTPie logo`` on Google Images you could use
-this command:
+URL parameters.
+
+With that, you don't have to worry about escaping the ``&``
+separators for your shell. Additionally, any special characters in the
+parameter name or value get automatically URL-escaped
+(as opposed to parameters specified in the full URL, which HTTPie doesn’t
+modify).
 
 .. code-block:: bash
 
-    $ http www.google.com search=='HTTPie logo' tbm==isch
+    $ http https://api.github.com/search/repositories q==httpie per_page==1
 
 
 .. code-block:: http
 
-    GET /?search=HTTPie+logo&tbm=isch HTTP/1.1
+    GET /search/repositories?q=httpie&per_page=1 HTTP/1.1
 
 
 
