@@ -21,7 +21,7 @@ DEFAULT_SESSIONS_DIR = DEFAULT_CONFIG_DIR / SESSIONS_DIR_NAME
 VALID_SESSION_NAME_PATTERN = re.compile('^[a-zA-Z0-9_.-]+$')
 # Request headers starting with these prefixes won't be stored in sessions.
 # They are specific to each request.
-# https://en.wikipedia.org/wiki/List_of_HTTP_header_fields#Requests
+# <https://en.wikipedia.org/wiki/List_of_HTTP_header_fields#Requests>
 SESSION_IGNORED_HEADER_PREFIXES = ['Content-', 'If-']
 
 
@@ -102,7 +102,7 @@ class Session(BaseConfigDict):
 
     @cookies.setter
     def cookies(self, jar: RequestsCookieJar):
-        # https://docs.python.org/2/library/cookielib.html#cookie-objects
+        # <https://docs.python.org/2/library/cookielib.html#cookie-objects>
         stored_attrs = ['value', 'path', 'secure', 'expires']
         self['cookies'] = {}
         for cookie in jar:

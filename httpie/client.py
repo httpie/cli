@@ -183,13 +183,13 @@ def finalize_headers(headers: RequestHeadersDict) -> RequestHeadersDict:
     final_headers = RequestHeadersDict()
     for name, value in headers.items():
         if value is not None:
-            # >leading or trailing LWS MAY be removed without
-            # >changing the semantics of the field value"
-            # -https://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html
+            # “leading or trailing LWS MAY be removed without
+            # changing the semantics of the field value”
+            # <https://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html>
             # Also, requests raises `InvalidHeader` for leading spaces.
             value = value.strip()
             if isinstance(value, str):
-                # See: https://github.com/jakubroztocil/httpie/issues/212
+                # See <https://github.com/jakubroztocil/httpie/issues/212>
                 value = value.encode('utf8')
         final_headers[name] = value
     return final_headers

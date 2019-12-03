@@ -6,7 +6,7 @@ import ssl
 
 
 # TODO: Use MultiDict for headers once added to `requests`.
-# https://github.com/jakubroztocil/httpie/issues/130
+# <https://github.com/jakubroztocil/httpie/issues/130>
 
 
 # ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
