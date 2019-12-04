@@ -93,7 +93,7 @@ test-dist: test-sdist test-bdist-wheel
 
 test-tox: uninstall-httpie install
 	@echo $(H1)Running tests on all Pythons via Tox$(H1END)
-	tox
+	$(VENV_BIN)/tox
 	@echo
 
 
@@ -139,8 +139,8 @@ publish-no-test:
 	@echo $(H1)Testing wheel build an installation$(H1END)
 	@echo "$(VERSION)"
 	@echo "$(VERSION)" | grep -q "dev" && echo '!!!Not publishing dev version!!!' && exit 1 || echo ok
-	python setup.py sdist bdist_wheel
-	twine upload dist/*
+	$(VENV_PYTHON) setup.py sdist bdist_wheel
+	$(VENV_BIN)/twine upload dist/*
 	@echo
 
 
@@ -154,7 +154,7 @@ uninstall-httpie:
 	- $(VENV_PIP) uninstall --yes httpie &2>/dev/null
 
 	@echo "Verifying…"
-	cd .. && ! python -m httpie --version &2>/dev/null
+	cd .. && ! $(VENV_PYTHON) -m httpie --version &2>/dev/null
 
 	@echo "Done"
 	@echo

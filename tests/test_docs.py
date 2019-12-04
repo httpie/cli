@@ -1,6 +1,7 @@
 import os
 import subprocess
 from glob import glob
+from pathlib import Path
 
 import pytest
 
@@ -38,12 +39,24 @@ filenames = list(sorted(rst_filenames()))
 assert filenames
 
 
-@pytest.mark.skipif(not has_docutils(), reason='docutils not installed')
+# HACK: hardcoded paths, venv should be irrelevant, etc.
+# TODO: replaces the process with Python code
+VENV_BIN = Path(__file__).parent.parent / 'venv/bin'
+VENV_PYTHON = VENV_BIN / 'python'
+VENV_RST2PSEUDOXML = VENV_BIN / 'rst2pseudoxml.py'
+
+
+@pytest.mark.skipif(not os.path.exists(VENV_RST2PSEUDOXML), reason='docutils not installed')
 @pytest.mark.parametrize('filename', filenames)
 def test_rst_file_syntax(filename):
-    print(filename)
     p = subprocess.Popen(
-        ['rst2pseudoxml.py', '--report=1', '--exit-status=1', filename],
+        [
+            VENV_PYTHON,
+            VENV_RST2PSEUDOXML,
+            '--report=1',
+            '--exit-status=1',
+            filename,
+        ],
         stderr=subprocess.PIPE,
         stdout=subprocess.PIPE,
         shell=True,
