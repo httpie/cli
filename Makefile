@@ -75,13 +75,13 @@ venv:
 
 
 test:
-	@echo $(H1)Running tests on the current Python interpreter $(HEADER_EXTRA) $(H1END)
+	@echo $(H1)Running tests$(HEADER_EXTRA)$(H1END)
 	$(VENV_BIN)/py.test $(COV) ./httpie $(COV) ./tests --doctest-modules --verbose ./httpie ./tests
 	@echo
 
 
 test-cover: COV=--cov
-test-cover: HEADER_EXTRA='(with coverage)'
+test-cover: HEADER_EXTRA=' (with coverage)'
 test-cover: test
 
 
