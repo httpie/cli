@@ -100,7 +100,7 @@ test-tox: uninstall-httpie install
 	@echo
 
 
-test-sdist: clean uninstall-httpie
+test-sdist: clean venv
 	@echo $(H1)Testing sdist build an installation$(H1END)
 	$(VENV_PYTHON) setup.py sdist
 	$(VENV_PIP) install --force-reinstall --upgrade dist/*.gz
@@ -108,8 +108,9 @@ test-sdist: clean uninstall-httpie
 	@echo
 
 
-test-bdist-wheel: clean uninstall-httpie
+test-bdist-wheel: clean venv
 	@echo $(H1)Testing wheel build an installation$(H1END)
+	$(VENV_PIP) install wheel
 	$(VENV_PYTHON) setup.py bdist_wheel
 	$(VENV_PIP) install --force-reinstall --upgrade dist/*.whl
 	$(VENV_BIN)/http --version

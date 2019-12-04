@@ -83,7 +83,7 @@ task during `setup`_—for your active shell session using the following command
     source venv/bin/activate
 
 (If you use ``virtualenvwrapper``, you can also use ``workon httpie`` to
-active the environment — we have created a symlink for you. It’s a bit of
+activate the environment — we have created a symlink for you. It’s a bit of
 a hack but it works™.)
 
 You should now see ``(httpie)`` next to your shell prompt, and
