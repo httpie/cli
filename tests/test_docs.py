@@ -19,7 +19,7 @@ def has_docutils():
 def rst_filenames():
     # noinspection PyShadowingNames
     for root, dirnames, filenames in os.walk(os.path.dirname(TESTS_ROOT)):
-        if '.tox' not in root:
+        if '.tox' not in root and 'site-packages' not in root:
             for filename in fnmatch.filter(filenames, '*.rst'):
                 yield os.path.join(root, filename)
 
