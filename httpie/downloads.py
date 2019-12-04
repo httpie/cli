@@ -347,7 +347,7 @@ class Downloader:
 
 
 class DownloadStatus:
-    """Holds details about the downland status."""
+    """Holds details about the download status."""
 
     def __init__(self):
         self.downloaded = 0
