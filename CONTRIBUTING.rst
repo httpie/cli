@@ -55,19 +55,21 @@ Setup
 *****
 
 The `Makefile`_ contains a bunch of tasks to get you started. Just run
-the following command:
+the following command, which:
+
+
+* Creates an isolated Python virtual environment inside ``./venv``
+  (via the standard library `venv`_ tool);
+* installs all dependencies and also installs HTTPie
+  (in editable mode so that the ``http`` command will point to your
+  working copy).
+* and runs tests (It is the same as running ``make install test``).
 
 
 .. code-block:: bash
 
     make
 
-* The commands creates an isolated Python virtual environment inside ``./venv``
-  (via the standard library `venv`_ tool);
-* installs all dependencies and also installs HTTPie
-  (in editable mode so that the ``http`` command will point to your
-  working copy).
-* and runs tests (It is the same as running ``make install test``).
 
 
 Python virtual environment

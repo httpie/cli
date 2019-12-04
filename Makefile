@@ -15,7 +15,7 @@ SYSTEM_PYTHON=python3
 VENV_ROOT=venv
 VENV_BIN=$(VENV_ROOT)/bin
 VENV_PIP=$(VENV_BIN)/pip3
-VENV_PYTHON=$(VENV_BIN)/python3
+VENV_PYTHON=$(VENV_BIN)/python
 
 
 export PATH := $(VENV_BIN):$(PATH)
