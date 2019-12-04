@@ -29,25 +29,75 @@ is a bigger one, it's always good to discuss before you start working on
 it.
 
 
-Creating Development Environment
+Development Environment
 --------------------------------
+
+
+Getting the code
+****************
 
 Go to https://github.com/jakubroztocil/httpie and fork the project repository.
 
 
 .. code-block:: bash
 
-    git clone https://github.com/<YOU>/httpie
+    # Clone your fork
+    git clone git@github.com:<YOU>/httpie.git
 
+    # Enter the project directory
     cd httpie
 
+    # Create a branch for your changes
     git checkout -b my_topical_branch
 
-    # (Recommended: create a new virtualenv)
 
-    # Install dev. requirements and also HTTPie (in editable mode
-    # so that the `http' command will point to your working copy):
-    make install
+Setup
+*****
+
+The `Makefile`_ contains a bunch of tasks to get you started. Just run
+the following command:
+
+
+.. code-block:: bash
+
+    make
+
+* The commands creates an isolated Python virtual environment inside ``./venv``
+  (via the standard library `venv`_ tool);
+* installs all dependencies and also installs HTTPie
+  (in editable mode so that the ``http`` command will point to your
+  working copy).
+* and runs tests (It is the same as running ``make install test``).
+
+
+Python virtual environment
+**************************
+
+Activate the Python virtual environment—created via the ``make install``
+task during `setup`_—for your active shell session using the following command:
+
+.. code-block:: bash
+
+    source venv/bin/activate
+
+(If you use ``virtualenvwrapper``, you can also use ``workon httpie`` to
+active the environment — we have created a symlink for you. It’s a bit of
+a hack but it works™.)
+
+You should now see ``(httpie)`` next to your shell prompt, and
+the ``http`` should point to you development copy:
+
+.. code-block::
+
+    (httpie) ~/Code/httpie $ which http
+    /Users/jakub/Code/httpie/venv/bin/http
+    (httpie) ~/Code/httpie $ http --version
+    2.0.0-dev
+
+(Btw, you don’t need to activate the virtual environment if you just want
+run some of the ``make`` tasks. You can also invoke the development
+version of HTTPie directly with ``./venv/bin/http`` without having to activate
+the environment first. The same goes for ``./venv/bin/py.test``, etc.).
 
 
 Making Changes
@@ -57,36 +107,47 @@ Please make sure your changes conform to `Style Guide for Python Code`_ (PEP8)
 and that ``make pycodestyle`` passes.
 
 
-Testing
--------
+Testing & CI
+------------
 
-Before opening a pull requests, please make sure the `test suite`_ passes
-in all of the `supported Python environments`_. You should also add tests
-for any new features and bug fixes.
+Please add tests for any new features and bug fixes.
 
-HTTPie uses `pytest`_ and `Tox`_ for testing.
+When you open a pull request,
+`Github Actions <https://github.com/jakubroztocil/httpie/actions>`_
+will automatically run HTTPie’s `test suite`_ against your code
+so please make sure all checks pass.
 
 
-Running all tests:
-******************
+Running tests locally
+*********************
+
+HTTPie uses the `pytest`_ runner. It also uses `Tox`_ which allows you to run
+tests on multiple Python versions even when testing locally.
+
 
 .. code-block:: bash
 
-    # Run all tests on the current Python interpreter with coverage
+    # Run tests on the current Python interpreter with coverage.
     make test
+
+    # Run tests with coverage
+    make test-cover
 
     # Run all tests in all of the supported and available Pythons via Tox
     make test-tox
 
-    # Run all tests for code as well as packaging, etc.
-    make test-all
-
     # Test PEP8 compliance
     make pycodestyle
 
+    # Run extended tests — for code as well as .rst files syntax, packaging, etc.
+    make test-all
 
-Running specific tests:
-***********************
+
+Running specific tests
+**********************
+
+After you have activated your virtual environment (see `setup`_), you
+can run specific tests from the terminal:
 
 .. code-block:: bash
 
@@ -104,7 +165,9 @@ Running specific tests:
 -----
 
 See `Makefile`_ for additional development utilities.
-Don't forget to add yourself to `AUTHORS`_!
+
+
+Finally, don't forget to add yourself to `AUTHORS`_!
 
 
 .. _Tox: http://tox.testrun.org
@@ -112,6 +175,7 @@ Don't forget to add yourself to `AUTHORS`_!
 .. _existing issues: https://github.com/jakubroztocil/httpie/issues?state=open
 .. _AUTHORS: https://github.com/jakubroztocil/httpie/blob/master/AUTHORS.rst
 .. _Makefile: https://github.com/jakubroztocil/httpie/blob/master/Makefile
+.. _venv: https://docs.python.org/3/library/venv.html
 .. _pytest: https://pytest.org/
 .. _Style Guide for Python Code: https://python.org/dev/peps/pep-0008/
 .. _test suite: https://github.com/jakubroztocil/httpie/tree/master/tests
