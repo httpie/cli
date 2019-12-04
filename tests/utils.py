@@ -14,7 +14,7 @@ from httpie.context import Environment
 from httpie.core import main
 
 
-TESTS_ROOT = os.path.abspath(os.path.dirname(__file__))
+TESTS_ROOT = Path(__file__).parent
 CRLF = '\r\n'
 COLOR = '\x1b['
 HTTP_OK = '200 OK'

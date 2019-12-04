@@ -1,10 +1,17 @@
 import os
-import fnmatch
 import subprocess
+from glob import glob
 
 import pytest
 
 from utils import TESTS_ROOT
+
+
+SOURCE_DIRECTORIES = [
+    'extras',
+    'httpie',
+    'tests',
+]
 
 
 def has_docutils():
@@ -17,25 +24,29 @@ def has_docutils():
 
 
 def rst_filenames():
-    # noinspection PyShadowingNames
-    for root, dirnames, filenames in os.walk(os.path.dirname(TESTS_ROOT)):
-        if '.tox' not in root and 'site-packages' not in root:
-            for filename in fnmatch.filter(filenames, '*.rst'):
-                yield os.path.join(root, filename)
+    cwd = os.getcwd()
+    os.chdir(TESTS_ROOT.parent)
+    try:
+        yield from glob('*.rst')
+        for directory in SOURCE_DIRECTORIES:
+            yield from glob(f'{directory}/**/*.rst', recursive=True)
+    finally:
+        os.chdir(cwd)
 
 
-filenames = list(rst_filenames())
+filenames = list(sorted(rst_filenames()))
 assert filenames
 
 
 @pytest.mark.skipif(not has_docutils(), reason='docutils not installed')
 @pytest.mark.parametrize('filename', filenames)
 def test_rst_file_syntax(filename):
+    print(filename)
     p = subprocess.Popen(
         ['rst2pseudoxml.py', '--report=1', '--exit-status=1', filename],
         stderr=subprocess.PIPE,
         stdout=subprocess.PIPE,
-        shell=True
+        shell=True,
     )
     err = p.communicate()[1]
     assert p.returncode == 0, err.decode('utf8')
