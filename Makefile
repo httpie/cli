@@ -18,6 +18,9 @@ VENV_PIP=$(VENV_BIN)/pip3
 VENV_PYTHON=$(VENV_BIN)/python3
 
 
+export PATH := $(VENV_BIN):$(PATH)
+
+
 all: uninstall-httpie install test
 
 
