@@ -47,7 +47,7 @@ Go to https://github.com/jakubroztocil/httpie and fork the project repository.
 
     # Install dev. requirements and also HTTPie (in editable mode
     # so that the `http' command will point to your working copy):
-    make init
+    make install
 
 
 Making Changes
