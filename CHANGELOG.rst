@@ -9,15 +9,15 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 `2.0.0`_ (2020-01-12)
 -------------------------
 * Removed Python 2.7 support (`EOL Jan 2020 <https://www.python.org/doc/sunset-python-2/>`_).
-* Removed the default 30-second connection ``--timeout`` limit.
-* Removed Python’s default limit of 100 response headers.
-* Removed automatic config file creation to avoid concurrency issues.
+* Added ``--offline`` to allow building an HTTP request and printing it but not
+  actually sending it over the network.
 * Replaced the old collect-all-then-process handling of HTTP communication
   with one-by-one processing of each HTTP request or response as they become
   available. This means that you can see headers immediately,
   see what is being send even when the request fails, etc.
-* Added ``--offline`` to allow building an HTTP request and printing it but not
-  actually sending it over the network.
+* Removed automatic config file creation to avoid concurrency issues.
+* Removed the default 30-second connection ``--timeout`` limit.
+* Removed Python’s default limit of 100 response headers.
 * Added ``--max-headers`` to allow setting the max header limit.
 * Added ``--compress`` to allow request body compression.
 * Added ``--ignore-netrc`` to allow bypassing credentials from ``.netrc``.
