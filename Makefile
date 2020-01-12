@@ -127,7 +127,8 @@ pycodestyle:
 codecov-upload:
 	@echo $(H1)Running codecov$(H1END)
 	@[ -f $(VENV_BIN)/codecov ] || $(VENV_PIP) install codecov
-	$(VENV_BIN)/codecov --required
+	# $(VENV_BIN)/codecov --required
+	$(VENV_BIN)/codecov
 	@echo
 
 
