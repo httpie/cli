@@ -18,21 +18,19 @@ from httpie.utils import (get_content_type, load_json_preserve_order)
 
 class RequestItems:
 
-    def __init__(self, as_form=False, chunked=False):
+    def __init__(self, as_form=False):
         self.headers = RequestHeadersDict()
         self.data = RequestDataDict() if as_form else RequestJSONDataDict()
         self.files = RequestFilesDict()
         self.params = RequestQueryParamsDict()
-        self.chunked = chunked
 
     @classmethod
     def from_args(
         cls,
         request_item_args: List[KeyValueArg],
         as_form=False,
-        chunked=False
     ) -> 'RequestItems':
-        instance = cls(as_form=as_form, chunked=chunked)
+        instance = cls(as_form=as_form)
         rules: Dict[str, Tuple[Callable, dict]] = {
             SEPARATOR_HEADER: (
                 process_header_arg,
@@ -108,15 +106,6 @@ def process_file_upload_arg(arg: KeyValueArg) -> Tuple[str, IO, str]:
         BytesIO(contents),
         get_content_type(filename),
     )
-
-
-def parse_file_item_chunked(arg: KeyValueArg):
-    fn = arg.value
-    try:
-        f = open(os.path.expanduser(fn), 'rb')
-    except IOError as e:
-        raise ParseError('"%s": %s' % (arg.orig, e))
-    return os.path.basename(fn), f, get_content_type(fn)
 
 
 def process_data_item_arg(arg: KeyValueArg) -> str:

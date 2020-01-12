@@ -36,7 +36,7 @@ install: venv
 clean:
 	@echo $(H1)Cleaning up$(H1END)
 	rm -rf $(VENV_ROOT)
-	# Symlink for virtualenvwrapper, if we’ve created one.
+	# Remove symlink for virtualenvwrapper, if we’ve created one.
 	[ -n "$(WORKON_HOME)" -a -L "$(WORKON_HOME)/httpie" -a -f "$(WORKON_HOME)/httpie" ] && rm $(WORKON_HOME)/httpie || true
 	rm -rf .tox *.egg dist build .coverage .cache .pytest_cache httpie.egg-info
 	find . -name '__pycache__' -delete -o -name '*.pyc' -delete

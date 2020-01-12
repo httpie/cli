@@ -6,7 +6,7 @@ This document records all notable changes to `HTTPie <https://httpie.org>`_.
 This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 
-`2.0.0-dev`_ (unreleased)
+`2.0.0`_ (2020-01-12)
 -------------------------
 * Removed Python 2.7 support (`EOL Jan 2020 <https://www.python.org/doc/sunset-python-2/>`_).
 * Removed the default 30-second connection ``--timeout`` limit.
@@ -408,4 +408,5 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 .. _1.0.1: https://github.com/jakubroztocil/httpie/compare/1.0.0...1.0.1
 .. _1.0.2: https://github.com/jakubroztocil/httpie/compare/1.0.1...1.0.2
 .. _1.0.3: https://github.com/jakubroztocil/httpie/compare/1.0.2...1.0.3
-.. _2.0.0-dev: https://github.com/jakubroztocil/httpie/compare/1.0.3...master
+.. _2.0.0-dev: https://github.com/jakubroztocil/httpie/compare/1.0.3...2.0.0
+.. _2.1.0-dev: https://github.com/jakubroztocil/httpie/compare/2.0.0...master
