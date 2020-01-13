@@ -14,7 +14,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 * Replaced the old collect-all-then-process handling of HTTP communication
   with one-by-one processing of each HTTP request or response as they become
   available. This means that you can see headers immediately,
-  see what is being send even when the request fails, etc.
+  see what is being sent even if the request fails, etc.
 * Removed automatic config file creation to avoid concurrency issues.
 * Removed the default 30-second connection ``--timeout`` limit.
 * Removed Python’s default limit of 100 response headers.
