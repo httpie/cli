@@ -1794,3 +1794,7 @@ have contributed.
     :target: https://pepy.tech/project/httpie
     :alt: Download count
 
+- name: GraphQL query
+  uses: helaili/github-graphql-action@1.0
+
+
