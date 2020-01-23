@@ -6,6 +6,11 @@ This document records all notable changes to `HTTPie <https://httpie.org>`_.
 This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 
+`2.1.0-dev`_ (unreleased)
+-------------------------
+* Fixed ``--form`` file upload mixed with redirected ``stdin`` error handling.
+
+
 `2.0.0`_ (2020-01-12)
 -------------------------
 * Removed Python 2.7 support (`EOL Jan 2020 <https://www.python.org/doc/sunset-python-2/>`_).

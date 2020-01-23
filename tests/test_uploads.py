@@ -3,6 +3,7 @@ import os
 import pytest
 
 from httpie.cli.exceptions import ParseError
+from httpie.status import ExitStatus
 from utils import MockEnvironment, http, HTTP_OK
 from fixtures import FILE_PATH_ARG, FILE_PATH, FILE_CONTENT
 
@@ -77,4 +78,5 @@ class TestRequestBodyFromFilePath:
             env=env,
             tolerate_error_exit_status=True,
         )
+        assert r.exit_status == ExitStatus.ERROR
         assert 'cannot be mixed' in r.stderr

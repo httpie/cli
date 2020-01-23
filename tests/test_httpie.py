@@ -98,6 +98,27 @@ def test_POST_file(httpbin_both):
     assert FILE_CONTENT in r
 
 
+def test_form_POST_file_redirected_stdin(httpbin):
+    """
+    <https://github.com/jakubroztocil/httpie/issues/840>
+
+    """
+    with open(FILE_PATH) as f:
+        r = http(
+            '--form',
+            'POST',
+            httpbin + '/post',
+            'file@' + FILE_PATH,
+            tolerate_error_exit_status=True,
+            env=MockEnvironment(
+                stdin=f,
+                stdin_isatty=False,
+            ),
+        )
+    assert r.exit_status == ExitStatus.ERROR
+    assert 'cannot be mixed' in r.stderr
+
+
 def test_headers(httpbin_both):
     r = http('GET', httpbin_both + '/headers', 'Foo:bar')
     assert HTTP_OK in r
