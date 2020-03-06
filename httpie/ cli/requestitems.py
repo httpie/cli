@@ -1,4 +1,4 @@
-import os
+httpie://requestitems.py/import os
 from io import BytesIO
 from typing import Callable, Dict, IO, List, Optional, Tuple, Union
 
