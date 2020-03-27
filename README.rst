@@ -195,21 +195,21 @@ Custom `HTTP method`_, `HTTP headers`_ and `JSON`_ data:
 
 .. code-block:: bash
 
-    $ http PUT example.org X-API-Token:123 name=John
+    $ http PUT httpbin.org/put X-API-Token:123 name=John
 
 
 Submitting `forms`_:
 
 .. code-block:: bash
 
-    $ http -f POST example.org hello=World
+    $ http -f POST httpbin.org/post hello=World
 
 
 See the request that is being sent using one of the `output options`_:
 
 .. code-block:: bash
 
-    $ http -v example.org
+    $ http -v httpbin.org/get
 
 
 Use `Github API`_ to post a comment on an
@@ -225,21 +225,21 @@ Upload a file using `redirected input`_:
 
 .. code-block:: bash
 
-    $ http example.org < file.json
+    $ http httpbin.org/post < file.json
 
 
 Download a file and save it via `redirected output`_:
 
 .. code-block:: bash
 
-    $ http example.org/file > file
+    $ http httpbin.org/image/png > image.png
 
 
 Download a file ``wget`` style:
 
 .. code-block:: bash
 
-    $ http --download example.org/file
+    $ http --download httpbin.org/image/png
 
 Use named `sessions`_ to make certain aspects or the communication persistent
 between requests to the same host:
@@ -267,14 +267,14 @@ The name of the HTTP method comes right before the URL argument:
 
 .. code-block:: bash
 
-    $ http DELETE example.org/todos/7
+    $ http DELETE httpbin.org/delete
 
 
 Which looks similar to the actual ``Request-Line`` that is sent:
 
 .. code-block:: http
 
-    DELETE /todos/7 HTTP/1.1
+    DELETE /delete HTTP/1.1
 
 
 When the ``METHOD`` argument is omitted from the command, HTTPie defaults to
@@ -464,7 +464,7 @@ Simple example:
 
 .. code-block:: bash
 
-    $ http PUT example.org name=John email=john@example.org
+    $ http PUT httpbin.org/put name=John email=john@example.org
 
 .. code-block:: http
 
@@ -472,7 +472,7 @@ Simple example:
     Accept: application/json, */*
     Accept-Encoding: gzip, deflate
     Content-Type: application/json
-    Host: example.org
+    Host: httpbin.org
 
     {
         "name": "John",
@@ -515,7 +515,7 @@ fields using ``=@`` and ``:=@``:
 
 .. code-block:: bash
 
-    $ http PUT api.example.com/person/1 \
+    $ http PUT httpbin.org/put \
         name=John \
         age:=29 married:=false hobbies:='["http", "pies"]' \  # Raw JSON
         description=@about-john.txt \   # Embed text file
@@ -527,7 +527,7 @@ fields using ``=@`` and ``:=@``:
     PUT /person/1 HTTP/1.1
     Accept: application/json, */*
     Content-Type: application/json
-    Host: api.example.com
+    Host: httpbin.org
 
     {
         "age": 29,
@@ -549,7 +549,7 @@ complex data. In that case it's always better to use `redirected input`_:
 
 .. code-block:: bash
 
-    $ http POST api.example.com/person/1 < person.json
+    $ http POST httpbin.org/post < data.json
 
 
 Forms
@@ -568,12 +568,12 @@ Regular forms
 
 .. code-block:: bash
 
-    $ http --form POST api.example.org/person/1 name='John Smith'
+    $ http --form POST httpbin.org/post name='John Smith'
 
 
 .. code-block:: http
 
-    POST /person/1 HTTP/1.1
+    POST /post HTTP/1.1
     Content-Type: application/x-www-form-urlencoded; charset=utf-8
 
     name=John+Smith
@@ -587,7 +587,7 @@ If one or more file fields is present, the serialization and content type is
 
 .. code-block:: bash
 
-    $ http -f POST example.com/jobs name='John Smith' cv@~/Documents/cv.pdf
+    $ http -f POST httpbin.org/post name='John Smith' cv@~/Documents/cv.pdf
 
 
 The request above is the same as if the following HTML form were
@@ -611,17 +611,17 @@ To set custom headers you can use the ``Header:Value`` notation:
 
 .. code-block:: bash
 
-    $ http example.org  User-Agent:Bacon/1.0  'Cookie:valued-visitor=yes;foo=bar'  \
+    $ http httpbin.org/headers  User-Agent:Bacon/1.0  'Cookie:valued-visitor=yes;foo=bar'  \
         X-Foo:Bar  Referer:https://httpie.org/
 
 
 .. code-block:: http
 
-    GET / HTTP/1.1
+    GET /headers HTTP/1.1
     Accept: */*
     Accept-Encoding: gzip, deflate
     Cookie: valued-visitor=yes;foo=bar
-    Host: example.org
+    Host: httpbin.org
     Referer: https://httpie.org/
     User-Agent: Bacon/1.0
     X-Foo: Bar
@@ -691,7 +691,7 @@ Send a single cookie:
 
 .. code-block:: bash
 
-    $ http example.org Cookie:sessionid=foo
+    $ http httpbin.org/cookies Cookie:sessionid=foo
 
 .. code-block:: http
 
@@ -700,7 +700,7 @@ Send a single cookie:
     Accept-Encoding: gzip, deflate
     Connection: keep-alive
     Cookie: sessionid=foo
-    Host: example.org
+    Host: httpbin.org
     User-Agent: HTTPie/0.9.9
 
 
@@ -709,7 +709,7 @@ Send multiple cookies
 
 .. code-block:: bash
 
-    $ http example.org 'Cookie:sessionid=foo;another-cookie=bar'
+    $ http httpbin.org/cookies 'Cookie:sessionid=foo;another-cookie=bar'
 
 .. code-block:: http
 
@@ -718,7 +718,7 @@ Send multiple cookies
     Accept-Encoding: gzip, deflate
     Connection: keep-alive
     Cookie: sessionid=foo;another-cookie=bar
-    Host: example.org
+    Host: httpbin.org
     User-Agent: HTTPie/0.9.9
 
 
@@ -755,7 +755,7 @@ Basic auth
 
 .. code-block:: bash
 
-    $ http -a username:password example.org
+    $ http -a username:password httpbin.org/basic-auth/username/password
 
 
 Digest auth
@@ -764,7 +764,7 @@ Digest auth
 
 .. code-block:: bash
 
-    $ http -A digest -a username:password example.org
+    $ http -A digest -a username:password httpbin.org/digest-auth/httpie/username/password
 
 
 Password prompt
@@ -940,7 +940,7 @@ To skip the host's SSL certificate verification, you can pass ``--verify=no``
 
 .. code-block:: bash
 
-    $ http --verify=no https://example.org
+    $ http --verify=no https://httpbin.org/get
 
 
 Custom CA bundle
@@ -1095,7 +1095,7 @@ status code after an update:
 
 .. code-block:: bash
 
-    $ http --headers PATCH example.org/Really-Huge-Resource name='New Name'
+    $ http --headers PATCH httpbin.org/patch name='New Name'
 
 
 Since we are only printing the HTTP headers here, the connection to the server
@@ -1117,28 +1117,28 @@ Redirect from a file:
 
 .. code-block:: bash
 
-    $ http PUT example.com/person/1 X-API-Token:123 < person.json
+    $ http PUT httpbin.org/put X-API-Token:123 < person.json
 
 
 Or the output of another program:
 
 .. code-block:: bash
 
-    $ grep '401 Unauthorized' /var/log/httpd/error_log | http POST example.org/intruders
+    $ grep '401 Unauthorized' /var/log/httpd/error_log | http POST httpbin.org/post
 
 
 You can use ``echo`` for simple data:
 
 .. code-block:: bash
 
-    $ echo '{"name": "John"}' | http PATCH example.com/person/1 X-API-Token:123
+    $ echo '{"name": "John"}' | http PATCH httpbin.org/patch X-API-Token:123
 
 
 You can also use a Bash *here string*:
 
 .. code-block:: bash
 
-    $ http example.com/ <<<'{"name": "John"}'
+    $ http httpbin.org/post <<<'{"name": "John"}'
 
 
 You can even pipe web services together using HTTPie:
@@ -1152,14 +1152,14 @@ You can use ``cat`` to enter multiline data on the terminal:
 
 .. code-block:: bash
 
-    $ cat | http POST example.com
+    $ cat | http POST httpbin.org/post
     <paste>
     ^D
 
 
 .. code-block:: bash
 
-    $ cat | http POST example.com/todos Content-Type:text/plain
+    $ cat | http POST httpbin.org/post Content-Type:text/plain
     - buy milk
     - call parents
     ^D
@@ -1169,7 +1169,7 @@ On OS X, you can send the contents of the clipboard with ``pbpaste``:
 
 .. code-block:: bash
 
-    $ pbpaste | http PUT example.com
+    $ pbpaste | http PUT httpbin.org/put
 
 
 Passing data through ``stdin`` cannot be combined with data fields specified
@@ -1243,7 +1243,7 @@ that the response body is binary,
 
 .. code-block:: bash
 
-    $ http example.org/Movie.mov
+    $ http httpbin.org/bytes/2000
 
 
 You will nearly instantly see something like this:
@@ -1251,10 +1251,7 @@ You will nearly instantly see something like this:
 .. code-block:: http
 
     HTTP/1.1 200 OK
-    Accept-Ranges: bytes
-    Content-Encoding: gzip
-    Content-Type: video/quicktime
-    Transfer-Encoding: chunked
+    Content-Type: application/octet-stream
 
     +-----------------------------------------+
     | NOTE: binary data not shown in terminal |
@@ -1279,7 +1276,7 @@ Download a file:
 
 .. code-block:: bash
 
-    $ http example.org/Movie.mov > Movie.mov
+    $ http httpbin.org/image/png > image.png
 
 
 Download an image of Octocat, resize it using ImageMagick, upload it elsewhere:
@@ -1294,7 +1291,7 @@ Force colorizing and formatting, and show both the request and the response in
 
 .. code-block:: bash
 
-    $ http --pretty=all --verbose example.org | less -R
+    $ http --pretty=all --verbose httpbin.org/get | less -R
 
 
 The ``-R`` flag tells ``less`` to interpret color escape sequences included
@@ -1453,10 +1450,10 @@ to the same host.
 .. code-block:: bash
 
     # Create a new session
-    $ http --session=/tmp/session.json example.org API-Token:123
+    $ http --session=/tmp/session.json httpbin.org/headers API-Token:123
 
     # Re-use an existing session — API-Token will be set:
-    $ http --session=/tmp/session.json example.org
+    $ http --session=/tmp/session.json httpbin.org/headers
 
 
 All session data, including credentials, cookie data,
@@ -1471,11 +1468,11 @@ Named sessions
 
 
 You can create one or more named session per host. For example, this is how
-you can create a new session named ``user1`` for ``example.org``:
+you can create a new session named ``user1`` for ``httpbin.org``:
 
 .. code-block:: bash
 
-    $ http --session=user1 -a user1:password example.org X-Foo:Bar
+    $ http --session=user1 -a user1:password httpbin.org/get X-Foo:Bar
 
 From now on, you can refer to the session by its name. When you choose to
 use the session again, any previously specified authentication or HTTP headers
@@ -1483,13 +1480,13 @@ will automatically be set:
 
 .. code-block:: bash
 
-    $ http --session=user1 example.org
+    $ http --session=user1 httpbin.org/get
 
 To create or reuse a different session, simple specify a different name:
 
 .. code-block:: bash
 
-    $ http --session=user2 -a user2:password example.org X-Bar:Foo
+    $ http --session=user2 -a user2:password httpbin.org/get X-Bar:Foo
 
 Named sessions’s data is stored in JSON files in the the ``sessions``
 subdirectory of the `config`_ directory:
@@ -1538,7 +1535,7 @@ environment variable:
 .. code-block:: bash
 
     $ export HTTPIE_CONFIG_DIR=/tmp/httpie
-    $ http example.org
+    $ http httpbin.org/get
 
 To view the exact location run ``http --debug``.
 
@@ -1600,7 +1597,7 @@ respectively.
 
     #!/bin/bash
 
-    if http --check-status --ignore-stdin --timeout=2.5 HEAD example.org/health &> /dev/null; then
+    if http --check-status --ignore-stdin --timeout=2.5 HEAD httpbin.org/get &> /dev/null; then
         echo 'OK!'
     else
         case $? in
@@ -1648,7 +1645,8 @@ HTTP request:
 
 .. code-block:: http
 
-    POST /collection HTTP/1.1
+    POST /post HTTP/1.1
+    Host: httpbin.org
     X-API-Key: 123
     User-Agent: Bacon/1.0
     Content-Type: application/x-www-form-urlencoded
@@ -1660,7 +1658,7 @@ with the HTTPie command that sends it:
 
 .. code-block:: bash
 
-    $ http -f POST example.org/collection \
+    $ http -f POST httpbin.org/post \
       X-API-Key:123 \
       User-Agent:Bacon/1.0 \
       name=value \
