@@ -196,7 +196,6 @@ class Downloader:
         """
         :param resume: Should the download resume if partial download
                        already exists.
-        :type resume: bool
 
         :param output_file: The file to store response body in. If not
                             provided, it will be guessed from the response.
@@ -322,7 +321,6 @@ class Downloader:
 
         :param chunk: A chunk of response body data that has just
                       been downloaded and written to the output.
-        :type chunk: bytes
 
         """
         self.status.chunk_downloaded(len(chunk))
