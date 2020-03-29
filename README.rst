@@ -86,7 +86,7 @@ system package manager, for example:
 .. code-block:: bash
 
     # Debian, Ubuntu, etc.
-    $ apt-get install httpie
+    $ apt install httpie
 
 .. code-block:: bash
 
@@ -1793,4 +1793,3 @@ have contributed.
 .. |downloads| image:: https://pepy.tech/badge/httpie
     :target: https://pepy.tech/project/httpie
     :alt: Download count
-
