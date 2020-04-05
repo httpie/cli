@@ -1352,6 +1352,9 @@ the output filename (with decreasing priority):
 To prevent data loss by overwriting, HTTPie adds a unique numerical suffix to the
 filename when necessary (unless specified with ``--output, -o``).
 
+To trim extension from downloaded file name it is possible to specify 
+``--trim-ext` flag.
+
 
 Piping while downloading
 ------------------------

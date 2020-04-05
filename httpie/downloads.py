@@ -121,19 +121,29 @@ def filename_from_content_disposition(
             return filename
 
 
-def filename_from_url(url: str, content_type: Optional[str]) -> str:
+def filename_from_url(
+    url: str,
+    content_type: Optional[str],
+    options: Optional[dict] = {}
+) -> str:
+
     fn = urlsplit(url).path.rstrip('/')
     fn = os.path.basename(fn) if fn else 'index'
     if '.' not in fn and content_type:
         content_type = content_type.split(';')[0]
-        if content_type == 'text/plain':
-            # mimetypes returns '.ksh'
-            ext = '.txt'
-        else:
-            ext = mimetypes.guess_extension(content_type)
+        trim_ext = options.get('trim_ext', False)
 
-        if ext == '.htm':  # Python 3
-            ext = '.html'
+        if trim_ext:
+            ext = None
+        else:
+            if content_type == 'text/plain' and not trim_ext:
+                # mimetypes returns '.ksh'
+                ext = '.txt'
+            else:
+                ext = mimetypes.guess_extension(content_type)
+
+            if ext == '.htm':  # Python 3
+                ext = '.html'
 
         if ext:
             fn += ext
@@ -191,7 +201,8 @@ class Downloader:
         self,
         output_file: IO = None,
         resume: bool = False,
-        progress_file: IO = sys.stderr
+        progress_file: IO = sys.stderr,
+        options={}
     ):
         """
         :param resume: Should the download resume if partial download
@@ -213,6 +224,7 @@ class Downloader:
             status=self.status,
             output=progress_file
         )
+        self.options = options
 
     def pre_request(self, request_headers: dict):
         """Called just before the HTTP request is sent.
@@ -258,6 +270,7 @@ class Downloader:
             self._output_file = self._get_output_file_from_response(
                 initial_url=initial_url,
                 final_response=final_response,
+                options=self.options
             )
         else:
             # `--output, -o` provided
@@ -331,6 +344,7 @@ class Downloader:
     def _get_output_file_from_response(
         initial_url: str,
         final_response: requests.Response,
+        options: Optional[dict] = {}
     ) -> IO:
         # Output file not specified. Pick a name that doesn't exist yet.
         filename = None
@@ -341,6 +355,7 @@ class Downloader:
             filename = filename_from_url(
                 url=initial_url,
                 content_type=final_response.headers.get('Content-Type'),
+                options=options
             )
         unique_filename = get_unique_filename(filename)
         return open(unique_filename, mode='a+b')

@@ -350,6 +350,15 @@ output_options.add_argument(
 )
 
 output_options.add_argument(
+    '--trim-ext',
+    action='store_true',
+    default=False,
+    help="""
+    Trims extension from downloaded file name
+    """
+)
+
+output_options.add_argument(
     '--continue', '-c',
     dest='download_resume',
     action='store_true',

@@ -64,6 +64,16 @@ class TestDownloadUtils:
             url='http://example.org/foo',
             content_type='text/plain'
         )
+        assert 'foo' == filename_from_url(
+            url='http://example.org/foo',
+            content_type='text/plain',
+            options={'trim_ext': True}
+        )
+        assert 'foo.txt' == filename_from_url(
+            url='http://example.org/foo',
+            content_type='text/plain',
+            options={'trim_ext': False}
+        )
         assert 'foo.html' == filename_from_url(
             url='http://example.org/foo',
             content_type='text/html; charset=utf8'
