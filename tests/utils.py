@@ -1,6 +1,5 @@
 # coding=utf-8
 """Utilities for HTTPie test suite."""
-import os
 import sys
 import time
 import json

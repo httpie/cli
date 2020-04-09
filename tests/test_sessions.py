@@ -4,8 +4,6 @@ import shutil
 import sys
 from tempfile import gettempdir
 
-import pytest
-
 from httpie.plugins.builtin import HTTPBasicAuth
 from utils import MockEnvironment, mk_config_dir, http, HTTP_OK
 from fixtures import UNICODE
