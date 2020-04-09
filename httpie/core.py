@@ -18,7 +18,7 @@ from httpie.status import ExitStatus, http_status_to_exit_status
 
 
 def main(
-    args: List[Union[str, bytes]] = sys.argv,
+    args: List[Union[str, bytes]] = None,
     env=Environment(),
 ) -> ExitStatus:
     """
@@ -30,6 +30,8 @@ def main(
     Return exit status code.
 
     """
+    if args is None:
+        args = sys.argv
     program_name, *args = args
     env.program_name = os.path.basename(program_name)
     args = decode_raw_args(args, env.stdin_encoding)
