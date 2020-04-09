@@ -101,7 +101,8 @@ class FormatterPlugin(BasePlugin):
         self.enabled = True
         self.kwargs = kwargs
 
-    def format_headers(self, headers: str) -> str:
+    @staticmethod
+    def format_headers(headers: str) -> str:
         """Return processed `headers`
 
         :param headers: The headers as text.
@@ -109,7 +110,8 @@ class FormatterPlugin(BasePlugin):
         """
         return headers
 
-    def format_body(self, content: str, mime: str) -> str:
+    @staticmethod
+    def format_body(content: str, mime: str) -> str:
         """Return processed `content`.
 
         :param mime: E.g., 'application/atom+xml'.

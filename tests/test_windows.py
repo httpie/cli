@@ -13,7 +13,8 @@ class TestWindowsOnly:
 
     @pytest.mark.skipif(True,
                         reason='this test for some reason kills the process')
-    def test_windows_colorized_output(self, httpbin):
+    @staticmethod
+    def test_windows_colorized_output(httpbin):
         # Spits out the colorized output.
         http(httpbin.url + '/get', env=Environment())
 
