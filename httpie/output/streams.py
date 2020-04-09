@@ -37,7 +37,8 @@ class BaseStream:
         :param with_body: if `True`, body will be included
 
         """
-        assert with_headers or with_body
+        if not (with_headers or with_body):
+            raise AssertionError
         self.msg = msg
         self.with_headers = with_headers
         self.with_body = with_body
@@ -151,7 +152,8 @@ class PrettyStream(EncodedStream):
                             body.extend(line)
                             body.extend(lf)
                         self.mime, body = converter.convert(body)
-                        assert isinstance(body, str)
+                        if not isinstance(body, str):
+                            raise AssertionError
                         yield self.process_body(body)
                         return
                 raise BinarySuppressedError()

@@ -63,7 +63,8 @@ class Environment:
         any of the class attributes for this instance.
 
         """
-        assert all(hasattr(type(self), attr) for attr in kwargs.keys())
+        if not all(hasattr(type(self), attr) for attr in kwargs.keys()):
+            raise AssertionError
         self.__dict__.update(**kwargs)
 
         # Keyword arguments > stream.encoding > default utf8
@@ -110,5 +111,6 @@ class Environment:
         return config
 
     def log_error(self, msg, level='error'):
-        assert level in ['error', 'warning']
+        if level not in ['error', 'warning']:
+            raise AssertionError
         self.stderr.write(f'\n{self.program_name}: {level}: {msg}\n\n')

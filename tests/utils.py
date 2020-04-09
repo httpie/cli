@@ -74,7 +74,8 @@ class MockEnvironment(Environment):
         self.stdout.close()
         self.stderr.close()
         if self._delete_config_dir:
-            assert self._temp_dir in self.config_dir.parents
+            if self._temp_dir not in self.config_dir.parents:
+                raise AssertionError
             from shutil import rmtree
             rmtree(self.config_dir, ignore_errors=True)
 
