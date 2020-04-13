@@ -8,6 +8,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 `2.1.0-dev`_ (unreleased)
 -------------------------
+* Add ``--path-as-is`` to bypass dot segment (``/../`` or ``/./``) URL squashing.
 * Fixed ``--form`` file upload mixed with redirected ``stdin`` error handling.
 
 

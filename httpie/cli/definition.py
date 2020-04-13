@@ -552,6 +552,15 @@ network.add_argument(
 
     """
 )
+network.add_argument(
+    '--path-as-is',
+    default=False,
+    action='store_true',
+    help="""
+    Bypass dot segment (/../ or /./) URL squashing.
+
+    """
+)
 
 #######################################################################
 # SSL

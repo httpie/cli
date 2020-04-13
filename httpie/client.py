@@ -6,6 +6,7 @@ import zlib
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Iterable, Union
+from urllib.parse import urlparse, urlunparse
 
 import requests
 from requests.adapters import HTTPAdapter
@@ -77,6 +78,11 @@ def collect_messages(
 
     request = requests.Request(**request_kwargs)
     prepared_request = requests_session.prepare_request(request)
+    if args.path_as_is:
+        prepared_request.url = ensure_path_as_is(
+            orig_url=args.url,
+            prepped_url=prepared_request.url,
+        )
     if args.compress and prepared_request.body:
         compress_body(prepared_request, always=args.compress > 1)
     response_count = 0
@@ -278,3 +284,30 @@ def make_request_kwargs(
     }
 
     return kwargs
+
+
+def ensure_path_as_is(orig_url: str, prepped_url: str) -> str:
+    """
+    Handle `--path-as-is` by replacing the path component of the prepared
+    URL with the path component from the original URL. Other parts stay
+    untouched because other (welcome) processing on the URL might have
+    taken place.
+
+    <https://github.com/jakubroztocil/httpie/issues/895>
+
+
+    <https://ec.haxx.se/http/http-basics#path-as-is>
+    <https://curl.haxx.se/libcurl/c/CURLOPT_PATH_AS_IS.html>
+
+    >>> ensure_path_as_is('http://foo/../', 'http://foo/?foo=bar')
+    'http://foo/../?foo=bar'
+
+    """
+    parsed_orig, parsed_prepped = urlparse(orig_url), urlparse(prepped_url)
+    final_dict = {
+        # noinspection PyProtectedMember
+        **parsed_prepped._asdict(),
+        'path': parsed_orig.path,
+    }
+    final_url = urlunparse(tuple(final_dict.values()))
+    return final_url
