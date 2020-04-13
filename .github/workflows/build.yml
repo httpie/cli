@@ -1,5 +1,5 @@
 name: Build
-on: [push]
+on: [push, pull_request]
 jobs:
   extras:
     # Run coverage and extra tests only once
