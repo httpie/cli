@@ -30,7 +30,7 @@ except (ImportError, AttributeError):
 
 FORM_CONTENT_TYPE = 'application/x-www-form-urlencoded; charset=utf-8'
 JSON_CONTENT_TYPE = 'application/json'
-JSON_ACCEPT = f'{JSON_CONTENT_TYPE}, */*'
+JSON_ACCEPT = f'{JSON_CONTENT_TYPE}, */*;q=0.5'
 DEFAULT_UA = f'HTTPie/{__version__}'
 
 
