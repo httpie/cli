@@ -1,7 +1,6 @@
-import os
 import sys
 from pathlib import Path
-from typing import Union, IO, Optional
+from typing import IO, Optional
 
 
 try:
