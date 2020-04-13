@@ -30,8 +30,7 @@ except (ImportError, AttributeError):
 
 FORM_CONTENT_TYPE = 'application/x-www-form-urlencoded; charset=utf-8'
 JSON_CONTENT_TYPE = 'application/json'
-AUTO_JSON_ACCEPT = f'{JSON_CONTENT_TYPE}, */*;q=0.5'
-EXPLICIT_JSON_ACCEPT = JSON_CONTENT_TYPE
+JSON_ACCEPT = f'{JSON_CONTENT_TYPE}, */*;q=0.5'
 DEFAULT_UA = f'HTTPie/{__version__}'
 
 
@@ -209,8 +208,7 @@ def make_default_headers(args: argparse.Namespace) -> RequestHeadersDict:
 
     auto_json = args.data and not args.form
     if args.json or auto_json:
-        default_headers['Accept'] = (
-            EXPLICIT_JSON_ACCEPT if args.json else AUTO_JSON_ACCEPT)
+        default_headers['Accept'] = JSON_ACCEPT
         if args.json or (auto_json and args.data):
             default_headers['Content-Type'] = JSON_CONTENT_TYPE
 

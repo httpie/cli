@@ -2,7 +2,7 @@
 Tests for the provided defaults regarding HTTP method, and --json vs. --form.
 
 """
-from httpie.client import EXPLICIT_JSON_ACCEPT, AUTO_JSON_ACCEPT
+from httpie.client import JSON_ACCEPT
 from utils import MockEnvironment, http, HTTP_OK
 from fixtures import FILE_PATH
 
@@ -22,6 +22,7 @@ def test_default_headers_case_insensitive(httpbin):
     assert 'Content-Type' not in r
 
 
+# noinspection PyPep8Naming
 class TestImplicitHTTPMethod:
     def test_implicit_GET(self, httpbin):
         r = http(httpbin.url + '/get')
@@ -51,9 +52,9 @@ class TestImplicitHTTPMethod:
 
 class TestAutoContentTypeAndAcceptHeaders:
     """
-    Test that Accept and Content-Type correctly defaults to JSON,
-    but can still be overridden. The same with Content-Type when --form
-    -f is used.
+    Test that `Accept` and `Content-Type` correctly default to JSON,
+    but can still be overridden. The same with Content-Type when `--form`
+    `-f` is used.
 
     """
 
@@ -74,20 +75,20 @@ class TestAutoContentTypeAndAcceptHeaders:
     def test_POST_with_data_auto_JSON_headers(self, httpbin):
         r = http('POST', httpbin.url + '/post', 'a=b')
         assert HTTP_OK in r
-        assert r.json['headers']['Accept'] == AUTO_JSON_ACCEPT
+        assert r.json['headers']['Accept'] == JSON_ACCEPT
         assert r.json['headers']['Content-Type'] == 'application/json'
 
     def test_GET_with_data_auto_JSON_headers(self, httpbin):
         # JSON headers should automatically be set also for GET with data.
         r = http('POST', httpbin.url + '/post', 'a=b')
         assert HTTP_OK in r
-        assert r.json['headers']['Accept'] == AUTO_JSON_ACCEPT
+        assert r.json['headers']['Accept'] == JSON_ACCEPT
         assert r.json['headers']['Content-Type'] == 'application/json'
 
-    def test_POST_explicit_JSON_auto_JSON_accept(self, httpbin):
+    def test_POST_explicit_JSON_JSON_ACCEPT(self, httpbin):
         r = http('--json', 'POST', httpbin.url + '/post')
         assert HTTP_OK in r
-        assert r.json['headers']['Accept'] == EXPLICIT_JSON_ACCEPT
+        assert r.json['headers']['Accept'] == JSON_ACCEPT
         # Make sure Content-Type gets set even with no data.
         # https://github.com/jakubroztocil/httpie/issues/137
         assert 'application/json' in r.json['headers']['Content-Type']

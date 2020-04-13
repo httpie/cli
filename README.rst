@@ -469,7 +469,7 @@ Simple example:
 .. code-block:: http
 
     PUT / HTTP/1.1
-    Accept: application/json, */*
+    Accept: application/json, */*;q=0.5
     Accept-Encoding: gzip, deflate
     Content-Type: application/json
     Host: httpbin.org
@@ -490,7 +490,7 @@ both of which can be overwritten:
 
 ================    =======================================
 ``Content-Type``    ``application/json``
-``Accept``          ``application/json, */*``
+``Accept``          ``application/json, */*;q=0.5``
 ================    =======================================
 
 
@@ -500,7 +500,7 @@ Explicit JSON
 You can use ``--json, -j`` to explicitly set ``Accept``
 to ``application/json`` regardless of whether you are sending data
 (it's a shortcut for setting the header via the usual header notation:
-``http url Accept:'application/json, */*'``). Additionally,
+``http url Accept:'application/json, */*;q=0.5'``). Additionally,
 HTTPie will try to detect JSON responses even when the
 ``Content-Type`` is incorrectly ``text/plain`` or unknown.
 
@@ -525,7 +525,7 @@ fields using ``=@`` and ``:=@``:
 .. code-block:: http
 
     PUT /person/1 HTTP/1.1
-    Accept: application/json, */*
+    Accept: application/json, */*;q=0.5
     Content-Type: application/json
     Host: httpbin.org
 
@@ -1009,7 +1009,7 @@ documentation examples:
 
     $ http --verbose PUT httpbin.org/put hello=world
     PUT /put HTTP/1.1
-    Accept: application/json, */*
+    Accept: application/json, */*;q=0.5
     Accept-Encoding: gzip, deflate
     Content-Type: application/json
     Host: httpbin.org
