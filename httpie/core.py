@@ -90,7 +90,7 @@ def main(
             exit_status = ExitStatus.ERROR_TOO_MANY_REDIRECTS
             env.log_error(
                 f'Too many redirects'
-                f' (--max-redirects=parsed_args.max_redirects).'
+                f' (--max-redirects={parsed_args.max_redirects}).'
             )
         except Exception as e:
             # TODO: Further distinction between expected and unexpected errors.
