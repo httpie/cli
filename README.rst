@@ -225,7 +225,7 @@ Upload a file using `redirected input`_:
 
 .. code-block:: bash
 
-    $ http httpbin.org/post < file.json
+    $ http httpbin.org/post < files/data.json
 
 
 Download a file and save it via `redirected output`_:
@@ -549,7 +549,7 @@ complex data. In that case it's always better to use `redirected input`_:
 
 .. code-block:: bash
 
-    $ http POST httpbin.org/post < data.json
+    $ http POST httpbin.org/post < files/data.json
 
 
 Forms
@@ -587,7 +587,7 @@ If one or more file fields is present, the serialization and content type is
 
 .. code-block:: bash
 
-    $ http -f POST httpbin.org/post name='John Smith' cv@~/Documents/cv.pdf
+    $ http -f POST httpbin.org/post name='John Smith' cv@~/files/data.xml
 
 
 The request above is the same as if the following HTML form were
@@ -1117,7 +1117,7 @@ Redirect from a file:
 
 .. code-block:: bash
 
-    $ http PUT httpbin.org/put X-API-Token:123 < person.json
+    $ http PUT httpbin.org/put X-API-Token:123 < files/data.json
 
 
 Or the output of another program:
@@ -1198,7 +1198,7 @@ verbatim contents of that XML file with ``Content-Type: application/xml``:
 
 .. code-block:: bash
 
-    $ http PUT httpbin.org/put @/data/file.xml
+    $ http PUT httpbin.org/put @files/data.xml
 
 
 Terminal output
