@@ -181,3 +181,23 @@ def test_json_input_preserve_order(httpbin_both):
     assert HTTP_OK in r
     assert r.json['data'] == \
         '{"order": {"map": {"1": "first", "2": "second"}}}'
+
+
+def test_offline():
+    r = http(
+        '--offline',
+        'https://this-should.never-resolve/foo',
+        'param==value'
+    )
+    assert 'GET /foo?param=value' in r
+
+
+def test_offline_download():
+    """Absence of response should be handled gracefully with --download"""
+    r = http(
+        '--offline',
+        '--download',
+        'https://this-should.never-resolve/foo',
+        'param==value'
+    )
+    assert 'GET /foo?param=value' in r
