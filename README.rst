@@ -212,6 +212,13 @@ See the request that is being sent using one of the `output options`_:
     $ http -v httpbin.org/get
 
 
+Build and print a request without sending it using `offline mode`_:
+
+.. code-block:: bash
+
+    $ http --offline httpbin.org/post hello=offline
+
+
 Use `Github API`_ to post a comment on an
 `issue <https://github.com/jakubroztocil/httpie/issues/83>`_
 with `authentication`_:
@@ -241,12 +248,16 @@ Download a file ``wget`` style:
 
     $ http --download httpbin.org/image/png
 
-Use named `sessions`_ to make certain aspects or the communication persistent
+Use named `sessions`_ to make certain aspects of the communication persistent
 between requests to the same host:
+
 
 .. code-block:: bash
 
     $ http --session=logged-in -a username:password httpbin.org/get API-Key:123
+
+
+.. code-block:: bash
 
     $ http --session=logged-in httpbin.org/headers
 
@@ -1495,7 +1506,7 @@ Prettified streamed response:
     $ http --stream -f -a YOUR-TWITTER-NAME https://stream.twitter.com/1/statuses/filter.json track='Justin Bieber'
 
 
-Streamed output by small chunks alá ``tail -f``:
+Streamed output by small chunks à la ``tail -f``:
 
 .. code-block:: bash
 
@@ -1521,11 +1532,20 @@ to the same host.
 
 .. code-block:: bash
 
-    # Create a new session
-    $ http --session=/tmp/session.json httpbin.org/headers API-Token:123
+    # Create a new session:
+    $ http --session=./session.json httpbin.org/headers API-Token:123
 
-    # Re-use an existing session — API-Token will be set:
-    $ http --session=/tmp/session.json httpbin.org/headers
+
+.. code-block:: bash
+
+    # Inspect / edit the generated session file:
+    $ cat session.json
+
+
+.. code-block:: bash
+
+    # Re-use the existing session — the API-Token header will be set:
+    $ http --session=./session.json httpbin.org/headers
 
 
 All session data, including credentials, cookie data,
@@ -1546,8 +1566,8 @@ you can create a new session named ``user1`` for ``httpbin.org``:
 
     $ http --session=user1 -a user1:password httpbin.org/get X-Foo:Bar
 
-From now on, you can refer to the session by its name. When you choose to
-use the session again, any previously specified authentication or HTTP headers
+From now on, you can refer to the session by its name (``user1``). When you choose
+to use the session again, any previously specified authentication or HTTP headers
 will automatically be set:
 
 .. code-block:: bash
@@ -1565,6 +1585,14 @@ subdirectory of the `config`_ directory:
 ``~/.httpie/sessions/<host>/<name>.json``
 (``%APPDATA%\httpie\sessions\<host>\<name>.json`` on Windows).
 
+If you have executed the above commands on a unix machine,
+you should be able list the generated sessions files using:
+
+
+.. code-block:: bash
+
+    $ ls -l ~/.httpie/sessions/httpbin.org
+
 
 Anonymous sessions
 ------------------
@@ -1574,19 +1602,43 @@ allows for sessions to be re-used across multiple hosts:
 
 .. code-block:: bash
 
+    # Create a session:
     $ http --session=/tmp/session.json example.org
+
+
+.. code-block:: bash
+
+    # Use the session to make a request to another host:
     $ http --session=/tmp/session.json admin.example.org
+
+.. code-block:: bash
+
+    # You can also refer to a previously created named session:
     $ http --session=~/.httpie/sessions/another.example.org/test.json example.org
-    $ http --session-read-only=/tmp/session.json example.org
+
+
+When creating anonymous sessions, please remember to always include at least
+one ``/``, even if the session files is located in the current directory
+(i.e., ``--session=./session.json`` instead of just ``--session=session.json``),
+otherwise HTTPie assumes a named session instead.
 
 
 Readonly session
 ----------------
 
 To use an existing session file without updating it from the request/response
-exchange once it is created, specify the session name via
+exchange after it has been created, specify the session name via
 ``--session-read-only=SESSION_NAME_OR_PATH`` instead.
 
+.. code-block:: bash
+
+    # If the session file doesn’t exist, then it is created:
+    $ http --session-read-only=./ro-session.json httpbin.org/headers Custom-Header:orig-value
+
+.. code-block:: bash
+
+    # But it is not updated:
+    $ http --session-read-only=./ro-session.json httpbin.org/headers Custom-Header:new-value
 
 Config
 ======
