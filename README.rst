@@ -679,6 +679,50 @@ HTTPie reads before giving up (the default ``0``, i.e., there’s no limit).
 
 
 
+Offline mode
+============
+
+Use ``--offline`` to construct HTTP requests without sending them anywhere.
+With ``--offline``, HTTPie builds a request based on the specified options and arguments, prints it to ``stdout``,
+and then exists. It works completely offline; no network connection is ever made.
+This has a number of use cases, including:
+
+
+Generating API documentation examples that you can copy & paste without sending a request:
+
+
+.. code-block:: bash
+
+    $ http --offline POST server.chess/api/games API-Key:ZZZ w=magnus b=hikaru t=180 i=2
+
+
+.. code-block:: bash
+
+    $ http --offline MOVE server.chess/api/games/123 API-Key:ZZZ p=b a=R1a3 t=77
+
+
+Generating raw requests that can be sent with any other client:
+
+.. code-block:: bash
+
+    # 1. save a raw request to a file:
+    $ http --offline POST httpbin.org/post hello=world > request.http
+
+
+.. code-block:: bash
+
+    # 2. send it over the wire with, for example, the fantastic netcat tool:
+    $ nc httpbin.org 80 < request.http
+
+
+You can also use the ``--offline`` mode for debugging and exploring HTTP and HTTPie, and for “dry runs”.
+
+``--offline`` has the side-effect of automatically activating ``--print=HB``, i.e., both the request headers and the body
+are printed. You can customize the output with the usual `output options`_, with the exception that there
+is not response to be printed. You can use ``--offline`` in combination with all the other options (e.g., ``--session``).
+
+
+
 Cookies
 =======
 
