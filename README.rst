@@ -380,6 +380,34 @@ Example for the `httpie-unixsocket <https://github.com/httpie/httpie-unixsocket>
     # Now the scheme can be omitted
     $ http-unix %2Fvar%2Frun%2Fdocker.sock/info
 
+
+``--path-as-is``
+----------------
+
+The standard behaviour of HTTP clients is to normalize the path portion of URLs by squashing dot segments
+as a typically filesystem would:
+
+
+.. code-block:: bash
+
+    $ http -v example.org/./../../etc/password
+
+.. code-block:: http
+
+    GET /etc/password HTTP/1.1
+
+
+The ``--path-as-is`` option allows you to disable this behavior:
+
+.. code-block:: bash
+
+    $ http --path-as-is -v example.org/./../../etc/password
+
+.. code-block:: http
+
+    GET /../../etc/password HTTP/1.1
+
+
 Request items
 =============
 
