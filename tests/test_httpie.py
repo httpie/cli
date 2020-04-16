@@ -187,9 +187,8 @@ def test_offline():
     r = http(
         '--offline',
         'https://this-should.never-resolve/foo',
-        'param==value'
     )
-    assert 'GET /foo?param=value' in r
+    assert 'GET /foo' in r
 
 
 def test_offline_download():
@@ -198,6 +197,5 @@ def test_offline_download():
         '--offline',
         '--download',
         'https://this-should.never-resolve/foo',
-        'param==value'
     )
-    assert 'GET /foo?param=value' in r
+    assert 'GET /foo' in r

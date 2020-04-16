@@ -78,7 +78,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
 
         # Arguments processing and environment setup.
         self._apply_no_options(no_options)
-        self._validate_download_options()
+        self._process_download_options()
         self._setup_standard_streams()
         self._process_output_options()
         self._process_pretty_options()
@@ -379,7 +379,11 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
             # noinspection PyTypeChecker
             self.args.prettify = PRETTY_MAP[self.args.prettify]
 
-    def _validate_download_options(self):
+    def _process_download_options(self):
+        if self.args.offline:
+            self.args.download = False
+            self.args.download_resume = False
+            return
         if not self.args.download:
             if self.args.download_resume:
                 self.error('--continue only works with --download')
