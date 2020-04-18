@@ -6,6 +6,9 @@ This document records all notable changes to `HTTPie <https://httpie.org>`_.
 This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 
+`2.2.0-dev`_ (unreleased)
+-------------------------
+
 `2.1.0`_ (2020-04-18)
 ---------------------
 
@@ -422,6 +425,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 .. _1.0.3: https://github.com/jakubroztocil/httpie/compare/1.0.2...1.0.3
 .. _2.0.0: https://github.com/jakubroztocil/httpie/compare/1.0.3...2.0.0
 .. _2.1.0: https://github.com/jakubroztocil/httpie/compare/2.0.0...2.1.0
+.. _2.2.0-dev: https://github.com/jakubroztocil/httpie/compare/2.1.0...master
 
 
 .. _#488:https://github.com/jakubroztocil/httpie/issues/488
