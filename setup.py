@@ -10,8 +10,11 @@ import httpie
 
 
 class PyTest(TestCommand):
-    # `$ python setup.py test' simply installs minimal requirements
-    # and runs the tests with no fancy stuff like parallel execution.
+    """
+    Running `$ python setup.py test' simply installs minimal requirements
+    and runs the tests with no fancy stuff like parallel execution.
+
+    """
     def finalize_options(self):
         TestCommand.finalize_options(self)
         self.test_args = [
@@ -26,8 +29,6 @@ class PyTest(TestCommand):
 
 
 tests_require = [
-    # Pytest needs to come last.
-    # https://bitbucket.org/pypa/setuptools/issue/196/
     'pytest-httpbin',
     'pytest',
     'mock',
@@ -38,28 +39,24 @@ install_requires = [
     'requests>=2.22.0',
     'Pygments>=2.5.2',
 ]
-
+install_requires_win_only = [
+    'colorama>=0.2.4',
+]
 
 # Conditional dependencies:
 
 # sdist
 if 'bdist_wheel' not in sys.argv:
-    try:
-        # noinspection PyUnresolvedReferences
-        import argparse
-    except ImportError:
-        install_requires.append('argparse>=1.2.1')
 
     if 'win32' in str(sys.platform).lower():
         # Terminal colors for Windows
-        install_requires.append('colorama>=0.2.4')
+        install_requires.extend(install_requires_win_only)
 
 
 # bdist_wheel
 extras_require = {
     # https://wheel.readthedocs.io/en/latest/#defining-conditional-dependencies
-    'python_version == "3.0" or python_version == "3.1"': ['argparse>=1.2.1'],
-    ':sys_platform == "win32"': ['colorama>=0.2.4'],
+    ':sys_platform == "win32"': install_requires_win_only,
 }
 
 
@@ -74,7 +71,7 @@ setup(
     description=httpie.__doc__.strip(),
     long_description=long_description(),
     url='https://httpie.org/',
-    download_url='https://github.com/jakubroztocil/httpie',
+    download_url=f'https://github.com/jakubroztocil/httpie/archive/{httpie.__version__}.tar.gz',
     author=httpie.__author__,
     author_email='jakub@roztocil.co',
     license=httpie.__licence__,
@@ -85,6 +82,7 @@ setup(
             'https = httpie.__main__:main',
         ],
     },
+    python_requires='>=3.6',
     extras_require=extras_require,
     install_requires=install_requires,
     tests_require=tests_require,
@@ -93,8 +91,6 @@ setup(
         'Development Status :: 5 - Production/Stable',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3 :: Only',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
         'Environment :: Console',
         'Intended Audience :: Developers',
         'Intended Audience :: System Administrators',
@@ -106,4 +102,11 @@ setup(
         'Topic :: Text Processing',
         'Topic :: Utilities'
     ],
+    project_urls={
+        'Documentation': 'https://httpie.org/docs',
+        'Source': 'https://github.com/jakubroztocil/httpie',
+        'Online Demo': 'https://httpie.org/run',
+        'Donate': 'https://httpie.org/donate',
+        'Twitter': 'https://twitter.com/clihttp',
+    },
 )
