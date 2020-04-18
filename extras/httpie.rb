@@ -11,7 +11,6 @@ class Httpie < Formula
   homepage "https://httpie.org/"
   url "https://files.pythonhosted.org/packages/e2/79/da6aec7b4356e8b325561b987c940e5b1e4de1200a5c3db7c57a97d61ca1/httpie-2.1.0.tar.gz"
   sha256 "a76f1c72e83bd03cde3478c5f345d5570fdb2967ed19d68d09518088640b9e8e"
-  revision 1
   head "https://github.com/jakubroztocil/httpie.git"
 
   bottle do
