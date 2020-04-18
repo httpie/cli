@@ -14,7 +14,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 * Added ``--path-as-is`` to bypass dot segment (``/../`` or ``/./``)
   URL squashing (#895).
-* Changed the default value ``Accept`` header value for JSON requests from
+* Changed the default ``Accept`` header value for JSON requests from
   ``application/json, */*`` to ``application/json, */*;q=0.5``
   to clearly indicate preference (#488).
 * Fixed ``--form`` file upload mixed with redirected ``stdin`` error handling
