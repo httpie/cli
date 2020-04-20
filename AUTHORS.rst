@@ -38,5 +38,5 @@ Patches and ideas
 * `Edward Yang <https://github.com/honorabrutroll>`_
 * `Aleksandr Vinokurov <https://github.com/aleksandr-vin>`_
 * `Jeff Byrnes <https://github.com/jeffbyrnes>`_
-
+* `Žygimantas Magelinskas <https://github.com/Zygimantass>`_
 
