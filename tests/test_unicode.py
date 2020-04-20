@@ -96,13 +96,16 @@ def test_unicode_digest_auth(httpbin):
          '--auth', u'test:%s' % UNICODE,
          httpbin.url + u'/digest-auth/auth/test/' + UNICODE)
 
+
 def test_punycode_url():
     r = http("--verbose", "👻", "--offline")
     assert "Host: xn--9q8h" in r
 
+
 def test_punycode_url_with_tld():
     r = http("--verbose", "test.👻", "--offline")
     assert "Host: test.xn--9q8h" in r
+
 
 def test_multiple_punycode_in_url():
     r = http("--verbose", "👻.👻.com", "--offline")
