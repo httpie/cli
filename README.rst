@@ -228,7 +228,7 @@ Build and print a request without sending it using `offline mode`_:
     $ http --offline httpbin.org/post hello=offline
 
 
-Use `Github API`_ to post a comment on an
+Use `GitHub API`_ to post a comment on an
 `issue <https://github.com/jakubroztocil/httpie/issues/83>`_
 with `authentication`_:
 
@@ -1933,7 +1933,7 @@ have contributed.
 
 
 .. _pip: https://pip.pypa.io/en/stable/installing/
-.. _Github API: https://developer.github.com/v3/issues/comments/#create-a-comment
+.. _GitHub API: https://developer.github.com/v3/issues/comments/#create-a-comment
 .. _these fine people: https://github.com/jakubroztocil/httpie/contributors
 .. _Jakub Roztocil: https://roztocil.co
 .. _@jakubroztocil: https://twitter.com/jakubroztocil

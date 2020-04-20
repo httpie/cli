@@ -128,7 +128,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
   ``$ alias https='http --default-scheme=https``.
 * Added ``-I`` as a shortcut for ``--ignore-stdin``.
 * Added fish shell completion (located in ``extras/httpie-completion.fish``
-  in the Github repo).
+  in the GitHub repo).
 * Updated ``requests`` to 2.10.0 so that SOCKS support can be added via
   ``pip install requests[socks]``.
 * Changed the default JSON ``Accept`` header from ``application/json``

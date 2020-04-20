@@ -115,7 +115,7 @@ Testing & CI
 Please add tests for any new features and bug fixes.
 
 When you open a pull request,
-`Github Actions <https://github.com/jakubroztocil/httpie/actions>`_
+`GitHub Actions <https://github.com/jakubroztocil/httpie/actions>`_
 will automatically run HTTPie’s `test suite`_ against your code
 so please make sure all checks pass.
 
