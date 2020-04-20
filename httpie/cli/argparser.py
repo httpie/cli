@@ -87,6 +87,12 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
 
         if self.has_stdin_data:
             self._body_from_file(self.env.stdin)
+
+        try:
+            self.args.url = self.args.url.encode("idna").decode("utf-8")
+        except UnicodeError:
+            sys.stderr.write("Failed to encode string to IDNA: {0}".format(self.args.url))
+
         if not URL_SCHEME_RE.match(self.args.url):
             if os.path.basename(env.program_name) == 'https':
                 scheme = 'https://'
