@@ -707,7 +707,7 @@ There are a couple of default headers that HTTPie sets:
 
 
 
-Any of these except ``Host`` can be overwritten and some of them unset.
+Any of these can be overwritten and some of them unset (see bellow).
 
 
 
