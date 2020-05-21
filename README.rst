@@ -1621,9 +1621,9 @@ To create or reuse a different session, simple specify a different name:
 
     $ http --session=user2 -a user2:password httpbin.org/get X-Bar:Foo
 
-Named sessions’s data is stored in JSON files in the the ``sessions``
-subdirectory of the `config`_ directory:
-``~/.httpie/sessions/<host>/<name>.json``
+Named sessions’s data is stored in JSON files inside the ``sessions``
+subdirectory of the `config`_ directory, typically:
+``~/.config/httpie/sessions/<host>/<name>.json``
 (``%APPDATA%\httpie\sessions\<host>\<name>.json`` on Windows).
 
 If you have executed the above commands on a unix machine,
@@ -1632,7 +1632,7 @@ you should be able list the generated sessions files using:
 
 .. code-block:: bash
 
-    $ ls -l ~/.httpie/sessions/httpbin.org
+    $ ls -l ~/.config/httpie/sessions/httpbin.org
 
 
 Anonymous sessions
@@ -1655,7 +1655,7 @@ allows for sessions to be re-used across multiple hosts:
 .. code-block:: bash
 
     # You can also refer to a previously created named session:
-    $ http --session=~/.httpie/sessions/another.example.org/test.json example.org
+    $ http --session=~/.config/httpie/sessions/another.example.org/test.json example.org
 
 
 When creating anonymous sessions, please remember to always include at least
@@ -1693,9 +1693,12 @@ Config file directory
 
 The default location of the configuration file on most platforms is
 ``$XDG_CONFIG_HOME/httpie/config.json`` (defaulting to
-``~/.config/httpie/config.json``). For backwards compatibility, if the directory
-``~/.httpie`` exists, the configuration file there will be used instead. On
-Windows, the config file is located at ``%APPDATA%\httpie\config.json``.
+``~/.config/httpie/config.json``).
+
+For backwards compatibility, if the directory ``~/.httpie`` exists,
+the configuration file there will be used instead.
+
+On Windows, the config file is located at ``%APPDATA%\httpie\config.json``.
 
 The config directory can be changed by setting the ``$HTTPIE_CONFIG_DIR``
 environment variable:
@@ -1725,7 +1728,7 @@ For instance, you can use this config option to change your default color theme:
 
 .. code-block:: bash
 
-    $ cat ~/.httpie/config.json
+    $ cat ~/.config/httpie/config.json
 
 
 .. code-block:: json
