@@ -9,16 +9,19 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 `2.2.0-dev`_ (unreleased)
 -------------------------
 
+* Added support ``$XDG_CONFIG_HOME`` (`#920`_).
+
+
 `2.1.0`_ (2020-04-18)
 ---------------------
 
 * Added ``--path-as-is`` to bypass dot segment (``/../`` or ``/./``)
-  URL squashing (#895).
+  URL squashing (`#895`_).
 * Changed the default ``Accept`` header value for JSON requests from
   ``application/json, */*`` to ``application/json, */*;q=0.5``
-  to clearly indicate preference (#488).
+  to clearly indicate preference (`#488`_).
 * Fixed ``--form`` file upload mixed with redirected ``stdin`` error handling
-  (#840).
+  (`#840`_).
 
 
 `2.0.0`_ (2020-01-12)
@@ -431,3 +434,4 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 .. _#488:https://github.com/jakubroztocil/httpie/issues/488
 .. _#840:https://github.com/jakubroztocil/httpie/issues/840
 .. _#895:https://github.com/jakubroztocil/httpie/issues/895
+.. _#920:https://github.com/jakubroztocil/httpie/issues/920
