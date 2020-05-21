@@ -8,11 +8,28 @@ from httpie import __version__
 from httpie.compat import is_windows
 
 
-DEFAULT_CONFIG_DIR = Path(os.environ.get(
-    'HTTPIE_CONFIG_DIR',
-    os.path.expanduser('~/.httpie') if not is_windows else
-    os.path.expandvars(r'%APPDATA%\\httpie')
-))
+def get_default_config_dir() -> Path:
+    """Return the path to the httpie configuration directory.
+
+    This directory isn't guaranteed to exist, and nor are any of its
+    ancestors.
+    """
+    env_config_dir = os.environ.get('HTTPIE_CONFIG_DIR')
+    if env_config_dir:
+        return Path(env_config_dir)
+    if is_windows:
+        return Path(os.path.expandvars(r'%APPDATA%\httpie'))
+    legacy_config_dir = os.path.expanduser('~/.httpie')
+    if os.path.exists(legacy_config_dir):
+        return Path(legacy_config_dir)
+    xdg_config_dir = os.environ.get('XDG_CONFIG_HOME')
+    if not xdg_config_dir or not os.path.isabs(xdg_config_dir):
+        xdg_config_dir = os.path.expanduser('~/.config')
+    httpie_config_dir = os.path.join(xdg_config_dir, 'httpie')
+    return Path(httpie_config_dir)
+
+
+DEFAULT_CONFIG_DIR = get_default_config_dir()
 
 
 class ConfigFileError(Exception):

@@ -1691,8 +1691,11 @@ but you can create it manually.
 Config file directory
 ---------------------
 
-The default location of the configuration file is ``~/.httpie/config.json``
-(or ``%APPDATA%\httpie\config.json`` on Windows).
+The default location of the configuration file on most platforms is
+``$XDG_CONFIG_HOME/httpie/config.json`` (defaulting to
+``~/.config/httpie/config.json``). For backwards compatibility, if the directory
+``~/.httpie`` exists, the configuration file there will be used instead. On
+Windows, the config file is located at ``%APPDATA%\httpie\config.json``.
 
 The config directory can be changed by setting the ``$HTTPIE_CONFIG_DIR``
 environment variable:
