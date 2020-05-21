@@ -431,7 +431,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 .. _2.2.0-dev: https://github.com/jakubroztocil/httpie/compare/2.1.0...master
 
 
-.. _#488:https://github.com/jakubroztocil/httpie/issues/488
-.. _#840:https://github.com/jakubroztocil/httpie/issues/840
-.. _#895:https://github.com/jakubroztocil/httpie/issues/895
-.. _#920:https://github.com/jakubroztocil/httpie/issues/920
+.. _#488: https://github.com/jakubroztocil/httpie/issues/488
+.. _#840: https://github.com/jakubroztocil/httpie/issues/840
+.. _#895: https://github.com/jakubroztocil/httpie/issues/895
+.. _#920: https://github.com/jakubroztocil/httpie/issues/920
