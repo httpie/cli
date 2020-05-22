@@ -9,7 +9,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 `2.2.0-dev`_ (unreleased)
 -------------------------
 
-* Added support ``$XDG_CONFIG_HOME`` (`#920`_).
+* Added support for ``$XDG_CONFIG_HOME`` (`#920`_).
 
 
 `2.1.0`_ (2020-04-18)
