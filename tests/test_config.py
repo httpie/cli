@@ -61,7 +61,7 @@ def test_default_options_overwrite(httpbin):
 def test_explicit_xdg_config_home(monkeypatch: MonkeyPatch, tmp_path: Path):
     home_dir = tmp_path
     monkeypatch.delenv(ENV_HTTPIE_CONFIG_DIR, raising=False)
-    monkeypatch.setenv('HOME', home_dir)
+    monkeypatch.setenv('HOME', str(home_dir))
     custom_xdg_config_home = home_dir / 'custom_xdg_config_home'
     monkeypatch.setenv(ENV_XDG_CONFIG_HOME, str(custom_xdg_config_home))
     expected_config_dir = custom_xdg_config_home / DEFAULT_CONFIG_DIRNAME
@@ -73,7 +73,7 @@ def test_default_xdg_config_home(monkeypatch: MonkeyPatch, tmp_path: Path):
     home_dir = tmp_path
     monkeypatch.delenv(ENV_HTTPIE_CONFIG_DIR, raising=False)
     monkeypatch.delenv(ENV_XDG_CONFIG_HOME, raising=False)
-    monkeypatch.setenv('HOME', home_dir)
+    monkeypatch.setenv('HOME', str(home_dir))
     expected_config_dir = (
         home_dir
         / DEFAULT_RELATIVE_XDG_CONFIG_HOME
@@ -86,7 +86,7 @@ def test_default_xdg_config_home(monkeypatch: MonkeyPatch, tmp_path: Path):
 def test_legacy_config_dir(monkeypatch: MonkeyPatch, tmp_path: Path):
     home_dir = tmp_path
     monkeypatch.delenv(ENV_HTTPIE_CONFIG_DIR, raising=False)
-    monkeypatch.setenv('HOME', home_dir)
+    monkeypatch.setenv('HOME', str(home_dir))
     legacy_config_dir = home_dir / DEFAULT_RELATIVE_LEGACY_CONFIG_DIR
     legacy_config_dir.mkdir()
     assert get_default_config_dir() == legacy_config_dir
