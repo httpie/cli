@@ -2,7 +2,10 @@ import ssl
 
 from requests.adapters import HTTPAdapter
 # noinspection PyPackageRequirements
-from urllib3.util.ssl_ import DEFAULT_CIPHERS, create_urllib3_context
+from urllib3.util.ssl_ import (
+    DEFAULT_CIPHERS, create_urllib3_context,
+    resolve_ssl_version,
+)
 
 
 DEFAULT_SSL_CIPHERS = DEFAULT_CIPHERS
@@ -23,9 +26,9 @@ AVAILABLE_SSL_VERSION_ARG_MAPPING = {
 
 class HTTPieHTTPSAdapter(HTTPAdapter):
     def __init__(self, ssl_version: str = None, ciphers: str = None, **kwargs):
-        self._ssl_context: ssl.SSLContext = create_urllib3_context(
+        self._ssl_context = create_urllib3_context(
             ciphers=ciphers,
-            ssl_version=ssl_version
+            ssl_version=resolve_ssl_version(ssl_version),
         )
         super().__init__(**kwargs)
 
