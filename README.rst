@@ -310,8 +310,8 @@ The default scheme is ``http://`` and can be omitted from the argument:
 
 .. code-block:: bash
 
-    # => http://example.org
     $ http example.org
+    # => http://example.org
 
 
 HTTPie also installs an ``https`` executable, where the default
@@ -320,8 +320,8 @@ scheme is ``https://``:
 
 .. code-block:: bash
 
-    # => https://example.org
     $ https example.org
+    # => https://example.org
 
 
 Querystring parameters
