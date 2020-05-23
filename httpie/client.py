@@ -9,6 +9,8 @@ from typing import Iterable, Union
 from urllib.parse import urlparse, urlunparse
 
 import requests
+# noinspection PyPackageRequirements
+import urllib3
 
 from httpie import __version__
 from httpie.cli.dicts import RequestHeadersDict
@@ -18,15 +20,7 @@ from httpie.ssl import AVAILABLE_SSL_VERSION_ARG_MAPPING, HTTPieHTTPSAdapter
 from httpie.utils import repr_dict
 
 
-try:
-    # noinspection PyPackageRequirements
-    import urllib3
-
-
-    # <https://urllib3.readthedocs.io/en/latest/security.html>
-    urllib3.disable_warnings()
-except (ImportError, AttributeError):
-    pass
+urllib3.disable_warnings()
 
 FORM_CONTENT_TYPE = 'application/x-www-form-urlencoded; charset=utf-8'
 JSON_CONTENT_TYPE = 'application/json'
