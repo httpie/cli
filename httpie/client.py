@@ -14,18 +14,19 @@ from httpie import __version__
 from httpie.cli.dicts import RequestHeadersDict
 from httpie.plugins import plugin_manager
 from httpie.sessions import get_httpie_session
-from httpie.ssl import HTTPieHTTPSAdapter, AVAILABLE_SSL_VERSION_ARG_MAPPING
+from httpie.ssl import AVAILABLE_SSL_VERSION_ARG_MAPPING, HTTPieHTTPSAdapter
 from httpie.utils import repr_dict
 
 
 try:
     # noinspection PyPackageRequirements
     import urllib3
+
+
     # <https://urllib3.readthedocs.io/en/latest/security.html>
     urllib3.disable_warnings()
 except (ImportError, AttributeError):
     pass
-
 
 FORM_CONTENT_TYPE = 'application/x-www-form-urlencoded; charset=utf-8'
 JSON_CONTENT_TYPE = 'application/json'
@@ -57,6 +58,7 @@ def collect_messages(
     requests_session = build_requests_session(
         ssl_version=args.ssl_version,
         ciphers=args.ciphers,
+        verify=bool(send_kwargs_mergeable_from_env['verify'])
     )
 
     if httpie_session:
@@ -147,19 +149,22 @@ def compress_body(request: requests.PreparedRequest, always: bool):
 
 
 def build_requests_session(
+    verify: bool,
     ssl_version: str = None,
     ciphers: str = None,
 ) -> requests.Session:
     requests_session = requests.Session()
 
     # Install our adapter.
-    requests_session.mount('https://', HTTPieHTTPSAdapter(
+    https_adapter = HTTPieHTTPSAdapter(
         ciphers=ciphers,
+        verify=verify,
         ssl_version=(
             AVAILABLE_SSL_VERSION_ARG_MAPPING[ssl_version]
             if ssl_version else None
-        )
-    ))
+        ),
+    )
+    requests_session.mount('https://', https_adapter)
 
     # Install adapters from plugins.
     for plugin_cls in plugin_manager.get_transport_plugins():

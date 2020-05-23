@@ -25,11 +25,19 @@ AVAILABLE_SSL_VERSION_ARG_MAPPING = {
 
 
 class HTTPieHTTPSAdapter(HTTPAdapter):
-    def __init__(self, ssl_version: str = None, ciphers: str = None, **kwargs):
+    def __init__(
+        self,
+        verify: bool,
+        ssl_version: str = None,
+        ciphers: str = None,
+        **kwargs
+    ):
         self._ssl_context = create_urllib3_context(
             ciphers=ciphers,
             ssl_version=resolve_ssl_version(ssl_version),
+            cert_reqs=ssl.CERT_REQUIRED if verify else ssl.CERT_NONE
         )
+
         super().__init__(**kwargs)
 
     def init_poolmanager(self, *args, **kwargs):
