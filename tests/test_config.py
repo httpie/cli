@@ -1,10 +1,14 @@
-import os.path
 from pathlib import Path
 
 import pytest
+from _pytest.monkeypatch import MonkeyPatch
 
 from httpie.compat import is_windows
-from httpie.config import Config, get_default_config_dir
+from httpie.config import (
+    Config, DEFAULT_CONFIG_DIRNAME, DEFAULT_RELATIVE_LEGACY_CONFIG_DIR,
+    DEFAULT_RELATIVE_XDG_CONFIG_HOME, DEFAULT_WINDOWS_CONFIG_DIR,
+    ENV_HTTPIE_CONFIG_DIR, ENV_XDG_CONFIG_HOME, get_default_config_dir,
+)
 from utils import HTTP_OK, MockEnvironment, http
 
 
@@ -53,38 +57,48 @@ def test_default_options_overwrite(httpbin):
     }
 
 
-@pytest.mark.skipif(is_windows, reason='XDG_CONFIG_HOME is only supported on *nix')
-def test_config_file_location_xdg(monkeypatch, tmp_path):
-    monkeypatch.delenv('HTTPIE_CONFIG_DIR', raising=False)
-    home = tmp_path.absolute().as_posix()
-    monkeypatch.setenv('HOME', home)
-    xdg_config_home = tmp_path.joinpath("different_config")
-    os.mkdir(xdg_config_home)
-    monkeypatch.setenv('XDG_CONFIG_HOME', xdg_config_home.absolute().as_posix())
-    assert get_default_config_dir() == xdg_config_home.joinpath('httpie')
-    monkeypatch.delenv('XDG_CONFIG_HOME')
-    # NB: this should be true even though .config doesn't exist.
-    assert get_default_config_dir() == tmp_path.joinpath('.config', 'httpie')
-    monkeypatch.setenv('XDG_CONFIG_HOME', 'some/nonabsolute/path')
-    assert get_default_config_dir() == tmp_path.joinpath('.config', 'httpie')
+@pytest.mark.skipif(is_windows, reason='XDG_CONFIG_HOME needs *nix')
+def test_explicit_xdg_config_home(monkeypatch: MonkeyPatch, tmp_path: Path):
+    home_dir = tmp_path
+    monkeypatch.delenv(ENV_HTTPIE_CONFIG_DIR, raising=False)
+    monkeypatch.setenv('HOME', home_dir)
+    custom_xdg_config_home = home_dir / 'custom_xdg_config_home'
+    monkeypatch.setenv(ENV_XDG_CONFIG_HOME, str(custom_xdg_config_home))
+    expected_config_dir = custom_xdg_config_home / DEFAULT_CONFIG_DIRNAME
+    assert get_default_config_dir() == expected_config_dir
 
 
-@pytest.mark.skipif(is_windows, reason='legacy config file location is only checked on *nix')
-def test_config_file_location_legacy(monkeypatch, tmp_path):
-    monkeypatch.delenv('HTTPIE_CONFIG_DIR', raising=False)
-    home = tmp_path.absolute().as_posix()
-    monkeypatch.setenv('HOME', home)
-    os.mkdir(tmp_path.joinpath('.httpie'))
-    assert get_default_config_dir() == tmp_path.joinpath('.httpie')
+@pytest.mark.skipif(is_windows, reason='XDG_CONFIG_HOME needs *nix')
+def test_default_xdg_config_home(monkeypatch: MonkeyPatch, tmp_path: Path):
+    home_dir = tmp_path
+    monkeypatch.delenv(ENV_HTTPIE_CONFIG_DIR, raising=False)
+    monkeypatch.delenv(ENV_XDG_CONFIG_HOME, raising=False)
+    monkeypatch.setenv('HOME', home_dir)
+    expected_config_dir = (
+        home_dir
+        / DEFAULT_RELATIVE_XDG_CONFIG_HOME
+        / DEFAULT_CONFIG_DIRNAME
+    )
+    assert get_default_config_dir() == expected_config_dir
+
+
+@pytest.mark.skipif(is_windows, reason='legacy config dir needs *nix')
+def test_legacy_config_dir(monkeypatch: MonkeyPatch, tmp_path: Path):
+    home_dir = tmp_path
+    monkeypatch.delenv(ENV_HTTPIE_CONFIG_DIR, raising=False)
+    monkeypatch.setenv('HOME', home_dir)
+    legacy_config_dir = home_dir / DEFAULT_RELATIVE_LEGACY_CONFIG_DIR
+    legacy_config_dir.mkdir()
+    assert get_default_config_dir() == legacy_config_dir
+
+
+def test_custom_config_dir(monkeypatch: MonkeyPatch, tmp_path: Path):
+    httpie_config_dir = tmp_path / 'custom/directory'
+    monkeypatch.setenv(ENV_HTTPIE_CONFIG_DIR, str(httpie_config_dir))
+    assert get_default_config_dir() == httpie_config_dir
 
 
 @pytest.mark.skipif(not is_windows, reason='windows-only')
-def test_config_file_location_windows(monkeypatch):
-    monkeypatch.delenv('HTTPIE_CONFIG_DIR', raising=False)
-    assert get_default_config_dir() == Path(os.path.expandvars(r'%APPDATA%\httpie'))
-
-
-def test_config_file_location_custom(monkeypatch, tmp_path):
-    httpie_config_dir = tmp_path.joinpath('custom', 'directory')
-    monkeypatch.setenv('HTTPIE_CONFIG_DIR', str(httpie_config_dir.absolute()))
-    assert get_default_config_dir() == httpie_config_dir
+def test_windows_config_dir(monkeypatch: MonkeyPatch):
+    monkeypatch.delenv(ENV_HTTPIE_CONFIG_DIR, raising=False)
+    assert get_default_config_dir() == DEFAULT_WINDOWS_CONFIG_DIR
