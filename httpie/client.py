@@ -9,13 +9,12 @@ from typing import Iterable, Union
 from urllib.parse import urlparse, urlunparse
 
 import requests
-from requests.adapters import HTTPAdapter
 
 from httpie import __version__
-from httpie.cli.constants import SSL_VERSION_ARG_MAPPING
 from httpie.cli.dicts import RequestHeadersDict
 from httpie.plugins import plugin_manager
 from httpie.sessions import get_httpie_session
+from httpie.ssl import HTTPieHTTPSAdapter, AVAILABLE_SSL_VERSION_ARG_MAPPING
 from httpie.utils import repr_dict
 
 
@@ -57,6 +56,7 @@ def collect_messages(
     send_kwargs_mergeable_from_env = make_send_kwargs_mergeable_from_env(args)
     requests_session = build_requests_session(
         ssl_version=args.ssl_version,
+        ciphers=args.ciphers,
     )
 
     if httpie_session:
@@ -121,6 +121,7 @@ def collect_messages(
 @contextmanager
 def max_headers(limit):
     # <https://github.com/jakubroztocil/httpie/issues/802>
+    # noinspection PyUnresolvedReferences
     orig = http.client._MAXHEADERS
     http.client._MAXHEADERS = limit or float('Inf')
     try:
@@ -145,26 +146,17 @@ def compress_body(request: requests.PreparedRequest, always: bool):
         request.headers['Content-Length'] = str(len(deflated_data))
 
 
-class HTTPieHTTPSAdapter(HTTPAdapter):
-
-    def __init__(self, ssl_version=None, **kwargs):
-        self._ssl_version = ssl_version
-        super().__init__(**kwargs)
-
-    def init_poolmanager(self, *args, **kwargs):
-        kwargs['ssl_version'] = self._ssl_version
-        super().init_poolmanager(*args, **kwargs)
-
-
 def build_requests_session(
     ssl_version: str = None,
+    ciphers: str = None,
 ) -> requests.Session:
     requests_session = requests.Session()
 
     # Install our adapter.
     requests_session.mount('https://', HTTPieHTTPSAdapter(
+        ciphers=ciphers,
         ssl_version=(
-            SSL_VERSION_ARG_MAPPING[ssl_version]
+            AVAILABLE_SSL_VERSION_ARG_MAPPING[ssl_version]
             if ssl_version else None
         )
     ))

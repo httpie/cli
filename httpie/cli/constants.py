@@ -87,17 +87,3 @@ PRETTY_STDOUT_TTY_ONLY = object()
 OUTPUT_OPTIONS_DEFAULT = OUT_RESP_HEAD + OUT_RESP_BODY
 OUTPUT_OPTIONS_DEFAULT_STDOUT_REDIRECTED = OUT_RESP_BODY
 OUTPUT_OPTIONS_DEFAULT_OFFLINE = OUT_REQ_HEAD + OUT_REQ_BODY
-
-SSL_VERSION_ARG_MAPPING = {
-    'ssl2.3': 'PROTOCOL_SSLv23',
-    'ssl3': 'PROTOCOL_SSLv3',
-    'tls1': 'PROTOCOL_TLSv1',
-    'tls1.1': 'PROTOCOL_TLSv1_1',
-    'tls1.2': 'PROTOCOL_TLSv1_2',
-    'tls1.3': 'PROTOCOL_TLSv1_3',
-}
-SSL_VERSION_ARG_MAPPING = {
-    cli_arg: getattr(ssl, ssl_constant)
-    for cli_arg, ssl_constant in SSL_VERSION_ARG_MAPPING.items()
-    if hasattr(ssl, ssl_constant)
-}

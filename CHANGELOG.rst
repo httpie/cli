@@ -9,6 +9,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 `2.2.0-dev`_ (unreleased)
 -------------------------
 
+* Added support for ``--ciphers`` (`#870`_).
 * Added support for ``$XDG_CONFIG_HOME`` (`#920`_).
 
 
@@ -433,5 +434,6 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 .. _#488: https://github.com/jakubroztocil/httpie/issues/488
 .. _#840: https://github.com/jakubroztocil/httpie/issues/840
+.. _#870: https://github.com/jakubroztocil/httpie/issues/870
 .. _#895: https://github.com/jakubroztocil/httpie/issues/895
 .. _#920: https://github.com/jakubroztocil/httpie/issues/920

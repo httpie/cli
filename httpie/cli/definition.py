@@ -13,7 +13,7 @@ from httpie.cli.argtypes import (
 from httpie.cli.constants import (
     OUTPUT_OPTIONS, OUTPUT_OPTIONS_DEFAULT, OUT_REQ_BODY, OUT_REQ_HEAD,
     OUT_RESP_BODY, OUT_RESP_HEAD, PRETTY_MAP, PRETTY_STDOUT_TTY_ONLY,
-    SEPARATOR_GROUP_ALL_ITEMS, SEPARATOR_PROXY, SSL_VERSION_ARG_MAPPING,
+    SEPARATOR_GROUP_ALL_ITEMS, SEPARATOR_PROXY,
 )
 from httpie.output.formatters.colors import (
     AUTO_STYLE, AVAILABLE_STYLES, DEFAULT_STYLE,
@@ -21,6 +21,7 @@ from httpie.output.formatters.colors import (
 from httpie.plugins import plugin_manager
 from httpie.plugins.builtin import BuiltinAuthPlugin
 from httpie.sessions import DEFAULT_SESSIONS_DIR
+from httpie.ssl import DEFAULT_SSL_CIPHERS, AVAILABLE_SSL_VERSION_ARG_MAPPING
 
 
 parser = HTTPieArgumentParser(
@@ -580,13 +581,24 @@ ssl.add_argument(
 ssl.add_argument(
     '--ssl',  # TODO: Maybe something more general, such as --secure-protocol?
     dest='ssl_version',
-    choices=list(sorted(SSL_VERSION_ARG_MAPPING.keys())),
+    choices=list(sorted(AVAILABLE_SSL_VERSION_ARG_MAPPING.keys())),
     help="""
     The desired protocol version to use. This will default to
     SSL v2.3 which will negotiate the highest protocol that both
     the server and your installation of OpenSSL support. Available protocols
     may vary depending on OpenSSL installation (only the supported ones
     are shown here).
+
+    """
+)
+ssl.add_argument(
+    '--ciphers',
+    help=f"""
+
+    A string in the OpenSSL cipher list format. By default, the following
+    is used:
+
+    {DEFAULT_SSL_CIPHERS}
 
     """
 )

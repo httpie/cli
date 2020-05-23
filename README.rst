@@ -1092,16 +1092,38 @@ path of the key file with ``--cert-key``:
 SSL version
 -----------
 
-Use the ``--ssl=<PROTOCOL>`` to specify the desired protocol version to use.
-This will default to SSL v2.3 which will negotiate the highest protocol that both
-the server and your installation of OpenSSL support. The available protocols
-are ``ssl2.3``, ``ssl3``, ``tls1``, ``tls1.1``, ``tls1.2``, ``tls1.3``. (The actually
-available set of protocols may vary depending on your OpenSSL installation.)
+Use the ``--ssl=<PROTOCOL>`` option to specify the desired protocol version to
+use. This will default to SSL v2.3 which will negotiate the highest protocol
+that both the server and your installation of OpenSSL support. The available
+protocols are
+``ssl2.3``, ``ssl3``, ``tls1``, ``tls1.1``, ``tls1.2``, ``tls1.3``.
+(The actually available set of protocols may vary depending on your OpenSSL
+installation.)
 
 .. code-block:: bash
 
     # Specify the vulnerable SSL v3 protocol to talk to an outdated server:
     $ http --ssl=ssl3 https://vulnerable.example.org
+
+
+
+SSL ciphers
+-----------
+
+You can specify the available ciphers with ``--ciphers``.
+It should be a string in the
+`OpenSSL cipher list format <https://www.openssl.org/docs/man1.1.0/man1/ciphers.html>`_.
+
+.. code-block:: bash
+
+    $ http --ciphers=ECDHE-RSA-AES128-GCM-SHA256  https://httpbin.org/get
+
+Note: these cipher strings do not change the negotiated version of SSL or TLS,
+they only affect the list of available cipher suites.
+
+To see the default cipher string, run ``http --help`` and see
+the ``--ciphers`` section under SSL.
+
 
 
 Output options
