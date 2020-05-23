@@ -306,12 +306,22 @@ Request URL
 
 The only information HTTPie needs to perform a request is a URL.
 
-The default scheme is, somewhat unsurprisingly, ``http://``,
-and can be omitted from the argument – ``http example.org`` works just fine.
+The default scheme is ``http://`` and can be omitted from the argument:
+
+.. code-block:: bash
+
+    # => http://example.org
+    $ http example.org
+
 
 HTTPie also installs an ``https`` executable, where the default
-scheme is ``https://``: ``https example.org`` (that is the only difference
-between the ``http`` and ``https`` commands).
+scheme is ``https://``:
+
+
+.. code-block:: bash
+
+    # => https://example.org
+    $ https example.org
 
 
 Querystring parameters
