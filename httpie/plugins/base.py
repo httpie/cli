@@ -3,7 +3,7 @@ class BasePlugin:
     # The name of the plugin, eg. "My auth".
     name = None
 
-    # Optional short description. Will be be shown in the help
+    # Optional short description. It will be shown in the help
     # under --auth-type.
     description = None
 
@@ -15,7 +15,9 @@ class AuthPlugin(BasePlugin):
     """
     Base auth plugin class.
 
-    See <https://github.com/httpie/httpie-ntlm> for an example auth plugin.
+    See httpie-ntlm for an example auth plugin:
+
+        <https://github.com/httpie/httpie-ntlm>
 
     See also `test_auth_plugins.py`
 
@@ -58,8 +60,13 @@ class AuthPlugin(BasePlugin):
 
 class TransportPlugin(BasePlugin):
     """
+    Requests transport adapter docs:
 
-    https://2.python-requests.org/en/latest/user/advanced/#transport-adapters
+        <https://requests.readthedocs.io/en/latest/user/advanced/#transport-adapters>
+
+    See httpie-unixsocket for an example transport plugin:
+
+        <https://github.com/httpie/httpie-unixsocket>
 
     """
 
@@ -76,6 +83,14 @@ class TransportPlugin(BasePlugin):
 
 
 class ConverterPlugin(BasePlugin):
+    """
+    Possibly converts response data for prettified terminal display.
+
+    See httpie-msgpack for an example converter plugin:
+
+        <https://github.com/rasky/httpie-msgpack>.
+
+    """
 
     def __init__(self, mime):
         self.mime = mime
@@ -89,13 +104,17 @@ class ConverterPlugin(BasePlugin):
 
 
 class FormatterPlugin(BasePlugin):
+    """
+    Possibly formats response body & headers for prettified terminal display.
+
+    """
     group_name = 'format'
 
     def __init__(self, **kwargs):
         """
         :param env: an class:`Environment` instance
         :param kwargs: additional keyword argument that some
-                       processor might require.
+                       formatters might require.
 
         """
         self.enabled = True
