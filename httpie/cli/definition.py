@@ -18,7 +18,7 @@ from httpie.cli.constants import (
 from httpie.output.formatters.colors import (
     AUTO_STYLE, AVAILABLE_STYLES, DEFAULT_STYLE,
 )
-from httpie.plugins import plugin_manager
+from httpie.plugins.registry import plugin_manager
 from httpie.plugins.builtin import BuiltinAuthPlugin
 from httpie.sessions import DEFAULT_SESSIONS_DIR
 from httpie.ssl import DEFAULT_SSL_CIPHERS, AVAILABLE_SSL_VERSION_ARG_MAPPING

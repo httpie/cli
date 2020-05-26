@@ -14,7 +14,7 @@ import urllib3
 
 from httpie import __version__
 from httpie.cli.dicts import RequestHeadersDict
-from httpie.plugins import plugin_manager
+from httpie.plugins.registry import plugin_manager
 from httpie.sessions import get_httpie_session
 from httpie.ssl import AVAILABLE_SSL_VERSION_ARG_MAPPING, HTTPieHTTPSAdapter
 from httpie.utils import repr_dict

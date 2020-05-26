@@ -1,7 +1,8 @@
 import re
 from typing import Optional, List
 
-from httpie.plugins import plugin_manager, ConverterPlugin
+from httpie.plugins import ConverterPlugin
+from httpie.plugins.registry import plugin_manager
 from httpie.context import Environment
 
 

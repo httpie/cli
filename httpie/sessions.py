@@ -13,7 +13,7 @@ from requests.cookies import RequestsCookieJar, create_cookie
 
 from httpie.cli.dicts import RequestHeadersDict
 from httpie.config import BaseConfigDict, DEFAULT_CONFIG_DIR
-from httpie.plugins import plugin_manager
+from httpie.plugins.registry import plugin_manager
 
 
 SESSIONS_DIR_NAME = 'sessions'
