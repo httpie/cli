@@ -11,6 +11,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 * Added support for ``--ciphers`` (`#870`_).
 * Added support for ``$XDG_CONFIG_HOME`` (`#920`_).
+* Fixed built-in plugins-related circular imports (`#925`_).
 
 
 `2.1.0`_ (2020-04-18)
@@ -437,3 +438,4 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 .. _#870: https://github.com/jakubroztocil/httpie/issues/870
 .. _#895: https://github.com/jakubroztocil/httpie/issues/895
 .. _#920: https://github.com/jakubroztocil/httpie/issues/920
+.. _#925: https://github.com/jakubroztocil/httpie/issues/925
