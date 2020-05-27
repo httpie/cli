@@ -205,8 +205,7 @@ def parse_format_options(s: str, defaults: Optional[dict]) -> dict:
             path, value = option.lower().split('=')
             section, key = path.split('.')
         except ValueError:
-            raise argparse.ArgumentTypeError(
-                f'--format-options: invalid option: {option!r}')
+            raise argparse.ArgumentTypeError(f'invalid option {option!r}')
 
         if value in value_map:
             parsed_value = value_map[value]
@@ -223,12 +222,12 @@ def parse_format_options(s: str, defaults: Optional[dict]) -> dict:
                 default_value = defaults[section][key]
             except KeyError:
                 raise argparse.ArgumentTypeError(
-                    f'--format-options: invalid key: {path!r} in {option!r}')
+                    f'invalid key {path!r}')
 
             default_type, parsed_type = type(default_value), type(parsed_value)
             if parsed_type is not default_type:
                 raise argparse.ArgumentTypeError(
-                    '--format-options: invalid value type:'
+                    'invalid value'
                     f' {value!r} in {option!r}'
                     f' (expected {default_type.__name__}'
                     f' got {parsed_type.__name__})'
