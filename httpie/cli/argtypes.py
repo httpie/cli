@@ -184,7 +184,6 @@ def readable_file_arg(filename):
         raise argparse.ArgumentTypeError(f'{filename}: {ex.args[1]}')
 
 
-
 def parse_format_options(s: str, defaults: Optional[dict]) -> dict:
     """
     Parse `s` and update `defaults` with the parsed values.
