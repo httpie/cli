@@ -8,20 +8,23 @@ from textwrap import dedent, wrap
 from httpie import __doc__, __version__
 from httpie.cli.argparser import HTTPieArgumentParser
 from httpie.cli.argtypes import (
-    KeyValueArgType, SessionNameValidator, readable_file_arg,
+    KeyValueArgType, PARSED_DEFAULT_FORMAT_OPTIONS, SessionNameValidator,
+    parse_format_options,
+    readable_file_arg,
 )
 from httpie.cli.constants import (
-    OUTPUT_OPTIONS, OUTPUT_OPTIONS_DEFAULT, OUT_REQ_BODY, OUT_REQ_HEAD,
+    DEFAULT_FORMAT_OPTIONS, OUTPUT_OPTIONS,
+    OUTPUT_OPTIONS_DEFAULT, OUT_REQ_BODY, OUT_REQ_HEAD,
     OUT_RESP_BODY, OUT_RESP_HEAD, PRETTY_MAP, PRETTY_STDOUT_TTY_ONLY,
     SEPARATOR_GROUP_ALL_ITEMS, SEPARATOR_PROXY,
 )
 from httpie.output.formatters.colors import (
     AUTO_STYLE, AVAILABLE_STYLES, DEFAULT_STYLE,
 )
-from httpie.plugins.registry import plugin_manager
 from httpie.plugins.builtin import BuiltinAuthPlugin
+from httpie.plugins.registry import plugin_manager
 from httpie.sessions import DEFAULT_SESSIONS_DIR
-from httpie.ssl import DEFAULT_SSL_CIPHERS, AVAILABLE_SSL_VERSION_ARG_MAPPING
+from httpie.ssl import AVAILABLE_SSL_VERSION_ARG_MAPPING, DEFAULT_SSL_CIPHERS
 
 
 parser = HTTPieArgumentParser(
@@ -206,9 +209,9 @@ output_processing.add_argument(
     default=DEFAULT_STYLE,
     choices=AVAILABLE_STYLES,
     help="""
-    Output coloring style (default is "{default}"). One of:
+    Output coloring style (default is "{default}"). It can be One of:
 
-{available_styles}
+    {available_styles}
 
     The "{auto_style}" style follows your terminal's ANSI color styles.
 
@@ -221,8 +224,35 @@ output_processing.add_argument(
         available_styles='\n'.join(
             '{0}{1}'.format(8 * ' ', line.strip())
             for line in wrap(', '.join(sorted(AVAILABLE_STYLES)), 60)
-        ).rstrip(),
+        ).strip(),
         auto_style=AUTO_STYLE,
+    )
+)
+
+output_processing.add_argument(
+    '--format-options',
+    type=lambda s: parse_format_options(
+        s=s,
+        defaults=PARSED_DEFAULT_FORMAT_OPTIONS
+    ),
+    default=PARSED_DEFAULT_FORMAT_OPTIONS,
+    help="""
+    Controls output formatting. Only relevant when formatting is enabled
+    through (explicit or implied) --pretty=all or --pretty=format.
+    The following are the default options:
+
+        {option_list}
+
+    You can specify multiple comma-separated options. For example, this modifies
+    the settings to disable the sorting of JSON keys and headers:
+
+        --format-options json.sort_keys=false,headers.sort=false
+
+    This is something you will typically put into your config file.
+
+    """.format(
+        option_list='\n'.join(
+            (8 * ' ') + option for option in DEFAULT_FORMAT_OPTIONS).strip()
     )
 )
 

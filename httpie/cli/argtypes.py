@@ -2,9 +2,10 @@ import argparse
 import getpass
 import os
 import sys
-from typing import Union, List, Optional
+from copy import deepcopy
+from typing import List, Optional, Union
 
-from httpie.cli.constants import SEPARATOR_CREDENTIALS
+from httpie.cli.constants import DEFAULT_FORMAT_OPTIONS, SEPARATOR_CREDENTIALS
 from httpie.sessions import VALID_SESSION_NAME_PATTERN
 
 
@@ -181,3 +182,65 @@ def readable_file_arg(filename):
             return filename
     except IOError as ex:
         raise argparse.ArgumentTypeError(f'{filename}: {ex.args[1]}')
+
+
+
+def parse_format_options(s: str, defaults: Optional[dict]) -> dict:
+    """
+    Parse `s` and update `defaults` with the parsed values.
+
+    >>> parse_format_options(
+    ... defaults={'json': {'indent': 4, 'sort_keys': True}},
+    ... s='json.indent=2,json.sort_keys=False',
+    ... )
+    {'json': {'indent': 2, 'sort_keys': False}}
+
+    """
+    value_map = {
+        'true': True,
+        'false': False,
+    }
+    options = deepcopy(defaults or {})
+    for option in s.split(','):
+        try:
+            path, value = option.lower().split('=')
+            section, key = path.split('.')
+        except ValueError:
+            raise argparse.ArgumentTypeError(
+                f'--format-options: invalid option: {option!r}')
+
+        if value in value_map:
+            parsed_value = value_map[value]
+        else:
+            if value.isnumeric():
+                parsed_value = int(value)
+            else:
+                parsed_value = value
+
+        if defaults is None:
+            options.setdefault(section, {})
+        else:
+            try:
+                default_value = defaults[section][key]
+            except KeyError:
+                raise argparse.ArgumentTypeError(
+                    f'--format-options: invalid key: {path!r} in {option!r}')
+
+            default_type, parsed_type = type(default_value), type(parsed_value)
+            if parsed_type is not default_type:
+                raise argparse.ArgumentTypeError(
+                    '--format-options: invalid value type:'
+                    f' {value!r} in {option!r}'
+                    f' (expected {default_type.__name__}'
+                    f' got {parsed_type.__name__})'
+                )
+
+        options[section][key] = parsed_value
+
+    return options
+
+
+PARSED_DEFAULT_FORMAT_OPTIONS = parse_format_options(
+    s=','.join(DEFAULT_FORMAT_OPTIONS),
+    defaults=None,
+)

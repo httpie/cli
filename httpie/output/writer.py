@@ -152,6 +152,7 @@ def get_stream_type_and_kwargs(
                 groups=args.prettify,
                 color_scheme=args.style,
                 explicit_json=args.json,
+                format_options=args.format_options,
             )
         }
     else:

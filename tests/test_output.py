@@ -1,12 +1,15 @@
+import argparse
+import json
 import os
 from tempfile import gettempdir
 from urllib.request import urlopen
 
 import pytest
 
-from utils import MockEnvironment, http, HTTP_OK, COLOR, CRLF
-from httpie.status import ExitStatus
+from httpie.cli.argtypes import parse_format_options
 from httpie.output.formatters.colors import get_lexer
+from httpie.status import ExitStatus
+from utils import COLOR, CRLF, HTTP_OK, MockEnvironment, http
 
 
 @pytest.mark.parametrize('stdout_isatty', [True, False])
@@ -58,19 +61,19 @@ class TestColors:
     @pytest.mark.parametrize(
         argnames=['mime', 'explicit_json', 'body', 'expected_lexer_name'],
         argvalues=[
-            ('application/json',     False, None, 'JSON'),
+            ('application/json', False, None, 'JSON'),
             ('application/json+foo', False, None, 'JSON'),
             ('application/foo+json', False, None, 'JSON'),
             ('application/json-foo', False, None, 'JSON'),
-            ('application/x-json',   False, None, 'JSON'),
-            ('foo/json',             False, None, 'JSON'),
-            ('foo/json+bar',         False, None, 'JSON'),
-            ('foo/bar+json',         False, None, 'JSON'),
-            ('foo/json-foo',         False, None, 'JSON'),
-            ('foo/x-json',           False, None, 'JSON'),
+            ('application/x-json', False, None, 'JSON'),
+            ('foo/json', False, None, 'JSON'),
+            ('foo/json+bar', False, None, 'JSON'),
+            ('foo/bar+json', False, None, 'JSON'),
+            ('foo/json-foo', False, None, 'JSON'),
+            ('foo/x-json', False, None, 'JSON'),
             ('application/vnd.comverge.grid+hal+json', False, None, 'JSON'),
-            ('text/plain',           True, '{}', 'JSON'),
-            ('text/plain',           True, 'foo', 'Text only'),
+            ('text/plain', True, '{}', 'JSON'),
+            ('text/plain', True, 'foo', 'Text only'),
         ]
     )
     def test_get_lexer(self, mime, explicit_json, body, expected_lexer_name):
@@ -83,7 +86,7 @@ class TestColors:
 
 
 class TestPrettyOptions:
-    """Test the --pretty flag handling."""
+    """Test the --pretty handling."""
 
     def test_pretty_enabled_by_default(self, httpbin):
         env = MockEnvironment(colors=256)
@@ -138,6 +141,7 @@ class TestLineEndings:
     and as the headers/body separator.
 
     """
+
     def _validate_crlf(self, msg):
         lines = iter(msg.splitlines(True))
         for header in lines:
@@ -171,3 +175,77 @@ class TestLineEndings:
     def test_CRLF_formatted_request(self, httpbin):
         r = http('--pretty=format', '--print=HB', 'GET', httpbin.url + '/get')
         self._validate_crlf(r)
+
+
+class TestFormatOptions:
+    def test_header_formatting_options(self):
+        def get_headers(sort):
+            return http(
+                '--offline', '--print=H',
+                '--format-options', 'headers.sort=' + sort,
+                'example.org', 'ZZZ:foo', 'XXX:foo',
+            )
+
+        r_sorted = get_headers('true')
+        r_unsorted = get_headers('false')
+        assert r_sorted != r_unsorted
+        assert f'XXX: foo{CRLF}ZZZ: foo' in r_sorted
+        assert f'ZZZ: foo{CRLF}XXX: foo' in r_unsorted
+
+    @pytest.mark.parametrize(
+        argnames=['options', 'expected_json'],
+        argvalues=[
+            # @formatter:off
+            (
+                'json.sort_keys=true,json.indent=4',
+                json.dumps({'a': 0, 'b': 0}, indent=4),
+            ),
+            (
+                'json.sort_keys=false,json.indent=2',
+                json.dumps({'b': 0, 'a': 0}, indent=2),
+            ),
+            (
+                'json.format=false',
+                json.dumps({'b': 0, 'a': 0}),
+            ),
+            # @formatter:on
+        ]
+    )
+    def test_json_formatting_options(self, options: str, expected_json: str):
+        r = http(
+            '--offline', '--print=B',
+            '--format-options', options,
+            'example.org', 'b:=0', 'a:=0',
+        )
+        assert expected_json in r
+
+    @pytest.mark.parametrize(
+        argnames=['defaults', 'options_string', 'expected'],
+        argvalues=[
+            # @formatter:off
+            ({'foo': {'bar': 1}}, 'foo.bar=2', {'foo': {'bar': 2}}),
+            ({'foo': {'bar': True}}, 'foo.bar=false', {'foo': {'bar': False}}),
+            ({'foo': {'bar': 'a'}}, 'foo.bar=b', {'foo': {'bar': 'b'}}),
+            # @formatter:on
+        ]
+    )
+    def test_parse_format_options(self, defaults, options_string, expected):
+        actual = parse_format_options(s=options_string, defaults=defaults)
+        assert expected == actual
+
+    @pytest.mark.parametrize(
+        argnames=['options_string', 'expected_error'],
+        argvalues=[
+            ('foo=2', 'invalid option'),
+            ('foo.baz=2', 'invalid key'),
+            ('foo.bar=false', 'expected int got bool'),
+        ]
+    )
+    def test_parse_format_options_errors(self, options_string, expected_error):
+        defaults = {
+            'foo': {
+                'bar': 1
+            }
+        }
+        with pytest.raises(argparse.ArgumentTypeError, match=expected_error):
+            parse_format_options(s=options_string, defaults=defaults)

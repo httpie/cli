@@ -1395,6 +1395,20 @@ One of these options can be used to control output processing:
                        Default for redirected output.
 ====================   ========================================================
 
+
+You can control the applied formatting via the ``--format-options`` option.
+For example, this is how you would disable the default header and JSON key
+sorting, and specify a custom JSON indent size:
+
+
+.. code-block:: bash
+
+    $ http --format-options headers.sort=false,json.sort_keys=false,json.indent=2 httpbin.org/get
+
+This is something you will typically store as one of the default options in your
+`config`_ file. See ``http --help`` for all the available formatting options.
+
+
 Binary data
 -----------
 

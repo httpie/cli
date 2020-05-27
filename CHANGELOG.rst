@@ -9,7 +9,8 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 `2.2.0-dev`_ (unreleased)
 -------------------------
 
-* Added support for ``--ciphers`` (`#870`_).
+* Added ``--format-options`` to allow disabling sorting, etc. (`#128`_)
+* Added ``--ciphers`` to allow configuring OpenSSL ciphers (`#870`_).
 * Added support for ``$XDG_CONFIG_HOME`` (`#920`_).
 * Fixed built-in plugins-related circular imports (`#925`_).
 
@@ -433,6 +434,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 .. _2.2.0-dev: https://github.com/jakubroztocil/httpie/compare/2.1.0...master
 
 
+.. _#128: https://github.com/jakubroztocil/httpie/issues/128
 .. _#488: https://github.com/jakubroztocil/httpie/issues/488
 .. _#840: https://github.com/jakubroztocil/httpie/issues/840
 .. _#870: https://github.com/jakubroztocil/httpie/issues/870

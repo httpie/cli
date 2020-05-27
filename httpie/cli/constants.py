@@ -83,6 +83,15 @@ PRETTY_MAP = {
 }
 PRETTY_STDOUT_TTY_ONLY = object()
 
+
+DEFAULT_FORMAT_OPTIONS = [
+    'headers.sort=true',
+    'json.format=true',
+    'json.indent=4',
+    'json.sort_keys=true',
+]
+
+
 # Defaults
 OUTPUT_OPTIONS_DEFAULT = OUT_RESP_HEAD + OUT_RESP_BODY
 OUTPUT_OPTIONS_DEFAULT_STDOUT_REDIRECTED = OUT_RESP_BODY

@@ -3,6 +3,10 @@ from httpie.plugins import FormatterPlugin
 
 class HeadersFormatter(FormatterPlugin):
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.enabled = self.format_options['headers']['sort']
+
     def format_headers(self, headers: str) -> str:
         """
         Sorts headers by name while retaining relative

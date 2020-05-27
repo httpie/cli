@@ -4,10 +4,11 @@ import json
 from httpie.plugins import FormatterPlugin
 
 
-DEFAULT_INDENT = 4
-
-
 class JSONFormatter(FormatterPlugin):
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.enabled = self.format_options['json']['format']
 
     def format_body(self, body: str, mime: str) -> str:
         maybe_json = [
@@ -26,8 +27,8 @@ class JSONFormatter(FormatterPlugin):
                 # unicode escapes to improve readability.
                 body = json.dumps(
                     obj=obj,
-                    sort_keys=True,
+                    sort_keys=self.format_options['json']['sort_keys'],
                     ensure_ascii=False,
-                    indent=DEFAULT_INDENT
+                    indent=self.format_options['json']['indent']
                 )
         return body

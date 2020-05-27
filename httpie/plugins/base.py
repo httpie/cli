@@ -119,6 +119,7 @@ class FormatterPlugin(BasePlugin):
         """
         self.enabled = True
         self.kwargs = kwargs
+        self.format_options = kwargs['format_options']
 
     def format_headers(self, headers: str) -> str:
         """Return processed `headers`
