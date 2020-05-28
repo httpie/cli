@@ -190,7 +190,7 @@ def parse_format_options(s: str, defaults: Optional[dict]) -> dict:
 
     >>> parse_format_options(
     ... defaults={'json': {'indent': 4, 'sort_keys': True}},
-    ... s='json.indent=2,json.sort_keys=False',
+    ... s='json.indent:2,json.sort_keys:False',
     ... )
     {'json': {'indent': 2, 'sort_keys': False}}
 
@@ -202,7 +202,7 @@ def parse_format_options(s: str, defaults: Optional[dict]) -> dict:
     options = deepcopy(defaults or {})
     for option in s.split(','):
         try:
-            path, value = option.lower().split('=')
+            path, value = option.lower().split(':')
             section, key = path.split('.')
         except ValueError:
             raise argparse.ArgumentTypeError(f'invalid option {option!r}')

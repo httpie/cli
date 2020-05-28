@@ -182,7 +182,7 @@ class TestFormatOptions:
         def get_headers(sort):
             return http(
                 '--offline', '--print=H',
-                '--format-options', 'headers.sort=' + sort,
+                '--format-options', 'headers.sort:' + sort,
                 'example.org', 'ZZZ:foo', 'XXX:foo',
             )
 
@@ -197,15 +197,15 @@ class TestFormatOptions:
         argvalues=[
             # @formatter:off
             (
-                'json.sort_keys=true,json.indent=4',
+                'json.sort_keys:true,json.indent:4',
                 json.dumps({'a': 0, 'b': 0}, indent=4),
             ),
             (
-                'json.sort_keys=false,json.indent=2',
+                'json.sort_keys:false,json.indent:2',
                 json.dumps({'b': 0, 'a': 0}, indent=2),
             ),
             (
-                'json.format=false',
+                'json.format:false',
                 json.dumps({'b': 0, 'a': 0}),
             ),
             # @formatter:on
@@ -223,9 +223,9 @@ class TestFormatOptions:
         argnames=['defaults', 'options_string', 'expected'],
         argvalues=[
             # @formatter:off
-            ({'foo': {'bar': 1}}, 'foo.bar=2', {'foo': {'bar': 2}}),
-            ({'foo': {'bar': True}}, 'foo.bar=false', {'foo': {'bar': False}}),
-            ({'foo': {'bar': 'a'}}, 'foo.bar=b', {'foo': {'bar': 'b'}}),
+            ({'foo': {'bar': 1}}, 'foo.bar:2', {'foo': {'bar': 2}}),
+            ({'foo': {'bar': True}}, 'foo.bar:false', {'foo': {'bar': False}}),
+            ({'foo': {'bar': 'a'}}, 'foo.bar:b', {'foo': {'bar': 'b'}}),
             # @formatter:on
         ]
     )
@@ -236,9 +236,9 @@ class TestFormatOptions:
     @pytest.mark.parametrize(
         argnames=['options_string', 'expected_error'],
         argvalues=[
-            ('foo=2', 'invalid option'),
-            ('foo.baz=2', 'invalid key'),
-            ('foo.bar=false', 'expected int got bool'),
+            ('foo:2', 'invalid option'),
+            ('foo.baz:2', 'invalid key'),
+            ('foo.bar:false', 'expected int got bool'),
         ]
     )
     def test_parse_format_options_errors(self, options_string, expected_error):

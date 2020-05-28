@@ -246,7 +246,7 @@ output_processing.add_argument(
     You can specify multiple comma-separated options. For example, this modifies
     the settings to disable the sorting of JSON keys and headers:
 
-        --format-options json.sort_keys=false,headers.sort=false
+        --format-options json.sort_keys:false,headers.sort:false
 
     This is something you will typically put into your config file.
 

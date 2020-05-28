@@ -85,10 +85,10 @@ PRETTY_STDOUT_TTY_ONLY = object()
 
 
 DEFAULT_FORMAT_OPTIONS = [
-    'headers.sort=true',
-    'json.format=true',
-    'json.indent=4',
-    'json.sort_keys=true',
+    'headers.sort:true',
+    'json.format:true',
+    'json.indent:4',
+    'json.sort_keys:true',
 ]
 
 
