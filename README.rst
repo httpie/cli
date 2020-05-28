@@ -11,7 +11,7 @@ generally interacting with HTTP servers.
 
 .. class:: no-web no-pdf
 
-    |pypi| |build| |coverage| |downloads| |gitter|
+    |docs| |pypi| |build| |coverage| |downloads| |gitter|
 
 
 .. class:: no-web no-pdf
@@ -1995,6 +1995,10 @@ have contributed.
 .. _Jakub Roztocil: https://roztocil.co
 .. _@jakubroztocil: https://twitter.com/jakubroztocil
 
+
+.. |docs| image:: https://img.shields.io/badge/stable%20docs-httpie.org%2Fdocs-brightgreen?style=flat-square
+    :target: https://httpie.org/docs
+    :alt: Stable documentation
 
 .. |pypi| image:: https://img.shields.io/pypi/v/httpie.svg?style=flat-square&label=latest%20stable%20version
     :target: https://pypi.python.org/pypi/httpie
