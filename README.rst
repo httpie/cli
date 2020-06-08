@@ -683,6 +683,13 @@ submitted:
 Note that ``@`` is used to simulate a file upload form field, whereas
 ``=@`` just embeds the file content as a regular text field value.
 
+When uploading files, their content type is inferred from the file name. You can manually
+override the inferred content type:
+
+.. code-block:: bash
+
+   $ http -f POST httpbin.org/post name='John Smith' cv@'~/files/data.bin;type=application/pdf'
+
 
 HTTP headers
 ============
