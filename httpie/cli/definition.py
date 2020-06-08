@@ -113,6 +113,7 @@ positional.add_argument(
     '@' Form file fields (only with --form, -f):
 
         cs@~/Documents/CV.pdf
+        cv@'~/Documents/CV.pdf;type=application/pdf'
 
     '=@' A data field like '=', but takes a file path and embeds its content:
 
