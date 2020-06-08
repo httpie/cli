@@ -38,6 +38,16 @@ class TestMultipartFormDataFileUpload:
         assert r.count(FILE_CONTENT) in [3, 4]
         assert r.count('Content-Type: text/plain') == 2
 
+    def test_upload_custom_content_type(self, httpbin):
+        r = http('--form', '--verbose', 'POST', httpbin.url + '/post',
+                 'test-file@%s;type=image/vnd.microsoft.icon' % FILE_PATH_ARG)
+        assert HTTP_OK in r
+        # Content type is stripped from the filename
+        assert 'Content-Disposition: form-data; name="test-file";' \
+               ' filename="%s"' % os.path.basename(FILE_PATH) in r
+        assert FILE_CONTENT in r
+        assert 'Content-Type: image/vnd.microsoft.icon' in r
+
 
 class TestRequestBodyFromFilePath:
     """

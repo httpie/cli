@@ -6,7 +6,8 @@ from httpie.cli.argtypes import KeyValueArg
 from httpie.cli.constants import (
     SEPARATOR_DATA_EMBED_FILE_CONTENTS, SEPARATOR_DATA_EMBED_RAW_JSON_FILE,
     SEPARATOR_DATA_RAW_JSON, SEPARATOR_DATA_STRING, SEPARATOR_FILE_UPLOAD,
-    SEPARATOR_HEADER, SEPARATOR_HEADER_EMPTY, SEPARATOR_QUERY_PARAM,
+    SEPARATOR_FILE_UPLOAD_TYPE, SEPARATOR_HEADER, SEPARATOR_HEADER_EMPTY,
+    SEPARATOR_QUERY_PARAM,
 )
 from httpie.cli.dicts import (
     RequestDataDict, RequestFilesDict, RequestHeadersDict, RequestJSONDataDict,
@@ -95,7 +96,10 @@ def process_query_param_arg(arg: KeyValueArg) -> str:
 
 
 def process_file_upload_arg(arg: KeyValueArg) -> Tuple[str, IO, str]:
-    filename = arg.value
+    parts = arg.value.split(SEPARATOR_FILE_UPLOAD_TYPE)
+    filename = parts[0]
+    mime_type = parts[1] if len(parts) > 1 else None
+
     try:
         with open(os.path.expanduser(filename), 'rb') as f:
             contents = f.read()
@@ -104,7 +108,7 @@ def process_file_upload_arg(arg: KeyValueArg) -> Tuple[str, IO, str]:
     return (
         os.path.basename(filename),
         BytesIO(contents),
-        get_content_type(filename),
+        mime_type or get_content_type(filename),
     )
 
 
