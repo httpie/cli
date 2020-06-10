@@ -22,5 +22,13 @@ class LocalHostError(Error):
     '''Exception raised when the user fails to provide a valid localhost'''
     pass
 
+class InvalidArgument(Error):
+    '''Exception raised when user passes in invalid argument to a parameter'''
+    pass
+
+class OfflineError(Error):
+    '''Exception raised when user attempts a request offline'''
+    pass
+
 #TODO: ADD the rest of the classes including a general catch-all one for errors we may miss
 #TODO: Write tests for intended class functionctionality
