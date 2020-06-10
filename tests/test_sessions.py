@@ -2,6 +2,7 @@
 import os
 import shutil
 import sys
+import json
 from tempfile import gettempdir
 
 import pytest
@@ -186,3 +187,13 @@ class TestSession(SessionTestBase):
                  httpbin.url + '/get', env=self.env())
         finally:
             os.chdir(cwd)
+    
+    def test_expired_cookies(self, httpbin):
+        self.start_session(httpbin)
+        session_path = self.config_dir / 'session-by-path.json'
+        http('--session', str(session_path), httpbin.url + '/cookies/set?hello=100')
+        r1 = http('--session', str(session_path), httpbin.url + '/cookies/delete?hello=100')
+        with open(self.config_dir / 'session-by-path.json', 'r') as myfile:
+            data=myfile.read()
+        obj = json.loads(data)
+        assert len(obj['cookies']) == 0
