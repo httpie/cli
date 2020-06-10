@@ -1,6 +1,8 @@
 class Error(Exception):
     '''Base Class for custom exceptions'''
-    pass
+    def __init__(self, *args, **kwargs):
+        super().__init__(self,*args, **kwargs)
+    #TODO: Do I need to define custom methods/attributes for Error class or is *args, **kwargs,and built-in methods from Exception class sufficient?
 
 class ConnectionError(Error):
     #TODO: Work on this class together
