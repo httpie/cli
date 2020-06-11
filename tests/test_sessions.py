@@ -187,7 +187,7 @@ class TestSession(SessionTestBase):
                  httpbin.url + '/get', env=self.env())
         finally:
             os.chdir(cwd)
-    
+
     def test_expired_cookies(self, httpbin):
         self.start_session(httpbin)
         orig_session = {
@@ -214,3 +214,4 @@ class TestSession(SessionTestBase):
         updated_session = json.loads(session_path.read_text())
         assert 'to_stay' in updated_session['cookies']
         assert 'to_expire' not in updated_session['cookies']
+ 

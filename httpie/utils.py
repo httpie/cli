@@ -9,6 +9,7 @@ from pprint import pformat
 
 import requests.auth
 
+
 def load_json_preserve_order(s):
     return json.loads(s, object_pairs_hook=OrderedDict)
 
