@@ -11,6 +11,7 @@ from urllib.parse import urlparse, urlunparse
 import requests
 # noinspection PyPackageRequirements
 import urllib3
+from requests.cookies import remove_cookie_by_name
 
 from httpie import __version__
 from httpie.cli.dicts import RequestHeadersDict
@@ -112,8 +113,10 @@ def collect_messages(
 
     if httpie_session:
         if httpie_session.is_new() or not args.session_read_only:
+            for cookie in expired_cookies:
+                remove_cookie_by_name(requests_session.cookies,cookie['name'],path=cookie['path'])
+
             httpie_session.cookies = requests_session.cookies
-            print('expired_cookies -->', expired_cookies)
             httpie_session.save()
 
 
