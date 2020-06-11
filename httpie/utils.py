@@ -102,7 +102,7 @@ def get_expired_cookies(response):
 
     for cookie in extracted_cookies:
         cookie_header = dict((key, val) for key, val in cookie)
-        if cookie_header['expires'] <= curr_timestamp:
+        if "expires" in cookie_header and cookie_header['expires'] <= curr_timestamp:
             cookie_name = cookie[0][0]
             cookie_path = cookie_header.get('path', '/')
             expired_cookies.append({'name': cookie_name, 'path': cookie_path})
