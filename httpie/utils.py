@@ -9,9 +9,6 @@ from pprint import pformat
 
 import requests.auth
 
-from httpie.models import HTTPResponse
-
-
 def load_json_preserve_order(s):
     return json.loads(s, object_pairs_hook=OrderedDict)
 
@@ -90,25 +87,30 @@ def get_content_type(filename):
         return content_type
 
 
-def get_expired_cookies(response: HTTPResponse) -> list:
-    original = response._orig.raw._original_response
+def get_expired_cookies(response) -> list:
+    original = response.raw._original_response
 
     expired_cookies = []
     cookie_headers = []
     curr_timestamp = time.time()
 
-    for header in original.msg._headers:
-        if header[0] == 'Set-Cookie':
-            cookie_headers.append(header[1])
+    for header_name, content in original.msg._headers:
+        if header_name == 'Set-Cookie':
+            cookie_headers.append(content)
 
     extracted_cookies = parse_ns_headers(cookie_headers)
 
     for cookie in extracted_cookies:
+        print('------cookie', cookie)
         cookie_name = cookie[0][0]
+        is_expired = False
+        cookie_path = '/'
         for cookie_key, cookie_value in cookie:
             if cookie_key == 'expires':
                 is_expired = curr_timestamp > cookie_value
-                if is_expired:
-                    expired_cookies.append(cookie_name)
+            if cookie_key == 'path':
+                cookie_path = cookie_value
+        if is_expired:
+            expired_cookies.append({'name': cookie_name, 'path': cookie_path})
 
     return expired_cookies

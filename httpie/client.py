@@ -96,7 +96,7 @@ def collect_messages(
                     **send_kwargs_merged,
                     **send_kwargs,
                 )
-                expired_cookies += get_expired_cookies(HTTPResponse(response))
+                expired_cookies += get_expired_cookies(response)
 
             response_count += 1
             if response.next:
@@ -114,7 +114,6 @@ def collect_messages(
         if httpie_session.is_new() or not args.session_read_only:
             httpie_session.cookies = requests_session.cookies
             print('expired_cookies -->', expired_cookies)
-            httpie_session.cookies.clear()
             httpie_session.save()
 
 

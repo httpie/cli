@@ -209,13 +209,8 @@ class TestSession(SessionTestBase):
             '--print=H',
             httpbin.url + '/cookies/delete?to_expire',
         )
-
         assert 'Cookie: to_expire=foo; to_stay=foo' in r
 
         updated_session = json.loads(session_path.read_text())
-
         assert 'to_stay' in updated_session['cookies']
-
-        # Verify `to_expire` is gone
         assert 'to_expire' not in updated_session['cookies']
-
