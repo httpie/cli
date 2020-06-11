@@ -15,7 +15,6 @@ from requests.cookies import remove_cookie_by_name
 
 from httpie import __version__
 from httpie.cli.dicts import RequestHeadersDict
-from httpie.models import HTTPResponse
 from httpie.plugins.registry import plugin_manager
 from httpie.sessions import get_httpie_session
 from httpie.ssl import AVAILABLE_SSL_VERSION_ARG_MAPPING, HTTPieHTTPSAdapter
