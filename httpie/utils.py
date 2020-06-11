@@ -87,7 +87,7 @@ def get_content_type(filename):
         return content_type
 
 
-def get_expired_cookies(response) -> list:
+def get_expired_cookies(response):
     original = response.raw._original_response
     expired_cookies = []
     cookie_headers = []
@@ -100,15 +100,10 @@ def get_expired_cookies(response) -> list:
     extracted_cookies = parse_ns_headers(cookie_headers)
 
     for cookie in extracted_cookies:
-        cookie_name = cookie[0][0]
-        is_expired = False
-        cookie_path = '/'
-        for cookie_key, cookie_value in cookie:
-            if cookie_key == 'expires':
-                is_expired = curr_timestamp > cookie_value
-            if cookie_key == 'path':
-                cookie_path = cookie_value
-        if is_expired:
+        cookie_header = dict((key, val) for key, val in cookie)
+        if cookie_header['expires'] <= curr_timestamp:
+            cookie_name = cookie[0][0]
+            cookie_path = cookie_header.get('path', '/')
             expired_cookies.append({'name': cookie_name, 'path': cookie_path})
 
     return expired_cookies

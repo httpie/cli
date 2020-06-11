@@ -115,7 +115,6 @@ def collect_messages(
         if httpie_session.is_new() or not args.session_read_only:
             for cookie in expired_cookies:
                 remove_cookie_by_name(requests_session.cookies,cookie['name'],path=cookie['path'])
-
             httpie_session.cookies = requests_session.cookies
             httpie_session.save()
 
