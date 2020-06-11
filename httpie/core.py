@@ -15,6 +15,7 @@ from httpie.downloads import Downloader
 from httpie.output.writer import write_message, write_stream
 from httpie.plugins.registry import plugin_manager
 from httpie.status import ExitStatus, http_status_to_exit_status
+from httpie.cli.errors import ConnectionError as connection_error_message
 
 
 # noinspection PyDefaultArgument
@@ -35,6 +36,7 @@ def main(
     env.program_name = os.path.basename(program_name)
     args = decode_raw_args(args, env.stdin_encoding)
     plugin_manager.load_installed_plugins()
+    connection_error = connection_error_message()
 
     from httpie.cli.definition import parser
 
@@ -92,6 +94,12 @@ def main(
             env.log_error(
                 f'Too many redirects'
                 f' (--max-redirects={parsed_args.max_redirects}).'
+            )
+        except requests.ConnectionError:
+            exit_status = ExitStatus.CONNECTION_ERROR
+            error = connection_error.__str__()
+            env.log_error(
+                f'{error} to url: {parsed_args.url}.'
             )
         except Exception as e:
             # TODO: Further distinction between expected and unexpected errors.

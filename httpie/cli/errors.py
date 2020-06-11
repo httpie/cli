@@ -5,9 +5,13 @@ class Error(Exception):
     #TODO: Do I need to define custom methods/attributes for Error class or is *args, **kwargs,and built-in methods from Exception class sufficient?
 
 class ConnectionError(Error):
-    #TODO: Work on this class together
-    '''Exception raised for error when connecting to server'''
-    pass
+    def __init__(self,*args):
+        self.exc = None
+        self.message = None
+
+    def __str__(self):
+        self.message = "Failed to establish a new connection"
+        return self.message
 
 class BasicAuthError(Error):
     '''Exception raised for wrong username and pw when authenticating'''
@@ -20,14 +24,6 @@ class MethodMismatchError(Error):
 
 class LocalHostError(Error):
     '''Exception raised when the user fails to provide a valid localhost'''
-    pass
-
-class InvalidArgument(Error):
-    '''Exception raised when user passes in invalid argument to a parameter'''
-    pass
-
-class OfflineError(Error):
-    '''Exception raised when user attempts a request offline'''
     pass
 
 #TODO: ADD the rest of the classes including a general catch-all one for errors we may miss
