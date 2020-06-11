@@ -190,32 +190,10 @@ class TestSession(SessionTestBase):
     
     def test_expired_cookies(self, httpbin):
         self.start_session(httpbin)
-        orig_session = {
-            'cookies': {
-                'to_expire': {
-                    'value': 'foo'
-                },
-                'to_stay': {
-                    'value': 'foo'
-                },
-            }
-        }
-
-        session_path = mk_config_dir() / 'test-session.json'
-        session_path.write_text(json.dumps(orig_session))
-
-        r = http(
-            '--session', str(session_path),
-            '--print=H',
-            httpbin.url + '/cookies/delete?to_expire',
-        )
-
-        assert 'Cookie: to_expire=foo; to_stay=foo' in r
-
-        updated_session = json.loads(session_path.read_text())
-
-        assert 'to_stay' in updated_session['cookies']
-
-        # Verify `to_expire` is gone
-        assert 'to_expire' not in updated_session['cookies']
-
+        session_path = self.config_dir / 'session-by-path.json'
+        http('--session', str(session_path), httpbin.url + '/cookies/set?hello=100')
+        r1 = http('--session', str(session_path), httpbin.url + '/cookies/delete?hello=100')
+        with open(self.config_dir / 'session-by-path.json', 'r') as myfile:
+            data=myfile.read()
+        obj = json.loads(data)
+        assert len(obj['cookies']) == 0
