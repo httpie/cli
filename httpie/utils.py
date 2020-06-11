@@ -1,10 +1,15 @@
 from __future__ import division
+
 import json
 import mimetypes
+import time
 from collections import OrderedDict
+from http.cookiejar import parse_ns_headers
 from pprint import pformat
 
 import requests.auth
+
+from httpie.models import HTTPResponse
 
 
 def load_json_preserve_order(s):
@@ -83,3 +88,27 @@ def get_content_type(filename):
         if encoding:
             content_type = '%s; charset=%s' % (mime, encoding)
         return content_type
+
+
+def get_expired_cookies(response: HTTPResponse) -> list:
+    original = response._orig.raw._original_response
+
+    expired_cookies = []
+    cookie_headers = []
+    curr_timestamp = time.time()
+
+    for header in original.msg._headers:
+        if header[0] == 'Set-Cookie':
+            cookie_headers.append(header[1])
+
+    extracted_cookies = parse_ns_headers(cookie_headers)
+
+    for cookie in extracted_cookies:
+        cookie_name = cookie[0][0]
+        for cookie_key, cookie_value in cookie:
+            if cookie_key == 'expires':
+                is_expired = curr_timestamp > cookie_value
+                if is_expired:
+                    expired_cookies.append(cookie_name)
+
+    return expired_cookies
