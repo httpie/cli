@@ -214,4 +214,3 @@ class TestSession(SessionTestBase):
         updated_session = json.loads(session_path.read_text())
         assert 'to_stay' in updated_session['cookies']
         assert 'to_expire' not in updated_session['cookies']
- 
