@@ -97,13 +97,16 @@ def get_expired_cookies(raw_response_header, curr_timestamp=None):
         if header_name == 'Set-Cookie':
             cookie_headers.append(content)
 
-    extracted_cookies = parse_ns_headers(cookie_headers)
+    extracted_cookies = [
+        dict(cookie, name=cookie[0][0])
+        for cookie in parse_ns_headers(cookie_headers)
+    ]
 
     for cookie in extracted_cookies:
-        cookie_header = dict((key, val) for key, val in cookie)
-        if "expires" in cookie_header and cookie_header['expires'] <= curr_timestamp:
-            cookie_name = cookie[0][0]
-            cookie_path = cookie_header.get('path', '/')
-            expired_cookies.append({'name': cookie_name, 'path': cookie_path})
+        if "expires" in cookie and cookie['expires'] <= curr_timestamp:
+            expired_cookies.append({
+                'name': cookie['name'],
+                'path': cookie.get('path', '/')
+            })
 
     return expired_cookies
