@@ -147,4 +147,5 @@ class Session(BaseConfigDict):
 
     def remove_expired_cookies(self, expired_cookies):
         for cookie in expired_cookies:
-            remove_cookie_by_name(self.cookies, cookie['name'], path=cookie['path'])
+            if cookie['name'] in self['cookies']:
+                self['cookies'].pop(cookie['name'])
