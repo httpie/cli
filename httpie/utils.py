@@ -88,7 +88,7 @@ def get_content_type(filename):
         return content_type
 
 
-def get_expired_cookies(raw_response_header, curr_timestamp=None):
+def get_expired_cookies(raw_response_header: list, curr_timestamp: float = None) -> list:
     expired_cookies = []
     cookie_headers = []
     curr_timestamp = curr_timestamp or time.time()

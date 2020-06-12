@@ -145,7 +145,7 @@ class Session(BaseConfigDict):
         assert {'type', 'raw_auth'} == auth.keys()
         self['auth'] = auth
 
-    def remove_expired_cookies(self, expired_cookies):
+    def remove_expired_cookies(self, expired_cookies: list) -> None:
         for cookie in expired_cookies:
             if cookie['name'] in self['cookies']:
                 self['cookies'].pop(cookie['name'])
