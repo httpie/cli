@@ -8,6 +8,7 @@ from tempfile import gettempdir
 import pytest
 
 from httpie.plugins.builtin import HTTPBasicAuth
+from httpie.utils import get_expired_cookies
 from utils import MockEnvironment, mk_config_dir, http, HTTP_OK
 from fixtures import UNICODE
 
@@ -214,3 +215,24 @@ class TestSession(SessionTestBase):
         updated_session = json.loads(session_path.read_text())
         assert 'to_stay' in updated_session['cookies']
         assert 'to_expire' not in updated_session['cookies']
+
+class TestGetExpiredCookieUtil:
+
+    @pytest.mark.parametrize(
+        argnames=['raw_header', 'expected'],
+        argvalues=[
+            ([('X-Powered-By', 'Express'),
+            ('Set-Cookie', 'hello=world; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; HttpOnly'),
+            ('Content-Type', 'application/json; charset=utf-8'), ('Content-Length', '35'), ('ETag', 'W/"23-VhiALGYCMivVwSJRaovse0pz+QE"'),
+            ('Date', 'Fri, 12 Jun 2020 14:42:15 GMT'), ('Connection', 'keep-alive')], 
+            [{'name': 'hello', 'path': '/'}]),
+            ([('X-Powered-By', 'Express'),
+            ('Set-Cookie', 'hello=world; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; HttpOnly'),
+            ('Set-Cookie', 'pea=pod; Path=/ab; Expires=Thu, 01-Jan-1970 00:00:00 GMT; HttpOnly'),
+            ('Content-Type', 'application/json; charset=utf-8'), ('Content-Length', '35'), ('ETag', 'W/"23-VhiALGYCMivVwSJRaovse0pz+QE"'),
+            ('Date', 'Fri, 12 Jun 2020 14:42:15 GMT'), ('Connection', 'keep-alive')], 
+            [{'name': 'hello', 'path': '/'}, {'name': 'pea', 'path': '/ab'}])
+        ]
+    )
+    def test_get_expired_cookies_manages_multiple_cookie_headers(self, raw_header, expected):
+        assert get_expired_cookies(raw_header) == expected
