@@ -9,7 +9,7 @@ from typing import Optional, Union
 from urllib.parse import urlsplit
 
 from requests.auth import AuthBase
-from requests.cookies import RequestsCookieJar, create_cookie
+from requests.cookies import RequestsCookieJar, create_cookie, remove_cookie_by_name
 
 from httpie.cli.dicts import RequestHeadersDict
 from httpie.config import BaseConfigDict, DEFAULT_CONFIG_DIR
@@ -144,3 +144,7 @@ class Session(BaseConfigDict):
     def auth(self, auth: dict):
         assert {'type', 'raw_auth'} == auth.keys()
         self['auth'] = auth
+
+    def remove_expired_cookies(self, expired_cookies):
+        for cookie in expired_cookies:
+            remove_cookie_by_name(self.cookies, cookie['name'], path=cookie['path'])
