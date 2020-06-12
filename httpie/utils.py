@@ -88,13 +88,12 @@ def get_content_type(filename):
         return content_type
 
 
-def get_expired_cookies(response):
-    original = response.raw._original_response
+def get_expired_cookies(raw_response_header, curr_timestamp=None):
     expired_cookies = []
     cookie_headers = []
-    curr_timestamp = time.time()
+    curr_timestamp = curr_timestamp or time.time()
 
-    for header_name, content in original.msg._headers:
+    for header_name, content in raw_response_header:
         if header_name == 'Set-Cookie':
             cookie_headers.append(content)
 

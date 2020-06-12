@@ -3,6 +3,7 @@ import os
 import shutil
 import sys
 import json
+from datetime import datetime
 from tempfile import gettempdir
 
 import pytest
@@ -219,20 +220,28 @@ class TestSession(SessionTestBase):
 class TestGetExpiredCookieUtil:
 
     @pytest.mark.parametrize(
-        argnames=['raw_header', 'expected'],
+        argnames=['raw_header', 'timestamp', 'expected'],
         argvalues=[
             ([('X-Powered-By', 'Express'),
             ('Set-Cookie', 'hello=world; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; HttpOnly'),
             ('Content-Type', 'application/json; charset=utf-8'), ('Content-Length', '35'), ('ETag', 'W/"23-VhiALGYCMivVwSJRaovse0pz+QE"'),
-            ('Date', 'Fri, 12 Jun 2020 14:42:15 GMT'), ('Connection', 'keep-alive')], 
+            ('Date', 'Thu, 01-Jan-1970 00:00:00 GMT'), ('Connection', 'keep-alive')], 
+            None,
             [{'name': 'hello', 'path': '/'}]),
             ([('X-Powered-By', 'Express'),
             ('Set-Cookie', 'hello=world; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; HttpOnly'),
             ('Set-Cookie', 'pea=pod; Path=/ab; Expires=Thu, 01-Jan-1970 00:00:00 GMT; HttpOnly'),
             ('Content-Type', 'application/json; charset=utf-8'), ('Content-Length', '35'), ('ETag', 'W/"23-VhiALGYCMivVwSJRaovse0pz+QE"'),
-            ('Date', 'Fri, 12 Jun 2020 14:42:15 GMT'), ('Connection', 'keep-alive')], 
-            [{'name': 'hello', 'path': '/'}, {'name': 'pea', 'path': '/ab'}])
+            ('Date', 'Thu, 01-Jan-1970 00:00:00 GMT'), ('Connection', 'keep-alive')], 
+            None,
+            [{'name': 'hello', 'path': '/'}, {'name': 'pea', 'path': '/ab'}]),
+            ([('X-Powered-By', 'Express'),
+            ('Set-Cookie', 'hello=world; Path=/; Expires=Fri, 12 Jun 2020 12:28:55 GMT; HttpOnly'),
+            ('Content-Type', 'application/json; charset=utf-8'), ('Content-Length', '35'), ('ETag', 'W/"23-VhiALGYCMivVwSJRaovse0pz+QE"'),
+            ('Date', 'Fri, 12 Jun 2020 14:42:15 GMT'), ('Connection', 'keep-alive')],
+            datetime(2020,6,11).timestamp(),
+            [])
         ]
     )
-    def test_get_expired_cookies_manages_multiple_cookie_headers(self, raw_header, expected):
-        assert get_expired_cookies(raw_header) == expected
+    def test_get_expired_cookies_manages_multiple_cookie_headers(self, raw_header, timestamp, expected):
+        assert get_expired_cookies(raw_header, curr_timestamp=timestamp) == expected
