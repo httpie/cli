@@ -9,11 +9,11 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 `2.2.0-dev`_ (unreleased)
 -------------------------
 
+* Fixed built-in plugins-related circular imports (`#925`_).
 * Added ``--format-options`` to allow disabling sorting, etc. (`#128`_)
 * Added ``--ciphers`` to allow configuring OpenSSL ciphers (`#870`_).
 * Added support for ``$XDG_CONFIG_HOME`` (`#920`_).
-* Fixed built-in plugins-related circular imports (`#925`_).
-* Fixed custom content types for each multipart uploaded file (`#668`_).
+* Added support for custom content types for uploaded files (`#668`_).
 
 
 `2.1.0`_ (2020-04-18)
