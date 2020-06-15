@@ -6,7 +6,6 @@ from typing import List, Union
 import requests
 from pygments import __version__ as pygments_version
 from requests import __version__ as requests_version
-
 from httpie import __version__ as httpie_version
 from httpie.client import collect_messages
 from httpie.context import Environment
@@ -14,6 +13,7 @@ from httpie.downloads import Downloader
 from httpie.output.writer import write_message, write_stream
 from httpie.plugins.registry import plugin_manager
 from httpie.status import ExitStatus, http_status_to_exit_status
+
 
 # noinspection PyDefaultArgument
 def main(
