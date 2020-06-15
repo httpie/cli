@@ -3,7 +3,6 @@ import os
 import platform
 import sys
 from typing import List, Union
-
 import requests
 from pygments import __version__ as pygments_version
 from requests import __version__ as requests_version
@@ -95,7 +94,7 @@ def main(
         except requests.ConnectionError:
             exit_status = ExitStatus.ERROR
             env.log_error(
-                f"Connection failed while doing a {parsed_args.method} request to URL: {parsed_args.url}"
+                f"Connection aborted while doing a {parsed_args.method} request to URL: {parsed_args.url}"
             )
             if include_traceback:
                 raise
