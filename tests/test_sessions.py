@@ -193,18 +193,18 @@ class TestSession(SessionTestBase):
 class TestExpiredCookie(SessionTestBase):
 
     @pytest.mark.parametrize(
-        argnames=['initial_cookies', 'expired_cookies'],
+        argnames=['initial_cookie', 'expired_cookie'],
         argvalues=[
-            ({'id': {'value': 123}}, {'name': 'id'}),
-            ({'id': {'value': 123}}, {'name': 'token'})
+            ({'id': {'value': 123}}, 'id'),
+            ({'id': {'value': 123}}, 'token')
         ]
     )
-    def test_removes_expired_cookies_from_session_obj(self, initial_cookies, expired_cookies, httpbin):
+    def test_removes_expired_cookies_from_session_obj(self, initial_cookie, expired_cookie, httpbin):
         self.start_session(httpbin)
         session = Session(self.config_dir)
-        session['cookies'] = initial_cookies
-        session.remove_expired_cookies([expired_cookies])
-        assert expired_cookies['name'] not in session.cookies
+        session['cookies'] = initial_cookie
+        session.remove_cookies([expired_cookie])
+        assert expired_cookie not in session.cookies
 
     def test_expired_cookies(self, httpbin):
         self.start_session(httpbin)
