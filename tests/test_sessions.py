@@ -191,7 +191,7 @@ class TestSession(SessionTestBase):
             os.chdir(cwd)
 
 
-class TestExpiredCookies():
+class TestExpiredCookies:
 
     @pytest.mark.parametrize(
         argnames=['initial_cookie', 'expired_cookie'],
@@ -237,46 +237,45 @@ class TestExpiredCookies():
 
         shutil.rmtree(config_dir)
 
+    @pytest.mark.parametrize(
+        argnames=['raw_header', 'timestamp', 'expected'],
+        argvalues=[
+            (
+                [
+                    ('Set-Cookie', 'hello=world; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; HttpOnly'),
+                    ('Connection', 'keep-alive')
+                ],
+                None,
+                [
+                    {
+                        'name': 'hello',
+                        'path': '/'
+                    }
+                ]
+            ),
+            (
+                [
+                    ('Set-Cookie', 'hello=world; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; HttpOnly'),
+                    ('Set-Cookie', 'pea=pod; Path=/ab; Expires=Thu, 01-Jan-1970 00:00:00 GMT; HttpOnly'),
+                    ('Connection', 'keep-alive')
+                ],
+                None,
+                [
+                    {'name': 'hello', 'path': '/'},
+                    {'name': 'pea', 'path': '/ab'}
+                ]
+            ),
+            (
+                [
+                    ('Set-Cookie', 'hello=world; Path=/; Expires=Fri, 12 Jun 2020 12:28:55 GMT; HttpOnly'),
+                    ('Connection', 'keep-alive')
+                ],
+                datetime(2020, 6, 11).timestamp(),
+                [
 
-@pytest.mark.parametrize(
-    argnames=['raw_header', 'timestamp', 'expected'],
-    argvalues=[
-        (
-            [
-                ('Set-Cookie', 'hello=world; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; HttpOnly'),
-                ('Connection', 'keep-alive')
-            ],
-            None,
-            [
-                {
-                    'name': 'hello',
-                    'path': '/'
-                }
-            ]
-        ),
-        (
-            [
-                ('Set-Cookie', 'hello=world; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; HttpOnly'),
-                ('Set-Cookie', 'pea=pod; Path=/ab; Expires=Thu, 01-Jan-1970 00:00:00 GMT; HttpOnly'),
-                ('Connection', 'keep-alive')
-            ],
-            None,
-            [
-                {'name': 'hello', 'path': '/'},
-                {'name': 'pea', 'path': '/ab'}
-            ]
-        ),
-        (
-            [
-                ('Set-Cookie', 'hello=world; Path=/; Expires=Fri, 12 Jun 2020 12:28:55 GMT; HttpOnly'),
-                ('Connection', 'keep-alive')
-            ],
-            datetime(2020, 6, 11).timestamp(),
-            [
-
-            ]
-        )
-    ]
-)
-def test_get_expired_cookies_manages_multiple_cookie_headers(raw_header, timestamp, expected):
-    assert get_expired_cookies(raw_header, curr_timestamp=timestamp) == expected
+                ]
+            )
+        ]
+    )
+    def test_get_expired_cookies_manages_multiple_cookie_headers(self, raw_header, timestamp, expected):
+        assert get_expired_cookies(raw_header, curr_timestamp=timestamp) == expected
