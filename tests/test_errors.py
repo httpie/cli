@@ -33,14 +33,14 @@ def test_error_traceback(program):
 @mock.patch('httpie.core.program')
 def test_connection_error(program):
     exc = ConnectionError('Connection failed')
-    exc.request = Request(method='GET', url='http:/www.httpies.org')
+    exc.request = Request(method='GET', url='.invalid')
     program.side_effect = exc
-    r = http('www.httpies.org', tolerate_error_exit_status=True)
+    r = http('.invalid', tolerate_error_exit_status=True)
     assert r.exit_status == ExitStatus.ERROR
     error_msg = (
         'ConnectionError: '
         'Connection failed while doing a GET request to URL: '
-        'http:/www.httpies.org'
+        '.invalid'
     )
     assert error_msg in r.stderr
     
