@@ -1,4 +1,5 @@
 # coding=utf-8
+import json
 import os
 import shutil
 import sys
@@ -186,3 +187,22 @@ class TestSession(SessionTestBase):
                  httpbin.url + '/get', env=self.env())
         finally:
             os.chdir(cwd)
+    
+    def test_existing_and_new_cookies_sent_in_request(self, httpbin):
+        self.start_session(httpbin)
+        orig_session = {
+            'cookies': {
+                'existing': {
+                    'value': 'foo'
+                }
+            }
+        }
+        session_path = self.config_dir / 'test-session.json'
+        session_path.write_text(json.dumps(orig_session))
+
+        r = http(
+            '--session', str(session_path),
+            '--print=H',
+            httpbin.url, 'Cookie:new=bar',
+        )
+        assert 'Cookie: existing=foo; new=bar' in r
