@@ -1,14 +1,17 @@
 # coding=utf-8
+import json
 import os
 import shutil
-import sys
+from datetime import datetime
 from tempfile import gettempdir
 
 import pytest
 
-from httpie.plugins.builtin import HTTPBasicAuth
-from utils import MockEnvironment, mk_config_dir, http, HTTP_OK
 from fixtures import UNICODE
+from httpie.plugins.builtin import HTTPBasicAuth
+from httpie.sessions import Session
+from httpie.utils import get_expired_cookies
+from utils import MockEnvironment, mk_config_dir, http, HTTP_OK
 
 
 class SessionTestBase:
@@ -186,3 +189,91 @@ class TestSession(SessionTestBase):
                  httpbin.url + '/get', env=self.env())
         finally:
             os.chdir(cwd)
+
+
+class TestExpiredCookies:
+
+    def setup_method(self, method):
+        self.config_dir = mk_config_dir()
+
+    def teardown_method(self, method):
+        shutil.rmtree(self.config_dir)
+
+    @pytest.mark.parametrize(
+        argnames=['initial_cookie', 'expired_cookie'],
+        argvalues=[
+            ({'id': {'value': 123}}, 'id'),
+            ({'id': {'value': 123}}, 'token')
+        ]
+    )
+    def test_removes_expired_cookies_from_session_obj(self, initial_cookie, expired_cookie, httpbin):
+        session = Session(self.config_dir)
+        session['cookies'] = initial_cookie
+        session.remove_cookies([expired_cookie])
+        assert expired_cookie not in session.cookies
+
+    def test_expired_cookies(self, httpbin):
+        orig_session = {
+            'cookies': {
+                'to_expire': {
+                    'value': 'foo'
+                },
+                'to_stay': {
+                    'value': 'foo'
+                },
+            }
+        }
+        session_path = self.config_dir / 'test-session.json'
+        session_path.write_text(json.dumps(orig_session))
+
+        r = http(
+            '--session', str(session_path),
+            '--print=H',
+            httpbin.url + '/cookies/delete?to_expire',
+        )
+        assert 'Cookie: to_expire=foo; to_stay=foo' in r
+
+        updated_session = json.loads(session_path.read_text())
+        assert 'to_stay' in updated_session['cookies']
+        assert 'to_expire' not in updated_session['cookies']
+
+    @pytest.mark.parametrize(
+        argnames=['headers', 'now', 'expected_expired'],
+        argvalues=[
+            (
+                [
+                    ('Set-Cookie', 'hello=world; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; HttpOnly'),
+                    ('Connection', 'keep-alive')
+                ],
+                None,
+                [
+                    {
+                        'name': 'hello',
+                        'path': '/'
+                    }
+                ]
+            ),
+            (
+                [
+                    ('Set-Cookie', 'hello=world; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; HttpOnly'),
+                    ('Set-Cookie', 'pea=pod; Path=/ab; Expires=Thu, 01-Jan-1970 00:00:00 GMT; HttpOnly'),
+                    ('Connection', 'keep-alive')
+                ],
+                None,
+                [
+                    {'name': 'hello', 'path': '/'},
+                    {'name': 'pea', 'path': '/ab'}
+                ]
+            ),
+            (
+                [
+                    ('Set-Cookie', 'hello=world; Path=/; Expires=Fri, 12 Jun 2020 12:28:55 GMT; HttpOnly'),
+                    ('Connection', 'keep-alive')
+                ],
+                datetime(2020, 6, 11).timestamp(),
+                []
+            )
+        ]
+    )
+    def test_get_expired_cookies_manages_multiple_cookie_headers(self, headers, now, expected_expired):
+        assert get_expired_cookies(headers, now=now) == expected_expired
