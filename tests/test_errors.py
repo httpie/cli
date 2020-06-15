@@ -43,8 +43,8 @@ def test_connection_error(program):
         '.invalid'
     )
     assert error_msg in r.stderr
-    
-    
+
+
 def test_max_headers_limit(httpbin_both):
     with raises(ConnectionError) as e:
         http('--max-headers=1', httpbin_both + '/get')
