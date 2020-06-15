@@ -94,7 +94,8 @@ def main(
         except requests.ConnectionError:
             exit_status = ExitStatus.ERROR
             env.log_error(
-                f'Connection failed while doing a {parsed_args.method} request to URL: {parsed_args.url}'
+                f'Connection failed while doing a {parsed_args.method}'
+                f' request to URL: {parsed_args.url}'
             )
             if include_traceback:
                 raise
