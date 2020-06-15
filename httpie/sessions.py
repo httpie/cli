@@ -81,8 +81,8 @@ class Session(BaseConfigDict):
 
             if name == 'Cookie':
                 for cookie in value.split(';'):
-                    key, value = cookie.split("=")
-                    self['cookies'][key.strip()] = {'value': value.strip()}
+                    name, value = cookie.split("=")
+                    self['cookies'][name.strip()] = {'value': value.strip()}
                 del request_headers['Cookie']
                 continue
 
