@@ -187,13 +187,18 @@ class TestSession(SessionTestBase):
                  httpbin.url + '/get', env=self.env())
         finally:
             os.chdir(cwd)
-    
+
     @pytest.mark.parametrize(
-        "new_cookies, expected", 
-        [("new=bar", "existing_cookie=foo; new=bar"),
-        ("new=bar; chocolate=milk", "chocolate=milk; existing_cookie=foo; new=bar")]
+        "new_cookies, expected, expected_dict",
+        [("new=bar", "existing_cookie=foo; new=bar", {"new": "bar"}),
+        ("new=bar;chocolate=milk", "chocolate=milk; existing_cookie=foo; new=bar",\
+         {"new": "bar", "chocolate": "milk"}),
+        ("new=bar; chocolate=milk", "chocolate=milk; existing_cookie=foo; new=bar",\
+         {"new": "bar", "chocolate": "milk"})]
     )
-    def test_existing_and_new_cookies_sent_in_request(self, new_cookies, expected, httpbin):
+    def test_existing_and_new_cookies_sent_in_request(self, new_cookies,\
+                                                      expected, expected_dict,\
+                                                      httpbin):
         self.start_session(httpbin)
         orig_session = {
             'cookies': {
@@ -212,3 +217,16 @@ class TestSession(SessionTestBase):
         )
         #Note: cookies in response are in alphabetical order
         assert 'Cookie: ' + expected in r
+        updated_session = json.loads(session_path.read_text())
+
+        # TODO: REMOVE print(updated_session)
+        for name, value in expected_dict.items():
+            assert name, value in updated_session['cookies']
+            assert "Cookie" not in updated_session['headers']
+
+
+
+
+
+
+
