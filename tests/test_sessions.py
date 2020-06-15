@@ -191,7 +191,7 @@ class TestSession(SessionTestBase):
             os.chdir(cwd)
 
 
-class TestExpiredCookies(SessionTestBase):
+class TestExpiredCookies():
 
     @pytest.mark.parametrize(
         argnames=['initial_cookie', 'expired_cookie'],
@@ -201,14 +201,15 @@ class TestExpiredCookies(SessionTestBase):
         ]
     )
     def test_removes_expired_cookies_from_session_obj(self, initial_cookie, expired_cookie, httpbin):
-        self.start_session(httpbin)
-        session = Session(self.config_dir)
+        config_dir = mk_config_dir()
+        session = Session(config_dir)
         session['cookies'] = initial_cookie
         session.remove_cookies([expired_cookie])
         assert expired_cookie not in session.cookies
 
+        shutil.rmtree(config_dir)
+
     def test_expired_cookies(self, httpbin):
-        self.start_session(httpbin)
         orig_session = {
             'cookies': {
                 'to_expire': {
@@ -219,8 +220,8 @@ class TestExpiredCookies(SessionTestBase):
                 },
             }
         }
-
-        session_path = self.config_dir / 'test-session.json'
+        config_dir = mk_config_dir()
+        session_path = config_dir / 'test-session.json'
         session_path.write_text(json.dumps(orig_session))
 
         r = http(
@@ -233,6 +234,8 @@ class TestExpiredCookies(SessionTestBase):
         updated_session = json.loads(session_path.read_text())
         assert 'to_stay' in updated_session['cookies']
         assert 'to_expire' not in updated_session['cookies']
+
+        shutil.rmtree(config_dir)
 
 
 @pytest.mark.parametrize(
