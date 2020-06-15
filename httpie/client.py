@@ -11,7 +11,6 @@ from urllib.parse import urlparse, urlunparse
 import requests
 # noinspection PyPackageRequirements
 import urllib3
-from requests.cookies import remove_cookie_by_name
 
 from httpie import __version__
 from httpie.cli.dicts import RequestHeadersDict
@@ -19,6 +18,7 @@ from httpie.plugins.registry import plugin_manager
 from httpie.sessions import get_httpie_session
 from httpie.ssl import AVAILABLE_SSL_VERSION_ARG_MAPPING, HTTPieHTTPSAdapter
 from httpie.utils import get_expired_cookies, repr_dict
+
 
 urllib3.disable_warnings()
 
@@ -96,8 +96,9 @@ def collect_messages(
                     **send_kwargs_merged,
                     **send_kwargs,
                 )
-                raw_response_message_header = response.raw._original_response.msg._headers
-                expired_cookies += get_expired_cookies(raw_response_message_header)
+                expired_cookies += get_expired_cookies(
+                    headers=response.raw._original_response.msg._headers,
+                )
 
             response_count += 1
             if response.next:
@@ -114,7 +115,8 @@ def collect_messages(
     if httpie_session:
         if httpie_session.is_new() or not args.session_read_only:
             httpie_session.cookies = requests_session.cookies
-            httpie_session.remove_expired_cookies(expired_cookies)
+            httpie_session.remove_cookies(
+                cookie['name'] for cookie in expired_cookies)
             httpie_session.save()
 
 

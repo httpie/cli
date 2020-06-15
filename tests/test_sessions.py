@@ -1,18 +1,17 @@
 # coding=utf-8
+import json
 import os
 import shutil
-import sys
-import json
 from datetime import datetime
 from tempfile import gettempdir
 
 import pytest
 
-from httpie.sessions import Session
-from httpie.plugins.builtin import HTTPBasicAuth
-from httpie.utils import get_expired_cookies
-from utils import MockEnvironment, mk_config_dir, http, HTTP_OK
 from fixtures import UNICODE
+from httpie.plugins.builtin import HTTPBasicAuth
+from httpie.sessions import Session
+from httpie.utils import get_expired_cookies
+from utils import HTTP_OK, MockEnvironment, http, mk_config_dir
 
 
 class SessionTestBase:
@@ -194,15 +193,29 @@ class TestSession(SessionTestBase):
     @pytest.mark.parametrize(
         argnames=['initial_cookies', 'expired_cookies'],
         argvalues=[
-            ({'id': {'value': 123}}, {'name': 'id'}),
-            ({'id': {'value': 123}}, {'name': 'token'})
+            ({
+                 'id': {
+                     'value': 123
+                 }
+             }, {
+                 'name': 'id'
+             }),
+            ({
+                 'id': {
+                     'value': 123
+                 }
+             }, {
+                 'name': 'token'
+             })
         ]
     )
-    def test_removes_expired_cookies_from_session_obj(self, initial_cookies, expired_cookies, httpbin):
+    def test_removes_expired_cookies_from_session_obj(self, initial_cookies,
+                                                      expired_cookies,
+                                                      httpbin):
         self.start_session(httpbin)
         session = Session(self.config_dir)
         session['cookies'] = initial_cookies
-        session.remove_expired_cookies([expired_cookies])
+        session.remove_cookies([expired_cookies])
         assert expired_cookies['name'] not in session.cookies
 
     def test_expired_cookies(self, httpbin):
@@ -239,25 +252,51 @@ class TestGetExpiredCookiesUtil:
         argnames=['raw_header', 'timestamp', 'expected'],
         argvalues=[
             ([('X-Powered-By', 'Express'),
-              ('Set-Cookie', 'hello=world; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; HttpOnly'),
-                ('Content-Type', 'application/json; charset=utf-8'), ('Content-Length', '35'), ('ETag', 'W/"23-VhiALGYCMivVwSJRaovse0pz+QE"'),
-              ('Date', 'Thu, 01-Jan-1970 00:00:00 GMT'), ('Connection', 'keep-alive')],
-                None,
-                [{'name': 'hello', 'path': '/'}]),
+              ('Set-Cookie',
+               'hello=world; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; HttpOnly'),
+              ('Content-Type', 'application/json; charset=utf-8'),
+              ('Content-Length', '35'),
+              ('ETag', 'W/"23-VhiALGYCMivVwSJRaovse0pz+QE"'),
+              ('Date', 'Thu, 01-Jan-1970 00:00:00 GMT'),
+              ('Connection', 'keep-alive')],
+             None,
+             [{
+                  'name': 'hello',
+                  'path': '/'
+              }]),
             ([('X-Powered-By', 'Express'),
-              ('Set-Cookie', 'hello=world; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; HttpOnly'),
-                ('Set-Cookie', 'pea=pod; Path=/ab; Expires=Thu, 01-Jan-1970 00:00:00 GMT; HttpOnly'),
-                ('Content-Type', 'application/json; charset=utf-8'), ('Content-Length', '35'), ('ETag', 'W/"23-VhiALGYCMivVwSJRaovse0pz+QE"'),
-              ('Date', 'Thu, 01-Jan-1970 00:00:00 GMT'), ('Connection', 'keep-alive')],
-                None,
-                [{'name': 'hello', 'path': '/'}, {'name': 'pea', 'path': '/ab'}]),
+              ('Set-Cookie',
+               'hello=world; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; HttpOnly'),
+              ('Set-Cookie',
+               'pea=pod; Path=/ab; Expires=Thu, 01-Jan-1970 00:00:00 GMT; HttpOnly'),
+              ('Content-Type', 'application/json; charset=utf-8'),
+              ('Content-Length', '35'),
+              ('ETag', 'W/"23-VhiALGYCMivVwSJRaovse0pz+QE"'),
+              ('Date', 'Thu, 01-Jan-1970 00:00:00 GMT'),
+              ('Connection', 'keep-alive')],
+             None,
+             [{
+                  'name': 'hello',
+                  'path': '/'
+              }, {
+                  'name': 'pea',
+                  'path': '/ab'
+              }]),
             ([('X-Powered-By', 'Express'),
-              ('Set-Cookie', 'hello=world; Path=/; Expires=Fri, 12 Jun 2020 12:28:55 GMT; HttpOnly'),
-                ('Content-Type', 'application/json; charset=utf-8'), ('Content-Length', '35'), ('ETag', 'W/"23-VhiALGYCMivVwSJRaovse0pz+QE"'),
-                ('Date', 'Fri, 12 Jun 2020 14:42:15 GMT'), ('Connection', 'keep-alive')],
+              ('Set-Cookie',
+               'hello=world; Path=/; Expires=Fri, 12 Jun 2020 12:28:55 GMT; HttpOnly'),
+              ('Content-Type', 'application/json; charset=utf-8'),
+              ('Content-Length', '35'),
+              ('ETag', 'W/"23-VhiALGYCMivVwSJRaovse0pz+QE"'),
+              ('Date', 'Fri, 12 Jun 2020 14:42:15 GMT'),
+              ('Connection', 'keep-alive')],
              datetime(2020, 6, 11).timestamp(),
-                [])
+             [])
         ]
     )
-    def test_get_expired_cookies_manages_multiple_cookie_headers(self, raw_header, timestamp, expected):
-        assert get_expired_cookies(raw_header, curr_timestamp=timestamp) == expected
+    def test_get_expired_cookies_manages_multiple_cookie_headers(self,
+                                                                 raw_header,
+                                                                 timestamp,
+                                                                 expected):
+        assert get_expired_cookies(raw_header,
+                                   curr_timestamp=timestamp) == expected

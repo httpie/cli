@@ -5,7 +5,7 @@ Persistent, JSON-serialized sessions.
 import os
 import re
 from pathlib import Path
-from typing import Optional, Union
+from typing import Iterable, List, Optional, Union
 from urllib.parse import urlsplit
 
 from requests.auth import AuthBase
@@ -145,7 +145,7 @@ class Session(BaseConfigDict):
         assert {'type', 'raw_auth'} == auth.keys()
         self['auth'] = auth
 
-    def remove_expired_cookies(self, expired_cookies: list) -> None:
-        for cookie in expired_cookies:
-            if cookie['name'] in self['cookies']:
-                self['cookies'].pop(cookie['name'])
+    def remove_cookies(self, names: Iterable[str]):
+        for name in names:
+            if name in self['cookies']:
+                del self['cookies']
