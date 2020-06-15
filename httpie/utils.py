@@ -1,8 +1,12 @@
 from __future__ import division
+
 import json
 import mimetypes
+import time
 from collections import OrderedDict
+from http.cookiejar import parse_ns_headers
 from pprint import pformat
+from typing import List, Tuple
 
 import requests.auth
 
@@ -83,3 +87,27 @@ def get_content_type(filename):
         if encoding:
             content_type = '%s; charset=%s' % (mime, encoding)
         return content_type
+
+
+def get_expired_cookies(
+    headers: List[Tuple[str, str]],
+    now: float = None
+) -> List[dict]:
+    now = now or time.time()
+    attr_sets: List[Tuple[str, str]] = parse_ns_headers(
+        value for name, value in headers
+        if name.lower() == 'set-cookie'
+    )
+    cookies = [
+        # The first attr name is the cookie name.
+        dict(attrs[1:], name=attrs[0][0])
+        for attrs in attr_sets
+    ]
+    return [
+        {
+            'name': cookie['name'],
+            'path': cookie.get('path', '/')
+        }
+        for cookie in cookies
+        if cookie.get('expires', float('Inf')) <= now
+    ]

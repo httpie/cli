@@ -14,7 +14,8 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 * Added ``--ciphers`` to allow configuring OpenSSL ciphers (`#870`_).
 * Added support for ``$XDG_CONFIG_HOME`` (`#920`_).
 * Added support for custom content types for uploaded files (`#668`_).
-
+* Added support for ``Set-Cookie``-triggered cookie expiration (`#853`_).
+* Improved error message formatting for connection errors (`#815`_).
 
 `2.1.0`_ (2020-04-18)
 ---------------------
@@ -437,9 +438,10 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 .. _#128: https://github.com/jakubroztocil/httpie/issues/128
 .. _#488: https://github.com/jakubroztocil/httpie/issues/488
+.. _#668: https://github.com/jakubroztocil/httpie/issues/668
 .. _#840: https://github.com/jakubroztocil/httpie/issues/840
+.. _#853: https://github.com/jakubroztocil/httpie/issues/853
 .. _#870: https://github.com/jakubroztocil/httpie/issues/870
 .. _#895: https://github.com/jakubroztocil/httpie/issues/895
 .. _#920: https://github.com/jakubroztocil/httpie/issues/920
 .. _#925: https://github.com/jakubroztocil/httpie/issues/925
-.. _#668: https://github.com/jakubroztocil/httpie/issues/668

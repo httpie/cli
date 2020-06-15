@@ -14,7 +14,6 @@ def test_error(program):
     r = http('www.google.com', tolerate_error_exit_status=True)
     assert r.exit_status == ExitStatus.ERROR
     error_msg = (
-        'ConnectionError: '
         'Connection aborted while doing a GET request to URL: '
         'http://www.google.com'
     )
@@ -32,15 +31,14 @@ def test_error_traceback(program):
 
 @mock.patch('httpie.core.program')
 def test_connection_error(program):
-    exc = ConnectionError('Connection failed')
-    exc.request = Request(method='GET', url='.invalid')
+    exc = ConnectionError('Connection aborted')
+    exc.request = Request(method='GET', url='http://test.invalid')
     program.side_effect = exc
-    r = http('.invalid', tolerate_error_exit_status=True)
+    r = http('http://test.invalid', tolerate_error_exit_status=True)
     assert r.exit_status == ExitStatus.ERROR
     error_msg = (
-        'ConnectionError: '
-        'Connection failed while doing a GET request to URL: '
-        '.invalid'
+        'Connection aborted while doing a GET request to URL: '
+        'http://test.invalid'
     )
     assert error_msg in r.stderr
 
