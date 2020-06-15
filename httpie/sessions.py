@@ -5,11 +5,11 @@ Persistent, JSON-serialized sessions.
 import os
 import re
 from pathlib import Path
-from typing import Optional, Union
+from typing import Iterable, Optional, Union
 from urllib.parse import urlsplit
 
 from requests.auth import AuthBase
-from requests.cookies import RequestsCookieJar, create_cookie
+from requests.cookies import RequestsCookieJar, create_cookie, remove_cookie_by_name
 
 from httpie.cli.dicts import RequestHeadersDict
 from httpie.config import BaseConfigDict, DEFAULT_CONFIG_DIR
@@ -144,3 +144,8 @@ class Session(BaseConfigDict):
     def auth(self, auth: dict):
         assert {'type', 'raw_auth'} == auth.keys()
         self['auth'] = auth
+
+    def remove_cookies(self, names: Iterable[str]):
+        for name in names:
+            if name in self['cookies']:
+                del self['cookies'][name]
