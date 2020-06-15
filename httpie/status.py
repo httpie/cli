@@ -15,7 +15,6 @@ class ExitStatus(IntEnum):
 
     ERROR_TOO_MANY_REDIRECTS = 6
     PLUGIN_ERROR = 7
-    CONNECTION_ERROR = 8
     # 128+2 SIGINT
     # <http://www.tldp.org/LDP/abs/html/exitcodes.html>
     ERROR_CTRL_C = 130

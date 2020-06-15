@@ -96,11 +96,13 @@ def main(
                 f' (--max-redirects={parsed_args.max_redirects}).'
             )
         except requests.ConnectionError:
-            exit_status = ExitStatus.CONNECTION_ERROR
-            error = connection_error.__str__()
+            exit_status = ExitStatus.ERROR
+            error = connection_error.info(parsed_args.method)
             env.log_error(
-                f'{error} to url: {parsed_args.url}.'
+                f'{error} {parsed_args.url}.'
             )
+            if include_traceback:
+                raise
         except Exception as e:
             # TODO: Further distinction between expected and unexpected errors.
             msg = str(e)
