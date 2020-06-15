@@ -15,6 +15,7 @@ def test_basic_auth(httpbin_both):
     assert HTTP_OK in r
     assert r.json == {'authenticated': True, 'user': 'user'}
 
+
 @pytest.mark.parametrize('argument_name', ['--auth-type', '-A'])
 def test_digest_auth(httpbin_both, argument_name):
     r = http(argument_name + '=digest', '--auth=user:password',
@@ -107,10 +108,10 @@ def test_ignore_netrc_together_with_auth():
     )
     assert isinstance(args.auth, HTTPBasicAuth)
 
+
 def test_honor_netrc_authtype(httpbin_both):
     with mock.patch('requests.sessions.get_netrc_auth') as get_netrc_auth:
         get_netrc_auth.return_value = ('httpie', 'password')
-        r = http('--auth-type=basic','GET', httpbin_both + '/basic-auth/httpie/password')
+        r = http('--auth-type=basic', 'GET', httpbin_both + '/basic-auth/httpie/password')
         assert get_netrc_auth.call_count == 1
         assert HTTP_OK in r
-
