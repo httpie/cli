@@ -188,47 +188,49 @@ class TestSession(SessionTestBase):
         finally:
             os.chdir(cwd)
 
-    @pytest.mark.parametrize(
-        argnames=["new_cookies", "new_cookies_dict", "expected"],
-        argvalues=[(
-            "new=bar",
-            {"new": "bar"},
-            "existing_cookie=foo; new=bar"
-        ),
-            (
-            "new=bar;chocolate=milk",
-            {"new": "bar", "chocolate": "milk"},
-            "chocolate=milk; existing_cookie=foo; new=bar"
-        ),
-            (
-            "new=bar; chocolate=milk",
-            {"new": "bar", "chocolate": "milk"},
-            "chocolate=milk; existing_cookie=foo; new=bar"
-        )
-        ]
+
+@pytest.mark.parametrize(
+    argnames=["new_cookies", "new_cookies_dict", "expected"],
+    argvalues=[(
+        "new=bar",
+        {"new": "bar"},
+        "existing_cookie=foo; new=bar"
+    ),
+        (
+        "new=bar;chocolate=milk",
+        {"new": "bar", "chocolate": "milk"},
+        "chocolate=milk; existing_cookie=foo; new=bar"
+    ),
+        (
+        "new=bar; chocolate=milk",
+        {"new": "bar", "chocolate": "milk"},
+        "chocolate=milk; existing_cookie=foo; new=bar"
     )
-    def test_existing_and_new_cookies_sent_in_request(self, new_cookies, new_cookies_dict, expected, httpbin):
-        self.start_session(httpbin)
-        orig_session = {
-            'cookies': {
-                'existing_cookie': {
-                    'value': 'foo',
-                }
+    ]
+)
+def test_existing_and_new_cookies_sent_in_request(new_cookies, new_cookies_dict, expected, httpbin):
+    config_dir = mk_config_dir()
+    orig_session = {
+        'cookies': {
+            'existing_cookie': {
+                'value': 'foo',
             }
         }
-        session_path = self.config_dir / 'test-session.json'
-        session_path.write_text(json.dumps(orig_session))
+    }
+    session_path = config_dir / 'test-session.json'
+    session_path.write_text(json.dumps(orig_session))
 
-        r = http(
-            '--session', str(session_path),
-            '--print=H',
-            httpbin.url,
-            'Cookie:' + new_cookies,
-        )
-        # Note: cookies in response are in alphabetical order
-        assert 'Cookie: ' + expected in r
+    r = http(
+        '--session', str(session_path),
+        '--print=H',
+        httpbin.url,
+        'Cookie:' + new_cookies,
+    )
+    # Note: cookies in response are in alphabetical order
+    assert 'Cookie: ' + expected in r
 
-        updated_session = json.loads(session_path.read_text())
-        for name, value in new_cookies_dict.items():
-            assert name, value in updated_session['cookies']
-            assert "Cookie" not in updated_session['headers']
+    updated_session = json.loads(session_path.read_text())
+    for name, value in new_cookies_dict.items():
+        assert name, value in updated_session['cookies']
+        assert "Cookie" not in updated_session['headers']
+    shutil.rmtree(config_dir)
