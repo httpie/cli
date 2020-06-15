@@ -1,10 +1,12 @@
 from __future__ import division
+from typing import Tuple
 import json
 import mimetypes
 from collections import OrderedDict
 from pprint import pformat
 
 import requests.auth
+import requests.sessions
 
 
 def load_json_preserve_order(s):
@@ -83,3 +85,17 @@ def get_content_type(filename):
         if encoding:
             content_type = '%s; charset=%s' % (mime, encoding)
         return content_type
+
+
+def netrc_reader(host: str, ignore_netrc: bool) -> Tuple[str]:
+    """
+    Returns a tuple contatining (account, password) or None.
+    """
+    # code should be refactored to prevent access to .netrc if access
+    # is too permisive
+    if ignore_netrc:
+        authenticator = None
+    else:
+        authenticator = requests.sessions.get_netrc_auth(host)
+
+        return authenticator

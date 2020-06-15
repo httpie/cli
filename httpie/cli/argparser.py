@@ -3,6 +3,8 @@ import errno
 import os
 import re
 import sys
+
+from requests.sessions import get_netrc_auth
 from argparse import RawDescriptionHelpFormatter
 from textwrap import dedent
 from urllib.parse import urlsplit
@@ -19,7 +21,7 @@ from httpie.cli.exceptions import ParseError
 from httpie.cli.requestitems import RequestItems
 from httpie.context import Environment
 from httpie.plugins.registry import plugin_manager
-from httpie.utils import ExplicitNullAuth, get_content_type
+from httpie.utils import ExplicitNullAuth, get_content_type, netrc_reader
 
 
 class HTTPieHelpFormatter(RawDescriptionHelpFormatter):
@@ -158,9 +160,11 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
         self.args.auth_plugin = None
         default_auth_plugin = plugin_manager.get_auth_plugins()[0]
         auth_type_set = self.args.auth_type is not None
+        auth_set = self.args.auth is not None
+        netrc_token = None
         url = urlsplit(self.args.url)
 
-        if self.args.auth is None and not auth_type_set:
+        if not auth_set and not auth_type_set:
             if url.username is not None:
                 # Handle http://username:password@hostname/
                 username = url.username
@@ -171,6 +175,20 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
                     sep=SEPARATOR_CREDENTIALS,
                     orig=SEPARATOR_CREDENTIALS.join([username, password])
                 )
+        parsed_with_url = isinstance(self.args.auth, AuthCredentials)
+
+        # Get netrc data if it exists
+        netrc_token = netrc_reader(self.args.url, self.args.ignore_netrc)
+        netrc_auth = None
+        if netrc_token is not None:
+            username = netrc_token[0]
+            password = netrc_token[1]
+            netrc_auth = AuthCredentials(
+                key=username,
+                value=password,
+                sep=SEPARATOR_CREDENTIALS,
+                orig=SEPARATOR_CREDENTIALS.join([username, password])
+            )
 
         if self.args.auth is not None or auth_type_set:
             if not self.args.auth_type:
@@ -178,7 +196,10 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
             plugin = plugin_manager.get_auth_plugin(self.args.auth_type)()
 
             if plugin.auth_require and self.args.auth is None:
-                self.error('--auth required')
+                if netrc_auth is None:
+                    self.error('--auth required')
+                else:
+                    self.args.auth = netrc_auth
 
             plugin.raw_auth = self.args.auth
             self.args.auth_plugin = plugin
@@ -206,6 +227,14 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
                     username=credentials.key,
                     password=credentials.value,
                 )
+        if not self.args.auth and netrc_auth is not None:
+            self.args.auth_type = default_auth_plugin.auth_type
+            plugin = plugin_manager.get_auth_plugin(self.args.auth_type)()
+            self.args.auth = plugin.get_auth(
+                username=netrc_auth.key,
+                password=netrc_auth.value,
+            )
+
         if not self.args.auth and self.args.ignore_netrc:
             # Set a no-op auth to force requests to ignore .netrc
             # <https://github.com/psf/requests/issues/2773#issuecomment-174312831>
