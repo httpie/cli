@@ -15,8 +15,6 @@ from httpie.downloads import Downloader
 from httpie.output.writer import write_message, write_stream
 from httpie.plugins.registry import plugin_manager
 from httpie.status import ExitStatus, http_status_to_exit_status
-from httpie.cli.errors import ConnectionError as connection_error_message
-
 
 # noinspection PyDefaultArgument
 def main(
@@ -36,7 +34,6 @@ def main(
     env.program_name = os.path.basename(program_name)
     args = decode_raw_args(args, env.stdin_encoding)
     plugin_manager.load_installed_plugins()
-    connection_error = connection_error_message()
 
     from httpie.cli.definition import parser
 
@@ -97,9 +94,8 @@ def main(
             )
         except requests.ConnectionError:
             exit_status = ExitStatus.ERROR
-            error = connection_error.info(parsed_args.method)
             env.log_error(
-                f'{error} {parsed_args.url}.'
+                f"Connection failed while doing a {parsed_args.method} request to URL: {parsed_args.url}"
             )
             if include_traceback:
                 raise
