@@ -89,25 +89,25 @@ def get_content_type(filename):
         return content_type
 
 
-def get_expired_cookies(headers: List[Tuple[str, str]], curr_timestamp: float = None) -> List[dict]:
-    expired_cookies = []
-    cookie_headers = []
-    curr_timestamp = curr_timestamp or time.time()
-
-    for header_name, content in headers:
-        if header_name == 'Set-Cookie':
-            cookie_headers.append(content)
-
-    extracted_cookies = [
-        dict(cookie, name=cookie[0][0])
-        for cookie in parse_ns_headers(cookie_headers)
+def get_expired_cookies(
+    headers: List[Tuple[str, str]],
+    now: float = None
+) -> List[dict]:
+    now = now or time.time()
+    attr_sets: List[Tuple[str, str]] = parse_ns_headers(
+        value for name, value in headers
+        if name.lower() == 'set-cookie'
+    )
+    cookies = [
+        # The first attr name is the cookie name.
+        dict(attrs[1:], name=attrs[0][0])
+        for attrs in attr_sets
     ]
-
-    for cookie in extracted_cookies:
-        if "expires" in cookie and cookie['expires'] <= curr_timestamp:
-            expired_cookies.append({
-                'name': cookie['name'],
-                'path': cookie.get('path', '/')
-            })
-
-    return expired_cookies
+    return [
+        {
+            'name': cookie['name'],
+            'path': cookie.get('path', '/')
+        }
+        for cookie in cookies
+        if cookie.get('expires', float('Inf')) <= now
+    ]

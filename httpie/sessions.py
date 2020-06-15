@@ -9,7 +9,7 @@ from typing import Iterable, Optional, Union
 from urllib.parse import urlsplit
 
 from requests.auth import AuthBase
-from requests.cookies import RequestsCookieJar, create_cookie, remove_cookie_by_name
+from requests.cookies import RequestsCookieJar, create_cookie
 
 from httpie.cli.dicts import RequestHeadersDict
 from httpie.config import BaseConfigDict, DEFAULT_CONFIG_DIR

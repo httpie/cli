@@ -193,6 +193,12 @@ class TestSession(SessionTestBase):
 
 class TestExpiredCookies:
 
+    def setup_method(self, method):
+        self.config_dir = mk_config_dir()
+
+    def teardown_method(self, method):
+        shutil.rmtree(self.config_dir)
+
     @pytest.mark.parametrize(
         argnames=['initial_cookie', 'expired_cookie'],
         argvalues=[
@@ -201,13 +207,10 @@ class TestExpiredCookies:
         ]
     )
     def test_removes_expired_cookies_from_session_obj(self, initial_cookie, expired_cookie, httpbin):
-        config_dir = mk_config_dir()
-        session = Session(config_dir)
+        session = Session(self.config_dir)
         session['cookies'] = initial_cookie
         session.remove_cookies([expired_cookie])
         assert expired_cookie not in session.cookies
-
-        shutil.rmtree(config_dir)
 
     def test_expired_cookies(self, httpbin):
         orig_session = {
@@ -220,8 +223,7 @@ class TestExpiredCookies:
                 },
             }
         }
-        config_dir = mk_config_dir()
-        session_path = config_dir / 'test-session.json'
+        session_path = self.config_dir / 'test-session.json'
         session_path.write_text(json.dumps(orig_session))
 
         r = http(
@@ -235,10 +237,8 @@ class TestExpiredCookies:
         assert 'to_stay' in updated_session['cookies']
         assert 'to_expire' not in updated_session['cookies']
 
-        shutil.rmtree(config_dir)
-
     @pytest.mark.parametrize(
-        argnames=['raw_header', 'timestamp', 'expected'],
+        argnames=['headers', 'now', 'expected_expired'],
         argvalues=[
             (
                 [
@@ -271,11 +271,9 @@ class TestExpiredCookies:
                     ('Connection', 'keep-alive')
                 ],
                 datetime(2020, 6, 11).timestamp(),
-                [
-
-                ]
+                []
             )
         ]
     )
-    def test_get_expired_cookies_manages_multiple_cookie_headers(self, raw_header, timestamp, expected):
-        assert get_expired_cookies(raw_header, curr_timestamp=timestamp) == expected
+    def test_get_expired_cookies_manages_multiple_cookie_headers(self, headers, now, expected_expired):
+        assert get_expired_cookies(headers, now=now) == expected_expired
