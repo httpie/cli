@@ -190,6 +190,7 @@ class TestSession(SessionTestBase):
         finally:
             os.chdir(cwd)
 
+
 class TestExpiredCookie(SessionTestBase):
 
     @pytest.mark.parametrize(
@@ -232,6 +233,7 @@ class TestExpiredCookie(SessionTestBase):
         updated_session = json.loads(session_path.read_text())
         assert 'to_stay' in updated_session['cookies']
         assert 'to_expire' not in updated_session['cookies']
+
 
 @pytest.mark.parametrize(
     argnames=['raw_header', 'timestamp', 'expected'],

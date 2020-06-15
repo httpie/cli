@@ -97,7 +97,7 @@ def collect_messages(
                     **send_kwargs,
                 )
                 expired_cookies += get_expired_cookies(
-                    headers = response.raw._original_response.msg._headers
+                    headers=response.raw._original_response.msg._headers
                 )
 
             response_count += 1
