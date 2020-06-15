@@ -190,6 +190,8 @@ class TestSession(SessionTestBase):
         finally:
             os.chdir(cwd)
 
+class TestExpiredCookie(SessionTestBase):
+
     @pytest.mark.parametrize(
         argnames=['initial_cookies', 'expired_cookies'],
         argvalues=[
