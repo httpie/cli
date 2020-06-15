@@ -78,6 +78,12 @@ class Session(BaseConfigDict):
             value = value.decode('utf8')
             if name == 'User-Agent' and value.startswith('HTTPie/'):
                 continue
+            
+            if name == 'Cookie':
+                for cookie in value.split(';'):
+                    key, value = cookie.split("=")
+                    self['cookies'][key] = {'value': value}
+                del request_headers['Cookie']
 
             for prefix in SESSION_IGNORED_HEADER_PREFIXES:
                 if name.lower().startswith(prefix.lower()):

@@ -188,12 +188,17 @@ class TestSession(SessionTestBase):
         finally:
             os.chdir(cwd)
     
-    def test_existing_and_new_cookies_sent_in_request(self, httpbin):
+    @pytest.mark.parametrize(
+        "new_cookies, expected", 
+        [("new=bar", "existing_cookie=foo; new=bar"),
+        ("new=bar; chocolate=milk", "chocolate=milk; existing_cookie=foo; new=bar")]
+    )
+    def test_existing_and_new_cookies_sent_in_request(self, new_cookies, expected, httpbin):
         self.start_session(httpbin)
         orig_session = {
             'cookies': {
-                'existing': {
-                    'value': 'foo'
+                'existing_cookie': {
+                    'value': 'foo',
                 }
             }
         }
@@ -203,6 +208,7 @@ class TestSession(SessionTestBase):
         r = http(
             '--session', str(session_path),
             '--print=H',
-            httpbin.url, 'Cookie:new=bar',
+            httpbin.url, 'Cookie:'+ new_cookies,
         )
-        assert 'Cookie: existing=foo; new=bar' in r
+        #Note: cookies in response are in alphabetical order
+        assert 'Cookie: ' + expected in r
