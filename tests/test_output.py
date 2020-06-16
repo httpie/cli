@@ -6,7 +6,12 @@ from urllib.request import urlopen
 
 import pytest
 
-from httpie.cli.argtypes import parse_format_options
+from httpie.cli.constants import DEFAULT_FORMAT_OPTIONS
+from httpie.cli.definition import parser
+from httpie.cli.argtypes import (
+    PARSED_DEFAULT_FORMAT_OPTIONS,
+    parse_format_options,
+)
 from httpie.output.formatters.colors import get_lexer
 from httpie.status import ExitStatus
 from utils import COLOR, CRLF, HTTP_OK, MockEnvironment, http
@@ -249,3 +254,55 @@ class TestFormatOptions:
         }
         with pytest.raises(argparse.ArgumentTypeError, match=expected_error):
             parse_format_options(s=options_string, defaults=defaults)
+
+    @pytest.mark.parametrize(
+        argnames=['args', 'expected_format_options'],
+        argvalues=[
+            (
+                [
+                    '--format-options',
+                    'headers.sort:false,json.sort_keys:false',
+                    '--format-options=json.indent:10'
+                ],
+                {
+                    'headers': {'sort': False},
+                    'json': {'sort_keys': False, 'indent': 10, 'format': True},
+                }
+            ),
+            (
+                [
+                    '--unsorted'
+                ],
+                {
+                    'headers': {'sort': False},
+                    'json': {'sort_keys': False, 'indent': 4, 'format': True},
+                }
+            ),
+            (
+                [
+                    '--format-options=headers.sort:true',
+                    '--unsorted',
+                    '--format-options=headers.sort:true',
+                ],
+                {
+                    'headers': {'sort': True},
+                    'json': {'sort_keys': False, 'indent': 4, 'format': True},
+                }
+            ),
+            (
+                [
+                    '--no-format-options',  # --no-<option> anywhere resets
+                    '--format-options=headers.sort:true',
+                    '--unsorted',
+                    '--format-options=headers.sort:true',
+                ],
+                PARSED_DEFAULT_FORMAT_OPTIONS,
+            ),
+        ],
+    )
+    def test_format_options_accumulation(self, args, expected_format_options):
+        parsed_args = parser.parse_args(
+            args=[*args, 'example.org'],
+            env=MockEnvironment(),
+        )
+        assert parsed_args.format_options == expected_format_options

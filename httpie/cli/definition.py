@@ -9,14 +9,13 @@ from httpie import __doc__, __version__
 from httpie.cli.argparser import HTTPieArgumentParser
 from httpie.cli.argtypes import (
     KeyValueArgType, PARSED_DEFAULT_FORMAT_OPTIONS, SessionNameValidator,
-    parse_format_options,
     readable_file_arg,
 )
 from httpie.cli.constants import (
     DEFAULT_FORMAT_OPTIONS, OUTPUT_OPTIONS,
     OUTPUT_OPTIONS_DEFAULT, OUT_REQ_BODY, OUT_REQ_HEAD,
     OUT_RESP_BODY, OUT_RESP_HEAD, PRETTY_MAP, PRETTY_STDOUT_TTY_ONLY,
-    SEPARATOR_GROUP_ALL_ITEMS, SEPARATOR_PROXY,
+    SEPARATOR_GROUP_ALL_ITEMS, SEPARATOR_PROXY, UNSORTED_FORMAT_OPTIONS,
 )
 from httpie.output.formatters.colors import (
     AUTO_STYLE, AVAILABLE_STYLES, DEFAULT_STYLE,
@@ -229,14 +228,22 @@ output_processing.add_argument(
         auto_style=AUTO_STYLE,
     )
 )
+output_processing.add_argument(
+    '--unsorted',
+    action='append_const',
+    const=','.join(UNSORTED_FORMAT_OPTIONS),
+    dest='format_options',
+    help="""
+    Disables all sorting while formatting output. It is a shortcut for:
 
+        --format-options=json.sort_keys:false,headers.sort:false
+
+    """
+)
 output_processing.add_argument(
     '--format-options',
-    type=lambda s: parse_format_options(
-        s=s,
-        defaults=PARSED_DEFAULT_FORMAT_OPTIONS
-    ),
-    default=PARSED_DEFAULT_FORMAT_OPTIONS,
+    default=[],
+    action='append',
     help="""
     Controls output formatting. Only relevant when formatting is enabled
     through (explicit or implied) --pretty=all or --pretty=format.
@@ -244,10 +251,11 @@ output_processing.add_argument(
 
         {option_list}
 
-    You can specify multiple comma-separated options. For example, this modifies
-    the settings to disable the sorting of JSON keys and headers:
+    You may use this option multiple times, as well as specify multiple
+    comma-separated options at the same time. For example, this modifies the
+    settings to disable the sorting of JSON keys, and sets the indent size to 2:
 
-        --format-options json.sort_keys:false,headers.sort:false
+        --format-options json.sort_keys:false,json.indent:2
 
     This is something you will typically put into your config file.
 

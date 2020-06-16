@@ -91,7 +91,10 @@ DEFAULT_FORMAT_OPTIONS = [
     'json.indent:4',
     'json.sort_keys:true',
 ]
-
+UNSORTED_FORMAT_OPTIONS = [
+    'headers.sort:false',
+    'json.sort_keys:false',
+]
 
 # Defaults
 OUTPUT_OPTIONS_DEFAULT = OUT_RESP_HEAD + OUT_RESP_BODY
