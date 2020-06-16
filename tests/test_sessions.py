@@ -295,6 +295,16 @@ class TestExpiredCookies:
         "new=bar; chocolate=milk",
         {"new": "bar", "chocolate": "milk"},
         "chocolate=milk; existing_cookie=foo; new=bar"
+    ),
+        (
+        "new=bar;; chocolate=milk;;;",
+        {"new": "bar", "chocolate": "milk"},
+        "existing_cookie=foo; new=bar"
+    ),
+        (
+        "new=bar; chocolate=milk;;;",
+        {"new": "bar", "chocolate": "milk"},
+        "chocolate=milk; existing_cookie=foo; new=bar"
     )
     ]
 )

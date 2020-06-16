@@ -4,6 +4,8 @@ Persistent, JSON-serialized sessions.
 """
 import os
 import re
+
+from http.cookies import SimpleCookie
 from pathlib import Path
 from typing import Iterable, Optional, Union
 from urllib.parse import urlsplit
@@ -79,10 +81,9 @@ class Session(BaseConfigDict):
             if name == 'User-Agent' and value.startswith('HTTPie/'):
                 continue
 
-            if name == 'Cookie':
-                for cookie in value.split(';'):
-                    name, value = cookie.split("=")
-                    self['cookies'][name.strip()] = {'value': value.strip()}
+            if name.lower() == 'cookie':
+                for cookie_name, morsel in SimpleCookie(value).items():
+                    self['cookies'][cookie_name] = {'value': morsel.value}
                 del request_headers['Cookie']
                 continue
 
