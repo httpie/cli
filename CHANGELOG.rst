@@ -10,12 +10,12 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 -------------------------
 
 * Fixed built-in plugins-related circular imports (`#925`_).
-* Added ``--format-options`` to allow disabling sorting, etc. (`#128`_)
-* Added ``--unsorted`` shortcut to set all sorting-related ``--format-options`` to ``false``. (`#128`_)
 * Added ``--ciphers`` to allow configuring OpenSSL ciphers (`#870`_).
 * Added support for ``$XDG_CONFIG_HOME`` (`#920`_).
 * Added support for custom content types for uploaded files (`#668`_).
 * Added support for ``Set-Cookie``-triggered cookie expiration (`#853`_).
+* Added ``--format-options`` to allow disabling sorting, etc. (`#128`_)
+* Added ``--sorted`` and ``--unsorted`` shortcuts for (un)setting all sorting-related ``--format-options``. (`#128`_)
 * Added ``netrc`` support for auth plugins.
   Enabled for ``--auth-type=basic`` and ``digest``, 3rd parties may opt in (`#718`_, `#719`_, `#852`_, `#934`_).
 

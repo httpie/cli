@@ -298,6 +298,40 @@ class TestFormatOptions:
                 ],
                 PARSED_DEFAULT_FORMAT_OPTIONS,
             ),
+            (
+                [
+                    '--format-options=json.indent:2',
+                    '--unsorted',
+                    '--no-unsorted',
+                ],
+                {
+                    'headers': {'sort': True},
+                    'json': {'sort_keys': True, 'indent': 2, 'format': True},
+                }
+            ),
+            (
+                [
+                    '--format-options=json.indent:2',
+                    '--unsorted',
+                    '--sorted',
+                ],
+                {
+                    'headers': {'sort': True},
+                    'json': {'sort_keys': True, 'indent': 2, 'format': True},
+                }
+            ),
+            (
+                [
+                    '--format-options=json.indent:2',
+                    '--sorted',
+                    '--no-sorted',
+                    '--no-unsorted',
+                ],
+                {
+                    'headers': {'sort': True},
+                    'json': {'sort_keys': True, 'indent': 2, 'format': True},
+                }
+            ),
         ],
     )
     def test_format_options_accumulation(self, args, expected_format_options):
