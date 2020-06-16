@@ -91,27 +91,22 @@ def main(
                 f'Too many redirects'
                 f' (--max-redirects={parsed_args.max_redirects}).'
             )
-        except requests.ConnectionError as e:
-            exit_status = ExitStatus.ERROR
-            if hasattr(e, 'request'):
-                request = e.request
-                if hasattr(request, 'url'):
-                    env.log_error(
-                        f'Connection aborted while doing a '
-                        f'{parsed_args.method} request to URL: {request.url}.'
-                    )
-            if include_traceback:
-                raise
         except Exception as e:
             # TODO: Further distinction between expected and unexpected errors.
             msg = str(e)
             if hasattr(e, 'request'):
                 request = e.request
                 if hasattr(request, 'url'):
-                    msg = (
-                        f'{msg} while doing a {request.method}'
-                        f' request to URL: {request.url}'
-                    )
+                    if type(e) is requests.ConnectionError:
+                        env.log_error(
+                            f'Connection aborted while doing a '
+                            f'{request.method} request to URL: {request.url}.'
+                        )
+                    else:
+                        msg = (
+                            f'{msg} while doing a {request.method}'
+                            f' request to URL: {request.url}'
+                        )
             env.log_error(f'{type(e).__name__}: {msg}')
             if include_traceback:
                 raise
