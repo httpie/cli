@@ -22,6 +22,7 @@ class HTTPBasicAuth(requests.auth.HTTPBasicAuth):
         See https://github.com/jakubroztocil/httpie/issues/212
 
         """
+        # noinspection PyTypeChecker
         request.headers['Authorization'] = type(self).make_header(
             self.username, self.password).encode('latin1')
         return request
@@ -36,6 +37,7 @@ class HTTPBasicAuth(requests.auth.HTTPBasicAuth):
 class BasicAuthPlugin(BuiltinAuthPlugin):
     name = 'Basic HTTP auth'
     auth_type = 'basic'
+    netrc_parse = True
 
     # noinspection PyMethodOverriding
     def get_auth(self, username: str, password: str) -> HTTPBasicAuth:
@@ -43,9 +45,9 @@ class BasicAuthPlugin(BuiltinAuthPlugin):
 
 
 class DigestAuthPlugin(BuiltinAuthPlugin):
-
     name = 'Digest HTTP auth'
     auth_type = 'digest'
+    netrc_parse = True
 
     # noinspection PyMethodOverriding
     def get_auth(

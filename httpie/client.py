@@ -17,8 +17,7 @@ from httpie.cli.dicts import RequestHeadersDict
 from httpie.plugins.registry import plugin_manager
 from httpie.sessions import get_httpie_session
 from httpie.ssl import AVAILABLE_SSL_VERSION_ARG_MAPPING, HTTPieHTTPSAdapter
-from httpie.utils import repr_dict
-
+from httpie.utils import get_expired_cookies, repr_dict
 
 urllib3.disable_warnings()
 
@@ -82,6 +81,7 @@ def collect_messages(
     if args.compress and prepared_request.body:
         compress_body(prepared_request, always=args.compress > 1)
     response_count = 0
+    expired_cookies = []
     while prepared_request:
         yield prepared_request
         if not args.offline:
@@ -95,6 +95,12 @@ def collect_messages(
                     **send_kwargs_merged,
                     **send_kwargs,
                 )
+
+            # noinspection PyProtectedMember
+            expired_cookies += get_expired_cookies(
+                headers=response.raw._original_response.msg._headers
+            )
+
             response_count += 1
             if response.next:
                 if args.max_redirects and response_count == args.max_redirects:
@@ -110,6 +116,10 @@ def collect_messages(
     if httpie_session:
         if httpie_session.is_new() or not args.session_read_only:
             httpie_session.cookies = requests_session.cookies
+            httpie_session.remove_cookies(
+                # TODO: take path & domain into account?
+                cookie['name'] for cookie in expired_cookies
+            )
             httpie_session.save()
 
 
