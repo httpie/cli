@@ -242,7 +242,6 @@ output_processing.add_argument(
 )
 output_processing.add_argument(
     '--format-options',
-    default=[],
     action='append',
     help="""
     Controls output formatting. Only relevant when formatting is enabled

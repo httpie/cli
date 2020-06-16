@@ -416,6 +416,6 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
 
     def _process_format_options(self):
         parsed_options = PARSED_DEFAULT_FORMAT_OPTIONS
-        for options_group in self.args.format_options:
+        for options_group in self.args.format_options or []:
             parsed_options = parse_format_options(options_group, defaults=parsed_options)
         self.args.format_options = parsed_options
