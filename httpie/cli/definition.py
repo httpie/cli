@@ -1,7 +1,7 @@
-'''
+"""
 CLI arguments definition.
 
-'''
+"""
 from argparse import (FileType, OPTIONAL, SUPPRESS, ZERO_OR_MORE)
 from textwrap import dedent, wrap
 

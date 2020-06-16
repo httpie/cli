@@ -6,12 +6,11 @@ from urllib.request import urlopen
 
 import pytest
 
-from httpie.cli.constants import DEFAULT_FORMAT_OPTIONS
-from httpie.cli.definition import parser
 from httpie.cli.argtypes import (
     PARSED_DEFAULT_FORMAT_OPTIONS,
     parse_format_options,
 )
+from httpie.cli.definition import parser
 from httpie.output.formatters.colors import get_lexer
 from httpie.status import ExitStatus
 from utils import COLOR, CRLF, HTTP_OK, MockEnvironment, http
@@ -265,8 +264,14 @@ class TestFormatOptions:
                     '--format-options=json.indent:10'
                 ],
                 {
-                    'headers': {'sort': False},
-                    'json': {'sort_keys': False, 'indent': 10, 'format': True},
+                    'headers': {
+                        'sort': False
+                    },
+                    'json': {
+                        'sort_keys': False,
+                        'indent': 10,
+                        'format': True
+                    },
                 }
             ),
             (
@@ -274,8 +279,14 @@ class TestFormatOptions:
                     '--unsorted'
                 ],
                 {
-                    'headers': {'sort': False},
-                    'json': {'sort_keys': False, 'indent': 4, 'format': True},
+                    'headers': {
+                        'sort': False
+                    },
+                    'json': {
+                        'sort_keys': False,
+                        'indent': 4,
+                        'format': True
+                    },
                 }
             ),
             (
@@ -285,8 +296,14 @@ class TestFormatOptions:
                     '--format-options=headers.sort:true',
                 ],
                 {
-                    'headers': {'sort': True},
-                    'json': {'sort_keys': False, 'indent': 4, 'format': True},
+                    'headers': {
+                        'sort': True
+                    },
+                    'json': {
+                        'sort_keys': False,
+                        'indent': 4,
+                        'format': True
+                    },
                 }
             ),
             (
@@ -305,8 +322,14 @@ class TestFormatOptions:
                     '--no-unsorted',
                 ],
                 {
-                    'headers': {'sort': True},
-                    'json': {'sort_keys': True, 'indent': 2, 'format': True},
+                    'headers': {
+                        'sort': True
+                    },
+                    'json': {
+                        'sort_keys': True,
+                        'indent': 2,
+                        'format': True
+                    },
                 }
             ),
             (
@@ -316,8 +339,14 @@ class TestFormatOptions:
                     '--sorted',
                 ],
                 {
-                    'headers': {'sort': True},
-                    'json': {'sort_keys': True, 'indent': 2, 'format': True},
+                    'headers': {
+                        'sort': True
+                    },
+                    'json': {
+                        'sort_keys': True,
+                        'indent': 2,
+                        'format': True
+                    },
                 }
             ),
             (
@@ -328,8 +357,14 @@ class TestFormatOptions:
                     '--no-unsorted',
                 ],
                 {
-                    'headers': {'sort': True},
-                    'json': {'sort_keys': True, 'indent': 2, 'format': True},
+                    'headers': {
+                        'sort': True
+                    },
+                    'json': {
+                        'sort_keys': True,
+                        'indent': 2,
+                        'format': True
+                    },
                 }
             ),
         ],
