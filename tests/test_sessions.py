@@ -75,10 +75,13 @@ class TestSessionFlow(SessionTestBase):
 
         # Make a request modifying the session data.
         r3 = http('--follow', '--session=test', '--auth=username:password2',
-                  'GET', httpbin.url + '/cookies/set?hello=world2',
-                  'Hello:World2',
+                  '--print=Hhb', 'GET',
+                  httpbin.url + '/cookies/set?hello=world2', 'Hello:World2',
                   env=self.env())
         assert HTTP_OK in r3
+
+        # https://github.com/jakubroztocil/httpie/issues/662
+        assert 'Cookie: hello=world2' in r3
 
         # Get a response to a request from the updated session.
         r4 = http('--session=test', 'GET', httpbin.url + '/get',
