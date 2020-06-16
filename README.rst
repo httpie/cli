@@ -16,7 +16,7 @@ generally interacting with HTTP servers.
 
 .. class:: no-web no-pdf
 
-    .. image:: https://raw.githubusercontent.com/jakubroztocil/httpie/master/httpie.gif
+    .. image:: https://raw.githubusertent.com/jakubroztocil/httpie/master/httpie.gif
         :alt: HTTPie in action
         :width: 100%
         :align: center
@@ -1749,6 +1749,9 @@ but you can create it manually.
 Config file directory
 ---------------------
 
+To see the exact location for your installation, run ``http --debug`` and
+look for ``config_dir`` in the output.
+
 The default location of the configuration file on most platforms is
 ``$XDG_CONFIG_HOME/httpie/config.json`` (defaulting to
 ``~/.config/httpie/config.json``).
@@ -1766,7 +1769,6 @@ environment variable:
     $ export HTTPIE_CONFIG_DIR=/tmp/httpie
     $ http httpbin.org/get
 
-To view the exact location run ``http --debug``.
 
 
 Configurable options

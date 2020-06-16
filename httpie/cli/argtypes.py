@@ -242,3 +242,9 @@ PARSED_DEFAULT_FORMAT_OPTIONS = parse_format_options(
     s=','.join(DEFAULT_FORMAT_OPTIONS),
     defaults=None,
 )
+
+
+class UnsortedAction(argparse.Action):
+
+    def __call__(self, *args, **kwargs):
+        return 1

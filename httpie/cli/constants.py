@@ -91,7 +91,13 @@ DEFAULT_FORMAT_OPTIONS = [
     'json.indent:4',
     'json.sort_keys:true',
 ]
-
+SORTED_FORMAT_OPTIONS = [
+    'headers.sort:true',
+    'json.sort_keys:true',
+]
+SORTED_FORMAT_OPTIONS_STRING = ','.join(SORTED_FORMAT_OPTIONS)
+UNSORTED_FORMAT_OPTIONS_STRING = ','.join(
+    option.replace('true', 'false') for option in SORTED_FORMAT_OPTIONS)
 
 # Defaults
 OUTPUT_OPTIONS_DEFAULT = OUT_RESP_HEAD + OUT_RESP_BODY
