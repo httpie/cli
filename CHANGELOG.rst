@@ -14,7 +14,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 * Added ``--ciphers`` to allow configuring OpenSSL ciphers (`#870`_).
 * Added support for ``$XDG_CONFIG_HOME`` (`#920`_).
 * Added support for custom content types for uploaded files (`#668`_).
-
+* Fixed cookie not updated during redirect by saving domain for cookies (`#662`).
 
 `2.1.0`_ (2020-04-18)
 ---------------------
