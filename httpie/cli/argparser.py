@@ -7,9 +7,16 @@ from argparse import RawDescriptionHelpFormatter
 from textwrap import dedent
 from urllib.parse import urlsplit
 
-from httpie.cli.argtypes import AuthCredentials, KeyValueArgType, parse_auth
+from requests.utils import get_netrc_auth
+
+from httpie.cli.argtypes import (
+    AuthCredentials, KeyValueArgType, PARSED_DEFAULT_FORMAT_OPTIONS,
+    parse_auth,
+    parse_format_options,
+)
 from httpie.cli.constants import (
-    HTTP_GET, HTTP_POST, OUTPUT_OPTIONS, OUTPUT_OPTIONS_DEFAULT,
+    DEFAULT_FORMAT_OPTIONS, HTTP_GET, HTTP_POST, OUTPUT_OPTIONS,
+    OUTPUT_OPTIONS_DEFAULT,
     OUTPUT_OPTIONS_DEFAULT_STDOUT_REDIRECTED, OUT_RESP_BODY, PRETTY_MAP,
     PRETTY_STDOUT_TTY_ONLY, SEPARATOR_CREDENTIALS, SEPARATOR_GROUP_ALL_ITEMS,
     SEPARATOR_GROUP_DATA_ITEMS, URL_SCHEME_RE,
@@ -42,6 +49,8 @@ class HTTPieHelpFormatter(RawDescriptionHelpFormatter):
         return text.splitlines()
 
 
+# TODO: refactor and design type-annotated data structures
+#       for raw args + parsed args and keep things immutable.
 class HTTPieArgumentParser(argparse.ArgumentParser):
     """Adds additional logic to `argparse.ArgumentParser`.
 
@@ -82,6 +91,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
         self._setup_standard_streams()
         self._process_output_options()
         self._process_pretty_options()
+        self._process_format_options()
         self._guess_method()
         self._parse_items()
 
@@ -154,7 +164,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
             self.env.stdout_isatty = False
 
     def _process_auth(self):
-        # TODO: refactor
+        # TODO: refactor & simplify this method.
         self.args.auth_plugin = None
         default_auth_plugin = plugin_manager.get_auth_plugins()[0]
         auth_type_set = self.args.auth_type is not None
@@ -176,6 +186,19 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
             if not self.args.auth_type:
                 self.args.auth_type = default_auth_plugin.auth_type
             plugin = plugin_manager.get_auth_plugin(self.args.auth_type)()
+
+            if (not self.args.ignore_netrc
+                    and self.args.auth is None
+                    and plugin.netrc_parse):
+                # Only host needed, so it’s OK URL not finalized.
+                netrc_credentials = get_netrc_auth(self.args.url)
+                if netrc_credentials:
+                    self.args.auth = AuthCredentials(
+                        key=netrc_credentials[0],
+                        value=netrc_credentials[1],
+                        sep=SEPARATOR_CREDENTIALS,
+                        orig=SEPARATOR_CREDENTIALS.join(netrc_credentials)
+                    )
 
             if plugin.auth_require and self.args.auth is None:
                 self.error('--auth required')
@@ -390,3 +413,9 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
         if self.args.download_resume and not (
                 self.args.download and self.args.output_file):
             self.error('--continue requires --output to be specified')
+
+    def _process_format_options(self):
+        parsed_options = PARSED_DEFAULT_FORMAT_OPTIONS
+        for options_group in self.args.format_options or []:
+            parsed_options = parse_format_options(options_group, defaults=parsed_options)
+        self.args.format_options = parsed_options
