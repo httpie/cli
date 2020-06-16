@@ -22,9 +22,7 @@ def humanize_bytes(n, precision=2):
     # Licence: MIT
     # URL: https://code.activestate.com/recipes/577081/
     """Return a humanized string representation of a number of bytes.
-
     Assumes `from __future__ import division`.
-
     >>> humanize_bytes(1)
     '1 B'
     >>> humanize_bytes(1024, precision=1)
@@ -41,7 +39,6 @@ def humanize_bytes(n, precision=2):
     '1.31 GB'
     >>> humanize_bytes(1024 * 1234 * 1111, precision=1)
     '1.3 GB'
-
     """
     abbrevs = [
         (1 << 50, 'PB'),
@@ -77,7 +74,6 @@ def get_content_type(filename):
     Return the content type for ``filename`` in format appropriate
     for Content-Type headers, or ``None`` if the file type is unknown
     to ``mimetypes``.
-
     """
     mime, encoding = mimetypes.guess_type(filename, strict=False)
     if mime:
