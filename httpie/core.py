@@ -98,7 +98,7 @@ def main(
                 request = e.request
                 if hasattr(request, 'url'):
                     if type(e) is requests.ConnectionError:
-                        env.log_error(
+                        msg = (
                             f'Connection aborted while doing a '
                             f'{request.method} request to URL: {request.url}.'
                         )
