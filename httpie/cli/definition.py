@@ -8,7 +8,7 @@ from textwrap import dedent, wrap
 from httpie import __doc__, __version__
 from httpie.cli.argparser import HTTPieArgumentParser
 from httpie.cli.argtypes import (
-    KeyValueArgType, PARSED_DEFAULT_FORMAT_OPTIONS, SessionNameValidator,
+    KeyValueArgType, SessionNameValidator,
     readable_file_arg,
 )
 from httpie.cli.constants import (
