@@ -35,13 +35,22 @@ class AuthPlugin(BasePlugin):
     # Set this to `False` to disable the parsing and error handling.
     auth_parse = True
 
+    # Set to `True` to make it possible for this auth
+    # plugin to acquire credentials from the user’s netrc file(s).
+    # It is used as a fallback when the credentials are not provided explicitly
+    # through `--auth, -a`. Enabling this will allow skipping `--auth, -a`
+    # even when `auth_require` is set `True` (provided that netrc provides
+    # credential for a given host).
+    netrc_parse = False
+
     # If both `auth_parse` and `prompt_password` are set to `True`,
     # and the value of `-a` lacks the password part,
     # then the user will be prompted to type the password in.
     prompt_password = True
 
     # Will be set to the raw value of `-a` (if provided) before
-    # `get_auth()` gets called.
+    # `get_auth()` gets called. If the credentials came from a netrc file,
+    # then this is `None`.
     raw_auth = None
 
     def get_auth(self, username=None, password=None):

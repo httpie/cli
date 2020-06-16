@@ -7,6 +7,8 @@ from argparse import RawDescriptionHelpFormatter
 from textwrap import dedent
 from urllib.parse import urlsplit
 
+from requests.utils import get_netrc_auth
+
 from httpie.cli.argtypes import AuthCredentials, KeyValueArgType, parse_auth
 from httpie.cli.constants import (
     HTTP_GET, HTTP_POST, OUTPUT_OPTIONS, OUTPUT_OPTIONS_DEFAULT,
@@ -154,7 +156,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
             self.env.stdout_isatty = False
 
     def _process_auth(self):
-        # TODO: refactor
+        # TODO: refactor & simplify this method.
         self.args.auth_plugin = None
         default_auth_plugin = plugin_manager.get_auth_plugins()[0]
         auth_type_set = self.args.auth_type is not None
@@ -176,6 +178,19 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
             if not self.args.auth_type:
                 self.args.auth_type = default_auth_plugin.auth_type
             plugin = plugin_manager.get_auth_plugin(self.args.auth_type)()
+
+            if (not self.args.ignore_netrc
+                    and self.args.auth is None
+                    and plugin.netrc_parse):
+                # Only host needed, so it’s OK URL not finalized.
+                netrc_credentials = get_netrc_auth(self.args.url)
+                if netrc_credentials:
+                    self.args.auth = AuthCredentials(
+                        key=netrc_credentials[0],
+                        value=netrc_credentials[1],
+                        sep=SEPARATOR_CREDENTIALS,
+                        orig=SEPARATOR_CREDENTIALS.join(netrc_credentials)
+                    )
 
             if plugin.auth_require and self.args.auth is None:
                 self.error('--auth required')
