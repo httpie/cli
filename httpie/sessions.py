@@ -78,7 +78,7 @@ class Session(BaseConfigDict):
                 continue  # Ignore explicitly unset headers
 
             value = value.decode('utf8')
-            if name == 'User-Agent' and value.startswith('HTTPie/'):
+            if name.lower() == 'user-agent' and value.startswith('HTTPie/'):
                 continue
 
             if name.lower() == 'cookie':

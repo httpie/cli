@@ -35,6 +35,14 @@ class SessionTestBase:
         return MockEnvironment(config_dir=self.config_dir)
 
 
+class CookieTestBase:
+    def setup_method(self, method):
+        self.config_dir = mk_config_dir()
+
+    def teardown_method(self, method):
+        shutil.rmtree(self.config_dir)
+
+
 class TestSessionFlow(SessionTestBase):
     """
     These tests start with an existing session created in `setup_method()`.
@@ -191,13 +199,7 @@ class TestSession(SessionTestBase):
             os.chdir(cwd)
 
 
-class TestExpiredCookies:
-
-    def setup_method(self, method):
-        self.config_dir = mk_config_dir()
-
-    def teardown_method(self, method):
-        shutil.rmtree(self.config_dir)
+class TestExpiredCookies(CookieTestBase):
 
     @pytest.mark.parametrize(
         argnames=['initial_cookie', 'expired_cookie'],
@@ -279,58 +281,108 @@ class TestExpiredCookies:
         assert get_expired_cookies(headers, now=now) == expected_expired
 
 
-@pytest.mark.parametrize(
-    argnames=["new_cookies", "new_cookies_dict", "expected"],
-    argvalues=[(
-        "new=bar",
-        {"new": "bar"},
-        "existing_cookie=foo; new=bar"
-    ),
-        (
-        "new=bar;chocolate=milk",
-        {"new": "bar", "chocolate": "milk"},
-        "chocolate=milk; existing_cookie=foo; new=bar"
-    ),
-        (
-        "new=bar; chocolate=milk",
-        {"new": "bar", "chocolate": "milk"},
-        "chocolate=milk; existing_cookie=foo; new=bar"
-    ),
-        (
-        "new=bar;; chocolate=milk;;;",
-        {"new": "bar", "chocolate": "milk"},
-        "existing_cookie=foo; new=bar"
-    ),
-        (
-        "new=bar; chocolate=milk;;;",
-        {"new": "bar", "chocolate": "milk"},
-        "chocolate=milk; existing_cookie=foo; new=bar"
+class TestCookieStorage(CookieTestBase):
+
+    @pytest.mark.parametrize(
+        argnames=['new_cookies', 'new_cookies_dict', 'expected'],
+        argvalues=[(
+            'new=bar',
+            {'new': 'bar'},
+            'existing_cookie=foo; new=bar'
+        ),
+            (
+            'new=bar;chocolate=milk',
+            {'new': 'bar', 'chocolate': 'milk'},
+            'chocolate=milk; existing_cookie=foo; new=bar'
+        ),
+            (
+            'new=bar; chocolate=milk',
+            {'new': 'bar', 'chocolate': 'milk'},
+            'chocolate=milk; existing_cookie=foo; new=bar'
+        ),
+            (
+            'new=bar;; chocolate=milk;;;',
+            {'new': 'bar', 'chocolate': 'milk'},
+            'existing_cookie=foo; new=bar'
+        ),
+            (
+            'new=bar; chocolate=milk;;;',
+            {'new': 'bar', 'chocolate': 'milk'},
+            'chocolate=milk; existing_cookie=foo; new=bar'
+        )
+        ]
     )
-    ]
-)
-def test_existing_and_new_cookies_sent_in_request(new_cookies, new_cookies_dict, expected, httpbin):
-    config_dir = mk_config_dir()
-    orig_session = {
-        'cookies': {
-            'existing_cookie': {
-                'value': 'foo',
+    def test_existing_and_new_cookies_sent_in_request(self, new_cookies, new_cookies_dict, expected, httpbin):
+        orig_session = {
+            'cookies': {
+                'existing_cookie': {
+                    'value': 'foo',
+                }
             }
         }
-    }
-    session_path = config_dir / 'test-session.json'
-    session_path.write_text(json.dumps(orig_session))
+        session_path = self.config_dir / 'test-session.json'
+        session_path.write_text(json.dumps(orig_session))
 
-    r = http(
-        '--session', str(session_path),
-        '--print=H',
-        httpbin.url,
-        'Cookie:' + new_cookies,
+        r = http(
+            '--session', str(session_path),
+            '--print=H',
+            httpbin.url,
+            'Cookie:' + new_cookies,
+        )
+        # Note: cookies in response are in alphabetical order
+        assert 'Cookie: ' + expected in r
+
+        updated_session = json.loads(session_path.read_text())
+        for name, value in new_cookies_dict.items():
+            assert name, value in updated_session['cookies']
+            assert 'Cookie' not in updated_session['headers']
+
+    @pytest.mark.parametrize(
+        argnames=['cli_cookie', 'set_cookie', 'expected'],
+        argvalues=[(
+            '',
+            '/cookies/set/to_be_overwritten/bar',
+            'bar'
+        ),
+            (
+            'to_be_overwritten=not_foo',
+            '/cookies/set/to_be_overwritten/bar',
+            'bar'
+        ),
+            (
+            'to_be_overwritten=not_foo',
+            '',
+            'not_foo'
+        ),
+            (
+            '',
+            '',
+            'foo'
+        )
+        ]
     )
-    # Note: cookies in response are in alphabetical order
-    assert 'Cookie: ' + expected in r
+    def test_cookie_storage_priority(self, cli_cookie, set_cookie, expected, httpbin):
+        """
+        All of these override the file
+        1. set-cookie (from server)
+        2. command line
+        3. cookie stored # except for this... of course
+        """
+        orig_session = {
+            'cookies': {
+                'to_be_overwritten': {
+                    'value': 'foo',
+                }
+            }
+        }
+        session_path = self.config_dir / 'test-session.json'
+        session_path.write_text(json.dumps(orig_session))
 
-    updated_session = json.loads(session_path.read_text())
-    for name, value in new_cookies_dict.items():
-        assert name, value in updated_session['cookies']
-        assert "Cookie" not in updated_session['headers']
-    shutil.rmtree(config_dir)
+        r = http(
+            '--session', str(session_path),
+            httpbin.url + set_cookie,
+            'Cookie:' + cli_cookie,
+        )
+        updated_session = json.loads(session_path.read_text())
+
+        assert updated_session['cookies']['to_be_overwritten']['value'] == expected
