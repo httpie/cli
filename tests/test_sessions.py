@@ -39,6 +39,19 @@ class CookieTestBase:
     def setup_method(self, method):
         self.config_dir = mk_config_dir()
 
+        orig_session = {
+            'cookies': {
+                'cookie1': {
+                    'value': 'foo',
+                },
+                'cookie2': {
+                    'value': 'foo',
+                }
+            }
+        }
+        self.session_path = self.config_dir / 'test-session.json'
+        self.session_path.write_text(json.dumps(orig_session))
+
     def teardown_method(self, method):
         shutil.rmtree(self.config_dir)
 
@@ -215,29 +228,16 @@ class TestExpiredCookies(CookieTestBase):
         assert expired_cookie not in session.cookies
 
     def test_expired_cookies(self, httpbin):
-        orig_session = {
-            'cookies': {
-                'to_expire': {
-                    'value': 'foo'
-                },
-                'to_stay': {
-                    'value': 'foo'
-                },
-            }
-        }
-        session_path = self.config_dir / 'test-session.json'
-        session_path.write_text(json.dumps(orig_session))
-
         r = http(
-            '--session', str(session_path),
+            '--session', str(self.session_path),
             '--print=H',
-            httpbin.url + '/cookies/delete?to_expire',
+            httpbin.url + '/cookies/delete?cookie2',
         )
-        assert 'Cookie: to_expire=foo; to_stay=foo' in r
+        assert 'Cookie: cookie1=foo; cookie2=foo' in r
 
-        updated_session = json.loads(session_path.read_text())
-        assert 'to_stay' in updated_session['cookies']
-        assert 'to_expire' not in updated_session['cookies']
+        updated_session = json.loads(self.session_path.read_text())
+        assert 'cookie1' in updated_session['cookies']
+        assert 'cookie2' not in updated_session['cookies']
 
     @pytest.mark.parametrize(
         argnames=['headers', 'now', 'expected_expired'],
@@ -288,43 +288,33 @@ class TestCookieStorage(CookieTestBase):
         argvalues=[(
             'new=bar',
             {'new': 'bar'},
-            'existing_cookie=foo; new=bar'
+            'cookie1=foo; cookie2=foo; new=bar'
         ),
             (
             'new=bar;chocolate=milk',
             {'new': 'bar', 'chocolate': 'milk'},
-            'chocolate=milk; existing_cookie=foo; new=bar'
+            'chocolate=milk; cookie1=foo; cookie2=foo; new=bar'
         ),
             (
             'new=bar; chocolate=milk',
             {'new': 'bar', 'chocolate': 'milk'},
-            'chocolate=milk; existing_cookie=foo; new=bar'
+            'chocolate=milk; cookie1=foo; cookie2=foo; new=bar'
         ),
             (
             'new=bar;; chocolate=milk;;;',
             {'new': 'bar', 'chocolate': 'milk'},
-            'existing_cookie=foo; new=bar'
+            'cookie1=foo; cookie2=foo; new=bar'
         ),
             (
             'new=bar; chocolate=milk;;;',
             {'new': 'bar', 'chocolate': 'milk'},
-            'chocolate=milk; existing_cookie=foo; new=bar'
+            'chocolate=milk; cookie1=foo; cookie2=foo; new=bar'
         )
         ]
     )
     def test_existing_and_new_cookies_sent_in_request(self, new_cookies, new_cookies_dict, expected, httpbin):
-        orig_session = {
-            'cookies': {
-                'existing_cookie': {
-                    'value': 'foo',
-                }
-            }
-        }
-        session_path = self.config_dir / 'test-session.json'
-        session_path.write_text(json.dumps(orig_session))
-
         r = http(
-            '--session', str(session_path),
+            '--session', str(self.session_path),
             '--print=H',
             httpbin.url,
             'Cookie:' + new_cookies,
@@ -332,7 +322,7 @@ class TestCookieStorage(CookieTestBase):
         # Note: cookies in response are in alphabetical order
         assert 'Cookie: ' + expected in r
 
-        updated_session = json.loads(session_path.read_text())
+        updated_session = json.loads(self.session_path.read_text())
         for name, value in new_cookies_dict.items():
             assert name, value in updated_session['cookies']
             assert 'Cookie' not in updated_session['headers']
@@ -341,16 +331,16 @@ class TestCookieStorage(CookieTestBase):
         argnames=['cli_cookie', 'set_cookie', 'expected'],
         argvalues=[(
             '',
-            '/cookies/set/to_be_overwritten/bar',
+            '/cookies/set/cookie1/bar',
             'bar'
         ),
             (
-            'to_be_overwritten=not_foo',
-            '/cookies/set/to_be_overwritten/bar',
+            'cookie1=not_foo',
+            '/cookies/set/cookie1/bar',
             'bar'
         ),
             (
-            'to_be_overwritten=not_foo',
+            'cookie1=not_foo',
             '',
             'not_foo'
         ),
@@ -363,26 +353,16 @@ class TestCookieStorage(CookieTestBase):
     )
     def test_cookie_storage_priority(self, cli_cookie, set_cookie, expected, httpbin):
         """
-        All of these override the file
+        Expected order of priority for cookie storage in session file:
         1. set-cookie (from server)
-        2. command line
-        3. cookie stored # except for this... of course
+        2. command line arg
+        3. cookie already stored in session file
         """
-        orig_session = {
-            'cookies': {
-                'to_be_overwritten': {
-                    'value': 'foo',
-                }
-            }
-        }
-        session_path = self.config_dir / 'test-session.json'
-        session_path.write_text(json.dumps(orig_session))
-
         r = http(
-            '--session', str(session_path),
+            '--session', str(self.session_path),
             httpbin.url + set_cookie,
             'Cookie:' + cli_cookie,
         )
-        updated_session = json.loads(session_path.read_text())
+        updated_session = json.loads(self.session_path.read_text())
 
-        assert updated_session['cookies']['to_be_overwritten']['value'] == expected
+        assert updated_session['cookies']['cookie1']['value'] == expected
