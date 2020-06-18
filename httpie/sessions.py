@@ -84,7 +84,7 @@ class Session(BaseConfigDict):
             if name.lower() == 'cookie':
                 for cookie_name, morsel in SimpleCookie(value).items():
                     self['cookies'][cookie_name] = {'value': morsel.value}
-                del request_headers['Cookie']
+                del request_headers[name]
                 continue
 
             for prefix in SESSION_IGNORED_HEADER_PREFIXES:
