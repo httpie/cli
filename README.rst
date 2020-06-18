@@ -1747,11 +1747,11 @@ exchange after it has been created, specify the session name via
 Cookie Storage Behaviour
 ------------------------
 
-**TL;DR:** Cookie storage priority: Server response > Command line request > Session file 
+**TL;DR:** Cookie storage priority: Server response > Command line request > Session file
 
-To set a cookie within a Session there are three options: 
+To set a cookie within a Session there are three options:
 
-1. Get a `Set-Cookie` header in a response from a server
+1. Get a ``Set-Cookie`` header in a response from a server
 
 .. code-block:: bash
 
@@ -1766,7 +1766,7 @@ To set a cookie within a Session there are three options:
 3. Manually set cookie parameters in the json file of the session
 
 .. code-block:: json
-    
+
     {
         "__meta__": {
         "about": "HTTPie session file",
@@ -1789,13 +1789,13 @@ To set a cookie within a Session there are three options:
     }
 
 Cookies will be set in the session file with the priority specified above. For example, a cookie
-set through the command line will overwrite a cookie of the same name stored 
-in the session file. If the server returns a `Set-Cookie` header with a
+set through the command line will overwrite a cookie of the same name stored
+in the session file. If the server returns a ``Set-Cookie`` header with a
 cookie of the same name, the returned cookie will overwrite the preexisting cookie.
 
 Expired cookies are never stored. If a cookie in a session file expires, it will be removed before
 sending a new request. If the server expires an existing cookie, it will also be removed from the
-session file. 
+session file.
 
 
 Config
