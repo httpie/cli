@@ -1404,6 +1404,8 @@ One of these options can be used to control output processing:
 
 
 You can control the applied formatting via the ``--format-options`` option.
+The following options are available:
+
 For example, this is how you would disable the default header and JSON key
 sorting, and specify a custom JSON indent size:
 
@@ -1414,6 +1416,10 @@ sorting, and specify a custom JSON indent size:
 
 This is something you will typically store as one of the default options in your
 `config`_ file. See ``http --help`` for all the available formatting options.
+
+There are also two shortcuts that allow you to quickly disable and re-enable
+sorting-related format options (currently it means JSON keys and headers):
+``--unsorted`` and ``--sorted``.
 
 
 Binary data
