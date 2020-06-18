@@ -16,7 +16,7 @@ generally interacting with HTTP servers.
 
 .. class:: no-web no-pdf
 
-    .. image:: https://raw.githubusertent.com/jakubroztocil/httpie/master/httpie.gif
+    .. image:: https://raw.githubusercontent.com/jakubroztocil/httpie/master/httpie.gif
         :alt: HTTPie in action
         :width: 100%
         :align: center
