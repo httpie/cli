@@ -36,7 +36,6 @@ tests_require = [
 
 
 install_requires = [
-    'requests>=2.22.0',
     'requests[socks]>=2.22.0',
     'Pygments>=2.5.2',
 ]
