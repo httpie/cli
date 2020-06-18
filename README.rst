@@ -1760,7 +1760,6 @@ To set a cookie within a Session there are three options:
 3. Manually set cookie parameters in the json file of the session
 
 .. code-block:: json
-    :emphasize-lines: 12-19
     
     {
         "__meta__": {
