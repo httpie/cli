@@ -109,6 +109,11 @@ system package manager, for example:
 
 .. code-block:: bash
 
+    # Gentoo
+    $ emerge httpie
+
+.. code-block:: bash
+
     # Arch Linux
     $ pacman -S httpie
 
