@@ -9,6 +9,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 `2.3.0-dev`_ (unreleased)
 -------------------------
 * Added support for combining cookies specified on the CLI and in a session file (`#932`_).
+* Added out of the box SOCKS support with no extra installation (`#904`_).
 
 
 `2.2.0`_ (2020-06-18)
@@ -456,6 +457,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 .. _#870: https://github.com/jakubroztocil/httpie/issues/870
 .. _#895: https://github.com/jakubroztocil/httpie/issues/895
 .. _#920: https://github.com/jakubroztocil/httpie/issues/920
+.. _#904: https://github.com/jakubroztocil/httpie/issues/904
 .. _#925: https://github.com/jakubroztocil/httpie/issues/925
 .. _#932: https://github.com/jakubroztocil/httpie/issues/932
 .. _#934: https://github.com/jakubroztocil/httpie/issues/934

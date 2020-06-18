@@ -1055,15 +1055,6 @@ In your ``~/.bash_profile``:
 SOCKS
 -----
 
-Homebrew-installed HTTPie comes with SOCKS proxy support out of the box.
-To enable SOCKS proxy support for non-Homebrew  installations, you’ll
-might need to install ``requests[socks]`` manually using ``pip``:
-
-
-.. code-block:: bash
-
-    $ pip install -U requests[socks]
-
 Usage is the same as for other types of `proxies`_:
 
 .. code-block:: bash
