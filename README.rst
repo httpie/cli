@@ -530,7 +530,6 @@ Simple example:
     $ http PUT httpbin.org/put name=John email=john@example.org
 
 .. code-block:: http
-
     PUT / HTTP/1.1
     Accept: application/json, */*;q=0.5
     Accept-Encoding: gzip, deflate
@@ -1744,6 +1743,60 @@ exchange after it has been created, specify the session name via
 
     # But it is not updated:
     $ http --session-read-only=./ro-session.json httpbin.org/headers Custom-Header:new-value
+
+Cookie Storage Behaviour
+------------------------
+
+**TL;DR:** Cookie storage priority: Server response > Command line request > Session file 
+
+To set a cookie within a Session there are three options: 
+
+1. Get a `Set-Cookie` header in a response from a server
+
+.. code-block:: bash
+
+    $ http --session=./session.json httpbin.org/cookie/set?foo=bar
+
+2. Set the cookie name and value through the command line as seen in `cookies`_
+
+.. code-block:: bash
+
+    $ http --session=./session.json httpbin.org/headers Cookie:foo=bar
+
+3. Manually set cookie parameters in the json file of the session
+
+.. code-block:: json
+    
+    {
+        "__meta__": {
+        "about": "HTTPie session file",
+        "help": "https://httpie.org/doc#sessions",
+        "httpie": "2.2.0-dev"
+        },
+        "auth": {
+            "password": null,
+            "type": null,
+            "username": null
+        },
+        "cookies": {
+            "foo": {
+                "expires": null,
+                "path": "/",
+                "secure": false,
+                "value": "bar"
+                }
+        }
+    }
+
+Cookies will be set in the session file with the priority specified above. For example, a cookie
+set through the command line will overwrite a cookie of the same name stored 
+in the session file. If the server returns a `Set-Cookie` header with a
+cookie of the same name, the returned cookie will overwrite the preexisting cookie.
+
+Expired cookies are never stored. If a cookie in a session file expires, it will be removed before
+sending a new request. If the server expires an existing cookie, it will also be removed from the
+session file. 
+
 
 Config
 ======
