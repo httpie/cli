@@ -9,15 +9,15 @@ class Httpie < Formula
 
   desc "User-friendly cURL replacement (command-line HTTP client)"
   homepage "https://httpie.org/"
-  url "https://files.pythonhosted.org/packages/e2/79/da6aec7b4356e8b325561b987c940e5b1e4de1200a5c3db7c57a97d61ca1/httpie-2.1.0.tar.gz"
-  sha256 "a76f1c72e83bd03cde3478c5f345d5570fdb2967ed19d68d09518088640b9e8e"
+  url "https://files.pythonhosted.org/packages/37/6c/0d050f49e3b2bac589367d0c3aee9c078e23c6914b0210ffc0117218bdaf/httpie-2.2.0.tar.gz"
+  sha256 "31ac28088ee6a0b6f3ba7a53379000c4d1910c1708c9ff768f84b111c14405a0"
   head "https://github.com/jakubroztocil/httpie.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "1fb33d9c85dc462c2549a03cf08670edad8014a5fdf0a7cb26493c64af40283d" => :catalina
-    sha256 "a22030f0b96c698c90265286ee80ffbb03079d1d008a80c0bdb3ea15a17d3fbb" => :mojave
-    sha256 "9f994ecf826efe53a3a49d1c3193e271629068d11306df55adeea2842a8afb8c" => :high_sierra
+    sha256 "25f0e58f81a2cdd9cba772f07d67591533b4b31a2b970a356701aa046d4d9638" => :catalina
+    sha256 "be158ebb4cfd327ebea02f7b8b8d63d093e474cd303eafff4a2b56b0611983a2" => :mojave
+    sha256 "f331edb94183bfc5fa9de4b4abf148cc91a3a8b3c0e24cc1f5e6b0a4172dd34d" => :high_sierra
   end
 
   depends_on "python@3.8"
@@ -28,13 +28,13 @@ class Httpie < Formula
   end
 
   resource "requests" do
-    url "https://files.pythonhosted.org/packages/f5/4f/280162d4bd4d8aad241a21aecff7a6e46891b905a4341e7ab549ebaf7915/requests-2.23.0.tar.gz"
-    sha256 "b3f43d496c6daba4493e7c431722aeb7dbc6288f52a6e04e7b6023b0247817e6"
+    url "https://files.pythonhosted.org/packages/da/67/672b422d9daf07365259958912ba533a0ecab839d4084c487a5fe9a5405f/requests-2.24.0.tar.gz"
+    sha256 "b3559a131db72c33ee969480840fff4bb6dd111de7dd27c8ee1f820f4f00231b"
   end
 
   resource "certifi" do
-    url "https://files.pythonhosted.org/packages/b8/e2/a3a86a67c3fc8249ed305fc7b7d290ebe5e4d46ad45573884761ef4dea7b/certifi-2020.4.5.1.tar.gz"
-    sha256 "51fcb31174be6e6664c5f69e3e1691a2d72a1a12e90f872cbdb1567eb47b6519"
+    url "https://files.pythonhosted.org/packages/b4/19/53433f37a31543364c8676f30b291d128cdf4cd5b31b755b7890f8e89ac8/certifi-2020.4.5.2.tar.gz"
+    sha256 "5ad7e9a056d25ffa5082862e36f119f7f7cec6457fa07ee2f8c339814b80c9b1"
   end
 
   resource "urllib3" do
