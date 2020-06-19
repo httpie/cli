@@ -27,6 +27,25 @@ VALID_SESSION_NAME_PATTERN = re.compile('^[a-zA-Z0-9_.-]+$')
 SESSION_IGNORED_HEADER_PREFIXES = ['Content-', 'If-']
 
 
+def create_new_session_path(
+    config_dir: Path,
+    session_name: str,
+    host: Optional[str],
+    url: str,
+) -> str:
+    hostname = host or urlsplit(url).netloc.split('@')[-1]
+    if not hostname:
+        # HACK/FIXME: httpie-unixsocket's URLs have no hostname.
+        hostname = 'localhost'
+
+    # host:port => host_port
+    hostname = hostname.replace(':', '_')
+    path = (
+        config_dir / SESSIONS_DIR_NAME / hostname / f'{session_name}.json'
+    )
+    return path
+
+
 def get_httpie_session(
     config_dir: Path,
     session_name: Optional[str],
@@ -42,19 +61,12 @@ def get_httpie_session(
     """
     if not session_name:
         return None
+
     if os.path.sep in session_name:
         path = os.path.expanduser(session_name)
     else:
-        hostname = host or urlsplit(url).netloc.split('@')[-1]
-        if not hostname:
-            # HACK/FIXME: httpie-unixsocket's URLs have no hostname.
-            hostname = 'localhost'
+        path = create_new_session_path(config_dir, session_name, host, url)
 
-        # host:port => host_port
-        hostname = hostname.replace(':', '_')
-        path = (
-            config_dir / SESSIONS_DIR_NAME / hostname / f'{session_name}.json'
-        )
     session = Session(path)
     session.load()
     return session
