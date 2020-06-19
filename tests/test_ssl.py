@@ -133,4 +133,9 @@ def test_ciphers_none_can_be_selected(httpbin_secure):
         tolerate_error_exit_status=True,
     )
     assert r.exit_status == ExitStatus.ERROR
-    assert 'No cipher can be selected.' in r.stderr
+    # Linux/macOS:
+    #   http: error: SSLError: ('No cipher can be selected.',)
+    # OpenBSD:
+    #   <https://marc.info/?l=openbsd-ports&m=159251948515635&w=2>
+    #   http: error: Error: [('SSL routines', '(UNKNOWN)SSL_internal', 'no cipher match')]
+    assert 'cipher' in r.stderr
