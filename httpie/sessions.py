@@ -7,7 +7,7 @@ import re
 
 from http.cookies import SimpleCookie
 from pathlib import Path
-from typing import Iterable, Optional, Union
+from typing import Iterable, List, Optional, Union
 from urllib.parse import urlsplit
 
 from requests.auth import AuthBase
@@ -119,6 +119,14 @@ class Session(BaseConfigDict):
     @property
     def headers(self) -> RequestHeadersDict:
         return RequestHeadersDict(self['headers'])
+
+    def update_cookies(self, new_cookies: RequestsCookieJar, expired_cookies: List[str]):
+        self.cookies = new_cookies
+        self.remove_cookies(
+            # TODO: take path & domain into account?
+            cookie['name'] for cookie in expired_cookies
+        )
+        self.save()
 
     @property
     def cookies(self) -> RequestsCookieJar:

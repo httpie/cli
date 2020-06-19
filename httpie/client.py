@@ -65,9 +65,6 @@ def collect_messages(
     if httpie_session:
         httpie_session_headers = httpie_session.headers
 
-    # send_kwargs?
-    # send_kwargs vs request_kwargs?
-    # send_kwargs_mergeable_from_env?
     request_kwargs = make_request_kwargs(
         args=args,
         base_headers=httpie_session_headers,
@@ -147,12 +144,7 @@ def collect_messages(
 
     if httpie_session:
         if httpie_session.is_new() or not args.session_read_only:
-            httpie_session.cookies = requests_session.cookies
-            httpie_session.remove_cookies(
-                # TODO: take path & domain into account?
-                cookie['name'] for cookie in expired_cookies
-            )
-            httpie_session.save()
+            httpie_session.update_cookies(requests_session.cookies, expired_cookies)
 
 
 # noinspection PyProtectedMember
