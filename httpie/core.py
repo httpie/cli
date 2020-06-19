@@ -102,7 +102,8 @@ def main(
                         details = e.args[0]
                         url = request.url
                         method = request.method
-                        connection_error = write_connection_error(details, url, method)
+                        error_type = e.__doc__
+                        connection_error = write_connection_error(details, url, method, error_type)
                         error = connection_error.__str__()
                         env.log_error(
                             f'{error}'
