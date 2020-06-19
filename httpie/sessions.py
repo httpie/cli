@@ -29,10 +29,19 @@ SESSION_IGNORED_HEADER_PREFIXES = ['Content-', 'If-']
 
 def get_httpie_session(
     config_dir: Path,
-    session_name: str,
+    session_name: Optional[str],
     host: Optional[str],
     url: str,
-) -> 'Session':
+) -> Optional['Session']:
+    """
+    Loads or creates a new session at config_dir/session_name.json if the session_name is valid.
+
+    Returns:
+        None: when session_name is none
+        Session: when session_name exists
+    """
+    if not session_name:
+        return None
     if os.path.sep in session_name:
         path = os.path.expanduser(session_name)
     else:

@@ -31,15 +31,16 @@ def collect_messages(
     args: argparse.Namespace,
     config_dir: Path,
 ) -> Iterable[Union[requests.PreparedRequest, requests.Response]]:
-    httpie_session = None
+
+    httpie_session = get_httpie_session(
+        config_dir=config_dir,
+        session_name=args.session or args.session_read_only,
+        host=args.headers.get('Host'),
+        url=args.url,
+    )
+
     httpie_session_headers = None
-    if args.session or args.session_read_only:
-        httpie_session = get_httpie_session(
-            config_dir=config_dir,
-            session_name=args.session or args.session_read_only,
-            host=args.headers.get('Host'),
-            url=args.url,
-        )
+    if httpie_session:
         httpie_session_headers = httpie_session.headers
 
     request_kwargs = make_request_kwargs(

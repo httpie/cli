@@ -3,13 +3,14 @@ import json
 import os
 import shutil
 from datetime import datetime
+from pathlib import Path
 from tempfile import gettempdir
 
 import pytest
 
 from fixtures import UNICODE
 from httpie.plugins.builtin import HTTPBasicAuth
-from httpie.sessions import Session
+from httpie.sessions import Session, get_httpie_session
 from httpie.utils import get_expired_cookies
 from utils import MockEnvironment, mk_config_dir, http, HTTP_OK
 
@@ -366,3 +367,7 @@ class TestCookieStorage(CookieTestBase):
         updated_session = json.loads(self.session_path.read_text())
 
         assert updated_session['cookies']['cookie1']['value'] == expected
+
+
+def test_get_httpie_session_returns_none():
+    assert get_httpie_session(Path(), None, None, "") is None
