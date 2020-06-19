@@ -27,6 +27,28 @@ JSON_ACCEPT = f'{JSON_CONTENT_TYPE}, */*;q=0.5'
 DEFAULT_UA = f'HTTPie/{__version__}'
 
 
+def make_send_kwargs(args: argparse.Namespace) -> dict:
+    cert = None
+    if args.cert:
+        cert = args.cert
+        if args.cert_key:
+            cert = args.cert, args.cert_key
+
+    return {
+        'timeout': args.timeout or None,
+        'allow_redirects': False,
+        'proxies': {p.key: p.value for p in args.proxy},
+        'stream': True,
+        'verify': {
+            'yes': True,
+            'true': True,
+            'no': False,
+            'false': False,
+        }.get(args.verify.lower(), args.verify),
+        'cert': cert,
+    }
+
+
 def collect_messages(
     args: argparse.Namespace,
     config_dir: Path,
@@ -43,16 +65,20 @@ def collect_messages(
     if httpie_session:
         httpie_session_headers = httpie_session.headers
 
+    # send_kwargs?
+    # send_kwargs vs request_kwargs?
+    # send_kwargs_mergeable_from_env?
     request_kwargs = make_request_kwargs(
         args=args,
         base_headers=httpie_session_headers,
     )
+
     send_kwargs = make_send_kwargs(args)
-    send_kwargs_mergeable_from_env = make_send_kwargs_mergeable_from_env(args)
+
     requests_session = build_requests_session(
         ssl_version=args.ssl_version,
         ciphers=args.ciphers,
-        verify=bool(send_kwargs_mergeable_from_env['verify'])
+        verify=bool(send_kwargs['verify'])
     )
 
     if httpie_session:
@@ -81,20 +107,25 @@ def collect_messages(
         )
     if args.compress and prepared_request.body:
         compress_body(prepared_request, always=args.compress > 1)
+
     response_count = 0
     expired_cookies = []
     while prepared_request:
         yield prepared_request
         if not args.offline:
             send_kwargs_merged = requests_session.merge_environment_settings(
-                url=prepared_request.url,
-                **send_kwargs_mergeable_from_env,
+                prepared_request.url,
+                send_kwargs['proxies'],
+                send_kwargs['stream'],
+                send_kwargs['verify'],
+                send_kwargs['cert'],
             )
             with max_headers(args.max_headers):
                 response = requests_session.send(
-                    request=prepared_request,
+                    timeout=send_kwargs['timeout'],
+                    allow_redirects=send_kwargs['allow_redirects'],
                     **send_kwargs_merged,
-                    **send_kwargs,
+                    request=prepared_request,
                 )
 
             # noinspection PyProtectedMember
@@ -219,34 +250,6 @@ def make_default_headers(args: argparse.Namespace) -> RequestHeadersDict:
         # the `Content-Type` for us.
         default_headers['Content-Type'] = FORM_CONTENT_TYPE
     return default_headers
-
-
-def make_send_kwargs(args: argparse.Namespace) -> dict:
-    kwargs = {
-        'timeout': args.timeout or None,
-        'allow_redirects': False,
-    }
-    return kwargs
-
-
-def make_send_kwargs_mergeable_from_env(args: argparse.Namespace) -> dict:
-    cert = None
-    if args.cert:
-        cert = args.cert
-        if args.cert_key:
-            cert = cert, args.cert_key
-    kwargs = {
-        'proxies': {p.key: p.value for p in args.proxy},
-        'stream': True,
-        'verify': {
-            'yes': True,
-            'true': True,
-            'no': False,
-            'false': False,
-        }.get(args.verify.lower(), args.verify),
-        'cert': cert,
-    }
-    return kwargs
 
 
 def make_request_kwargs(
