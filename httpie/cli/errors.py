@@ -7,14 +7,14 @@ class ConnectionError(Exception):
         self.hint = None
 
     def __str__(self):
-        if ("[Errno 11001] getaddrinfo failed" in str(self.details) or     # Windows
-            "[Errno -2] Name or service not known" in str(self.details) or # Linux
-            "[Errno 8] nodename nor servname " in str(self.details)): #OS X
+        if ("[Errno 11001] getaddrinfo failed" in str(self.details) or   
+            "[Errno -2] Name or service not known" in str(self.details) or 
+            "[Errno 8] nodename nor servname " in str(self.details)): 
             self.reason = 'DNSLookupError'
             msg = (
                 f'Connection from {self.url} aborted while doing a {self.method} request: {self.reason}'
             )
-        else :
+        else:
             msg = (
                 f'Connection from {self.url} aborted while doing a {self.method} request'
             )
