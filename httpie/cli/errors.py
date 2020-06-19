@@ -7,9 +7,9 @@ class ConnectionError(Exception):
         self.error_type = error_type
 
     def __str__(self):
-        if ("[Errno 11001] getaddrinfo failed" in str(self.details) or   
-            "[Errno -2] Name or service not known" in str(self.details) or 
-            "[Errno 8] nodename nor servname " in str(self.details)): 
+        if ("[Errno 11001] getaddrinfo failed" in str(self.details)
+            or "[Errno -2] Name or service not known" in str(self.details)
+            or "[Errno 8] nodename nor servname" in str(self.details)):
             self.reason = 'DNSLookupError'
             msg = (
                 f'{self.error_type}'
