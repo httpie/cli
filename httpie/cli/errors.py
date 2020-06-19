@@ -8,12 +8,12 @@ class ConnectionError(Exception):
 
     def __str__(self):
         if ("[Errno 11001] getaddrinfo failed" in str(self.details)
-            or "[Errno -2] Name or service not known" in str(self.details)
-            or "[Errno 8] nodename nor servname" in str(self.details)):
+                or "[Errno -2] Name or service not known" in str(self.details)
+                or "[Errno 8] nodename nor servname" in str(self.details)):
             self.reason = 'DNSLookupError'
             msg = (
                 f'{self.error_type}'
-                f'\nConnection aborted while doing a {self.method} request to {self.url}'
+                f'\nConnection from {self.url} aborted while doing a {self.method} request'
                 f'\nReason: {self.reason}'
                 f'\nDetails: {self.prettify_details(self.details)}'
             )
