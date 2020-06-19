@@ -1,12 +1,21 @@
-class CustomError(Exception):
-    def __init__(self, *args, **kwargs):
-        super.__init__
-        self.exc = None
-        self.message = None
-        self.details = None
-        self.args = None
+class ConnectionError(Exception):
+    def __init__(self, details, url, method):
+        self.details = details
+        self.url = url
+        self.method = method
+        self.reason = None
         self.hint = None
-        self.support = None
 
     def __str__(self):
-        pass
+        if ("[Errno 11001] getaddrinfo failed" in str(self.details) or     # Windows
+            "[Errno -2] Name or service not known" in str(self.details) or # Linux
+            "[Errno 8] nodename nor servname " in str(self.details)): #OS X
+            self.reason = 'DNSLookupError'
+            msg = (
+                f'Connection from {self.url} aborted while doing a {self.method} request: {self.reason}'
+            )
+        else :
+            msg = (
+                f'Connection from {self.url} aborted while doing a {self.method} request'
+            )
+        return msg
