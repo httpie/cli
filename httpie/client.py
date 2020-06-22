@@ -105,46 +105,50 @@ def collect_messages(
     if args.compress and prepared_request.body:
         compress_body(prepared_request, always=args.compress > 1)
 
-    response_count = 0
     expired_cookies = []
-    while prepared_request:
+    for response_count in range(1, args.max_redirects + 1):
         yield prepared_request
-        if not args.offline:
-            send_kwargs_merged = requests_session.merge_environment_settings(
-                prepared_request.url,
-                send_kwargs['proxies'],
-                send_kwargs['stream'],
-                send_kwargs['verify'],
-                send_kwargs['cert'],
-            )
-            with max_headers(args.max_headers):
-                response = requests_session.send(
-                    timeout=send_kwargs['timeout'],
-                    allow_redirects=send_kwargs['allow_redirects'],
-                    **send_kwargs_merged,
-                    request=prepared_request,
-                )
+        if args.offline:
+            break
 
-            # noinspection PyProtectedMember
-            expired_cookies += get_expired_cookies(
-                headers=response.raw._original_response.msg._headers
+        send_kwargs_merged = requests_session.merge_environment_settings(
+            prepared_request.url,
+            send_kwargs['proxies'],
+            send_kwargs['stream'],
+            send_kwargs['verify'],
+            send_kwargs['cert'],
+        )
+        with max_headers(args.max_headers):
+            response = requests_session.send(
+                timeout=send_kwargs['timeout'],
+                allow_redirects=send_kwargs['allow_redirects'],
+                **send_kwargs_merged,
+                request=prepared_request,
             )
 
-            response_count += 1
-            if response.next:
-                if args.max_redirects and response_count == args.max_redirects:
-                    raise requests.TooManyRedirects
-                if args.follow:
-                    prepared_request = response.next
-                    if args.all:
-                        yield response
-                    continue
+        # noinspection PyProtectedMember
+        expired_cookies += get_expired_cookies(
+            headers=response.raw._original_response.msg._headers
+        )
+
+        if not response.next or not args.follow:
             yield response
-        break
+            break
+
+        prepared_request = follow_redirect(args, response_count, response)
+        if not args.all:
+            continue
+        yield response
 
     if httpie_session:
         if httpie_session.is_new() or not args.session_read_only:
             httpie_session.update_cookies(requests_session.cookies, expired_cookies)
+
+
+def follow_redirect(args, response_count, response):
+    if args.max_redirects and response_count == (args.max_redirects):
+        raise requests.TooManyRedirects
+    return response.next
 
 
 # noinspection PyProtectedMember
