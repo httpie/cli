@@ -16,6 +16,7 @@ from requests.cookies import RequestsCookieJar, create_cookie
 from httpie.cli.dicts import RequestHeadersDict
 from httpie.config import BaseConfigDict, DEFAULT_CONFIG_DIR
 from httpie.plugins.registry import plugin_manager
+from httpie.plugins.base import AuthPlugin
 
 
 SESSIONS_DIR_NAME = 'sessions'
@@ -181,6 +182,16 @@ class Session(BaseConfigDict):
     def auth(self, auth: dict):
         assert {'type', 'raw_auth'} == auth.keys()
         self['auth'] = auth
+
+    def update_auth(self, auth_plugin: AuthPlugin):
+        """Update the session auth with the auth_plugin arguments
+        """
+        if auth_plugin:
+            # Save auth from CLI to HTTPie session.
+            self.auth = {
+                'type': auth_plugin.auth_type,
+                'raw_auth': auth_plugin.raw_auth,
+            }
 
     def remove_cookies(self, names: Iterable[str]):
         for name in names:

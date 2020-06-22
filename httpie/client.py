@@ -5,7 +5,7 @@ import sys
 import zlib
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Iterable, Union
+from typing import Iterable, Union, Tuple
 from urllib.parse import urlparse, urlunparse
 
 import requests
@@ -15,7 +15,7 @@ import urllib3
 from httpie import __version__
 from httpie.cli.dicts import RequestHeadersDict
 from httpie.plugins.registry import plugin_manager
-from httpie.sessions import get_httpie_session
+from httpie.sessions import get_httpie_session, Session
 from httpie.ssl import AVAILABLE_SSL_VERSION_ARG_MAPPING, HTTPieHTTPSAdapter
 from httpie.utils import get_expired_cookies, repr_dict
 
@@ -49,10 +49,22 @@ def make_send_kwargs(args: argparse.Namespace) -> dict:
     }
 
 
-def collect_messages(
+def prepare_sessions(
     args: argparse.Namespace,
     config_dir: Path,
-) -> Iterable[Union[requests.PreparedRequest, requests.Response]]:
+) -> Tuple[dict, dict, Session, requests.Session]:
+    """Loads or creates HTTPie Session object
+    Overrides session file configurations with command line args
+    Prepares keyword arguments
+    Creates a requests RequestSession object
+
+    Args:
+        args (argparse.Namespace): Command line arguments
+        config_dir (Path): Path to find or create Session file
+
+    Returns:
+        Tuple[dict, dict, Session, requests.Session]: Keyword arguments and Session objects
+    """
 
     httpie_session = get_httpie_session(
         config_dir=config_dir,
@@ -79,24 +91,37 @@ def collect_messages(
     )
 
     if httpie_session:
-        httpie_session.update_headers(request_kwargs['headers'])
-        requests_session.cookies = httpie_session.cookies
-        if args.auth_plugin:
-            # Save auth from CLI to HTTPie session.
-            httpie_session.auth = {
-                'type': args.auth_plugin.auth_type,
-                'raw_auth': args.auth_plugin.raw_auth,
-            }
-        elif httpie_session.auth:
+        httpie_session.update_auth(args.auth_plugin)
+        if httpie_session.auth:
             # Apply auth from HTTPie session
             request_kwargs['auth'] = httpie_session.auth
+        httpie_session.update_headers(request_kwargs['headers'])
+        requests_session.cookies = httpie_session.cookies
 
-    if args.debug:
-        # TODO: reflect the split between request and send kwargs.
-        dump_request(request_kwargs)
+    return request_kwargs, send_kwargs, httpie_session, requests_session
+
+
+def create_prepared_request(
+    args: argparse.Namespace,
+    requests_session: requests.Session,
+    request_kwargs: dict
+) -> requests.PreparedRequest:
+    """Creates a PreparedRequest object
+    Leaves relative path as input if `path_as_is` specified in args
+    Compresses request body if `compress` specified in args
+
+    Args:
+        args (argparse.Namespace): Command line arguments
+        requests_session (requests.Session): Preprepared requests.Session object
+        request_kwargs (dict): Prepared keyword arguments for request
+
+    Returns:
+        requests.PreparedRequest: Created PreparedRequest object
+    """
 
     request = requests.Request(**request_kwargs)
     prepared_request = requests_session.prepare_request(request)
+
     if args.path_as_is:
         prepared_request.url = ensure_path_as_is(
             orig_url=args.url,
@@ -104,6 +129,33 @@ def collect_messages(
         )
     if args.compress and prepared_request.body:
         compress_body(prepared_request, always=args.compress > 1)
+
+    return prepared_request
+
+
+def collect_messages(
+    args: argparse.Namespace,
+    config_dir: Path,
+) -> Iterable[Union[requests.PreparedRequest, requests.Response]]:
+    """
+    Prepares request, sends it and follows redirects if specified
+    Uses and updates the session file if specified
+
+    Arguments:
+        - args: arguments from CLI
+        - config_dir: directory for the session files
+
+    Returns: yields requests and responses
+    """
+
+    request_kwargs, send_kwargs, httpie_session, requests_session\
+        = prepare_sessions(args, config_dir)
+
+    if args.debug:
+        # TODO: reflect the split between request and send kwargs.
+        dump_request(request_kwargs)
+
+    prepared_request = create_prepared_request(args, requests_session, request_kwargs)
 
     expired_cookies = []
     for response_count in range(1, args.max_redirects + 1):
@@ -145,7 +197,11 @@ def collect_messages(
             httpie_session.update_cookies(requests_session.cookies, expired_cookies)
 
 
-def follow_redirect(args, response_count, response):
+def follow_redirect(
+    args: argparse.Namespace,
+    response_count: int,
+    response: requests.Response
+) -> requests.Response:
     if args.max_redirects and response_count == (args.max_redirects):
         raise requests.TooManyRedirects
     return response.next
