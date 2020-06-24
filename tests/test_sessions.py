@@ -235,7 +235,7 @@ class TestSession(SessionTestBase):
             auth_parse = auth_parse_param
 
             def get_auth(self, username=None, password=None):
-                return basic_auth(header='{}=='.format(header))
+                return basic_auth(header=f'{header}==')
 
         plugin_manager.register(Plugin)
 
@@ -253,8 +253,8 @@ class TestSession(SessionTestBase):
             httpbin + '/basic-auth/user/password',
             '--print=H',
         )
-        assert "Authorization: {}".format(header) in r1
-        assert "Authorization: {}".format(header) in r2
+        assert f'Authorization: {header}' in r1
+        assert f'Authorization: {header}' in r2
         plugin_manager.unregister(Plugin)
 
     @mock.patch('httpie.cli.argtypes.AuthCredentials._getpass',
@@ -276,7 +276,7 @@ class TestSession(SessionTestBase):
             httpbin + '/basic-auth/user/password',
             '--auth-type',
             Plugin.auth_type,
-            '--auth', 'user',
+            '--auth', 'user:',
         )
 
         r2 = http(
