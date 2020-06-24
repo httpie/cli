@@ -223,8 +223,6 @@ class TestSession(SessionTestBase):
 
             def get_auth(self, username=None, password=None):
                 assert self.raw_auth == 'user:password'
-                assert username == 'user'
-                assert password == 'password'
                 return basic_auth(header='Custom dXNlcjpwYXNzd29yZA==')
 
         plugin_manager.register(Plugin)
@@ -256,9 +254,6 @@ class TestSession(SessionTestBase):
             auth_require = True
 
             def get_auth(self, username=None, password=None):
-                assert self.raw_auth == 'user:password'
-                assert username == 'user'
-                assert password == 'password'
                 return basic_auth()
 
         plugin_manager.register(Plugin)
