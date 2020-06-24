@@ -3,6 +3,7 @@ import json
 import os
 import shutil
 from datetime import datetime
+from mock import mock
 from tempfile import gettempdir
 
 import pytest
@@ -214,7 +215,15 @@ class TestSession(SessionTestBase):
         finally:
             os.chdir(cwd)
 
-    def test_auth_type_reused_in_session(self, httpbin):
+    @pytest.mark.parametrize(
+        argnames=['auth_require_param', 'auth_parse_param'],
+        argvalues=[
+            (False, False),
+            (False, True),
+            (True, False)
+        ]
+    )
+    def test_auth_type_reused_in_session(self, auth_require_param, auth_parse_param, httpbin):
         self.start_session(httpbin)
         session_path = self.config_dir / 'test-session.json'
 
@@ -222,10 +231,10 @@ class TestSession(SessionTestBase):
 
         class Plugin(AuthPlugin):
             auth_type = 'test-reused'
-            auth_require = False
+            auth_require = auth_require_param
+            auth_parse = auth_parse_param
 
             def get_auth(self, username=None, password=None):
-                assert self.raw_auth == 'user:password'
                 return basic_auth(header='{}=='.format(header))
 
         plugin_manager.register(Plugin)
@@ -237,17 +246,45 @@ class TestSession(SessionTestBase):
             Plugin.auth_type,
             '--auth', 'user:password',
             '--print=H',
-            '--debug'
         )
 
         r2 = http(
             '--session', str(session_path),
             httpbin + '/basic-auth/user/password',
             '--print=H',
-            '--debug'
         )
         assert "Authorization: {}".format(header) in r1
         assert "Authorization: {}".format(header) in r2
+        plugin_manager.unregister(Plugin)
+
+    @mock.patch('httpie.cli.argtypes.AuthCredentials._getpass',
+                new=lambda self, prompt: 'password')
+    def test_auth_plugin_prompt_password_in_session(self, httpbin):
+        self.start_session(httpbin)
+        session_path = self.config_dir / 'test-session.json'
+
+        class Plugin(AuthPlugin):
+            auth_type = 'test-prompted'
+
+            def get_auth(self, username=None, password=None):
+                return basic_auth()
+
+        plugin_manager.register(Plugin)
+
+        r1 = http(
+            '--session', str(session_path),
+            httpbin + '/basic-auth/user/password',
+            '--auth-type',
+            Plugin.auth_type,
+            '--auth', 'user',
+        )
+
+        r2 = http(
+            '--session', str(session_path),
+            httpbin + '/basic-auth/user/password',
+        )
+        assert HTTP_OK in r1
+        assert HTTP_OK in r2
         plugin_manager.unregister(Plugin)
 
     def test_auth_type_stored_in_session_file(self, httpbin):
@@ -262,13 +299,12 @@ class TestSession(SessionTestBase):
                 return basic_auth()
 
         plugin_manager.register(Plugin)
-        r1 = http('--session', str(self.session_path),
-                  httpbin + '/basic-auth/user/password',
-                  '--auth-type',
-                  Plugin.auth_type,
-                  '--auth', 'user:password',
-                  '--print=Hh'
-                  )
+        http('--session', str(self.session_path),
+             httpbin + '/basic-auth/user/password',
+             '--auth-type',
+             Plugin.auth_type,
+             '--auth', 'user:password',
+             )
         updated_session = json.loads(self.session_path.read_text())
         assert updated_session['auth']['type'] == 'test-saved'
         assert updated_session['auth']['raw_auth'] == "user:password"
