@@ -216,6 +216,9 @@ class TestSession(SessionTestBase):
 
     def test_auth_type_reused_in_session(self, httpbin):
         self.start_session(httpbin)
+        session_path = self.config_dir / 'test-session.json'
+
+        header = 'Custom dXNlcjpwYXNzd29yZA'
 
         class Plugin(AuthPlugin):
             auth_type = 'test-reused'
@@ -223,26 +226,28 @@ class TestSession(SessionTestBase):
 
             def get_auth(self, username=None, password=None):
                 assert self.raw_auth == 'user:password'
-                return basic_auth(header='Custom dXNlcjpwYXNzd29yZA==')
+                return basic_auth(header='{}=='.format(header))
 
         plugin_manager.register(Plugin)
 
         r1 = http(
-            '--session=test',
+            '--session', str(session_path),
             httpbin + '/basic-auth/user/password',
             '--auth-type',
             Plugin.auth_type,
             '--auth', 'user:password',
-            '--print=H'
+            '--print=H',
+            '--debug'
         )
 
         r2 = http(
-            '--session=test',
+            '--session', str(session_path),
             httpbin + '/basic-auth/user/password',
             '--print=H',
+            '--debug'
         )
-        assert "Authorization: Custom dXNlcjpwYXNzd29yZA" in r1
-        assert "Authorization: Custom dXNlcjpwYXNzd29yZA" in r2
+        assert "Authorization: {}".format(header) in r1
+        assert "Authorization: {}".format(header) in r2
         plugin_manager.unregister(Plugin)
 
     def test_auth_type_stored_in_session_file(self, httpbin):
@@ -266,6 +271,7 @@ class TestSession(SessionTestBase):
                   )
         updated_session = json.loads(self.session_path.read_text())
         assert updated_session['auth']['type'] == 'test-saved'
+        assert updated_session['auth']['raw_auth'] == "user:password"
         plugin_manager.unregister(Plugin)
 
 
