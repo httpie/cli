@@ -71,18 +71,6 @@ the following command, which:
     make
 
 
-If you are on a Windows machine and not able to run ``make``, follow the next steps
-***********************************************************************************
-
-
-
-.. code-block:: bash
-
-    python -m venv --prompt httpie venv
-
-.. code-block:: bash
-
-    venv\Scripts\activate
 
 Python virtual environment
 **************************
@@ -113,6 +101,41 @@ run some of the ``make`` tasks. You can also invoke the development
 version of HTTPie directly with ``./venv/bin/http`` without having to activate
 the environment first. The same goes for ``./venv/bin/py.test``, etc.).
 
+If you are on a Windows machine and not able to run ``make``, follow the next steps
+***********************************************************************************
+
+Create a virtual environment and activate it:
+
+.. code-block:: bash
+
+    python -m venv --prompt httpie venv
+    venv\Scripts\activate
+
+Install HTTPie in editable mode with all the dependencies:
+
+.. code-block:: bash
+
+    pip install --upgrade -e . -r requirements-dev.txt
+    
+You should now see ``(httpie)`` next to your shell prompt, and
+the ``http`` should point to your development copy:
+
+.. code-block::
+    
+    # In PowerShell:
+    (httpie) PS C:\Users\ovezovs\httpie> Get-Command http
+    CommandType     Name                                               Version    Source
+    -----------     ----                                               -------    ------
+    Application     http.exe                                           0.0.0.0    C:\Users\ovezovs\httpie\venv\Scripts\http.exe
+    
+    # In CMD:
+    (httpie) C:\Users\ovezovs\httpie> where http
+    C:\Users\ovezovs\httpie\venv\Scripts\http.exe
+    C:\Users\ovezovs\AppData\Local\Programs\Python\Python38-32\Scripts\http.exe
+    
+    (httpie) C:\Users\ovezovs\httpie> http --version
+    2.3.0-dev    
+    
 
 Making Changes
 --------------
