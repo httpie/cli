@@ -71,6 +71,18 @@ the following command, which:
     make
 
 
+If you are on a Windows machine and not able to run ``make``, follow the next steps
+***********************************************************************************
+
+
+
+.. code-block:: bash
+
+    python -m venv --prompt httpie venv
+
+.. code-block:: bash
+
+    venv\Scripts\activate
 
 Python virtual environment
 **************************
