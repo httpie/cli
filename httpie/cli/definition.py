@@ -643,7 +643,7 @@ ssl.add_argument(
     '''
 )
 ssl.add_argument(
-    '--ssl',  # TODO: Maybe something more general, such as --secure-protocol?
+    '--ssl',
     dest='ssl_version',
     choices=list(sorted(AVAILABLE_SSL_VERSION_ARG_MAPPING.keys())),
     help='''

@@ -170,7 +170,6 @@ uninstall-httpie:
 ###############################################################################
 
 pdf:
-	# NOTE: rst2pdf needs to be installed manually and against a Python 2
 	@echo "Converting README.rst to PDF…"
 	rst2pdf \
 		--strip-elements-with-class=no-pdf \

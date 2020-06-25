@@ -46,7 +46,6 @@ def test_help():
 def test_version():
     r = http('--version', tolerate_error_exit_status=True)
     assert r.exit_status == ExitStatus.SUCCESS
-    # FIXME: py3 has version in stdout, py2 in stderr
     assert httpie.__version__ == r.strip()
 
 

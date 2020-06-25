@@ -40,13 +40,17 @@ assert filenames
 
 
 # HACK: hardcoded paths, venv should be irrelevant, etc.
-# TODO: replaces the process with Python code
+# TODO: simplify by using the Python API instead of a subprocess
+#       then we wont’t need the paths.
 VENV_BIN = Path(__file__).parent.parent / 'venv/bin'
 VENV_PYTHON = VENV_BIN / 'python'
 VENV_RST2PSEUDOXML = VENV_BIN / 'rst2pseudoxml.py'
 
 
-@pytest.mark.skipif(not os.path.exists(VENV_RST2PSEUDOXML), reason='docutils not installed')
+@pytest.mark.skipif(
+    not VENV_RST2PSEUDOXML.exists(),
+    reason='docutils not installed',
+)
 @pytest.mark.parametrize('filename', filenames)
 def test_rst_file_syntax(filename):
     p = subprocess.Popen(

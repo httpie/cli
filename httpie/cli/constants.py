@@ -2,7 +2,6 @@
 
 """
 import re
-import ssl
 
 
 # TODO: Use MultiDict for headers once added to `requests`.
