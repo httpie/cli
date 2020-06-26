@@ -426,6 +426,16 @@ output_options.add_argument(
     '''
 )
 
+output_options.add_argument(
+    '--quiet', '-q',
+    action='store_true',
+    default=False,
+    help='''
+    Do not print to stdout or stderr.
+
+    '''
+)
+
 #######################################################################
 # Sessions
 #######################################################################
