@@ -123,8 +123,7 @@ so please make sure all checks pass.
 Running tests locally
 *********************
 
-HTTPie uses the `pytest`_ runner. It also uses `Tox`_ which allows you to run
-tests on multiple Python versions even when testing locally.
+HTTPie uses the `pytest`_ runner.
 
 
 .. code-block:: bash
@@ -134,9 +133,6 @@ tests on multiple Python versions even when testing locally.
 
     # Run tests with coverage
     make test-cover
-
-    # Run all tests in all of the supported and available Pythons via Tox
-    make test-tox
 
     # Test PEP8 compliance
     make pycodestyle
@@ -158,12 +154,6 @@ can run specific tests from the terminal:
     py.test tests/test_uploads.py::TestMultipartFormDataFileUpload
     py.test tests/test_uploads.py::TestMultipartFormDataFileUpload::test_upload_ok
 
-    # Run specific tests on the on all Pythons via Tox
-    # (change to `tox -e py37' to limit Python version)
-    tox -- tests/test_uploads.py --verbose
-    tox -- tests/test_uploads.py::TestMultipartFormDataFileUpload --verbose
-    tox -- tests/test_uploads.py::TestMultipartFormDataFileUpload::test_upload_ok --verbose
-
 -----
 
 See `Makefile`_ for additional development utilities.
@@ -172,8 +162,6 @@ See `Makefile`_ for additional development utilities.
 Finally, don't forget to add yourself to `AUTHORS`_!
 
 
-.. _Tox: http://tox.testrun.org
-.. _supported Python environments: https://github.com/jakubroztocil/httpie/blob/master/tox.ini
 .. _existing issues: https://github.com/jakubroztocil/httpie/issues?state=open
 .. _AUTHORS: https://github.com/jakubroztocil/httpie/blob/master/AUTHORS.rst
 .. _Makefile: https://github.com/jakubroztocil/httpie/blob/master/Makefile
