@@ -101,6 +101,58 @@ run some of the ``make`` tasks. You can also invoke the development
 version of HTTPie directly with ``./venv/bin/http`` without having to activate
 the environment first. The same goes for ``./venv/bin/py.test``, etc.).
 
+If you are on a Windows machine and not able to run ``make``, follow the next steps
+***********************************************************************************
+
+Create a virtual environment and activate it:
+
+.. code-block:: powershell
+
+    python -m venv --prompt httpie venv
+    venv\Scripts\activate
+
+Install HTTPie in editable mode with all the dependencies:
+
+.. code-block:: powershell
+
+    pip install --upgrade -e . -r requirements-dev.txt
+    
+You should now see ``(httpie)`` next to your shell prompt, and
+the ``http`` should point to your development copy:
+
+.. code-block:: powershell
+    
+    # In PowerShell:
+    (httpie) PS C:\Users\ovezovs\httpie> Get-Command http
+    CommandType     Name                                               Version    Source
+    -----------     ----                                               -------    ------
+    Application     http.exe                                           0.0.0.0    C:\Users\ovezovs\httpie\venv\Scripts\http.exe
+
+.. code-block:: bash
+
+    # In CMD:
+    (httpie) C:\Users\ovezovs\httpie> where http
+    C:\Users\ovezovs\httpie\venv\Scripts\http.exe
+    C:\Users\ovezovs\AppData\Local\Programs\Python\Python38-32\Scripts\http.exe
+    
+    (httpie) C:\Users\ovezovs\httpie> http --version
+    2.3.0-dev    
+
+Use ``pytest`` to run tests locally with an active virtual environment:
+
+.. code-block:: bash
+    
+    # Run all tests
+    py.test
+    
+.. code-block:: bash
+
+    # Run specific tests
+    py.test tests\test_uploads.py
+    py.test tests\test_uploads.py::TestMultipartFormDataFileUpload
+    py.test tests\test_uploads.py::TestMultipartFormDataFileUpload::test_upload_ok
+
+
 
 Making Changes
 --------------
