@@ -16,17 +16,34 @@ to your bug report, e.g.:
 
 .. code-block:: bash
 
-    $ http --debug [COMPLETE ARGUMENT LIST THAT TRIGGERS THE ERROR]
-    [COMPLETE OUTPUT]
+    $ http --debug <COMPLETE ARGUMENT LIST THAT TRIGGERS THE ERROR>
+
+    <COMPLETE OUTPUT>
 
 
 2. Contributing Code and Docs
 =============================
 
 Before working on a new feature or a bug, please browse `existing issues`_
-to see whether it has been previously discussed. If the change in question
-is a bigger one, it's always good to discuss before you start working on
-it.
+to see whether it has previously  been discussed.
+
+If your change alters HTTPie’s behaviour or interface, it's a good idea to
+discuss it before you start working on it.
+
+If you are fixing an issue, the first step should be to create a test case that
+reproduces the incorrect behaviour. That will also help you to build an
+understanding of the issue at hand.
+
+Please note that pull requests introducing code changes without new tests
+will generally not get merged. The same goes for PRs changing HTTPie’s
+behaviour and not providing documentation.
+
+Conversely, PRs consisting of documentation improvements or tests
+for existing-yet-previously-untested behavior will very likely be merged.
+Therefore, docs and tests improvements are a great candidate for your first
+contribution.
+
+Consider also adding a ``CHANGELOG`` entry for your changes.
 
 
 Development Environment
@@ -101,58 +118,6 @@ run some of the ``make`` tasks. You can also invoke the development
 version of HTTPie directly with ``./venv/bin/http`` without having to activate
 the environment first. The same goes for ``./venv/bin/py.test``, etc.).
 
-If you are on a Windows machine and not able to run ``make``, follow the next steps
-***********************************************************************************
-
-Create a virtual environment and activate it:
-
-.. code-block:: powershell
-
-    python -m venv --prompt httpie venv
-    venv\Scripts\activate
-
-Install HTTPie in editable mode with all the dependencies:
-
-.. code-block:: powershell
-
-    pip install --upgrade -e . -r requirements-dev.txt
-    
-You should now see ``(httpie)`` next to your shell prompt, and
-the ``http`` should point to your development copy:
-
-.. code-block:: powershell
-    
-    # In PowerShell:
-    (httpie) PS C:\Users\ovezovs\httpie> Get-Command http
-    CommandType     Name                                               Version    Source
-    -----------     ----                                               -------    ------
-    Application     http.exe                                           0.0.0.0    C:\Users\ovezovs\httpie\venv\Scripts\http.exe
-
-.. code-block:: bash
-
-    # In CMD:
-    (httpie) C:\Users\ovezovs\httpie> where http
-    C:\Users\ovezovs\httpie\venv\Scripts\http.exe
-    C:\Users\ovezovs\AppData\Local\Programs\Python\Python38-32\Scripts\http.exe
-    
-    (httpie) C:\Users\ovezovs\httpie> http --version
-    2.3.0-dev    
-
-Use ``pytest`` to run tests locally with an active virtual environment:
-
-.. code-block:: bash
-    
-    # Run all tests
-    py.test
-    
-.. code-block:: bash
-
-    # Run specific tests
-    py.test tests\test_uploads.py
-    py.test tests\test_uploads.py::TestMultipartFormDataFileUpload
-    py.test tests\test_uploads.py::TestMultipartFormDataFileUpload::test_upload_ok
-
-
 
 Making Changes
 --------------
@@ -210,8 +175,59 @@ can run specific tests from the terminal:
 
 See `Makefile`_ for additional development utilities.
 
+Windows
+*******
 
-Finally, don't forget to add yourself to `AUTHORS`_!
+If you are on a Windows machine and not able to run ``make``,
+follow the next steps for a basic setup. As a prerequisite, you need to have
+Python 3.6+ installed.
+
+Create a virtual environment and activate it:
+
+.. code-block:: powershell
+
+    python -m venv --prompt httpie venv
+    venv\Scripts\activate
+
+Install HTTPie in editable mode with all the dependencies:
+
+.. code-block:: powershell
+
+    pip install --upgrade -e . -r requirements-dev.txt
+
+You should now see ``(httpie)`` next to your shell prompt, and
+the ``http`` should point to your development copy:
+
+.. code-block:: powershell
+
+    # In PowerShell:
+    (httpie) PS C:\Users\ovezovs\httpie> Get-Command http
+    CommandType     Name                                               Version    Source
+    -----------     ----                                               -------    ------
+    Application     http.exe                                           0.0.0.0    C:\Users\ovezovs\httpie\venv\Scripts\http.exe
+
+.. code-block:: bash
+
+    # In CMD:
+    (httpie) C:\Users\ovezovs\httpie> where http
+    C:\Users\ovezovs\httpie\venv\Scripts\http.exe
+    C:\Users\ovezovs\AppData\Local\Programs\Python\Python38-32\Scripts\http.exe
+
+    (httpie) C:\Users\ovezovs\httpie> http --version
+    2.3.0-dev
+
+Use ``pytest`` to run tests locally with an active virtual environment:
+
+.. code-block:: bash
+
+    # Run all tests
+    py.test
+
+
+-----
+
+
+Finally, feel free to add yourself to `AUTHORS`_!
 
 
 .. _existing issues: https://github.com/jakubroztocil/httpie/issues?state=open
