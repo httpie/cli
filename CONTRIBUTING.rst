@@ -162,8 +162,6 @@ See `Makefile`_ for additional development utilities.
 Finally, don't forget to add yourself to `AUTHORS`_!
 
 
-.. _Tox: http://tox.testrun.org
-.. _supported Python environments: https://github.com/jakubroztocil/httpie/blob/master/tox.ini
 .. _existing issues: https://github.com/jakubroztocil/httpie/issues?state=open
 .. _AUTHORS: https://github.com/jakubroztocil/httpie/blob/master/AUTHORS.rst
 .. _Makefile: https://github.com/jakubroztocil/httpie/blob/master/Makefile
