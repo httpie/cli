@@ -106,21 +106,21 @@ If you are on a Windows machine and not able to run ``make``, follow the next st
 
 Create a virtual environment and activate it:
 
-.. code-block:: bash
+.. code-block:: powershell
 
     python -m venv --prompt httpie venv
     venv\Scripts\activate
 
 Install HTTPie in editable mode with all the dependencies:
 
-.. code-block:: bash
+.. code-block:: powershell
 
     pip install --upgrade -e . -r requirements-dev.txt
     
 You should now see ``(httpie)`` next to your shell prompt, and
 the ``http`` should point to your development copy:
 
-.. code-block::
+.. code-block:: powershell
     
     # In PowerShell:
     (httpie) PS C:\Users\ovezovs\httpie> Get-Command http
@@ -128,7 +128,7 @@ the ``http`` should point to your development copy:
     -----------     ----                                               -------    ------
     Application     http.exe                                           0.0.0.0    C:\Users\ovezovs\httpie\venv\Scripts\http.exe
 
-.. code-block::
+.. code-block:: bash
 
     # In CMD:
     (httpie) C:\Users\ovezovs\httpie> where http
