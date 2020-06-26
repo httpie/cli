@@ -137,7 +137,22 @@ the ``http`` should point to your development copy:
     
     (httpie) C:\Users\ovezovs\httpie> http --version
     2.3.0-dev    
+
+Use ``pytest`` to run tests locally:
+
+.. code-block:: bash
     
+    # Run all tests
+    py.test
+    
+.. code-block:: bash
+
+    # Run specific tests
+    py.test tests/test_uploads.py
+    py.test tests/test_uploads.py::TestMultipartFormDataFileUpload
+    py.test tests/test_uploads.py::TestMultipartFormDataFileUpload::test_upload_ok
+
+
 
 Making Changes
 --------------
