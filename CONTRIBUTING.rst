@@ -127,7 +127,9 @@ the ``http`` should point to your development copy:
     CommandType     Name                                               Version    Source
     -----------     ----                                               -------    ------
     Application     http.exe                                           0.0.0.0    C:\Users\ovezovs\httpie\venv\Scripts\http.exe
-    
+
+.. code-block::
+
     # In CMD:
     (httpie) C:\Users\ovezovs\httpie> where http
     C:\Users\ovezovs\httpie\venv\Scripts\http.exe
