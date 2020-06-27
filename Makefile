@@ -38,7 +38,7 @@ clean:
 	rm -rf $(VENV_ROOT)
 	# Remove symlink for virtualenvwrapper, if we’ve created one.
 	[ -n "$(WORKON_HOME)" -a -L "$(WORKON_HOME)/httpie" -a -f "$(WORKON_HOME)/httpie" ] && rm $(WORKON_HOME)/httpie || true
-	rm -rf .tox *.egg dist build .coverage .cache .pytest_cache httpie.egg-info
+	rm -rf *.egg dist build .coverage .cache .pytest_cache httpie.egg-info
 	find . -name '__pycache__' -delete -o -name '*.pyc' -delete
 	@echo
 
@@ -86,17 +86,11 @@ test-cover: test
 
 
 # test-all is meant to test everything — even this Makefile
-test-all: clean install test test-tox test-dist pycodestyle
+test-all: clean install test test-dist pycodestyle
 	@echo
 
 
 test-dist: test-sdist test-bdist-wheel
-	@echo
-
-
-test-tox: uninstall-httpie install
-	@echo $(H1)Running tests on all Pythons via Tox$(H1END)
-	$(VENV_BIN)/tox
 	@echo
 
 
