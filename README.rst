@@ -1156,6 +1156,7 @@ be printed via several options:
 ``--verbose, -v``   Print the whole HTTP exchange (request and response).
                     This option also enables ``--all`` (see below).
 ``--print, -p``     Selects parts of the HTTP exchange.
+``--quiet, -q``     Doesn't print anything. 
 =================   =====================================================
 
 ``--verbose`` can often be useful for debugging the request and generating
