@@ -24,7 +24,7 @@ from httpie.cli.constants import (
 )
 from httpie.cli.exceptions import ParseError
 from httpie.cli.requestitems import RequestItems
-from httpie.context import Environment
+from httpie.context import Environment, DEVNULL_PATH
 from httpie.plugins.registry import plugin_manager
 from httpie.utils import ExplicitNullAuth, get_content_type
 
@@ -135,16 +135,11 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
         Modify `env.stdout` and `env.stdout_isatty` based on args, if needed.
 
         """
-        if self.args.quiet:
-            self.env.stdout = self.env.devnull
-            self.env.stdout_isatty = self.env.devnull_isatty
-            self.env.stderr = self.env.devnull
-            self.env.stderr_isatty = self.env.devnull_isatty
 
         self.args.output_file_specified = bool(self.args.output_file)
         if self.args.download:
             # FIXME: Come up with a cleaner solution.
-            if not self.args.output_file and not self.env.stdout_isatty and not self.args.quiet:
+            if not self.args.output_file and not self.env.stdout_isatty:
                 # Use stdout as the download output file.
                 self.args.output_file = self.env.stdout
             # With `--download`, we write everything that would normally go to
@@ -168,6 +163,11 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
                     raise
             self.env.stdout = self.args.output_file
             self.env.stdout_isatty = False
+
+        if self.args.quiet:
+            self.env.devnull = open(DEVNULL_PATH, 'w')
+            self.env.stdout = self.env.devnull
+            self.env.stderr = self.env.devnull
 
     def _process_auth(self):
         # TODO: refactor & simplify this method.

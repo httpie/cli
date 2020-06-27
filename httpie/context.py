@@ -14,6 +14,8 @@ from httpie.config import DEFAULT_CONFIG_DIR, Config, ConfigFileError
 
 from httpie.utils import repr_dict
 
+DEVNULL_PATH = os.devnull
+
 
 class Environment:
     """
@@ -35,8 +37,8 @@ class Environment:
     stdout_encoding: str = None
     stderr: IO = sys.stderr
     stderr_isatty: bool = stderr.isatty()
-    devnull: IO = open(os.devnull, "w")
-    devnull_isatty: bool = devnull.isatty()
+    devnull: IO = None
+    devnull_isatty: bool = False
     colors = 256
     program_name: str = 'http'
     if not is_windows:
@@ -48,7 +50,7 @@ class Environment:
                 pass
     else:
         # noinspection PyUnresolvedReferences
-        import colorama.initialisex
+        import colorama.initialise
         stdout = colorama.initialise.wrap_stream(
             stdout, convert=None, strip=None,
             autoreset=True, wrap=True
