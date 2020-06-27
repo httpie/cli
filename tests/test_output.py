@@ -32,6 +32,15 @@ def test_output_option(httpbin, stdout_isatty):
     assert actual_body == expected_body
 
 
+class TestQuietFlag:
+    def test_quiet(self, httpbin):
+        r = http('--quiet', 'GET', httpbin.url + '/get')
+        # check stdin
+        assert r.stderr == ''
+        # Check stdout
+        assert str(r) == ''
+
+
 class TestVerboseFlag:
     def test_verbose(self, httpbin):
         r = http('--verbose',

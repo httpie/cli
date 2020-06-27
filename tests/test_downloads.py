@@ -189,3 +189,11 @@ class TestDownloads:
             assert os.listdir('.') == [expected_filename]
         finally:
             os.chdir(orig_cwd)
+
+    def test_download_quietflag(self, httpbin_both, httpbin):
+        robots_txt = '/robots.txt'
+        body = urlopen(httpbin + robots_txt).read().decode()
+        env = MockEnvironment(stdin_isatty=True, stdout_isatty=False)
+        r = http('--quiet', '--download', httpbin_both.url + robots_txt, env=env)
+        assert r.stderr == ''
+        assert body == r
