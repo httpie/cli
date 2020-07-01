@@ -1,3 +1,4 @@
+import os
 import pytest
 from pytest_httpbin import certs
 
@@ -22,3 +23,19 @@ def httpbin_secure_untrusted(monkeypatch, httpbin_secure):
     """
     monkeypatch.delenv('REQUESTS_CA_BUNDLE')
     return httpbin_secure
+
+
+@pytest.fixture(autouse=True, scope='session')
+def pyopenssl_inject():
+    """
+    Injects `pyOpenSSL` module to make sure `requests`
+    will use it.
+
+    <https://github.com/psf/requests/pull/5443#issuecomment-645740394>
+    """
+
+    if os.getenv('HTTPIE_TEST_WITH_PYOPENSSL', default='0') != '1':
+        return
+
+    import urllib3.contrib.pyopenssl
+    urllib3.contrib.pyopenssl.inject_into_urllib3()
