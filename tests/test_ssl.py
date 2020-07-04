@@ -1,6 +1,7 @@
 import pytest
 import pytest_httpbin.certs
 import requests.exceptions
+import ssl
 
 from httpie.ssl import AVAILABLE_SSL_VERSION_ARG_MAPPING, DEFAULT_SSL_CIPHERS
 from httpie.status import ExitStatus
@@ -46,6 +47,12 @@ def test_ssl_version(httpbin_secure, ssl_version):
         if ssl_version == 'ssl3':
             # pytest-httpbin doesn't support ssl3
             pass
+        elif e.__context__ is not None:  # Check if root cause was an unsupported TLS version
+            root = e.__context__
+            while root.__context__ is not None:
+                root = root.__context__
+            if isinstance(root, ssl.SSLError) and root.reason == "TLSV1_ALERT_PROTOCOL_VERSION":
+                pytest.skip("Unsupported TLS version: {}".format(ssl_version))
         else:
             raise
 
