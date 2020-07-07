@@ -34,9 +34,9 @@ If you are fixing an issue, the first step should be to create a test case that
 reproduces the incorrect behaviour. That will also help you to build an
 understanding of the issue at hand.
 
-Please note that pull requests introducing code changes without new tests
+**Pull requests introducing code changes without tests
 will generally not get merged. The same goes for PRs changing HTTPie’s
-behaviour and not providing documentation.
+behaviour and not providing documentation.**
 
 Conversely, PRs consisting of documentation improvements or tests
 for existing-yet-previously-untested behavior will very likely be merged.
