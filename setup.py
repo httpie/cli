@@ -29,6 +29,7 @@ class PyTest(TestCommand):
 
 
 tests_require = [
+    'wheel',
     'pytest-httpbin',
     'pytest',
     'mock',
