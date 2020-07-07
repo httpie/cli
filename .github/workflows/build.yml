@@ -9,7 +9,7 @@ jobs:
       - uses: actions/setup-python@v1
         with:
           python-version: 3.8
-      - run: pip install --upgrade pip
+      - run: pip install --upgrade pip setuptools wheel
       - run: make install
       - run: make pycodestyle
       - run: make test-cover
