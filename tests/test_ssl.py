@@ -1,6 +1,8 @@
+import os
 import pytest
 import pytest_httpbin.certs
 import requests.exceptions
+import urllib3
 
 from httpie.ssl import AVAILABLE_SSL_VERSION_ARG_MAPPING, DEFAULT_SSL_CIPHERS
 from httpie.status import ExitStatus
@@ -138,3 +140,17 @@ def test_ciphers_none_can_be_selected(httpbin_secure):
     #   <https://marc.info/?l=openbsd-ports&m=159251948515635&w=2>
     #   http: error: Error: [('SSL routines', '(UNKNOWN)SSL_internal', 'no cipher match')]
     assert 'cipher' in r.stderr
+
+
+def test_pyopenssl():
+    env_with_pyopenssl = os.getenv('HTTPIE_TEST_WITH_PYOPENSSL', default='0')
+
+    assert env_with_pyopenssl == '0' or env_with_pyopenssl == '1'
+
+    if env_with_pyopenssl == '0':
+        assert urllib3.util.ssl_.IS_PYOPENSSL is False
+        assert urllib3.util.IS_PYOPENSSL is False
+
+    elif env_with_pyopenssl == '1':
+        assert urllib3.util.ssl_.IS_PYOPENSSL is True
+        assert urllib3.util.IS_PYOPENSSL is True

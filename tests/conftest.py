@@ -33,9 +33,11 @@ def pyopenssl_inject():
 
     <https://github.com/psf/requests/pull/5443#issuecomment-645740394>
     """
-
-    if os.getenv('HTTPIE_TEST_WITH_PYOPENSSL', default='0') != '1':
-        return
-
     import urllib3.contrib.pyopenssl
     urllib3.contrib.pyopenssl.inject_into_urllib3()
+
+    if os.getenv('HTTPIE_TEST_WITH_PYOPENSSL', default='0') == '0':
+        urllib3.contrib.pyopenssl.extract_from_urllib3()
+
+    yield
+    urllib3.contrib.pyopenssl.extract_from_urllib3()
