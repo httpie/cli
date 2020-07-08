@@ -34,6 +34,18 @@ def test_password_prompt(httpbin):
     assert r.json == {'authenticated': True, 'user': 'user'}
 
 
+def test_password_from_env(httpbin):
+    import os
+    os.environ["HTTPIE_PASSWORD"] = "password"
+    try:
+        r = http('--auth', 'user',
+                 'GET', httpbin.url + '/basic-auth/user/password')
+        assert HTTP_OK in r
+        assert r.json == {'authenticated': True, 'user': 'user'}
+    finally:
+        del os.environ["HTTPIE_PASSWORD"]
+
+
 def test_credentials_in_url(httpbin_both):
     url = add_auth(httpbin_both.url + '/basic-auth/user/password',
                    auth='user:password')

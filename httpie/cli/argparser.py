@@ -216,15 +216,19 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
                 else:
                     credentials = parse_auth(self.args.auth)
 
-                if (not credentials.has_password()
-                        and plugin.prompt_password):
-                    if self.args.ignore_stdin:
-                        # Non-tty stdin read by now
-                        self.error(
-                            'Unable to prompt for passwords because'
-                            ' --ignore-stdin is set.'
-                        )
-                    credentials.prompt_password(url.netloc)
+                if not credentials.has_password():
+                    env_password = os.getenv("HTTPIE_PASSWORD")
+
+                    if env_password is not None:
+                        credentials.value = env_password
+                    elif plugin.prompt_password:
+                        if self.args.ignore_stdin:
+                            # Non-tty stdin read by now
+                            self.error(
+                                'Unable to prompt for passwords because'
+                                ' --ignore-stdin is set.'
+                            )
+                        credentials.prompt_password(url.netloc)
                 self.args.auth = plugin.get_auth(
                     username=credentials.key,
                     password=credentials.value,

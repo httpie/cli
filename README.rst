@@ -918,6 +918,17 @@ Empty password
     $ http -a username: httpbin.org/headers
 
 
+Environment variable
+--------------------
+
+A password can also be provided via environment variable ``HTTPIE_PASSWORD``.
+The env password is ignored if the password is provided as an argument as well.
+
+.. code-block:: bash
+
+    $ HTTPIE_PASSWORD=password http -a username httpbin.org/basic-auth/username/password
+
+
 ``.netrc``
 ----------
 
