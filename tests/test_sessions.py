@@ -3,15 +3,19 @@ import json
 import os
 import shutil
 from datetime import datetime
+from mock import mock
 from tempfile import gettempdir
 
 import pytest
 
 from fixtures import UNICODE
+from httpie.plugins import AuthPlugin
 from httpie.plugins.builtin import HTTPBasicAuth
+from httpie.plugins.registry import plugin_manager
 from httpie.sessions import Session
 from httpie.utils import get_expired_cookies
-from utils import MockEnvironment, mk_config_dir, http, HTTP_OK
+from tests.test_auth_plugins import basic_auth
+from utils import HTTP_OK, MockEnvironment, http, mk_config_dir
 
 
 class SessionTestBase:
@@ -210,6 +214,101 @@ class TestSession(SessionTestBase):
                  httpbin.url + '/get', env=self.env())
         finally:
             os.chdir(cwd)
+
+    @pytest.mark.parametrize(
+        argnames=['auth_require_param', 'auth_parse_param'],
+        argvalues=[
+            (False, False),
+            (False, True),
+            (True, False)
+        ]
+    )
+    def test_auth_type_reused_in_session(self, auth_require_param, auth_parse_param, httpbin):
+        self.start_session(httpbin)
+        session_path = self.config_dir / 'test-session.json'
+
+        header = 'Custom dXNlcjpwYXNzd29yZA'
+
+        class Plugin(AuthPlugin):
+            auth_type = 'test-reused'
+            auth_require = auth_require_param
+            auth_parse = auth_parse_param
+
+            def get_auth(self, username=None, password=None):
+                return basic_auth(header=f'{header}==')
+
+        plugin_manager.register(Plugin)
+
+        r1 = http(
+            '--session', str(session_path),
+            httpbin + '/basic-auth/user/password',
+            '--auth-type',
+            Plugin.auth_type,
+            '--auth', 'user:password',
+            '--print=H',
+        )
+
+        r2 = http(
+            '--session', str(session_path),
+            httpbin + '/basic-auth/user/password',
+            '--print=H',
+        )
+        assert f'Authorization: {header}' in r1
+        assert f'Authorization: {header}' in r2
+        plugin_manager.unregister(Plugin)
+
+    @mock.patch('httpie.cli.argtypes.AuthCredentials._getpass',
+                new=lambda self, prompt: 'password')
+    def test_auth_plugin_prompt_password_in_session(self, httpbin):
+        self.start_session(httpbin)
+        session_path = self.config_dir / 'test-session.json'
+
+        class Plugin(AuthPlugin):
+            auth_type = 'test-prompted'
+
+            def get_auth(self, username=None, password=None):
+                return basic_auth()
+
+        plugin_manager.register(Plugin)
+
+        r1 = http(
+            '--session', str(session_path),
+            httpbin + '/basic-auth/user/password',
+            '--auth-type',
+            Plugin.auth_type,
+            '--auth', 'user:',
+        )
+
+        r2 = http(
+            '--session', str(session_path),
+            httpbin + '/basic-auth/user/password',
+        )
+        assert HTTP_OK in r1
+        assert HTTP_OK in r2
+        plugin_manager.unregister(Plugin)
+
+    def test_auth_type_stored_in_session_file(self, httpbin):
+        self.config_dir = mk_config_dir()
+        self.session_path = self.config_dir / 'test-session.json'
+
+        class Plugin(AuthPlugin):
+            auth_type = 'test-saved'
+            auth_require = True
+
+            def get_auth(self, username=None, password=None):
+                return basic_auth()
+
+        plugin_manager.register(Plugin)
+        http('--session', str(self.session_path),
+             httpbin + '/basic-auth/user/password',
+             '--auth-type',
+             Plugin.auth_type,
+             '--auth', 'user:password',
+             )
+        updated_session = json.loads(self.session_path.read_text())
+        assert updated_session['auth']['type'] == 'test-saved'
+        assert updated_session['auth']['raw_auth'] == "user:password"
+        plugin_manager.unregister(Plugin)
 
 
 class TestExpiredCookies(CookieTestBase):
