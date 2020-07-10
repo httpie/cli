@@ -31,6 +31,7 @@ class PyTest(TestCommand):
 tests_require = [
     'pytest-httpbin',
     'pytest',
+    'pyopenssl',
     'mock',
 ]
 

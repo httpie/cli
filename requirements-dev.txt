@@ -6,3 +6,4 @@ docutils
 wheel
 pycodestyle
 twine
+pyopenssl
