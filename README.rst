@@ -878,7 +878,7 @@ The currently supported authentication schemes are Basic and Digest
                         have higher priority).
 
 ``--auth-type, -A``     Specify the auth mechanism. Possible values are
-                        ``basic`` and ``digest``. The default value is
+                        ``basic``, ``digest``, or the name of any `auth plugins`_ you have installed. The default value is
                         ``basic`` so it can often be omitted.
 ===================     ======================================================
 

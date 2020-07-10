@@ -49,7 +49,7 @@ def get_default_config_dir() -> Path:
 
     # 4. XDG
     xdg_config_home_dir = os.environ.get(
-        ENV_XDG_CONFIG_HOME,                         # 4.1. explicit
+        ENV_XDG_CONFIG_HOME,  # 4.1. explicit
         home_dir / DEFAULT_RELATIVE_XDG_CONFIG_HOME  # 4.2. default
     )
     return Path(xdg_config_home_dir) / DEFAULT_CONFIG_DIRNAME
@@ -108,16 +108,14 @@ class BaseConfigDict(dict):
 
         self.ensure_directory()
 
+        json_string = json.dumps(
+            obj=self,
+            indent=4,
+            sort_keys=True,
+            ensure_ascii=True,
+        )
         try:
-            with self.path.open('w') as f:
-                json.dump(
-                    obj=self,
-                    fp=f,
-                    indent=4,
-                    sort_keys=True,
-                    ensure_ascii=True,
-                )
-                f.write('\n')
+            self.path.write_text(json_string + '\n')
         except IOError:
             if not fail_silently:
                 raise
