@@ -112,18 +112,16 @@ class Environment:
                     self.log_error(e, level='warning')
         return config
 
-    
-    @property 
+    @property
     def devnull(self) -> IO:
         if self._devnull is None:
             self._devnull = open(os.devnull, 'w+')
         return self._devnull
 
-    #For ease of testing
     @devnull.setter
     def devnull(self, value):
         self._devnull = value
-        
+
     def log_error(self, msg, level='error'):
         assert level in ['error', 'warning']
         self.stderr.write(f'\n{self.program_name}: {level}: {msg}\n\n')
