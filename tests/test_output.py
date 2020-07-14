@@ -1,6 +1,8 @@
 import argparse
+import mock
 import json
 import os
+import io 
 from tempfile import gettempdir
 from urllib.request import urlopen
 
@@ -33,13 +35,50 @@ def test_output_option(httpbin, stdout_isatty):
 
 
 class TestQuietFlag:
-    def test_quiet(self, httpbin):
-        r = http('--quiet', 'GET', httpbin.url + '/get')
-        # check stdin
+
+    @pytest.mark.parametrize('argument_name', ['--quiet', '-q'])
+    def test_quiet(self, httpbin, argument_name):
+        env = MockEnvironment(stdin_isatty=True, stdout_isatty=True)
+        r = http(argument_name, 'GET', httpbin.url + '/get', env=env)
+        assert env.stdout == env.devnull
+        assert env.stderr == env.devnull
         assert r.stderr == ''
-        # Check stdout
         assert str(r) == ''
 
+    @pytest.mark.parametrize('argument_name', ['--quiet', '-q'])
+    def test_quiet_correct_message(self, httpbin, argument_name):
+        sim_devnull = io.BytesIO()
+        env = MockEnvironment(stdin_isatty=True, stdout_isatty=True)
+        env.devnull = sim_devnull
+        r = http(argument_name, 'GET', httpbin.url + '/get', env=env)
+        assert env.stdout == env.devnull
+        assert env.stderr == env.devnull
+        assert r.stderr == ''
+        assert HTTP_OK in r.devnull.decode()
+        assert str(r) == ''
+
+    @mock.patch('httpie.cli.argtypes.AuthCredentials._getpass',
+                new=lambda self, prompt:'password')
+    def test_quiet_password_prompt(self, httpbin):
+        """ Tests whether httpie still prompts for password when request
+        requires authetication and only username is provided"""
+        env = MockEnvironment(stdin_isatty=True, stdout_isatty=True)
+        env.devnull = io.BytesIO()
+        r = http('--quiet', '--auth', 'user','GET', httpbin.url + '/basic-auth/user/password', env=env)
+        assert HTTP_OK in r.devnull.decode()
+        assert env.stdout == env.devnull
+        assert env.stderr == env.devnull
+        assert str(r) == ''
+        assert r.stderr == ''
+
+    @pytest.mark.parametrize('argument_name', ['-h', '-b', '-v', '-p=hH'])
+    def test_quiet_flag_overrides_other_output_options(self, httpbin, argument_name):
+        env = MockEnvironment(stdin_isatty=True, stdout_isatty=True)
+        r = http('--quiet', argument_name, httpbin.url + '/GET', env=env)
+        assert env.stdout == env.devnull
+        assert env.stderr == env.devnull
+        assert str(r) == ''
+        assert r.stderr == ''
 
 class TestVerboseFlag:
     def test_verbose(self, httpbin):

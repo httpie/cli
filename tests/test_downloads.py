@@ -5,6 +5,7 @@ from urllib.request import urlopen
 
 import pytest
 import mock
+import requests
 from requests.structures import CaseInsensitiveDict
 
 from httpie.downloads import (
@@ -190,10 +191,12 @@ class TestDownloads:
         finally:
             os.chdir(orig_cwd)
 
-    def test_download_quietflag(self, httpbin_both, httpbin):
+    def test_download_with_quiet_flag(self, httpbin_both, httpbin):
         robots_txt = '/robots.txt'
-        body = urlopen(httpbin + robots_txt).read().decode()
+        body = requests.get(httpbin + robots_txt).text
         env = MockEnvironment(stdin_isatty=True, stdout_isatty=False)
         r = http('--quiet', '--download', httpbin_both.url + robots_txt, env=env)
         assert r.stderr == ''
-        assert body == r
+        assert env.devnull == env.stderr
+        assert env.devnull == env.stdout
+
