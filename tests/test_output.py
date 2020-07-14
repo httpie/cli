@@ -2,7 +2,7 @@ import argparse
 import mock
 import json
 import os
-import io 
+import io
 from tempfile import gettempdir
 from urllib.request import urlopen
 
@@ -54,18 +54,18 @@ class TestQuietFlag:
         assert env.stdout == env.devnull
         assert env.stderr == env.devnull
         assert r.stderr == ''
-        assert HTTP_OK in r.devnull.decode()
+        assert HTTP_OK in r.devnull
         assert str(r) == ''
 
     @mock.patch('httpie.cli.argtypes.AuthCredentials._getpass',
-                new=lambda self, prompt:'password')
+                new=lambda self, prompt: 'password')
     def test_quiet_password_prompt(self, httpbin):
         """ Tests whether httpie still prompts for password when request
         requires authetication and only username is provided"""
         env = MockEnvironment(stdin_isatty=True, stdout_isatty=True)
         env.devnull = io.BytesIO()
-        r = http('--quiet', '--auth', 'user','GET', httpbin.url + '/basic-auth/user/password', env=env)
-        assert HTTP_OK in r.devnull.decode()
+        r = http('--quiet', '--auth', 'user', 'GET', httpbin.url + '/basic-auth/user/password', env=env)
+        assert HTTP_OK in r.devnull
         assert env.stdout == env.devnull
         assert env.stderr == env.devnull
         assert str(r) == ''
@@ -79,6 +79,7 @@ class TestQuietFlag:
         assert env.stderr == env.devnull
         assert str(r) == ''
         assert r.stderr == ''
+
 
 class TestVerboseFlag:
     def test_verbose(self, httpbin):

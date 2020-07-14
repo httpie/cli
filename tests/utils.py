@@ -94,12 +94,12 @@ class BaseCLIResponse:
 
         - stdout output: print(self)
         - stderr output: print(self.stderr)
-        - devnull output: print(self.devnull) 
+        - devnull output: print(self.devnull)
         - exit_status output: print(self.exit_status)
 
     """
     stderr: str = None
-    devnull: str = None 
+    devnull: str = None
     json: dict = None
     exit_status: ExitStatus = None
 
@@ -163,20 +163,21 @@ def http(
     # noinspection PyUnresolvedReferences
     """
     Run HTTPie and capture stderr/out and exit status.
-    Content writtent to devnull will be captured if 
-    env.devnull in env does not correspond to os.devnull file. 
+    Content writtent to devnull will be captured only if
+    env.devnull is set manually.
 
     Invoke `httpie.core.main()` with `args` and `kwargs`,
     and return a `CLIResponse` subclass instance.
 
     The return value is either a `StrCLIResponse`, or `BytesCLIResponse`
-    if unable to decode the output. 
+    if unable to decode the output. Devnull is string when possible,
+    bytes otherwise.
 
     The response has the following attributes:
 
         `stdout` is represented by the instance itself (print r)
         `stderr`: text written to stderr
-        `devnull` text written to devnull. String if possible bytes otherwise
+        `devnull` text written to devnull.
         `exit_status`: the exit status
         `json`: decoded JSON (if possible) or `None`
 
@@ -264,7 +265,11 @@ def http(
             r = BytesCLIResponse(output)
         else:
             r = StrCLIResponse(output)
-            
+
+        try:
+            devnull_output = devnull_output.decode('utf8')
+        except Exception:
+            pass
 
         r.devnull = devnull_output
         r.stderr = stderr.read()

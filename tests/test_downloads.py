@@ -199,4 +199,3 @@ class TestDownloads:
         assert r.stderr == ''
         assert env.devnull == env.stderr
         assert env.devnull == env.stdout
-
