@@ -37,8 +37,7 @@ class Environment:
     stdout_encoding: str = None
     stderr: IO = sys.stderr
     stderr_isatty: bool = stderr.isatty()
-    devnull: IO = None
-    devnull_isatty: bool = False
+    _devnull = None
     colors = 256
     program_name: str = 'http'
     if not is_windows:
@@ -113,6 +112,18 @@ class Environment:
                     self.log_error(e, level='warning')
         return config
 
+    
+    @property 
+    def devnull(self) -> IO:
+        if self._devnull is None:
+            self._devnull = open(os.devnull, 'w+')
+        return self._devnull
+
+    #For ease of testing
+    @devnull.setter
+    def devnull(self, value):
+        self._devnull = value
+        
     def log_error(self, msg, level='error'):
         assert level in ['error', 'warning']
         self.stderr.write(f'\n{self.program_name}: {level}: {msg}\n\n')
