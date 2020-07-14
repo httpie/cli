@@ -11,7 +11,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 * Added support for combining cookies specified on the CLI and in a session file (`#932`_).
 * Added out of the box SOCKS support with no extra installation (`#904`_).
 * Removed Tox testing entirely (`#943`_).
-* Added a -quiet flag to enforce silent behaviour. 
+* Added a ``--quiet`` flag to enforce silent behaviour. 
 
 
 `2.2.0`_ (2020-06-18)
