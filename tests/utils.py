@@ -94,10 +94,12 @@ class BaseCLIResponse:
 
         - stdout output: print(self)
         - stderr output: print(self.stderr)
+        - devnull output: print(self.devnull) 
         - exit_status output: print(self.exit_status)
 
     """
     stderr: str = None
+    devnull: str = None 
     json: dict = None
     exit_status: ExitStatus = None
 
@@ -161,17 +163,20 @@ def http(
     # noinspection PyUnresolvedReferences
     """
     Run HTTPie and capture stderr/out and exit status.
+    Content writtent to devnull will be captured if 
+    env.devnull in env does not correspond to os.devnull file. 
 
     Invoke `httpie.core.main()` with `args` and `kwargs`,
     and return a `CLIResponse` subclass instance.
 
     The return value is either a `StrCLIResponse`, or `BytesCLIResponse`
-    if unable to decode the output.
+    if unable to decode the output. 
 
     The response has the following attributes:
 
         `stdout` is represented by the instance itself (print r)
         `stderr`: text written to stderr
+        `devnull` text written to devnull. String if possible bytes otherwise
         `exit_status`: the exit status
         `json`: decoded JSON (if possible) or `None`
 
@@ -204,6 +209,7 @@ def http(
 
     stdout = env.stdout
     stderr = env.stderr
+    devnull = env.devnull
 
     args = list(args)
     args_with_config_defaults = args + env.config.default_options
@@ -249,13 +255,18 @@ def http(
 
         stdout.seek(0)
         stderr.seek(0)
+        devnull.seek(0)
         output = stdout.read()
+        devnull_output = devnull.read()
         try:
             output = output.decode('utf8')
         except UnicodeDecodeError:
             r = BytesCLIResponse(output)
         else:
             r = StrCLIResponse(output)
+            
+
+        r.devnull = devnull_output
         r.stderr = stderr.read()
         r.exit_status = exit_status
 
@@ -265,6 +276,7 @@ def http(
         return r
 
     finally:
+        devnull.close()
         stdout.close()
         stderr.close()
         env.cleanup()
