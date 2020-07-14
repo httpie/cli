@@ -14,8 +14,6 @@ from httpie.config import DEFAULT_CONFIG_DIR, Config, ConfigFileError
 
 from httpie.utils import repr_dict
 
-DEVNULL_PATH = os.devnull
-
 
 class Environment:
     """

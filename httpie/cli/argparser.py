@@ -24,7 +24,7 @@ from httpie.cli.constants import (
 )
 from httpie.cli.exceptions import ParseError
 from httpie.cli.requestitems import RequestItems
-from httpie.context import Environment, DEVNULL_PATH
+from httpie.context import Environment
 from httpie.plugins.registry import plugin_manager
 from httpie.utils import ExplicitNullAuth, get_content_type
 
