@@ -165,7 +165,6 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
             self.env.stdout_isatty = False
 
         if self.args.quiet:
-            self.env.devnull = open(DEVNULL_PATH, 'w')
             self.env.stdout = self.env.devnull
             self.env.stderr = self.env.devnull
 
