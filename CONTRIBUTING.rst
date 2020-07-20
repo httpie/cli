@@ -104,7 +104,7 @@ activate the environment — we have created a symlink for you. It’s a bit of
 a hack but it works™.)
 
 You should now see ``(httpie)`` next to your shell prompt, and
-the ``http`` should point to you development copy:
+the ``http`` command should point to your development copy:
 
 .. code-block::
 
@@ -196,7 +196,7 @@ Install HTTPie in editable mode with all the dependencies:
     pip install --upgrade -e . -r requirements-dev.txt
 
 You should now see ``(httpie)`` next to your shell prompt, and
-the ``http`` should point to your development copy:
+the ``http`` command should point to your development copy:
 
 .. code-block:: powershell
 

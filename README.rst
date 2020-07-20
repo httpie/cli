@@ -775,7 +775,7 @@ Offline mode
 
 Use ``--offline`` to construct HTTP requests without sending them anywhere.
 With ``--offline``, HTTPie builds a request based on the specified options and arguments, prints it to ``stdout``,
-and then exists. It works completely offline; no network connection is ever made.
+and then exits. It works completely offline; no network connection is ever made.
 This has a number of use cases, including:
 
 
