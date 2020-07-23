@@ -40,7 +40,8 @@ install_requires = [
     'multidict>=4.7.0',
     'setuptools',
     'importlib-metadata>=1.4.0; python_version < "3.8"',
-    'rich>=9.10.0'
+    'rich>=9.10.0',
+    'argcomplete'
 ]
 install_requires_win_only = [
     'colorama>=0.2.4',

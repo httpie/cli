@@ -3,6 +3,8 @@ from __future__ import annotations
 import textwrap
 from argparse import FileType
 
+from argcomplete.completers import ChoicesCompleter, FilesCompleter
+
 from httpie import __doc__, __version__
 from httpie.cli.argtypes import (KeyValueArgType, SessionNameValidator,
                                  SSLCredentials, readable_file_arg,
@@ -64,7 +66,8 @@ positional_arguments.add_argument(
         $ http example.org hello=world   # => POST
 
     """,
-)
+).completer = ChoicesCompleter(
+    ('GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'))
 positional_arguments.add_argument(
     dest='url',
     metavar='URL',
@@ -79,7 +82,7 @@ positional_arguments.add_argument(
         $ http :/foo                    # => http://localhost/foo
 
     """,
-)
+).completer = ChoicesCompleter(())
 positional_arguments.add_argument(
     dest='request_items',
     metavar='REQUEST_ITEM',
@@ -136,7 +139,7 @@ positional_arguments.add_argument(
         field-name-with\:colon=value
 
     """,
-)
+).completer = ChoicesCompleter(())
 
 #######################################################################
 # Content type.
@@ -190,7 +193,7 @@ content_types.add_argument(
         'Specify a custom boundary string for multipart/form-data requests. '
         'Only has effect only together with --form.'
     )
-)
+).completer = ChoicesCompleter(())
 content_types.add_argument(
     '--raw',
     short_help='Pass raw request data without extra processing.',
@@ -351,7 +354,7 @@ output_processing.add_argument(
         --response-charset=big5
 
     """,
-)
+).completer = ChoicesCompleter(())
 output_processing.add_argument(
     '--response-mime',
     metavar='MIME_TYPE',
@@ -364,7 +367,7 @@ output_processing.add_argument(
         --response-mime=text/xml
 
     """,
-)
+).completer = ChoicesCompleter(())
 output_processing.add_argument(
     '--format-options',
     action='append',
@@ -389,7 +392,7 @@ output_processing.add_argument(
             f'        {option}' for option in DEFAULT_FORMAT_OPTIONS
         ).strip()
     ),
-)
+).completer = ChoicesCompleter(())
 
 #######################################################################
 # Output options
@@ -418,7 +421,7 @@ output_options.add_argument(
     response body is printed by default.
 
     """,
-)
+).completer = ChoicesCompleter(())
 output_options.add_argument(
     '--headers',
     '-h',
@@ -492,7 +495,7 @@ output_options.add_argument(
     dest='output_options_history',
     metavar='WHAT',
     help=Qualifiers.SUPPRESS,
-)
+).completer = ChoicesCompleter(())
 output_options.add_argument(
     '--stream',
     '-S',
@@ -526,7 +529,7 @@ output_options.add_argument(
     printed to stderr.
 
     """,
-)
+).completer = FilesCompleter()
 
 output_options.add_argument(
     '--download',
@@ -597,7 +600,7 @@ sessions.add_argument(
 
         https://httpie.io/docs/cli/config-file-directory
     """,
-)
+).completer = FilesCompleter(('json',))
 sessions.add_argument(
     '--session-read-only',
     metavar='SESSION_NAME_OR_PATH',
@@ -608,7 +611,7 @@ sessions.add_argument(
     exchange.
 
     """,
-)
+).completer = FilesCompleter(('json',))
 
 #######################################################################
 # Authentication
@@ -672,7 +675,7 @@ authentication.add_argument(
     (-a username), HTTPie will prompt for the password.
 
     """,
-)
+).completer = ChoicesCompleter(())
 authentication.add_argument(
     '--auth-type',
     '-A',
@@ -683,7 +686,7 @@ authentication.add_argument(
     cache=False,
     short_help='The authentication mechanism to be used.',
     help_formatter=format_auth_help,
-)
+).completer = ChoicesCompleter(())
 authentication.add_argument(
     '--ignore-netrc',
     default=False,
@@ -717,7 +720,7 @@ network.add_argument(
     and $HTTPS_proxy are supported as well.
 
     """,
-)
+).completer = ChoicesCompleter(())
 network.add_argument(
     '--follow',
     '-F',
@@ -735,7 +738,7 @@ network.add_argument(
     By default, requests have a limit of 30 redirects (works with --follow).
 
     """,
-)
+).completer = ChoicesCompleter(())
 network.add_argument(
     '--max-headers',
     type=int,
@@ -744,7 +747,7 @@ network.add_argument(
         'The maximum number of response headers to be read before '
         'giving up (default 0, i.e., no limit).'
     )
-)
+).completer = ChoicesCompleter(())
 
 network.add_argument(
     '--timeout',
@@ -761,7 +764,7 @@ network.add_argument(
     the underlying socket for timeout seconds).
 
     """,
-)
+).completer = ChoicesCompleter(())
 network.add_argument(
     '--check-status',
     default=False,
@@ -811,7 +814,7 @@ ssl.add_argument(
     for private certs. (Or you can set the REQUESTS_CA_BUNDLE environment
     variable instead.)
     """,
-)
+).completer = ChoicesCompleter(('yes', 'no'))
 ssl.add_argument(
     '--ssl',
     dest='ssl_version',
@@ -825,7 +828,7 @@ ssl.add_argument(
     are shown here).
 
     """,
-)
+).completer = ChoicesCompleter(())
 ssl.add_argument(
     '--ciphers',
     short_help='A string in the OpenSSL cipher list format.',
@@ -837,7 +840,7 @@ ssl.add_argument(
     {DEFAULT_SSL_CIPHERS}
 
     """,
-)
+).completer = ChoicesCompleter(())
 ssl.add_argument(
     '--cert',
     default=None,
@@ -849,7 +852,7 @@ ssl.add_argument(
     specify --cert-key separately.
 
     """,
-)
+).completer = FilesCompleter(('crt', 'cert', 'pem'))
 ssl.add_argument(
     '--cert-key',
     default=None,
@@ -860,7 +863,7 @@ ssl.add_argument(
     certificate file does not contain the private key.
 
     """,
-)
+).completer = FilesCompleter(('key', 'pem'))
 
 ssl.add_argument(
     '--cert-key-pass',
@@ -872,7 +875,7 @@ ssl.add_argument(
     is given and the key file requires a passphrase.
     If not provided, you’ll be prompted interactively.
     """
-)
+).completer = ChoicesCompleter(())
 
 #######################################################################
 # Troubleshooting
@@ -914,7 +917,7 @@ troubleshooting.add_argument(
     '--default-scheme',
     default='http',
     short_help='The default scheme to use if not specified in the URL.'
-)
+).completer = ChoicesCompleter(('http', 'https'))
 troubleshooting.add_argument(
     '--debug',
     action='store_true',

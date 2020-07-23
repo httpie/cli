@@ -5,6 +5,7 @@ import sys
 import socket
 from typing import List, Optional, Union, Callable
 
+import argcomplete
 import requests
 from pygments import __version__ as pygments_version
 from requests import __version__ as requests_version
@@ -72,6 +73,8 @@ def raw_main(
             return ExitStatus.SUCCESS
 
     exit_status = ExitStatus.SUCCESS
+
+    argcomplete.autocomplete(parser)
 
     try:
         parsed_args = parser.parse_args(
