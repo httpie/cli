@@ -5,6 +5,8 @@ CLI arguments definition.
 from argparse import (FileType, OPTIONAL, SUPPRESS, ZERO_OR_MORE)
 from textwrap import dedent, wrap
 
+from argcomplete.completers import ChoicesCompleter, FilesCompleter
+
 from .. import __doc__, __version__
 from .argparser import HTTPieArgumentParser
 from .argtypes import (
@@ -69,7 +71,8 @@ positional.add_argument(
         $ http example.org hello=world   # => POST
 
     '''
-)
+).completer = ChoicesCompleter(
+    ('GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'))
 positional.add_argument(
     dest='url',
     metavar='URL',
@@ -83,7 +86,7 @@ positional.add_argument(
         $ http :/foo                    # => http://localhost/foo
 
     '''
-)
+).completer = ChoicesCompleter(())
 positional.add_argument(
     dest='request_items',
     metavar='REQUEST_ITEM',
@@ -129,7 +132,7 @@ positional.add_argument(
         field-name-with\:colon=value
 
     '''
-)
+).completer = ChoicesCompleter(())
 
 #######################################################################
 # Content type.
@@ -332,7 +335,7 @@ output_processing.add_argument(
         option_list='\n'.join(
             f'        {option}' for option in DEFAULT_FORMAT_OPTIONS).strip()
     )
-)
+).completer = ChoicesCompleter(())
 
 #######################################################################
 # Output options
@@ -357,7 +360,7 @@ output_options.add_argument(
     response body is printed by default.
 
     '''
-)
+).completer = ChoicesCompleter(())
 output_options.add_argument(
     '--headers', '-h',
     dest='output_options',
@@ -413,7 +416,7 @@ output_options.add_argument(
     response.
 
     '''
-)
+).completer = ChoicesCompleter(())
 output_options.add_argument(
     '--stream', '-S',
     action='store_true',
@@ -506,7 +509,7 @@ sessions.add_argument(
         {DEFAULT_SESSIONS_DIR}/<HOST>/<SESSION_NAME>.json.
 
     '''
-)
+).completer = FilesCompleter(("json",))
 sessions.add_argument(
     '--session-read-only',
     metavar='SESSION_NAME_OR_PATH',
@@ -516,7 +519,7 @@ sessions.add_argument(
     exchange.
 
     '''
-)
+).completer = FilesCompleter(("json",))
 
 #######################################################################
 # Authentication
@@ -533,7 +536,7 @@ auth.add_argument(
     for the password.
 
     ''',
-)
+).completer = ChoicesCompleter(())
 
 
 class _AuthTypeLazyChoices:
@@ -609,7 +612,7 @@ network.add_argument(
     and $HTTPS_proxy are supported as well.
 
     '''
-)
+).completer = ChoicesCompleter(())
 network.add_argument(
     '--follow', '-F',
     default=False,
@@ -628,7 +631,7 @@ network.add_argument(
     By default, requests have a limit of 30 redirects (works with --follow).
 
     '''
-)
+).completer = ChoicesCompleter(())
 
 network.add_argument(
     '--max-headers',
@@ -639,7 +642,7 @@ network.add_argument(
     (default 0, i.e., no limit).
 
     '''
-)
+).completer = ChoicesCompleter(())
 
 network.add_argument(
     '--timeout',
@@ -655,7 +658,7 @@ network.add_argument(
     the underlying socket for timeout seconds).
 
     '''
-)
+).completer = ChoicesCompleter(())
 network.add_argument(
     '--check-status',
     default=False,
@@ -705,7 +708,7 @@ ssl.add_argument(
     for private certs. (Or you can set the REQUESTS_CA_BUNDLE environment
     variable instead.)
     '''
-)
+).completer = ChoicesCompleter(('yes', 'no'))
 ssl.add_argument(
     '--ssl',
     dest='ssl_version',
@@ -729,7 +732,7 @@ ssl.add_argument(
     {DEFAULT_SSL_CIPHERS}
 
     '''
-)
+).completer = ChoicesCompleter(())
 ssl.add_argument(
     '--cert',
     default=None,
@@ -740,7 +743,7 @@ ssl.add_argument(
     specify --cert-key separately.
 
     '''
-)
+).completer = FilesCompleter(("crt", "cert", "pem"))
 
 ssl.add_argument(
     '--cert-key',
@@ -751,7 +754,7 @@ ssl.add_argument(
     certificate file does not contain the private key.
 
     '''
-)
+).completer = FilesCompleter(("key", "pem"))
 
 #######################################################################
 # Troubleshooting
@@ -802,7 +805,7 @@ troubleshooting.add_argument(
     The default scheme to use if not specified in the URL.
 
     '''
-)
+).completer = ChoicesCompleter(('http', 'https'))
 troubleshooting.add_argument(
     '--debug',
     action='store_true',

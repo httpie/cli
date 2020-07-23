@@ -4,6 +4,7 @@ import platform
 import sys
 from typing import List, Optional, Tuple, Union
 
+import argcomplete
 import requests
 from pygments import __version__ as pygments_version
 from requests import __version__ as requests_version
@@ -48,6 +49,8 @@ def main(args: List[Union[str, bytes]] = sys.argv, env=Environment()) -> ExitSta
             return ExitStatus.SUCCESS
 
     exit_status = ExitStatus.SUCCESS
+
+    argcomplete.autocomplete(parser)
 
     try:
         parsed_args = parser.parse_args(
