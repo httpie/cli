@@ -1,6 +1,8 @@
 import pytest
 import pytest_httpbin.certs
 import requests.exceptions
+import ssl
+import urllib3
 
 from httpie.ssl import AVAILABLE_SSL_VERSION_ARG_MAPPING, DEFAULT_SSL_CIPHERS
 from httpie.status import ExitStatus
@@ -46,6 +48,12 @@ def test_ssl_version(httpbin_secure, ssl_version):
         if ssl_version == 'ssl3':
             # pytest-httpbin doesn't support ssl3
             pass
+        elif e.__context__ is not None:  # Check if root cause was an unsupported TLS version
+            root = e.__context__
+            while root.__context__ is not None:
+                root = root.__context__
+            if isinstance(root, ssl.SSLError) and root.reason == "TLSV1_ALERT_PROTOCOL_VERSION":
+                pytest.skip("Unsupported TLS version: {}".format(ssl_version))
         else:
             raise
 
@@ -84,11 +92,14 @@ class TestClientCert:
 class TestServerCert:
 
     def test_verify_no_OK(self, httpbin_secure):
+        # Avoid warnings when explicitly testing insecure requests
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
         r = http(httpbin_secure.url + '/get', '--verify=no')
         assert HTTP_OK in r
 
     @pytest.mark.parametrize('verify_value', ['false', 'fALse'])
     def test_verify_false_OK(self, httpbin_secure, verify_value):
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
         r = http(httpbin_secure.url + '/get', '--verify', verify_value)
         assert HTTP_OK in r
 
