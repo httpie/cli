@@ -432,7 +432,8 @@ output_options.add_argument(
     default=False,
     help='''
     Do not print to stdout or stderr.
-
+    stdout is still redirected if --output is specified.
+    Flag doesn't affect behaviour of download beyond not printing to terminal.
     '''
 )
 

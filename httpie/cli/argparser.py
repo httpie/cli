@@ -148,6 +148,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
             # The response body will be treated separately.
             self.env.stdout = self.env.stderr
             self.env.stdout_isatty = self.env.stderr_isatty
+
         elif self.args.output_file:
             # When not `--download`ing, then `--output` simply replaces
             # `stdout`. The file is opened for appending, which isn't what
@@ -165,8 +166,9 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
             self.env.stdout_isatty = False
 
         if self.args.quiet:
-            self.env.stdout = self.env.devnull
             self.env.stderr = self.env.devnull
+            if not (self.args.output_file_specified and not self.args.download):
+                self.env.stdout = self.env.devnull
 
     def _process_auth(self):
         # TODO: refactor & simplify this method.

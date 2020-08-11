@@ -1158,6 +1158,10 @@ be printed via several options:
 ``--print, -p``     Selects parts of the HTTP exchange.
 ``--quiet, -q``     Doesn't print anything. Overrides other output flags.
 =================   =====================================================
+If ``--quiet`` is used in conjuction with ``--output`` the flag is ignored
+and ``stdout`` is still redirected. If ``--quiet`` is used with ``--download``
+file is still downloaded as usual but ``stdout`` and ``stdin`` are redirected
+to ``devnull``. 
 
 ``--verbose`` can often be useful for debugging the request and generating
 documentation examples:
