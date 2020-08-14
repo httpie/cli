@@ -2,11 +2,13 @@ import argparse
 import mock
 import json
 import os
+import tempfile
 import io
 from tempfile import gettempdir
 from urllib.request import urlopen
 
 import pytest
+import requests
 
 from httpie.cli.argtypes import (
     PARSED_DEFAULT_FORMAT_OPTIONS,
@@ -79,6 +81,28 @@ class TestQuietFlag:
         assert env.stderr == env.devnull
         assert str(r) == ''
         assert r.stderr == ''
+
+    def test_quiet_flag_with_output_redirection(self, httpbin):
+        robots_txt = '/robots.txt'
+        expected_body = requests.get(httpbin + robots_txt).text
+        expected_filename = 'test.txt'
+        env = MockEnvironment(stdin_isatty=True, stdout_isatty=True)
+        orig_cwd = os.getcwd()
+        os.chdir(tempfile.mkdtemp(prefix='httpie_download_quiet_test_'))
+        try:
+            assert os.listdir('.') == []
+            r = http('--quiet',
+                     '--output=' + expected_filename,
+                     httpbin + robots_txt,
+                     env=env)
+            assert os.listdir('.') == [expected_filename]
+            assert r.stderr == ''
+            assert env.devnull == env.stderr
+            assert env.devnull != env.stdout
+            with open(expected_filename, 'r') as f:
+                assert f.read() == expected_body
+        finally:
+            os.chdir(orig_cwd)
 
 
 class TestVerboseFlag:
