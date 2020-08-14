@@ -191,11 +191,44 @@ class TestDownloads:
         finally:
             os.chdir(orig_cwd)
 
-    def test_download_with_quiet_flag(self, httpbin_both, httpbin):
+    def test_download_with_quiet_flag(self, httpbin):
         robots_txt = '/robots.txt'
-        body = requests.get(httpbin + robots_txt).text
-        env = MockEnvironment(stdin_isatty=True, stdout_isatty=False)
-        r = http('--quiet', '--download', httpbin_both.url + robots_txt, env=env)
-        assert r.stderr == ''
-        assert env.devnull == env.stderr
-        assert env.devnull == env.stdout
+        expected_body = requests.get(httpbin + robots_txt).text
+        expected_filename = 'robots.txt'
+        env = MockEnvironment(stdin_isatty=True, stdout_isatty=True)
+        orig_cwd = os.getcwd()
+        os.chdir(tempfile.mkdtemp(prefix='httpie_download_quiet_test_'))
+        try:
+            assert os.listdir('.') == []
+            r = http('--quiet', '--download', httpbin + robots_txt, env=env)
+            assert os.listdir('.') == [expected_filename]
+            assert r.stderr == ''
+            assert env.devnull == env.stderr
+            assert env.devnull == env.stdout
+            with open(expected_filename, 'r') as f:
+                assert f.read() == expected_body
+        finally:
+            os.chdir(orig_cwd)
+
+    def test_download_with_quiet_and_output_flag(self, httpbin):
+        robots_txt = '/robots.txt'
+        expected_body = requests.get(httpbin + robots_txt).text
+        expected_filename = 'test.txt'
+        env = MockEnvironment(stdin_isatty=True, stdout_isatty=True)
+        orig_cwd = os.getcwd()
+        os.chdir(tempfile.mkdtemp(prefix='httpie_download_quiet_test_'))
+        try:
+            assert os.listdir('.') == []
+            r = http('--quiet',
+                     '--download',
+                     '--output=' + expected_filename,
+                     httpbin + robots_txt,
+                     env=env)
+            assert os.listdir('.') == [expected_filename]
+            assert r.stderr == ''
+            assert env.devnull == env.stderr
+            assert env.devnull == env.stdout
+            with open(expected_filename, 'r') as f:
+                assert f.read() == expected_body
+        finally:
+            os.chdir(orig_cwd)
