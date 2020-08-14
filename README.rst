@@ -2009,6 +2009,10 @@ HTTPie plays exceptionally well with the following tools:
   —  interactive shell for HTTPie featuring autocomplete
   and command syntax highlighting
 
+Helpers to convert from other client tools:
+
+* `CurliPie <https://curlipie.now.sh/>`_ help convert cURL command line to HTTPie command line.
+
 
 Alternatives
 ~~~~~~~~~~~~
