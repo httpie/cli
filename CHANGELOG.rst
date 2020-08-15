@@ -8,6 +8,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 `2.3.0-dev`_ (unreleased)
 -------------------------
+* Added support for multipart upload streaming (`#684`_).
 * Added support for combining cookies specified on the CLI and in a session file (`#932`_).
 * Added out of the box SOCKS support with no extra installation (`#904`_).
 * Added ``--quiet, -q`` flag to enforce silent behaviour.
@@ -451,6 +452,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 .. _#128: https://github.com/jakubroztocil/httpie/issues/128
 .. _#488: https://github.com/jakubroztocil/httpie/issues/488
 .. _#668: https://github.com/jakubroztocil/httpie/issues/668
+.. _#684: https://github.com/jakubroztocil/httpie/issues/684
 .. _#718: https://github.com/jakubroztocil/httpie/issues/718
 .. _#719: https://github.com/jakubroztocil/httpie/issues/719
 .. _#840: https://github.com/jakubroztocil/httpie/issues/840

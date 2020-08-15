@@ -4,6 +4,7 @@ from typing import Callable, Iterable, Union
 from httpie.context import Environment
 from httpie.models import HTTPMessage
 from httpie.output.processing import Conversion, Formatting
+from requests_toolbelt import MultipartEncoder
 
 
 BINARY_SUPPRESSED_NOTICE = (
@@ -14,11 +15,29 @@ BINARY_SUPPRESSED_NOTICE = (
 )
 
 
-class BinarySuppressedError(Exception):
+LARGE_UPLOAD_SUPPRESSED_NOTICE = (
+    b'\n'
+    b'+--------------------------------------------------------+\n'
+    b'| NOTE: large form upload data not shown in the terminal |\n'
+    b'+--------------------------------------------------------+'
+)
+
+
+class DataSuppressedError(Exception):
+    message = None
+
+
+class BinarySuppressedError(DataSuppressedError):
+    """An error indicating that the body is binary and won't be written,
+     e.g., for terminal output)."""
+    message = BINARY_SUPPRESSED_NOTICE
+
+
+class LargeUploadSuppressedError(DataSuppressedError):
     """An error indicating that the body is binary and won't be written,
      e.g., for terminal output)."""
 
-    message = BINARY_SUPPRESSED_NOTICE
+    message = LARGE_UPLOAD_SUPPRESSED_NOTICE
 
 
 class BaseStream:
@@ -63,7 +82,7 @@ class BaseStream:
                     yield chunk
                     if self.on_body_chunk_downloaded:
                         self.on_body_chunk_downloaded(chunk)
-            except BinarySuppressedError as e:
+            except DataSuppressedError as e:
                 if self.with_headers:
                     yield b'\n'
                 yield e.message
@@ -184,6 +203,8 @@ class BufferedPrettyStream(PrettyStream):
         body = bytearray()
 
         for chunk in self.msg.iter_body(self.CHUNK_SIZE):
+            if isinstance(chunk, MultipartEncoder):
+                raise LargeUploadSuppressedError()
             if not converter and b'\0' in chunk:
                 converter = self.conversion.get_converter(self.mime)
                 if not converter:

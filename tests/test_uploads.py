@@ -1,8 +1,10 @@
 import os
+from unittest import mock
 
 import pytest
 
 from httpie.cli.exceptions import ParseError
+from httpie.output.streams import LARGE_UPLOAD_SUPPRESSED_NOTICE
 from httpie.status import ExitStatus
 from utils import MockEnvironment, http, HTTP_OK
 from fixtures import FILE_PATH_ARG, FILE_PATH, FILE_CONTENT
@@ -39,14 +41,31 @@ class TestMultipartFormDataFileUpload:
         assert r.count('Content-Type: text/plain') == 2
 
     def test_upload_custom_content_type(self, httpbin):
-        r = http('--form', '--verbose', 'POST', httpbin.url + '/post',
-                 f'test-file@{FILE_PATH_ARG};type=image/vnd.microsoft.icon')
+        r = http(
+            '--form',
+            '--verbose',
+            httpbin.url + '/post',
+            f'test-file@{FILE_PATH_ARG};type=image/vnd.microsoft.icon'
+        )
         assert HTTP_OK in r
         # Content type is stripped from the filename
         assert 'Content-Disposition: form-data; name="test-file";' \
                f' filename="{os.path.basename(FILE_PATH)}"' in r
-        assert FILE_CONTENT in r
+        assert r.count(FILE_CONTENT) == 2
         assert 'Content-Type: image/vnd.microsoft.icon' in r
+
+    @mock.patch('httpie.uploads.UPLOAD_BUFFER', 0)
+    def test_large_upload_display_suppressed(self, httpbin):
+        r = http(
+            '--form',
+            '--verbose',
+            httpbin.url + '/post',
+            f'test-file@{FILE_PATH_ARG}',
+            'foo=bar',
+        )
+        assert HTTP_OK in r
+        assert r.count(FILE_CONTENT) == 1
+        assert LARGE_UPLOAD_SUPPRESSED_NOTICE.decode() in r
 
 
 class TestRequestBodyFromFilePath:

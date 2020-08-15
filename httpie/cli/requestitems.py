@@ -99,15 +99,13 @@ def process_file_upload_arg(arg: KeyValueArg) -> Tuple[str, IO, str]:
     parts = arg.value.split(SEPARATOR_FILE_UPLOAD_TYPE)
     filename = parts[0]
     mime_type = parts[1] if len(parts) > 1 else None
-
     try:
-        with open(os.path.expanduser(filename), 'rb') as f:
-            contents = f.read()
+        f = open(os.path.expanduser(filename), 'rb')
     except IOError as e:
         raise ParseError('"%s": %s' % (arg.orig, e))
     return (
         os.path.basename(filename),
-        BytesIO(contents),
+        f,
         mime_type or get_content_type(filename),
     )
 

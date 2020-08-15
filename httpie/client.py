@@ -11,13 +11,14 @@ from urllib.parse import urlparse, urlunparse
 import requests
 # noinspection PyPackageRequirements
 import urllib3
-
 from httpie import __version__
 from httpie.cli.dicts import RequestHeadersDict
 from httpie.plugins.registry import plugin_manager
 from httpie.sessions import get_httpie_session
 from httpie.ssl import AVAILABLE_SSL_VERSION_ARG_MAPPING, HTTPieHTTPSAdapter
+from httpie.uploads import get_multipart_data
 from httpie.utils import get_expired_cookies, repr_dict
+
 
 urllib3.disable_warnings()
 
@@ -256,6 +257,7 @@ def make_request_kwargs(
     Translate our `args` into `requests.Request` keyword arguments.
 
     """
+    files = args.files
     # Serialize JSON data, if needed.
     data = args.data
     auto_json = data and not args.form
@@ -274,6 +276,10 @@ def make_request_kwargs(
     headers.update(args.headers)
     headers = finalize_headers(headers)
 
+    if args.form and files:
+        data, headers['Content-Type'] = get_multipart_data(data, files)
+        files = None
+
     kwargs = {
         'method': args.method.lower(),
         'url': args.url,
@@ -281,7 +287,7 @@ def make_request_kwargs(
         'data': data,
         'auth': args.auth,
         'params': args.params,
-        'files': args.files,
+        'files': files,
     }
 
     return kwargs

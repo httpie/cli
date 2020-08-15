@@ -694,6 +694,10 @@ override the inferred content type:
 
    $ http -f POST httpbin.org/post name='John Smith' cv@'~/files/data.bin;type=application/pdf'
 
+Larger multipart uploads (i.e., ``--form`` requests with at least one ``file@path``)
+are always streamed to avoid memory issues. Additionally, the display of the
+request body on the terminal is suppressed.
+
 
 HTTP headers
 ============

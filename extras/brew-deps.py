@@ -16,6 +16,7 @@ PACKAGES = [
     'httpie',
     'Pygments',
     'requests',
+    'requests-toolbelt',
     'certifi',
     'urllib3',
     'idna',
