@@ -183,52 +183,11 @@ class TestDownloads:
         # Redirect from `/redirect/1` to `/get`.
         expected_filename = '1.json'
         orig_cwd = os.getcwd()
-        os.chdir(tempfile.mkdtemp(prefix='httpie_download_test_'))
-        try:
-            assert os.listdir('.') == []
-            http('--download', httpbin.url + '/redirect/1')
-            assert os.listdir('.') == [expected_filename]
-        finally:
-            os.chdir(orig_cwd)
-
-    def test_download_with_quiet_flag(self, httpbin):
-        robots_txt = '/robots.txt'
-        expected_body = requests.get(httpbin + robots_txt).text
-        expected_filename = 'robots.txt'
-        env = MockEnvironment(stdin_isatty=True, stdout_isatty=True)
-        orig_cwd = os.getcwd()
-        os.chdir(tempfile.mkdtemp(prefix='httpie_download_quiet_test_'))
-        try:
-            assert os.listdir('.') == []
-            r = http('--quiet', '--download', httpbin + robots_txt, env=env)
-            assert os.listdir('.') == [expected_filename]
-            assert r.stderr == ''
-            assert env.devnull == env.stderr
-            assert env.devnull == env.stdout
-            with open(expected_filename, 'r') as f:
-                assert f.read() == expected_body
-        finally:
-            os.chdir(orig_cwd)
-
-    def test_download_with_quiet_and_output_flag(self, httpbin):
-        robots_txt = '/robots.txt'
-        expected_body = requests.get(httpbin + robots_txt).text
-        expected_filename = 'test.txt'
-        env = MockEnvironment(stdin_isatty=True, stdout_isatty=True)
-        orig_cwd = os.getcwd()
-        os.chdir(tempfile.mkdtemp(prefix='httpie_download_quiet_test_'))
-        try:
-            assert os.listdir('.') == []
-            r = http('--quiet',
-                     '--download',
-                     '--output=' + expected_filename,
-                     httpbin + robots_txt,
-                     env=env)
-            assert os.listdir('.') == [expected_filename]
-            assert r.stderr == ''
-            assert env.devnull == env.stderr
-            assert env.devnull == env.stdout
-            with open(expected_filename, 'r') as f:
-                assert f.read() == expected_body
-        finally:
-            os.chdir(orig_cwd)
+        with tempfile.TemporaryDirectory() as tmp_dirname:
+            os.chdir(tmp_dirname)
+            try:
+                assert os.listdir('.') == []
+                http('--download', httpbin.url + '/redirect/1')
+                assert os.listdir('.') == [expected_filename]
+            finally:
+                os.chdir(orig_cwd)

@@ -1156,12 +1156,34 @@ be printed via several options:
 ``--verbose, -v``   Print the whole HTTP exchange (request and response).
                     This option also enables ``--all`` (see below).
 ``--print, -p``     Selects parts of the HTTP exchange.
-``--quiet, -q``     Doesn't print anything. Overrides other output flags.
+``--quiet, -q``     Don't print anything to ``stdout`` and ``stderr``.
 =================   =====================================================
-If ``--quiet`` is used in conjuction with ``--output`` the flag is ignored
-and ``stdout`` is still redirected. If ``--quiet`` is used with ``--download``
-file is still downloaded as usual but ``stdout`` and ``stdin`` are redirected
-to ``devnull``. 
+
+
+What parts of the HTTP exchange should be printed
+-------------------------------------------------
+
+All the other `output options`_ are under the hood just shortcuts for
+the more powerful ``--print, -p``. It accepts a string of characters each
+of which represents a specific part of the HTTP exchange:
+
+==========  ==================
+Character   Stands for
+==========  ==================
+``H``       request headers
+``B``       request body
+``h``       response headers
+``b``       response body
+==========  ==================
+
+Print request and response headers:
+
+.. code-block:: bash
+
+    $ http --print=Hh PUT httpbin.org/put hello=world
+
+Verbose output
+--------------
 
 ``--verbose`` can often be useful for debugging the request and generating
 documentation examples:
@@ -1192,28 +1214,12 @@ documentation examples:
         […]
     }
 
+Quiet output
+------------
 
-What parts of the HTTP exchange should be printed
--------------------------------------------------
-
-All the other `output options`_ are under the hood just shortcuts for
-the more powerful ``--print, -p``. It accepts a string of characters each
-of which represents a specific part of the HTTP exchange:
-
-==========  ==================
-Character   Stands for
-==========  ==================
-``H``       request headers
-``B``       request body
-``h``       response headers
-``b``       response body
-==========  ==================
-
-Print request and response headers:
-
-.. code-block:: bash
-
-    $ http --print=Hh PUT httpbin.org/put hello=world
+``--quiet`` redirects all output that would otherwise go to ``stdout``
+and ``stderr``  (except for error messages) to ``/dev/null``.
+This doesn’t affect output to a file via ``--output`` or ``--download``.
 
 
 Viewing intermediary requests/responses

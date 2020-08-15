@@ -35,7 +35,6 @@ class Environment:
     stdout_encoding: str = None
     stderr: IO = sys.stderr
     stderr_isatty: bool = stderr.isatty()
-    _devnull = None
     colors = 256
     program_name: str = 'http'
     if not is_windows:
@@ -58,7 +57,7 @@ class Environment:
         )
         del colorama
 
-    def __init__(self, **kwargs):
+    def __init__(self, devnull=None, **kwargs):
         """
         Use keyword arguments to overwrite
         any of the class attributes for this instance.
@@ -66,6 +65,10 @@ class Environment:
         """
         assert all(hasattr(type(self), attr) for attr in kwargs.keys())
         self.__dict__.update(**kwargs)
+
+        # The original STDERR unaffected by --quiet’ing.
+        self._orig_stderr = self.stderr
+        self._devnull = devnull
 
         # Keyword arguments > stream.encoding > default utf8
         if self.stdin and self.stdin_encoding is None:
@@ -122,4 +125,4 @@ class Environment:
 
     def log_error(self, msg, level='error'):
         assert level in ['error', 'warning']
-        self.stderr.write(f'\n{self.program_name}: {level}: {msg}\n\n')
+        self._orig_stderr.write(f'\n{self.program_name}: {level}: {msg}\n\n')
