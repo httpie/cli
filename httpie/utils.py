@@ -111,5 +111,3 @@ def get_expired_cookies(
         for cookie in cookies
         if cookie.get('expires', float('Inf')) <= now
     ]
-
-
