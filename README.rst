@@ -1,12 +1,12 @@
 HTTPie: command-line HTTP client for the API era
 ################################################
 
-HTTPie (pronounced *aitch-tee-tee-pie*) is a command-line HTTP client.
-Its goal is to make CLI interaction with web services as human-friendly
-as possible. It provides a simple ``http`` command that allows for sending
-arbitrary HTTP requests using a simple and natural syntax, and displays
-colorized output. HTTPie can be used for testing, debugging, and
-generally interacting with HTTP servers.
+HTTPie (pronounced *aitch-tee-tee-pie*) is a command-line HTTP client. 
+Its goal is to make CLI interaction with web services as human-friendly as possible. 
+HTTPie is designed for testing, debugging, and generally interacting with APIs & HTTP servers. 
+The ``http`` & ``https`` commands allow for creating and sending arbitrary HTTP requests. 
+They use simple and natural syntax and provide formatted and colorized output.
+
 
 
 .. class:: no-web no-pdf
