@@ -1,5 +1,5 @@
 """
-HTTPie - a CLI, cURL-like tool for humans.
+HTTPie: command-line HTTP client for the API era.
 
 """
 
