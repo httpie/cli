@@ -754,11 +754,11 @@ automatically:
     Content-Type: multipart/letter; boundary=c31279ab254f40aeb06df32b433cbccb
     Host: example.org
 
-    --multipart/letter
+    --c31279ab254f40aeb06df32b433cbccb
     Content-Disposition: form-data; name="hello"
 
     world
-    --multipart/letter--
+    --c31279ab254f40aeb06df32b433cbccb--
 
 
 HTTP headers
