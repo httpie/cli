@@ -723,40 +723,42 @@ By default, HTTPie uses a random unique string as the boundary but you can use
 
 .. code-block:: bash
 
-    $ http --form --multipart --boundary=XOXO --offline example.org hello=world
+    $ http --form --multipart --boundary=xoxo --offline example.org hello=world
 
 .. code-block:: http
 
     POST / HTTP/1.1
     Content-Length: 129
-    Content-Type: multipart/form-data; boundary=XOXO
+    Content-Type: multipart/form-data; boundary=xoxo
     Host: example.org
 
-    --XOXO
+    --xoxo
     Content-Disposition: form-data; name="hello"
 
     world
-    --XOXO--
+    --xoxo--
 
 If you specify a custom ``Content-Type`` header without including the boundary
 bit, HTTPie will add the boundary value (specified or generated) to the header
 automatically:
 
+
 .. code-block:: bash
-    http --form --multipart --boundary=XOXO --offline example.org hello=world Content-Type:love/letter
+
+    http --form --multipart --offline example.org hello=world Content-Type:multipart/letter
 
 .. code-block:: http
 
     POST / HTTP/1.1
     Content-Length: 129
-    Content-Type: love/letter; boundary=XOXO
+    Content-Type: multipart/letter; boundary=c31279ab254f40aeb06df32b433cbccb
     Host: example.org
 
-    --XOXO
+    --multipart/letter
     Content-Disposition: form-data; name="hello"
 
     world
-    --XOXO--
+    --multipart/letter--
 
 
 HTTP headers
