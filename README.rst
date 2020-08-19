@@ -698,6 +698,66 @@ Larger multipart uploads (i.e., ``--form`` requests with at least one ``file@pat
 are always streamed to avoid memory issues. Additionally, the display of the
 request body on the terminal is suppressed.
 
+You can explicitly use ``--multipart`` to enforce ``multipart/form-data`` even
+for form requests without any files:
+
+.. code-block:: bash
+
+    $ http --form --multipart --offline example.org/ hello=world
+
+.. code-block:: http
+
+    POST / HTTP/1.1
+    Content-Length: 129
+    Content-Type: multipart/form-data; boundary=c31279ab254f40aeb06df32b433cbccb
+    Host: example.org
+
+    --c31279ab254f40aeb06df32b433cbccb
+    Content-Disposition: form-data; name="hello"
+
+    world
+    --c31279ab254f40aeb06df32b433cbccb--
+
+By default, HTTPie uses a random unique string as the boundary. You may use
+the ``--boundary`` option to specify a custom boundary string instead:
+
+.. code-block:: bash
+
+    $ http --form --multipart --boundary=XOXO --offline example.org/ hello=world
+
+.. code-block:: http
+
+    POST / HTTP/1.1
+    Content-Length: 129
+    Content-Type: multipart/form-data; boundary=XOXO
+    Host: example.org
+
+    --XOXO
+    Content-Disposition: form-data; name="hello"
+
+    world
+    --XOXO--
+
+If you specify a custom ``Content-Type`` header without including the boundary
+bit, HTTPie will add the boundary value (specified or generated) to the header
+automatically:
+
+.. code-block:: bash
+    http --form --multipart --boundary=XOXO --offline example.org/ hello=world Content-Type:love/letter
+
+.. code-block:: http
+
+    POST / HTTP/1.1
+    Content-Length: 129
+    Content-Type: love/letter; boundary=XOXO
+    Host: example.org
+
+    --XOXO
+    Content-Disposition: form-data; name="hello"
+
+    world
+    --XOXO--
+
 
 HTTP headers
 ============

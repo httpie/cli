@@ -75,16 +75,13 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
     ) -> argparse.Namespace:
         self.env = env
         self.args, no_options = super().parse_known_args(args, namespace)
-
         if self.args.debug:
             self.args.traceback = True
-
         self.has_stdin_data = (
             self.env.stdin
             and not self.args.ignore_stdin
             and not self.env.stdin_isatty
         )
-
         # Arguments processing and environment setup.
         self._apply_no_options(no_options)
         self._process_download_options()
@@ -94,11 +91,15 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
         self._process_format_options()
         self._guess_method()
         self._parse_items()
-
         if self.has_stdin_data:
             self._body_from_file(self.env.stdin)
+        self._process_url()
+        self._process_auth()
+        return self.args
+
+    def _process_url(self):
         if not URL_SCHEME_RE.match(self.args.url):
-            if os.path.basename(env.program_name) == 'https':
+            if os.path.basename(self.env.program_name) == 'https':
                 scheme = 'https://'
             else:
                 scheme = self.args.default_scheme + "://"
@@ -114,9 +115,6 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
                 self.args.url += rest
             else:
                 self.args.url = scheme + self.args.url
-        self._process_auth()
-
-        return self.args
 
     # noinspection PyShadowingBuiltins
     def _print_message(self, message, file=None):

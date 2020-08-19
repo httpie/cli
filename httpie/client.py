@@ -16,7 +16,7 @@ from httpie.cli.dicts import RequestHeadersDict
 from httpie.plugins.registry import plugin_manager
 from httpie.sessions import get_httpie_session
 from httpie.ssl import AVAILABLE_SSL_VERSION_ARG_MAPPING, HTTPieHTTPSAdapter
-from httpie.uploads import get_multipart_data
+from httpie.uploads import get_multipart_data_and_content_type
 from httpie.utils import get_expired_cookies, repr_dict
 
 
@@ -276,8 +276,13 @@ def make_request_kwargs(
     headers.update(args.headers)
     headers = finalize_headers(headers)
 
-    if args.form and files:
-        data, headers['Content-Type'] = get_multipart_data(data, files)
+    if args.form and (files or args.multipart):
+        data, headers['Content-Type'] = get_multipart_data_and_content_type(
+            data=data,
+            files=files,
+            boundary=args.boundary,
+            content_type=args.headers.get('Content-Type'),
+        )
         files = None
 
     kwargs = {

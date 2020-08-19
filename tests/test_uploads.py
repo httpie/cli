@@ -4,6 +4,7 @@ from unittest import mock
 import pytest
 
 from httpie.cli.exceptions import ParseError
+from httpie.client import FORM_CONTENT_TYPE
 from httpie.output.streams import LARGE_UPLOAD_SUPPRESSED_NOTICE
 from httpie.status import ExitStatus
 from utils import MockEnvironment, http, HTTP_OK
@@ -66,6 +67,79 @@ class TestMultipartFormDataFileUpload:
         assert HTTP_OK in r
         assert r.count(FILE_CONTENT) == 1
         assert LARGE_UPLOAD_SUPPRESSED_NOTICE.decode() in r
+
+    def test_form_no_files_urlencoded(self, httpbin):
+        r = http(
+            '--form',
+            '--verbose',
+            httpbin.url + '/post',
+            'AAAA=AAA',
+            'BBB=BBB',
+        )
+        assert HTTP_OK in r
+        assert FORM_CONTENT_TYPE in r
+
+    def test_form_no_files_multipart(self, httpbin):
+        r = http(
+            '--form',
+            '--verbose',
+            '--multipart',
+            httpbin.url + '/post',
+            'AAAA=AAA',
+            'BBB=BBB',
+        )
+        assert HTTP_OK in r
+        assert FORM_CONTENT_TYPE not in r
+        assert 'multipart/form-data' in r
+
+    def test_form_multipart_custom_boundary(self, httpbin):
+        boundary = 'HTTPIE_FTW'
+        r = http(
+            '--print=HB',
+            '--check-status',
+            '--form',
+            '--multipart',
+            f'--boundary={boundary}',
+            httpbin.url + '/post',
+            'AAAA=AAA',
+            'BBB=BBB',
+        )
+        assert f'multipart/form-data; boundary={boundary}' in r
+        assert r.count(boundary) == 4
+
+    def test_multipart_custom_content_type_boundary_added(self, httpbin):
+        boundary = 'HTTPIE_FTW'
+        r = http(
+            '--print=HB',
+            '--check-status',
+            '--form',
+            '--multipart',
+            f'--boundary={boundary}',
+            httpbin.url + '/post',
+            'Content-Type: multipart/magic',
+            'AAAA=AAA',
+            'BBB=BBB',
+        )
+        assert f'multipart/magic; boundary={boundary}' in r
+        assert r.count(boundary) == 4
+
+    def test_multipart_custom_content_type_boundary_preserved(self, httpbin):
+        # Allow explicit nonsense requests.
+        boundary_in_header = 'HEADER_BOUNDARY'
+        boundary_in_body = 'BODY_BOUNDARY'
+        r = http(
+            '--form',
+            '--print=HB',
+            '--check-status',
+            '--multipart',
+            f'--boundary={boundary_in_body}',
+            httpbin.url + '/post',
+            f'Content-Type: multipart/magic; boundary={boundary_in_header}',
+            'AAAA=AAA',
+            'BBB=BBB',
+        )
+        assert f'multipart/magic; boundary={boundary_in_header}' in r
+        assert r.count(boundary_in_body) == 3
 
 
 class TestRequestBodyFromFilePath:

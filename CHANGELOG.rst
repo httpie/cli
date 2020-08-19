@@ -12,6 +12,8 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 * Added support for combining cookies specified on the CLI and in a session file (`#932`_).
 * Added out of the box SOCKS support with no extra installation (`#904`_).
 * Added ``--quiet, -q`` flag to enforce silent behaviour.
+* Added ``--multipart`` to allow ``multipart/form-data`` encoding for non-file ``--form`` requests as well.
+* Added ``--boundary`` to allow a custom boundary string for ``multipart/form-data`` requests.
 * Removed Tox testing entirely (`#943`_).
 
 

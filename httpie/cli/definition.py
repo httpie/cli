@@ -161,6 +161,25 @@ content_type.add_argument(
 
     '''
 )
+content_type.add_argument(
+    '--multipart',
+    default=False,
+    action='store_true',
+    help='''
+    Force the request to be encoded as multipart/form-data even without
+    any file fields. Only has effect only together with --form.
+
+    '''
+)
+content_type.add_argument(
+    '--boundary',
+    help='''
+    Specify a custom boundary string for multipart/form-data requests.
+    Only has effect only together with --form.
+
+    '''
+)
+
 
 #######################################################################
 # Content processing.
