@@ -1,10 +1,10 @@
 HTTPie: command-line HTTP client for the API era
 ################################################
 
-HTTPie (pronounced *aitch-tee-tee-pie*) is a command-line HTTP client. 
-Its goal is to make CLI interaction with web services as human-friendly as possible. 
-HTTPie is designed for testing, debugging, and generally interacting with APIs & HTTP servers. 
-The ``http`` & ``https`` commands allow for creating and sending arbitrary HTTP requests. 
+HTTPie (pronounced *aitch-tee-tee-pie*) is a command-line HTTP client.
+Its goal is to make CLI interaction with web services as human-friendly as possible.
+HTTPie is designed for testing, debugging, and generally interacting with APIs & HTTP servers.
+The ``http`` & ``https`` commands allow for creating and sending arbitrary HTTP requests.
 They use simple and natural syntax and provide formatted and colorized output.
 
 
@@ -703,7 +703,7 @@ for form requests without any files:
 
 .. code-block:: bash
 
-    $ http --form --multipart --offline example.org/ hello=world
+    $ http --form --multipart --offline example.org hello=world
 
 .. code-block:: http
 
@@ -718,12 +718,12 @@ for form requests without any files:
     world
     --c31279ab254f40aeb06df32b433cbccb--
 
-By default, HTTPie uses a random unique string as the boundary. You may use
-the ``--boundary`` option to specify a custom boundary string instead:
+By default, HTTPie uses a random unique string as the boundary but you can use
+``--boundary`` to specify a custom string instead:
 
 .. code-block:: bash
 
-    $ http --form --multipart --boundary=XOXO --offline example.org/ hello=world
+    $ http --form --multipart --boundary=XOXO --offline example.org hello=world
 
 .. code-block:: http
 
@@ -743,7 +743,7 @@ bit, HTTPie will add the boundary value (specified or generated) to the header
 automatically:
 
 .. code-block:: bash
-    http --form --multipart --boundary=XOXO --offline example.org/ hello=world Content-Type:love/letter
+    http --form --multipart --boundary=XOXO --offline example.org hello=world Content-Type:love/letter
 
 .. code-block:: http
 
