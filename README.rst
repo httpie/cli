@@ -1,5 +1,5 @@
-HTTPie: command-line HTTP client for the API era
-################################################
+HTTPie: human-friendly CLI HTTP client for the API era
+######################################################
 
 HTTPie (pronounced *aitch-tee-tee-pie*) is a command-line HTTP client.
 Its goal is to make CLI interaction with web services as human-friendly as possible.
