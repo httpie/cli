@@ -367,13 +367,22 @@ class TestExpiredCookies(CookieTestBase):
                 ]
             ),
             (
+                # Checks we gracefully ignore expires date in invalid format.
+                # <https://github.com/httpie/httpie/issues/963>
+                [
+                    ('Set-Cookie', 'pfg=; Expires=Sat, 19-Sep-2020 06:58:14 GMT+0000; Max-Age=0; path=/; domain=.tumblr.com; secure; HttpOnly'),
+                ],
+                None,
+                []
+            ),
+            (
                 [
                     ('Set-Cookie', 'hello=world; Path=/; Expires=Fri, 12 Jun 2020 12:28:55 GMT; HttpOnly'),
                     ('Connection', 'keep-alive')
                 ],
                 datetime(2020, 6, 11).timestamp(),
                 []
-            )
+            ),
         ]
     )
     def test_get_expired_cookies_manages_multiple_cookie_headers(self, headers, now, expected_expired):

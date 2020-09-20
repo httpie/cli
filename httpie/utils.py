@@ -6,7 +6,7 @@ import time
 from collections import OrderedDict
 from http.cookiejar import parse_ns_headers
 from pprint import pformat
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 import requests.auth
 
@@ -93,7 +93,12 @@ def get_expired_cookies(
     headers: List[Tuple[str, str]],
     now: float = None
 ) -> List[dict]:
+
     now = now or time.time()
+
+    def is_expired(expires: Optional[float]) -> bool:
+        return expires is not None and expires <= now
+
     attr_sets: List[Tuple[str, str]] = parse_ns_headers(
         value for name, value in headers
         if name.lower() == 'set-cookie'
@@ -103,11 +108,12 @@ def get_expired_cookies(
         dict(attrs[1:], name=attrs[0][0])
         for attrs in attr_sets
     ]
+
     return [
         {
             'name': cookie['name'],
             'path': cookie.get('path', '/')
         }
         for cookie in cookies
-        if cookie.get('expires', float('Inf')) <= now
+        if is_expired(expires=cookie.get('expires'))
     ]
