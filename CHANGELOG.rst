@@ -15,6 +15,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 * Added ``--multipart`` to allow ``multipart/form-data`` encoding for non-file ``--form`` requests as well.
 * Added ``--boundary`` to allow a custom boundary string for ``multipart/form-data`` requests.
 * Removed Tox testing entirely (`#943`_).
+* Fixed the handling of invalid ``expires`` dates in ``Set-Cookie`` headers (`#963`_).
 
 
 `2.2.0`_ (2020-06-18)
@@ -468,3 +469,4 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 .. _#932: https://github.com/jakubroztocil/httpie/issues/932
 .. _#934: https://github.com/jakubroztocil/httpie/issues/934
 .. _#943: https://github.com/jakubroztocil/httpie/issues/943
+.. _#963: https://github.com/jakubroztocil/httpie/issues/963
