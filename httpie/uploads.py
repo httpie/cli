@@ -29,5 +29,5 @@ def get_multipart_data_and_content_type(
     else:
         content_type = headers['Content-Type']
 
-    data = b''.join(encoder) if headers['Content-Length'] < UPLOAD_BUFFER else encoder
+    data = b''.join(encoder) if int(headers['Content-Length']) < UPLOAD_BUFFER else encoder
     return data, content_type
