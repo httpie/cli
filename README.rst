@@ -684,7 +684,7 @@ submitted:
         <input type="file" name="cv" />
     </form>
 
-Note that ``@`` is used to simulate a file upload form field, whereas
+Please note that ``@`` is used to simulate a file upload form field, whereas
 ``=@`` just embeds the file content as a regular text field value.
 
 When uploading files, their content type is inferred from the file name. You can manually
@@ -694,16 +694,12 @@ override the inferred content type:
 
    $ http -f POST httpbin.org/post name='John Smith' cv@'~/files/data.bin;type=application/pdf'
 
-Larger multipart uploads (i.e., ``--form`` requests with at least one ``file@path``)
-are always streamed to avoid memory issues. Additionally, the display of the
-request body on the terminal is suppressed.
-
-You can explicitly use ``--multipart`` to enforce ``multipart/form-data`` even
-for form requests without any files:
+To perform a ``multipart/form-data`` request even without any files, use
+``--multipart`` instead of ``--form``:
 
 .. code-block:: bash
 
-    $ http --form --multipart --offline example.org hello=world
+    $ http --multipart --offline example.org hello=world
 
 .. code-block:: http
 
@@ -717,6 +713,10 @@ for form requests without any files:
 
     world
     --c31279ab254f40aeb06df32b433cbccb--
+
+Larger multipart uploads are always streamed to avoid memory issues.
+Additionally, the display of the request body on the terminal is suppressed
+for larger uploads.
 
 By default, HTTPie uses a random unique string as the boundary but you can use
 ``--boundary`` to specify a custom string instead:

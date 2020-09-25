@@ -55,7 +55,7 @@ class TestMultipartFormDataFileUpload:
         assert r.count(FILE_CONTENT) == 2
         assert 'Content-Type: image/vnd.microsoft.icon' in r
 
-    @mock.patch('httpie.uploads.UPLOAD_BUFFER', 0)
+    @mock.patch('httpie.uploads.MULTIPART_UPLOAD_BUFFER', 0)
     def test_large_upload_display_suppressed(self, httpbin):
         r = http(
             '--form',
@@ -79,9 +79,8 @@ class TestMultipartFormDataFileUpload:
         assert HTTP_OK in r
         assert FORM_CONTENT_TYPE in r
 
-    def test_form_no_files_multipart(self, httpbin):
+    def test_multipart(self, httpbin):
         r = http(
-            '--form',
             '--verbose',
             '--multipart',
             httpbin.url + '/post',
@@ -92,12 +91,38 @@ class TestMultipartFormDataFileUpload:
         assert FORM_CONTENT_TYPE not in r
         assert 'multipart/form-data' in r
 
+    def test_multipart_too_large_for_terminal(self, httpbin):
+        with mock.patch('httpie.uploads.MULTIPART_UPLOAD_BUFFER', 0):
+            r = http(
+                '--verbose',
+                '--multipart',
+                httpbin.url + '/post',
+                'AAAA=AAA',
+                'BBB=BBB',
+            )
+        assert HTTP_OK in r
+        assert FORM_CONTENT_TYPE not in r
+        assert 'multipart/form-data' in r
+
+    def test_multipart_too_large_for_terminal_non_pretty(self, httpbin):
+        with mock.patch('httpie.uploads.MULTIPART_UPLOAD_BUFFER', 0):
+            r = http(
+                '--verbose',
+                '--multipart',
+                '--pretty=none',
+                httpbin.url + '/post',
+                'AAAA=AAA',
+                'BBB=BBB',
+            )
+        assert HTTP_OK in r
+        assert FORM_CONTENT_TYPE not in r
+        assert 'multipart/form-data' in r
+
     def test_form_multipart_custom_boundary(self, httpbin):
         boundary = 'HTTPIE_FTW'
         r = http(
             '--print=HB',
             '--check-status',
-            '--form',
             '--multipart',
             f'--boundary={boundary}',
             httpbin.url + '/post',
@@ -112,7 +137,6 @@ class TestMultipartFormDataFileUpload:
         r = http(
             '--print=HB',
             '--check-status',
-            '--form',
             '--multipart',
             f'--boundary={boundary}',
             httpbin.url + '/post',
@@ -128,7 +152,6 @@ class TestMultipartFormDataFileUpload:
         boundary_in_header = 'HEADER_BOUNDARY'
         boundary_in_body = 'BODY_BOUNDARY'
         r = http(
-            '--form',
             '--print=HB',
             '--check-status',
             '--multipart',

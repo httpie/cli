@@ -8,7 +8,7 @@ from httpie.cli.dicts import RequestDataDict, RequestFilesDict
 
 # Multipart uploads smaller than this size gets buffered (otherwise streamed).
 # NOTE: Unbuffered upload requests cannot be displayed on the terminal.
-UPLOAD_BUFFER = 1024 * 100
+MULTIPART_UPLOAD_BUFFER = 1024 * 1000
 
 
 def get_multipart_data_and_content_type(
@@ -29,7 +29,7 @@ def get_multipart_data_and_content_type(
     else:
         content_type = encoder.content_type
 
-    data = encoder.to_string() if 0 and encoder.len < UPLOAD_BUFFER else encoder
+    data = encoder.to_string() if 0 and encoder.len < MULTIPART_UPLOAD_BUFFER else encoder
     return data, content_type
 
 

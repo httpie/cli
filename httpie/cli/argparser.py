@@ -17,7 +17,8 @@ from httpie.cli.argtypes import (
 from httpie.cli.constants import (
     HTTP_GET, HTTP_POST, OUTPUT_OPTIONS, OUTPUT_OPTIONS_DEFAULT,
     OUTPUT_OPTIONS_DEFAULT_OFFLINE, OUTPUT_OPTIONS_DEFAULT_STDOUT_REDIRECTED,
-    OUT_RESP_BODY, PRETTY_MAP, PRETTY_STDOUT_TTY_ONLY, SEPARATOR_CREDENTIALS,
+    OUT_RESP_BODY, PRETTY_MAP, PRETTY_STDOUT_TTY_ONLY, RequestContentType,
+    SEPARATOR_CREDENTIALS,
     SEPARATOR_GROUP_ALL_ITEMS, SEPARATOR_GROUP_DATA_ITEMS, URL_SCHEME_RE,
 )
 from httpie.cli.exceptions import ParseError
@@ -82,6 +83,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
         )
         # Arguments processing and environment setup.
         self._apply_no_options(no_options)
+        self._process_request_content_type()
         self._process_download_options()
         self._setup_standard_streams()
         self._process_output_options()
@@ -95,12 +97,21 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
         self._process_auth()
         return self.args
 
+    def _process_request_content_type(self):
+        rct = self.args.request_content_type
+        self.args.json = rct is RequestContentType.JSON
+        self.args.multipart = rct is RequestContentType.MULTIPART
+        self.args.form = rct in {
+            RequestContentType.FORM,
+            RequestContentType.MULTIPART,
+        }
+
     def _process_url(self):
         if not URL_SCHEME_RE.match(self.args.url):
             if os.path.basename(self.env.program_name) == 'https':
                 scheme = 'https://'
             else:
-                scheme = self.args.default_scheme + "://"
+                scheme = self.args.default_scheme + '://'
 
             # See if we're using curl style shorthand for localhost (:3000/foo)
             shorthand = re.match(r'^:(?!:)(\d*)(/?.*)$', self.args.url)
@@ -163,8 +174,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
 
         if self.args.quiet:
             self.env.stderr = self.env.devnull
-            if not (
-                self.args.output_file_specified and not self.args.download):
+            if not (self.args.output_file_specified and not self.args.download):
                 self.env.stdout = self.env.devnull
 
     def _process_auth(self):
@@ -192,8 +202,8 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
             plugin = plugin_manager.get_auth_plugin(self.args.auth_type)()
 
             if (not self.args.ignore_netrc
-                and self.args.auth is None
-                and plugin.netrc_parse):
+                    and self.args.auth is None
+                    and plugin.netrc_parse):
                 # Only host needed, so it’s OK URL not finalized.
                 netrc_credentials = get_netrc_auth(self.args.url)
                 if netrc_credentials:
@@ -221,7 +231,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
                     credentials = parse_auth(self.args.auth)
 
                 if (not credentials.has_password()
-                    and plugin.prompt_password):
+                        and plugin.prompt_password):
                     if self.args.ignore_stdin:
                         # Non-tty stdin read by now
                         self.error(
@@ -275,13 +285,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
                        'data (key=value) cannot be mixed. Pass '
                        '--ignore-stdin to let key/value take priority. '
                        'See https://httpie.org/doc#scripting for details.')
-        buffer = getattr(fd, 'buffer', fd)
-        # if fd is self.env.stdin and not self.args.chunked:
-        #     self.args.data = buffer.read()
-        # else:
-        #     self.args.data = buffer
-        # print(type(fd))
-        self.args.data = buffer
+        self.args.data = getattr(fd, 'buffer', fd).read()
 
     def _guess_method(self):
         """Set `args.method` if not specified to either POST or GET
@@ -317,8 +321,8 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
                 has_data = (
                     self.has_stdin_data
                     or any(
-                    item.sep in SEPARATOR_GROUP_DATA_ITEMS
-                    for item in self.args.request_items)
+                        item.sep in SEPARATOR_GROUP_DATA_ITEMS
+                        for item in self.args.request_items)
                 )
                 self.args.method = HTTP_POST if has_data else HTTP_GET
 
@@ -421,12 +425,11 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
             if self.args.download_resume:
                 self.error('--continue only works with --download')
         if self.args.download_resume and not (
-            self.args.download and self.args.output_file):
+                self.args.download and self.args.output_file):
             self.error('--continue requires --output to be specified')
 
     def _process_format_options(self):
         parsed_options = PARSED_DEFAULT_FORMAT_OPTIONS
         for options_group in self.args.format_options or []:
-            parsed_options = parse_format_options(options_group,
-                                                  defaults=parsed_options)
+            parsed_options = parse_format_options(options_group, defaults=parsed_options)
         self.args.format_options = parsed_options
