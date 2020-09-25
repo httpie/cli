@@ -2159,7 +2159,7 @@ have contributed.
     :alt: Test coverage
 
 .. |build| image:: https://github.com/httpie/httpie/workflows/Build/badge.svg
-    :target: https://github.com/jakubroztocil/httpie/actions
+    :target: https://github.com/httpie/httpie/actions
     :alt: Build status of the master branch on Mac/Linux/Windows
 
 .. |gitter| image:: https://img.shields.io/gitter/room/jkbrzt/httpie.svg?style=flat-square
