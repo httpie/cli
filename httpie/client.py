@@ -139,11 +139,12 @@ def max_headers(limit):
 
 def compress_body(request: requests.PreparedRequest, always: bool):
     deflater = zlib.compressobj()
-    body_bytes = (
-        request.body
-        if isinstance(request.body, bytes)
-        else request.body.encode()
-    )
+    if isinstance(request.body, str):
+        body_bytes = request.body.encode()
+    elif hasattr(request.body, 'read'):
+        body_bytes = request.body.read()
+    else:
+        body_bytes = request.body
     deflated_data = deflater.compress(body_bytes)
     deflated_data += deflater.flush()
     is_economical = len(deflated_data) < len(body_bytes)
@@ -276,7 +277,7 @@ def make_request_kwargs(
     headers.update(args.headers)
     headers = finalize_headers(headers)
 
-    if args.form and (files or args.multipart):
+    if (args.form and files) or args.multipart:
         data, headers['Content-Type'] = get_multipart_data_and_content_type(
             data=data,
             files=files,

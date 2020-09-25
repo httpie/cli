@@ -1,6 +1,7 @@
 """Parsing and processing of CLI input (args, auth credentials, files, stdin).
 
 """
+import enum
 import re
 
 
@@ -10,6 +11,9 @@ import re
 
 # ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
 # <https://tools.ietf.org/html/rfc3986#section-3.1>
+from enum import Enum
+
+
 URL_SCHEME_RE = re.compile(r'^[a-z][a-z0-9.+-]*://', re.IGNORECASE)
 
 HTTP_POST = 'POST'
@@ -102,3 +106,9 @@ UNSORTED_FORMAT_OPTIONS_STRING = ','.join(
 OUTPUT_OPTIONS_DEFAULT = OUT_RESP_HEAD + OUT_RESP_BODY
 OUTPUT_OPTIONS_DEFAULT_STDOUT_REDIRECTED = OUT_RESP_BODY
 OUTPUT_OPTIONS_DEFAULT_OFFLINE = OUT_REQ_HEAD + OUT_REQ_BODY
+
+
+class RequestContentType(enum.Enum):
+    FORM = enum.auto()
+    MULTIPART = enum.auto()
+    JSON = enum.auto()

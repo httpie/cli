@@ -15,7 +15,8 @@ from httpie.cli.constants import (
     DEFAULT_FORMAT_OPTIONS, OUTPUT_OPTIONS,
     OUTPUT_OPTIONS_DEFAULT, OUT_REQ_BODY, OUT_REQ_HEAD,
     OUT_RESP_BODY, OUT_RESP_HEAD, PRETTY_MAP, PRETTY_STDOUT_TTY_ONLY,
-    SEPARATOR_GROUP_ALL_ITEMS, SEPARATOR_PROXY, SORTED_FORMAT_OPTIONS_STRING,
+    RequestContentType, SEPARATOR_GROUP_ALL_ITEMS, SEPARATOR_PROXY,
+    SORTED_FORMAT_OPTIONS_STRING,
     UNSORTED_FORMAT_OPTIONS_STRING,
 )
 from httpie.output.formatters.colors import (
@@ -141,7 +142,9 @@ content_type = parser.add_argument_group(
 
 content_type.add_argument(
     '--json', '-j',
-    action='store_true',
+    action='store_const',
+    const=RequestContentType.JSON,
+    dest='request_content_type',
     help='''
     (default) Data items from the command line are serialized as a JSON object.
     The Content-Type and Accept headers are set to application/json
@@ -151,7 +154,9 @@ content_type.add_argument(
 )
 content_type.add_argument(
     '--form', '-f',
-    action='store_true',
+    action='store_const',
+    const=RequestContentType.FORM,
+    dest='request_content_type',
     help='''
     Data items from the command line are serialized as form fields.
 
@@ -163,11 +168,12 @@ content_type.add_argument(
 )
 content_type.add_argument(
     '--multipart',
-    default=False,
-    action='store_true',
+    action='store_const',
+    const=RequestContentType.MULTIPART,
+    dest='request_content_type',
     help='''
-    Force the request to be encoded as multipart/form-data even without
-    any file fields. Only has effect only together with --form.
+    Similar to --form, but always sends a multipart/form-data
+    request (i.e., even without files).
 
     '''
 )

@@ -125,6 +125,8 @@ class EncodedStream(BaseStream):
 
     def iter_body(self) -> Iterable[bytes]:
         for line, lf in self.msg.iter_lines(self.CHUNK_SIZE):
+            if isinstance(line, MultipartEncoder):
+                raise LargeUploadSuppressedError()
             if b'\0' in line:
                 raise BinarySuppressedError()
             yield line.decode(self.msg.encoding) \

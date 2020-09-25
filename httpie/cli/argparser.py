@@ -18,7 +18,8 @@ from httpie.cli.constants import (
     DEFAULT_FORMAT_OPTIONS, HTTP_GET, HTTP_POST, OUTPUT_OPTIONS,
     OUTPUT_OPTIONS_DEFAULT,
     OUTPUT_OPTIONS_DEFAULT_STDOUT_REDIRECTED, OUT_RESP_BODY, PRETTY_MAP,
-    PRETTY_STDOUT_TTY_ONLY, SEPARATOR_CREDENTIALS, SEPARATOR_GROUP_ALL_ITEMS,
+    PRETTY_STDOUT_TTY_ONLY, RequestContentType,
+    SEPARATOR_CREDENTIALS, SEPARATOR_GROUP_ALL_ITEMS,
     SEPARATOR_GROUP_DATA_ITEMS, URL_SCHEME_RE,
     OUTPUT_OPTIONS_DEFAULT_OFFLINE,
 )
@@ -84,6 +85,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
         )
         # Arguments processing and environment setup.
         self._apply_no_options(no_options)
+        self._process_request_content_type()
         self._process_download_options()
         self._setup_standard_streams()
         self._process_output_options()
@@ -97,12 +99,21 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
         self._process_auth()
         return self.args
 
+    def _process_request_content_type(self):
+        rct = self.args.request_content_type
+        self.args.json = rct is RequestContentType.JSON
+        self.args.multipart = rct is RequestContentType.MULTIPART
+        self.args.form = rct in {
+            RequestContentType.FORM,
+            RequestContentType.MULTIPART,
+        }
+
     def _process_url(self):
         if not URL_SCHEME_RE.match(self.args.url):
             if os.path.basename(self.env.program_name) == 'https':
                 scheme = 'https://'
             else:
-                scheme = self.args.default_scheme + "://"
+                scheme = self.args.default_scheme + '://'
 
             # See if we're using curl style shorthand for localhost (:3000/foo)
             shorthand = re.match(r'^:(?!:)(\d*)(/?.*)$', self.args.url)
