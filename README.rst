@@ -2154,11 +2154,11 @@ have contributed.
     :target: https://pypi.python.org/pypi/httpie
     :alt: Latest version released on PyPi
 
-.. |coverage| image:: https://img.shields.io/codecov/c/github/jakubroztocil/httpie?style=flat-square
-    :target: https://codecov.io/gh/jakubroztocil/httpie
+.. |coverage| image:: https://img.shields.io/codecov/c/github/httpie/httpie?style=flat-square
+    :target: https://codecov.io/gh/httpie/httpie
     :alt: Test coverage
 
-.. |build| image:: https://github.com/jakubroztocil/httpie/workflows/Build/badge.svg
+.. |build| image:: https://github.com/httpie/httpie/workflows/Build/badge.svg
     :target: https://github.com/jakubroztocil/httpie/actions
     :alt: Build status of the master branch on Mac/Linux/Windows
 
