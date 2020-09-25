@@ -16,7 +16,7 @@ from time import sleep, time
 from typing import IO, Optional, Tuple
 from urllib.parse import urlsplit
 
-import requests
+import httpx
 
 from httpie.models import HTTPResponse
 from httpie.output.streams import RawStream
@@ -232,7 +232,7 @@ class Downloader:
     def start(
         self,
         initial_url: str,
-        final_response: requests.Response
+        final_response: httpx.Response
     ) -> Tuple[RawStream, IO]:
         """
         Initiate and return a stream for `response` body  with progress
@@ -328,7 +328,7 @@ class Downloader:
     @staticmethod
     def _get_output_file_from_response(
         initial_url: str,
-        final_response: requests.Response,
+        final_response: httpx.Response,
     ) -> IO:
         # Output file not specified. Pick a name that doesn't exist yet.
         filename = None

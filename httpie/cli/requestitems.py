@@ -9,8 +9,9 @@ from httpie.cli.constants import (
     SEPARATOR_FILE_UPLOAD_TYPE, SEPARATOR_HEADER, SEPARATOR_HEADER_EMPTY,
     SEPARATOR_QUERY_PARAM,
 )
+import httpx
 from httpie.cli.dicts import (
-    RequestDataDict, RequestFilesDict, RequestHeadersDict, RequestJSONDataDict,
+    RequestDataDict, RequestFilesDict, RequestJSONDataDict,
     RequestQueryParamsDict,
 )
 from httpie.cli.exceptions import ParseError
@@ -20,7 +21,7 @@ from httpie.utils import (get_content_type, load_json_preserve_order)
 class RequestItems:
 
     def __init__(self, as_form=False):
-        self.headers = RequestHeadersDict()
+        self.headers = httpx.Headers()
         self.data = RequestDataDict() if as_form else RequestJSONDataDict()
         self.files = RequestFilesDict()
         self.params = RequestQueryParamsDict()

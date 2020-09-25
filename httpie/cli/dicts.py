@@ -1,13 +1,6 @@
 from collections import OrderedDict
 
-from requests.structures import CaseInsensitiveDict
-
-
-class RequestHeadersDict(CaseInsensitiveDict):
-    """
-    Headers are case-insensitive and multiple values are currently not supported.
-
-    """
+import httpx
 
 
 class RequestJSONDataDict(OrderedDict):

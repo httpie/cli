@@ -2,7 +2,7 @@ import argparse
 import errno
 from typing import Union, IO, TextIO, Tuple, Type
 
-import requests
+import httpx
 
 from httpie.context import Environment
 from httpie.models import HTTPRequest, HTTPResponse
@@ -18,16 +18,16 @@ from httpie.cli.constants import (
 
 
 def write_message(
-    requests_message: Union[requests.PreparedRequest, requests.Response],
+    requests_message: Union[httpx.Request, httpx.Response],
     env: Environment,
     args: argparse.Namespace,
 ):
     output_options_by_message_type = {
-        requests.PreparedRequest: {
+        httpx.Request: {
             'with_headers': OUT_REQ_HEAD in args.output_options,
             'with_body': OUT_REQ_BODY in args.output_options,
         },
-        requests.Response: {
+        httpx.Response: {
             'with_headers': OUT_RESP_HEAD in args.output_options,
             'with_body': OUT_RESP_BODY in args.output_options,
         },
@@ -102,7 +102,7 @@ def write_stream_with_colors_win_py3(
 def build_output_stream_for_message(
     args: argparse.Namespace,
     env: Environment,
-    requests_message: Union[requests.PreparedRequest, requests.Response],
+    requests_message: Union[httpx.Request, httpx.Response],
     with_headers: bool,
     with_body: bool,
 ):
@@ -111,8 +111,8 @@ def build_output_stream_for_message(
         args=args,
     )
     message_class = {
-        requests.PreparedRequest: HTTPRequest,
-        requests.Response: HTTPResponse,
+        httpx.Request: HTTPRequest,
+        httpx.Response: HTTPResponse,
     }[type(requests_message)]
     yield from stream_class(
         msg=message_class(requests_message),

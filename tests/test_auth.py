@@ -1,8 +1,8 @@
 """HTTP authentication-related tests."""
 import mock
 import pytest
+import httpx
 
-from httpie.plugins.builtin import HTTPBasicAuth
 from httpie.status import ExitStatus
 from httpie.utils import ExplicitNullAuth
 from utils import http, add_auth, HTTP_OK, MockEnvironment
@@ -81,7 +81,7 @@ def test_missing_auth(httpbin):
 def test_netrc(httpbin_both):
     # This one gets handled by requests (no --auth, --auth-type present),
     # that’s why we patch inside `requests.sessions`.
-    with mock.patch('requests.sessions.get_netrc_auth') as get_netrc_auth:
+    with mock.patch('httpx._utils.NetRCInfo.get_credentials') as get_netrc_auth:
         get_netrc_auth.return_value = ('httpie', 'password')
         r = http(httpbin_both + '/basic-auth/httpie/password')
         assert get_netrc_auth.call_count == 1
@@ -101,7 +101,7 @@ def test_ignore_netrc_together_with_auth():
         args=['--ignore-netrc', '--auth=username:password', 'example.org'],
         env=MockEnvironment(),
     )
-    assert isinstance(args.auth, HTTPBasicAuth)
+    assert isinstance(args.auth, httpx.BasicAuth)
 
 
 def test_ignore_netrc_with_auth_type_resulting_in_missing_auth(httpbin):

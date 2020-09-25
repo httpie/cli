@@ -8,19 +8,15 @@ from pathlib import Path
 from typing import Iterable, Union
 from urllib.parse import urlparse, urlunparse
 
-import requests
+import httpx
 # noinspection PyPackageRequirements
-import urllib3
 from httpie import __version__
-from httpie.cli.dicts import RequestHeadersDict
 from httpie.plugins.registry import plugin_manager
 from httpie.sessions import get_httpie_session
 from httpie.ssl import AVAILABLE_SSL_VERSION_ARG_MAPPING, HTTPieHTTPSAdapter
 from httpie.uploads import get_multipart_data_and_content_type
 from httpie.utils import get_expired_cookies, repr_dict
 
-
-urllib3.disable_warnings()
 
 FORM_CONTENT_TYPE = 'application/x-www-form-urlencoded; charset=utf-8'
 JSON_CONTENT_TYPE = 'application/json'
@@ -31,7 +27,7 @@ DEFAULT_UA = f'HTTPie/{__version__}'
 def collect_messages(
     args: argparse.Namespace,
     config_dir: Path,
-) -> Iterable[Union[requests.PreparedRequest, requests.Response]]:
+) -> Iterable[Union[httpx.Request, httpx.Response]]:
     httpie_session = None
     httpie_session_headers = None
     if args.session or args.session_read_only:
@@ -49,7 +45,7 @@ def collect_messages(
     )
     send_kwargs = make_send_kwargs(args)
     send_kwargs_mergeable_from_env = make_send_kwargs_mergeable_from_env(args)
-    requests_session = build_requests_session(
+    httpx_session = build_httpx_session(
         ssl_version=args.ssl_version,
         ciphers=args.ciphers,
         verify=bool(send_kwargs_mergeable_from_env['verify'])
@@ -57,7 +53,7 @@ def collect_messages(
 
     if httpie_session:
         httpie_session.update_headers(request_kwargs['headers'])
-        requests_session.cookies = httpie_session.cookies
+        httpx_session.cookies = httpie_session.cookies
         if args.auth_plugin:
             # Save auth from CLI to HTTPie session.
             httpie_session.auth = {
@@ -72,42 +68,38 @@ def collect_messages(
         # TODO: reflect the split between request and send kwargs.
         dump_request(request_kwargs)
 
-    request = requests.Request(**request_kwargs)
-    prepared_request = requests_session.prepare_request(request)
+    request = httpx_session.build_request(**request_kwargs)
     if args.path_as_is:
-        prepared_request.url = ensure_path_as_is(
+        request.url = ensure_path_as_is(
             orig_url=args.url,
-            prepped_url=prepared_request.url,
+            prepped_url=request.url,
         )
-    if args.compress and prepared_request.body:
-        compress_body(prepared_request, always=args.compress > 1)
+    request.read()
+    if args.compress and request.content:
+        request = compress_body(request, always=args.compress > 1)
     response_count = 0
     expired_cookies = []
-    while prepared_request:
-        yield prepared_request
+    while request:
+        yield request
         if not args.offline:
-            send_kwargs_merged = requests_session.merge_environment_settings(
-                url=prepared_request.url,
-                **send_kwargs_mergeable_from_env,
-            )
             with max_headers(args.max_headers):
-                response = requests_session.send(
-                    request=prepared_request,
-                    **send_kwargs_merged,
+                assert not isinstance(request, httpx.Response)
+                response = httpx_session.send(
+                    request=request,
                     **send_kwargs,
                 )
 
             # noinspection PyProtectedMember
-            expired_cookies += get_expired_cookies(
-                headers=response.raw._original_response.msg._headers
-            )
+            # expired_cookies += get_expired_cookies(
+            #     headers=response.raw._original_response.msg._headers
+            # )
 
             response_count += 1
-            if response.next:
+            if response.is_redirect:
                 if args.max_redirects and response_count == args.max_redirects:
-                    raise requests.TooManyRedirects
+                    raise httpx.TooManyRedirects
                 if args.follow:
-                    prepared_request = response.next
+                    request = response.next()
                     if args.all:
                         yield response
                     continue
@@ -116,7 +108,7 @@ def collect_messages(
 
     if httpie_session:
         if httpie_session.is_new() or not args.session_read_only:
-            httpie_session.cookies = requests_session.cookies
+            httpie_session.cookies = httpx_session.cookies
             httpie_session.remove_cookies(
                 # TODO: take path & domain into account?
                 cookie['name'] for cookie in expired_cookies
@@ -137,58 +129,53 @@ def max_headers(limit):
         http.client._MAXHEADERS = orig
 
 
-def compress_body(request: requests.PreparedRequest, always: bool):
+def compress_body(request: httpx.Request, always: bool) -> httpx.Request:
     deflater = zlib.compressobj()
-    body_bytes = (
-        request.body
-        if isinstance(request.body, bytes)
-        else request.body.encode()
-    )
-    deflated_data = deflater.compress(body_bytes)
+    deflated_data = deflater.compress(request.content)
     deflated_data += deflater.flush()
-    is_economical = len(deflated_data) < len(body_bytes)
+    is_economical = len(deflated_data) < len(request.content)
     if is_economical or always:
-        request.body = deflated_data
+        request = httpx.Request(method=request.method, url=request.url, headers=request.headers, content=deflated_data)
         request.headers['Content-Encoding'] = 'deflate'
         request.headers['Content-Length'] = str(len(deflated_data))
+    return request
 
-
-def build_requests_session(
+def build_httpx_session(
     verify: bool,
     ssl_version: str = None,
     ciphers: str = None,
-) -> requests.Session:
-    requests_session = requests.Session()
+) -> httpx.Client:
+    httpx_session = httpx.Client()
 
-    # Install our adapter.
-    https_adapter = HTTPieHTTPSAdapter(
-        ciphers=ciphers,
-        verify=verify,
-        ssl_version=(
-            AVAILABLE_SSL_VERSION_ARG_MAPPING[ssl_version]
-            if ssl_version else None
-        ),
-    )
-    requests_session.mount('https://', https_adapter)
+    # # Install our adapter.
+    # https_adapter = HTTPieHTTPSAdapter(
+    #     ciphers=ciphers,
+    #     verify=verify,
+    #     ssl_version=(
+    #         AVAILABLE_SSL_VERSION_ARG_MAPPING[ssl_version]
+    #         if ssl_version else None
+    #     ),
+    # )
+    # httpx_session.mount('https://', https_adapter)
+    #
+    # # Install adapters from plugins.
+    # for plugin_cls in plugin_manager.get_transport_plugins():
+    #     transport_plugin = plugin_cls()
+    #     httpx_session.mount(
+    #         prefix=transport_plugin.prefix,
+    #         adapter=transport_plugin.get_adapter(),
+    #     )
 
-    # Install adapters from plugins.
-    for plugin_cls in plugin_manager.get_transport_plugins():
-        transport_plugin = plugin_cls()
-        requests_session.mount(
-            prefix=transport_plugin.prefix,
-            adapter=transport_plugin.get_adapter(),
-        )
-
-    return requests_session
+    return httpx_session
 
 
 def dump_request(kwargs: dict):
     sys.stderr.write(
-        f'\n>>> requests.request(**{repr_dict(kwargs)})\n\n')
+        f'\n>>> httpx.request(**{repr_dict(kwargs)})\n\n')
 
 
-def finalize_headers(headers: RequestHeadersDict) -> RequestHeadersDict:
-    final_headers = RequestHeadersDict()
+def finalize_headers(headers: httpx.Headers) -> httpx.Headers:
+    final_headers = httpx.Headers()
     for name, value in headers.items():
         if value is not None:
             # “leading or trailing LWS MAY be removed without
@@ -196,15 +183,12 @@ def finalize_headers(headers: RequestHeadersDict) -> RequestHeadersDict:
             # <https://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html>
             # Also, requests raises `InvalidHeader` for leading spaces.
             value = value.strip()
-            if isinstance(value, str):
-                # See <https://github.com/jakubroztocil/httpie/issues/212>
-                value = value.encode('utf8')
         final_headers[name] = value
     return final_headers
 
 
-def make_default_headers(args: argparse.Namespace) -> RequestHeadersDict:
-    default_headers = RequestHeadersDict({
+def make_default_headers(args: argparse.Namespace) -> httpx.Headers:
+    default_headers = httpx.Headers({
         'User-Agent': DEFAULT_UA
     })
 
@@ -225,6 +209,7 @@ def make_send_kwargs(args: argparse.Namespace) -> dict:
     kwargs = {
         'timeout': args.timeout or None,
         'allow_redirects': False,
+        'auth': args.auth,
     }
     return kwargs
 
@@ -251,10 +236,10 @@ def make_send_kwargs_mergeable_from_env(args: argparse.Namespace) -> dict:
 
 def make_request_kwargs(
     args: argparse.Namespace,
-    base_headers: RequestHeadersDict = None
+    base_headers: httpx.Headers = None
 ) -> dict:
     """
-    Translate our `args` into `requests.Request` keyword arguments.
+    Translate our `args` into `httpx.Request` keyword arguments.
 
     """
     files = args.files
@@ -277,20 +262,20 @@ def make_request_kwargs(
     headers = finalize_headers(headers)
 
     if args.form and (files or args.multipart):
-        data, headers['Content-Type'] = get_multipart_data_and_content_type(
-            data=data,
-            files=files,
-            boundary=args.boundary,
-            content_type=args.headers.get('Content-Type'),
-        )
-        files = None
+        pass
+        # data, headers['Content-Type'] = get_multipart_data_and_content_type(
+        #     data=data,
+        #     files=files,
+        #     boundary=args.boundary,
+        #     content_type=args.headers.get('Content-Type'),
+        # )
+        # files = None
 
     kwargs = {
         'method': args.method.lower(),
         'url': args.url,
         'headers': headers,
         'data': data,
-        'auth': args.auth,
         'params': args.params,
         'files': files,
     }

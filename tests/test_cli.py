@@ -39,7 +39,7 @@ class TestItemParsing:
             self.key_value_arg(r'bar\@baz@%s' % FILE_PATH_ARG),
         ])
         # `requests.structures.CaseInsensitiveDict` => `dict`
-        headers = dict(items.headers._store.values())
+        headers = dict(items.headers)
 
         assert headers == {
             'foo:bar': 'baz',

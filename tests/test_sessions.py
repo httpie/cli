@@ -10,7 +10,6 @@ import pytest
 
 from fixtures import UNICODE
 from httpie.plugins import AuthPlugin
-from httpie.plugins.builtin import HTTPBasicAuth
 from httpie.plugins.registry import plugin_manager
 from httpie.sessions import Session
 from httpie.utils import get_expired_cookies
@@ -186,8 +185,13 @@ class TestSession(SessionTestBase):
         assert HTTP_OK in r2
 
         # FIXME: Authorization *sometimes* is not present on Python3
+        def make_header(username, password):
+            userpass = b":".join((username.encode('utf-8'), password.encode('utf-8')))
+            token = b64encode(userpass).decode()
+            return f"Basic {token}"
+
         assert (r2.json['headers']['Authorization']
-                == HTTPBasicAuth.make_header(u'test', UNICODE))
+                == make_header(u'test', UNICODE))
         # httpbin doesn't interpret utf8 headers
         assert UNICODE in r2
 

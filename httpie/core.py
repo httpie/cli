@@ -4,9 +4,9 @@ import platform
 import sys
 from typing import List, Union
 
-import requests
+import httpx
 from pygments import __version__ as pygments_version
-from requests import __version__ as requests_version
+from httpx import __version__ as httpx_version
 
 from httpie import __version__ as httpie_version
 from httpie.client import collect_messages
@@ -84,10 +84,10 @@ def main(
                 if include_traceback:
                     raise
                 exit_status = ExitStatus.ERROR
-        except requests.Timeout:
+        except httpx.TimeoutException:
             exit_status = ExitStatus.ERROR_TIMEOUT
             env.log_error(f'Request timed out ({parsed_args.timeout}s).')
-        except requests.TooManyRedirects:
+        except httpx.TooManyRedirects:
             exit_status = ExitStatus.ERROR_TOO_MANY_REDIRECTS
             env.log_error(
                 f'Too many redirects'
@@ -141,7 +141,7 @@ def program(
                 env=env,
                 args=args,
             )
-            if isinstance(message, requests.PreparedRequest):
+            if isinstance(message, httpx.Request):
                 if not initial_request:
                     initial_request = message
             else:
@@ -191,7 +191,7 @@ def program(
 def print_debug_info(env: Environment):
     env.stderr.writelines([
         f'HTTPie {httpie_version}\n',
-        f'Requests {requests_version}\n',
+        f'HTTPX {httpx_version}\n',
         f'Pygments {pygments_version}\n',
         f'Python {sys.version}\n{sys.executable}\n',
         f'{platform.system()} {platform.release()}',

@@ -10,10 +10,9 @@ from pathlib import Path
 from typing import Iterable, Optional, Union
 from urllib.parse import urlsplit
 
-from requests.auth import AuthBase
+import httpx
 from requests.cookies import RequestsCookieJar, create_cookie
 
-from httpie.cli.dicts import RequestHeadersDict
 from httpie.config import BaseConfigDict, DEFAULT_CONFIG_DIR
 from httpie.plugins.registry import plugin_manager
 
@@ -65,7 +64,7 @@ class Session(BaseConfigDict):
             'password': None
         }
 
-    def update_headers(self, request_headers: RequestHeadersDict):
+    def update_headers(self, request_headers: httpx.Headers):
         """
         Update the session headers with the request ones while ignoring
         certain name prefixes.
@@ -77,7 +76,6 @@ class Session(BaseConfigDict):
             if value is None:
                 continue  # Ignore explicitly unset headers
 
-            value = value.decode('utf8')
             if name.lower() == 'user-agent' and value.startswith('HTTPie/'):
                 continue
 
@@ -96,12 +94,12 @@ class Session(BaseConfigDict):
         self['headers'] = dict(headers)
 
     @property
-    def headers(self) -> RequestHeadersDict:
-        return RequestHeadersDict(self['headers'])
+    def headers(self) -> httpx.Headers:
+        return httpx.Headers(self['headers'])
 
     @property
-    def cookies(self) -> RequestsCookieJar:
-        jar = RequestsCookieJar()
+    def cookies(self) -> httpx.Cookies:
+        jar = httpx.Cookies()
         for name, cookie_dict in self['cookies'].items():
             jar.set_cookie(create_cookie(
                 name, cookie_dict.pop('value'), **cookie_dict))
@@ -109,7 +107,7 @@ class Session(BaseConfigDict):
         return jar
 
     @cookies.setter
-    def cookies(self, jar: RequestsCookieJar):
+    def cookies(self, jar: httpx.Cookies):
         # <https://docs.python.org/2/library/cookielib.html#cookie-objects>
         stored_attrs = ['value', 'path', 'secure', 'expires']
         self['cookies'] = {}
@@ -120,7 +118,7 @@ class Session(BaseConfigDict):
             }
 
     @property
-    def auth(self) -> Optional[AuthBase]:
+    def auth(self) -> Optional[httpx.Auth]:
         auth = self.get('auth', None)
         if not auth or not auth['type']:
             return

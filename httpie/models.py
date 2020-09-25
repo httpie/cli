@@ -41,37 +41,23 @@ class HTTPMessage:
 
 
 class HTTPResponse(HTTPMessage):
-    """A :class:`requests.models.Response` wrapper."""
+    """A :class:`httpx.models.Response` wrapper."""
 
     def iter_body(self, chunk_size=1):
-        return self._orig.iter_content(chunk_size=chunk_size)
+        return self._orig.iter_bytes()
 
     def iter_lines(self, chunk_size):
-        return ((line, b'\n') for line in self._orig.iter_lines(chunk_size))
+        return ((line, b'\n') for line in self._orig.iter_lines())
 
     # noinspection PyProtectedMember
     @property
     def headers(self):
-        original = self._orig.raw._original_response
+        original = self._orig
 
-        version = {
-            9: '0.9',
-            10: '1.0',
-            11: '1.1',
-            20: '2',
-        }[original.version]
-
-        status_line = f'HTTP/{version} {original.status} {original.reason}'
+        status_line = f'{original.http_version} {original.status_code} {original.reason_phrase}'
         headers = [status_line]
-        try:
-            # `original.msg` is a `http.client.HTTPMessage` on Python 3
-            # `_headers` is a 2-tuple
-            headers.extend(
-                '%s: %s' % header for header in original.msg._headers)
-        except AttributeError:
-            # and a `httplib.HTTPMessage` on Python 2.x
-            # `headers` is a list of `name: val<CRLF>`.
-            headers.extend(h.strip() for h in original.msg.headers)
+        headers.extend(
+            '%s: %s' % header for header in original.headers.items())
 
         return '\r\n'.join(headers)
 
@@ -87,7 +73,7 @@ class HTTPResponse(HTTPMessage):
 
 
 class HTTPRequest(HTTPMessage):
-    """A :class:`requests.models.Request` wrapper."""
+    """A :class:`httpx.models.Request` wrapper."""
 
     def iter_body(self, chunk_size):
         yield self.body
@@ -97,12 +83,11 @@ class HTTPRequest(HTTPMessage):
 
     @property
     def headers(self):
-        url = urlsplit(self._orig.url)
+        url = self._orig.url
 
-        request_line = '{method} {path}{query} HTTP/1.1'.format(
+        request_line = '{method} {target} HTTP/1.1'.format(
             method=self._orig.method,
-            path=url.path or '/',
-            query='?' + url.query if url.query else ''
+            target=url.raw_path.decode("ascii")
         )
 
         headers = dict(self._orig.headers)
@@ -131,7 +116,7 @@ class HTTPRequest(HTTPMessage):
 
     @property
     def body(self):
-        body = self._orig.body
+        body = self._orig.content
         if isinstance(body, str):
             # Happens with JSON/form request data parsed from the command line.
             body = body.encode('utf8')
