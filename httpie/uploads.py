@@ -1,6 +1,6 @@
 from typing import Tuple, Union
 
-from requests_toolbelt import MultipartEncoder
+from httpx._multipart import MultipartStream
 
 from httpie.cli.dicts import RequestDataDict, RequestFilesDict
 
@@ -15,18 +15,19 @@ def get_multipart_data_and_content_type(
     files: RequestFilesDict,
     boundary: str = None,
     content_type: str = None,
-) -> Tuple[Union[MultipartEncoder, bytes], str]:
-    fields = list(data.items()) + list(files.items())
-    encoder = MultipartEncoder(
-        fields=fields,
-        boundary=boundary,
+) -> Tuple[Union[MultipartStream, bytes], str]:
+    encoder = MultipartStream(
+        data=data,
+        files=files,
+        boundary=None if boundary is None else boundary.encode('ascii'),
     )
+    headers = encoder.get_headers()
     if content_type:
         content_type = content_type.strip()  # maybe auto-strip all headers somewhere
         if 'boundary=' not in content_type:
             content_type = f'{content_type}; boundary={encoder.boundary_value}'
     else:
-        content_type = encoder.content_type
+        content_type = headers['Content-Type']
 
-    data = encoder.to_string() if encoder.len < UPLOAD_BUFFER else encoder
+    data = b''.join(encoder) if headers['Content-Length'] < UPLOAD_BUFFER else encoder
     return data, content_type

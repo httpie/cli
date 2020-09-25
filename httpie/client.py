@@ -83,7 +83,6 @@ def collect_messages(
         yield request
         if not args.offline:
             with max_headers(args.max_headers):
-                assert not isinstance(request, httpx.Response)
                 response = httpx_session.send(
                     request=request,
                     **send_kwargs,
@@ -95,11 +94,11 @@ def collect_messages(
             # )
 
             response_count += 1
-            if response.is_redirect:
+            if response.next:
                 if args.max_redirects and response_count == args.max_redirects:
-                    raise httpx.TooManyRedirects
+                    raise httpx.TooManyRedirects("Too many redirects", request=request)
                 if args.follow:
-                    request = response.next()
+                    request = response.next
                     if args.all:
                         yield response
                     continue
@@ -262,14 +261,13 @@ def make_request_kwargs(
     headers = finalize_headers(headers)
 
     if args.form and (files or args.multipart):
-        pass
-        # data, headers['Content-Type'] = get_multipart_data_and_content_type(
-        #     data=data,
-        #     files=files,
-        #     boundary=args.boundary,
-        #     content_type=args.headers.get('Content-Type'),
-        # )
-        # files = None
+        data, headers['Content-Type'] = get_multipart_data_and_content_type(
+            data=data,
+            files=files,
+            boundary=args.boundary,
+            content_type=args.headers.get('Content-Type'),
+        )
+        files = None
 
     kwargs = {
         'method': args.method.lower(),

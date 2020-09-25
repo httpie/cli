@@ -1,7 +1,5 @@
 from collections import OrderedDict
 
-import httpx
-
 
 class RequestJSONDataDict(OrderedDict):
     pass
