@@ -9,6 +9,10 @@ from pygments import __version__ as pygments_version
 from requests import __version__ as requests_version
 
 from httpie import __version__ as httpie_version
+from httpie.cli.constants import (
+    OUT_REQ_BODY, OUT_REQ_HEAD, OUT_RESP_BODY,
+    OUT_RESP_HEAD,
+)
 from httpie.client import collect_messages
 from httpie.context import Environment
 from httpie.downloads import Downloader
@@ -111,6 +115,22 @@ def main(
     return exit_status
 
 
+def get_output_options(
+    args: argparse.Namespace,
+    message: Union[requests.PreparedRequest, requests.Response]
+) -> dict:
+    return {
+        requests.PreparedRequest: {
+            'with_headers': OUT_REQ_HEAD in args.output_options,
+            'with_body': OUT_REQ_BODY in args.output_options,
+        },
+        requests.Response: {
+            'with_headers': OUT_RESP_HEAD in args.output_options,
+            'with_body': OUT_RESP_BODY in args.output_options,
+        },
+    }[type(message)]
+
+
 def program(
     args: argparse.Namespace,
     env: Environment,
@@ -135,15 +155,36 @@ def program(
         initial_request = None
         final_response = None
 
-        for message in collect_messages(args, env.config.directory):
-            write_message(
-                requests_message=message,
-                env=env,
-                args=args,
-            )
-            if isinstance(message, requests.PreparedRequest):
+        def upload_callback(chunk):
+            print('GOT', chunk)
+
+        messages = collect_messages(
+            args=args,
+            config_dir=env.config.directory,
+            body_chunk_sent_callback=upload_callback
+        )
+        for message in messages:
+            is_request = isinstance(message, requests.PreparedRequest)
+            output_options = get_output_options(args=args, message=message)
+            if not is_request or not output_options['with_body']:
+                write_message(
+                    requests_message=message,
+                    env=env,
+                    args=args,
+                    **output_options,
+                )
+            if is_request:
                 if not initial_request:
                     initial_request = message
+                if 0and not args.offline:
+                    output_options['with_body'] = False
+                write_message(
+                    requests_message=message,
+                    env=env,
+                    args=args,
+                    **output_options,
+                )
+
             else:
                 final_response = message
                 if args.check_status or downloader:

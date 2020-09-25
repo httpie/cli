@@ -23,6 +23,13 @@ LARGE_UPLOAD_SUPPRESSED_NOTICE = (
 )
 
 
+def might_suppress(chunk):
+    if isinstance(chunk, MultipartEncoder):
+        raise LargeUploadSuppressedError()
+    # if isinstance(io.IOBase):
+    #     pass
+
+
 class DataSuppressedError(Exception):
     message = None
 

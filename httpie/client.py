@@ -5,7 +5,7 @@ import sys
 import zlib
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Iterable, Union
+from typing import Callable, Iterable, Union
 from urllib.parse import urlparse, urlunparse
 
 import requests
@@ -16,7 +16,10 @@ from httpie.cli.dicts import RequestHeadersDict
 from httpie.plugins.registry import plugin_manager
 from httpie.sessions import get_httpie_session
 from httpie.ssl import AVAILABLE_SSL_VERSION_ARG_MAPPING, HTTPieHTTPSAdapter
-from httpie.uploads import get_multipart_data_and_content_type
+from httpie.uploads import (
+    wrap_request_data,
+    get_multipart_data_and_content_type,
+)
 from httpie.utils import get_expired_cookies, repr_dict
 
 
@@ -31,6 +34,7 @@ DEFAULT_UA = f'HTTPie/{__version__}'
 def collect_messages(
     args: argparse.Namespace,
     config_dir: Path,
+    body_chunk_sent_callback: Callable[[bytes], None]=None,
 ) -> Iterable[Union[requests.PreparedRequest, requests.Response]]:
     httpie_session = None
     httpie_session_headers = None
@@ -46,6 +50,7 @@ def collect_messages(
     request_kwargs = make_request_kwargs(
         args=args,
         base_headers=httpie_session_headers,
+        callback=body_chunk_sent_callback
     )
     send_kwargs = make_send_kwargs(args)
     send_kwargs_mergeable_from_env = make_send_kwargs_mergeable_from_env(args)
@@ -251,7 +256,8 @@ def make_send_kwargs_mergeable_from_env(args: argparse.Namespace) -> dict:
 
 def make_request_kwargs(
     args: argparse.Namespace,
-    base_headers: RequestHeadersDict = None
+    base_headers: RequestHeadersDict = None,
+    callback=lambda chunk: chunk
 ) -> dict:
     """
     Translate our `args` into `requests.Request` keyword arguments.
@@ -289,7 +295,7 @@ def make_request_kwargs(
         'method': args.method.lower(),
         'url': args.url,
         'headers': headers,
-        'data': data,
+        'data': wrap_request_data(data, callback=callback),
         'auth': args.auth,
         'params': args.params,
         'files': files,
