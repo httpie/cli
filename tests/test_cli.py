@@ -15,7 +15,7 @@ from httpie.cli import constants
 from httpie.cli.definition import parser
 from httpie.cli.argtypes import KeyValueArg, KeyValueArgType
 from httpie.cli.requestitems import RequestItems
-from utils import HTTP_OK, MockEnvironment, http
+from utils import HTTP_OK, MockEnvironment, StdinBytesIO, http
 
 
 class TestItemParsing:
@@ -312,10 +312,11 @@ class TestNoOptions:
 class TestStdin:
 
     def test_ignore_stdin(self, httpbin):
-        with open(FILE_PATH) as f:
-            env = MockEnvironment(stdin=f, stdin_isatty=False)
-            r = http('--ignore-stdin', '--verbose', httpbin.url + '/get',
-                     env=env)
+        env = MockEnvironment(
+            stdin=StdinBytesIO(FILE_PATH.read_bytes()),
+            stdin_isatty=False,
+        )
+        r = http('--ignore-stdin', '--verbose', httpbin.url + '/get', env=env)
         assert HTTP_OK in r
         assert 'GET /get HTTP' in r, "Don't default to POST."
         assert FILE_CONTENT not in r, "Don't send stdin data."

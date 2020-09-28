@@ -17,7 +17,7 @@ from httpie.cli.argtypes import (
 from httpie.cli.constants import (
     HTTP_GET, HTTP_POST, OUTPUT_OPTIONS, OUTPUT_OPTIONS_DEFAULT,
     OUTPUT_OPTIONS_DEFAULT_OFFLINE, OUTPUT_OPTIONS_DEFAULT_STDOUT_REDIRECTED,
-    OUT_RESP_BODY, PRETTY_MAP, PRETTY_STDOUT_TTY_ONLY, RequestContentType,
+    OUT_RESP_BODY, PRETTY_MAP, PRETTY_STDOUT_TTY_ONLY, RequestType,
     SEPARATOR_CREDENTIALS,
     SEPARATOR_GROUP_ALL_ITEMS, SEPARATOR_GROUP_DATA_ITEMS, URL_SCHEME_RE,
 )
@@ -83,7 +83,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
         )
         # Arguments processing and environment setup.
         self._apply_no_options(no_options)
-        self._process_request_content_type()
+        self._process_request_type()
         self._process_download_options()
         self._setup_standard_streams()
         self._process_output_options()
@@ -95,15 +95,23 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
             self._body_from_file(self.env.stdin)
         self._process_url()
         self._process_auth()
+
+        if self.args.compress:
+            # TODO: allow --compress with --chunked / --multipart
+            if self.args.chunked:
+                self.error('cannot combine --compress and --chunked')
+            if self.args.multipart:
+                self.error('cannot combine --compress and --multipart')
+
         return self.args
 
-    def _process_request_content_type(self):
-        rct = self.args.request_content_type
-        self.args.json = rct is RequestContentType.JSON
-        self.args.multipart = rct is RequestContentType.MULTIPART
-        self.args.form = rct in {
-            RequestContentType.FORM,
-            RequestContentType.MULTIPART,
+    def _process_request_type(self):
+        request_type = self.args.request_type
+        self.args.json = request_type is RequestType.JSON
+        self.args.multipart = request_type is RequestType.MULTIPART
+        self.args.form = request_type in {
+            RequestType.FORM,
+            RequestType.MULTIPART,
         }
 
     def _process_url(self):
@@ -285,7 +293,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
                        'data (key=value) cannot be mixed. Pass '
                        '--ignore-stdin to let key/value take priority. '
                        'See https://httpie.org/doc#scripting for details.')
-        self.args.data = getattr(fd, 'buffer', fd).read()
+        self.args.data = getattr(fd, 'buffer', fd)
 
     def _guess_method(self):
         """Set `args.method` if not specified to either POST or GET
@@ -346,6 +354,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
             self.args.data = request_items.data
             self.args.files = request_items.files
             self.args.params = request_items.params
+            self.args.multipart_data = request_items.multipart_data
 
         if self.args.files and not self.args.form:
             # `http url @/path/to/file`

@@ -107,7 +107,8 @@ def build_output_stream_for_message(
         with_body=with_body,
         **stream_kwargs,
     )
-    if env.stdout_isatty and with_body:
+    if (env.stdout_isatty and with_body
+            and not getattr(requests_message, 'is_body_upload_chunk', False)):
         # Ensure a blank line after the response body.
         # For terminal output only.
         yield b'\n\n'

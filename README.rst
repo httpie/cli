@@ -16,7 +16,7 @@ They use simple and natural syntax and provide formatted and colorized output.
 
 .. class:: no-web no-pdf
 
-    .. image:: https://raw.githubusercontent.com/jakubroztocil/httpie/master/httpie.gif
+    .. image:: https://raw.githubusercontent.com/httpie/httpie/master/httpie.gif
         :alt: HTTPie in action
         :width: 100%
         :align: center
@@ -35,7 +35,7 @@ where you can select your corresponding HTTPie version as well as run examples d
 browser using a `termible.io <https://termible.io?utm_source=httpie-readme>`_ embedded terminal.
 If you are reading this on GitHub, then this text covers the current *development* version.
 You are invited to submit fixes and improvements to the the docs by editing
-`README.rst <https://github.com/jakubroztocil/httpie/blob/master/README.rst>`_.
+`README.rst <https://github.com/httpie/httpie/blob/master/README.rst>`_.
 
 
 Main features
@@ -58,7 +58,7 @@ Main features
 
 .. class:: no-web
 
-    .. image:: https://raw.githubusercontent.com/jakubroztocil/httpie/master/httpie.png
+    .. image:: https://raw.githubusercontent.com/httpie/httpie/master/httpie.png
         :alt: HTTPie compared to cURL
         :width: 100%
         :align: center
@@ -167,11 +167,11 @@ Otherwise with ``pip``:
 
 .. code-block:: bash
 
-    $ pip install --upgrade https://github.com/jakubroztocil/httpie/archive/master.tar.gz
+    $ pip install --upgrade https://github.com/httpie/httpie/archive/master.tar.gz
 
 
 Verify that now we have the
-`current development version identifier <https://github.com/jakubroztocil/httpie/blob/master/httpie/__init__.py#L6>`_
+`current development version identifier <https://github.com/httpie/httpie/blob/master/httpie/__init__.py#L6>`_
 with the ``-dev`` suffix, for example:
 
 .. code-block:: bash
@@ -234,12 +234,12 @@ Build and print a request without sending it using `offline mode`_:
 
 
 Use `GitHub API`_ to post a comment on an
-`issue <https://github.com/jakubroztocil/httpie/issues/83>`_
+`issue <https://github.com/httpie/httpie/issues/83>`_
 with `authentication`_:
 
 .. code-block:: bash
 
-    $ http -a USERNAME POST https://api.github.com/repos/jakubroztocil/httpie/issues/83/comments body='HTTPie is awesome! :heart:'
+    $ http -a USERNAME POST https://api.github.com/repos/httpie/httpie/issues/83/comments body='HTTPie is awesome! :heart:'
 
 
 Upload a file using `redirected input`_:
@@ -471,20 +471,23 @@ their type is distinguished only by the separator used:
 | ``name==value``       | string parameter to the URL.                        |
 |                       | The ``==`` separator is used.                       |
 +-----------------------+-----------------------------------------------------+
-| Data Fields           | Request data fields to be serialized as a JSON      |
-| ``field=value``,      | object (default), or to be form-encoded             |
-| ``field=@file.txt``   | (``--form, -f``).                                   |
+| Data Fields           | Request data fields to be serialized as a JSON       |
+| ``field=value``,       | object (default), to be form-encoded                |
+| ``field=@file.txt``     | (with ``--form, -f``), or to be serialized as       |
+|                       | ``multipart/form-data`` (with ``--multipart``).     |
 +-----------------------+-----------------------------------------------------+
-| Raw JSON fields       | Useful when sending JSON and one or                 |
-| ``field:=json``,      | more fields need to be a ``Boolean``, ``Number``,   |
-| ``field:=@file.json`` | nested ``Object``, or an ``Array``,  e.g.,          |
+| Raw JSON fields        | Useful when sending JSON and one or                 |
+| ``field:=json``,       | more fields need to be a ``Boolean``, ``Number``,    |
+| ``field:=@file.json``   | nested ``Object``, or an ``Array``,  e.g.,          |
 |                       | ``meals:='["ham","spam"]'`` or ``pies:=[1,2,3]``    |
 |                       | (note the quotes).                                  |
 +-----------------------+-----------------------------------------------------+
-| Form File Fields      | Only available with ``--form, -f``.                 |
-| ``field@/dir/file``   | For example ``screenshot@~/Pictures/img.png``.      |
-|                       | The presence of a file field results                |
-|                       | in a ``multipart/form-data`` request.               |
+| Fields upload fields   | Only available with ``--form, -f`` and              |
+| ``field@/dir/file``     | ``--multipart``.                                    |
+| ``field@file;type``     | For example ``screenshot@~/Pictures/img.png``, or   |
+|                       | ``'cv@cv.txt;text/markdown'``.                      |
+|                       | With ``--form``, the presence of a file field         |
+|                       | results in a ``--multipart`` request.               |
 +-----------------------+-----------------------------------------------------+
 
 
@@ -714,12 +717,10 @@ To perform a ``multipart/form-data`` request even without any files, use
     world
     --c31279ab254f40aeb06df32b433cbccb--
 
-Larger multipart uploads are always streamed to avoid memory issues.
-Additionally, the display of the request body on the terminal is suppressed
-for larger uploads.
+File uploads are always streamed to avoid memory issues with large files.
 
-By default, HTTPie uses a random unique string as the boundary but you can use
-``--boundary`` to specify a custom string instead:
+By default, HTTPie uses a random unique string as the multipart boundary
+but you can use ``--boundary`` to specify a custom string instead:
 
 .. code-block:: bash
 
@@ -739,8 +740,8 @@ By default, HTTPie uses a random unique string as the boundary but you can use
     --xoxo--
 
 If you specify a custom ``Content-Type`` header without including the boundary
-bit, HTTPie will add the boundary value (specified or generated) to the header
-automatically:
+bit, HTTPie will add the boundary value (explicitly specified or auto-generated)
+to the header automatically:
 
 
 .. code-block:: bash
@@ -1347,9 +1348,14 @@ Redirected Input
 ================
 
 The universal method for passing request data is through redirected ``stdin``
-(standard input)—piping. Such data is buffered and then with no further
-processing used as the request body. There are multiple useful ways to use
-piping:
+(standard input)—piping.
+
+By default, ``stdin`` data is buffered and then with no further processing
+used as the request body. If you provide ``Content-Length``, then the request
+body is streamed without buffering. You can also use ``--chunked`` to enable
+streaming via `chunked transfer encoding`_.
+
+There are multiple useful ways to use piping:
 
 Redirect from a file:
 
@@ -1383,7 +1389,7 @@ You can even pipe web services together using HTTPie:
 
 .. code-block:: bash
 
-    $ http GET https://api.github.com/repos/jakubroztocil/httpie | http POST httpbin.org/post
+    $ http GET https://api.github.com/repos/httpie/httpie | http POST httpbin.org/post
 
 
 You can use ``cat`` to enter multiline data on the terminal:
@@ -1437,6 +1443,33 @@ verbatim contents of that XML file with ``Content-Type: application/xml``:
 .. code-block:: bash
 
     $ http PUT httpbin.org/put @files/data.xml
+
+File uploads are always streamed to avoid memory issues with large files.
+
+
+Chunked transfer encoding
+=========================
+
+For any request, you can use the ``--chunked`` flag to instruct HTTPie to use
+ ``Transfer-Encoding: chunked``:
+
+
+.. code-block:: bash
+
+    $ http --chunked PUT httpbin.org/put hello=world
+
+.. code-block:: bash
+
+    $ http --chunked --multipart PUT httpbin.org/put hello=world foo@files/data.xml
+
+.. code-block:: bash
+
+    $ http --chunked httpbin.org/post @files/data.xml
+
+.. code-block:: bash
+
+    $ cat files/data.xml | http --chunked httpbin.org/post
+
 
 
 Terminal output
@@ -1585,7 +1618,7 @@ is being saved to a file.
 
 .. code-block:: bash
 
-    $ http --download https://github.com/jakubroztocil/httpie/archive/master.tar.gz
+    $ http --download https://github.com/httpie/httpie/archive/master.tar.gz
 
 .. code-block:: http
 
@@ -1627,7 +1660,7 @@ headers and progress are still shown in the terminal:
 
 .. code-block:: bash
 
-    $ http -d https://github.com/jakubroztocil/httpie/archive/master.tar.gz |  tar zxf -
+    $ http -d https://github.com/httpie/httpie/archive/master.tar.gz |  tar zxf -
 
 
 
@@ -2108,27 +2141,27 @@ Alternatives
 Contributing
 ------------
 
-See `CONTRIBUTING.rst <https://github.com/jakubroztocil/httpie/blob/master/CONTRIBUTING.rst>`_.
+See `CONTRIBUTING.rst <https://github.com/httpie/httpie/blob/master/CONTRIBUTING.rst>`_.
 
 
 Change log
 ----------
 
-See `CHANGELOG <https://github.com/jakubroztocil/httpie/blob/master/CHANGELOG.rst>`_.
+See `CHANGELOG <https://github.com/httpie/httpie/blob/master/CHANGELOG.rst>`_.
 
 
 Artwork
 -------
 
 * `Logo <https://github.com/claudiatd/httpie-artwork>`_ by `Cláudia Delgado <https://github.com/claudiatd>`_.
-* `Animation <https://raw.githubusercontent.com/jakubroztocil/httpie/master/httpie.gif>`_ by `Allen Smith <https://github.com/loranallensmith>`_ of GitHub.
+* `Animation <https://raw.githubusercontent.com/httpie/httpie/master/httpie.gif>`_ by `Allen Smith <https://github.com/loranallensmith>`_ of GitHub.
 
 
 
 Licence
 -------
 
-BSD-3-Clause: `LICENSE <https://github.com/jakubroztocil/httpie/blob/master/LICENSE>`_.
+BSD-3-Clause: `LICENSE <https://github.com/httpie/httpie/blob/master/LICENSE>`_.
 
 
 
@@ -2141,7 +2174,7 @@ have contributed.
 
 .. _pip: https://pip.pypa.io/en/stable/installing/
 .. _GitHub API: https://developer.github.com/v3/issues/comments/#create-a-comment
-.. _these fine people: https://github.com/jakubroztocil/httpie/contributors
+.. _these fine people: https://github.com/httpie/httpie/contributors
 .. _Jakub Roztocil: https://roztocil.co
 .. _@jakubroztocil: https://twitter.com/jakubroztocil
 
@@ -2154,12 +2187,12 @@ have contributed.
     :target: https://pypi.python.org/pypi/httpie
     :alt: Latest version released on PyPi
 
-.. |coverage| image:: https://img.shields.io/codecov/c/github/jakubroztocil/httpie?style=flat-square
-    :target: https://codecov.io/gh/jakubroztocil/httpie
+.. |coverage| image:: https://img.shields.io/codecov/c/github/httpie/httpie?style=flat-square
+    :target: https://codecov.io/gh/httpie/httpie
     :alt: Test coverage
 
-.. |build| image:: https://github.com/jakubroztocil/httpie/workflows/Build/badge.svg
-    :target: https://github.com/jakubroztocil/httpie/actions
+.. |build| image:: https://github.com/httpie/httpie/workflows/Build/badge.svg
+    :target: https://github.com/httpie/httpie/actions
     :alt: Build status of the master branch on Mac/Linux/Windows
 
 .. |gitter| image:: https://img.shields.io/gitter/room/jkbrzt/httpie.svg?style=flat-square

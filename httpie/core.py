@@ -2,7 +2,7 @@ import argparse
 import os
 import platform
 import sys
-from typing import List, Union
+from typing import List, Optional, Tuple, Union
 
 import requests
 from pygments import __version__ as pygments_version
@@ -16,7 +16,10 @@ from httpie.cli.constants import (
 from httpie.client import collect_messages
 from httpie.context import Environment
 from httpie.downloads import Downloader
-from httpie.output.writer import write_message, write_stream
+from httpie.output.writer import (
+    write_message,
+    write_stream,
+)
 from httpie.plugins.registry import plugin_manager
 from httpie.status import ExitStatus, http_status_to_exit_status
 
@@ -118,16 +121,16 @@ def main(
 def get_output_options(
     args: argparse.Namespace,
     message: Union[requests.PreparedRequest, requests.Response]
-) -> dict:
+) -> Tuple[bool, bool]:
     return {
-        requests.PreparedRequest: {
-            'with_headers': OUT_REQ_HEAD in args.output_options,
-            'with_body': OUT_REQ_BODY in args.output_options,
-        },
-        requests.Response: {
-            'with_headers': OUT_RESP_HEAD in args.output_options,
-            'with_body': OUT_RESP_BODY in args.output_options,
-        },
+        requests.PreparedRequest: (
+            OUT_REQ_HEAD in args.output_options,
+            OUT_REQ_BODY in args.output_options,
+        ),
+        requests.Response: (
+            OUT_RESP_HEAD in args.output_options,
+            OUT_RESP_BODY in args.output_options,
+        ),
     }[type(message)]
 
 
@@ -152,39 +155,57 @@ def program(
             )
             downloader.pre_request(args.headers)
 
-        initial_request = None
-        final_response = None
+        needs_separator = False
 
-        def upload_callback(chunk):
-            print('GOT', chunk)
+        def maybe_separate():
+            nonlocal needs_separator
+            if env.stdout.isatty() and needs_separator:
+                needs_separator = False
+                getattr(env.stdout, 'buffer', env.stdout).write(b'\n\n')
+
+        initial_request: Optional[requests.PreparedRequest] = None
+        final_response: Optional[requests.Response] = None
+
+        def request_body_read_callback(chunk: bytes):
+            should_pipe_to_stdout = (
+                # Request body output desired
+                OUT_REQ_BODY in args.output_options
+                # & not `.read()` already pre-request (e.g., for  compression)
+                and initial_request
+                # & non-EOF chunk
+                and chunk
+            )
+            if should_pipe_to_stdout:
+                msg = requests.PreparedRequest()
+                msg.is_body_upload_chunk = True
+                msg.body = chunk
+                msg.headers = initial_request.headers
+                write_message(
+                    requests_message=msg,
+                    env=env,
+                    args=args,
+                    with_body=True,
+                    with_headers=False
+                )
 
         messages = collect_messages(
             args=args,
             config_dir=env.config.directory,
-            body_chunk_sent_callback=upload_callback
+            request_body_read_callback=request_body_read_callback
         )
         for message in messages:
+            maybe_separate()
             is_request = isinstance(message, requests.PreparedRequest)
-            output_options = get_output_options(args=args, message=message)
-            if not is_request or not output_options['with_body']:
-                write_message(
-                    requests_message=message,
-                    env=env,
-                    args=args,
-                    **output_options,
-                )
+            with_headers, with_body = get_output_options(
+                args=args, message=message)
             if is_request:
                 if not initial_request:
                     initial_request = message
-                if 0and not args.offline:
-                    output_options['with_body'] = False
-                write_message(
-                    requests_message=message,
-                    env=env,
-                    args=args,
-                    **output_options,
-                )
-
+                    is_streamed_upload = not args.offline and not isinstance(
+                        message.body, (str, bytes))
+                    if with_body:
+                        with_body = not is_streamed_upload
+                        needs_separator = is_streamed_upload
             else:
                 final_response = message
                 if args.check_status or downloader:
@@ -193,11 +214,20 @@ def program(
                         follow=args.follow
                     )
                     if (not env.stdout_isatty
-                            and exit_status != ExitStatus.SUCCESS):
+                        and exit_status != ExitStatus.SUCCESS):
                         env.log_error(
                             f'HTTP {message.raw.status} {message.raw.reason}',
                             level='warning'
                         )
+            write_message(
+                requests_message=message,
+                env=env,
+                args=args,
+                with_headers=with_headers,
+                with_body=with_body,
+            )
+
+        maybe_separate()
 
         if downloader and exit_status == ExitStatus.SUCCESS:
             # Last response body download.
@@ -225,7 +255,7 @@ def program(
             downloader.failed()
 
         if (not isinstance(args, list) and args.output_file
-                and args.output_file_specified):
+            and args.output_file_specified):
             args.output_file.close()
 
 

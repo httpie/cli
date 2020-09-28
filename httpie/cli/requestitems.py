@@ -4,13 +4,15 @@ from typing import Callable, Dict, IO, List, Optional, Tuple, Union
 
 from httpie.cli.argtypes import KeyValueArg
 from httpie.cli.constants import (
-    SEPARATOR_DATA_EMBED_FILE_CONTENTS, SEPARATOR_DATA_EMBED_RAW_JSON_FILE,
+    SEPARATORS_GROUP_MULTIPART, SEPARATOR_DATA_EMBED_FILE_CONTENTS,
+    SEPARATOR_DATA_EMBED_RAW_JSON_FILE,
     SEPARATOR_DATA_RAW_JSON, SEPARATOR_DATA_STRING, SEPARATOR_FILE_UPLOAD,
     SEPARATOR_FILE_UPLOAD_TYPE, SEPARATOR_HEADER, SEPARATOR_HEADER_EMPTY,
     SEPARATOR_QUERY_PARAM,
 )
 from httpie.cli.dicts import (
-    RequestDataDict, RequestFilesDict, RequestHeadersDict, RequestJSONDataDict,
+    MultipartRequestDataDict, RequestDataDict, RequestFilesDict,
+    RequestHeadersDict, RequestJSONDataDict,
     RequestQueryParamsDict,
 )
 from httpie.cli.exceptions import ParseError
@@ -24,6 +26,8 @@ class RequestItems:
         self.data = RequestDataDict() if as_form else RequestJSONDataDict()
         self.files = RequestFilesDict()
         self.params = RequestQueryParamsDict()
+        # To preserve the order of fields in file upload multipart requests.
+        self.multipart_data = MultipartRequestDataDict()
 
     @classmethod
     def from_args(
@@ -69,7 +73,11 @@ class RequestItems:
 
         for arg in request_item_args:
             processor_func, target_dict = rules[arg.sep]
-            target_dict[arg.key] = processor_func(arg)
+            value = processor_func(arg)
+            target_dict[arg.key] = value
+
+            if arg.sep in SEPARATORS_GROUP_MULTIPART:
+                instance.multipart_data[arg.key] = value
 
         return instance
 

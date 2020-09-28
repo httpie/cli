@@ -41,6 +41,12 @@ SEPARATOR_GROUP_DATA_ITEMS = frozenset({
     SEPARATOR_DATA_EMBED_RAW_JSON_FILE
 })
 
+SEPARATORS_GROUP_MULTIPART = frozenset({
+    SEPARATOR_DATA_STRING,
+    SEPARATOR_DATA_EMBED_FILE_CONTENTS,
+    SEPARATOR_FILE_UPLOAD,
+})
+
 # Separators for items whose value is a filename to be embedded
 SEPARATOR_GROUP_DATA_EMBED_ITEMS = frozenset({
     SEPARATOR_DATA_EMBED_FILE_CONTENTS,
@@ -108,7 +114,7 @@ OUTPUT_OPTIONS_DEFAULT_STDOUT_REDIRECTED = OUT_RESP_BODY
 OUTPUT_OPTIONS_DEFAULT_OFFLINE = OUT_REQ_HEAD + OUT_REQ_BODY
 
 
-class RequestContentType(enum.Enum):
+class RequestType(enum.Enum):
     FORM = enum.auto()
     MULTIPART = enum.auto()
     JSON = enum.auto()

@@ -1,10 +1,10 @@
 # coding=utf-8
 """Utilities for HTTPie test suite."""
-import os
 import sys
 import time
 import json
 import tempfile
+from io import BytesIO
 from pathlib import Path
 from typing import Optional, Union
 
@@ -12,6 +12,12 @@ from httpie.status import ExitStatus
 from httpie.config import Config
 from httpie.context import Environment
 from httpie.core import main
+
+
+# pytest-httpbin currently does not support chunked requests:
+# <https://github.com/kevin1024/pytest-httpbin/issues/33>
+# <https://github.com/kevin1024/pytest-httpbin/issues/28>
+HTTPBIN_WITH_CHUNKED_SUPPORT = 'http://httpbin.org'
 
 
 TESTS_ROOT = Path(__file__).parent
@@ -34,6 +40,11 @@ def mk_config_dir() -> Path:
 def add_auth(url, auth):
     proto, rest = url.split('://', 1)
     return proto + '://' + auth + '@' + rest
+
+
+class StdinBytesIO(BytesIO):
+    """To be used for `MockEnvironment.stdin`"""
+    len = 0  # See `prepare_request_body()`
 
 
 class MockEnvironment(Environment):

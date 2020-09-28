@@ -12,7 +12,8 @@ import base64
 import zlib
 
 from fixtures import FILE_PATH, FILE_CONTENT
-from utils import http, HTTP_OK, MockEnvironment
+from httpie.status import ExitStatus
+from utils import StdinBytesIO, http, HTTP_OK, MockEnvironment
 
 
 def assert_decompressed_equal(base64_compressed_data, expected_str):
@@ -25,6 +26,20 @@ def assert_decompressed_equal(base64_compressed_data, expected_str):
     actual_str = actual_str.rstrip()
 
     assert actual_str == expected_str
+
+
+def test_cannot_combine_compress_with_chunked(httpbin):
+    r = http('--compress', '--chunked', httpbin.url + '/get',
+             tolerate_error_exit_status=True)
+    assert r.exit_status == ExitStatus.ERROR
+    assert 'cannot combine --compress and --chunked' in r.stderr
+
+
+def test_cannot_combine_compress_with_multipart(httpbin):
+    r = http('--compress', '--multipart', httpbin.url + '/get',
+             tolerate_error_exit_status=True)
+    assert r.exit_status == ExitStatus.ERROR
+    assert 'cannot combine --compress and --multipart' in r.stderr
 
 
 def test_compress_skip_negative_ratio(httpbin_both):
@@ -78,15 +93,17 @@ def test_compress_form(httpbin_both):
 
 
 def test_compress_stdin(httpbin_both):
-    with open(FILE_PATH) as f:
-        env = MockEnvironment(stdin=f, stdin_isatty=False)
-        r = http(
-            '--compress',
-            '--compress',
-            'PATCH',
-            httpbin_both + '/patch',
-            env=env,
-        )
+    env = MockEnvironment(
+        stdin=StdinBytesIO(FILE_PATH.read_bytes()),
+        stdin_isatty=False,
+    )
+    r = http(
+        '--compress',
+        '--compress',
+        'PATCH',
+        httpbin_both + '/patch',
+        env=env,
+    )
     assert HTTP_OK in r
     assert r.json['headers']['Content-Encoding'] == 'deflate'
     assert_decompressed_equal(r.json['data'], FILE_CONTENT.strip())
@@ -100,7 +117,7 @@ def test_compress_file(httpbin_both):
         '--compress',
         'PUT',
         httpbin_both + '/put',
-        'file@' + FILE_PATH,
+        f'file@{FILE_PATH}',
     )
     assert HTTP_OK in r
     assert r.json['headers']['Content-Encoding'] == 'deflate'

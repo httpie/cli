@@ -2,6 +2,8 @@
 Tests for the provided defaults regarding HTTP method, and --json vs. --form.
 
 """
+from io import BytesIO
+
 from httpie.client import JSON_ACCEPT
 from utils import MockEnvironment, http, HTTP_OK
 from fixtures import FILE_PATH
@@ -44,9 +46,11 @@ class TestImplicitHTTPMethod:
         assert r.json['form'] == {'foo': 'bar'}
 
     def test_implicit_POST_stdin(self, httpbin):
-        with open(FILE_PATH) as f:
-            env = MockEnvironment(stdin_isatty=False, stdin=f)
-            r = http('--form', httpbin.url + '/post', env=env)
+        env = MockEnvironment(
+            stdin_isatty=False,
+            stdin=BytesIO(FILE_PATH.read_bytes())
+        )
+        r = http('--form', httpbin.url + '/post', env=env)
         assert HTTP_OK in r
 
 

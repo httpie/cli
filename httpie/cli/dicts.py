@@ -34,19 +34,24 @@ class MultiValueOrderedDict(OrderedDict):
                 super().__setitem__(key, [self[key]])
             self[key].append(value)
 
+    def items(self):
+        for key, values in super().items():
+            if not isinstance(values, list):
+                values = [values]
+            for value in values:
+                yield key, value
+
 
 class RequestQueryParamsDict(MultiValueOrderedDict):
     pass
 
 
 class RequestDataDict(MultiValueOrderedDict):
+    pass
 
-    def items(self):
-        for key, values in super(MultiValueOrderedDict, self).items():
-            if not isinstance(values, list):
-                values = [values]
-            for value in values:
-                yield key, value
+
+class MultipartRequestDataDict(MultiValueOrderedDict):
+    pass
 
 
 class RequestFilesDict(RequestDataDict):
