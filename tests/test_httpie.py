@@ -1,18 +1,16 @@
 """High-level tests."""
 import io
-import sys
 from unittest import mock
 
 import pytest
 
+import httpie
 import httpie.__main__
+from fixtures import FILE_CONTENT, FILE_PATH
+from httpie.cli.exceptions import ParseError
 from httpie.context import Environment
 from httpie.status import ExitStatus
-from httpie.cli.exceptions import ParseError
-from utils import MockEnvironment, StdinBytesIO, http, HTTP_OK
-from fixtures import FILE_PATH, FILE_CONTENT, FILE_PATH_ARG
-
-import httpie
+from utils import HTTP_OK, MockEnvironment, StdinBytesIO, http
 
 
 def test_main_entry_point():
@@ -100,7 +98,9 @@ def test_POST_form(httpbin_both):
 def test_POST_form_multiple_values(httpbin_both):
     r = http('--form', 'POST', httpbin_both + '/post', 'foo=bar', 'foo=baz')
     assert HTTP_OK in r
-    assert r.json['form'] == {'foo': ['bar', 'baz']}
+    assert r.json['form'] == {
+        'foo': ['bar', 'baz']
+    }
 
 
 def test_POST_stdin(httpbin_both):
@@ -152,7 +152,7 @@ def test_headers_unset(httpbin_both):
     assert 'Accept' in r.json['headers']  # default Accept present
 
     r = http('GET', httpbin_both + '/headers', 'Accept:')
-    assert 'Accept' not in r.json['headers']   # default Accept unset
+    assert 'Accept' not in r.json['headers']  # default Accept unset
 
 
 @pytest.mark.skip('unimplemented')
@@ -161,7 +161,7 @@ def test_unset_host_header(httpbin_both):
     assert 'Host' in r.json['headers']  # default Host present
 
     r = http('GET', httpbin_both + '/headers', 'Host:')
-    assert 'Host' not in r.json['headers']   # default Host unset
+    assert 'Host' not in r.json['headers']  # default Host unset
 
 
 def test_headers_empty_value(httpbin_both):
@@ -169,7 +169,7 @@ def test_headers_empty_value(httpbin_both):
     assert r.json['headers']['Accept']  # default Accept has value
 
     r = http('GET', httpbin_both + '/headers', 'Accept;')
-    assert r.json['headers']['Accept'] == ''   # Accept has no value
+    assert r.json['headers']['Accept'] == ''  # Accept has no value
 
 
 def test_headers_empty_value_with_value_gives_error(httpbin):
@@ -182,4 +182,4 @@ def test_json_input_preserve_order(httpbin_both):
              'order:={"map":{"1":"first","2":"second"}}')
     assert HTTP_OK in r
     assert r.json['data'] == \
-        '{"order": {"map": {"1": "first", "2": "second"}}}'
+           '{"order": {"map": {"1":Clean "first", "2": "second"}}}'
