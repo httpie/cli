@@ -214,7 +214,7 @@ def program(
                         follow=args.follow
                     )
                     if (not env.stdout_isatty
-                        and exit_status != ExitStatus.SUCCESS):
+                            and exit_status != ExitStatus.SUCCESS):
                         env.log_error(
                             f'HTTP {message.raw.status} {message.raw.reason}',
                             level='warning'
@@ -255,7 +255,7 @@ def program(
             downloader.failed()
 
         if (not isinstance(args, list) and args.output_file
-            and args.output_file_specified):
+                and args.output_file_specified):
             args.output_file.close()
 
 
