@@ -4,7 +4,6 @@ from typing import Callable, Iterable, Union
 from httpie.context import Environment
 from httpie.models import HTTPMessage
 from httpie.output.processing import Conversion, Formatting
-from requests_toolbelt import MultipartEncoder
 
 
 BINARY_SUPPRESSED_NOTICE = (
@@ -12,14 +11,6 @@ BINARY_SUPPRESSED_NOTICE = (
     b'+-----------------------------------------+\n'
     b'| NOTE: binary data not shown in terminal |\n'
     b'+-----------------------------------------+'
-)
-
-
-LARGE_UPLOAD_SUPPRESSED_NOTICE = (
-    b'\n'
-    b'+--------------------------------------------------------+\n'
-    b'| NOTE: large form upload data not shown in the terminal |\n'
-    b'+--------------------------------------------------------+'
 )
 
 
@@ -31,13 +22,6 @@ class BinarySuppressedError(DataSuppressedError):
     """An error indicating that the body is binary and won't be written,
      e.g., for terminal output)."""
     message = BINARY_SUPPRESSED_NOTICE
-
-
-class LargeUploadSuppressedError(DataSuppressedError):
-    """An error indicating that the body is binary and won't be written,
-     e.g., for terminal output)."""
-
-    message = LARGE_UPLOAD_SUPPRESSED_NOTICE
 
 
 class BaseStream:
@@ -203,8 +187,6 @@ class BufferedPrettyStream(PrettyStream):
         body = bytearray()
 
         for chunk in self.msg.iter_body(self.CHUNK_SIZE):
-            if isinstance(chunk, MultipartEncoder):
-                raise LargeUploadSuppressedError()
             if not converter and b'\0' in chunk:
                 converter = self.conversion.get_converter(self.mime)
                 if not converter:

@@ -52,7 +52,7 @@ class HTTPieHTTPSAdapter(HTTPAdapter):
         verify: bool,
         ssl_version: str = None,
         ciphers: str = None,
-    ) -> ssl.SSLContext:
+    ) -> 'ssl.SSLContext':
         return create_urllib3_context(
             ciphers=ciphers,
             ssl_version=resolve_ssl_version(ssl_version),

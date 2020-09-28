@@ -15,7 +15,8 @@ from httpie.cli.constants import (
     DEFAULT_FORMAT_OPTIONS, OUTPUT_OPTIONS,
     OUTPUT_OPTIONS_DEFAULT, OUT_REQ_BODY, OUT_REQ_HEAD,
     OUT_RESP_BODY, OUT_RESP_HEAD, PRETTY_MAP, PRETTY_STDOUT_TTY_ONLY,
-    SEPARATOR_GROUP_ALL_ITEMS, SEPARATOR_PROXY, SORTED_FORMAT_OPTIONS_STRING,
+    RequestType, SEPARATOR_GROUP_ALL_ITEMS, SEPARATOR_PROXY,
+    SORTED_FORMAT_OPTIONS_STRING,
     UNSORTED_FORMAT_OPTIONS_STRING,
 )
 from httpie.output.formatters.colors import (
@@ -110,7 +111,7 @@ positional.add_argument(
 
         awesome:=true  amount:=42  colors:='["red", "green", "blue"]'
 
-    '@' Form file fields (only with --form, -f):
+    '@' Form file fields (only with --form or --multipart):
 
         cv@~/Documents/CV.pdf
         cv@'~/Documents/CV.pdf;type=application/pdf'
@@ -141,7 +142,9 @@ content_type = parser.add_argument_group(
 
 content_type.add_argument(
     '--json', '-j',
-    action='store_true',
+    action='store_const',
+    const=RequestType.JSON,
+    dest='request_type',
     help='''
     (default) Data items from the command line are serialized as a JSON object.
     The Content-Type and Accept headers are set to application/json
@@ -151,7 +154,9 @@ content_type.add_argument(
 )
 content_type.add_argument(
     '--form', '-f',
-    action='store_true',
+    action='store_const',
+    const=RequestType.FORM,
+    dest='request_type',
     help='''
     Data items from the command line are serialized as form fields.
 
@@ -163,11 +168,12 @@ content_type.add_argument(
 )
 content_type.add_argument(
     '--multipart',
-    default=False,
-    action='store_true',
+    action='store_const',
+    const=RequestType.MULTIPART,
+    dest='request_type',
     help='''
-    Force the request to be encoded as multipart/form-data even without
-    any file fields. Only has effect only together with --form.
+    Similar to --form, but always sends a multipart/form-data
+    request (i.e., even without files).
 
     '''
 )
@@ -394,7 +400,7 @@ output_options.add_argument(
     action='store_true',
     default=False,
     help='''
-    Always stream the output by line, i.e., behave like `tail -f'.
+    Always stream the response body by line, i.e., behave like `tail -f'.
 
     Without --stream and with --pretty (either set or implied),
     HTTPie fetches the whole response before it outputs the processed data.
@@ -655,6 +661,15 @@ network.add_argument(
     Bypass dot segment (/../ or /./) URL squashing.
 
     '''
+)
+
+network.add_argument(
+    '--chunked',
+    default=False,
+    action='store_true',
+    help="""
+
+    """
 )
 
 #######################################################################

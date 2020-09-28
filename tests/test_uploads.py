@@ -1,14 +1,55 @@
 import os
-from unittest import mock
 
 import pytest
 
 from httpie.cli.exceptions import ParseError
 from httpie.client import FORM_CONTENT_TYPE
-from httpie.output.streams import LARGE_UPLOAD_SUPPRESSED_NOTICE
 from httpie.status import ExitStatus
-from utils import MockEnvironment, http, HTTP_OK
+from utils import (
+    HTTPBIN_WITH_CHUNKED_SUPPORT, MockEnvironment, StdinBytesIO, http,
+    HTTP_OK,
+)
 from fixtures import FILE_PATH_ARG, FILE_PATH, FILE_CONTENT
+
+
+def test_chunked_json():
+    r = http(
+        '--verbose',
+        '--chunked',
+        HTTPBIN_WITH_CHUNKED_SUPPORT + '/post',
+        'hello=world',
+    )
+    assert HTTP_OK in r
+    assert 'Transfer-Encoding: chunked' in r
+    assert r.count('hello') == 3
+
+
+def test_chunked_form():
+    r = http(
+        '--verbose',
+        '--chunked',
+        '--form',
+        HTTPBIN_WITH_CHUNKED_SUPPORT + '/post',
+        'hello=world',
+    )
+    assert HTTP_OK in r
+    assert 'Transfer-Encoding: chunked' in r
+    assert r.count('hello') == 2
+
+
+def test_chunked_stdin():
+    r = http(
+        '--verbose',
+        '--chunked',
+        HTTPBIN_WITH_CHUNKED_SUPPORT + '/post',
+        env=MockEnvironment(
+            stdin=StdinBytesIO(FILE_PATH.read_bytes()),
+            stdin_isatty=False,
+        )
+    )
+    assert HTTP_OK in r
+    assert 'Transfer-Encoding: chunked' in r
+    assert r.count(FILE_CONTENT) == 2
 
 
 class TestMultipartFormDataFileUpload:
@@ -55,19 +96,6 @@ class TestMultipartFormDataFileUpload:
         assert r.count(FILE_CONTENT) == 2
         assert 'Content-Type: image/vnd.microsoft.icon' in r
 
-    @mock.patch('httpie.uploads.UPLOAD_BUFFER', 0)
-    def test_large_upload_display_suppressed(self, httpbin):
-        r = http(
-            '--form',
-            '--verbose',
-            httpbin.url + '/post',
-            f'test-file@{FILE_PATH_ARG}',
-            'foo=bar',
-        )
-        assert HTTP_OK in r
-        assert r.count(FILE_CONTENT) == 1
-        assert LARGE_UPLOAD_SUPPRESSED_NOTICE.decode() in r
-
     def test_form_no_files_urlencoded(self, httpbin):
         r = http(
             '--form',
@@ -79,9 +107,8 @@ class TestMultipartFormDataFileUpload:
         assert HTTP_OK in r
         assert FORM_CONTENT_TYPE in r
 
-    def test_form_no_files_multipart(self, httpbin):
+    def test_multipart(self, httpbin):
         r = http(
-            '--form',
             '--verbose',
             '--multipart',
             httpbin.url + '/post',
@@ -97,7 +124,6 @@ class TestMultipartFormDataFileUpload:
         r = http(
             '--print=HB',
             '--check-status',
-            '--form',
             '--multipart',
             f'--boundary={boundary}',
             httpbin.url + '/post',
@@ -112,7 +138,6 @@ class TestMultipartFormDataFileUpload:
         r = http(
             '--print=HB',
             '--check-status',
-            '--form',
             '--multipart',
             f'--boundary={boundary}',
             httpbin.url + '/post',
@@ -128,7 +153,6 @@ class TestMultipartFormDataFileUpload:
         boundary_in_header = 'HEADER_BOUNDARY'
         boundary_in_body = 'BODY_BOUNDARY'
         r = http(
-            '--form',
             '--print=HB',
             '--check-status',
             '--multipart',
@@ -141,6 +165,20 @@ class TestMultipartFormDataFileUpload:
         assert f'multipart/magic; boundary={boundary_in_header}' in r
         assert r.count(boundary_in_body) == 3
 
+    def test_multipart_chunked(self, httpbin):
+        r = http(
+            '--verbose',
+            '--multipart',
+            '--chunked',
+            # '--offline',
+            HTTPBIN_WITH_CHUNKED_SUPPORT + '/post',
+            'AAA=AAA',
+        )
+        assert 'Transfer-Encoding: chunked' in r
+        assert 'multipart/form-data' in r
+        assert 'name="AAA"' in r  # in request
+        assert '"AAA": "AAA"', r  # in response
+
 
 class TestRequestBodyFromFilePath:
     """
@@ -149,11 +187,25 @@ class TestRequestBodyFromFilePath:
     """
 
     def test_request_body_from_file_by_path(self, httpbin):
-        r = http('--verbose',
-                 'POST', httpbin.url + '/post', '@' + FILE_PATH_ARG)
+        r = http(
+            '--verbose',
+            'POST', httpbin.url + '/post',
+            '@' + FILE_PATH_ARG,
+        )
         assert HTTP_OK in r
-        assert FILE_CONTENT in r, r
+        assert r.count(FILE_CONTENT) == 2
         assert '"Content-Type": "text/plain"' in r
+
+    def test_request_body_from_file_by_path_chunked(self, httpbin):
+        r = http(
+            '--verbose', '--chunked',
+            HTTPBIN_WITH_CHUNKED_SUPPORT + '/post',
+            '@' + FILE_PATH_ARG,
+        )
+        assert HTTP_OK in r
+        assert 'Transfer-Encoding: chunked' in r
+        assert '"Content-Type": "text/plain"' in r
+        assert r.count(FILE_CONTENT) == 2
 
     def test_request_body_from_file_by_path_with_explicit_content_type(
             self, httpbin):

@@ -2,10 +2,9 @@ import argparse
 import http.client
 import json
 import sys
-import zlib
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Iterable, Union
+from typing import Callable, Iterable, Union
 from urllib.parse import urlparse, urlunparse
 
 import requests
@@ -16,7 +15,10 @@ from httpie.cli.dicts import RequestHeadersDict
 from httpie.plugins.registry import plugin_manager
 from httpie.sessions import get_httpie_session
 from httpie.ssl import AVAILABLE_SSL_VERSION_ARG_MAPPING, HTTPieHTTPSAdapter
-from httpie.uploads import get_multipart_data_and_content_type
+from httpie.uploads import (
+    compress_request, prepare_request_body,
+    get_multipart_data_and_content_type,
+)
 from httpie.utils import get_expired_cookies, repr_dict
 
 
@@ -31,6 +33,7 @@ DEFAULT_UA = f'HTTPie/{__version__}'
 def collect_messages(
     args: argparse.Namespace,
     config_dir: Path,
+    request_body_read_callback: Callable[[bytes], None] = None,
 ) -> Iterable[Union[requests.PreparedRequest, requests.Response]]:
     httpie_session = None
     httpie_session_headers = None
@@ -46,6 +49,7 @@ def collect_messages(
     request_kwargs = make_request_kwargs(
         args=args,
         base_headers=httpie_session_headers,
+        request_body_read_callback=request_body_read_callback
     )
     send_kwargs = make_send_kwargs(args)
     send_kwargs_mergeable_from_env = make_send_kwargs_mergeable_from_env(args)
@@ -80,7 +84,10 @@ def collect_messages(
             prepped_url=prepared_request.url,
         )
     if args.compress and prepared_request.body:
-        compress_body(prepared_request, always=args.compress > 1)
+        compress_request(
+            request=prepared_request,
+            always=args.compress > 1,
+        )
     response_count = 0
     expired_cookies = []
     while prepared_request:
@@ -135,22 +142,6 @@ def max_headers(limit):
         yield
     finally:
         http.client._MAXHEADERS = orig
-
-
-def compress_body(request: requests.PreparedRequest, always: bool):
-    deflater = zlib.compressobj()
-    body_bytes = (
-        request.body
-        if isinstance(request.body, bytes)
-        else request.body.encode()
-    )
-    deflated_data = deflater.compress(body_bytes)
-    deflated_data += deflater.flush()
-    is_economical = len(deflated_data) < len(body_bytes)
-    if is_economical or always:
-        request.body = deflated_data
-        request.headers['Content-Encoding'] = 'deflate'
-        request.headers['Content-Length'] = str(len(deflated_data))
 
 
 def build_requests_session(
@@ -251,7 +242,8 @@ def make_send_kwargs_mergeable_from_env(args: argparse.Namespace) -> dict:
 
 def make_request_kwargs(
     args: argparse.Namespace,
-    base_headers: RequestHeadersDict = None
+    base_headers: RequestHeadersDict = None,
+    request_body_read_callback=lambda chunk: chunk
 ) -> dict:
     """
     Translate our `args` into `requests.Request` keyword arguments.
@@ -276,23 +268,25 @@ def make_request_kwargs(
     headers.update(args.headers)
     headers = finalize_headers(headers)
 
-    if args.form and (files or args.multipart):
+    if (args.form and files) or args.multipart:
         data, headers['Content-Type'] = get_multipart_data_and_content_type(
-            data=data,
-            files=files,
+            data=args.multipart_data,
             boundary=args.boundary,
             content_type=args.headers.get('Content-Type'),
         )
-        files = None
 
     kwargs = {
         'method': args.method.lower(),
         'url': args.url,
         'headers': headers,
-        'data': data,
+        'data': prepare_request_body(
+            body=data,
+            body_read_callback=request_body_read_callback,
+            chunked=args.chunked,
+            content_length_header_value=headers.get('Content-Length')
+        ),
         'auth': args.auth,
-        'params': args.params,
-        'files': files,
+        'params': args.params.items(),
     }
 
     return kwargs

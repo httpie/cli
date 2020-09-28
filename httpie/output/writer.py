@@ -1,6 +1,6 @@
 import argparse
 import errno
-from typing import Union, IO, TextIO, Tuple, Type
+from typing import IO, TextIO, Tuple, Type, Union
 
 import requests
 
@@ -8,12 +8,7 @@ from httpie.context import Environment
 from httpie.models import HTTPRequest, HTTPResponse
 from httpie.output.processing import Conversion, Formatting
 from httpie.output.streams import (
-    RawStream, PrettyStream,
-    BufferedPrettyStream, EncodedStream,
-    BaseStream,
-)
-from httpie.cli.constants import (
-    OUT_REQ_BODY, OUT_REQ_HEAD, OUT_RESP_BODY, OUT_RESP_HEAD,
+    BaseStream, BufferedPrettyStream, EncodedStream, PrettyStream, RawStream,
 )
 
 
@@ -21,26 +16,18 @@ def write_message(
     requests_message: Union[requests.PreparedRequest, requests.Response],
     env: Environment,
     args: argparse.Namespace,
+    with_headers=False,
+    with_body=False,
 ):
-    output_options_by_message_type = {
-        requests.PreparedRequest: {
-            'with_headers': OUT_REQ_HEAD in args.output_options,
-            'with_body': OUT_REQ_BODY in args.output_options,
-        },
-        requests.Response: {
-            'with_headers': OUT_RESP_HEAD in args.output_options,
-            'with_body': OUT_RESP_BODY in args.output_options,
-        },
-    }
-    output_options = output_options_by_message_type[type(requests_message)]
-    if not any(output_options.values()):
+    if not (with_body or with_headers):
         return
     write_stream_kwargs = {
         'stream': build_output_stream_for_message(
             args=args,
             env=env,
             requests_message=requests_message,
-            **output_options,
+            with_body=with_body,
+            with_headers=with_headers,
         ),
         # NOTE: `env.stdout` will in fact be `stderr` with `--download`
         'outfile': env.stdout,
@@ -120,7 +107,8 @@ def build_output_stream_for_message(
         with_body=with_body,
         **stream_kwargs,
     )
-    if env.stdout_isatty and with_body:
+    if (env.stdout_isatty and with_body
+            and not getattr(requests_message, 'is_body_upload_chunk', False)):
         # Ensure a blank line after the response body.
         # For terminal output only.
         yield b'\n\n'

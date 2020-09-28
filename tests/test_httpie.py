@@ -1,5 +1,6 @@
 """High-level tests."""
 import io
+import sys
 from unittest import mock
 
 import pytest
@@ -8,7 +9,7 @@ import httpie.__main__
 from httpie.context import Environment
 from httpie.status import ExitStatus
 from httpie.cli.exceptions import ParseError
-from utils import MockEnvironment, http, HTTP_OK
+from utils import MockEnvironment, StdinBytesIO, http, HTTP_OK
 from fixtures import FILE_PATH, FILE_CONTENT
 
 import httpie
@@ -103,15 +104,17 @@ def test_POST_form_multiple_values(httpbin_both):
 
 
 def test_POST_stdin(httpbin_both):
-    with open(FILE_PATH) as f:
-        env = MockEnvironment(stdin=f, stdin_isatty=False)
-        r = http('--form', 'POST', httpbin_both + '/post', env=env)
+    env = MockEnvironment(
+        stdin=StdinBytesIO(FILE_PATH.read_bytes()),
+        stdin_isatty=False,
+    )
+    r = http('--form', 'POST', httpbin_both + '/post', env=env)
     assert HTTP_OK in r
     assert FILE_CONTENT in r
 
 
 def test_POST_file(httpbin_both):
-    r = http('--form', 'POST', httpbin_both + '/post', 'file@' + FILE_PATH)
+    r = http('--form', 'POST', httpbin_both + '/post', f'file@{FILE_PATH}')
     assert HTTP_OK in r
     assert FILE_CONTENT in r
 
@@ -126,10 +129,10 @@ def test_form_POST_file_redirected_stdin(httpbin):
             '--form',
             'POST',
             httpbin + '/post',
-            'file@' + FILE_PATH,
+            f'file@{FILE_PATH}',
             tolerate_error_exit_status=True,
             env=MockEnvironment(
-                stdin=f,
+                stdin=StdinBytesIO(FILE_PATH.read_bytes()),
                 stdin_isatty=False,
             ),
         )

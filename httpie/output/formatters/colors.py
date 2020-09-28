@@ -86,7 +86,7 @@ class ColorFormatter(FormatterPlugin):
                 lexer=lexer,
                 formatter=self.formatter,
             )
-        return body.strip()
+        return body
 
     def get_lexer_for_body(
         self, mime: str,
