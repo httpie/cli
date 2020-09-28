@@ -23,9 +23,9 @@ JSON_FILE_PATH_ARG = patharg(JSON_FILE_PATH)
 # Strip because we don't want new lines in the data so that we can
 # easily count occurrences also when embedded in JSON (where the new
 # line would be escaped).
-FILE_CONTENT = FILE_PATH.read_text().strip()
+FILE_CONTENT = FILE_PATH.read_text('utf8').strip()
 
 
-JSON_FILE_CONTENT = JSON_FILE_PATH.read_text()
+JSON_FILE_CONTENT = JSON_FILE_PATH.read_text('utf8')
 BIN_FILE_CONTENT = BIN_FILE_PATH.read_bytes()
 UNICODE = FILE_CONTENT
