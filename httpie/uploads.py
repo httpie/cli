@@ -39,11 +39,20 @@ def prepare_request_body(
     body_read_callback: Callable[[bytes], bytes],
     content_length_header_value: int = None,
     chunked=False,
+    offline=False,
 ) -> Union[str, bytes, IO, MultipartEncoder, ChunkedUploadStream]:
+
+    is_file_like = hasattr(body, 'read')
+
     if isinstance(body, RequestDataDict):
         body = urlencode(body, doseq=True)
 
-    if not hasattr(body, 'read'):
+    if offline:
+        if is_file_like:
+            return body.read()
+        return body
+
+    if not is_file_like:
         if chunked:
             body = ChunkedUploadStream(
                 # Pass the entire body as one chunk.

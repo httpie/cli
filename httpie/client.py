@@ -283,7 +283,8 @@ def make_request_kwargs(
             body=data,
             body_read_callback=request_body_read_callback,
             chunked=args.chunked,
-            content_length_header_value=headers.get('Content-Length')
+            offline=args.offline,
+            content_length_header_value=headers.get('Content-Length'),
         ),
         'auth': args.auth,
         'params': args.params.items(),

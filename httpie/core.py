@@ -201,7 +201,7 @@ def program(
             if is_request:
                 if not initial_request:
                     initial_request = message
-                    is_streamed_upload = not args.offline and not isinstance(
+                    is_streamed_upload = not isinstance(
                         message.body, (str, bytes))
                     if with_body:
                         with_body = not is_streamed_upload

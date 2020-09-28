@@ -144,10 +144,9 @@ class StrCLIResponse(str, BaseCLIResponse):
             elif self.strip().startswith('{'):
                 # Looks like JSON body.
                 self._json = json.loads(self)
-            elif (self.count('Content-Type:') == 1
-                    and 'application/json' in self):
-                # Looks like a whole JSON HTTP message,
-                # try to extract its body.
+            elif self.count('Content-Type:') == 1:
+                # Looks like a HTTP message,
+                # try to extract JSON from its body.
                 try:
                     j = self.strip()[self.strip().rindex('\r\n\r\n'):]
                 except ValueError:

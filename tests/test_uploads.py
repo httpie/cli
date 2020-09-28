@@ -170,7 +170,6 @@ class TestMultipartFormDataFileUpload:
             '--verbose',
             '--multipart',
             '--chunked',
-            # '--offline',
             HTTPBIN_WITH_CHUNKED_SUPPORT + '/post',
             'AAA=AAA',
         )
@@ -178,6 +177,25 @@ class TestMultipartFormDataFileUpload:
         assert 'multipart/form-data' in r
         assert 'name="AAA"' in r  # in request
         assert '"AAA": "AAA"', r  # in response
+
+    def test_multipart_preserve_order(self, httpbin):
+        r = http(
+            '--form',
+            '--offline',
+            httpbin + '/post',
+            'text_field=foo',
+            f'file_field@{FILE_PATH_ARG}',
+        )
+        assert r.index('text_field') < r.index('file_field')
+
+        r = http(
+            '--form',
+            '--offline',
+            httpbin + '/post',
+            f'file_field@{FILE_PATH_ARG}',
+            'text_field=foo',
+        )
+        assert r.index('text_field') > r.index('file_field')
 
 
 class TestRequestBodyFromFilePath:

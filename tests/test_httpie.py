@@ -10,7 +10,7 @@ from httpie.context import Environment
 from httpie.status import ExitStatus
 from httpie.cli.exceptions import ParseError
 from utils import MockEnvironment, StdinBytesIO, http, HTTP_OK
-from fixtures import FILE_PATH, FILE_CONTENT
+from fixtures import FILE_PATH, FILE_CONTENT, FILE_PATH_ARG
 
 import httpie
 
@@ -191,6 +191,48 @@ def test_offline():
         'https://this-should.never-resolve/foo',
     )
     assert 'GET /foo' in r
+
+
+def test_offline_form():
+    r = http(
+        '--offline',
+        '--form',
+        'https://this-should.never-resolve/foo',
+        'foo=bar'
+    )
+    assert 'POST /foo' in r
+    assert 'foo=bar' in r
+
+
+def test_offline_json():
+    r = http(
+        '--offline',
+        'https://this-should.never-resolve/foo',
+        'foo=bar'
+    )
+    assert 'POST /foo' in r
+    assert r.json == {'foo': 'bar'}
+
+
+def test_offline_multipart():
+    r = http(
+        '--offline',
+        '--multipart',
+        'https://this-should.never-resolve/foo',
+        'foo=bar'
+    )
+    assert 'POST /foo' in r
+    assert 'name="foo"' in r
+
+
+def test_offline_from_file():
+    r = http(
+        '--offline',
+        'https://this-should.never-resolve/foo',
+        f'@{FILE_PATH_ARG}'
+    )
+    assert 'POST /foo' in r
+    assert FILE_CONTENT in r
 
 
 def test_offline_download():
