@@ -266,6 +266,10 @@ def make_request_kwargs(
     if base_headers:
         headers.update(base_headers)
     headers.update(args.headers)
+    if args.offline and args.chunked and 'Transfer-Encoding' not in headers:
+        # When online, we let requests set the header instead to be able more
+        # easily verify chunking is taking place.
+        headers['Transfer-Encoding'] = 'chunked'
     headers = finalize_headers(headers)
 
     if (args.form and files) or args.multipart:
