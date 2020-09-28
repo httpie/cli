@@ -1450,8 +1450,8 @@ File uploads are always streamed to avoid memory issues with large files.
 Chunked transfer encoding
 =========================
 
-For any request, you can use the ``--chunked`` flag to instruct HTTPie to use
- ``Transfer-Encoding: chunked``:
+You can use the ``--chunked`` flag to instruct HTTPie to use
+``Transfer-Encoding: chunked``:
 
 
 .. code-block:: bash
