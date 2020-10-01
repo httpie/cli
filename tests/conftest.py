@@ -10,7 +10,7 @@ def httpbin_add_ca_bundle(monkeypatch):
     (Same as `httpbin_ca_bundle`, just auto-used.).
 
     """
-    monkeypatch.setenv('REQUESTS_CA_BUNDLE', certs.where())
+    monkeypatch.setenv('SSL_CERT_FILE', certs.where())
 
 
 @pytest.fixture(scope='function')
@@ -20,5 +20,5 @@ def httpbin_secure_untrusted(monkeypatch, httpbin_secure):
     make-CA-trusted-by-default.
 
     """
-    monkeypatch.delenv('REQUESTS_CA_BUNDLE')
+    monkeypatch.delenv('SSL_CERT_FILE')
     return httpbin_secure
