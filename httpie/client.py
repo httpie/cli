@@ -48,7 +48,8 @@ def collect_messages(
     httpx_session = build_httpx_session(
         ssl_version=args.ssl_version,
         ciphers=args.ciphers,
-        verify=bool(send_kwargs_mergeable_from_env['verify'])
+        verify=bool(send_kwargs_mergeable_from_env['verify']),
+        removed_headers=args.removed_headers
     )
 
     if httpie_session:
@@ -94,11 +95,11 @@ def collect_messages(
             # )
 
             response_count += 1
-            if response.next:
+            if response.next_request:
                 if args.max_redirects and response_count == args.max_redirects:
                     raise httpx.TooManyRedirects("Too many redirects", request=request)
                 if args.follow:
-                    request = response.next
+                    request = response.next_request
                     if args.all:
                         yield response
                     continue
@@ -143,6 +144,7 @@ def build_httpx_session(
     verify: bool,
     ssl_version: str = None,
     ciphers: str = None,
+    removed_headers: dict = None
 ) -> httpx.Client:
     httpx_session = httpx.Client()
 
@@ -164,6 +166,10 @@ def build_httpx_session(
     #         prefix=transport_plugin.prefix,
     #         adapter=transport_plugin.get_adapter(),
     #     )
+
+    if removed_headers is not None:
+        for header in removed_headers.keys():
+            httpx_session.headers.pop(header, None)
 
     return httpx_session
 

@@ -25,6 +25,7 @@ class RequestItems:
         self.data = RequestDataDict() if as_form else RequestJSONDataDict()
         self.files = RequestFilesDict()
         self.params = RequestQueryParamsDict()
+        self.removed_headers = {}
 
     @classmethod
     def from_args(
@@ -70,7 +71,11 @@ class RequestItems:
 
         for arg in request_item_args:
             processor_func, target_dict = rules[arg.sep]
-            target_dict[arg.key] = processor_func(arg)
+            value = processor_func(arg)
+            if arg.sep == SEPARATOR_HEADER and value is None:
+                instance.removed_headers[arg.key] = None
+            else:
+                target_dict[arg.key] = value
 
         return instance
 

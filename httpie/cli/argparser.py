@@ -337,6 +337,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
             self.args.data = request_items.data
             self.args.files = request_items.files
             self.args.params = request_items.params
+            self.args.removed_headers = request_items.removed_headers
 
         if self.args.files and not self.args.form:
             # `http url @/path/to/file`
