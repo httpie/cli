@@ -149,7 +149,6 @@ def compress_body(request: requests.PreparedRequest, always: bool):
     deflated_data += deflater.flush()
     is_economical = len(deflated_data) < len(body_bytes)
     if is_economical or always:
-        print(request.body, repr(deflated_data), len(request.body), len(deflated_data))
         request.body = deflated_data
         request.headers['Content-Encoding'] = 'deflate'
         request.headers['Content-Length'] = str(len(deflated_data))
