@@ -52,26 +52,26 @@ class HTTPResponse(HTTPMessage):
     # noinspection PyProtectedMember
     @property
     def headers(self):
-        original = self._orig.raw._original_response
+        raw = self._orig.raw
 
         version = {
             9: '0.9',
             10: '1.0',
             11: '1.1',
             20: '2',
-        }[original.version]
+        }[raw.version]
 
-        status_line = f'HTTP/{version} {original.status} {original.reason}'
+        status_line = f'HTTP/{version} {raw.status} {raw.reason}'
         headers = [status_line]
         try:
             # `original.msg` is a `http.client.HTTPMessage` on Python 3
             # `_headers` is a 2-tuple
             headers.extend(
-                '%s: %s' % header for header in original.msg._headers)
+                '%s: %s' % header for header in raw.headers.items())
         except AttributeError:
             # and a `httplib.HTTPMessage` on Python 2.x
             # `headers` is a list of `name: val<CRLF>`.
-            headers.extend(h.strip() for h in original.msg.headers)
+            headers.extend(h.strip() for h in raw.headers)
 
         return '\r\n'.join(headers)
 

@@ -12,6 +12,7 @@ import requests
 # noinspection PyPackageRequirements
 import urllib3
 from httpie import __version__
+from httpie.adapters import HTTPCoreAdapter
 from httpie.cli.dicts import RequestHeadersDict
 from httpie.plugins.registry import plugin_manager
 from httpie.sessions import get_httpie_session
@@ -99,7 +100,7 @@ def collect_messages(
 
             # noinspection PyProtectedMember
             expired_cookies += get_expired_cookies(
-                headers=response.raw._original_response.msg._headers
+                headers=response.raw.headers.items()
             )
 
             response_count += 1
@@ -148,6 +149,7 @@ def compress_body(request: requests.PreparedRequest, always: bool):
     deflated_data += deflater.flush()
     is_economical = len(deflated_data) < len(body_bytes)
     if is_economical or always:
+        print(request.body, repr(deflated_data), len(request.body), len(deflated_data))
         request.body = deflated_data
         request.headers['Content-Encoding'] = 'deflate'
         request.headers['Content-Length'] = str(len(deflated_data))
@@ -160,24 +162,26 @@ def build_requests_session(
 ) -> requests.Session:
     requests_session = requests.Session()
 
+    requests_session.mount("http://", HTTPCoreAdapter())
+    requests_session.mount("https://", HTTPCoreAdapter())
     # Install our adapter.
-    https_adapter = HTTPieHTTPSAdapter(
-        ciphers=ciphers,
-        verify=verify,
-        ssl_version=(
-            AVAILABLE_SSL_VERSION_ARG_MAPPING[ssl_version]
-            if ssl_version else None
-        ),
-    )
-    requests_session.mount('https://', https_adapter)
-
-    # Install adapters from plugins.
-    for plugin_cls in plugin_manager.get_transport_plugins():
-        transport_plugin = plugin_cls()
-        requests_session.mount(
-            prefix=transport_plugin.prefix,
-            adapter=transport_plugin.get_adapter(),
-        )
+    # https_adapter = HTTPieHTTPSAdapter(
+    #     ciphers=ciphers,
+    #     verify=verify,
+    #     ssl_version=(
+    #         AVAILABLE_SSL_VERSION_ARG_MAPPING[ssl_version]
+    #         if ssl_version else None
+    #     ),
+    # )
+    # requests_session.mount('https://', https_adapter)
+    #
+    # # Install adapters from plugins.
+    # for plugin_cls in plugin_manager.get_transport_plugins():
+    #     transport_plugin = plugin_cls()
+    #     requests_session.mount(
+    #         prefix=transport_plugin.prefix,
+    #         adapter=transport_plugin.get_adapter(),
+    #     )
 
     return requests_session
 
