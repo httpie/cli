@@ -2094,7 +2094,7 @@ Please use the following support channels:
 * `StackOverflow <https://stackoverflow.com>`_
   to ask questions (please make sure to use the
   `httpie <https://stackoverflow.com/questions/tagged/httpie>`_ tag).
-* Tweet directly to `@clihttp <https://twitter.com/clihttp>`_.
+* Tweet directly to `@httpie <https://twitter.com/httpie>`_.
 * You can also tweet directly to `@jakubroztocil`_.
 
 
