@@ -108,6 +108,6 @@ setup(
         'Source': 'https://github.com/jakubroztocil/httpie',
         'Online Demo': 'https://httpie.org/run',
         'Donate': 'https://httpie.org/donate',
-        'Twitter': 'https://twitter.com/clihttp',
+        'Twitter': 'https://twitter.com/httpie',
     },
 )
