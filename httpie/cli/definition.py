@@ -794,3 +794,22 @@ troubleshooting.add_argument(
 
     '''
 )
+
+#######################################################################
+# History
+#######################################################################
+
+history = parser.add_argument_group(title='History')
+
+history.add_argument(
+    '--history',
+    metavar='ENTRY',
+    type=int,
+    nargs='?',
+    const=0,
+    default=None,
+    help='''
+    Request from history
+
+    '''
+)

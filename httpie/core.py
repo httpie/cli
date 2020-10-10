@@ -23,6 +23,8 @@ from httpie.output.writer import (
 from httpie.plugins.registry import plugin_manager
 from httpie.status import ExitStatus, http_status_to_exit_status
 
+from httpie.history import get_history, Entry
+
 
 # noinspection PyDefaultArgument
 def main(
@@ -63,6 +65,16 @@ def main(
             args=args,
             env=env,
         )
+
+        if parsed_args.history is not None:
+            if parsed_args.history == 0:
+                print_history(env, parsed_args)
+                return ExitStatus.SUCCESS
+            else:
+                history = get_history(host=parsed_args.headers.get('Host'), url=parsed_args.url)
+                args = history.get_entry(parsed_args.history).get_args()
+                main(args, env)
+
     except KeyboardInterrupt:
         env.stderr.write('\n')
         if include_traceback:
@@ -80,6 +92,7 @@ def main(
                 args=parsed_args,
                 env=env,
             )
+
         except KeyboardInterrupt:
             env.stderr.write('\n')
             if include_traceback:
@@ -286,3 +299,8 @@ def decode_raw_args(
         if type(arg) == bytes else arg
         for arg in args
     ]
+
+
+def print_history(env, args):
+    history = get_history(host=args.headers.get('Host'), url=args.url)
+    env.stderr.write(history.get_history_str(10))
