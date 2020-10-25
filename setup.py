@@ -18,8 +18,10 @@ class PyTest(TestCommand):
     def finalize_options(self):
         TestCommand.finalize_options(self)
         self.test_args = [
-            '--doctest-modules', '--verbose',
-            './httpie', './tests'
+            '--doctest-modules',
+            '--verbose',
+            './httpie',
+            './tests',
         ]
         self.test_suite = True
 
@@ -72,7 +74,7 @@ setup(
     description=httpie.__doc__.strip(),
     long_description=long_description(),
     url='https://httpie.org/',
-    download_url=f'https://github.com/jakubroztocil/httpie/archive/{httpie.__version__}.tar.gz',
+    download_url=f'https://github.com/httpie/httpie/archive/{httpie.__version__}.tar.gz',
     author=httpie.__author__,
     author_email='jakub@roztocil.co',
     license=httpie.__licence__,
@@ -104,10 +106,10 @@ setup(
         'Topic :: Utilities'
     ],
     project_urls={
+        'GitHub': 'https://github.com/httpie/httpie',
+        'Twitter': 'https://twitter.com/httpie',
         'Documentation': 'https://httpie.org/docs',
-        'Source': 'https://github.com/jakubroztocil/httpie',
         'Online Demo': 'https://httpie.org/run',
         'Donate': 'https://httpie.org/donate',
-        'Twitter': 'https://twitter.com/httpie',
     },
 )
