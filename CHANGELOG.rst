@@ -6,13 +6,15 @@ This document records all notable changes to `HTTPie <https://httpie.org>`_.
 This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 
-`2.3.0-dev`_ (unreleased)
+`2.3.0`_ (2020-10-25)
 -------------------------
 
+* Added support for streamed uploads (`#201`_).
 * Added support for multipart upload streaming (`#684`_).
 * Added support for body-from-file upload streaming (``http httpbin.org/post @file``).
-* Added ``--chunked`` to allow chunked transfer encoding.
+* Added ``--chunked`` to enable chunked transfer encoding (`#753`_).
 * Added ``--multipart`` to allow ``multipart/form-data`` encoding for non-file ``--form`` requests as well.
+* Added support for preserving field order in multipart requests (`#903`_).
 * Added ``--boundary`` to allow a custom boundary string for ``multipart/form-data`` requests.
 * Added support for combining cookies specified on the CLI and in a session file (`#932`_).
 * Added out of the box SOCKS support with no extra installation (`#904`_).
@@ -452,20 +454,23 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 .. _2.0.0: https://github.com/jakubroztocil/httpie/compare/1.0.3...2.0.0
 .. _2.1.0: https://github.com/jakubroztocil/httpie/compare/2.0.0...2.1.0
 .. _2.2.0: https://github.com/jakubroztocil/httpie/compare/2.1.0...2.2.0
-.. _2.3.0-dev: https://github.com/jakubroztocil/httpie/compare/2.2.0...master
+.. _2.3.0: https://github.com/jakubroztocil/httpie/compare/2.2.0...2.3.0
 
 
 .. _#128: https://github.com/jakubroztocil/httpie/issues/128
+.. _#201: https://github.com/jakubroztocil/httpie/issues/201
 .. _#488: https://github.com/jakubroztocil/httpie/issues/488
 .. _#668: https://github.com/jakubroztocil/httpie/issues/668
 .. _#684: https://github.com/jakubroztocil/httpie/issues/684
 .. _#718: https://github.com/jakubroztocil/httpie/issues/718
 .. _#719: https://github.com/jakubroztocil/httpie/issues/719
+.. _#753: https://github.com/jakubroztocil/httpie/issues/753
 .. _#840: https://github.com/jakubroztocil/httpie/issues/840
 .. _#853: https://github.com/jakubroztocil/httpie/issues/853
 .. _#852: https://github.com/jakubroztocil/httpie/issues/852
 .. _#870: https://github.com/jakubroztocil/httpie/issues/870
 .. _#895: https://github.com/jakubroztocil/httpie/issues/895
+.. _#903: https://github.com/jakubroztocil/httpie/issues/903
 .. _#920: https://github.com/jakubroztocil/httpie/issues/920
 .. _#904: https://github.com/jakubroztocil/httpie/issues/904
 .. _#925: https://github.com/jakubroztocil/httpie/issues/925

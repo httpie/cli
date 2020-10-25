@@ -2,6 +2,8 @@
 # See ./CONTRIBUTING.rst
 ###############################################################################
 
+.PHONY: build
+
 ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 VERSION=$(shell grep __version__ httpie/__init__.py)
 REQUIREMENTS=requirements-dev.txt
@@ -111,6 +113,9 @@ test-bdist-wheel: clean venv
 	@echo
 
 
+twine-check:
+	twine check dist/*
+
 pycodestyle:
 	@echo $(H1)Running pycodestyle$(H1END)
 	@[ -f $(VENV_BIN)/pycodestyle ] || $(VENV_PIP) install pycodestyle
@@ -131,6 +136,11 @@ codecov-upload:
 ###############################################################################
 
 
+build:
+	rm -rf build/
+	$(VENV_PYTHON) setup.py sdist bdist_wheel
+
+
 publish: test-all publish-no-test
 
 
@@ -138,7 +148,8 @@ publish-no-test:
 	@echo $(H1)Testing wheel build an installation$(H1END)
 	@echo "$(VERSION)"
 	@echo "$(VERSION)" | grep -q "dev" && echo '!!!Not publishing dev version!!!' && exit 1 || echo ok
-	$(VENV_PYTHON) setup.py sdist bdist_wheel
+	make build
+	make twine-check
 	$(VENV_BIN)/twine upload dist/*
 	@echo
 

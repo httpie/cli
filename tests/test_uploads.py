@@ -52,6 +52,23 @@ def test_chunked_stdin():
     assert r.count(FILE_CONTENT) == 2
 
 
+def test_chunked_stdin_multiple_chunks():
+    stdin_bytes = FILE_PATH.read_bytes() + b'\n' + FILE_PATH.read_bytes()
+    r = http(
+        '--verbose',
+        '--chunked',
+        HTTPBIN_WITH_CHUNKED_SUPPORT + '/post',
+        env=MockEnvironment(
+            stdin=StdinBytesIO(stdin_bytes),
+            stdin_isatty=False,
+            stdout_isatty=True,
+        )
+    )
+    assert HTTP_OK in r
+    assert 'Transfer-Encoding: chunked' in r
+    assert r.count(FILE_CONTENT) == 4
+
+
 class TestMultipartFormDataFileUpload:
 
     def test_non_existent_file_raises_parse_error(self, httpbin):

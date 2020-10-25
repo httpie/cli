@@ -159,7 +159,7 @@ def program(
 
         def maybe_separate():
             nonlocal needs_separator
-            if env.stdout.isatty() and needs_separator:
+            if env.stdout_isatty and needs_separator:
                 needs_separator = False
                 getattr(env.stdout, 'buffer', env.stdout).write(b'\n\n')
 

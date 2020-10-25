@@ -538,6 +538,7 @@ Simple example:
     $ http PUT httpbin.org/put name=John email=john@example.org
 
 .. code-block:: http
+
     PUT / HTTP/1.1
     Accept: application/json, */*;q=0.5
     Accept-Encoding: gzip, deflate
