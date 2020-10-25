@@ -160,6 +160,7 @@ On macOS you can install it with Homebrew:
 
 .. code-block:: bash
 
+    $ brew unlink httpie
     $ brew install httpie --HEAD
 
 
