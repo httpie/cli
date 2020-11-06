@@ -85,6 +85,9 @@ class Environment:
             self.stdout_encoding = getattr(
                 actual_stdout, 'encoding', None) or 'utf8'
 
+        self._history_enabled = False
+
+
     def __str__(self):
         defaults = dict(type(self).__dict__)
         actual = dict(defaults)
@@ -122,6 +125,14 @@ class Environment:
     @devnull.setter
     def devnull(self, value):
         self._devnull = value
+
+    @property
+    def history_enabled(self) -> bool:
+        return self._history_enabled
+
+    @history_enabled.setter
+    def history_enabled(self, value):
+        self._history_enabled = value
 
     def log_error(self, msg, level='error'):
         assert level in ['error', 'warning']

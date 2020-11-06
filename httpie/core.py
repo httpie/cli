@@ -23,7 +23,7 @@ from httpie.output.writer import (
 from httpie.plugins.registry import plugin_manager
 from httpie.status import ExitStatus, http_status_to_exit_status
 
-from httpie.history import get_history, Entry
+from httpie.history import EntryNotFound, get_history
 
 
 # noinspection PyDefaultArgument
@@ -65,7 +65,7 @@ def main(
             args=args,
             env=env,
         )
-
+        env.history_enabled = True
         if parsed_args.history is not None:
             if parsed_args.history == 0:
                 print_history(env, parsed_args)
@@ -73,7 +73,9 @@ def main(
             else:
                 history = get_history(host=parsed_args.headers.get('Host'), url=parsed_args.url)
                 args = history.get_entry(parsed_args.history).get_args()
+                env.history_enabled = False
                 main(args, env)
+                return ExitStatus.SUCCESS
 
     except KeyboardInterrupt:
         env.stderr.write('\n')
@@ -86,6 +88,11 @@ def main(
             if include_traceback:
                 raise
             exit_status = ExitStatus.ERROR
+    except EntryNotFound:
+        if include_traceback:
+            raise
+        env.log_error('Entry not found.')
+        exit_status = ExitStatus.ERROR
     else:
         try:
             exit_status = program(
@@ -261,6 +268,12 @@ def program(
                         downloader.status.total_size,
                         downloader.status.downloaded
                     ))
+
+        if args.history is None and env.history_enabled:
+            history = get_history(host=args.headers.get('Host'), url=args.url)
+            history.add_entry(args=sys.argv)
+            history.save()
+
         return exit_status
 
     finally:

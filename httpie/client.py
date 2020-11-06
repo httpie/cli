@@ -14,7 +14,6 @@ from httpie import __version__
 from httpie.cli.dicts import RequestHeadersDict
 from httpie.plugins.registry import plugin_manager
 from httpie.sessions import get_httpie_session
-from httpie.history import get_history
 from httpie.ssl import AVAILABLE_SSL_VERSION_ARG_MAPPING, HTTPieHTTPSAdapter
 from httpie.uploads import (
     compress_request, prepare_request_body,
@@ -130,11 +129,6 @@ def collect_messages(
                 cookie['name'] for cookie in expired_cookies
             )
             httpie_session.save()
-
-    if args.history is None:
-        history = get_history(host=args.headers.get('Host'), url=args.url)
-        history.add_entry(args=sys.argv)
-        history.save()
 
 
 # noinspection PyProtectedMember

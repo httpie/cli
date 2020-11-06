@@ -33,26 +33,26 @@ class History(BaseConfigDict):
         super().__init__(self.get_history_path(filename))
         self['entries'] = []
 
-    def add_entry(self, entry: Entry):
-        self['entries'].append(entry)
-
     def add_entry(self, **kwargs):
         self['entries'].append((Entry(kwargs)))
 
     def get_entry(self, index) -> Entry:
-        entries = self['entries']
-        entry_dict = entries[index]
+        try:
+            entry_dict = self['entries'][index - 1]
+        except IndexError:
+            raise EntryNotFound()
+
         return Entry(entry_dict)
 
     def get_history_str(self, count):
         history = '\n'
 
-        i = len(self['entries']) - count
+        i = 1
 
-        entries = self['entries'][-count:]
+        entries = self['entries']
 
         for entry in entries:
-            history = history + f"{i}  {' '.join(entry['args'])}\n"
+            history = history + f"{i}  {' '.join(entry['args'][1:])}\n"
             i += 1
 
         return history + '\n'
