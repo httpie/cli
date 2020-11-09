@@ -189,7 +189,7 @@ class Downloader:
 
     def __init__(
         self,
-        output_file: IO = None,
+        output_file: str = "",
         resume: bool = False,
         progress_file: IO = sys.stderr
     ):
@@ -205,7 +205,10 @@ class Downloader:
         """
         self.finished = False
         self.status = DownloadStatus()
-        self._output_file = output_file
+
+        self._output_dest = output_file
+        self.output_file = None
+
         self._resume = resume
         self._resumed_from = 0
         self._progress_reporter = ProgressReporterThread(
@@ -222,7 +225,7 @@ class Downloader:
         # Ask the server not to encode the content so that we can resume, etc.
         request_headers['Accept-Encoding'] = 'identity'
         if self._resume:
-            bytes_have = os.path.getsize(self._output_file.name)
+            bytes_have = os.path.getsize(self.output_file.name)
             if bytes_have:
                 # Set ``Range`` header to resume the download
                 # TODO: Use "If-Range: mtime" to make sure it's fresh?
@@ -253,13 +256,27 @@ class Downloader:
         except (KeyError, ValueError, TypeError):
             total_size = None
 
-        if not self._output_file:
-            self._output_file = self._get_output_file_from_response(
+        if not self._output_dest:
+            # no `--output, -o` provided
+            self.output_file = self._get_output_file_from_response(
                 initial_url=initial_url,
                 final_response=final_response,
             )
+
+        elif os.path.isdir(str(self._output_dest)):
+            # `--output, -o` directory provided
+            new_file = self._get_output_file_from_response(
+                initial_url=initial_url,
+                final_response=final_response,
+            )
+            self._output_dest += "/" + new_file.name
+            new_file.close()
+            self.output_file = open(str(self._output_dest), 'a+b')
+
         else:
             # `--output, -o` provided
+            self.output_file = open(str(self._output_dest), 'a+b')
+
             if self._resume and final_response.status_code == PARTIAL_CONTENT:
                 total_size = parse_content_range(
                     final_response.headers.get('Content-Range'),
@@ -269,8 +286,8 @@ class Downloader:
             else:
                 self._resumed_from = 0
                 try:
-                    self._output_file.seek(0)
-                    self._output_file.truncate()
+                    self.output_file.seek(0)
+                    self.output_file.truncate()
                 except IOError:
                     pass  # stdout
 
@@ -292,12 +309,12 @@ class Downloader:
                 (humanize_bytes(total_size) + ' '
                  if total_size is not None
                  else ''),
-                self._output_file.name
+                self.output_file.name
             )
         )
         self._progress_reporter.start()
 
-        return stream, self._output_file
+        return stream, self.output_file
 
     def finish(self):
         assert not self.finished
@@ -341,7 +358,7 @@ class Downloader:
                 content_type=final_response.headers.get('Content-Type'),
             )
         unique_filename = get_unique_filename(filename)
-        return open(unique_filename, mode='a+b')
+        return open(unique_filename, 'a+b')
 
 
 class DownloadStatus:

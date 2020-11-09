@@ -415,7 +415,7 @@ output_options.add_argument(
 )
 output_options.add_argument(
     '--output', '-o',
-    type=FileType('a+b'),
+    type=str,
     dest='output_file',
     metavar='FILE',
     help='''

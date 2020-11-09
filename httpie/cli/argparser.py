@@ -152,9 +152,13 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
         """
 
         self.args.output_file_specified = bool(self.args.output_file)
+        self.output_dest = self.args.output_file
+        if not os.path.isdir(self.output_dest):
+            self.args.output_file = open(self.output_dest, 'a+b')
+
         if self.args.download:
             # FIXME: Come up with a cleaner solution.
-            if not self.args.output_file and not self.env.stdout_isatty:
+            if not self.output_dest and not self.env.stdout_isatty:
                 # Use stdout as the download output file.
                 self.args.output_file = self.env.stdout
             # With `--download`, we write everything that would normally go to
@@ -164,19 +168,20 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
             self.env.stdout = self.env.stderr
             self.env.stdout_isatty = self.env.stderr_isatty
 
-        elif self.args.output_file:
+        elif self.output_dest:
             # When not `--download`ing, then `--output` simply replaces
             # `stdout`. The file is opened for appending, which isn't what
             # we want in this case.
-            self.args.output_file.seek(0)
-            try:
-                self.args.output_file.truncate()
-            except IOError as e:
-                if e.errno == errno.EINVAL:
-                    # E.g. /dev/null on Linux.
-                    pass
-                else:
-                    raise
+            if not os.path.isdir(self.output_dest):
+                self.args.output_file.seek(0)
+                try:
+                    self.args.output_file.truncate()
+                except IOError as e:
+                    if e.errno == errno.EINVAL:
+                        # E.g. /dev/null on Linux.
+                        pass
+                    else:
+                        raise
             self.env.stdout = self.args.output_file
             self.env.stdout_isatty = False
 

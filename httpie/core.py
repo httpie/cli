@@ -256,7 +256,7 @@ def program(
 
         if (not isinstance(args, list) and args.output_file
                 and args.output_file_specified):
-            args.output_file.close()
+            downloader.output_file.close()
 
 
 def print_debug_info(env: Environment):
