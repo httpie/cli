@@ -71,7 +71,7 @@ def main(
                 print_history(env, parsed_args)
                 return ExitStatus.SUCCESS
             else:
-                history = get_history(host=parsed_args.headers.get('Host'), url=parsed_args.url)
+                history = get_history(env.config.directory, host=parsed_args.headers.get('Host'), url=parsed_args.url)
                 args = history.get_entry(parsed_args.history).get_args()
                 env.history_enabled = False
                 main(args, env)
@@ -270,7 +270,7 @@ def program(
                     ))
 
         if args.history is None and env.history_enabled:
-            history = get_history(host=args.headers.get('Host'), url=args.url)
+            history = get_history(config_dir=env.config.directory, host=args.headers.get('Host'), url=args.url)
             history.add_entry(args=sys.argv)
             history.save()
 
@@ -315,5 +315,5 @@ def decode_raw_args(
 
 
 def print_history(env, args):
-    history = get_history(host=args.headers.get('Host'), url=args.url)
+    history = get_history(config_dir=env.config.directory, host=args.headers.get('Host'), url=args.url)
     env.stderr.write(history.get_history_str(10))

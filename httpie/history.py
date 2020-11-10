@@ -1,14 +1,19 @@
 from httpie.config import BaseConfigDict, get_default_config_dir
 from typing import Optional
 from urllib.parse import urlsplit
+from pathlib import Path
 
 
-def get_history(host: Optional[str], url: str) -> 'History':
+HISTORY_DIR_NAME = 'history'
+
+def get_history(config_dir: Path, host: Optional[str], url: str) -> 'History':
     hostname = host or urlsplit(url).netloc.split('@')[-1]
     if not hostname:
         hostname = 'localhost'
 
-    history = History(f'{hostname}.json')
+    path = config_dir / HISTORY_DIR_NAME / f'{hostname}.json'
+
+    history = History(path)
     history.load()
 
     return history
@@ -29,8 +34,8 @@ class Entry(dict):
 
 class History(BaseConfigDict):
 
-    def __init__(self, filename):
-        super().__init__(self.get_history_path(filename))
+    def __init__(self, path: Path):
+        super().__init__(path)
         self['entries'] = []
 
     def add_entry(self, **kwargs):
@@ -56,9 +61,6 @@ class History(BaseConfigDict):
             i += 1
 
         return history + '\n'
-
-    def get_history_path(self, filename):
-        return get_default_config_dir() / 'history' / filename
 
     def __str__(self):
         return self.get_history_str(len(self['entries']))

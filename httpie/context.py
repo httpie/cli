@@ -87,7 +87,6 @@ class Environment:
 
         self._history_enabled = False
 
-
     def __str__(self):
         defaults = dict(type(self).__dict__)
         actual = dict(defaults)
