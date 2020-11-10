@@ -259,7 +259,8 @@ class TestSession(SessionTestBase):
 
     @mock.patch('httpie.cli.argtypes.AuthCredentials._getpass',
                 new=lambda self, prompt: 'password')
-    def test_auth_plugin_prompt_password_in_session(self, httpbin):
+    @staticmethod
+    def test_auth_plugin_prompt_password_in_session(httpbin):
         self.start_session(httpbin)
         session_path = self.config_dir / 'test-session.json'
 

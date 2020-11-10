@@ -8,7 +8,8 @@ from utils import MockEnvironment, http
 
 class TestBinaryRequestData:
 
-    def test_binary_stdin(self, httpbin):
+    @staticmethod
+    def test_binary_stdin(httpbin):
         with open(BIN_FILE_PATH, 'rb') as stdin:
             env = MockEnvironment(
                 stdin=stdin,
@@ -18,13 +19,15 @@ class TestBinaryRequestData:
             r = http('--print=B', 'POST', httpbin.url + '/post', env=env)
             assert r == BIN_FILE_CONTENT
 
-    def test_binary_file_path(self, httpbin):
+    @staticmethod
+    def test_binary_file_path(httpbin):
         env = MockEnvironment(stdin_isatty=True, stdout_isatty=False)
         r = http('--print=B', 'POST', httpbin.url + '/post',
                  '@' + BIN_FILE_PATH_ARG, env=env, )
         assert r == BIN_FILE_CONTENT
 
-    def test_binary_file_form(self, httpbin):
+    @staticmethod
+    def test_binary_file_form(httpbin):
         env = MockEnvironment(stdin_isatty=True, stdout_isatty=False)
         r = http('--print=B', '--form', 'POST', httpbin.url + '/post',
                  'test@' + BIN_FILE_PATH_ARG, env=env)
@@ -33,16 +36,19 @@ class TestBinaryRequestData:
 
 class TestBinaryResponseData:
 
-    def test_binary_suppresses_when_terminal(self, httpbin):
+    @staticmethod
+    def test_binary_suppresses_when_terminal(httpbin):
         r = http('GET', httpbin + '/bytes/1024?seed=1')
         assert BINARY_SUPPRESSED_NOTICE.decode() in r
 
-    def test_binary_suppresses_when_not_terminal_but_pretty(self, httpbin):
+    @staticmethod
+    def test_binary_suppresses_when_not_terminal_but_pretty(httpbin):
         env = MockEnvironment(stdin_isatty=True, stdout_isatty=False)
         r = http('--pretty=all', 'GET', httpbin + '/bytes/1024?seed=1', env=env)
         assert BINARY_SUPPRESSED_NOTICE.decode() in r
 
-    def test_binary_included_and_correct_when_suitable(self, httpbin):
+    @staticmethod
+    def test_binary_included_and_correct_when_suitable(httpbin):
         env = MockEnvironment(stdin_isatty=True, stdout_isatty=False)
         url = httpbin + '/bytes/1024?seed=1'
         r = http('GET', url, env=env)

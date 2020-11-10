@@ -38,8 +38,8 @@ def get_package_meta(package_name):
                 'url': download_url,
                 'sha256': hasher.hexdigest(),
             }
-    else:
-        raise RuntimeError(f'{package_name}: download not found: {resp}')
+        
+    raise RuntimeError(f'{package_name}: download not found: {resp}')
 
 
 def main():

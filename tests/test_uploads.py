@@ -71,12 +71,14 @@ def test_chunked_stdin_multiple_chunks():
 
 class TestMultipartFormDataFileUpload:
 
-    def test_non_existent_file_raises_parse_error(self, httpbin):
+    @staticmethod
+    def test_non_existent_file_raises_parse_error(httpbin):
         with pytest.raises(ParseError):
             http('--form',
                  'POST', httpbin.url + '/post', 'foo@/__does_not_exist__')
 
-    def test_upload_ok(self, httpbin):
+    @staticmethod
+    def test_upload_ok(httpbin):
         r = http('--form', '--verbose', 'POST', httpbin.url + '/post',
                  f'test-file@{FILE_PATH_ARG}', 'foo=bar')
         assert HTTP_OK in r
@@ -87,7 +89,8 @@ class TestMultipartFormDataFileUpload:
         assert '"foo": "bar"' in r
         assert 'Content-Type: text/plain' in r
 
-    def test_upload_multiple_fields_with_the_same_name(self, httpbin):
+    @staticmethod
+    def test_upload_multiple_fields_with_the_same_name(httpbin):
         r = http('--form', '--verbose', 'POST', httpbin.url + '/post',
                  f'test-file@{FILE_PATH_ARG}',
                  f'test-file@{FILE_PATH_ARG}')
@@ -99,7 +102,8 @@ class TestMultipartFormDataFileUpload:
         assert r.count(FILE_CONTENT) in [3, 4]
         assert r.count('Content-Type: text/plain') == 2
 
-    def test_upload_custom_content_type(self, httpbin):
+    @staticmethod
+    def test_upload_custom_content_type(httpbin):
         r = http(
             '--form',
             '--verbose',
@@ -113,7 +117,8 @@ class TestMultipartFormDataFileUpload:
         assert r.count(FILE_CONTENT) == 2
         assert 'Content-Type: image/vnd.microsoft.icon' in r
 
-    def test_form_no_files_urlencoded(self, httpbin):
+    @staticmethod
+    def test_form_no_files_urlencoded(httpbin):
         r = http(
             '--form',
             '--verbose',
@@ -124,7 +129,8 @@ class TestMultipartFormDataFileUpload:
         assert HTTP_OK in r
         assert FORM_CONTENT_TYPE in r
 
-    def test_multipart(self, httpbin):
+    @staticmethod
+    def test_multipart(httpbin):
         r = http(
             '--verbose',
             '--multipart',
@@ -136,7 +142,8 @@ class TestMultipartFormDataFileUpload:
         assert FORM_CONTENT_TYPE not in r
         assert 'multipart/form-data' in r
 
-    def test_form_multipart_custom_boundary(self, httpbin):
+    @staticmethod
+    def test_form_multipart_custom_boundary(httpbin):
         boundary = 'HTTPIE_FTW'
         r = http(
             '--print=HB',
@@ -150,7 +157,8 @@ class TestMultipartFormDataFileUpload:
         assert f'multipart/form-data; boundary={boundary}' in r
         assert r.count(boundary) == 4
 
-    def test_multipart_custom_content_type_boundary_added(self, httpbin):
+    @staticmethod
+    def test_multipart_custom_content_type_boundary_added(httpbin):
         boundary = 'HTTPIE_FTW'
         r = http(
             '--print=HB',
@@ -165,7 +173,8 @@ class TestMultipartFormDataFileUpload:
         assert f'multipart/magic; boundary={boundary}' in r
         assert r.count(boundary) == 4
 
-    def test_multipart_custom_content_type_boundary_preserved(self, httpbin):
+    @staticmethod
+    def test_multipart_custom_content_type_boundary_preserved(httpbin):
         # Allow explicit nonsense requests.
         boundary_in_header = 'HEADER_BOUNDARY'
         boundary_in_body = 'BODY_BOUNDARY'
@@ -182,7 +191,8 @@ class TestMultipartFormDataFileUpload:
         assert f'multipart/magic; boundary={boundary_in_header}' in r
         assert r.count(boundary_in_body) == 3
 
-    def test_multipart_chunked(self, httpbin):
+    @staticmethod
+    def test_multipart_chunked(httpbin):
         r = http(
             '--verbose',
             '--multipart',
@@ -195,7 +205,8 @@ class TestMultipartFormDataFileUpload:
         assert 'name="AAA"' in r  # in request
         assert '"AAA": "AAA"', r  # in response
 
-    def test_multipart_preserve_order(self, httpbin):
+    @staticmethod
+    def test_multipart_preserve_order(httpbin):
         r = http(
             '--form',
             '--offline',
@@ -221,7 +232,8 @@ class TestRequestBodyFromFilePath:
 
     """
 
-    def test_request_body_from_file_by_path(self, httpbin):
+    @staticmethod
+    def test_request_body_from_file_by_path(httpbin):
         r = http(
             '--verbose',
             'POST', httpbin.url + '/post',
@@ -231,7 +243,8 @@ class TestRequestBodyFromFilePath:
         assert r.count(FILE_CONTENT) == 2
         assert '"Content-Type": "text/plain"' in r
 
-    def test_request_body_from_file_by_path_chunked(self, httpbin):
+    @staticmethod
+    def test_request_body_from_file_by_path_chunked(httpbin):
         r = http(
             '--verbose', '--chunked',
             HTTPBIN_WITH_CHUNKED_SUPPORT + '/post',
@@ -242,8 +255,9 @@ class TestRequestBodyFromFilePath:
         assert '"Content-Type": "text/plain"' in r
         assert r.count(FILE_CONTENT) == 2
 
+    @staticmethod
     def test_request_body_from_file_by_path_with_explicit_content_type(
-            self, httpbin):
+            httpbin):
         r = http('--verbose',
                  'POST', httpbin.url + '/post', '@' + FILE_PATH_ARG,
                  'Content-Type:text/plain; charset=utf8')
@@ -251,15 +265,17 @@ class TestRequestBodyFromFilePath:
         assert FILE_CONTENT in r
         assert 'Content-Type: text/plain; charset=utf8' in r
 
+    @staticmethod
     def test_request_body_from_file_by_path_no_field_name_allowed(
-            self, httpbin):
+            httpbin):
         env = MockEnvironment(stdin_isatty=True)
         r = http('POST', httpbin.url + '/post', 'field-name@' + FILE_PATH_ARG,
                  env=env, tolerate_error_exit_status=True)
         assert 'perhaps you meant --form?' in r.stderr
 
+    @staticmethod
     def test_request_body_from_file_by_path_no_data_items_allowed(
-            self, httpbin):
+            httpbin):
         env = MockEnvironment(stdin_isatty=False)
         r = http(
             'POST',
