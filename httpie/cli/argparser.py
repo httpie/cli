@@ -151,16 +151,17 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
 
         """
 
-        self.args.output_file_specified = bool(self.args.output_file)
-        self.output_dest = self.args.output_file
+        self.args.output_dest_specified = bool(self.args.output_dest)
+        self.output_dest = self.args.output_dest
         if not os.path.isdir(self.output_dest):
-            self.args.output_file = open(self.output_dest, 'a+b')
+            self.output_file = open(self.output_dest, 'a+b')
+            self.args.output_file = self.output_file
 
         if self.args.download:
             # FIXME: Come up with a cleaner solution.
             if not self.output_dest and not self.env.stdout_isatty:
                 # Use stdout as the download output file.
-                self.args.output_file = self.env.stdout
+                self.args.output_dest = self.env.stdout
             # With `--download`, we write everything that would normally go to
             # `stdout` to `stderr` instead. Let's replace the stream so that
             # we don't have to use many `if`s throughout the codebase.
@@ -173,21 +174,21 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
             # `stdout`. The file is opened for appending, which isn't what
             # we want in this case.
             if not os.path.isdir(self.output_dest):
-                self.args.output_file.seek(0)
+                self.args.output_dest.seek(0)
                 try:
-                    self.args.output_file.truncate()
+                    self.args.output_dest.truncate()
                 except IOError as e:
                     if e.errno == errno.EINVAL:
                         # E.g. /dev/null on Linux.
                         pass
                     else:
                         raise
-            self.env.stdout = self.args.output_file
+            self.env.stdout = self.args.output_dest
             self.env.stdout_isatty = False
 
         if self.args.quiet:
             self.env.stderr = self.env.devnull
-            if not (self.args.output_file_specified and not self.args.download):
+            if not (self.args.output_dest_specified and not self.args.download):
                 self.env.stdout = self.env.devnull
 
     def _process_auth(self):
@@ -424,7 +425,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
             self.args.prettify = PRETTY_MAP[
                 'all' if self.env.stdout_isatty else 'none']
         elif (self.args.prettify and self.env.is_windows
-              and self.args.output_file):
+              and self.args.output_dest):
             self.error('Only terminal output can be colorized on Windows.')
         else:
             # noinspection PyTypeChecker
@@ -439,7 +440,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
             if self.args.download_resume:
                 self.error('--continue only works with --download')
         if self.args.download_resume and not (
-                self.args.download and self.args.output_file):
+                self.args.download and self.args.output_dest):
             self.error('--continue requires --output to be specified')
 
     def _process_format_options(self):

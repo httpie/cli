@@ -416,12 +416,12 @@ output_options.add_argument(
 output_options.add_argument(
     '--output', '-o',
     type=str,
-    dest='output_file',
+    dest='output_dest',
     metavar='FILE',
     help='''
-    Save output to FILE instead of stdout. If --download is also set, then only
-    the response body is saved to FILE. Other parts of the HTTP exchange are
-    printed to stderr.
+    Save output to a FILE or create it inside a DIRECTORY instead of stdout.
+    If --download is also set, then only the response body is saved to FILE.
+    Other parts of the HTTP exchange are printed to stderr.
 
     '''
 

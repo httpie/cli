@@ -189,7 +189,7 @@ class Downloader:
 
     def __init__(
         self,
-        output_file: str = "",
+        output_dest: str = "",
         resume: bool = False,
         progress_file: IO = sys.stderr
     ):
@@ -197,16 +197,16 @@ class Downloader:
         :param resume: Should the download resume if partial download
                        already exists.
 
-        :param output_file: The file to store response body in. If not
-                            provided, it will be guessed from the response.
+        :param output_dest: The file or dir to store response body in. If not
+                            provided, file name will be guessed
+                            from the response.
 
         :param progress_file: Where to report download progress.
 
         """
         self.finished = False
         self.status = DownloadStatus()
-
-        self._output_dest = output_file
+        self._output_dest = output_dest
         self.output_file = None
 
         self._resume = resume
@@ -225,7 +225,8 @@ class Downloader:
         # Ask the server not to encode the content so that we can resume, etc.
         request_headers['Accept-Encoding'] = 'identity'
         if self._resume:
-            bytes_have = os.path.getsize(self.output_file.name)
+            # change this for --continue directory behavior
+            bytes_have = os.path.getsize(self.output_dest.name)
             if bytes_have:
                 # Set ``Range`` header to resume the download
                 # TODO: Use "If-Range: mtime" to make sure it's fresh?
@@ -265,16 +266,18 @@ class Downloader:
 
         elif os.path.isdir(str(self._output_dest)):
             # `--output, -o` directory provided
-            new_file = self._get_output_file_from_response(
+            self.created_file = self._get_output_file_from_response(
                 initial_url=initial_url,
                 final_response=final_response,
             )
-            self._output_dest += "/" + new_file.name
-            new_file.close()
-            self.output_file = open(str(self._output_dest), 'a+b')
+            self.output_file_path = os.path.join(
+                self._output_dest, self.created_file.name
+            )
+            self.created_file.close()
+            self.output_file = open(str(self.output_file_path), 'a+b')
 
         else:
-            # `--output, -o` provided
+            # `--output, -o` file provided
             self.output_file = open(str(self._output_dest), 'a+b')
 
             if self._resume and final_response.status_code == PARTIAL_CONTENT:

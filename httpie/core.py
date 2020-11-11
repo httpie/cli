@@ -149,7 +149,7 @@ def program(
         if args.download:
             args.follow = True  # --download implies --follow.
             downloader = Downloader(
-                output_file=args.output_file,
+                output_dest=args.output_dest,
                 progress_file=env.stderr,
                 resume=args.download_resume
             )
@@ -254,8 +254,8 @@ def program(
         if downloader and not downloader.finished:
             downloader.failed()
 
-        if (not isinstance(args, list) and args.output_file
-                and args.output_file_specified):
+        if (not isinstance(args, list) and args.output_dest
+                and args.output_dest_specified):
             downloader.output_file.close()
 
 
