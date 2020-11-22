@@ -5,7 +5,6 @@ from urllib.request import urlopen
 
 import pytest
 import mock
-import requests
 from requests.structures import CaseInsensitiveDict
 
 from httpie.downloads import (
