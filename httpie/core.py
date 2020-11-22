@@ -283,6 +283,6 @@ def decode_raw_args(
     """
     return [
         arg.decode(stdin_encoding)
-        if type(arg) == bytes else arg
+        if type(arg) is bytes else arg
         for arg in args
     ]
