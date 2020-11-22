@@ -5,15 +5,6 @@ import enum
 import re
 
 
-# TODO: Use MultiDict for headers once added to `requests`.
-# <https://github.com/jakubroztocil/httpie/issues/130>
-
-
-# ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
-# <https://tools.ietf.org/html/rfc3986#section-3.1>
-from enum import Enum
-
-
 URL_SCHEME_RE = re.compile(r'^[a-z][a-z0-9.+-]*://', re.IGNORECASE)
 
 HTTP_POST = 'POST'
