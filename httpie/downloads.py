@@ -244,8 +244,7 @@ class Downloader:
         :return: RawStream, output_file
 
         """
-        if self.status.time_started:
-            raise AssertionError
+        assert not self.status.time_started
 
         # FIXME: some servers still might sent Content-Encoding: gzip
         # <https://github.com/jakubroztocil/httpie/issues/423>
@@ -301,8 +300,7 @@ class Downloader:
         return stream, self._output_file
 
     def finish(self):
-        if self.finished:
-            raise AssertionError
+        assert not self.finished
         self.finished = True
         self.status.finished()
 
@@ -357,15 +355,13 @@ class DownloadStatus:
         self.time_finished = None
 
     def started(self, resumed_from=0, total_size=None):
-        if self.time_started is not None:
-            raise AssertionError
+        assert self.time_started is None
         self.total_size = total_size
         self.downloaded = self.resumed_from = resumed_from
         self.time_started = time()
 
     def chunk_downloaded(self, size):
-        if self.time_finished is not None:
-            raise AssertionError
+        assert self.time_finished is None
         self.downloaded += size
 
     @property
@@ -373,10 +369,8 @@ class DownloadStatus:
         return self.time_finished is not None
 
     def finished(self):
-        if self.time_started is None:
-            raise AssertionError
-        if self.time_finished is not None:
-            raise AssertionError
+        assert self.time_started is not None
+        assert self.time_finished is None
         self.time_finished = time()
 
 

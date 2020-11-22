@@ -5,6 +5,7 @@ from urllib.request import urlopen
 
 import pytest
 import mock
+import requests
 from requests.structures import CaseInsensitiveDict
 
 from httpie.downloads import (
@@ -24,8 +25,7 @@ class Response:
 
 class TestDownloadUtils:
 
-    @staticmethod
-    def test_Content_Range_parsing():
+    def test_Content_Range_parsing(self):
         parse = parse_content_range
 
         assert parse('bytes 100-199/200', 100) == 200
@@ -60,8 +60,7 @@ class TestDownloadUtils:
     def test_Content_Disposition_parsing(self, header, expected_filename):
         assert filename_from_content_disposition(header) == expected_filename
 
-    @staticmethod
-    def test_filename_from_url():
+    def test_filename_from_url(self):
         assert 'foo.txt' == filename_from_url(
             url='http://example.org/foo',
             content_type='text/plain'
@@ -124,8 +123,7 @@ class TestDownloadUtils:
 class TestDownloads:
     # TODO: more tests
 
-    @staticmethod
-    def test_actual_download(httpbin_both, httpbin):
+    def test_actual_download(self, httpbin_both, httpbin):
         robots_txt = '/robots.txt'
         body = urlopen(httpbin + robots_txt).read().decode()
         env = MockEnvironment(stdin_isatty=True, stdout_isatty=False)
@@ -135,8 +133,7 @@ class TestDownloads:
         assert 'Done' in r.stderr
         assert body == r
 
-    @staticmethod
-    def test_download_with_Content_Length(httpbin_both):
+    def test_download_with_Content_Length(self, httpbin_both):
         with open(os.devnull, 'w') as devnull:
             downloader = Downloader(output_file=devnull, progress_file=devnull)
             downloader.start(
@@ -154,8 +151,7 @@ class TestDownloads:
             assert not downloader.interrupted
             downloader._progress_reporter.join()
 
-    @staticmethod
-    def test_download_no_Content_Length(httpbin_both):
+    def test_download_no_Content_Length(self, httpbin_both):
         with open(os.devnull, 'w') as devnull:
             downloader = Downloader(output_file=devnull, progress_file=devnull)
             downloader.start(
@@ -168,8 +164,7 @@ class TestDownloads:
             assert not downloader.interrupted
             downloader._progress_reporter.join()
 
-    @staticmethod
-    def test_download_interrupted(httpbin_both):
+    def test_download_interrupted(self, httpbin_both):
         with open(os.devnull, 'w') as devnull:
             downloader = Downloader(output_file=devnull, progress_file=devnull)
             downloader.start(
@@ -184,8 +179,7 @@ class TestDownloads:
             assert downloader.interrupted
             downloader._progress_reporter.join()
 
-    @staticmethod
-    def test_download_with_redirect_original_url_used_for_filename(httpbin):
+    def test_download_with_redirect_original_url_used_for_filename(self, httpbin):
         # Redirect from `/redirect/1` to `/get`.
         expected_filename = '1.json'
         orig_cwd = os.getcwd()

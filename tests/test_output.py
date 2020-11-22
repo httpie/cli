@@ -41,8 +41,7 @@ def test_output_option(httpbin, stdout_isatty):
 class TestQuietFlag:
 
     @pytest.mark.parametrize('argument_name', ['--quiet', '-q'])
-    @staticmethod
-    def test_quiet(httpbin, argument_name):
+    def test_quiet(self, httpbin, argument_name):
         env = MockEnvironment(
             stdin_isatty=True,
             stdout_isatty=True,
@@ -57,8 +56,7 @@ class TestQuietFlag:
 
     @mock.patch('httpie.cli.argtypes.AuthCredentials._getpass',
                 new=lambda self, prompt: 'password')
-    @staticmethod
-    def test_quiet_with_password_prompt(httpbin):
+    def test_quiet_with_password_prompt(self, httpbin):
         """
         Tests whether httpie still prompts for a password when request
         requires authentication and only username is provided
@@ -81,8 +79,7 @@ class TestQuietFlag:
         assert r.stderr == ''
 
     @pytest.mark.parametrize('argument_name', ['-h', '-b', '-v', '-p=hH'])
-    @staticmethod
-    def test_quiet_with_explicit_output_options(httpbin, argument_name):
+    def test_quiet_with_explicit_output_options(self, httpbin, argument_name):
         env = MockEnvironment(stdin_isatty=True, stdout_isatty=True)
         r = http('--quiet', argument_name, httpbin.url + '/get', env=env)
         assert env.stdout is env.devnull
@@ -91,8 +88,7 @@ class TestQuietFlag:
         assert r.stderr == ''
 
     @pytest.mark.parametrize('with_download', [True, False])
-    @staticmethod
-    def test_quiet_with_output_redirection(httpbin, with_download):
+    def test_quiet_with_output_redirection(self, httpbin, with_download):
         url = httpbin + '/robots.txt'
         output_path = Path('output.txt')
         env = MockEnvironment()
@@ -124,30 +120,26 @@ class TestQuietFlag:
 
 
 class TestVerboseFlag:
-    @staticmethod
-    def test_verbose(httpbin):
+    def test_verbose(self, httpbin):
         r = http('--verbose',
                  'GET', httpbin.url + '/get', 'test-header:__test__')
         assert HTTP_OK in r
         assert r.count('__test__') == 2
 
-    @staticmethod
-    def test_verbose_form(httpbin):
+    def test_verbose_form(self, httpbin):
         # https://github.com/jakubroztocil/httpie/issues/53
         r = http('--verbose', '--form', 'POST', httpbin.url + '/post',
                  'A=B', 'C=D')
         assert HTTP_OK in r
         assert 'A=B&C=D' in r
 
-    @staticmethod
-    def test_verbose_json(httpbin):
+    def test_verbose_json(self, httpbin):
         r = http('--verbose',
                  'POST', httpbin.url + '/post', 'foo=bar', 'baz=bar')
         assert HTTP_OK in r
         assert '"baz": "bar"' in r
 
-    @staticmethod
-    def test_verbose_implies_all(httpbin):
+    def test_verbose_implies_all(self, httpbin):
         r = http('--verbose', '--follow', httpbin + '/redirect/1')
         assert 'GET /redirect/1 HTTP/1.1' in r
         assert 'HTTP/1.1 302 FOUND' in r
@@ -180,38 +172,32 @@ class TestColors:
         assert lexer is not None
         assert lexer.name == expected_lexer_name
 
-    @staticmethod
-    def test_get_lexer_not_found():
+    def test_get_lexer_not_found(self):
         assert get_lexer('xxx/yyy') is None
 
 
 class TestPrettyOptions:
     """Test the --pretty handling."""
 
-    @staticmethod
-    def test_pretty_enabled_by_default(httpbin):
+    def test_pretty_enabled_by_default(self, httpbin):
         env = MockEnvironment(colors=256)
         r = http('GET', httpbin.url + '/get', env=env)
         assert COLOR in r
 
-    @staticmethod
-    def test_pretty_enabled_by_default_unless_stdout_redirected(httpbin):
+    def test_pretty_enabled_by_default_unless_stdout_redirected(self, httpbin):
         r = http('GET', httpbin.url + '/get')
         assert COLOR not in r
 
-    @staticmethod
-    def test_force_pretty(httpbin):
+    def test_force_pretty(self, httpbin):
         env = MockEnvironment(stdout_isatty=False, colors=256)
         r = http('--pretty=all', 'GET', httpbin.url + '/get', env=env, )
         assert COLOR in r
 
-    @staticmethod
-    def test_force_ugly(httpbin):
+    def test_force_ugly(self, httpbin):
         r = http('--pretty=none', 'GET', httpbin.url + '/get')
         assert COLOR not in r
 
-    @staticmethod
-    def test_subtype_based_pygments_lexer_match(httpbin):
+    def test_subtype_based_pygments_lexer_match(self, httpbin):
         """Test that media subtype is used if type/subtype doesn't
         match any lexer.
 
@@ -221,8 +207,7 @@ class TestPrettyOptions:
                  'Content-Type:text/foo+json', 'a=b', env=env)
         assert COLOR in r
 
-    @staticmethod
-    def test_colors_option(httpbin):
+    def test_colors_option(self, httpbin):
         env = MockEnvironment(colors=256)
         r = http('--print=B', '--pretty=colors',
                  'GET', httpbin.url + '/get', 'a=b',
@@ -231,8 +216,7 @@ class TestPrettyOptions:
         assert not r.strip().count('\n')
         assert COLOR in r
 
-    @staticmethod
-    def test_format_option(httpbin):
+    def test_format_option(self, httpbin):
         env = MockEnvironment(colors=256)
         r = http('--print=B', '--pretty=format',
                  'GET', httpbin.url + '/get', 'a=b',
@@ -249,8 +233,7 @@ class TestLineEndings:
 
     """
 
-    @staticmethod
-    def _validate_crlf(msg):
+    def _validate_crlf(self, msg):
         lines = iter(msg.splitlines(True))
         for header in lines:
             if header == CRLF:
@@ -286,8 +269,7 @@ class TestLineEndings:
 
 
 class TestFormatOptions:
-    @staticmethod
-    def test_header_formatting_options():
+    def test_header_formatting_options(self):
         def get_headers(sort):
             return http(
                 '--offline', '--print=H',

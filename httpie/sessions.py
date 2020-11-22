@@ -150,8 +150,7 @@ class Session(BaseConfigDict):
 
     @auth.setter
     def auth(self, auth: dict):
-        if {'type', 'raw_auth'} != auth.keys():
-            raise AssertionError
+        assert {'type', 'raw_auth'} == auth.keys()
         self['auth'] = auth
 
     def remove_cookies(self, names: Iterable[str]):

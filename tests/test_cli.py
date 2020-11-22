@@ -143,8 +143,7 @@ class TestItemParsing:
 
 
 class TestQuerystring:
-    @staticmethod
-    def test_query_string_params_in_url(httpbin):
+    def test_query_string_params_in_url(self, httpbin):
         r = http('--print=Hhb', 'GET', httpbin.url + '/get?a=1&b=2')
         path = '/get?a=1&b=2'
         url = httpbin.url + path
@@ -152,8 +151,7 @@ class TestQuerystring:
         assert 'GET %s HTTP/1.1' % path in r
         assert '"url": "%s"' % url in r
 
-    @staticmethod
-    def test_query_string_params_items(httpbin):
+    def test_query_string_params_items(self, httpbin):
         r = http('--print=Hhb', 'GET', httpbin.url + '/get', 'a==1')
         path = '/get?a=1'
         url = httpbin.url + path
@@ -161,8 +159,8 @@ class TestQuerystring:
         assert 'GET %s HTTP/1.1' % path in r
         assert '"url": "%s"' % url in r
 
-    @staticmethod
-    def test_query_string_params_in_url_and_items_with_duplicates(httpbin):
+    def test_query_string_params_in_url_and_items_with_duplicates(self,
+                                                                  httpbin):
         r = http('--print=Hhb', 'GET',
                  httpbin.url + '/get?a=1&a=1', 'a==1', 'a==1')
         path = '/get?a=1&a=1&a=1&a=1'
@@ -173,51 +171,42 @@ class TestQuerystring:
 
 
 class TestLocalhostShorthand:
-    @staticmethod
-    def test_expand_localhost_shorthand():
+    def test_expand_localhost_shorthand(self):
         args = parser.parse_args(args=[':'], env=MockEnvironment())
         assert args.url == 'http://localhost'
 
-    @staticmethod
-    def test_expand_localhost_shorthand_with_slash():
+    def test_expand_localhost_shorthand_with_slash(self):
         args = parser.parse_args(args=[':/'], env=MockEnvironment())
         assert args.url == 'http://localhost/'
 
-    @staticmethod
-    def test_expand_localhost_shorthand_with_port():
+    def test_expand_localhost_shorthand_with_port(self):
         args = parser.parse_args(args=[':3000'], env=MockEnvironment())
         assert args.url == 'http://localhost:3000'
 
-    @staticmethod
-    def test_expand_localhost_shorthand_with_path():
+    def test_expand_localhost_shorthand_with_path(self):
         args = parser.parse_args(args=[':/path'], env=MockEnvironment())
         assert args.url == 'http://localhost/path'
 
-    @staticmethod
-    def test_expand_localhost_shorthand_with_port_and_slash():
+    def test_expand_localhost_shorthand_with_port_and_slash(self):
         args = parser.parse_args(args=[':3000/'], env=MockEnvironment())
         assert args.url == 'http://localhost:3000/'
 
-    @staticmethod
-    def test_expand_localhost_shorthand_with_port_and_path():
+    def test_expand_localhost_shorthand_with_port_and_path(self):
         args = parser.parse_args(args=[':3000/path'], env=MockEnvironment())
         assert args.url == 'http://localhost:3000/path'
 
-    @staticmethod
-    def test_dont_expand_shorthand_ipv6_as_shorthand():
+    def test_dont_expand_shorthand_ipv6_as_shorthand(self):
         args = parser.parse_args(args=['::1'], env=MockEnvironment())
         assert args.url == 'http://::1'
 
-    @staticmethod
-    def test_dont_expand_longer_ipv6_as_shorthand():
+    def test_dont_expand_longer_ipv6_as_shorthand(self):
         args = parser.parse_args(
             args=['::ffff:c000:0280'],
             env=MockEnvironment()
         )
         assert args.url == 'http://::ffff:c000:0280'
 
-    @staticmethod
-    def test_dont_expand_full_ipv6_as_shorthand():
+    def test_dont_expand_full_ipv6_as_shorthand(self):
         args = parser.parse_args(
             args=['0000:0000:0000:0000:0000:0000:0000:0001'],
             env=MockEnvironment()
@@ -308,13 +297,11 @@ class TestArgumentParser:
 
 class TestNoOptions:
 
-    @staticmethod
-    def test_valid_no_options(httpbin):
+    def test_valid_no_options(self, httpbin):
         r = http('--verbose', '--no-verbose', 'GET', httpbin.url + '/get')
         assert 'GET /get HTTP/1.1' not in r
 
-    @staticmethod
-    def test_invalid_no_options(httpbin):
+    def test_invalid_no_options(self, httpbin):
         r = http('--no-war', 'GET', httpbin.url + '/get',
                  tolerate_error_exit_status=True)
         assert r.exit_status == ExitStatus.ERROR
@@ -324,8 +311,7 @@ class TestNoOptions:
 
 class TestStdin:
 
-    @staticmethod
-    def test_ignore_stdin(httpbin):
+    def test_ignore_stdin(self, httpbin):
         env = MockEnvironment(
             stdin=StdinBytesIO(FILE_PATH.read_bytes()),
             stdin_isatty=False,
@@ -335,41 +321,35 @@ class TestStdin:
         assert 'GET /get HTTP' in r, "Don't default to POST."
         assert FILE_CONTENT not in r, "Don't send stdin data."
 
-    @staticmethod
-    def test_ignore_stdin_cannot_prompt_password(httpbin):
+    def test_ignore_stdin_cannot_prompt_password(self, httpbin):
         r = http('--ignore-stdin', '--auth=no-password', httpbin.url + '/get',
                  tolerate_error_exit_status=True)
         assert r.exit_status == ExitStatus.ERROR
         assert 'because --ignore-stdin' in r.stderr
 
-    @staticmethod
-    def test_stdin_closed(httpbin):
+    def test_stdin_closed(self, httpbin):
         r = http(httpbin + '/get', env=MockEnvironment(stdin=None))
         assert HTTP_OK in r
 
 
 class TestSchemes:
 
-    @staticmethod
-    def test_invalid_custom_scheme():
+    def test_invalid_custom_scheme(self):
         # InvalidSchema is expected because HTTPie
         # shouldn't touch a formally valid scheme.
         with pytest.raises(InvalidSchema):
             http('foo+bar-BAZ.123://bah')
 
-    @staticmethod
-    def test_invalid_scheme_via_via_default_scheme():
+    def test_invalid_scheme_via_via_default_scheme(self):
         # InvalidSchema is expected because HTTPie
         # shouldn't touch a formally valid scheme.
         with pytest.raises(InvalidSchema):
             http('bah', '--default=scheme=foo+bar-BAZ.123')
 
-    @staticmethod
-    def test_default_scheme_option(httpbin_secure):
+    def test_default_scheme_option(self, httpbin_secure):
         url = '{0}:{1}'.format(httpbin_secure.host, httpbin_secure.port)
         assert HTTP_OK in http(url, '--default-scheme=https')
 
-    @staticmethod
-    def test_scheme_when_invoked_as_https(httpbin_secure):
+    def test_scheme_when_invoked_as_https(self, httpbin_secure):
         url = '{0}:{1}'.format(httpbin_secure.host, httpbin_secure.port)
         assert HTTP_OK in http(url, program_name='https')

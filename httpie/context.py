@@ -63,8 +63,7 @@ class Environment:
         any of the class attributes for this instance.
 
         """
-        if not all(hasattr(type(self), attr) for attr in kwargs.keys()):
-            raise AssertionError
+        assert all(hasattr(type(self), attr) for attr in kwargs.keys())
         self.__dict__.update(**kwargs)
 
         # The original STDERR unaffected by --quiet’ing.
@@ -125,6 +124,5 @@ class Environment:
         self._devnull = value
 
     def log_error(self, msg, level='error'):
-        if level not in ['error', 'warning']:
-            raise AssertionError
+        assert level in ['error', 'warning']
         self._orig_stderr.write(f'\n{self.program_name}: {level}: {msg}\n\n')

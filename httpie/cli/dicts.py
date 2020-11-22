@@ -26,8 +26,7 @@ class MultiValueOrderedDict(OrderedDict):
         data and URL params.
 
         """
-        if isinstance(value, list):
-            raise AssertionError
+        assert not isinstance(value, list)
         if key not in self:
             super().__setitem__(key, value)
         else:

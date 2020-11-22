@@ -302,8 +302,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
         """
         if self.args.method is None:
             # Invoked as `http URL'.
-            if self.args.request_items:
-                raise AssertionError
+            assert not self.args.request_items
             if self.has_stdin_data:
                 self.args.method = HTTP_POST
             else:
