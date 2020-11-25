@@ -1,6 +1,7 @@
 import os
 import tempfile
 import time
+from ntpath import basename
 from urllib.request import urlopen
 
 import pytest
@@ -9,8 +10,11 @@ import requests
 from requests.structures import CaseInsensitiveDict
 
 from httpie.downloads import (
-    parse_content_range, filename_from_content_disposition, filename_from_url,
-    get_unique_filename, ContentRangeError, Downloader,
+    parse_content_range, ContentRangeError, Downloader
+)
+from httpie.utils import (
+    filename_from_content_disposition, filename_from_url,
+    get_unique_filename, get_initial_filename
 )
 from utils import http, MockEnvironment
 
@@ -98,7 +102,7 @@ class TestDownloadUtils:
             ('foo.' + 'A' * 20, 10, 'foo.' + 'A' * 3 + '-10'),
         ]
     )
-    @mock.patch('httpie.downloads.get_filename_max_length')
+    @mock.patch('httpie.utils.get_filename_max_length')
     def test_unique_filename(self, get_filename_max_length,
                              orig_name, unique_on_attempt,
                              expected):
@@ -164,6 +168,42 @@ class TestDownloads:
             assert not downloader.interrupted
             downloader._progress_reporter.join()
 
+    def test_download_inside_dir(self, httpbin_both, httpbin):
+        orig_cwd = os.getcwd()
+        robots_txt = '/robots.txt'
+        with tempfile.TemporaryDirectory() as tmp_dirname:
+            created_filepath = get_unique_filename(
+                os.path.join(
+                    tmp_dirname,
+                    get_initial_filename(httpbin_both.url + robots_txt)
+                )
+            )
+
+            os.chdir(tmp_dirname)
+            try:
+                assert os.listdir('.') == []
+                r = http('-do', tmp_dirname, httpbin_both.url + robots_txt)
+                assert os.listdir(tmp_dirname) == [basename(created_filepath)]
+            finally:
+                os.chdir(orig_cwd)
+
+    def test_download_interrupted_inside_dir(self, httpbin_both, httpbin):
+        orig_cwd = os.getcwd()
+        with tempfile.TemporaryDirectory() as tmp_dirname:
+            os.chdir(tmp_dirname)
+            http('-do', tmp_dirname, httpbin.url + '/')
+            created_filepath = os.path.join(
+                tmp_dirname,
+                get_initial_filename(httpbin_both.url + '/')
+            )
+
+            try:
+                http('-dco', tmp_dirname, httpbin_both.url + '/')
+                assert len(os.listdir(tmp_dirname)) == 1
+                assert os.listdir(tmp_dirname) == [basename(created_filepath)]
+            finally:
+                os.chdir(orig_cwd)
+
     def test_download_interrupted(self, httpbin_both):
         with open(os.devnull, 'w') as devnull:
             downloader = Downloader(output_file=devnull, progress_file=devnull)
@@ -191,3 +231,4 @@ class TestDownloads:
                 assert os.listdir('.') == [expected_filename]
             finally:
                 os.chdir(orig_cwd)
+

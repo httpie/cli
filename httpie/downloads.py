@@ -6,21 +6,19 @@ Download mode implementation.
 from __future__ import division
 
 import errno
-import mimetypes
 import os
 import re
 import sys
+import requests
 import threading
-from mailbox import Message
 from time import sleep, time
 from typing import IO, Optional, Tuple
-from urllib.parse import urlsplit
-
-import requests
 
 from httpie.models import HTTPResponse
 from httpie.output.streams import RawStream
-from httpie.utils import humanize_bytes
+from httpie.utils import (
+    humanize_bytes, get_unique_filename, get_initial_filename
+)
 
 
 PARTIAL_CONTENT = 206
@@ -100,96 +98,11 @@ def parse_content_range(content_range: str, resumed_from: int) -> int:
     return last_byte_pos + 1
 
 
-def filename_from_content_disposition(
-    content_disposition: str
-) -> Optional[str]:
-    """
-    Extract and validate filename from a Content-Disposition header.
-
-    :param content_disposition: Content-Disposition value
-    :return: the filename if present and valid, otherwise `None`
-
-    """
-    # attachment; filename=jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz
-
-    msg = Message('Content-Disposition: %s' % content_disposition)
-    filename = msg.get_filename()
-    if filename:
-        # Basic sanitation.
-        filename = os.path.basename(filename).lstrip('.').strip()
-        if filename:
-            return filename
-
-
-def filename_from_url(url: str, content_type: Optional[str]) -> str:
-    fn = urlsplit(url).path.rstrip('/')
-    fn = os.path.basename(fn) if fn else 'index'
-    if '.' not in fn and content_type:
-        content_type = content_type.split(';')[0]
-        if content_type == 'text/plain':
-            # mimetypes returns '.ksh'
-            ext = '.txt'
-        else:
-            ext = mimetypes.guess_extension(content_type)
-
-        if ext == '.htm':  # Python 3
-            ext = '.html'
-
-        if ext:
-            fn += ext
-
-    return fn
-
-
-def trim_filename(filename: str, max_len: int) -> str:
-    if len(filename) > max_len:
-        trim_by = len(filename) - max_len
-        name, ext = os.path.splitext(filename)
-        if trim_by >= len(name):
-            filename = filename[:-trim_by]
-        else:
-            filename = name[:-trim_by] + ext
-    return filename
-
-
-def get_filename_max_length(directory: str) -> int:
-    max_len = 255
-    try:
-        pathconf = os.pathconf
-    except AttributeError:
-        pass  # non-posix
-    else:
-        try:
-            max_len = pathconf(directory, 'PC_NAME_MAX')
-        except OSError as e:
-            if e.errno != errno.EINVAL:
-                raise
-    return max_len
-
-
-def trim_filename_if_needed(filename: str, directory='.', extra=0) -> str:
-    max_len = get_filename_max_length(directory) - extra
-    if len(filename) > max_len:
-        filename = trim_filename(filename, max_len)
-    return filename
-
-
-def get_unique_filename(filename: str, exists=os.path.exists) -> str:
-    attempt = 0
-    while True:
-        suffix = '-' + str(attempt) if attempt > 0 else ''
-        try_filename = trim_filename_if_needed(filename, extra=len(suffix))
-        try_filename += suffix
-        if not exists(try_filename):
-            return try_filename
-        attempt += 1
-
-
 class Downloader:
 
     def __init__(
         self,
-        output_dest: str = "",
+        output_file: IO,
         resume: bool = False,
         progress_file: IO = sys.stderr
     ):
@@ -206,8 +119,7 @@ class Downloader:
         """
         self.finished = False
         self.status = DownloadStatus()
-        self._output_dest = output_dest
-        self.output_file = None
+        self._output_file = output_file
 
         self._resume = resume
         self._resumed_from = 0
@@ -216,7 +128,7 @@ class Downloader:
             output=progress_file
         )
 
-    def pre_request(self, request_headers: dict):
+    def pre_request(self, url: str, request_headers: dict):
         """Called just before the HTTP request is sent.
 
         Might alter `request_headers`.
@@ -225,8 +137,7 @@ class Downloader:
         # Ask the server not to encode the content so that we can resume, etc.
         request_headers['Accept-Encoding'] = 'identity'
         if self._resume:
-            # change this for --continue directory behavior
-            bytes_have = os.path.getsize(self.output_dest.name)
+            bytes_have = os.path.getsize(self._output_file.name)
             if bytes_have:
                 # Set ``Range`` header to resume the download
                 # TODO: Use "If-Range: mtime" to make sure it's fresh?
@@ -257,40 +168,26 @@ class Downloader:
         except (KeyError, ValueError, TypeError):
             total_size = None
 
-        if not self._output_dest:
-            # no `--output, -o` provided
-            self.output_file = self._get_output_file_from_response(
-                initial_url=initial_url,
-                final_response=final_response,
-            )
 
-        elif os.path.isdir(str(self._output_dest)):
-            # `--output, -o` directory provided
-            self.created_file = self._get_output_file_from_response(
-                initial_url=initial_url,
-                final_response=final_response,
+        if not self._output_file:
+            # create download output file
+            self.output_filename = get_initial_filename(initial_url)
+            self._output_file = open(
+                get_unique_filename(self.output_filename), "a+b"
             )
-            self.output_file_path = os.path.join(
-                self._output_dest, self.created_file.name
-            )
-            self.created_file.close()
-            self.output_file = open(str(self.output_file_path), 'a+b')
 
         else:
-            # `--output, -o` file provided
-            self.output_file = open(str(self._output_dest), 'a+b')
-
+            # output file provided
             if self._resume and final_response.status_code == PARTIAL_CONTENT:
                 total_size = parse_content_range(
                     final_response.headers.get('Content-Range'),
                     self._resumed_from
                 )
-
             else:
                 self._resumed_from = 0
                 try:
-                    self.output_file.seek(0)
-                    self.output_file.truncate()
+                    self._output_file.seek(0)
+                    self._output_file.truncate()
                 except IOError:
                     pass  # stdout
 
@@ -312,12 +209,12 @@ class Downloader:
                 (humanize_bytes(total_size) + ' '
                  if total_size is not None
                  else ''),
-                self.output_file.name
+                self._output_file.name
             )
         )
         self._progress_reporter.start()
 
-        return stream, self.output_file
+        return stream, self._output_file
 
     def finish(self):
         assert not self.finished
@@ -344,24 +241,6 @@ class Downloader:
 
         """
         self.status.chunk_downloaded(len(chunk))
-
-    @staticmethod
-    def _get_output_file_from_response(
-        initial_url: str,
-        final_response: requests.Response,
-    ) -> IO:
-        # Output file not specified. Pick a name that doesn't exist yet.
-        filename = None
-        if 'Content-Disposition' in final_response.headers:
-            filename = filename_from_content_disposition(
-                final_response.headers['Content-Disposition'])
-        if not filename:
-            filename = filename_from_url(
-                url=initial_url,
-                content_type=final_response.headers.get('Content-Type'),
-            )
-        unique_filename = get_unique_filename(filename)
-        return open(unique_filename, 'a+b')
 
 
 class DownloadStatus:
