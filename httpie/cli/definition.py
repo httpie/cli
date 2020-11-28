@@ -2,7 +2,7 @@
 CLI arguments definition.
 
 """
-from argparse import (FileType, OPTIONAL, SUPPRESS, ZERO_OR_MORE)
+from argparse import (OPTIONAL, SUPPRESS, ZERO_OR_MORE)
 from textwrap import dedent, wrap
 
 from httpie import __doc__, __version__

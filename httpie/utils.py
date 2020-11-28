@@ -1,7 +1,7 @@
 from __future__ import division
 
 import os
-import sys
+import errno
 import json
 import mimetypes
 from mailbox import Message
@@ -200,9 +200,11 @@ def trim_filename_if_needed(filename: str, directory='.', extra=0) -> str:
 def get_initial_filename(url: str):
     try:
         headers = requests.head(url, allow_redirects=True).headers
-    except Exception as e:
-         filename = filename_from_url(url, '')
-         return filename
+    except Exception:
+        # If there's an error while making request here,
+        # return the default filename and handle the error on the main request
+        filename = filename_from_url(url, '')
+        return filename
 
     filename = filename_from_url(url, headers["Content-Type"])
     content_disposition = None

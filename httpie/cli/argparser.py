@@ -183,10 +183,6 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
 
         if self.args.download:
             # FIXME: Come up with a cleaner solution.
-            # self.output_filename = get_unique_filename(
-                # get_initial_filename(self.args.url)
-            # )
-            # self.output_file = open(self.output_filename, 'a+b')
             if not self.args.output_dest and not self.env.stdout_isatty:
                 # Use stdout as the download output file.
                 self.output_file = self.env.stdout
@@ -217,7 +213,8 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
 
         if self.args.quiet:
             self.env.stderr = self.env.devnull
-            if not (self.args.output_dest_specified and not self.args.download):
+            if not (self.args.output_dest_specified and
+                    not self.args.download):
                 self.env.stdout = self.env.devnull
 
     def _process_auth(self):
@@ -475,5 +472,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
     def _process_format_options(self):
         parsed_options = PARSED_DEFAULT_FORMAT_OPTIONS
         for options_group in self.args.format_options or []:
-            parsed_options = parse_format_options(options_group, defaults=parsed_options)
+            parsed_options = parse_format_options(
+                options_group, defaults=parsed_options
+            )
         self.args.format_options = parsed_options

@@ -5,14 +5,13 @@ Download mode implementation.
 """
 from __future__ import division
 
-import errno
 import os
 import re
 import sys
 import requests
 import threading
 from time import sleep, time
-from typing import IO, Optional, Tuple
+from typing import IO, Tuple
 
 from httpie.models import HTTPResponse
 from httpie.output.streams import RawStream
@@ -167,7 +166,6 @@ class Downloader:
             total_size = int(final_response.headers['Content-Length'])
         except (KeyError, ValueError, TypeError):
             total_size = None
-
 
         if not self._output_file:
             # create download output file
