@@ -213,8 +213,8 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
 
         if self.args.quiet:
             self.env.stderr = self.env.devnull
-            if not (self.args.output_dest_specified and
-                    not self.args.download):
+            if not (self.args.output_dest_specified
+                    and not self.args.download):
                 self.env.stdout = self.env.devnull
 
     def _process_auth(self):

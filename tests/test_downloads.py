@@ -231,4 +231,3 @@ class TestDownloads:
                 assert os.listdir('.') == [expected_filename]
             finally:
                 os.chdir(orig_cwd)
-
