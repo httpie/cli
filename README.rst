@@ -462,34 +462,34 @@ their type is distinguished only by the separator used:
 ``:``, ``=``, ``:=``, ``==``, ``@``, ``=@``, and ``:=@``. The ones with an
 ``@`` expect a file path as value.
 
-+-----------------------+-----------------------------------------------------+
-| Item Type             | Description                                         |
-+=======================+=====================================================+
-| HTTP Headers          | Arbitrary HTTP header, e.g. ``X-API-Token:123``.    |
-| ``Name:Value``        |                                                     |
-+-----------------------+-----------------------------------------------------+
-| URL parameters        | Appends the given name/value pair as a query        |
-| ``name==value``       | string parameter to the URL.                        |
-|                       | The ``==`` separator is used.                       |
-+-----------------------+-----------------------------------------------------+
-| Data Fields           | Request data fields to be serialized as a JSON      |
-| ``field=value``,      | object (default), to be form-encoded                |
-| ``field=@file.txt``   | (with ``--form, -f``), or to be serialized as       |
-|                       | ``multipart/form-data`` (with ``--multipart``).     |
-+-----------------------+-----------------------------------------------------+
-| Raw JSON fields       | Useful when sending JSON and one or                 |
-| ``field:=json``,      | more fields need to be a ``Boolean``, ``Number``,   |
-| ``field:=@file.json`` | nested ``Object``, or an ``Array``,  e.g.,          |
-|                       | ``meals:='["ham","spam"]'`` or ``pies:=[1,2,3]``    |
-|                       | (note the quotes).                                  |
-+-----------------------+-----------------------------------------------------+
-| Fields upload fields  | Only available with ``--form, -f`` and              |
-| ``field@/dir/file``   | ``--multipart``.                                    |
-| ``field@file;type``   | For example ``screenshot@~/Pictures/img.png``, or   |
-|                       | ``'cv@cv.txt;text/markdown'``.                      |
-|                       | With ``--form``, the presence of a file field       |
-|                       | results in a ``--multipart`` request.               |
-+-----------------------+-----------------------------------------------------+
++------------------------------+---------------------------------------------------+
+| Item Type                    | Description                                       |
++==============================+===================================================+
+| HTTP Headers                 | Arbitrary HTTP header, e.g. ``X-API-Token:123``.  |
+| ``Name:Value``               |                                                   |
++------------------------------+---------------------------------------------------+
+| URL parameters               | Appends the given name/value pair as a query      |
+| ``name==value``              | string parameter to the URL.                      |
+|                              | The ``==`` separator is used.                     |
++------------------------------+---------------------------------------------------+
+| Data Fields                  | Request data fields to be serialized as a JSON    |
+| ``field=value``,             | object (default), to be form-encoded              |
+| ``field=@file.txt``          | (with ``--form, -f``), or to be serialized as     |
+|                              | ``multipart/form-data`` (with ``--multipart``).   |
++------------------------------+---------------------------------------------------+
+| Raw JSON fields              | Useful when sending JSON and one or               |
+| ``field:=json``,             | more fields need to be a ``Boolean``, ``Number``, |
+| ``field:=@file.json``        | nested ``Object``, or an ``Array``,  e.g.,        |
+|                              | ``meals:='["ham","spam"]'`` or ``pies:=[1,2,3]``  |
+|                              | (note the quotes).                                |
++------------------------------+---------------------------------------------------+
+| Fields upload fields         | Only available with ``--form, -f`` and            |
+| ``field@/dir/file``          | ``--multipart``.                                  |
+| ``field@file;type=filetype`` | For example ``screenshot@~/Pictures/img.png``, or |
+|                              | ``'cv@cv.txt;type=text/markdown'``.               |
+|                              | With ``--form``, the presence of a file field     |
+|                              | results in a ``--multipart`` request.             |
++------------------------------+---------------------------------------------------+
 
 
 Note that data fields aren’t the only way to specify request data:
