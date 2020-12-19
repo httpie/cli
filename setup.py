@@ -111,6 +111,5 @@ setup(
         'Twitter': 'https://twitter.com/httpie',
         'Documentation': 'https://httpie.org/docs',
         'Online Demo': 'https://httpie.org/run',
-        'Donate': 'https://httpie.org/donate',
     },
 )
