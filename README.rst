@@ -128,9 +128,9 @@ and always provides the latest version) is to use `pip`_:
 .. code-block:: bash
 
     # Make sure we have an up-to-date version of pip and setuptools:
-    $ pip install --upgrade pip setuptools
+    $ python -m pip install --upgrade pip setuptools
 
-    $ pip install --upgrade httpie
+    $ python -m pip install --upgrade httpie
 
 
 (If ``pip`` installation fails for some reason, you can try
