@@ -1721,7 +1721,7 @@ Prettified streamed response:
 
 .. code-block:: bash
 
-    $ http --stream -f -a YOUR-TWITTER-NAME https://stream.twitter.com/1/statuses/filter.json track='Justin Bieber'
+    $ http --stream httpbin.org/stream/3
 
 
 Streamed output by small chunks à la ``tail -f``:
