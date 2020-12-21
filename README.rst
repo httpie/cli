@@ -1730,8 +1730,7 @@ Streamed output by small chunks à la ``tail -f``:
 
     # Send each new tweet (JSON object) mentioning "Apple" to another
     # server as soon as it arrives from the Twitter streaming API:
-    $ http --stream -f -a YOUR-TWITTER-NAME https://stream.twitter.com/1/statuses/filter.json track=Apple \
-    | while read tweet; do echo "$tweet" | http POST example.org/tweets ; done
+    $ http --stream httpbin.org/stream/3 | while read line; do echo "$line" | http httpbin.org/post ; done
 
 Sessions
 ========
