@@ -485,7 +485,7 @@ their type is distinguished only by the separator used:
 +------------------------------+---------------------------------------------------+
 | Fields upload fields         | Only available with ``--form, -f`` and            |
 | ``field@/dir/file``          | ``--multipart``.                                  |
-| ``field@file;type=filetype`` | For example ``screenshot@~/Pictures/img.png``, or |
+| ``field@file;type=mime``     | For example ``screenshot@~/Pictures/img.png``, or |
 |                              | ``'cv@cv.txt;type=text/markdown'``.               |
 |                              | With ``--form``, the presence of a file field     |
 |                              | results in a ``--multipart`` request.             |
