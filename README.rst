@@ -1728,8 +1728,7 @@ Streamed output by small chunks à la ``tail -f``:
 
 .. code-block:: bash
 
-    # Send each new tweet (JSON object) mentioning "Apple" to another
-    # server as soon as it arrives from the Twitter streaming API:
+    # Send each new line (JSON object) to another URL as soon as it arrives from a streaming API:
     $ http --stream httpbin.org/stream/3 | while read line; do echo "$line" | http httpbin.org/post ; done
 
 Sessions
