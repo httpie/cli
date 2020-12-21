@@ -1,5 +1,4 @@
 import os
-from io import BytesIO
 from typing import Callable, Dict, IO, List, Optional, Tuple, Union
 
 from httpie.cli.argtypes import KeyValueArg

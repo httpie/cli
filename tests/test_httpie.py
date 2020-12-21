@@ -182,4 +182,4 @@ def test_json_input_preserve_order(httpbin_both):
              'order:={"map":{"1":"first","2":"second"}}')
     assert HTTP_OK in r
     assert r.json['data'] == \
-           '{"order": {"map": {"1": "first", "2": "second"}}}'
+        '{"order": {"map": {"1": "first", "2": "second"}}}'
