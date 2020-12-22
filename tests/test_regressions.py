@@ -1,8 +1,8 @@
 """Miscellaneous regression tests"""
 import pytest
 
-from utils import http, HTTP_OK
 from httpie.compat import is_windows
+from utils import HTTP_OK, MockEnvironment, http
 
 
 def test_Host_header_overwrite(httpbin):
@@ -25,3 +25,18 @@ def test_output_devnull(httpbin):
 
     """
     http('--output=/dev/null', httpbin + '/get')
+
+
+@pytest.mark.skip(reason='TODO: fix #1006')
+def test_verbose_redirected_stdout_separator(httpbin):
+    """
+
+    <https://github.com/httpie/httpie/issues/1006>
+    """
+    r = http(
+        '-v',
+        httpbin.url + '/post',
+        'a=b',
+        env=MockEnvironment(stdout_isatty=False),
+    )
+    assert '}HTTP/' not in r
