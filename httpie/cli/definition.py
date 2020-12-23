@@ -37,7 +37,7 @@ parser = HTTPieArgumentParser(
 
     Suggestions and bug reports are greatly appreciated:
 
-        https://github.com/jakubroztocil/httpie/issues
+        https://github.com/httpie/httpie/issues
 
     '''),
 )

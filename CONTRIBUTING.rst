@@ -53,7 +53,7 @@ Development Environment
 Getting the code
 ****************
 
-Go to https://github.com/jakubroztocil/httpie and fork the project repository.
+Go to https://github.com/httpie/httpie and fork the project repository.
 
 
 .. code-block:: bash
@@ -132,7 +132,7 @@ Testing & CI
 Please add tests for any new features and bug fixes.
 
 When you open a pull request,
-`GitHub Actions <https://github.com/jakubroztocil/httpie/actions>`_
+`GitHub Actions <https://github.com/httpie/httpie/actions>`_
 will automatically run HTTPie’s `test suite`_ against your code
 so please make sure all checks pass.
 
@@ -230,10 +230,10 @@ Use ``pytest`` to run tests locally with an active virtual environment:
 Finally, feel free to add yourself to `AUTHORS`_!
 
 
-.. _existing issues: https://github.com/jakubroztocil/httpie/issues?state=open
-.. _AUTHORS: https://github.com/jakubroztocil/httpie/blob/master/AUTHORS.rst
-.. _Makefile: https://github.com/jakubroztocil/httpie/blob/master/Makefile
+.. _existing issues: https://github.com/httpie/httpie/issues?state=open
+.. _AUTHORS: https://github.com/httpie/httpie/blob/master/AUTHORS.rst
+.. _Makefile: https://github.com/httpie/httpie/blob/master/Makefile
 .. _venv: https://docs.python.org/3/library/venv.html
 .. _pytest: https://pytest.org/
 .. _Style Guide for Python Code: https://python.org/dev/peps/pep-0008/
-.. _test suite: https://github.com/jakubroztocil/httpie/tree/master/tests
+.. _test suite: https://github.com/httpie/httpie/tree/master/tests

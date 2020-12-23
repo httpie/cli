@@ -19,7 +19,7 @@ class HTTPBasicAuth(requests.auth.HTTPBasicAuth):
         """
         Override username/password serialization to allow unicode.
 
-        See https://github.com/jakubroztocil/httpie/issues/212
+        See https://github.com/httpie/httpie/issues/212
 
         """
         # noinspection PyTypeChecker

@@ -11,7 +11,7 @@ from fixtures import FILE_PATH
 
 def test_default_headers_case_insensitive(httpbin):
     """
-    <https://github.com/jakubroztocil/httpie/issues/644>
+    <https://github.com/httpie/httpie/issues/644>
     """
     r = http(
         '--debug',
@@ -63,7 +63,7 @@ class TestAutoContentTypeAndAcceptHeaders:
     """
 
     def test_GET_no_data_no_auto_headers(self, httpbin):
-        # https://github.com/jakubroztocil/httpie/issues/62
+        # https://github.com/httpie/httpie/issues/62
         r = http('GET', httpbin.url + '/headers')
         assert HTTP_OK in r
         assert r.json['headers']['Accept'] == '*/*'
@@ -94,7 +94,7 @@ class TestAutoContentTypeAndAcceptHeaders:
         assert HTTP_OK in r
         assert r.json['headers']['Accept'] == JSON_ACCEPT
         # Make sure Content-Type gets set even with no data.
-        # https://github.com/jakubroztocil/httpie/issues/137
+        # https://github.com/httpie/httpie/issues/137
         assert 'application/json' in r.json['headers']['Content-Type']
 
     def test_GET_explicit_JSON_explicit_headers(self, httpbin):
