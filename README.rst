@@ -210,28 +210,28 @@ Custom `HTTP method`_, `HTTP headers`_ and `JSON`_ data:
 
 .. code-block:: bash
 
-    $ http PUT httpbin.org/put X-API-Token:123 name=John
+    $ http PUT pie.dev/put X-API-Token:123 name=John
 
 
 Submitting `forms`_:
 
 .. code-block:: bash
 
-    $ http -f POST httpbin.org/post hello=World
+    $ http -f POST pie.dev/post hello=World
 
 
 See the request that is being sent using one of the `output options`_:
 
 .. code-block:: bash
 
-    $ http -v httpbin.org/get
+    $ http -v pie.dev/get
 
 
 Build and print a request without sending it using `offline mode`_:
 
 .. code-block:: bash
 
-    $ http --offline httpbin.org/post hello=offline
+    $ http --offline pie.dev/post hello=offline
 
 
 Use `GitHub API`_ to post a comment on an
@@ -247,21 +247,21 @@ Upload a file using `redirected input`_:
 
 .. code-block:: bash
 
-    $ http httpbin.org/post < files/data.json
+    $ http pie.dev/post < files/data.json
 
 
 Download a file and save it via `redirected output`_:
 
 .. code-block:: bash
 
-    $ http httpbin.org/image/png > image.png
+    $ http pie.dev/image/png > image.png
 
 
 Download a file ``wget`` style:
 
 .. code-block:: bash
 
-    $ http --download httpbin.org/image/png
+    $ http --download pie.dev/image/png
 
 Use named `sessions`_ to make certain aspects of the communication persistent
 between requests to the same host:
@@ -269,12 +269,12 @@ between requests to the same host:
 
 .. code-block:: bash
 
-    $ http --session=logged-in -a username:password httpbin.org/get API-Key:123
+    $ http --session=logged-in -a username:password pie.dev/get API-Key:123
 
 
 .. code-block:: bash
 
-    $ http --session=logged-in httpbin.org/headers
+    $ http --session=logged-in pie.dev/headers
 
 
 Set a custom ``Host`` header to work around missing DNS records:
@@ -293,7 +293,7 @@ The name of the HTTP method comes right before the URL argument:
 
 .. code-block:: bash
 
-    $ http DELETE httpbin.org/delete
+    $ http DELETE pie.dev/delete
 
 
 Which looks similar to the actual ``Request-Line`` that is sent:
@@ -511,7 +511,7 @@ token ``--`` to prevent confusion with ``--arguments``:
 
 .. code-block:: bash
 
-    $ http httpbin.org/post  --  -name-starting-with-dash=foo -Unusual-Header:bar
+    $ http pie.dev/post  --  -name-starting-with-dash=foo -Unusual-Header:bar
 
 .. code-block:: http
 
@@ -536,7 +536,7 @@ Simple example:
 
 .. code-block:: bash
 
-    $ http PUT httpbin.org/put name=John email=john@example.org
+    $ http PUT pie.dev/put name=John email=john@example.org
 
 .. code-block:: http
 
@@ -544,7 +544,7 @@ Simple example:
     Accept: application/json, */*;q=0.5
     Accept-Encoding: gzip, deflate
     Content-Type: application/json
-    Host: httpbin.org
+    Host: pie.dev
 
     {
         "name": "John",
@@ -587,7 +587,7 @@ fields using ``=@`` and ``:=@``:
 
 .. code-block:: bash
 
-    $ http PUT httpbin.org/put \
+    $ http PUT pie.dev/put \
         name=John \                        # String (default)
         age:=29 \                          # Raw JSON — Number
         married:=false \                   # Raw JSON — Boolean
@@ -602,7 +602,7 @@ fields using ``=@`` and ``:=@``:
     PUT /person/1 HTTP/1.1
     Accept: application/json, */*;q=0.5
     Content-Type: application/json
-    Host: httpbin.org
+    Host: pie.dev
 
     {
         "age": 29,
@@ -632,11 +632,11 @@ In such cases, it’s better to pass the full raw JSON data via
 
 .. code-block:: bash
 
-    $ echo '{"hello": "world"}' | http POST httpbin.org/post
+    $ echo '{"hello": "world"}' | http POST pie.dev/post
 
 .. code-block:: bash
 
-    $ http POST httpbin.org/post < files/data.json
+    $ http POST pie.dev/post < files/data.json
 
 Furthermore, this syntax only allows you to send an object as the JSON document, but not an array, etc.
 Here, again, the solution is to use `redirected input`_.
@@ -657,7 +657,7 @@ Regular forms
 
 .. code-block:: bash
 
-    $ http --form POST httpbin.org/post name='John Smith'
+    $ http --form POST pie.dev/post name='John Smith'
 
 
 .. code-block:: http
@@ -676,7 +676,7 @@ If one or more file fields is present, the serialization and content type is
 
 .. code-block:: bash
 
-    $ http -f POST httpbin.org/post name='John Smith' cv@~/files/data.xml
+    $ http -f POST pie.dev/post name='John Smith' cv@~/files/data.xml
 
 
 The request above is the same as if the following HTML form were
@@ -697,7 +697,7 @@ override the inferred content type:
 
 .. code-block:: bash
 
-   $ http -f POST httpbin.org/post name='John Smith' cv@'~/files/data.bin;type=application/pdf'
+   $ http -f POST pie.dev/post name='John Smith' cv@'~/files/data.bin;type=application/pdf'
 
 To perform a ``multipart/form-data`` request even without any files, use
 ``--multipart`` instead of ``--form``:
@@ -771,7 +771,7 @@ To set custom headers you can use the ``Header:Value`` notation:
 
 .. code-block:: bash
 
-    $ http httpbin.org/headers  User-Agent:Bacon/1.0  'Cookie:valued-visitor=yes;foo=bar'  \
+    $ http pie.dev/headers  User-Agent:Bacon/1.0  'Cookie:valued-visitor=yes;foo=bar'  \
         X-Foo:Bar  Referer:https://httpie.org/
 
 
@@ -781,7 +781,7 @@ To set custom headers you can use the ``Header:Value`` notation:
     Accept: */*
     Accept-Encoding: gzip, deflate
     Cookie: valued-visitor=yes;foo=bar
-    Host: httpbin.org
+    Host: pie.dev
     Referer: https://httpie.org/
     User-Agent: Bacon/1.0
     X-Foo: Bar
@@ -815,7 +815,7 @@ To unset a previously specified header
 
 .. code-block:: bash
 
-    $ http httpbin.org/headers Accept: User-Agent:
+    $ http pie.dev/headers Accept: User-Agent:
 
 
 To send a header with an empty value, use ``Header;``:
@@ -823,7 +823,7 @@ To send a header with an empty value, use ``Header;``:
 
 .. code-block:: bash
 
-    $ http httpbin.org/headers 'Header;'
+    $ http pie.dev/headers 'Header;'
 
 
 Limiting response headers
@@ -835,7 +835,7 @@ HTTPie reads before giving up (the default ``0``, i.e., there’s no limit).
 
 .. code-block:: bash
 
-    $ http --max-headers=100 httpbin.org/get
+    $ http --max-headers=100 pie.dev/get
 
 
 
@@ -866,13 +866,13 @@ Generating raw requests that can be sent with any other client:
 .. code-block:: bash
 
     # 1. save a raw request to a file:
-    $ http --offline POST httpbin.org/post hello=world > request.http
+    $ http --offline POST pie.dev/post hello=world > request.http
 
 
 .. code-block:: bash
 
     # 2. send it over the wire with, for example, the fantastic netcat tool:
-    $ nc httpbin.org 80 < request.http
+    $ nc pie.dev 80 < request.http
 
 
 You can also use the ``--offline`` mode for debugging and exploring HTTP and HTTPie, and for “dry runs”.
@@ -895,7 +895,7 @@ Send a single cookie:
 
 .. code-block:: bash
 
-    $ http httpbin.org/cookies Cookie:sessionid=foo
+    $ http pie.dev/cookies Cookie:sessionid=foo
 
 .. code-block:: http
 
@@ -904,7 +904,7 @@ Send a single cookie:
     Accept-Encoding: gzip, deflate
     Connection: keep-alive
     Cookie: sessionid=foo
-    Host: httpbin.org
+    Host: pie.dev
     User-Agent: HTTPie/0.9.9
 
 
@@ -913,7 +913,7 @@ Send multiple cookies
 
 .. code-block:: bash
 
-    $ http httpbin.org/cookies 'Cookie:sessionid=foo;another-cookie=bar'
+    $ http pie.dev/cookies 'Cookie:sessionid=foo;another-cookie=bar'
 
 .. code-block:: http
 
@@ -922,7 +922,7 @@ Send multiple cookies
     Accept-Encoding: gzip, deflate
     Connection: keep-alive
     Cookie: sessionid=foo;another-cookie=bar
-    Host: httpbin.org
+    Host: pie.dev
     User-Agent: HTTPie/0.9.9
 
 
@@ -959,7 +959,7 @@ Basic auth
 
 .. code-block:: bash
 
-    $ http -a username:password httpbin.org/basic-auth/username/password
+    $ http -a username:password pie.dev/basic-auth/username/password
 
 
 Digest auth
@@ -968,7 +968,7 @@ Digest auth
 
 .. code-block:: bash
 
-    $ http -A digest -a username:password httpbin.org/digest-auth/httpie/username/password
+    $ http -A digest -a username:password pie.dev/digest-auth/httpie/username/password
 
 
 Password prompt
@@ -976,7 +976,7 @@ Password prompt
 
 .. code-block:: bash
 
-    $ http -a username httpbin.org/basic-auth/username/password
+    $ http -a username pie.dev/basic-auth/username/password
 
 
 Empty password
@@ -984,7 +984,7 @@ Empty password
 
 .. code-block:: bash
 
-    $ http -a username: httpbin.org/headers
+    $ http -a username: pie.dev/headers
 
 
 ``.netrc``
@@ -998,13 +998,13 @@ For example:
 .. code-block:: bash
 
     $ cat ~/.netrc
-    machine httpbin.org
+    machine pie.dev
     login httpie
     password test
 
 .. code-block:: bash
 
-    $ http httpbin.org/basic-auth/httpie/test
+    $ http pie.dev/basic-auth/httpie/test
     HTTP/1.1 200 OK
     [...]
 
@@ -1012,7 +1012,7 @@ This can be disabled with the ``--ignore-netrc`` option:
 
 .. code-block:: bash
 
-    $ http --ignore-netrc httpbin.org/basic-auth/httpie/test
+    $ http --ignore-netrc pie.dev/basic-auth/httpie/test
     HTTP/1.1 401 UNAUTHORIZED
     [...]
 
@@ -1046,7 +1046,7 @@ response is shown:
 
 .. code-block:: bash
 
-    $ http httpbin.org/redirect/3
+    $ http pie.dev/redirect/3
 
 
 Follow ``Location``
@@ -1058,7 +1058,7 @@ and show the final response instead, use the ``--follow, -F`` option:
 
 .. code-block:: bash
 
-    $ http --follow httpbin.org/redirect/3
+    $ http --follow pie.dev/redirect/3
 
 
 Showing intermediary redirect responses
@@ -1070,7 +1070,7 @@ then use the ``--all`` option as well:
 
 .. code-block:: bash
 
-    $ http --follow --all httpbin.org/redirect/3
+    $ http --follow --all pie.dev/redirect/3
 
 
 
@@ -1083,7 +1083,7 @@ To change the default limit of maximum ``30`` redirects, use the
 
 .. code-block:: bash
 
-    $ http --follow --all --max-redirects=2 httpbin.org/redirect/3
+    $ http --follow --all --max-redirects=2 pie.dev/redirect/3
 
 
 Proxies
@@ -1143,7 +1143,7 @@ To skip the host’s SSL certificate verification, you can pass ``--verify=no``
 
 .. code-block:: bash
 
-    $ http --verify=no https://httpbin.org/get
+    $ http --verify=no https://pie.dev/get
 
 
 Custom CA bundle
@@ -1202,7 +1202,7 @@ It should be a string in the
 
 .. code-block:: bash
 
-    $ http --ciphers=ECDHE-RSA-AES128-GCM-SHA256  https://httpbin.org/get
+    $ http --ciphers=ECDHE-RSA-AES128-GCM-SHA256  https://pie.dev/get
 
 Note: these cipher strings do not change the negotiated version of SSL or TLS,
 they only affect the list of available cipher suites.
@@ -1249,7 +1249,7 @@ Print request and response headers:
 
 .. code-block:: bash
 
-    $ http --print=Hh PUT httpbin.org/put hello=world
+    $ http --print=Hh PUT pie.dev/put hello=world
 
 Verbose output
 --------------
@@ -1259,12 +1259,12 @@ documentation examples:
 
 .. code-block:: bash
 
-    $ http --verbose PUT httpbin.org/put hello=world
+    $ http --verbose PUT pie.dev/put hello=world
     PUT /put HTTP/1.1
     Accept: application/json, */*;q=0.5
     Accept-Encoding: gzip, deflate
     Content-Type: application/json
-    Host: httpbin.org
+    Host: pie.dev
     User-Agent: HTTPie/0.2.7dev
 
     {
@@ -1293,7 +1293,7 @@ This doesn’t affect output to a file via ``--output`` or ``--download``.
 .. code-block:: bash
 
     # There will be no output:
-    $ http --quiet httpbin.org/post enjoy='the silence'
+    $ http --quiet pie.dev/post enjoy='the silence'
 
 
 Viewing intermediary requests/responses
@@ -1308,7 +1308,7 @@ authentication is used (``--auth=digest``), etc.
 .. code-block:: bash
 
     # Include all responses that lead to the final one:
-    $ http --all --follow httpbin.org/redirect/3
+    $ http --all --follow pie.dev/redirect/3
 
 
 The intermediary requests/response are by default formatted according to
@@ -1320,7 +1320,7 @@ arguments as ``--print, -p`` but applies to the intermediary requests only.
 .. code-block:: bash
 
     # Print the intermediary requests/responses differently than the final one:
-    $ http -A digest -a foo:bar --all -p Hh -P H httpbin.org/digest-auth/auth/foo/bar
+    $ http -A digest -a foo:bar --all -p Hh -P H pie.dev/digest-auth/auth/foo/bar
 
 
 Conditional body download
@@ -1336,7 +1336,7 @@ status code after an update:
 
 .. code-block:: bash
 
-    $ http --headers PATCH httpbin.org/patch name='New Name'
+    $ http --headers PATCH pie.dev/patch name='New Name'
 
 
 Since we are only printing the HTTP headers here, the connection to the server
@@ -1363,49 +1363,49 @@ Redirect from a file:
 
 .. code-block:: bash
 
-    $ http PUT httpbin.org/put X-API-Token:123 < files/data.json
+    $ http PUT pie.dev/put X-API-Token:123 < files/data.json
 
 
 Or the output of another program:
 
 .. code-block:: bash
 
-    $ grep '401 Unauthorized' /var/log/httpd/error_log | http POST httpbin.org/post
+    $ grep '401 Unauthorized' /var/log/httpd/error_log | http POST pie.dev/post
 
 
 You can use ``echo`` for simple data:
 
 .. code-block:: bash
 
-    $ echo '{"name": "John"}' | http PATCH httpbin.org/patch X-API-Token:123
+    $ echo '{"name": "John"}' | http PATCH pie.dev/patch X-API-Token:123
 
 
 You can also use a Bash *here string*:
 
 .. code-block:: bash
 
-    $ http httpbin.org/post <<<'{"name": "John"}'
+    $ http pie.dev/post <<<'{"name": "John"}'
 
 
 You can even pipe web services together using HTTPie:
 
 .. code-block:: bash
 
-    $ http GET https://api.github.com/repos/httpie/httpie | http POST httpbin.org/post
+    $ http GET https://api.github.com/repos/httpie/httpie | http POST pie.dev/post
 
 
 You can use ``cat`` to enter multiline data on the terminal:
 
 .. code-block:: bash
 
-    $ cat | http POST httpbin.org/post
+    $ cat | http POST pie.dev/post
     <paste>
     ^D
 
 
 .. code-block:: bash
 
-    $ cat | http POST httpbin.org/post Content-Type:text/plain
+    $ cat | http POST pie.dev/post Content-Type:text/plain
     - buy milk
     - call parents
     ^D
@@ -1415,7 +1415,7 @@ On OS X, you can send the contents of the clipboard with ``pbpaste``:
 
 .. code-block:: bash
 
-    $ pbpaste | http PUT httpbin.org/put
+    $ pbpaste | http PUT pie.dev/put
 
 
 Passing data through ``stdin`` cannot be combined with data fields specified
@@ -1444,7 +1444,7 @@ verbatim contents of that XML file with ``Content-Type: application/xml``:
 
 .. code-block:: bash
 
-    $ http PUT httpbin.org/put @files/data.xml
+    $ http PUT pie.dev/put @files/data.xml
 
 File uploads are always streamed to avoid memory issues with large files.
 
@@ -1458,19 +1458,19 @@ You can use the ``--chunked`` flag to instruct HTTPie to use
 
 .. code-block:: bash
 
-    $ http --chunked PUT httpbin.org/put hello=world
+    $ http --chunked PUT pie.dev/put hello=world
 
 .. code-block:: bash
 
-    $ http --chunked --multipart PUT httpbin.org/put hello=world foo@files/data.xml
+    $ http --chunked --multipart PUT pie.dev/put hello=world foo@files/data.xml
 
 .. code-block:: bash
 
-    $ http --chunked httpbin.org/post @files/data.xml
+    $ http --chunked pie.dev/post @files/data.xml
 
 .. code-block:: bash
 
-    $ cat files/data.xml | http --chunked httpbin.org/post
+    $ cat files/data.xml | http --chunked pie.dev/post
 
 
 
@@ -1524,7 +1524,7 @@ sorting, and specify a custom JSON indent size:
 
 .. code-block:: bash
 
-    $ http --format-options headers.sort:false,json.sort_keys:false,json.indent:2 httpbin.org/get
+    $ http --format-options headers.sort:false,json.sort_keys:false,json.indent:2 pie.dev/get
 
 This is something you will typically store as one of the default options in your
 `config`_ file. See ``http --help`` for all the available formatting options.
@@ -1544,7 +1544,7 @@ that the response body is binary,
 
 .. code-block:: bash
 
-    $ http httpbin.org/bytes/2000
+    $ http pie.dev/bytes/2000
 
 
 You will nearly instantly see something like this:
@@ -1577,7 +1577,7 @@ Download a file:
 
 .. code-block:: bash
 
-    $ http httpbin.org/image/png > image.png
+    $ http pie.dev/image/png > image.png
 
 
 Download an image of Octocat, resize it using ImageMagick, upload it elsewhere:
@@ -1592,7 +1592,7 @@ Force colorizing and formatting, and show both the request and the response in
 
 .. code-block:: bash
 
-    $ http --pretty=all --verbose httpbin.org/get | less -R
+    $ http --pretty=all --verbose pie.dev/get | less -R
 
 
 The ``-R`` flag tells ``less`` to interpret color escape sequences included
@@ -1721,7 +1721,7 @@ Prettified streamed response:
 
 .. code-block:: bash
 
-    $ http --stream httpbin.org/stream/3
+    $ http --stream pie.dev/stream/3
 
 
 Streamed output by small chunks à la ``tail -f``:
@@ -1729,7 +1729,7 @@ Streamed output by small chunks à la ``tail -f``:
 .. code-block:: bash
 
     # Send each new line (JSON object) to another URL as soon as it arrives from a streaming API:
-    $ http --stream httpbin.org/stream/3 | while read line; do echo "$line" | http httpbin.org/post ; done
+    $ http --stream pie.dev/stream/3 | while read line; do echo "$line" | http pie.dev/post ; done
 
 Sessions
 ========
@@ -1749,7 +1749,7 @@ to the same host.
 .. code-block:: bash
 
     # Create a new session:
-    $ http --session=./session.json httpbin.org/headers API-Token:123
+    $ http --session=./session.json pie.dev/headers API-Token:123
 
 
 .. code-block:: bash
@@ -1760,7 +1760,7 @@ to the same host.
 .. code-block:: bash
 
     # Re-use the existing session — the API-Token header will be set:
-    $ http --session=./session.json httpbin.org/headers
+    $ http --session=./session.json pie.dev/headers
 
 
 All session data, including credentials, cookie data,
@@ -1775,11 +1775,11 @@ Named sessions
 
 
 You can create one or more named session per host. For example, this is how
-you can create a new session named ``user1`` for ``httpbin.org``:
+you can create a new session named ``user1`` for ``pie.dev``:
 
 .. code-block:: bash
 
-    $ http --session=user1 -a user1:password httpbin.org/get X-Foo:Bar
+    $ http --session=user1 -a user1:password pie.dev/get X-Foo:Bar
 
 From now on, you can refer to the session by its name (``user1``). When you choose
 to use the session again, any previously specified authentication or HTTP headers
@@ -1787,13 +1787,13 @@ will automatically be set:
 
 .. code-block:: bash
 
-    $ http --session=user1 httpbin.org/get
+    $ http --session=user1 pie.dev/get
 
 To create or reuse a different session, simple specify a different name:
 
 .. code-block:: bash
 
-    $ http --session=user2 -a user2:password httpbin.org/get X-Bar:Foo
+    $ http --session=user2 -a user2:password pie.dev/get X-Bar:Foo
 
 Named sessions’s data is stored in JSON files inside the ``sessions``
 subdirectory of the `config`_ directory, typically:
@@ -1806,7 +1806,7 @@ you should be able list the generated sessions files using:
 
 .. code-block:: bash
 
-    $ ls -l ~/.config/httpie/sessions/httpbin.org
+    $ ls -l ~/.config/httpie/sessions/pie.dev
 
 
 Anonymous sessions
@@ -1848,12 +1848,12 @@ exchange after it has been created, specify the session name via
 .. code-block:: bash
 
     # If the session file doesn’t exist, then it is created:
-    $ http --session-read-only=./ro-session.json httpbin.org/headers Custom-Header:orig-value
+    $ http --session-read-only=./ro-session.json pie.dev/headers Custom-Header:orig-value
 
 .. code-block:: bash
 
     # But it is not updated:
-    $ http --session-read-only=./ro-session.json httpbin.org/headers Custom-Header:new-value
+    $ http --session-read-only=./ro-session.json pie.dev/headers Custom-Header:new-value
 
 Cookie Storage Behaviour
 ------------------------
@@ -1866,13 +1866,13 @@ To set a cookie within a Session there are three options:
 
 .. code-block:: bash
 
-    $ http --session=./session.json httpbin.org/cookie/set?foo=bar
+    $ http --session=./session.json pie.dev/cookie/set?foo=bar
 
 2. Set the cookie name and value through the command line as seen in `cookies`_
 
 .. code-block:: bash
 
-    $ http --session=./session.json httpbin.org/headers Cookie:foo=bar
+    $ http --session=./session.json pie.dev/headers Cookie:foo=bar
 
 3. Manually set cookie parameters in the json file of the session
 
@@ -1937,7 +1937,7 @@ environment variable:
 .. code-block:: bash
 
     $ export HTTPIE_CONFIG_DIR=/tmp/httpie
-    $ http httpbin.org/get
+    $ http pie.dev/get
 
 
 
@@ -1998,7 +1998,7 @@ respectively.
 
     #!/bin/bash
 
-    if http --check-status --ignore-stdin --timeout=2.5 HEAD httpbin.org/get &> /dev/null; then
+    if http --check-status --ignore-stdin --timeout=2.5 HEAD pie.dev/get &> /dev/null; then
         echo 'OK!'
     else
         case $? in
@@ -2047,7 +2047,7 @@ HTTP request:
 .. code-block:: http
 
     POST /post HTTP/1.1
-    Host: httpbin.org
+    Host: pie.dev
     X-API-Key: 123
     User-Agent: Bacon/1.0
     Content-Type: application/x-www-form-urlencoded
@@ -2059,7 +2059,7 @@ with the HTTPie command that sends it:
 
 .. code-block:: bash
 
-    $ http -f POST httpbin.org/post \
+    $ http -f POST pie.dev/post \
       X-API-Key:123 \
       User-Agent:Bacon/1.0 \
       name=value \

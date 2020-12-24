@@ -10,7 +10,7 @@ def test_Host_header_overwrite(httpbin):
     https://github.com/httpie/httpie/issues/235
 
     """
-    host = 'httpbin.org'
+    host = 'pie.dev'
     url = httpbin.url + '/get'
     r = http('--print=hH', url, 'host:{0}'.format(host))
     assert HTTP_OK in r

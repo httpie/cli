@@ -16,7 +16,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 * Added support for streamed uploads (`#201`_).
 * Added support for multipart upload streaming (`#684`_).
-* Added support for body-from-file upload streaming (``http httpbin.org/post @file``).
+* Added support for body-from-file upload streaming (``http pie.dev/post @file``).
 * Added ``--chunked`` to enable chunked transfer encoding (`#753`_).
 * Added ``--multipart`` to allow ``multipart/form-data`` encoding for non-file ``--form`` requests as well.
 * Added support for preserving field order in multipart requests (`#903`_).

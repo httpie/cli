@@ -17,7 +17,7 @@ from httpie.core import main
 # pytest-httpbin currently does not support chunked requests:
 # <https://github.com/kevin1024/pytest-httpbin/issues/33>
 # <https://github.com/kevin1024/pytest-httpbin/issues/28>
-HTTPBIN_WITH_CHUNKED_SUPPORT = 'http://httpbin.org'
+HTTPBIN_WITH_CHUNKED_SUPPORT = 'http://pie.dev'
 
 
 TESTS_ROOT = Path(__file__).parent
@@ -198,7 +198,7 @@ def http(
 
     Example:
 
-    $ http --auth=user:password GET httpbin.org/basic-auth/user/password
+    $ http --auth=user:password GET pie.dev/basic-auth/user/password
 
         >>> httpbin = getfixture('httpbin')
         >>> r = http('-a', 'user:pw', httpbin.url + '/basic-auth/user/pw')
