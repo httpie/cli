@@ -220,7 +220,6 @@ def program(
                             level='warning'
                         )
 
-
                 if not downloader:
                     # repeating check for check_status specific
                     if(message.headers.get("Content-Length") and int(message.headers.get("Content-Length")) != len(message.content or "")):
@@ -231,7 +230,6 @@ def program(
                             ),
                             level='error'
                         )
-
 
             write_message(
                 requests_message=message,
