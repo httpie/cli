@@ -219,6 +219,20 @@ def program(
                             f'HTTP {message.raw.status} {message.raw.reason}',
                             level='warning'
                         )
+
+
+                if not downloader:
+                    # repeating check for check_status specific
+                    if(message.headers.get("Content-Length") and int(message.headers.get("Content-Length")) != len(message.content or "")):
+                        env.log_error(
+                            'Incomplete read: size=%d; read=%d' % (
+                                int(message.headers.get("Content-Length")),
+                                len(message.content)
+                            ),
+                            level='error'
+                        )
+
+
             write_message(
                 requests_message=message,
                 env=env,
