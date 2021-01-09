@@ -440,6 +440,18 @@ output_options.add_argument(
 )
 
 output_options.add_argument(
+    '--no-progress-bar',
+    dest='no_progress_bar',
+    action='store_true',
+    default=False,
+    help='''
+    Do not output a download progress bar when using --download. Will not do
+    anything without the --download flag enabled as well.
+
+    '''
+)
+
+output_options.add_argument(
     '--continue', '-c',
     dest='download_resume',
     action='store_true',

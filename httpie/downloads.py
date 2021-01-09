@@ -191,7 +191,8 @@ class Downloader:
         self,
         output_file: IO = None,
         resume: bool = False,
-        progress_file: IO = sys.stderr
+        progress_file: IO = sys.stderr,
+        no_progress_bar: bool = False
     ):
         """
         :param resume: Should the download resume if partial download
@@ -202,6 +203,8 @@ class Downloader:
 
         :param progress_file: Where to report download progress.
 
+        :param no_progress_bar: Toggles the download progress bar.
+
         """
         self.finished = False
         self.status = DownloadStatus()
@@ -210,7 +213,8 @@ class Downloader:
         self._resumed_from = 0
         self._progress_reporter = ProgressReporterThread(
             status=self.status,
-            output=progress_file
+            output=progress_file,
+            no_progress_bar=no_progress_bar
         )
 
     def pre_request(self, request_headers: dict):
@@ -387,7 +391,8 @@ class ProgressReporterThread(threading.Thread):
         status: DownloadStatus,
         output: IO,
         tick=.1,
-        update_interval=1
+        update_interval=1,
+        no_progress_bar: bool = False
     ):
         super().__init__()
         self.status = status
@@ -399,6 +404,7 @@ class ProgressReporterThread(threading.Thread):
         self._prev_bytes = 0
         self._prev_time = time()
         self._should_stop = threading.Event()
+        self._no_progress_bar = no_progress_bar
 
     def stop(self):
         """Stop reporting on next tick."""

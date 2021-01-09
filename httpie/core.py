@@ -151,7 +151,8 @@ def program(
             downloader = Downloader(
                 output_file=args.output_file,
                 progress_file=env.stderr,
-                resume=args.download_resume
+                resume=args.download_resume,
+                no_progress_bar=args.no_progress_bar # toggles the progress bar as per issue #889
             )
             downloader.pre_request(args.headers)
 
