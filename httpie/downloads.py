@@ -460,7 +460,7 @@ class ProgressReporterThread(threading.Thread):
             self._prev_time = now
             self._prev_bytes = downloaded
 
-        if(not self._no_progress_bar): # toggles the progress bar based on arg --no-progress-bar
+        if(not self._no_progress_bar):
             self.output.write(
                 CLEAR_LINE
                 + ' '
