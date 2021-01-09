@@ -460,14 +460,15 @@ class ProgressReporterThread(threading.Thread):
             self._prev_time = now
             self._prev_bytes = downloaded
 
-        self.output.write(
-            CLEAR_LINE
-            + ' '
-            + SPINNER[self._spinner_pos]
-            + ' '
-            + self._status_line
-        )
-        self.output.flush()
+        if(not self._no_progress_bar): # toggles the progress bar based on arg --no-progress-bar
+            self.output.write(
+                CLEAR_LINE
+                + ' '
+                + SPINNER[self._spinner_pos]
+                + ' '
+                + self._status_line
+            )
+            self.output.flush()
 
         self._spinner_pos = (self._spinner_pos + 1
                              if self._spinner_pos + 1 != len(SPINNER)
