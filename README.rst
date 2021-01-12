@@ -119,6 +119,9 @@ system package manager, for example:
     # Arch Linux
     $ pacman -S httpie
 
+.. code-block:: bash
+    # Solus
+    $ eopkg install httpie
 
 Windows, etc.
 -------------
