@@ -30,9 +30,11 @@ They use simple and natural syntax and provide formatted and colorized output.
 About this document
 ===================
 
-This documentation is best viewed at `httpie.org/docs <https://httpie.org/docs>`_,
-where you can select your corresponding HTTPie version as well as run examples directly from the
+This documentation is best viewed at `httpie.org/docs <https://httpie.org/docs>`_.
+
+You can select your corresponding HTTPie version as well as run examples directly from the
 browser using a `termible.io <https://termible.io?utm_source=httpie-readme>`_ embedded terminal.
+
 If you are reading this on GitHub, then this text covers the current *development* version.
 You are invited to submit fixes and improvements to the the docs by editing
 `README.rst <https://github.com/httpie/httpie/blob/master/README.rst>`_.
@@ -2082,15 +2084,15 @@ HTTPie reaches its final version ``1.0``. All changes are recorded in the
 
 
 
-User support
+Community and Support 
 ------------
 
-Please use the following support channels:
+HTTPie has the following community channels:
 
 * `GitHub issues <https://github.com/jkbr/httpie/issues>`_
   for bug reports and feature requests.
-* `Our Gitter chat room <https://gitter.im/jkbrzt/httpie>`_
-  to ask questions, discuss features, and for general discussion.
+* `Discord server <https://discord.gg/t8kw6SQ7A7>`_
+  to ask questions, discuss features, and for general API development discussion.
 * `StackOverflow <https://stackoverflow.com>`_
   to ask questions (please make sure to use the
   `httpie <https://stackoverflow.com/questions/tagged/httpie>`_ tag).
