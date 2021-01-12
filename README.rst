@@ -2091,7 +2091,7 @@ HTTPie has the following community channels:
 
 * `GitHub issues <https://github.com/jkbr/httpie/issues>`_
   for bug reports and feature requests.
-* `Discord server <https://discord.gg/t8kw6SQ7A7>`_
+* `Discord server <https://httpie.io/chat>`_
   to ask questions, discuss features, and for general API development discussion.
 * `StackOverflow <https://stackoverflow.com>`_
   to ask questions (please make sure to use the
