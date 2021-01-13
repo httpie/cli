@@ -16,6 +16,7 @@ from httpie.sessions import Session
 from httpie.utils import get_expired_cookies
 from tests.test_auth_plugins import basic_auth
 from utils import HTTP_OK, MockEnvironment, http, mk_config_dir
+from fixtures import FILE_PATH_ARG
 
 
 class SessionTestBase:
@@ -160,6 +161,12 @@ class TestSession(SessionTestBase):
         assert HTTP_OK in r2
         assert 'Content-Type' not in r2.json['headers']
         assert 'If-Unmodified-Since' not in r2.json['headers']
+
+    def test_session_with_upload(self, httpbin):
+        self.start_session(httpbin)
+        r = http('--session=test', '--form', '--verbose', 'POST', httpbin.url + '/post',
+                 f'test-file@{FILE_PATH_ARG}', 'foo=bar', env=self.env())
+        assert HTTP_OK in r
 
     def test_session_by_path(self, httpbin):
         self.start_session(httpbin)
