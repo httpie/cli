@@ -77,7 +77,9 @@ class Session(BaseConfigDict):
             if value is None:
                 continue  # Ignore explicitly unset headers
 
-            value = value.decode('utf8')
+            if type(value) is not str:
+                value = value.decode('utf8')
+
             if name.lower() == 'user-agent' and value.startswith('HTTPie/'):
                 continue
 
