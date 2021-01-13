@@ -10,6 +10,8 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 `2.4.0-dev`_ (unreleased)
 -------------------------
 
+* Fixed upload with ``--session`` (`#1020`_).
+
 
 `2.3.0`_ (2020-10-25)
 -------------------------
@@ -483,3 +485,4 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 .. _#934: https://github.com/httpie/httpie/issues/934
 .. _#943: https://github.com/httpie/httpie/issues/943
 .. _#963: https://github.com/httpie/httpie/issues/963
+.. _#1020: https://github.com/httpie/httpie/issues/1020
