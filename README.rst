@@ -2087,7 +2087,7 @@ HTTPie reaches its final version ``1.0``. All changes are recorded in the
 
 
 
-Community and Support 
+Community and Support
 ------------
 
 HTTPie has the following community channels:
@@ -2200,9 +2200,9 @@ have contributed.
     :target: https://github.com/httpie/httpie/actions
     :alt: Build status of the master branch on Mac/Linux/Windows
 
-.. |gitter| image:: https://img.shields.io/gitter/room/jkbrzt/httpie.svg?style=flat-square
-    :target: https://gitter.im/jkbrzt/httpie
-    :alt: Chat on Gitter
+.. |gitter| image:: https://img.shields.io/badge/chat-on%20Discord-brightgreen?style=flat-square
+    :target: https://httpie.io/chat
+    :alt: Chat on Discord
 
 .. |downloads| image:: https://pepy.tech/badge/httpie
     :target: https://pepy.tech/project/httpie
