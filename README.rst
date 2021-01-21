@@ -1613,6 +1613,17 @@ by adding the following to your ``~/.bash_profile``:
         http --pretty=all --print=hb "$@" | less -R;
     }
 
+If you enforce `--pretty=all` with redirected output and you get `UnicodeDecodeError`,
+you probably [have misconfigured locale](https://github.com/httpie/httpie/issues/1008#issuecomment-763836737).
+As a workaround, you can set environment variable `PYTHONIOENCODING` to `utf8`:
+
+.. code-block:: bash
+
+    export PYTHONIOENCODING=utf-8
+
+.. code-block:: bash
+
+    setx PYTHONIOENCODING "utf-8"
 
 Download mode
 =============
