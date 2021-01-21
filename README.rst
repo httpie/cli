@@ -807,7 +807,7 @@ There are a couple of default headers that HTTPie sets:
 
 
 
-Any of these can be overwritten and some of them unset (see bellow).
+Any of these can be overwritten and some of them unset (see below).
 
 
 
