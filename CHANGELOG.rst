@@ -11,6 +11,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 -------------------------
 
 * Fixed upload with ``--session`` (`#1020`_).
+* Fixed a missing blank line between request and response (`#1006`_).
 
 
 `2.3.0`_ (2020-10-25)
@@ -485,4 +486,5 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 .. _#934: https://github.com/httpie/httpie/issues/934
 .. _#943: https://github.com/httpie/httpie/issues/943
 .. _#963: https://github.com/httpie/httpie/issues/963
+.. _#1006: https://github.com/httpie/httpie/issues/1006
 .. _#1020: https://github.com/httpie/httpie/issues/1020
