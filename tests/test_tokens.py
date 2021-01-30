@@ -39,7 +39,6 @@ TERMINAL_RESPONSE = [
 ]
 TERMINAL_EXCHANGE = [
     *TERMINAL_REQUEST,
-    #Expect.SEPARATOR,  # I.e., two separators in a row. Good choice?
     *TERMINAL_RESPONSE,
 ]
 TERMINAL_BODY = [
@@ -77,7 +76,6 @@ def test_raw_body():
         env=MockEnvironment(stdout_isatty=False),
     )
     assert_output_matches(r, RAW_BODY)
-
 
 
 def test_raw_exchange(httpbin):
