@@ -185,7 +185,7 @@ def program(args: argparse.Namespace, env: Environment) -> ExitStatus:
                 final_response = message
                 if args.check_status or downloader:
                     exit_status = http_status_to_exit_status(http_status=message.status_code, follow=args.follow)
-                    if not env.stdout_isatty and exit_status != ExitStatus.SUCCESS:
+                    if exit_status != ExitStatus.SUCCESS and (not env.stdout_isatty or args.quiet):
                         env.log_error(f'HTTP {message.raw.status} {message.raw.reason}', level='warning')
             write_message(requests_message=message, env=env, args=args, with_headers=with_headers,
                           with_body=do_write_body)

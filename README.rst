@@ -1292,7 +1292,7 @@ Quiet output
 ------------
 
 ``--quiet`` redirects all output that would otherwise go to ``stdout``
-and ``stderr``  (except for error messages) to ``/dev/null``.
+and ``stderr`` to ``/dev/null`` (except for errors and warnings).
 This doesn’t affect output to a file via ``--output`` or ``--download``.
 
 .. code-block:: bash
