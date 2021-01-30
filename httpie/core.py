@@ -16,10 +16,7 @@ from httpie.cli.constants import (
 from httpie.client import collect_messages
 from httpie.context import Environment
 from httpie.downloads import Downloader
-from httpie.output.writer import (
-    write_message,
-    write_stream,
-)
+from httpie.output.writer import write_message, write_stream, MESSAGE_SEPARATOR_BYTES
 from httpie.plugins.registry import plugin_manager
 from httpie.status import ExitStatus, http_status_to_exit_status
 
@@ -155,14 +152,6 @@ def program(
             )
             downloader.pre_request(args.headers)
 
-        needs_separator = False
-
-        def maybe_separate():
-            nonlocal needs_separator
-            if env.stdout_isatty and needs_separator:
-                needs_separator = False
-                getattr(env.stdout, 'buffer', env.stdout).write(b'\n\n')
-
         initial_request: Optional[requests.PreparedRequest] = None
         final_response: Optional[requests.Response] = None
 
@@ -193,19 +182,34 @@ def program(
             config_dir=env.config.directory,
             request_body_read_callback=request_body_read_callback
         )
-        for message in messages:
-            maybe_separate()
-            is_request = isinstance(message, requests.PreparedRequest)
+
+        force_separator = False
+
+        def separate():
+            getattr(env.stdout, 'buffer', env.stdout).write(MESSAGE_SEPARATOR_BYTES)
+
+        with_body = False
+
+        for i, message in enumerate(messages):
+
+            if with_body and (force_separator or not env.stdout.isatty()):
+                # Separate previous message with body, if needed.
+                separate()
+            force_separator = False
+
             with_headers, with_body = get_output_options(
                 args=args, message=message)
+            is_request = isinstance(message, requests.PreparedRequest)
+
             if is_request:
+
                 if not initial_request:
                     initial_request = message
                     is_streamed_upload = not isinstance(
                         message.body, (str, bytes))
                     if with_body:
                         with_body = not is_streamed_upload
-                        needs_separator = is_streamed_upload
+                        force_separator = is_streamed_upload
             else:
                 final_response = message
                 if args.check_status or downloader:
@@ -219,6 +223,7 @@ def program(
                             f'HTTP {message.raw.status} {message.raw.reason}',
                             level='warning'
                         )
+
             write_message(
                 requests_message=message,
                 env=env,
@@ -227,7 +232,8 @@ def program(
                 with_body=with_body,
             )
 
-        maybe_separate()
+        if force_separator:
+            separate()
 
         if downloader and exit_status == ExitStatus.SUCCESS:
             # Last response body download.

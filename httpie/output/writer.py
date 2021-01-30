@@ -12,6 +12,10 @@ from httpie.output.streams import (
 )
 
 
+MESSAGE_SEPARATOR = '\n\n'
+MESSAGE_SEPARATOR_BYTES = MESSAGE_SEPARATOR.encode()
+
+
 def write_message(
     requests_message: Union[requests.PreparedRequest, requests.Response],
     env: Environment,
@@ -111,7 +115,7 @@ def build_output_stream_for_message(
             and not getattr(requests_message, 'is_body_upload_chunk', False)):
         # Ensure a blank line after the response body.
         # For terminal output only.
-        yield b'\n\n'
+        yield MESSAGE_SEPARATOR_BYTES
 
 
 def get_stream_type_and_kwargs(

@@ -28,7 +28,6 @@ def test_output_devnull(httpbin):
     http('--output=/dev/null', httpbin + '/get')
 
 
-@pytest.mark.skip(reason='TODO: fix #1006')
 def test_verbose_redirected_stdout_separator(httpbin):
     """
 
