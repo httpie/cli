@@ -139,6 +139,7 @@ def program(
     The main program without error handling.
 
     """
+    # TODO: refactor and drastically simplify, especially so that the separator logic is elsewhere.
     exit_status = ExitStatus.SUCCESS
     downloader = None
 
@@ -156,7 +157,7 @@ def program(
         final_response: Optional[requests.Response] = None
 
         def request_body_read_callback(chunk: bytes):
-            should_pipe_to_stdout = (
+            should_pipe_to_stdout = bool(
                 # Request body output desired
                 OUT_REQ_BODY in args.output_options
                 # & not `.read()` already pre-request (e.g., for  compression)
@@ -188,18 +189,14 @@ def program(
         def separate():
             getattr(env.stdout, 'buffer', env.stdout).write(MESSAGE_SEPARATOR_BYTES)
 
-        with_body = False
+        prev_with_body = False
 
-        for i, message in enumerate(messages):
+        for message in messages:
 
             if with_body and (force_separator or not env.stdout.isatty()):
                 # Separate previous message with body, if needed.
                 separate()
             force_separator = False
-
-            with_headers, with_body = get_output_options(
-                args=args, message=message)
-            is_request = isinstance(message, requests.PreparedRequest)
 
             if is_request:
 
@@ -208,8 +205,8 @@ def program(
                     is_streamed_upload = not isinstance(
                         message.body, (str, bytes))
                     if with_body:
-                        with_body = not is_streamed_upload
-                        force_separator = is_streamed_upload
+                        do_write_body = not is_streamed_upload
+                        force_separator = is_streamed_upload and env.stdout_isatty
             else:
                 final_response = message
                 if args.check_status or downloader:
@@ -229,8 +226,9 @@ def program(
                 env=env,
                 args=args,
                 with_headers=with_headers,
-                with_body=with_body,
+                with_body=do_write_body,
             )
+            prev_with_body = with_body
 
         if force_separator:
             separate()

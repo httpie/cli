@@ -113,6 +113,7 @@ class BaseCLIResponse:
     devnull: str = None
     json: dict = None
     exit_status: ExitStatus = None
+    command: str = None
 
 
 class BytesCLIResponse(bytes, BaseCLIResponse):
@@ -284,10 +285,13 @@ def http(
         r.devnull = devnull_output
         r.stderr = stderr.read()
         r.exit_status = exit_status
+        r.command = ' '.join(['http', *args])
+        r.command_full = ' '.join(complete_args)
 
         if r.exit_status != ExitStatus.SUCCESS:
             sys.stderr.write(r.stderr)
 
+        print(f'\n\n$ {r.command}\n')
         return r
 
     finally:

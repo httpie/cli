@@ -89,6 +89,13 @@ def expect_body(s: str) -> str:
     We require some text, and continue to read until we find an ending or until the end of the string.
 
     """
+    if 'content-disposition:' in s.lower():
+        # Multipart body heuristic.
+        final_boundary_re = re.compile('\r\n--[^-]+?--\r\n')
+        match = final_boundary_re.search(s)
+        if match:
+            return s[match.end():]
+
     endings = [s.index(sep) for sep in BODY_ENDINGS if sep in s]
     if not endings:
         s = ''  # Only body

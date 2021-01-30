@@ -132,3 +132,59 @@ def test_assert_output_matches_multiple_messages():
             Expect.SEPARATOR,
         ]
     )
+
+
+def test_assert_output_matches_multipart_body():
+    output = (
+        'POST / HTTP/1.1\r\n'
+        'User-Agent: HTTPie/2.4.0-dev\r\n'
+        'Accept-Encoding: gzip, deflate\r\n'
+        'Accept: */*\r\n'
+        'Connection: keep-alive\r\n'
+        'Content-Type: multipart/form-data; boundary=1e22169de43e4a2e8d9e41c0a1c93cc5\r\n'
+        'Content-Length: 212\r\n'
+        'Host: pie.dev\r\n'
+        '\r\n'
+        '--1e22169de43e4a2e8d9e41c0a1c93cc5\r\n'
+        'Content-Disposition: form-data; name="AAA"\r\n'
+        '\r\n'
+        'BBB\r\n'
+        '--1e22169de43e4a2e8d9e41c0a1c93cc5\r\n'
+        'Content-Disposition: form-data; name="CCC"\r\n'
+        '\r\n'
+        'DDD\r\n'
+        '--1e22169de43e4a2e8d9e41c0a1c93cc5--\r\n'
+    )
+    assert_output_matches(output, [Expect.REQUEST_HEADERS, Expect.BODY])
+
+
+def test_assert_output_matches_multipart_body_with_separator():
+    output = (
+        'POST / HTTP/1.1\r\n'
+        'User-Agent: HTTPie/2.4.0-dev\r\n'
+        'Accept-Encoding: gzip, deflate\r\n'
+        'Accept: */*\r\n'
+        'Connection: keep-alive\r\n'
+        'Content-Type: multipart/form-data; boundary=1e22169de43e4a2e8d9e41c0a1c93cc5\r\n'
+        'Content-Length: 212\r\n'
+        'Host: pie.dev\r\n'
+        '\r\n'
+        '--1e22169de43e4a2e8d9e41c0a1c93cc5\r\n'
+        'Content-Disposition: form-data; name="AAA"\r\n'
+        '\r\n'
+        'BBB\r\n'
+        '--1e22169de43e4a2e8d9e41c0a1c93cc5\r\n'
+        'Content-Disposition: form-data; name="CCC"\r\n'
+        '\r\n'
+        'DDD\r\n'
+        '--1e22169de43e4a2e8d9e41c0a1c93cc5--\r\n'
+        f'{MESSAGE_SEPARATOR}'
+    )
+    assert_output_matches(output, [Expect.REQUEST_HEADERS, Expect.BODY, Expect.SEPARATOR])
+
+
+def test_assert_output_matches_multiple_separators():
+    assert_output_matches(
+        MESSAGE_SEPARATOR + MESSAGE_SEPARATOR + 'AAA' + MESSAGE_SEPARATOR + MESSAGE_SEPARATOR,
+        [Expect.SEPARATOR, Expect.SEPARATOR, Expect.BODY, Expect.SEPARATOR, Expect.SEPARATOR]
+    )
