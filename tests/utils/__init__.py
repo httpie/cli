@@ -1,12 +1,14 @@
 # coding=utf-8
 """Utilities for HTTPie test suite."""
+import re
+import shlex
 import sys
 import time
 import json
 import tempfile
 from io import BytesIO
 from pathlib import Path
-from typing import Optional, Union
+from typing import Optional, Union, List
 
 from httpie.status import ExitStatus
 from httpie.config import Config
@@ -114,6 +116,14 @@ class BaseCLIResponse:
     json: dict = None
     exit_status: ExitStatus = None
     command: str = None
+    args: List[str] = []
+    complete_args: List[str] = []
+
+    @property
+    def command(self):
+        cmd = ' '.join(shlex.quote(arg) for arg in ['http', *self.args])
+        # pytest-httpbin to real httpbin.
+        return re.sub(r'127\.0\.0\.1:\d+', 'httpbin.org', cmd)
 
 
 class BytesCLIResponse(bytes, BaseCLIResponse):
@@ -285,8 +295,8 @@ def http(
         r.devnull = devnull_output
         r.stderr = stderr.read()
         r.exit_status = exit_status
-        r.command = ' '.join(['http', *args])
-        r.command_full = ' '.join(complete_args)
+        r.args = args
+        r.complete_args = ' '.join(complete_args)
 
         if r.exit_status != ExitStatus.SUCCESS:
             sys.stderr.write(r.stderr)
