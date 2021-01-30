@@ -20,7 +20,7 @@ from httpie.core import main
 HTTPBIN_WITH_CHUNKED_SUPPORT = 'http://pie.dev'
 
 
-TESTS_ROOT = Path(__file__).parent
+TESTS_ROOT = Path(__file__).parent.parent
 CRLF = '\r\n'
 COLOR = '\x1b['
 HTTP_OK = '200 OK'
@@ -49,7 +49,7 @@ class StdinBytesIO(BytesIO):
 
 class MockEnvironment(Environment):
     """Environment subclass with reasonable defaults for testing."""
-    colors = 0
+    colors = 0  # For easier debugging
     stdin_isatty = True,
     stdout_isatty = True
     is_windows = False

@@ -2,6 +2,7 @@
 import pytest
 
 from httpie.compat import is_windows
+from tests.utils.matching import assert_output_matches, Expect
 from utils import HTTP_OK, MockEnvironment, http
 
 
@@ -40,3 +41,10 @@ def test_verbose_redirected_stdout_separator(httpbin):
         env=MockEnvironment(stdout_isatty=False),
     )
     assert '}HTTP/' not in r
+    assert_output_matches(r, [
+        Expect.REQUEST_HEADERS,
+        Expect.BODY,
+        Expect.SEPARATOR,
+        Expect.RESPONSE_HEADERS,
+        Expect.BODY,
+    ])
