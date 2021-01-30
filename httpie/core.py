@@ -167,9 +167,11 @@ def program(args: argparse.Namespace, env: Environment) -> ExitStatus:
 
         # Process messages as they’re generated
         for message in messages:
-
-            if with_body and (force_separator or not env.stdout.isatty()):
-                # Separate previous message with body, if needed.
+            is_request = isinstance(message, requests.PreparedRequest)
+            with_headers, with_body = get_output_options(args=args, message=message)
+            do_write_body = with_body
+            if prev_with_body and (with_headers or with_body) and (force_separator or not env.stdout_isatty):
+                # Separate after a previous message with body, if needed. See test_tokens.py.
                 separate()
             force_separator = False
             if is_request:
