@@ -70,7 +70,7 @@ def expect_tokens(tokens: Iterable[Expect], s):
 
 
 def expect_token(token: Expect, s):
-    if token == Expect.BODY:
+    if token is Expect.BODY:
         s = expect_body(s)
     else:
         s = expect_regex(token, s)
