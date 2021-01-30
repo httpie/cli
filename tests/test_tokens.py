@@ -2,10 +2,11 @@
 The ideas behind these test and the named templates is to ensure consistent output
 across all supported different scenarios:
 
-* terminal vs. redirect stdout
-* different combinations of `--print=HBhb` (request/response headers/body)
-* multipart requests
-* streamed uploads
+TODO: cover more scenarios
+ * terminal vs. redirect stdout
+ * different combinations of `--print=HBhb` (request/response headers/body)
+ * multipart requests
+ * streamed uploads
 
 """
 from tests.utils.matching import assert_output_matches, Expect
