@@ -301,7 +301,7 @@ def http(
         if r.exit_status != ExitStatus.SUCCESS:
             sys.stderr.write(r.stderr)
 
-        print(f'\n\n$ {r.command}\n')
+        # print(f'\n\n$ {r.command}\n')
         return r
 
     finally:
