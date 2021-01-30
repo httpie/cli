@@ -81,7 +81,7 @@ def expect_regex(token: Expect, s) -> str:
     match = TOKEN_REGEX_MAP[token].match(s)
     if not match:
         raise OutputMatchingError(f'No match for {token} in {s!r}')
-    return s[len(match.group(0)):]
+    return s[match.end():]
 
 
 def expect_body(s: str) -> str:
