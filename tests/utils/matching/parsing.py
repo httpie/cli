@@ -62,14 +62,14 @@ class OutputMatchingError(ValueError):
     pass
 
 
-def expect_tokens(tokens: Iterable[Expect], s):
+def expect_tokens(tokens: Iterable[Expect], s: str):
     for token in tokens:
         s = expect_token(token, s)
     if s:
         raise OutputMatchingError(f'Unmatched remaining output for {tokens} in {s!r}')
 
 
-def expect_token(token: Expect, s):
+def expect_token(token: Expect, s: str) -> str:
     if token is Expect.BODY:
         s = expect_body(s)
     else:
@@ -77,7 +77,7 @@ def expect_token(token: Expect, s):
     return s
 
 
-def expect_regex(token: Expect, s) -> str:
+def expect_regex(token: Expect, s: str) -> str:
     match = TOKEN_REGEX_MAP[token].match(s)
     if not match:
         raise OutputMatchingError(f'No match for {token} in {s!r}')
