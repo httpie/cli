@@ -345,6 +345,15 @@ class TestExpiredCookies(CookieTestBase):
         assert 'cookie1' in updated_session['cookies']
         assert 'cookie2' not in updated_session['cookies']
 
+    def test_get_expired_cookies_using_max_age(self):
+        headers = [
+            ('Set-Cookie', 'one=two; Max-Age=0; path=/; domain=.tumblr.com; HttpOnly')
+        ]
+        expected_expired = [
+            {'name': 'one', 'path': '/'}
+        ]
+        assert get_expired_cookies(headers, now=None) == expected_expired
+
     @pytest.mark.parametrize(
         argnames=['headers', 'now', 'expected_expired'],
         argvalues=[
