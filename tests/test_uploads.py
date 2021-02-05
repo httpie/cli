@@ -237,6 +237,7 @@ class TestRequestBodyFromFilePath:
             HTTPBIN_WITH_CHUNKED_SUPPORT + '/post',
             '@' + FILE_PATH_ARG,
         )
+        print(r)
         assert HTTP_OK in r
         assert 'Transfer-Encoding: chunked' in r
         assert '"Content-Type": "text/plain"' in r
