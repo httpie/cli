@@ -7,6 +7,10 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 
 
+`2.5.0-dev`_ (unreleased)
+-------------------------
+
+
 `2.4.0`_ (2021-02-06)
 ---------------------
 * Added support for ``--session`` cookie expiration based on ``Set-Cookie: max-age=<n>``. (`#1029`_)
