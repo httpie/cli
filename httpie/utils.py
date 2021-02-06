@@ -109,14 +109,7 @@ def get_expired_cookies(
         for attrs in attr_sets
     ]
 
-    # HACK/FIXME: https://github.com/psf/requests/issues/5743
-    for cookie in cookies:
-        if 'expires' in cookie:
-            continue
-
-        max_age = cookie.get('max-age')
-        if max_age and max_age.isdigit():
-            cookie['expires'] = now + float(max_age)
+    _max_age_to_expires(cookies=cookies, now=now)
 
     return [
         {
@@ -126,3 +119,18 @@ def get_expired_cookies(
         for cookie in cookies
         if is_expired(expires=cookie.get('expires'))
     ]
+
+
+def _max_age_to_expires(cookies, now):
+    """
+    Translate `max-age` into `expires` for Requests to take it into account.
+
+    HACK/FIXME: <https://github.com/psf/requests/issues/5743>
+
+    """
+    for cookie in cookies:
+        if 'expires' in cookie:
+            continue
+        max_age = cookie.get('max-age')
+        if max_age and max_age.isdigit():
+            cookie['expires'] = now + float(max_age)
