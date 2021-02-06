@@ -150,7 +150,7 @@ publish-no-test:
 	@echo "$(VERSION)" | grep -q "dev" && echo '!!!Not publishing dev version!!!' && exit 1 || echo ok
 	make build
 	make twine-check
-	$(VENV_BIN)/twine upload dist/*
+	$(VENV_BIN)/twine upload --repository=httpie dist/*
 	@echo
 
 
