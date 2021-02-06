@@ -120,8 +120,10 @@ system package manager, for example:
     $ pacman -S httpie
 
 .. code-block:: bash
+
     # Solus
     $ eopkg install httpie
+
 
 Windows, etc.
 -------------
@@ -2088,7 +2090,7 @@ HTTPie reaches its final version ``1.0``. All changes are recorded in the
 
 
 Community and Support
-------------
+---------------------
 
 HTTPie has the following community channels:
 
