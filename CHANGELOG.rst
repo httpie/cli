@@ -10,7 +10,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 `2.4.0`_ (2021-02-06)
 ---------------------
 * Added support for ``--session`` cookie expiration based on ``Set-Cookie: max-age=<n>``. (`#1029`_)
-* Show a ``--check-status`` warning with ``--quiet`` as well, not only when the output si redirected. (`#1026`_)
+* Show a ``--check-status`` warning with ``--quiet`` as well, not only when the output is redirected. (`#1026`_)
 * Fixed upload with ``--session`` (`#1020`_).
 * Fixed a missing blank line between request and response (`#1006`_).
 
