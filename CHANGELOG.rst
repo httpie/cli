@@ -7,8 +7,8 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 
 
-`2.4.0-dev`_ (unreleased)
--------------------------
+`2.4.0`_ (2021-02-06)
+---------------------
 * Added support for ``--session`` cookie expiration based on ``Set-Cookie: max-age=<n>``. (`#1029`_)
 * Show a ``--check-status`` warning with ``--quiet`` as well, not only when the output si redirected. (`#1026`_)
 * Fixed upload with ``--session`` (`#1020`_).
@@ -464,7 +464,8 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 .. _2.1.0: https://github.com/httpie/httpie/compare/2.0.0...2.1.0
 .. _2.2.0: https://github.com/httpie/httpie/compare/2.1.0...2.2.0
 .. _2.3.0: https://github.com/httpie/httpie/compare/2.2.0...2.3.0
-.. _2.4.0-dev: https://github.com/httpie/httpie/compare/2.3.0...master
+.. _2.4.0: https://github.com/httpie/httpie/compare/2.3.0...2.4.0
+.. _2.5.0-dev: https://github.com/httpie/httpie/compare/2.4.0...master
 
 .. _#128: https://github.com/httpie/httpie/issues/128
 .. _#201: https://github.com/httpie/httpie/issues/201
