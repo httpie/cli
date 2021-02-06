@@ -79,7 +79,7 @@ def test_terminal_request_headers_response_headers(httpbin):
 
 
 def test_raw_request_headers_response_headers(httpbin):
-    r = http('--print=Hh', httpbin + '/get')
+    r = http('--print=Hh', httpbin + '/get', env=MockEnvironment(stdout_isatty=False))
     assert_output_matches(r, [Expect.REQUEST_HEADERS, Expect.RESPONSE_HEADERS])
 
 
@@ -97,10 +97,7 @@ def test_raw_headers_and_body():
 
 
 def test_raw_body():
-    r = http(
-        '--print=B', '--offline', 'pie.dev', 'AAA=BBB',
-        env=MockEnvironment(stdout_isatty=False),
-    )
+    r = http('--print=B', '--offline', 'pie.dev', 'AAA=BBB', env=MockEnvironment(stdout_isatty=False))
     assert_output_matches(r, RAW_BODY)
 
 
