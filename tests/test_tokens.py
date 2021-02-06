@@ -63,6 +63,31 @@ def test_terminal_headers_and_body():
     assert_output_matches(r, TERMINAL_REQUEST)
 
 
+def test_terminal_request_headers_response_body(httpbin):
+    r = http('--print=Hb', httpbin + '/get')
+    assert_output_matches(r, TERMINAL_REQUEST)
+
+
+def test_raw_request_headers_response_body(httpbin):
+    r = http('--print=Hb', httpbin + '/get', env=MockEnvironment(stdout_isatty=False))
+    assert_output_matches(r, RAW_REQUEST)
+
+
+def test_terminal_request_headers_response_headers(httpbin):
+    r = http('--print=Hh', httpbin + '/get')
+    assert_output_matches(r, [Expect.REQUEST_HEADERS, Expect.RESPONSE_HEADERS])
+
+
+def test_raw_request_headers_response_headers(httpbin):
+    r = http('--print=Hh', httpbin + '/get')
+    assert_output_matches(r, [Expect.REQUEST_HEADERS, Expect.RESPONSE_HEADERS])
+
+
+def test_terminal_request_body_response_body(httpbin):
+    r = http('--print=Hh', httpbin + '/get')
+    assert_output_matches(r, [Expect.REQUEST_HEADERS, Expect.RESPONSE_HEADERS])
+
+
 def test_raw_headers_and_body():
     r = http(
         '--print=HB', '--offline', 'pie.dev', 'AAA=BBB',
@@ -109,3 +134,8 @@ def test_verbose_chunked():
     assert HTTP_OK in r
     assert 'Transfer-Encoding: chunked' in r
     assert_output_matches(r, TERMINAL_EXCHANGE)
+
+
+def test_request_headers_response_body(httpbin):
+    r = http('--print=Hb', httpbin + '/get')
+    assert_output_matches(r, TERMINAL_REQUEST)
