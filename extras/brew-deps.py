@@ -12,6 +12,13 @@ import hashlib
 import requests
 
 
+VERSIONS = {
+    # By default, we use the latest packages. But sometimes Requests has a maximum supported versions.
+    # Take a look here before making a release: <https://github.com/psf/requests/blob/master/setup.py>
+    'idna': '2.10',
+}
+
+
 PACKAGES = [
     'httpie',
     'Pygments',
@@ -26,10 +33,17 @@ PACKAGES = [
 
 
 def get_package_meta(package_name):
-    api_url = f'https://pypi.python.org/pypi/{package_name}/json'
+    api_url = f'https://pypi.org/pypi/{package_name}/json'
     resp = requests.get(api_url).json()
     hasher = hashlib.sha256()
-    for release in resp['urls']:
+    version = VERSIONS.get(package_name)
+    if package_name not in VERSIONS:
+        # Latest version
+        release_bundle = resp['urls']
+    else:
+        release_bundle = resp['releases'][version]
+
+    for release in release_bundle:
         download_url = release['url']
         if download_url.endswith('.tar.gz'):
             hasher.update(requests.get(download_url).content)
