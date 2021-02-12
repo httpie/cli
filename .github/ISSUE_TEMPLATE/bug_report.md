@@ -2,7 +2,7 @@
 name: Bug report
 about: Report a HTTPie bug
 title: ''
-labels: "bug, new"
+labels: "new, bug"
 assignees: ''
 
 ---
@@ -12,6 +12,8 @@ assignees: ''
 - [ ] Bug can be reproduced
 - [ ] Bug hasn't been reported before
 - [ ] Bug is in the latest version of HTTPie
+
+___
 
 **Describe the bug**
 A clear and concise description of what the bug is
