@@ -30,6 +30,9 @@ class TestDownloadUtils:
         assert parse('bytes 100-199/200', 100) == 200
         assert parse('bytes 100-199/*', 100) == 200
 
+        # single byte
+        assert parse('bytes 100-100/*', 100) == 101
+
         # missing
         pytest.raises(ContentRangeError, parse, None, 100)
 
@@ -44,9 +47,6 @@ class TestDownloadUtils:
 
         # invalid byte-range-resp-spec
         pytest.raises(ContentRangeError, parse, 'bytes 100-99/199', 100)
-
-        # invalid byte-range-resp-spec
-        pytest.raises(ContentRangeError, parse, 'bytes 100-100/*', 100)
 
     @pytest.mark.parametrize('header, expected_filename', [
         ('attachment; filename=hello-WORLD_123.txt', 'hello-WORLD_123.txt'),
