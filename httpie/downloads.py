@@ -81,7 +81,7 @@ def parse_content_range(content_range: str, resumed_from: int) -> int:
     # last-byte-pos value, is invalid. The recipient of an invalid
     # byte-content-range- spec MUST ignore it and any content
     # transferred along with it."
-    if (first_byte_pos >= last_byte_pos
+    if (first_byte_pos > last_byte_pos
         or (instance_length is not None
             and instance_length <= last_byte_pos)):
         raise ContentRangeError(
