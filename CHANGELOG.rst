@@ -9,6 +9,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 `2.5.0-dev`_ (unreleased)
 -------------------------
+* Fixed ``--continue --download`` with a single byte to be downloaded left (`#1032`_).
 
 
 `2.4.0`_ (2021-02-06)
@@ -496,3 +497,4 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 .. _#1020: https://github.com/httpie/httpie/issues/1020
 .. _#1026: https://github.com/httpie/httpie/issues/1026
 .. _#1029: https://github.com/httpie/httpie/issues/1029
+.. _#1032: https://github.com/httpie/httpie/issues/1032
