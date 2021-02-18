@@ -6,8 +6,9 @@ labels: "new, enhancement"
 assignees: ''
 
 ---
+**Checklist**
 
-- [ ] I've searched for similar feature requests
+- [ ] I've searched for similar feature requests.
 
 ---
 
@@ -19,5 +20,5 @@ assignees: ''
 E.g. “I'm always frustrated when [...]”, “I’m trying to do […] so that […]”.
 
 
-**Provide any additional information, screenshots or code examples below**
+**Provide any additional information, screenshots or code examples below:**
 

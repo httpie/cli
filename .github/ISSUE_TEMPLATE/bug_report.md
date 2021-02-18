@@ -7,8 +7,10 @@ assignees: ''
 
 ---
 
-- [ ] I've searched for similar issues
-- [ ] I'm using the the latest version of HTTPie
+**Checklist**
+
+- [ ] I've searched for similar issues.
+- [ ] I'm using the the latest version of HTTPie.
 
 ---
 
@@ -35,4 +37,4 @@ $ http --debug <COMPLETE ARGUMENT LIST THAT TRIGGERS THE ERROR>
 ```
 
 
-**Provide any additional information, screenshots or code examples below**
+**Provide any additional information, screenshots, or code examples below:**
