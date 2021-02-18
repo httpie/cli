@@ -9,7 +9,7 @@ assignees: ''
 
 - [ ] I've searched for similar feature requests
 
-___
+---
 
 **What enhancement would you like to see?**
 

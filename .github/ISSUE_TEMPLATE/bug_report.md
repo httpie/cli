@@ -10,7 +10,7 @@ assignees: ''
 - [ ] I've searched for similar issues
 - [ ] I'm using the the latest version of HTTPie
 
-___
+---
 
 **What are the steps to reproduce the problem?**
 
