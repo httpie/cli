@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Report a HTTPie bug
+about: Report an HTTPie bug
 title: ''
 labels: "new, bug"
 assignees: ''
