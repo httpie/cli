@@ -31,7 +31,7 @@ Tell us what should happen
 Tell us what happens instead
 
 **Debug output and/or screenshots**
-It's important that you provide the full command argument list as well as the output of the failing command. Use the `--debug` flag, then copy and paste both the command and its output here.
+Please provide the full command argument list as well as the output of the failing command. Run `http` with the `--debug` flag, then copy and paste both the command and its output here.
 
 ```
 $ http --debug <COMPLETE ARGUMENT LIST THAT TRIGGERS THE ERROR>
