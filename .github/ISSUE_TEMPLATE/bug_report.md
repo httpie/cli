@@ -11,7 +11,7 @@ assignees: ''
 
 - [ ] Bug can be reproduced
 - [ ] I've searched the issues and found nothing
-- [ ] Bug is in the latest version of HTTPie
+- [ ] I'm using the the latest version of HTTPie
 
 ___
 
