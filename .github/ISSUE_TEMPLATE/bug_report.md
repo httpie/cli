@@ -10,7 +10,7 @@ assignees: ''
 **Checklist**
 
 - [ ] Bug can be reproduced
-- [ ] Bug hasn't been reported before
+- [ ] I've searched the issues and found nothing
 - [ ] Bug is in the latest version of HTTPie
 
 ___
