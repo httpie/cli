@@ -9,7 +9,7 @@ assignees: ''
 
 **Checklist**
 
-- [ ] Bug can be reproduced
+- [ ] The issue is reproducible
 - [ ] I've searched the issues and found nothing
 - [ ] I'm using the the latest version of HTTPie
 
@@ -31,7 +31,7 @@ Tell us what should happen
 Tell us what happens instead
 
 **Debug output and/or screenshots**
-Please provide the full command argument list as well as the output of the failing command. Run `http` with the `--debug` flag, then copy and paste both the command and its output here.
+Please provide the full command argument list as well as the output of the failing command. Run `http` with the `--debug` flag, then copy and paste both the command and its output here
 
 ```
 $ http --debug <COMPLETE ARGUMENT LIST THAT TRIGGERS THE ERROR>
