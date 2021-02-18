@@ -7,4 +7,4 @@ assignees: ''
 
 ---
 
-Anything you think is relevant. If it's a general question, reach out via the HTTPie Discord: https://httpie.io/chat
+If you have a general question, please consider asking on Discord: https://httpie.io/chat
