@@ -2045,7 +2045,7 @@ Meta
 Interface design
 ----------------
 
-The syntax of the command arguments closely corresponds to the actual HTTP
+The syntax of the command arguments closely correspond to the actual HTTP
 requests sent over the wire. It has the advantage  that it’s easy to remember
 and read. It is often possible to translate an HTTP request to an HTTPie
 argument list just by inlining the request elements. For example, compare this
