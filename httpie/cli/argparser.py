@@ -358,13 +358,17 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
 
         if self.args.files and not self.args.form:
             # `http url @/path/to/file`
-            file_fields = list(self.args.files.keys())
-            if file_fields != ['']:
-                self.error(
-                    'Invalid file fields (perhaps you meant --form?): %s'
-                    % ','.join(file_fields))
+            request_file = None
+            for key, file in self.args.files.items():
+                if key != '':
+                    self.error(
+                        'Invalid file fields (perhaps you meant --form?): %s'
+                        % ','.join(self.args.files.keys()))
+                if request_file is not None:
+                    self.error("Can't read request from multiple files")
+                request_file = file
 
-            fn, fd, ct = self.args.files['']
+            fn, fd, ct = request_file
             self.args.files = {}
 
             self._body_from_file(fd)
