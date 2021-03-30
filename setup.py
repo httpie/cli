@@ -42,6 +42,7 @@ install_requires = [
     'requests[socks]>=2.22.0',
     'Pygments>=2.5.2',
     'requests-toolbelt>=0.9.1',
+    'setuptools',
 ]
 install_requires_win_only = [
     'colorama>=0.2.4',
