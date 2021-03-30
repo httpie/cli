@@ -108,6 +108,10 @@ system package manager, for example:
 
     # CentOS, RHEL, ...
     $ yum install httpie
+    
+.. code-block:: bash
+    # openSUSE
+    $ zypper in httpie
 
 .. code-block:: bash
 
