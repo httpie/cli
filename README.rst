@@ -111,7 +111,7 @@ system package manager, for example:
     
 .. code-block:: bash
     # openSUSE
-    $ zypper in httpie
+    $ zypper install httpie
 
 .. code-block:: bash
 
