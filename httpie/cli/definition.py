@@ -671,6 +671,16 @@ network.add_argument(
 
     """
 )
+network.add_argument(
+    # <https://github.com/httpie/httpie/issues/805>
+    '--send-term-headers',
+    '-T',
+    default=False,
+    action='store_true',
+    help="""
+
+    """
+)
 
 #######################################################################
 # SSL

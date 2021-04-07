@@ -34,9 +34,10 @@ def collect_messages(
     args: argparse.Namespace,
     config_dir: Path,
     request_body_read_callback: Callable[[bytes], None] = None,
+    extra_headers: dict = None,
 ) -> Iterable[Union[requests.PreparedRequest, requests.Response]]:
     httpie_session = None
-    httpie_session_headers = None
+    base_headers = {}
     if args.session or args.session_read_only:
         httpie_session = get_httpie_session(
             config_dir=config_dir,
@@ -44,11 +45,11 @@ def collect_messages(
             host=args.headers.get('Host'),
             url=args.url,
         )
-        httpie_session_headers = httpie_session.headers
-
+        base_headers = httpie_session.headers
+    base_headers.update(extra_headers)
     request_kwargs = make_request_kwargs(
         args=args,
-        base_headers=httpie_session_headers,
+        base_headers=base_headers,
         request_body_read_callback=request_body_read_callback
     )
     send_kwargs = make_send_kwargs(args)

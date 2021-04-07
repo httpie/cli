@@ -1,6 +1,7 @@
 import sys
 import os
 from pathlib import Path
+from pprint import pprint
 from typing import IO, Optional
 
 
@@ -37,6 +38,13 @@ class Environment:
     stderr_isatty: bool = stderr.isatty()
     colors = 256
     program_name: str = 'http'
+
+    # <https://github.com/httpie/httpie/issues/805>
+    env_lang = os.environ.get('LANG', '').split('_')[0]
+    env_term = os.environ.get('TERM', '')
+    env_columns = os.environ.get('COLUMNS', '')
+    env_lines = os.environ.get('LINES', '')
+
     if not is_windows:
         if curses:
             try:
@@ -126,3 +134,14 @@ class Environment:
     def log_error(self, msg, level='error'):
         assert level in ['error', 'warning']
         self._orig_stderr.write(f'\n{self.program_name}: {level}: {msg}\n\n')
+
+
+def get_term_info_headers(env:Environment):
+    # <https://github.com/httpie/httpie/issues/805>
+    return {
+        'Accept-Language': env.env_lang,
+        'X-Terminal': env.env_term,
+        'X-Terminal-Attached': 'yes' if env.stdin.isatty() else 'no',
+        'X-Terminal-Columns': env.env_columns,
+        'X-Terminal-Lines': env.env_lines,
+    }

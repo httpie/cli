@@ -11,7 +11,7 @@ from requests import __version__ as requests_version
 from httpie import __version__ as httpie_version
 from httpie.cli.constants import OUT_REQ_BODY, OUT_REQ_HEAD, OUT_RESP_BODY, OUT_RESP_HEAD
 from httpie.client import collect_messages
-from httpie.context import Environment
+from httpie.context import Environment, get_term_info_headers
 from httpie.downloads import Downloader
 from httpie.output.writer import write_message, write_stream, MESSAGE_SEPARATOR_BYTES
 from httpie.plugins.registry import plugin_manager
@@ -160,8 +160,12 @@ def program(args: argparse.Namespace, env: Environment) -> ExitStatus:
             args.follow = True  # --download implies --follow.
             downloader = Downloader(output_file=args.output_file, progress_file=env.stderr, resume=args.download_resume)
             downloader.pre_request(args.headers)
-        messages = collect_messages(args=args, config_dir=env.config.directory,
-                                    request_body_read_callback=request_body_read_callback)
+        messages = collect_messages(
+            args=args,
+            config_dir=env.config.directory,
+            extra_headers=get_term_info_headers(env) if args.send_term_headers else None,
+            request_body_read_callback=request_body_read_callback,
+        )
         force_separator = False
         prev_with_body = False
 
