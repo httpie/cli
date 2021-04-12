@@ -1,12 +1,11 @@
-HTTPie: human-friendly CLI HTTP client for the API era
+HTTPie: Human-friendly CLI HTTP client for the API era
 ######################################################
 
 HTTPie (pronounced *aitch-tee-tee-pie*) is a command-line HTTP client.
-Its goal is to make CLI interaction with web services as human-friendly as possible.
-HTTPie is designed for testing, debugging, and generally interacting with APIs & HTTP servers.
-The ``http`` & ``https`` commands allow for creating and sending arbitrary HTTP requests.
-They use simple and natural syntax and provide formatted and colorized output.
-
+Its goal is to make command-line interactions with web services as
+human-friendly as possible. The ``http`` & ``https`` commands create and
+send HTTP/S requests using a simple and natural syntax. Response data is
+colorized in an easy-to-read format.
 
 
 .. class:: no-web no-pdf
@@ -30,13 +29,13 @@ They use simple and natural syntax and provide formatted and colorized output.
 About this document
 ===================
 
-This documentation is best viewed at `httpie.org/docs <https://httpie.org/docs>`_.
+Documentation is best viewed at `httpie.org/docs <https://httpie.org/docs>`_.
 
 You can select your corresponding HTTPie version as well as run examples directly from the
 browser using a `termible.io <https://termible.io?utm_source=httpie-readme>`_ embedded terminal.
 
 If you are reading this on GitHub, then this text covers the current *development* version.
-You are invited to submit fixes and improvements to the the docs by editing
+You are invited to submit fixes and improvements to the docs by editing
 `README.rst <https://github.com/httpie/httpie/blob/master/README.rst>`_.
 
 
@@ -52,7 +51,7 @@ Main features
 * Custom headers
 * Persistent sessions
 * Wget-like downloads
-* Linux, macOS and Windows support
+* Linux, macOS, and Windows support
 * Plugins
 * Documentation
 * Test coverage
@@ -70,9 +69,14 @@ Installation
 ============
 
 
+Python version
+--------------
+
+Python version 3.6 or greater is required.
+
+
 macOS
 -----
-
 
 On macOS, HTTPie can be installed via `Homebrew <https://brew.sh/>`_
 (recommended):
@@ -87,6 +91,7 @@ A MacPorts *port* is also available:
 .. code-block:: bash
 
     $ port install httpie
+
 
 Linux
 -----
@@ -125,11 +130,12 @@ system package manager, for example:
     $ eopkg install httpie
 
 
-Windows, etc.
--------------
+Windows and other systems
+-------------------------
 
-A universal installation method (that works on Windows, Mac OS X, Linux, …,
-and always provides the latest version) is to use `pip`_:
+Use `pip`_ as a universal installation method that works on Windows, macOS,
+Linux, and other operating systems. This method installs the latest version of
+HTTPie:
 
 
 .. code-block:: bash
@@ -139,23 +145,18 @@ and always provides the latest version) is to use `pip`_:
 
     $ python -m pip install --upgrade httpie
 
-
-(If ``pip`` installation fails for some reason, you can try
-``easy_install httpie`` as a fallback.)
-
-
-Python version
---------------
-
-Python version 3.6 or greater is required.
+    # If pip installation fails, try using easy_install:
+    $ easy_install httpie
 
 
-Unstable version
-----------------
+Development version
+-------------------
 
-You can also install the latest unreleased development version directly from
-the ``master`` branch on GitHub.  It is a work-in-progress of a future stable
-release so the experience might be not as smooth.
+You can install the latest unreleased development version from the
+``master`` branch of the
+`HTTPie GitHub repository <https://github.com/httpie/httpie>`_.
+The development version is a work-in-progress that may not be as stable
+as a released version.
 
 
 .. class:: no-pdf
@@ -163,7 +164,7 @@ release so the experience might be not as smooth.
 |build|
 
 
-On macOS you can install it with Homebrew:
+On macOS, the development version can be installed with Homebrew:
 
 .. code-block:: bash
 
@@ -171,16 +172,15 @@ On macOS you can install it with Homebrew:
     $ brew install --HEAD httpie
 
 
-Otherwise with ``pip``:
+On all operating systems, the development version can be installed with
+``pip``:
 
 .. code-block:: bash
 
     $ pip install --upgrade https://github.com/httpie/httpie/archive/master.tar.gz
 
 
-Verify that now we have the
-`current development version identifier <https://github.com/httpie/httpie/blob/master/httpie/__init__.py#L6>`_
-with the ``-dev`` suffix, for example:
+The development version number always includes the ``-dev`` suffix.
 
 .. code-block:: bash
 
@@ -200,7 +200,7 @@ Hello World:
     $ https httpie.io/hello
 
 
-Synopsis:
+Syntax:
 
 .. code-block:: bash
 
@@ -227,7 +227,7 @@ Submitting `forms`_:
     $ http -f POST pie.dev/post hello=World
 
 
-See the request that is being sent using one of the `output options`_:
+View the request data sent. Several `output options`_ are supported.
 
 .. code-block:: bash
 
@@ -330,25 +330,18 @@ The default scheme is ``http://`` and can be omitted from the argument:
 HTTPie also installs an ``https`` executable, where the default
 scheme is ``https://``:
 
-
 .. code-block:: bash
 
     $ https example.org
     # => https://example.org
 
 
-Querystring parameters
-----------------------
+Query string parameters
+-----------------------
 
-If you find yourself manually constructing URLs with querystring parameters
-on the terminal, you may appreciate the ``param==value`` syntax for appending
-URL parameters.
-
-With that, you don’t have to worry about escaping the ``&``
-separators for your shell. Additionally, any special characters in the
-parameter name or value get automatically URL-escaped
-(as opposed to parameters specified in the full URL, which HTTPie doesn’t
-modify).
+Query string parameters are specified with the syntax ``param==value``.
+There is no need to use ``&`` separators. Special characters in the parameter
+name or value are automatically URL-escaped.
 
 .. code-block:: bash
 
@@ -360,13 +353,22 @@ modify).
     GET /search/repositories?q=httpie&per_page=1 HTTP/1.1
 
 
-
 URL shortcuts for ``localhost``
 -------------------------------
 
-Additionally, curl-like shorthand for localhost is supported.
-This means that, for example ``:3000`` would expand to ``http://localhost:3000``
-If the port is omitted, then port 80 is assumed.
+curl-like shorthand for localhost is supported. For example ``:3000`` expands
+to ``http://localhost:3000``. If the port is omitted, then port 80 is assumed.
+
+.. code-block:: bash
+
+    $ http :
+
+
+.. code-block:: http
+
+    GET / HTTP/1.1
+    Host: localhost
+
 
 .. code-block:: bash
 
@@ -390,26 +392,21 @@ If the port is omitted, then port 80 is assumed.
     Host: localhost:3000
 
 
-.. code-block:: bash
-
-    $ http :
-
-
-.. code-block:: http
-
-    GET / HTTP/1.1
-    Host: localhost
-
-
 Other default schemes
 ---------------------
 
-When HTTPie is invoked as ``https`` then the default scheme is ``https://``
-(``$ https example.org`` will make a request to ``https://example.org``).
+When HTTPie is invoked as ``https`` then the default scheme is ``https://``.
 
-You can also use the ``--default-scheme <URL_SCHEME>`` option to create
-shortcuts for other protocols than HTTP (possibly supported via plugins).
-Example for the `httpie-unixsocket <https://github.com/httpie/httpie-unixsocket>`_ plugin:
+.. code-block:: bash
+
+    # Make a request to `https://example.org`
+    $ https example.org
+
+
+Use the ``--default-scheme="<URL_SCHEME>"`` option to create shortcuts for
+protocols other than HTTP, such as protocols supported via plugins. An
+example for the
+`httpie-unixsocket <https://github.com/httpie/httpie-unixsocket>`_ plugin:
 
 .. code-block:: bash
 
@@ -432,24 +429,25 @@ Example for the `httpie-unixsocket <https://github.com/httpie/httpie-unixsocket>
 ``--path-as-is``
 ----------------
 
-The standard behaviour of HTTP clients is to normalize the path portion of URLs by squashing dot segments
-as a typically filesystem would:
-
+The standard behavior of HTTP clients is to normalize the path portion of
+URLs by squashing dot segments in the same manner that many filesystems do:
 
 .. code-block:: bash
 
     $ http -v example.org/./../../etc/password
+
 
 .. code-block:: http
 
     GET /etc/password HTTP/1.1
 
 
-The ``--path-as-is`` option allows you to disable this behavior:
+The ``--path-as-is`` option disables this behavior:
 
 .. code-block:: bash
 
     $ http --path-as-is -v example.org/./../../etc/password
+
 
 .. code-block:: http
 
@@ -459,36 +457,35 @@ The ``--path-as-is`` option allows you to disable this behavior:
 Request items
 =============
 
-There are a few different *request item* types that provide a
-convenient mechanism for specifying HTTP headers, simple JSON and
-form data, files, and URL parameters.
+HTTPie supports several *request item* types for conveniently specifying
+HTTP headers, simple JSON and form data, files, and URL parameters. Each
+type is a key/value pair specified after the URL. The type is distinguished
+by the separator used: ``:``, ``=``, ``:=``, ``==``, ``@``, ``=@``, and
+``:=@``. The separators with an ``@`` expect a value of a file path.
 
-They are key/value pairs specified after the URL. All have in
-common that they become part of the actual request that is sent and that
-their type is distinguished only by the separator used:
-``:``, ``=``, ``:=``, ``==``, ``@``, ``=@``, and ``:=@``. The ones with an
-``@`` expect a file path as value.
+In addition, arbitrary request data can be passed by using `Redirected input`_.
 
 +------------------------------+---------------------------------------------------+
 | Item Type                    | Description                                       |
 +==============================+===================================================+
-| HTTP Headers                 | Arbitrary HTTP header, e.g. ``X-API-Token:123``.  |
-| ``Name:Value``               |                                                   |
+| HTTP Headers                 | Arbitrary HTTP header, e.g. ``X-API-Token:123``   |
+| ``name:value``               |                                                   |
 +------------------------------+---------------------------------------------------+
 | URL parameters               | Appends the given name/value pair as a query      |
-| ``name==value``              | string parameter to the URL.                      |
-|                              | The ``==`` separator is used.                     |
+| ``name==value``              | string parameter to the URL                       |
 +------------------------------+---------------------------------------------------+
-| Data Fields                  | Request data fields to be serialized as a JSON    |
-| ``field=value``,             | object (default), to be form-encoded              |
-| ``field=@file.txt``          | (with ``--form, -f``), or to be serialized as     |
-|                              | ``multipart/form-data`` (with ``--multipart``).   |
+| Data Fields                  | Method of sending the request data fields:        |
+| ``field=value``,             |                                                   |
+| ``field=@file.txt``          | * Serialized as a JSON object (default)           |
+|                              | * Form-encoded (with ``--form, -f``)              |
+|                              | * Serialized as ``multipart/form-data`` (with     |
+|                              |   ``--multipart``)                                |
 +------------------------------+---------------------------------------------------+
 | Raw JSON fields              | Useful when sending JSON and one or               |
 | ``field:=json``,             | more fields need to be a ``Boolean``, ``Number``, |
 | ``field:=@file.json``        | nested ``Object``, or an ``Array``,  e.g.,        |
 |                              | ``meals:='["ham","spam"]'`` or ``pies:=[1,2,3]``  |
-|                              | (note the quotes).                                |
+|                              | (note the quotes)                                 |
 +------------------------------+---------------------------------------------------+
 | Fields upload fields         | Only available with ``--form, -f`` and            |
 | ``field@/dir/file``          | ``--multipart``.                                  |
@@ -499,22 +496,18 @@ their type is distinguished only by the separator used:
 +------------------------------+---------------------------------------------------+
 
 
-Note that data fields aren’t the only way to specify request data:
-`Redirected input`_ is a mechanism for passing arbitrary request data.
-
-
 Escaping rules
 --------------
 
-You can use ``\`` to escape characters that shouldn’t be used as separators
-(or parts thereof). For instance, ``foo\==bar`` will become a data key/value
+Use ``\`` to escape characters that shouldn’t be used as a separator or as
+part of a separator. For instance, ``foo\==bar`` will become a data key/value
 pair (``foo=`` and ``bar``) instead of a URL parameter.
 
 Often it is necessary to quote the values, e.g. ``foo='bar baz'``.
 
-If any of the field names or headers starts with a minus
-(e.g., ``-fieldname``), you need to place all such items after the special
-token ``--`` to prevent confusion with ``--arguments``:
+If a field name or header begins with a minus sign (e.g., ``-fieldname``), the
+item must be placed after the special token ``--`` to prevent confusion with
+``--arguments``:
 
 .. code-block:: bash
 
@@ -529,7 +522,6 @@ token ``--`` to prevent confusion with ``--arguments``:
     {
         "-name-starting-with-dash": "foo"
     }
-
 
 
 JSON
@@ -1752,7 +1744,6 @@ custom `HTTP headers`_ (except for the ones starting with ``Content-`` or ``If-`
 (manually specified or sent by the server) persist between requests
 to the same host.
 
-
 .. code-block:: bash
 
     # Create a new session:
@@ -1763,6 +1754,7 @@ to the same host.
 
     # Inspect / edit the generated session file:
     $ cat session.json
+
 
 .. code-block:: bash
 
@@ -1780,13 +1772,13 @@ who has access to the session file.
 Named sessions
 --------------
 
-
 You can create one or more named session per host. For example, this is how
 you can create a new session named ``user1`` for ``pie.dev``:
 
 .. code-block:: bash
 
     $ http --session=user1 -a user1:password pie.dev/get X-Foo:Bar
+
 
 From now on, you can refer to the session by its name (``user1``). When you choose
 to use the session again, any previously specified authentication or HTTP headers
@@ -1796,11 +1788,13 @@ will automatically be set:
 
     $ http --session=user1 pie.dev/get
 
+
 To create or reuse a different session, simple specify a different name:
 
 .. code-block:: bash
 
     $ http --session=user2 -a user2:password pie.dev/get X-Bar:Foo
+
 
 Named sessions’s data is stored in JSON files inside the ``sessions``
 subdirectory of the `config`_ directory, typically:
@@ -1809,7 +1803,6 @@ subdirectory of the `config`_ directory, typically:
 
 If you have executed the above commands on a unix machine,
 you should be able list the generated sessions files using:
-
 
 .. code-block:: bash
 
@@ -1832,6 +1825,7 @@ allows for sessions to be re-used across multiple hosts:
 
     # Use the session to make a request to another host:
     $ http --session=/tmp/session.json admin.example.org
+
 
 .. code-block:: bash
 
@@ -1857,10 +1851,12 @@ exchange after it has been created, specify the session name via
     # If the session file doesn’t exist, then it is created:
     $ http --session-read-only=./ro-session.json pie.dev/headers Custom-Header:orig-value
 
+
 .. code-block:: bash
 
     # But it is not updated:
     $ http --session-read-only=./ro-session.json pie.dev/headers Custom-Header:new-value
+
 
 Cookie Storage Behaviour
 ------------------------
