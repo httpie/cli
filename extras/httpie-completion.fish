@@ -44,6 +44,7 @@ complete    -c http -s d -l download     -d 'Do not print the response body to s
 complete    -c http -s c -l continue     -d 'Resume an interrupted download'
 complete -x -c http      -l session      -d 'Create, or reuse and update a session'
 complete -x -c http -s a -l auth         -d 'If only the username is provided (-a username), HTTPie will prompt for the password'
+complete -x -c http -s a -l auth-file    -d 'Use a JSON data in a file for authentication'
 complete -x -c http      -l auth-type    -d 'The authentication mechanism to be used' -a '(__fish_httpie_auth_types)' -A
 complete -x -c http      -l proxy        -d 'String mapping protocol to the URL of the proxy'
 complete    -c http      -l follow       -d 'Allow full redirects'

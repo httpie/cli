@@ -516,6 +516,16 @@ auth.add_argument(
     ''',
 )
 
+auth.add_argument(
+    '--auth-file', '-af',
+    default=None,
+    metavar='[FILE]',
+    help='''
+    The JSON must contain the tags User and Pass.
+
+    ''',
+)
+
 
 class _AuthTypeLazyChoices:
     # Needed for plugin testing

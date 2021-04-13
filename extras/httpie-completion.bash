@@ -16,7 +16,7 @@ _http_complete_options() {
     local cur_word=$1
     local options="-j --json -f --form --pretty -s --style -p --print
     -v --verbose -h --headers -b --body -S --stream -o --output -d --download
-    -c --continue --session --session-read-only -a --auth --auth-type --proxy
+    -c --continue --session --session-read-only -a --auth --auth-file --auth-type --proxy
     --follow --verify --cert --cert-key --timeout --check-status --ignore-stdin
     --help --version --traceback --debug"
     COMPREPLY=( $( compgen -W "$options" -- "$cur_word" ) )
