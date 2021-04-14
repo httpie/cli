@@ -511,7 +511,7 @@ auth.add_argument(
     metavar='USER[:PASS]|FILE',
     help='''
     If only the username is provided (-a username), HTTPie will prompt
-    for the password. If the filename is provided, authentication will be done automatically.
+    for the password. If the filename (JSON: { "user": "httpwatch", "pass": "123" }) is provided, authentication will be done automatically.
 
     ''',
 )
