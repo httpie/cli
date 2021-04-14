@@ -953,9 +953,6 @@ The currently supported authentication schemes are Basic and Digest
                         supported as well (but credentials passed via ``-a``
                         have higher priority).
 
-``--auth-file, -af``    Pass a json file with User and Pass pair as
-                        the argument.
-
 ``--auth-type, -A``     Specify the auth mechanism. Possible values are
                         ``basic``, ``digest``, or the name of any `auth plugins`_ you have installed. The default value is
                         ``basic`` so it can often be omitted.

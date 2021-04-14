@@ -1,5 +1,8 @@
+import json
+import ast
 import argparse
 import errno
+from genericpath import exists
 import os
 import re
 import sys
@@ -204,6 +207,14 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
                     orig=SEPARATOR_CREDENTIALS.join([username, password])
                 )
 
+        #New method for SES Class
+        if exists(self.args.auth):
+            with open(self.args.auth) as f:
+                authdatafile = f.read()
+                obj = json.loads(authdatafile)
+                self.args.auth = obj['user'] + ":" + obj['pass']
+        #New method for SES Class
+        
         if self.args.auth is not None or auth_type_set:
             if not self.args.auth_type:
                 self.args.auth_type = default_auth_plugin.auth_type

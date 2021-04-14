@@ -508,20 +508,10 @@ auth = parser.add_argument_group(title='Authentication')
 auth.add_argument(
     '--auth', '-a',
     default=None,
-    metavar='USER[:PASS]',
+    metavar='USER[:PASS]|FILE',
     help='''
     If only the username is provided (-a username), HTTPie will prompt
-    for the password.
-
-    ''',
-)
-
-auth.add_argument(
-    '--auth-file', '-af',
-    default=None,
-    metavar='[FILE]',
-    help='''
-    The JSON must contain the tags User and Pass.
+    for the password. If the filename is provided, authentication will be done automatically.
 
     ''',
 )
