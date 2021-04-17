@@ -208,7 +208,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
                 )
 
         #New method for SES Class
-        if exists(self.args.auth):
+        if self.args.auth is not None and exists(self.args.auth):
             with open(self.args.auth) as f:
                 authdatafile = f.read()
                 obj = json.loads(authdatafile)
