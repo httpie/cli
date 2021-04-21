@@ -13,7 +13,7 @@ from httpie.cli.constants import OUT_REQ_BODY, OUT_REQ_HEAD, OUT_RESP_BODY, OUT_
 from httpie.client import collect_messages
 from httpie.context import Environment
 from httpie.downloads import Downloader
-from httpie.output.writer import write_message, write_stream, MESSAGE_SEPARATOR_BYTES
+from httpie.output.writer import write_message, write_stream, MESSAGE_SEPARATOR_BYTES, write_message_json
 from httpie.plugins.registry import plugin_manager
 from httpie.status import ExitStatus, http_status_to_exit_status
 
@@ -165,31 +165,57 @@ def program(args: argparse.Namespace, env: Environment) -> ExitStatus:
         force_separator = False
         prev_with_body = False
 
-        # Process messages as they’re generated
-        for message in messages:
-            is_request = isinstance(message, requests.PreparedRequest)
-            with_headers, with_body = get_output_options(args=args, message=message)
-            do_write_body = with_body
-            if prev_with_body and (with_headers or with_body) and (force_separator or not env.stdout_isatty):
-                # Separate after a previous message with body, if needed. See test_tokens.py.
-                separate()
-            force_separator = False
-            if is_request:
-                if not initial_request:
-                    initial_request = message
-                    is_streamed_upload = not isinstance(message.body, (str, bytes))
-                    if with_body:
-                        do_write_body = not is_streamed_upload
-                        force_separator = is_streamed_upload and env.stdout_isatty
-            else:
-                final_response = message
-                if args.check_status or downloader:
-                    exit_status = http_status_to_exit_status(http_status=message.status_code, follow=args.follow)
-                    if exit_status != ExitStatus.SUCCESS and (not env.stdout_isatty or args.quiet):
-                        env.log_error(f'HTTP {message.raw.status} {message.raw.reason}', level='warning')
-            write_message(requests_message=message, env=env, args=args, with_headers=with_headers,
-                          with_body=do_write_body)
-            prev_with_body = with_body
+        if args.output_format_form == "RAW":
+            # Process messages as they’re generated
+            for message in messages:
+                is_request = isinstance(message, requests.PreparedRequest)
+                with_headers, with_body = get_output_options(args=args, message=message)
+                do_write_body = with_body
+                if prev_with_body and (with_headers or with_body) and (force_separator or not env.stdout_isatty):
+                    # Separate after a previous message with body, if needed. See test_tokens.py.
+                    separate()
+                force_separator = False
+                if is_request:
+                    if not initial_request:
+                        initial_request = message
+                        is_streamed_upload = not isinstance(message.body, (str, bytes))
+                        if with_body:
+                            do_write_body = not is_streamed_upload
+                            force_separator = is_streamed_upload and env.stdout_isatty
+                else:
+                    final_response = message
+                    if args.check_status or downloader:
+                        exit_status = http_status_to_exit_status(http_status=message.status_code, follow=args.follow)
+                        if exit_status != ExitStatus.SUCCESS and (not env.stdout_isatty or args.quiet):
+                            env.log_error(f'HTTP {message.raw.status} {message.raw.reason}', level='warning')
+                write_message(requests_message=message, env=env, args=args, with_headers=with_headers,
+                            with_body=do_write_body)
+                prev_with_body = with_body
+        else:
+            for message in messages:
+                is_request = isinstance(message, requests.PreparedRequest)
+                with_headers, with_body = get_output_options(args=args, message=message)
+                do_write_body = with_body
+                if prev_with_body and (with_headers or with_body) and (force_separator or not env.stdout_isatty):
+                    # Separate after a previous message with body, if needed. See test_tokens.py.
+                    separate()
+                force_separator = False
+                if is_request:
+                    if not initial_request:
+                        initial_request = message
+                        is_streamed_upload = not isinstance(message.body, (str, bytes))
+                        if with_body:
+                            do_write_body = not is_streamed_upload
+                            force_separator = is_streamed_upload and env.stdout_isatty
+                else:
+                    final_response = message
+                    if args.check_status or downloader:
+                        exit_status = http_status_to_exit_status(http_status=message.status_code, follow=args.follow)
+                        if exit_status != ExitStatus.SUCCESS and (not env.stdout_isatty or args.quiet):
+                            env.log_error(f'HTTP {message.raw.status} {message.raw.reason}', level='warning')
+                write_message_json(requests_message=message, env=env, args=args, with_headers=with_headers,
+                            with_body=do_write_body)
+                prev_with_body = with_body
 
         # Cleanup
         if force_separator:

@@ -68,6 +68,9 @@ OUT_REQ_BODY = 'B'
 OUT_RESP_HEAD = 'h'
 OUT_RESP_BODY = 'b'
 
+OUT_FORMAT_JSON = 'JSON'
+OUT_FORMAT_RAW = 'RAW'
+
 OUTPUT_OPTIONS = frozenset({
     OUT_REQ_HEAD,
     OUT_REQ_BODY,
@@ -89,8 +92,9 @@ DEFAULT_FORMAT_OPTIONS = [
     'headers.sort:true',
     'json.format:true',
     'json.indent:4',
-    'json.sort_keys:true',
+    'json.sort_keys:true', 
 ]
+
 SORTED_FORMAT_OPTIONS = [
     'headers.sort:true',
     'json.sort_keys:true',

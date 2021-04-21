@@ -13,7 +13,7 @@ from httpie.cli.argtypes import (
 )
 from httpie.cli.constants import (
     DEFAULT_FORMAT_OPTIONS, OUTPUT_OPTIONS,
-    OUTPUT_OPTIONS_DEFAULT, OUT_REQ_BODY, OUT_REQ_HEAD,
+    OUTPUT_OPTIONS_DEFAULT, OUT_REQ_BODY, OUT_REQ_HEAD, OUT_FORMAT_JSON,OUT_FORMAT_RAW,
     OUT_RESP_BODY, OUT_RESP_HEAD, PRETTY_MAP, PRETTY_STDOUT_TTY_ONLY,
     RequestType, SEPARATOR_GROUP_ALL_ITEMS, SEPARATOR_PROXY,
     SORTED_FORMAT_OPTIONS_STRING,
@@ -286,6 +286,28 @@ output_processing.add_argument(
     Re-enables all sorting options while formatting output. It is a shortcut for:
 
         --format-options={SORTED_FORMAT_OPTIONS_STRING}
+
+    '''
+)
+output_processing.add_argument(  #TODO - escrever texto do help
+    '--output-format=json',
+    dest="output_format_form",
+    action='store_const',
+    const=OUT_FORMAT_JSON,
+    default=OUT_FORMAT_RAW,
+    help=f'''
+    Cenas cenas 
+
+    '''
+)
+output_processing.add_argument(  #TODO - escrever texto do help
+    '--output-format=raw',
+    dest="output_format_form",
+    action='store_const',
+    const=OUT_FORMAT_RAW,
+    default=OUT_FORMAT_RAW,
+    help=f'''
+    Cenas cenas
 
     '''
 )
