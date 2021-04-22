@@ -71,6 +71,91 @@ class BaseStream:
                     yield b'\n'
                 yield e.message
 
+class BaseStreamJson:
+    """Base HTTP message output stream class."""
+    CHUNK_SIZE = 1024 * 100
+
+    def __init__(
+        self,
+        msgReq: HTTPMessage,
+        msgRes: HTTPMessage,
+        on_body_chunk_downloaded: Callable[[bytes], None] = None,
+        chunk_size=CHUNK_SIZE
+    ):
+        """
+        :param msg: a :class:`models.HTTPMessage` subclass
+        :param with_headers: if `True`, headers will be included
+        :param with_body: if `True`, body will be included
+
+        """
+
+        self.chunk_size = chunk_size
+        self.msgReq = msgReq
+        self.msgRes = msgRes
+        self.on_body_chunk_downloaded = on_body_chunk_downloaded
+
+    def get_headers_req(self) -> bytes:
+        """Return the headers' bytes."""
+        return self.msgReq.headers.encode('utf8')
+        
+    def get_headers_res(self) -> bytes:
+        """Return the headers' bytes."""
+        return self.msgRes.headers.encode('utf8')
+    
+    def iter_body_req(self) -> Iterable[bytes]:
+        return self.msgReq.iter_body(self.chunk_size)
+        
+    def iter_body_res(self) -> Iterable[bytes]:
+        return self.msgRes.iter_body(self.chunk_size)
+        
+
+    def __iter__(self) -> Iterable[bytes]:
+        """Return an iterator over `self.msg`."""
+        body1=True
+        body2=True
+        yield b'{\n\t'
+        yield b'"Request": '
+        yield b'{\n\t\t'
+        yield b'"headers": '
+        yield b'{'
+        yield self.get_headers_req()
+        yield b'},\n\t\t'
+        yield b'"body": '
+        try:
+            for chunk in self.iter_body_req():
+                if chunk=="b''":
+                    body1=False
+                yield chunk
+                if self.on_body_chunk_downloaded:
+                    self.on_body_chunk_downloaded(chunk)
+        except DataSuppressedError as e:
+            yield e.message
+        if body1:
+            yield b'""'
+        yield b'\n\t'
+        yield b'},\n\t'
+        yield b'"Response": '
+        yield b'{\n\t\t'
+        yield b'"headers": '
+        yield b'{'
+        yield self.get_headers_res()
+        yield b'},\n\t\t'
+        yield b'"body": '
+        try:
+            for chunk in self.iter_body_res():
+                if chunk=="b''":
+                    body2=False
+                yield chunk
+                if self.on_body_chunk_downloaded:
+                    self.on_body_chunk_downloaded(chunk)
+        except DataSuppressedError as e:
+            yield e.message
+        if body2:
+            yield b'""'
+        yield b'\n\t'
+        yield b'}\n'
+        yield b'}'
+
 
 class RawStream(BaseStream):
     """The message is streamed in chunks with no processing."""

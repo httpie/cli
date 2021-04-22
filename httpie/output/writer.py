@@ -5,10 +5,10 @@ from typing import IO, TextIO, Tuple, Type, Union
 import requests
 
 from httpie.context import Environment
-from httpie.models import HTTPRequest, HTTPResponse, HTTPRequestJson, HTTPResponseJson
+from httpie.models import HTTPRequest, HTTPResponse, HTTPRequestJson, HTTPResponseJson, HTTPMessage
 from httpie.output.processing import Conversion, Formatting
 from httpie.output.streams import (
-    BaseStream, BufferedPrettyStream, EncodedStream, PrettyStream, RawStream,
+    BaseStreamJson, BaseStream, BufferedPrettyStream, EncodedStream, PrettyStream, RawStream, 
 )
 
 from httpie.output.formatters.colors import (
@@ -55,7 +55,7 @@ def write_message(
             raise
 
 def write_message_json(
-    requests_message: Union[requests.PreparedRequest, requests.Response],
+    requests_message: [requests.PreparedRequest, requests.Response],
     env: Environment,
     args: argparse.Namespace,
     with_headers=False,
@@ -76,7 +76,7 @@ def write_message_json(
         'flush': env.stdout_isatty or args.stream
     }
     try:
-        write_stream(**write_stream_kwargs)
+        write_stream_json(**write_stream_kwargs)
     except IOError as e:
         show_traceback = args.debug or args.traceback
         if not show_traceback and e.errno == errno.EPIPE:
@@ -88,6 +88,23 @@ def write_message_json(
 
 def write_stream(
     stream: BaseStream,
+    outfile: Union[IO, TextIO],
+    flush: bool
+):
+    """Write the output stream."""
+    try:
+        # Writing bytes so we use the buffer interface (Python 3).
+        buf = outfile.buffer
+    except AttributeError:
+        buf = outfile
+
+    for chunk in stream:
+        buf.write(chunk)
+        if flush:
+            outfile.flush()
+
+def write_stream_json(
+    stream: BaseStreamJson,
     outfile: Union[IO, TextIO],
     flush: bool
 ):
@@ -156,7 +173,7 @@ def build_output_stream_for_message(
 def build_output_stream_for_message_json(
     args: argparse.Namespace,
     env: Environment,
-    requests_message: Union[requests.PreparedRequest, requests.Response],
+    requests_message: [requests.PreparedRequest, requests.Response],
     with_headers: bool,
     with_body: bool,
 ):
@@ -167,20 +184,17 @@ def build_output_stream_for_message_json(
     message_class = {
         requests.PreparedRequest: HTTPRequestJson,
         requests.Response: HTTPResponseJson
-    }[type(requests_message)]
+    }[type(requests_message[0])]
+    message_class2 = {
+        requests.PreparedRequest: HTTPRequestJson,
+        requests.Response: HTTPResponseJson
+    }[type(requests_message[1])]
+
     yield from stream_class(
-        msg=message_class(requests_message),
-        with_headers=with_headers,
-        with_body=with_body,
+        msgReq=message_class(requests_message[0]),
+        msgRes=message_class2(requests_message[1]),
         **stream_kwargs,
     )
-    print(message_class)
-    if (env.stdout_isatty and with_body
-            and not getattr(requests_message, 'is_body_upload_chunk', False)):
-        # Ensure a blank line after the response body.
-        # For terminal output only.
-        yield MESSAGE_SEPARATOR_BYTES
-
 
 def get_stream_type_and_kwargs(
     env: Environment,
@@ -198,6 +212,11 @@ def get_stream_type_and_kwargs(
                 else RawStream.CHUNK_SIZE
             )
         }
+    elif args.output_format_form=="JSON":
+        stream_class = BaseStreamJson
+        stream_kwargs = {
+            'on_body_chunk_downloaded': None
+        }
     elif args.prettify:
         stream_class = PrettyStream if args.stream else BufferedPrettyStream
         stream_kwargs = {
@@ -206,7 +225,7 @@ def get_stream_type_and_kwargs(
             'formatting': Formatting(
                 env=env,
                 groups=args.prettify,
-                color_scheme=SOLARIZED_STYLE,
+                color_scheme=args.style,
                 explicit_json=args.json,
                 format_options=args.format_options,
             )
