@@ -28,7 +28,7 @@
 </a>
 <a href="https://httpie.io/chat" target="_blank">
     <img src="https://img.shields.io/badge/chat-on%20Discord-brightgreen?style=flat&logo=discord&label=Chat%20on&color=%23B464F0" />
-</a>  &nbsp;
+</a>  &nbsp; &nbsp;
 
 HTTPie (<i>pronounced aitch-tee-tee-pie</i> 🥧) is a command-line HTTP client.
 
