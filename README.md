@@ -27,7 +27,7 @@
 
 The `http` and `https` commands let you send arbitrary HTTP requests for testing, debugging, and generally interacting with APIs & HTTP servers. Commands use simple, natural syntax and provide a formatted and colorized output.
 
-*Go to [httpie.io](https://httpie.io) to learn more.*
+**Go to [httpie.io](https://httpie.io) to learn more.**
 
 ## Features 
 
