@@ -8,28 +8,27 @@
 <img src="https://raw.githubusercontent.com/httpie/httpie/master/httpie.gif" width="600"/>
 
 <a href="https://github.com/httpie/httpie/actions" target="_blank">
-    <img src="https://github.com/httpie/httpie/workflows/Build/badge.svg">
+    <img src="https://img.shields.io/github/workflow/status/httpie/httpie/Build?color=%2373DC8C&label=Build&logo=github">
 </a>
 <a href="https://pypi.python.org/pypi/httpie" target="_blank">
-    <img src="https://img.shields.io/pypi/v/httpie.svg?style=flat&label=latest%20stable%20version" />
+    <img src="https://img.shields.io/pypi/v/httpie.svg?style=flat&label=Latest%20stable%20version&color=%23FA9BFA" />
 </a>
 <a href="https://codecov.io/gh/httpie/httpie" target="_blank">
-    <img src="https://img.shields.io/codecov/c/github/httpie/httpie?style=flat" />
+    <img src="https://img.shields.io/codecov/c/github/httpie/httpie?style=flat&label=Coverage&color=%234B78E6" />
 </a>
 <a href="https://pepy.tech/project/httpie" target="_blank">
-    <img src="https://pepy.tech/badge/httpie" />
+    <img src="https://img.shields.io/pypi/dm/httpie?color=%23B464F0&label=Downloads&logo=pypi" />
 </a>
 <a href="https://github.com/httpie/httpie/issues" target="blank_">
     <img src="https://img.shields.io/github/issues/httpie/httpie?style=flat&color=%23FFA24E&label=issues" />
 </a>
 
-\
 
 <a href="https://httpie.org/docs" target="_blank">
-    <img src="https://img.shields.io/badge/stable%20docs-httpie.org%2Fdocs-brightgreen?style=flat" />
+    <img src="https://img.shields.io/badge/stable%20docs-httpie.org%2Fdocs-brightgreen?style=flat&color=%238CB4CD" />
 </a>
 <a href="https://httpie.io/chat" target="_blank">
-    <img src="https://img.shields.io/badge/chat-on%20Discord-brightgreen?style=flat&logo=discord" />
+    <img src="https://img.shields.io/badge/chat-on%20Discord-brightgreen?style=flat&logo=discord&label=Chat%20on&color=%23B464F0" />
 </a>
 
 
