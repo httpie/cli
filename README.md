@@ -18,10 +18,7 @@
 </a>
 <a href="https://pepy.tech/project/httpie" target="_blank">
     <img src="https://img.shields.io/pypi/dm/httpie?color=%23DBDE52&label=Downloads&logo=python" />
-</a>
-
-
-
+</a>  </br>
 
 <a href="https://github.com/httpie/httpie/issues" target="blank_">
     <img src="https://img.shields.io/github/issues/httpie/httpie?style=flat&color=%23FFA24E&label=Issues&logo=github" />
@@ -33,12 +30,11 @@
     <img src="https://img.shields.io/badge/chat-on%20Discord-brightgreen?style=flat&logo=discord&label=Chat%20on&color=%23B464F0" />
 </a>
 
-
 HTTPie (<i>pronounced aitch-tee-tee-pie</i> 🥧) is a command-line HTTP client.
 
 The `http` and `https` commands let you send arbitrary HTTP requests for testing, debugging, and generally interacting with APIs & HTTP servers. Commands use simple, natural syntax and provide a formatted and colorized output.
 
-**Go to [httpie.io](https://httpie.io) to learn more.**
+**Visit [httpie.io](https://httpie.io) to learn more**
 
 ## Features 
 
@@ -95,14 +91,14 @@ $ http -a USERNAME POST https://api.github.com/repos/httpie/httpie/issues/83/com
 ## Contributing 
 
 We :sparkling_heart: our contributors! Please read the [contribution guide](https://github.com/httpie/httpie/blob/master/CONTRIBUTING.md) for how to contribute.
-Have a look through existing Issues and Pull Requests that you could help with.
+Have a look through existing [Issues](https://github.com/httpie/httpie/issues) and [Pull Requests](https://github.com/httpie/httpie/pulls) that you could help with.
 
 <a href="https://github.com/httpie/httpie/issues" target="blank_">
     <img src="https://img.shields.io/github/issues/httpie/httpie?style=flat&color=%23FFA24E&label=Issues&logo=github" />
 </a>
 <a href="https://github.com/httpie/httpie/pulls" target="blank_">
     <img src="https://img.shields.io/github/issues-pr/httpie/httpie?color=%23FA9BFA&label=Pull%20Requests&logo=github" />
-<a/>
+</a>
 
 If you'd like to request a feature or report a bug, please [create a GitHub Issue](https://github.com/httpie/httpie/issues) using one of the templates provided.
 
