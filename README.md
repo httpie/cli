@@ -1,6 +1,6 @@
 <br/>
 <a href="https://httpie.io target="blank_">
-    <img width="250" alt="Httpie-Logo-Lockup-Pink@2x" src="https://user-images.githubusercontent.com/22844059/112143133-5fff7380-8bcf-11eb-85d0-8efdf27f3991.png">
+    <img width="285" alt="Httpie-Logo-Lockup-Pink@2x" src="https://user-images.githubusercontent.com/22844059/112143133-5fff7380-8bcf-11eb-85d0-8efdf27f3991.png">
 </a>
 
 # The human-friendly HTTP CLI client for working with APIs
@@ -27,7 +27,7 @@
 
 The `http` and `https` commands let you send arbitrary HTTP requests for testing, debugging, and generally interacting with APIs & HTTP servers. Commands use simple, natural syntax and provide a formatted and colorized output.
 
-*Visit [httpie.io](https://httpie.io) to learn more.
+*Go to [httpie.io](https://httpie.io) to learn more.*
 
 ## Features 
 
