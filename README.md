@@ -19,9 +19,6 @@
 <a href="https://pepy.tech/project/httpie" target="_blank">
     <img src="https://img.shields.io/pypi/dm/httpie?color=%23DBDE52&label=Downloads&logo=python" />
 </a>
-
-
-
 <a href="https://github.com/httpie/httpie/issues" target="blank_">
     <img src="https://img.shields.io/github/issues/httpie/httpie?style=flat&color=%23FFA24E&label=Issues" />
 </a>
