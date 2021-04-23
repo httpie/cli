@@ -137,7 +137,7 @@ make test-cover
 # Test PEP8 compliance
 make pycodestyle
 
-# Run extended tests — for code as well as .rst files syntax, packaging, etc.
+# Run extended tests — for code as well as .md files syntax, packaging, etc.
 make test-all
 ```
 

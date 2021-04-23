@@ -24,18 +24,18 @@ def has_docutils():
         return False
 
 
-def rst_filenames():
+def md_filenames():
     cwd = os.getcwd()
     os.chdir(TESTS_ROOT.parent)
     try:
-        yield from glob('*.rst')
+        yield from glob('*.md')
         for directory in SOURCE_DIRECTORIES:
-            yield from glob(f'{directory}/**/*.rst', recursive=True)
+            yield from glob(f'{directory}/**/*.md', recursive=True)
     finally:
         os.chdir(cwd)
 
 
-filenames = list(sorted(rst_filenames()))
+filenames = list(sorted(md_filenames()))
 assert filenames
 
 
@@ -44,19 +44,19 @@ assert filenames
 #       then we wont’t need the paths.
 VENV_BIN = Path(__file__).parent.parent / 'venv/bin'
 VENV_PYTHON = VENV_BIN / 'python'
-VENV_RST2PSEUDOXML = VENV_BIN / 'rst2pseudoxml.py'
+VENV_CM2PSEUDOXML = VENV_BIN / 'cm2pseudoxml'
 
 
 @pytest.mark.skipif(
-    not VENV_RST2PSEUDOXML.exists(),
-    reason='docutils not installed',
+    not VENV_CM2PSEUDOXML.exists(),
+    reason='remarkdown not installed',
 )
 @pytest.mark.parametrize('filename', filenames)
-def test_rst_file_syntax(filename):
+def test_cm_file_syntax(filename):
     p = subprocess.Popen(
         [
             VENV_PYTHON,
-            VENV_RST2PSEUDOXML,
+            VENV_CM2PSEUDOXML,
             '--report=1',
             '--exit-status=1',
             filename,

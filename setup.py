@@ -66,7 +66,7 @@ extras_require = {
 
 
 def long_description():
-    with codecs.open('README.rst', encoding='utf8') as f:
+    with codecs.open('README.md', encoding='utf8') as f:
         return f.read()
 
 
@@ -75,7 +75,7 @@ setup(
     version=httpie.__version__,
     description=httpie.__doc__.strip(),
     long_description=long_description(),
-    long_description_content_type='text/x-rst',
+    long_description_content_type='text/markdown',
     url='https://httpie.org/',
     download_url=f'https://github.com/httpie/httpie/archive/{httpie.__version__}.tar.gz',
     author=httpie.__author__,
