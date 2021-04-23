@@ -5,21 +5,20 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 
 
-`2.5.0-dev`_ (unreleased)
--------------------------
+### [2.5.0-dev](https://github.com/httpie/httpie/compare/2.4.0...master) (unreleased)
+
 - Fixed ``--continue --download`` with a single byte to be downloaded left. (`#1032`_)
 
 
-`2.4.0`_ (2021-02-06)
----------------------
+## [2.4.0](https://github.com/httpie/httpie/compare/2.3.0...2.4.0) (2021-02-06)
+
 - Added support for ``--session`` cookie expiration based on ``Set-Cookie: max-age=<n>``. (`#1029`_)
 - Show a ``--check-status`` warning with ``--quiet`` as well, not only when the output is redirected. (`#1026`_)
 - Fixed upload with ``--session`` (`#1020`_).
 - Fixed a missing blank line between request and response (`#1006`_).
 
 
-`2.3.0`_ (2020-10-25)
--------------------------
+## [2.3.0](https://github.com/httpie/httpie/compare/2.2.0...2.3.0) (2020-10-25)
 
 - Added support for streamed uploads (`#201`_).
 - Added support for multipart upload streaming (`#684`_).
@@ -35,8 +34,8 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - Removed Tox testing entirely (`#943`_).
 
 
-`2.2.0`_ (2020-06-18)
--------------------------
+## [2.2.0](https://github.com/httpie/httpie/compare/2.1.0...2.2.0) (2020-06-18)
+
 
 - Added support for custom content types for uploaded files (`#668`_).
 - Added support for ``$XDG_CONFIG_HOME`` (`#920`_).
@@ -49,8 +48,8 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - Fixed built-in plugins-related circular imports (`#925`_).
 
 
-`2.1.0`_ (2020-04-18)
----------------------
+## [2.1.0](https://github.com/httpie/httpie/compare/2.0.0...2.1.0) (2020-04-18)
+
 
 - Added ``--path-as-is`` to bypass dot segment (``/../`` or ``/./``)
   URL squashing (`#895`_).
@@ -61,8 +60,8 @@ This project adheres to [Semantic Versioning](https://semver.org/).
   (`#840`_).
 
 
-`2.0.0`_ (2020-01-12)
--------------------------
+## [2.0.0](https://github.com/httpie/httpie/compare/1.0.3...2.0.0) (2020-01-12)
+
 - Removed Python 2.7 support (`EOL Jan 2020 <https://www.python.org/doc/sunset-python-2/>`_).
 - Added ``--offline`` to allow building an HTTP request and printing it but not
   actually sending it over the network.
@@ -85,8 +84,8 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - Improved ``--debug`` output formatting.
 
 
-`1.0.3`_ (2019-08-26)
----------------------
+## [1.0.3](https://github.com/httpie/httpie/compare/1.0.2...1.0.3) (2019-08-26)
+
 
 - Fixed CVE-2019-10751 — the way the output filename is generated for
   ``--download`` requests without ``--output`` resulting in a redirect has
@@ -113,20 +112,20 @@ This project adheres to [Semantic Versioning](https://semver.org/).
   Reported by Raul Onitza and Giulio Comi.
 
 
-`1.0.2`_ (2018-11-14)
--------------------------
+## [1.0.2](https://github.com/httpie/httpie/compare/1.0.1...1.0.2) (2018-11-14)
+
 
 - Fixed tests for installation with pyOpenSSL.
 
 
-`1.0.1`_ (2018-11-14)
--------------------------
+## [1.0.1](https://github.com/httpie/httpie/compare/1.0.0...1.0.1) (2018-11-14)
+
 
 - Removed external URL calls from tests.
 
 
-`1.0.0`_ (2018-11-02)
--------------------------
+## [1.0.0](https://github.com/httpie/httpie/compare/0.9.9...1.0.0) (2018-11-02)
+
 
 - Added ``--style=auto`` which follows the terminal ANSI color styles.
 - Added support for selecting TLS 1.3 via ``--ssl=tls1.3``
@@ -139,14 +138,14 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 
 
-`0.9.9`_ (2016-12-08)
----------------------
+## [0.9.9](https://github.com/httpie/httpie/compare/0.9.8...0.9.9) (2016-12-08)
+
 
 - Fixed README.
 
 
-`0.9.8`_ (2016-12-08)
----------------------
+## [0.9.8](https://github.com/httpie/httpie/compare/0.9.6...0.9.8) (2016-12-08)
+
 
 - Extended auth plugin API.
 - Added exit status code ``7`` for plugin errors.
@@ -156,8 +155,8 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - Added the standard exit status code ``130`` for keyboard interrupts.
 
 
-`0.9.6`_ (2016-08-13)
----------------------
+## [0.9.6](https://github.com/httpie/httpie/compare/0.9.4...0.9.6) (2016-08-13)
+
 
 - Added Python 3 as a dependency for Homebrew installations
   to ensure some of the newer HTTP features work out of the box
@@ -177,8 +176,8 @@ This project adheres to [Semantic Versioning](https://semver.org/).
   and trailing whitespace is removed.
 
 
-`0.9.4`_ (2016-07-01)
----------------------
+## [0.9.4](https://github.com/httpie/httpie/compare/0.9.3...0.9.4) (2016-07-01)
+
 
 - Added ``Content-Type`` of files uploaded in ``multipart/form-data`` requests
 - Added ``--ssl=<PROTOCOL>`` to specify the desired SSL/TLS protocol version
@@ -204,8 +203,8 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 
 
-`0.9.3`_ (2016-01-01)
----------------------
+## [0.9.3](https://github.com/httpie/httpie/compare/0.9.2...0.9.3) (2016-01-01)
+
 
 - Changed the default color ``--style`` from ``solarized`` to ``monokai``
 - Added basic Bash autocomplete support (need to be installed manually)
@@ -216,24 +215,24 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - Fixed ``--auth`` prompt on Windows
 
 
-`0.9.2`_ (2015-02-24)
----------------------
+## [0.9.2](https://github.com/httpie/httpie/compare/0.9.1...0.9.2) (2015-02-24)
+
 
 - Fixed compatibility with Requests 2.5.1
 - Changed the default JSON ``Content-Type`` to ``application/json`` as UTF-8
   is the default JSON encoding
 
 
-`0.9.1`_ (2015-02-07)
----------------------
+## [0.9.1](https://github.com/httpie/httpie/compare/0.9.0...0.9.1) (2015-02-07)
+
 
 - Added support for Requests transport adapter plugins
   (see `httpie-unixsocket <https://github.com/httpie/httpie-unixsocket>`_
   and `httpie-http2 <https://github.com/httpie/httpie-http2>`_)
 
 
-`0.9.0`_ (2015-01-31)
----------------------
+## [0.9.0](https://github.com/httpie/httpie/compare/0.8.0...0.9.0) (2015-01-31)
+
 
 - Added ``--cert`` and ``--cert-key`` parameters to specify a client side
   certificate and private key for SSL
@@ -253,8 +252,8 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - Miscellaneous bugfixes
 
 
-`0.8.0`_ (2014-01-25)
----------------------
+## [0.8.0](https://github.com/httpie/httpie/compare/0.7.1...0.8.0) (2014-01-25)
+
 
 - Added ``field=@file.txt`` and ``field:=@file.json`` for embedding
   the contents of text and JSON files into request data
@@ -263,8 +262,8 @@ This project adheres to [Semantic Versioning](https://semver.org/).
   credentials, if included in the URL
 
 
-`0.7.1`_ (2013-09-24)
----------------------
+## [0.7.1](https://github.com/httpie/httpie/compare/0.6.0...0.7.1) (2013-09-24)
+
 
 - Added ``--ignore-stdin``
 - Added support for auth plugins
@@ -273,36 +272,36 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - Update to Requests 2.0.0
 
 
-`0.6.0`_ (2013-06-03)
----------------------
+## [0.6.0](https://github.com/httpie/httpie/compare/0.5.1...0.6.0) (2013-06-03)
+
 
 - XML data is now formatted
 - ``--session`` and ``--session-read-only`` now also accept paths to
   session files (eg. ``http --session=/tmp/session.json example.org``)
 
 
-`0.5.1`_ (2013-05-13)
----------------------
+## [0.5.1](https://github.com/httpie/httpie/compare/0.5.0...0.5.1) (2013-05-13)
+
 
 - ``Content-*`` and ``If-*`` request headers are not stored in sessions
   anymore as they are request-specific
 
 
-`0.5.0`_ (2013-04-27)
----------------------
+## [0.5.0](https://github.com/httpie/httpie/compare/0.4.1...0.5.0) (2013-04-27)
+
 
 - Added a download mode via ``--download``
 - Fixes miscellaneous bugs
 
 
-`0.4.1`_ (2013-02-26)
----------------------
+## [0.4.1](https://github.com/httpie/httpie/compare/0.4.0...0.4.1) (2013-02-26)
+
 
 - Fixed ``setup.py``
 
 
-`0.4.0`_ (2013-02-22)
----------------------
+## [0.4.0](https://github.com/httpie/httpie/compare/0.3.0...0.4.0) (2013-02-22)
+
 
 - Added Python 3.3 compatibility
 - Added Requests >= v1.0.4 compatibility
@@ -312,8 +311,8 @@ This project adheres to [Semantic Versioning](https://semver.org/).
   last value is used
 
 
-`0.3.0`_ (2012-09-21)
----------------------
+## [0.3.0](https://github.com/httpie/httpie/compare/0.2.7...0.3.0) (2012-09-21)
+
 
 - Allow output redirection on Windows
 - Added configuration file
@@ -329,8 +328,8 @@ This project adheres to [Semantic Versioning](https://semver.org/).
   ``--ugly`` has bee removed in favor of ``--pretty=none``
 
 
-`0.2.7`_ (2012-08-07)
----------------------
+## [0.2.7](https://github.com/httpie/httpie/compare/0.2.5...0.2.7) (2012-08-07)
+
 
 - Added compatibility with Requests 0.13.6
 - Added streamed terminal output. ``--stream, -S`` can be used to enable
@@ -348,8 +347,8 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - Renamed ``--traceback`` to ``--debug``
 
 
-`0.2.6`_ (2012-07-26)
----------------------
+## [0.2.6](https://github.com/httpie/httpie/compare/0.2.5...0.2.6) (2012-07-26)
+
 
 - The short option for ``--headers`` is now ``-h`` (``-t`` has been
   removed, for usage use ``--help``)
@@ -365,8 +364,8 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - Added support for terminal colors under Windows
 
 
-`0.2.5`_ (2012-07-17)
----------------------
+## [0.2.5](https://github.com/httpie/httpie/compare/0.2.2...0.2.5) (2012-07-17)
+
 
 - Unicode characters in prettified JSON now don't get escaped for
   improved readability
@@ -378,8 +377,8 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - Fixed Content-Type for requests with no data
 
 
-`0.2.2`_ (2012-06-24)
----------------------
+## [0.2.2](https://github.com/httpie/httpie/compare/0.2.1...0.2.2) (2012-06-24)
+
 
 - The ``METHOD`` positional argument can now be omitted (defaults to
   ``GET``, or to ``POST`` with data)
@@ -387,16 +386,16 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - Added support for Tox
 
 
-`0.2.1`_ (2012-06-13)
----------------------
+## [0.2.1](https://github.com/httpie/httpie/compare/0.2.0...0.2.1) (2012-06-13)
+
 
 - Added compatibility with ``requests-0.12.1``
 - Dropped custom JSON and HTTP lexers in favor of the ones newly included
   in ``pygments-1.5``
 
 
-`0.2.0`_ (2012-04-25)
----------------------
+## [0.2.0](https://github.com/httpie/httpie/compare/0.1.6...0.2.0) (2012-04-25)
+
 
 - Added Python 3 support
 - Added the ability to print the HTTP request as well as the response
@@ -409,66 +408,28 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - Many bug fixes
 
 
-`0.1.6`_ (2012-03-04)
----------------------
+## [0.1.6](https://github.com/httpie/httpie/compare/0.1.5...0.1.6) (2012-03-04)
+
 
 - Fixed ``setup.py``
 
 
-`0.1.5`_ (2012-03-04)
----------------------
+## [0.1.5](https://github.com/httpie/httpie/compare/0.1.4...0.1.5) (2012-03-04)
+
 
 - Many improvements and bug fixes
 
 
-`0.1.4`_ (2012-02-28)
----------------------
+## [0.1.4](https://github.com/httpie/httpie/compare/b966efa...0.1.4) (2012-02-28)
+
 
 - Many improvements and bug fixes
 
 
-`0.1.0`_ (2012-02-25)
----------------------
+## [0.1.0](https://github.com/httpie/httpie/commit/b966efa) (2012-02-25)
+
 
 - Initial public release
-
-
-.. _`0.1.0`: https://github.com/httpie/httpie/commit/b966efa
-.. _0.1.4: https://github.com/httpie/httpie/compare/b966efa...0.1.4
-.. _0.1.5: https://github.com/httpie/httpie/compare/0.1.4...0.1.5
-.. _0.1.6: https://github.com/httpie/httpie/compare/0.1.5...0.1.6
-.. _0.2.0: https://github.com/httpie/httpie/compare/0.1.6...0.2.0
-.. _0.2.1: https://github.com/httpie/httpie/compare/0.2.0...0.2.1
-.. _0.2.2: https://github.com/httpie/httpie/compare/0.2.1...0.2.2
-.. _0.2.5: https://github.com/httpie/httpie/compare/0.2.2...0.2.5
-.. _0.2.6: https://github.com/httpie/httpie/compare/0.2.5...0.2.6
-.. _0.2.7: https://github.com/httpie/httpie/compare/0.2.5...0.2.7
-.. _0.3.0: https://github.com/httpie/httpie/compare/0.2.7...0.3.0
-.. _0.4.0: https://github.com/httpie/httpie/compare/0.3.0...0.4.0
-.. _0.4.1: https://github.com/httpie/httpie/compare/0.4.0...0.4.1
-.. _0.5.0: https://github.com/httpie/httpie/compare/0.4.1...0.5.0
-.. _0.5.1: https://github.com/httpie/httpie/compare/0.5.0...0.5.1
-.. _0.6.0: https://github.com/httpie/httpie/compare/0.5.1...0.6.0
-.. _0.7.1: https://github.com/httpie/httpie/compare/0.6.0...0.7.1
-.. _0.8.0: https://github.com/httpie/httpie/compare/0.7.1...0.8.0
-.. _0.9.0: https://github.com/httpie/httpie/compare/0.8.0...0.9.0
-.. _0.9.1: https://github.com/httpie/httpie/compare/0.9.0...0.9.1
-.. _0.9.2: https://github.com/httpie/httpie/compare/0.9.1...0.9.2
-.. _0.9.3: https://github.com/httpie/httpie/compare/0.9.2...0.9.3
-.. _0.9.4: https://github.com/httpie/httpie/compare/0.9.3...0.9.4
-.. _0.9.6: https://github.com/httpie/httpie/compare/0.9.4...0.9.6
-.. _0.9.8: https://github.com/httpie/httpie/compare/0.9.6...0.9.8
-.. _0.9.9: https://github.com/httpie/httpie/compare/0.9.8...0.9.9
-.. _1.0.0: https://github.com/httpie/httpie/compare/0.9.9...1.0.0
-.. _1.0.1: https://github.com/httpie/httpie/compare/1.0.0...1.0.1
-.. _1.0.2: https://github.com/httpie/httpie/compare/1.0.1...1.0.2
-.. _1.0.3: https://github.com/httpie/httpie/compare/1.0.2...1.0.3
-.. _2.0.0: https://github.com/httpie/httpie/compare/1.0.3...2.0.0
-.. _2.1.0: https://github.com/httpie/httpie/compare/2.0.0...2.1.0
-.. _2.2.0: https://github.com/httpie/httpie/compare/2.1.0...2.2.0
-.. _2.3.0: https://github.com/httpie/httpie/compare/2.2.0...2.3.0
-.. _2.4.0: https://github.com/httpie/httpie/compare/2.3.0...2.4.0
-.. _2.5.0-dev: https://github.com/httpie/httpie/compare/2.4.0...master
 
 .. _#128: https://github.com/httpie/httpie/issues/128
 .. _#201: https://github.com/httpie/httpie/issues/201
