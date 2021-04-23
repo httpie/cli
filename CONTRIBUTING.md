@@ -38,7 +38,7 @@ for existing-yet-previously-untested behavior will very likely be merged.
 Therefore, docs and tests improvements are a great candidate for your first
 contribution.
 
-Consider also adding a `CHANGELOG` entry for your changes.
+Consider also adding a [CHANGELOG](https://github.com/httpie/httpie/blob/master/CHANGELOG.md) entry for your changes.
 
 
 ### Development Environment
@@ -203,4 +203,4 @@ py.test
 ```
 -----
 
-Finally, feel free to add yourself to [AUTHORS](ttps://github.com/httpie/httpie/blob/master/AUTHORS.rst)!
+Finally, feel free to add yourself to [AUTHORS](https://github.com/httpie/httpie/blob/master/AUTHORS.md)!
