@@ -7,57 +7,57 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 ### [2.5.0-dev](https://github.com/httpie/httpie/compare/2.4.0...master) (unreleased)
 
-- Fixed ``--continue --download`` with a single byte to be downloaded left. (`#1032`_)
+- Fixed ``--continue --download`` with a single byte to be downloaded left. ([#1032](https://github.com/httpie/httpie/issues/1032))
 
 
 ## [2.4.0](https://github.com/httpie/httpie/compare/2.3.0...2.4.0) (2021-02-06)
 
-- Added support for ``--session`` cookie expiration based on ``Set-Cookie: max-age=<n>``. (`#1029`_)
-- Show a ``--check-status`` warning with ``--quiet`` as well, not only when the output is redirected. (`#1026`_)
-- Fixed upload with ``--session`` (`#1020`_).
-- Fixed a missing blank line between request and response (`#1006`_).
+- Added support for ``--session`` cookie expiration based on ``Set-Cookie: max-age=<n>``. ([#1029](https://github.com/httpie/httpie/issues/1029))
+- Show a ``--check-status`` warning with ``--quiet`` as well, not only when the output is redirected. ([#1026](https://github.com/httpie/httpie/issues/1026))
+- Fixed upload with ``--session`` ([#1020](https://github.com/httpie/httpie/issues/1020)).
+- Fixed a missing blank line between request and response ([#1006](https://github.com/httpie/httpie/issues/1006)).
 
 
 ## [2.3.0](https://github.com/httpie/httpie/compare/2.2.0...2.3.0) (2020-10-25)
 
-- Added support for streamed uploads (`#201`_).
-- Added support for multipart upload streaming (`#684`_).
+- Added support for streamed uploads ([#201](https://github.com/httpie/httpie/issues/201)).
+- Added support for multipart upload streaming ([#684](https://github.com/httpie/httpie/issues/684)).
 - Added support for body-from-file upload streaming (``http pie.dev/post @file``).
-- Added ``--chunked`` to enable chunked transfer encoding (`#753`_).
+- Added ``--chunked`` to enable chunked transfer encoding ([#753](https://github.com/httpie/httpie/issues/753])).
 - Added ``--multipart`` to allow ``multipart/form-data`` encoding for non-file ``--form`` requests as well.
-- Added support for preserving field order in multipart requests (`#903`_).
+- Added support for preserving field order in multipart requests ([#903](https://github.com/httpie/httpie/issues/903)).
 - Added ``--boundary`` to allow a custom boundary string for ``multipart/form-data`` requests.
-- Added support for combining cookies specified on the CLI and in a session file (`#932`_).
-- Added out of the box SOCKS support with no extra installation (`#904`_).
+- Added support for combining cookies specified on the CLI and in a session file ([#932](https://github.com/httpie/httpie/issues/932)).
+- Added out of the box SOCKS support with no extra installation ([#904](https://github.com/httpie/httpie/issues/904)).
 - Added ``--quiet, -q`` flag to enforce silent behaviour.
-- Fixed the handling of invalid ``expires`` dates in ``Set-Cookie`` headers (`#963`_).
-- Removed Tox testing entirely (`#943`_).
+- Fixed the handling of invalid ``expires`` dates in ``Set-Cookie`` headers ([#963](https://github.com/httpie/httpie/issues/963)).
+- Removed Tox testing entirely ([#943](https://github.com/httpie/httpie/issues/943)).
 
 
 ## [2.2.0](https://github.com/httpie/httpie/compare/2.1.0...2.2.0) (2020-06-18)
 
 
-- Added support for custom content types for uploaded files (`#668`_).
-- Added support for ``$XDG_CONFIG_HOME`` (`#920`_).
-- Added support for ``Set-Cookie``-triggered cookie expiration (`#853`_).
-- Added ``--format-options`` to allow disabling sorting, etc. (`#128`_)
-- Added ``--sorted`` and ``--unsorted`` shortcuts for (un)setting all sorting-related ``--format-options``. (`#128`_)
-- Added ``--ciphers`` to allow configuring OpenSSL ciphers (`#870`_).
+- Added support for custom content types for uploaded files ([#668](https://github.com/httpie/httpie/issues/668)).
+- Added support for ``$XDG_CONFIG_HOME`` ([#920](https://github.com/httpie/httpie/issues/920)).
+- Added support for ``Set-Cookie``-triggered cookie expiration ([#853](https://github.com/httpie/httpie/issues/853)).
+- Added ``--format-options`` to allow disabling sorting, etc. ([#128](https://github.com/httpie/httpie/issues/128))
+- Added ``--sorted`` and ``--unsorted`` shortcuts for (un)setting all sorting-related ``--format-options``. ([#128](https://github.com/httpie/httpie/issues/128))
+- Added ``--ciphers`` to allow configuring OpenSSL ciphers ([#870](https://github.com/httpie/httpie/issues/870)).
 - Added ``netrc`` support for auth plugins. Enabled for ``--auth-type=basic``
-  and ``digest``, 3rd parties may opt in (`#718`_, `#719`_, `#852`_, `#934`_).
-- Fixed built-in plugins-related circular imports (`#925`_).
+  and ``digest``, 3rd parties may opt in ([#718](https://github.com/httpie/httpie/issues/718), [#719](https://github.com/httpie/httpie/issues/719), [#852](https://github.com/httpie/httpie/issues/852), [#934](https://github.com/httpie/httpie/issues/934)).
+- Fixed built-in plugins-related circular imports ([#925](https://github.com/httpie/httpie/issues/925)).
 
 
 ## [2.1.0](https://github.com/httpie/httpie/compare/2.0.0...2.1.0) (2020-04-18)
 
 
 - Added ``--path-as-is`` to bypass dot segment (``/../`` or ``/./``)
-  URL squashing (`#895`_).
+  URL squashing ([#895](https://github.com/httpie/httpie/issues/895)).
 - Changed the default ``Accept`` header value for JSON requests from
   ``application/json, */*`` to ``application/json, */*;q=0.5``
-  to clearly indicate preference (`#488`_).
+  to clearly indicate preference ([#488](https://github.com/httpie/httpie/issues/488)).
 - Fixed ``--form`` file upload mixed with redirected ``stdin`` error handling
-  (`#840`_).
+  ([#840](https://github.com/httpie/httpie/issues/840)).
 
 
 ## [2.0.0](https://github.com/httpie/httpie/compare/1.0.3...2.0.0) (2020-01-12)
@@ -430,30 +430,3 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 
 - Initial public release
-
-.. _#128: https://github.com/httpie/httpie/issues/128
-.. _#201: https://github.com/httpie/httpie/issues/201
-.. _#488: https://github.com/httpie/httpie/issues/488
-.. _#668: https://github.com/httpie/httpie/issues/668
-.. _#684: https://github.com/httpie/httpie/issues/684
-.. _#718: https://github.com/httpie/httpie/issues/718
-.. _#719: https://github.com/httpie/httpie/issues/719
-.. _#753: https://github.com/httpie/httpie/issues/753
-.. _#840: https://github.com/httpie/httpie/issues/840
-.. _#853: https://github.com/httpie/httpie/issues/853
-.. _#852: https://github.com/httpie/httpie/issues/852
-.. _#870: https://github.com/httpie/httpie/issues/870
-.. _#895: https://github.com/httpie/httpie/issues/895
-.. _#903: https://github.com/httpie/httpie/issues/903
-.. _#920: https://github.com/httpie/httpie/issues/920
-.. _#904: https://github.com/httpie/httpie/issues/904
-.. _#925: https://github.com/httpie/httpie/issues/925
-.. _#932: https://github.com/httpie/httpie/issues/932
-.. _#934: https://github.com/httpie/httpie/issues/934
-.. _#943: https://github.com/httpie/httpie/issues/943
-.. _#963: https://github.com/httpie/httpie/issues/963
-.. _#1006: https://github.com/httpie/httpie/issues/1006
-.. _#1020: https://github.com/httpie/httpie/issues/1020
-.. _#1026: https://github.com/httpie/httpie/issues/1026
-.. _#1029: https://github.com/httpie/httpie/issues/1029
-.. _#1032: https://github.com/httpie/httpie/issues/1032
