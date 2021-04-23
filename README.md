@@ -1,5 +1,5 @@
 <br/>
-<a href="https://httpie.io target="blank_">
+<a href="https://httpie.io" target="blank_">
     <img width="285" alt="Httpie-Logo-Lockup-Pink@2x" src="https://user-images.githubusercontent.com/22844059/112143133-5fff7380-8bcf-11eb-85d0-8efdf27f3991.png">
 </a>
 
@@ -7,6 +7,9 @@
 
 <img src="https://raw.githubusercontent.com/httpie/httpie/master/httpie.gif" width="600"/>
 
+<a href="https://github.com/httpie/httpie/actions" target="_blank">
+    <img src="https://github.com/httpie/httpie/workflows/Build/badge.svg">
+</a>
 <a href="https://httpie.org/docs" target="_blank">
     <img src="https://img.shields.io/badge/stable%20docs-httpie.org%2Fdocs-brightgreen?style=flat-square" />
 </a>
