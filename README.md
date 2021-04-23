@@ -7,30 +7,17 @@
 
 <img src="https://raw.githubusercontent.com/httpie/httpie/master/httpie.gif" width="600"/>
 
-<a href="https://github.com/httpie/httpie/actions" target="_blank">
-    <img src="https://img.shields.io/github/workflow/status/httpie/httpie/Build?color=%2373DC8C&label=Build&logo=github">
-</a>
-<a href="https://pypi.python.org/pypi/httpie" target="_blank">
-    <img src="https://img.shields.io/pypi/v/httpie.svg?style=flat&label=Latest%20stable%20version&color=%23FA9BFA&logo=pypi&logoColor=white" />
-</a>
-<a href="https://codecov.io/gh/httpie/httpie" target="_blank">
-    <img src="https://img.shields.io/codecov/c/github/httpie/httpie?style=flat&label=Coverage&color=%237D7D7D&logo=codecov" />
-</a>
-<a href="https://pepy.tech/project/httpie" target="_blank">
-    <img src="https://img.shields.io/pypi/dm/httpie?color=%23DBDE52&label=Downloads&logo=python" />
-</a>  <br />
+[![Build](https://img.shields.io/github/workflow/status/httpie/httpie/Build?color=%2373DC8C&label=Build&logo=github)](https://github.com/httpie/httpie/actions)
+[![Latest version](https://img.shields.io/pypi/v/httpie.svg?style=flat&label=Latest%20stable%20version&color=%23FA9BFA&logo=pypi&logoColor=white)](https://pypi.python.org/pypi/httpie)
+[![Coverage](https://img.shields.io/codecov/c/github/httpie/httpie?style=flat&label=Coverage&color=%237D7D7D&logo=codecov)](https://codecov.io/gh/httpie/httpie)
+[![Downloads](https://img.shields.io/pypi/dm/httpie?color=%23DBDE52&label=Downloads&logo=python)](https://pepy.tech/project/httpie)
 
-<a href="https://github.com/httpie/httpie/issues" target="blank_">
-    <img src="https://img.shields.io/github/issues/httpie/httpie?style=flat&color=%23FFA24E&label=Issues&logo=github" />
-</a>
-<a href="https://httpie.org/docs" target="_blank">
-    <img src="https://img.shields.io/badge/stable%20docs-httpie.org%2Fdocs-brightgreen?style=flat&color=%234B78E6&label=Stable%20docs" />
-</a>
-<a href="https://httpie.io/chat" target="_blank">
-    <img src="https://img.shields.io/badge/chat-on%20Discord-brightgreen?style=flat&logo=discord&label=Chat%20on&color=%23B464F0" />
-</a>  &nbsp; &nbsp;
+[![Issues](https://img.shields.io/github/issues/httpie/httpie?style=flat&color=%23FFA24E&label=Issues&logo=github)](https://github.com/httpie/httpie/issues)
+[![Docs](https://img.shields.io/badge/stable%20docs-httpie.org%2Fdocs-brightgreen?style=flat&color=%234B78E6&label=Stable%20docs)](https://httpie.org/docs)
+[![Chat](https://img.shields.io/badge/chat-on%20Discord-brightgreen?style=flat&logo=discord&label=Chat%20on&color=%23B464F0)](https://httpie.io/chat)
 
-HTTPie (<i>pronounced aitch-tee-tee-pie</i> 🥧) is a command-line HTTP client.
+
+HTTPie (pronounced _aitch-tee-tee-pie_ 🥧) is a command-line HTTP client.
 
 The `http` and `https` commands let you send arbitrary HTTP requests for testing, debugging, and generally interacting with APIs & HTTP servers. Commands use simple, natural syntax and provide a formatted and colorized output.
 
@@ -93,12 +80,8 @@ $ http -a USERNAME POST https://api.github.com/repos/httpie/httpie/issues/83/com
 We :sparkling_heart: our contributors! Please read the [contribution guide](https://github.com/httpie/httpie/blob/master/CONTRIBUTING.md) for how to contribute.
 Have a look through existing [Issues](https://github.com/httpie/httpie/issues) and [Pull Requests](https://github.com/httpie/httpie/pulls) that you could help with.
 
-<a href="https://github.com/httpie/httpie/issues" target="blank_">
-    <img src="https://img.shields.io/github/issues/httpie/httpie?style=flat&color=%23FFA24E&label=Issues&logo=github" />
-</a>
-<a href="https://github.com/httpie/httpie/pulls" target="blank_">
-    <img src="https://img.shields.io/github/issues-pr/httpie/httpie?color=%23FA9BFA&label=Pull%20Requests&logo=github" />
-</a>
+[![Issues](https://img.shields.io/github/issues/httpie/httpie?style=flat&color=%23FFA24E&label=Issues&logo=github)](https://github.com/httpie/httpie/issues)
+[![PRs](https://img.shields.io/github/issues-pr/httpie/httpie?color=%23FA9BFA&label=Pull%20Requests&logo=github)](https://github.com/httpie/httpie/pulls)
 
 If you'd like to request a feature or report a bug, please [create a GitHub Issue](https://github.com/httpie/httpie/issues) using one of the templates provided.
 
@@ -118,8 +101,7 @@ If you'd like to request a feature or report a bug, please [create a GitHub Issu
 
 ## License 
 
-<a href="https://github.com/httpie/httpie/blob/master/LICENSE" target="blank_">
-    <img src="https://img.shields.io/github/license/httpie/httpie?color=%2373DC8C&label=License" />
-</a>
+[![License](https://img.shields.io/github/license/httpie/httpie?color=%2373DC8C&label=License)](https://github.com/httpie/httpie/blob/master/LICENSE)
+
 
 HTTPie is licensed under the [BSD-3-Clause License](https://github.com/httpie/httpie/blob/master/LICENSE). 
