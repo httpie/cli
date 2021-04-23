@@ -122,7 +122,7 @@ If you'd like to request a feature or report a bug, please [create a GitHub Issu
 ## License 
 
 <a href="https://github.com/httpie/httpie/blob/master/LICENSE" target="blank_">
-    <img src="https://img.shields.io/github/license/httpie/httpie?color=%2373DC8C" />
+    <img src="https://img.shields.io/github/license/httpie/httpie?color=%2373DC8C&label=License" />
 </a>
 
 HTTPie is licensed under the [BSD-3-Clause License](https://github.com/httpie/httpie/blob/master/LICENSE). 
