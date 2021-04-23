@@ -11,20 +11,24 @@
     <img src="https://github.com/httpie/httpie/workflows/Build/badge.svg">
 </a>
 <a href="https://httpie.org/docs" target="_blank">
-    <img src="https://img.shields.io/badge/stable%20docs-httpie.org%2Fdocs-brightgreen?style=flat-square" />
+    <img src="https://img.shields.io/badge/stable%20docs-httpie.org%2Fdocs-brightgreen?style=flat" />
 </a>
 <a href="https://pypi.python.org/pypi/httpie" target="_blank">
-    <img src="https://img.shields.io/pypi/v/httpie.svg?style=flat-square&label=latest%20stable%20version" />
+    <img src="https://img.shields.io/pypi/v/httpie.svg?style=flat&label=latest%20stable%20version" />
 </a>
 <a href="https://codecov.io/gh/httpie/httpie" target="_blank">
-    <img src="https://img.shields.io/codecov/c/github/httpie/httpie?style=flat-square" />
+    <img src="https://img.shields.io/codecov/c/github/httpie/httpie?style=flat" />
 </a>
 <a href="https://httpie.io/chat" target="_blank">
-    <img src="https://img.shields.io/badge/chat-on%20Discord-brightgreen?style=flat-square" />
+    <img src="https://img.shields.io/badge/chat-on%20Discord-brightgreen?style=flat&logo=discord" />
 </a>
 <a href="https://pepy.tech/project/httpie" target="_blank">
     <img src="https://pepy.tech/badge/httpie" />
 </a>
+<a href="https://github.com/httpie/httpie/issues" target="blank_">
+    <img src="https://img.shields.io/github/issues/httpie/httpie?style=flat&color=%23FFA24E&label=issues" />
+</a>
+
 
   HTTPie (<i>pronounced aitch-tee-tee-pie</i> 🥧) is a command-line HTTP client.
 
@@ -105,5 +109,9 @@ If you'd like to request a feature or report a bug, please [create a GitHub Issu
 - Subscribe to the [HTTPie newsletter](https://httpie.io) for occasional updates.
 
 ## License 
+
+<a href="https://github.com/httpie/httpie/blob/master/LICENSE" target="blank_">
+    <img src="https://img.shields.io/github/license/httpie/httpie?color=%2373DC8C" />
+</a>
 
 HTTPie is licensed under the [BSD-3-Clause License](https://github.com/httpie/httpie/blob/master/LICENSE). 
