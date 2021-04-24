@@ -36,7 +36,7 @@ You can select your corresponding HTTPie version as well as run examples directl
 browser using a `termible.io <https://termible.io?utm_source=httpie-readme>`_ embedded terminal.
 
 If you are reading this on GitHub, then this text covers the current *development* version.
-You are invited to submit fixes and improvements to the the docs by editing
+You are invited to submit fixes and improvements to the docs by editing
 `README.rst <https://github.com/httpie/httpie/blob/master/README.rst>`_.
 
 
