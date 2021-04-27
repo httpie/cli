@@ -301,7 +301,7 @@ output_processing.add_argument(  #TODO - escrever texto do help
     '''
 )
 output_processing.add_argument(  #TODO - escrever texto do help
-    '--output-format=raw',
+    '--output-format=raw', '--output-format', #default value is raw
     dest="output_format_form",
     action='store_const',
     const=OUT_FORMAT_RAW,
