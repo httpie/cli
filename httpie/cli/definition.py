@@ -296,7 +296,25 @@ output_processing.add_argument(  #TODO - escrever texto do help
     const=OUT_FORMAT_JSON,
     default=OUT_FORMAT_RAW,
     help=f'''
-    Cenas cenas 
+    The same as '--output-format=raw' but in Json format
+    
+   '' Output example:'''
+   ''' {
+  "request": {
+    "headers": {
+      "Foo": "Bar"
+    },
+    "body": "…"
+  },
+  "response": {
+    "headers": {
+      "Foo": "Bar"
+    },
+    "body": {
+      "result": "ok"
+    }
+  }
+}
 
     '''
 )
@@ -307,7 +325,16 @@ output_processing.add_argument(  #TODO - escrever texto do help
     const=OUT_FORMAT_RAW,
     default=OUT_FORMAT_RAW,
     help=f'''
-    Cenas cenas
+    Prints a HTTP Request/Response
+
+    Usage:
+    
+        Methods: GET, POST, PUT, DELETE
+        Command: ‘http –output-format [METHOD] [URL]’
+
+    Other usages:
+
+        --output-format=json , if JSON format is preferred
 
     '''
 )
