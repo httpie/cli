@@ -196,24 +196,28 @@ def program(args: argparse.Namespace, env: Environment) -> ExitStatus:
             for message in messages:
                 is_request = isinstance(message, requests.PreparedRequest)
                 with_headers, with_body = get_output_options(args=args, message=message)
-                do_write_body = with_body
+
                 #force_separator = False
                 if is_request:
+                    with_headers_req=with_headers
+                    with_body_req=with_body
                     if not initial_request:
                         initial_request = message
                         is_streamed_upload = not isinstance(message.body, (str, bytes))
                         if with_body:
-                            do_write_body = not is_streamed_upload
+                            with_body_req = not is_streamed_upload
                             #force_separator = is_streamed_upload and env.stdout_isatty
                 else:
+                    with_headers_res=with_headers
+                    with_body_res=with_body
                     final_response = message
                     if args.check_status or downloader:
                         exit_status = http_status_to_exit_status(http_status=message.status_code, follow=args.follow)
                         if exit_status != ExitStatus.SUCCESS and (not env.stdout_isatty or args.quiet):
                             env.log_error(f'HTTP {message.raw.status} {message.raw.reason}', level='warning')
                 all_messages_together.append(message)
-            write_message_json(requests_message=all_messages_together, env=env, args=args, with_headers=with_headers,
-                            with_body=do_write_body)
+            write_message_json(requests_message=all_messages_together, env=env, args=args, with_headers_req=with_headers_req, with_body_req=with_body_req, with_headers_res=with_headers_res,
+                            with_body_res=with_body_res)
             prev_with_body = with_body
 
         # Cleanup

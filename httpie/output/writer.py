@@ -58,18 +58,22 @@ def write_message_json(
     requests_message: [requests.PreparedRequest, requests.Response],
     env: Environment,
     args: argparse.Namespace,
-    with_headers=False,
-    with_body=False,
+    with_headers_req=False,
+    with_body_req=False,
+    with_headers_res=False,
+    with_body_res=False,
 ):
-    if not (with_body or with_headers):
+    if not (with_body_req or with_headers_req or with_body_res or with_headers_res):
         return
     write_stream_kwargs = {
         'stream': build_output_stream_for_message_json(
             args=args,
             env=env,
             requests_message=requests_message,
-            with_body=with_body,
-            with_headers=with_headers,
+            with_headers_req=with_headers_req,
+            with_body_req=with_body_req,
+            with_headers_res=with_headers_res,
+            with_body_res=with_body_res,
         ),
         # NOTE: `env.stdout` will in fact be `stderr` with `--download`
         'outfile': env.stdout,
@@ -174,8 +178,10 @@ def build_output_stream_for_message_json(
     args: argparse.Namespace,
     env: Environment,
     requests_message: [requests.PreparedRequest, requests.Response],
-    with_headers: bool,
-    with_body: bool,
+    with_headers_req: bool,
+    with_body_req: bool,
+    with_headers_res: bool,
+    with_body_res: bool,
 ):
     stream_class, stream_kwargs = get_stream_type_and_kwargs(
         env=env,
@@ -193,6 +199,10 @@ def build_output_stream_for_message_json(
     yield from stream_class(
         msgReq=message_class(requests_message[0]),
         msgRes=message_class2(requests_message[1]),
+        with_headers_req=with_headers_req,
+        with_body_req=with_body_req,
+        with_headers_res=with_headers_res,
+        with_body_res=with_body_res,
         **stream_kwargs,
     )
 

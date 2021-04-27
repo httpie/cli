@@ -79,6 +79,10 @@ class BaseStreamJson:
         self,
         msgReq: HTTPMessage,
         msgRes: HTTPMessage,
+        with_headers_req=True,
+        with_body_req=True,
+        with_headers_res=True,
+        with_body_res=True,
         on_body_chunk_downloaded: Callable[[bytes], None] = None,
         chunk_size=CHUNK_SIZE
     ):
@@ -92,6 +96,10 @@ class BaseStreamJson:
         self.chunk_size = chunk_size
         self.msgReq = msgReq
         self.msgRes = msgRes
+        self.with_headers_req = with_headers_req
+        self.with_body_req = with_body_req
+        self.with_headers_res = with_headers_res
+        self.with_body_res = with_body_res
         self.on_body_chunk_downloaded = on_body_chunk_downloaded
 
     def get_headers_req(self) -> bytes:
@@ -111,47 +119,44 @@ class BaseStreamJson:
 
     def __iter__(self) -> Iterable[bytes]:
         """Return an iterator over `self.msg`."""
-        body1=True
-        body2=True
         yield b'{\n\t'
-        yield b'"Request": '
-        yield b'{\n\t\t'
-        yield b'"headers": '
-        yield b'{'
-        yield self.get_headers_req()
-        yield b'},\n\t\t'
-        yield b'"body": '
-        try:
-            for chunk in self.iter_body_req():
-                if chunk=="b''":
-                    body1=False
-                yield chunk
-                if self.on_body_chunk_downloaded:
-                    self.on_body_chunk_downloaded(chunk)
-        except DataSuppressedError as e:
-            yield e.message
-        if body1:
-            yield b'""'
-        yield b'\n\t'
-        yield b'},\n\t'
+        if self.with_headers_req:
+            yield b'"Request": '
+            yield b'{\n\t\t'
+            yield b'"headers": '
+            yield b'{'
+            yield self.get_headers_req()
+            yield b'}'
+        if self.with_body_req:
+            yield b',\n\t\t'
+            yield b'"body": '
+            try:
+                for chunk in self.iter_body_req():
+                    yield chunk
+                    if self.on_body_chunk_downloaded:
+                        self.on_body_chunk_downloaded(chunk)
+            except DataSuppressedError as e:
+                yield e.message
+        if self.with_headers_req:
+            yield b'\n\t'
+            yield b'},\n\t'
         yield b'"Response": '
         yield b'{\n\t\t'
-        yield b'"headers": '
-        yield b'{'
-        yield self.get_headers_res()
-        yield b'},\n\t\t'
-        yield b'"body": '
-        try:
-            for chunk in self.iter_body_res():
-                if chunk=="b''":
-                    body2=False
-                yield chunk
-                if self.on_body_chunk_downloaded:
-                    self.on_body_chunk_downloaded(chunk)
-        except DataSuppressedError as e:
-            yield e.message
-        if body2:
-            yield b'""'
+        if self.with_headers_res:
+            yield b'"headers": '
+            yield b'{'
+            yield self.get_headers_res()
+            yield b'},\n\t\t'
+        if self.with_body_res:
+            yield b'"body": '
+            try:
+                for chunk in self.iter_body_res():
+                    yield chunk
+                    if self.on_body_chunk_downloaded:
+                        self.on_body_chunk_downloaded(chunk)
+            except DataSuppressedError as e:
+                yield e.message
+            
         yield b'\n\t'
         yield b'}\n'
         yield b'}'
