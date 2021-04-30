@@ -551,7 +551,8 @@ Host: pie.dev
 
 If your command includes some data [request items](#request-items), they are serialized as a JSON object by default. HTTPie also automatically sets the following headers, both of which can be overwritten:
 
-| Header name     |   Value              |
+| Header          |   Value              |
+|-----------------|----------------------|
 | `Content-Type`  |   `application/json` |
 | `Accept`        |   `application/json, */*;q=0.5` |
 
