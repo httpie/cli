@@ -720,7 +720,7 @@ world
 If you specify a custom `Content-Type` header without including the boundary bit, HTTPie will add the boundary value (explicitly specified or auto-generated) to the header automatically:
 
 ```bash
-http --form --multipart --offline example.org hello=world Content-Type:multipart/letter
+$ http --form --multipart --offline example.org hello=world Content-Type:multipart/letter
 ```
 
 
