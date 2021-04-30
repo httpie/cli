@@ -1,4 +1,3 @@
-mock
 pytest
 pytest-cov
 pytest-httpbin>=0.0.6

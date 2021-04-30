@@ -1,5 +1,5 @@
 """HTTP authentication-related tests."""
-import mock
+from unittest import mock
 import pytest
 
 from httpie.plugins.builtin import HTTPBasicAuth

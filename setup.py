@@ -34,7 +34,6 @@ class PyTest(TestCommand):
 tests_require = [
     'pytest-httpbin',
     'pytest',
-    'mock',
 ]
 
 

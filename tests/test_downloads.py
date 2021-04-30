@@ -1,10 +1,10 @@
 import os
 import tempfile
 import time
+from unittest import mock
 from urllib.request import urlopen
 
 import pytest
-import mock
 from requests.structures import CaseInsensitiveDict
 
 from httpie.downloads import (

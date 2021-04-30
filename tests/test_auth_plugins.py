@@ -1,4 +1,4 @@
-from mock import mock
+from unittest import mock
 
 from httpie.cli.constants import SEPARATOR_CREDENTIALS
 from httpie.plugins import AuthPlugin
