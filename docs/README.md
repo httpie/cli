@@ -18,9 +18,9 @@
     - [Querystring parameters](#querystring-parameters)
     - [URL shortcuts for localhost](#url-shortcuts-for-localhost)
     - [Other default schemes](other-default-schemes)
-    - `[--path-as-is](#--path-as-is)`
+    - [--path-as-is](#--path-as-is)
 - [Request items](#request-items)
-    - [Escaping rules](#escaping rules)
+    - [Escaping rules](#escaping-rules)
 - [JSON](#json)
     - [Default behaviour](#default-behaviour)
     - [Explicit JSON](#explicit-json)
@@ -30,9 +30,9 @@
     - [Regular forms](#regular-forms)
     - [File upload forms](#file-upload-forms)
 - [HTTP headers](#http-headers)
-    - Default request headers
-    - Empty headers and header un-setting
-    - Limiting response headers
+    - [Default request headers](#default-request-headers)
+    - [Empty headers and header un-setting](#empty-headers-and-header-un-setting)
+    - [Limiting response headers](#limiting-response-headers)
 - [Offline mode](#offline-mode)
 - [Cookies](#cookies)
 - [Authentication](#authentication)
@@ -40,7 +40,7 @@
     - [Digest auth](#digest-auth)
     - [Password prompt](#password-prompt)
     - [Empty password](#empty-password)
-    - `[.netrc](#netrc)`
+    - [.netrc](#netrc)
     - [Auth plugins](#auth-plugins)
 - [HTTP redirects](#http-redirects)
     - [Follow Location](#follow-location)
@@ -1360,14 +1360,13 @@ Syntax highlighting is applied to HTTP headers and bodies (where it makes sense)
 You can choose your preferred color scheme via the `--style` option if you don’t like the default one.
 There are dozens of styles available, here are just a few special or notable ones:
 
-====================   ========================================================================
-`auto`                 Follows your terminal ANSI color styles. This is the default style used by HTTPie.
-`default`              Default styles of the underlying Pygments library. Not actually used by default by HTTPie.
-                       You can enable it with `--style=default`
-`monokai`              A popular color scheme. Enable with `--style=monokai`.
-`fruity`               A bold, colorful scheme. Enable with `--style=fruity`.
-…                      See `$ http --help` for all the possible `--style` values.
-====================   ========================================================================
+| Style      | Description |
+|------------|-------------|
+| `auto`     | Follows your terminal ANSI color styles. This is the default style used by HTTPie |
+| `default`  | Default styles of the underlying Pygments library. Not actually used by default by HTTPie. You can enable it with `--style=default` |
+| `monokai`  | A popular color scheme. Enable with `--style=monokai` |
+| `fruity`   | A bold, colorful scheme. Enable with `--style=fruity` |
+| …          | See `$ http --help` for all the possible `--style` values |
 
 
 Also, the following formatting is applied:
@@ -1378,14 +1377,12 @@ Also, the following formatting is applied:
 
 One of these options can be used to control output processing:
 
-====================   ========================================================
-`--pretty=all`         Apply both colors and formatting.
-                       Default for terminal output.
-`--pretty=colors`      Apply colors.
-`--pretty=format`      Apply formatting.
-`--pretty=none`        Disables output processing.
-                       Default for redirected output.
-====================   ========================================================
+| Option            | Description |
+|-------------------|-------------|
+| `--pretty=all`    | Apply both colors and formatting. Default for terminal output |
+| `--pretty=colors` | Apply colors |
+| `--pretty=format` | Apply formatting |
+| `--pretty=none`   | Disables output processing. Default for redirected output |
 
 
 You can control the applied formatting via the `--format-options` option.
@@ -1432,9 +1429,9 @@ You will nearly instantly see something like this:
 HTTPie uses a different set of defaults for redirected output than for [terminal output](#terminal-output).
 The differences being:
 
-* Formatting and colors aren’t applied (unless `--pretty` is specified).
-* Only the response body is printed (unless one of the [output options](#output-options) is set).
-* Also, binary data isn’t suppressed.
+- Formatting and colors aren’t applied (unless `--pretty` is specified).
+- Only the response body is printed (unless one of the [output options](#output-options) is set).
+- Also, binary data isn’t suppressed.
 
 The reason is to make piping HTTPie’s output to another programs and downloading files work with no extra flags.
 Most of the time, only the raw response body is of an interest when the output is redirected.
@@ -1528,14 +1525,14 @@ If the server doesn’t support that, the whole file will simply be downloaded:
 
 ### Other notes
 
-* The `--download` option only changes how the response body is treated.
-* You can still set custom headers, use sessions, `--verbose, -v`, etc.
-* `--download` always implies `--follow` (redirects are followed).
-* `--download` also implies `--check-status`
+- The `--download` option only changes how the response body is treated.
+- You can still set custom headers, use sessions, `--verbose, -v`, etc.
+- `--download` always implies `--follow` (redirects are followed).
+- `--download` also implies `--check-status`
   (error HTTP status will result in a non-zero exist static code).
-* HTTPie exits with status code `1` (error) if the body hasn’t been fully
+- HTTPie exits with status code `1` (error) if the body hasn’t been fully
   downloaded.
-* `Accept-Encoding` cannot be set with `--download`.
+- `Accept-Encoding` cannot be set with `--download`.
 
 
 ### Streamed responses
@@ -1867,10 +1864,10 @@ All changes are recorded in the [change log](#change-log).
 
 HTTPie has the following community channels:
 
-* [GitHub Issues](https://github.com/jkbr/httpie/issues>) for bug reports and feature requests
-* [Discord server](https://httpie.io/chat) to ask questions, discuss features, and for general API development discussion
-* [StackOverflow](https://stackoverflow.com) to ask questions (make sure to use the [httpie](https://stackoverflow.com/questions/tagged/httpie) tag)
-* You can tweet directly [@httpie](https://twitter.com/httpie)
+- [GitHub Issues](https://github.com/jkbr/httpie/issues>) for bug reports and feature requests
+- [Discord server](https://httpie.io/chat) to ask questions, discuss features, and for general API development discussion
+- [StackOverflow](https://stackoverflow.com) to ask questions (make sure to use the [httpie](https://stackoverflow.com/questions/tagged/httpie) tag)
+- You can tweet directly [@httpie](https://twitter.com/httpie)
 
 
 ### Related projects
@@ -1880,26 +1877,26 @@ HTTPie has the following community channels:
 
 Under the hood, HTTPie uses these two amazing libraries:
 
-* [Requests](https://python-requests.org) — Python HTTP library for humans
-* [Pygments](https://pygments.org/) — Python syntax highlighter
+- [Requests](https://python-requests.org) — Python HTTP library for humans
+- [Pygments](https://pygments.org/) — Python syntax highlighter
 
 
 #### HTTPie friends
 
 HTTPie plays exceptionally well with the following tools:
 
-* [http-prompt](https://github.com/httpie/http-prompt) — an interactive shell for HTTPie featuring autocomplete and command syntax highlighting
-* [jq](https://stedolan.github.io/jq/) — CLI JSON processor that works great in conjunction with HTTPie
+- [http-prompt](https://github.com/httpie/http-prompt) — an interactive shell for HTTPie featuring autocomplete and command syntax highlighting
+- [jq](https://stedolan.github.io/jq/) — CLI JSON processor that works great in conjunction with HTTPie
 
 Helpers to convert from other client tools:
 
-* [CurliPie](https://curlipie.now.sh/) help convert cURL command line to HTTPie command line
+- [CurliPie](https://curlipie.now.sh/) help convert cURL command line to HTTPie command line
 
 
 #### Alternatives
 
-* [httpcat](https://github.com/jakubroztocil/httpcat) — a lower-level sister utility of HTTPie for constructing raw HTTP requests on the command line
-* [curl](https://curl.haxx.se) — a "Swiss knife" command line tool and an exceptional library for transferring data with URLs.
+- [httpcat](https://github.com/jakubroztocil/httpcat) — a lower-level sister utility of HTTPie for constructing raw HTTP requests on the command line
+- [curl](https://curl.haxx.se) — a "Swiss knife" command line tool and an exceptional library for transferring data with URLs.
 
 
 ### Contributing
@@ -1914,8 +1911,8 @@ See [CHANGELOG](https://github.com/httpie/httpie/blob/master/CHANGELOG.md).
 
 ### Artwork
 
-* Logo and branding by [HTTPie](https://httpie.io).
-* [README Animation](https://raw.githubusercontent.com/httpie/httpie/master/httpie.gif) by [Allen Smith](https://github.com/loranallensmith).
+- Logo and branding by [HTTPie](https://httpie.io).
+- [README Animation](https://raw.githubusercontent.com/httpie/httpie/master/httpie.gif) by [Allen Smith](https://github.com/loranallensmith).
 
 
 ### Licence
