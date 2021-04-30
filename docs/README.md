@@ -485,34 +485,13 @@ There are a few different *request item* types that provide a convenient mechani
 
 They are key/value pairs specified after the URL. All have in common that they become part of the actual request that is sent and that their type is distinguished only by the separator used: `:`, `=`, `:=`, `==`, `@`, `=@`, and `:=@`. The ones with an `@` expect a file path as value.
 
-+------------------------------+---------------------------------------------------+
 | Item Type                    | Description                                       |
-+==============================+===================================================+
-| HTTP Headers                 | Arbitrary HTTP header, e.g. `X-API-Token:123`.    |
-| `Name:Value`                 |                                                   |
-+------------------------------+---------------------------------------------------+
-| URL parameters               | Appends the given name/value pair as a query      |
-| `name==value`                | string parameter to the URL.                      |
-|                              | The `==` separator is used.                       |
-+------------------------------+---------------------------------------------------+
-| Data Fields                  | Request data fields to be serialized as a JSON    |
-| `field=value`,               | object (default), to be form-encoded              |
-| `field=@file.txt`            | (with `--form, -f`), or to be serialized as       |
-|                              | `multipart/form-data` (with `--multipart`).       |
-+------------------------------+---------------------------------------------------+
-| Raw JSON fields              | Useful when sending JSON and one or               |
-| `field:=json`,               | more fields need to be a `Boolean`, `Number`,     |
-| `field:=@file.json`          | nested `Object`, or an `Array`,  e.g.,            |
-|                              | `meals:='["ham","spam"]'` or `pies:=[1,2,3]`      |
-|                              | (note the quotes).                                |
-+------------------------------+---------------------------------------------------+
-| Fields upload fields         | Only available with `--form, -f` and              |
-| `field@/dir/file`            | `--multipart`.                                    |
-| `field@file;type=mime`       | For example `screenshot@~/Pictures/img.png`, or   |
-|                              | `'cv@cv.txt;type=text/markdown'`.                 |
-|                              | With `--form`, the presence of a file field       |
-|                              | results in a `--multipart` request.               |
-+------------------------------+---------------------------------------------------+
+|------------------------------|---------------------------------------------------|
+| HTTP Headers `Name:Value`    | Arbitrary HTTP header, e.g. `X-API-Token:123`     |
+| URL parameters `name==value` | Appends the given name/value pair as a querystring parameter to the URL. The `==` separator is used.     |
+| Data Fields `field=value`, `field=@file.txt` | Request data fields to be serialized as a JSON object (default), to be form-encoded (with `--form, -f`), or to be serialized as `multipart/form-data` (with `--multipart`) |
+| Raw JSON fields `field:=json`              | Useful when sending JSON and one or more fields need to be a `Boolean`, `Number`, nested `Object`, or an `Array`, e.g., `meals:='["ham","spam"]'` or `pies:=[1,2,3]` (note the quotes) |
+| File upload fields `field@/dir/file`, `field@file;type=mime` | Only available with `--form`, `-f` and `--multipart`. For example `screenshot@~/Pictures/img.png`, or `'cv@cv.txt;type=text/markdown'`. With `--form`, the presence of a file field results in a `--multipart` request |
 
 
 Note that data fields aren’t the only way to specify request data:
@@ -572,10 +551,9 @@ Simple example:
 
 If your command includes some data [request items](#request-items), they are serialized as a JSON object by default. HTTPie also automatically sets the following headers, both of which can be overwritten:
 
-================    =======================================
-`Content-Type`      `application/json`
-`Accept`            `application/json, */*;q=0.5`
-================    =======================================
+| Header name     |   Value              |
+| `Content-Type`  |   `application/json` |
+| `Accept`        |   `application/json, */*;q=0.5` |
 
 
 ### Explicit JSON
@@ -910,19 +888,10 @@ the [sessions](#sessions) feature.
 
 The currently supported authentication schemes are Basic and Digest (see [auth plugins](#auth-plugins) for more). There are two flags that control authentication:
 
-===================     ======================================================
-`--auth, -a`          Pass a `username:password` pair as
-                        the argument. Or, if you only specify a username
-                        (`-a username`), you’ll be prompted for
-                        the password before the request is sent.
-                        To send an empty password, pass `username:`.
-                        The `username:password@hostname` URL syntax is
-                        supported as well (but credentials passed via `-a`
-                        have higher priority).
-
-`--auth-type, -A`     Specify the auth mechanism. Possible values are
-                        `basic`, `digest`, or the name of any [auth plugins](#auth-plugins) you have installed. The default value is `basic` so it can often be omitted.
-===================     ======================================================
+| Flag              | Parameters |
+|-------------------|------------|
+| `--auth, -a`      | Pass a `username:password` pair as the argument. Or, if you only specify a username (`-a username`), you’ll be prompted for the password before the request is sent. To send an empty password, pass `username:`. The `username:password@hostname` URL syntax is supported as well (but credentials passed via `-a` have higher priority) |
+| `--auth-type, -A` | Specify the auth mechanism. Possible values are `basic`, `digest`, or the name of any [auth plugins](#auth-plugins) you have installed. The default value is `basic` so it can often be omitted |
 
 
 ### Basic auth
@@ -1151,14 +1120,13 @@ By default, HTTPie only outputs the final response and the whole response
 message is printed (headers as well as the body). You can control what should
 be printed via several options:
 
-=================   =====================================================
-`--headers, -h`   Only the response headers are printed.
-`--body, -b`      Only the response body is printed.
-`--verbose, -v`   Print the whole HTTP exchange (request and response).
-                    This option also enables `--all` (see below).
-`--print, -p`     Selects parts of the HTTP exchange.
-`--quiet, -q`     Don't print anything to `stdout` and `stderr`.
-=================   =====================================================
+| Option          | What is printed |
+|-----------------|-----------------|
+| `--headers, -h` | Only the response headers are printed |
+| `--body, -b`    | Only the response body is printed |
+| `--verbose, -v` | Print the whole HTTP exchange (request and response). This option also enables `--all` (see below) |
+| `--print, -p`   | Selects parts of the HTTP exchange |
+| `--quiet, -q`   | Don't print anything to `stdout` and `stderr` |
 
 
 ### What parts of the HTTP exchange should be printed
@@ -1166,14 +1134,12 @@ be printed via several options:
 All the other [output options](#output-options) are under the hood just shortcuts for the more powerful `--print, -p`.
 It accepts a string of characters each of which represents a specific part of the HTTP exchange:
 
-==========  ==================
-Character   Stands for
-==========  ==================
-`H`         request headers
-`B`         request body
-`h`         response headers
-`b`         response body
-==========  ==================
+| Character | Stands for |
+|-----------|------------|
+| `H`       | request headers |
+| `B`       | request body |
+| `h`       | response headers | 
+| `b`       | response body |
 
 
 Print request and response headers:
