@@ -1893,7 +1893,7 @@ Notice that both the order of elements and the syntax is very similar, and that 
 
 The two modes, `--pretty=all` (default for terminal) and `--pretty=none` (default for redirected output), allow for both user-friendly interactive use and usage from scripts, where HTTPie serves as a generic HTTP client.
 
-As HTTPie is still under heavy development, the existing command line syntax and some of the `--OPTIONS` may change slightly before HTTPie reaches its final version `1.0`.
+In the future, the command line syntax and some of the `--OPTIONS` may change slightly as HTTPie is developed further and new features are added.
 All changes are recorded in the [change log](#change-log).
 
 
