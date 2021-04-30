@@ -3,7 +3,7 @@ import json
 import os
 import shutil
 from datetime import datetime
-from mock import mock
+from unittest import mock
 from tempfile import gettempdir
 
 import pytest

@@ -1,4 +1,4 @@
-import mock
+from unittest import mock
 from pytest import raises
 from requests import Request
 from requests.exceptions import ConnectionError
