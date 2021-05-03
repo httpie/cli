@@ -39,5 +39,6 @@ Patches and ideas
 * `Aleksandr Vinokurov <https://github.com/aleksandr-vin>`_
 * `Jeff Byrnes <https://github.com/jeffbyrnes>`_
 * `Denis Belavin <https://github.com/LuckyDenis>`_
+* `Mickaël Schoentgen <https://github.com/BoboTiG>`_
 
 
