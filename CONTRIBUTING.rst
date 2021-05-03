@@ -116,7 +116,7 @@ the ``http`` command should point to your development copy:
 (Btw, you don’t need to activate the virtual environment if you just want
 run some of the ``make`` tasks. You can also invoke the development
 version of HTTPie directly with ``./venv/bin/http`` without having to activate
-the environment first. The same goes for ``./venv/bin/py.test``, etc.).
+the environment first. The same goes for ``./venv/bin/pytest``, etc.).
 
 
 Making Changes
@@ -167,9 +167,9 @@ can run specific tests from the terminal:
 .. code-block:: bash
 
     # Run specific tests on the current Python
-    py.test tests/test_uploads.py
-    py.test tests/test_uploads.py::TestMultipartFormDataFileUpload
-    py.test tests/test_uploads.py::TestMultipartFormDataFileUpload::test_upload_ok
+    python -m pytest tests/test_uploads.py
+    python -m pytest tests/test_uploads.py::TestMultipartFormDataFileUpload
+    python -m pytest tests/test_uploads.py::TestMultipartFormDataFileUpload::test_upload_ok
 
 -----
 
@@ -221,7 +221,7 @@ Use ``pytest`` to run tests locally with an active virtual environment:
 .. code-block:: bash
 
     # Run all tests
-    py.test
+    python -m pytest
 
 
 -----

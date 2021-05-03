@@ -78,7 +78,7 @@ venv:
 
 test:
 	@echo $(H1)Running tests$(HEADER_EXTRA)$(H1END)
-	$(VENV_BIN)/py.test $(COV) ./httpie $(COV) ./tests --doctest-modules --verbose ./httpie ./tests
+	$(VENV_BIN)/python -m pytest $(COV) ./httpie $(COV) ./tests --doctest-modules --verbose ./httpie ./tests
 	@echo
 
 
