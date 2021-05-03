@@ -9,7 +9,7 @@ from httpie.config import (
     DEFAULT_RELATIVE_XDG_CONFIG_HOME, DEFAULT_WINDOWS_CONFIG_DIR,
     ENV_HTTPIE_CONFIG_DIR, ENV_XDG_CONFIG_HOME, get_default_config_dir,
 )
-from utils import HTTP_OK, MockEnvironment, http
+from .utils import HTTP_OK, MockEnvironment, http
 
 
 def test_default_options(httpbin):

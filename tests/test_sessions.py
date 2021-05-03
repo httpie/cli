@@ -8,15 +8,14 @@ from tempfile import gettempdir
 
 import pytest
 
-from fixtures import UNICODE
+from .fixtures import FILE_PATH_ARG, UNICODE
 from httpie.plugins import AuthPlugin
 from httpie.plugins.builtin import HTTPBasicAuth
 from httpie.plugins.registry import plugin_manager
 from httpie.sessions import Session
 from httpie.utils import get_expired_cookies
-from tests.test_auth_plugins import basic_auth
-from utils import HTTP_OK, MockEnvironment, http, mk_config_dir
-from fixtures import FILE_PATH_ARG
+from .test_auth_plugins import basic_auth
+from .utils import HTTP_OK, MockEnvironment, http, mk_config_dir
 
 
 class SessionTestBase:

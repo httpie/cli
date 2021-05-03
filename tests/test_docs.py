@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from utils import TESTS_ROOT
+from .utils import TESTS_ROOT
 
 
 SOURCE_DIRECTORIES = [

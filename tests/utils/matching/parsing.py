@@ -3,7 +3,7 @@ from typing import Iterable
 from enum import Enum, auto
 
 from httpie.output.writer import MESSAGE_SEPARATOR
-from tests.utils import CRLF
+from ...utils import CRLF
 
 
 class Expect(Enum):

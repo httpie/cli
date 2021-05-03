@@ -6,7 +6,7 @@ import pytest
 from requests.exceptions import InvalidSchema
 
 import httpie.cli.argparser
-from fixtures import (
+from .fixtures import (
     FILE_CONTENT, FILE_PATH, FILE_PATH_ARG, JSON_FILE_CONTENT,
     JSON_FILE_PATH_ARG,
 )
@@ -15,7 +15,7 @@ from httpie.cli import constants
 from httpie.cli.definition import parser
 from httpie.cli.argtypes import KeyValueArg, KeyValueArgType
 from httpie.cli.requestitems import RequestItems
-from utils import HTTP_OK, MockEnvironment, StdinBytesIO, http
+from .utils import HTTP_OK, MockEnvironment, StdinBytesIO, http
 
 
 class TestItemParsing:

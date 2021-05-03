@@ -6,11 +6,11 @@ import pytest
 
 import httpie
 import httpie.__main__
-from fixtures import FILE_CONTENT, FILE_PATH
+from .fixtures import FILE_CONTENT, FILE_PATH
 from httpie.cli.exceptions import ParseError
 from httpie.context import Environment
 from httpie.status import ExitStatus
-from utils import HTTP_OK, MockEnvironment, StdinBytesIO, http
+from .utils import HTTP_OK, MockEnvironment, StdinBytesIO, http
 
 
 def test_main_entry_point():

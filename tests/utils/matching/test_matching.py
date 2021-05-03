@@ -3,8 +3,8 @@ Here we test our output parsing and matching implementation, not HTTPie itself.
 
 """
 from httpie.output.writer import MESSAGE_SEPARATOR
-from tests.utils import CRLF
-from tests.utils.matching import assert_output_does_not_match, assert_output_matches, Expect
+from ...utils import CRLF
+from . import assert_output_does_not_match, assert_output_matches, Expect
 
 
 def test_assert_output_matches_headers_incomplete():
