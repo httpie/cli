@@ -18,9 +18,9 @@ from urllib.parse import urlsplit
 
 import requests
 
-from httpie.models import HTTPResponse
-from httpie.output.streams import RawStream
-from httpie.utils import humanize_bytes
+from .models import HTTPResponse
+from .output.streams import RawStream
+from .utils import humanize_bytes
 
 
 PARTIAL_CONTENT = 206

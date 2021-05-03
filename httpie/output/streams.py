@@ -1,9 +1,9 @@
 from itertools import chain
 from typing import Callable, Iterable, Union
 
-from httpie.context import Environment
-from httpie.models import HTTPMessage
-from httpie.output.processing import Conversion, Formatting
+from ..context import Environment
+from ..models import HTTPMessage
+from .processing import Conversion, Formatting
 
 
 BINARY_SUPPRESSED_NOTICE = (

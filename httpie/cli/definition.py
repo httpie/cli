@@ -5,13 +5,13 @@ CLI arguments definition.
 from argparse import (FileType, OPTIONAL, SUPPRESS, ZERO_OR_MORE)
 from textwrap import dedent, wrap
 
-from httpie import __doc__, __version__
-from httpie.cli.argparser import HTTPieArgumentParser
-from httpie.cli.argtypes import (
+from .. import __doc__, __version__
+from .argparser import HTTPieArgumentParser
+from .argtypes import (
     KeyValueArgType, SessionNameValidator,
     readable_file_arg,
 )
-from httpie.cli.constants import (
+from .constants import (
     DEFAULT_FORMAT_OPTIONS, OUTPUT_OPTIONS,
     OUTPUT_OPTIONS_DEFAULT, OUT_REQ_BODY, OUT_REQ_HEAD,
     OUT_RESP_BODY, OUT_RESP_HEAD, PRETTY_MAP, PRETTY_STDOUT_TTY_ONLY,
@@ -19,13 +19,13 @@ from httpie.cli.constants import (
     SORTED_FORMAT_OPTIONS_STRING,
     UNSORTED_FORMAT_OPTIONS_STRING,
 )
-from httpie.output.formatters.colors import (
+from ..output.formatters.colors import (
     AUTO_STYLE, AVAILABLE_STYLES, DEFAULT_STYLE,
 )
-from httpie.plugins.builtin import BuiltinAuthPlugin
-from httpie.plugins.registry import plugin_manager
-from httpie.sessions import DEFAULT_SESSIONS_DIR
-from httpie.ssl import AVAILABLE_SSL_VERSION_ARG_MAPPING, DEFAULT_SSL_CIPHERS
+from ..plugins.builtin import BuiltinAuthPlugin
+from ..plugins.registry import plugin_manager
+from ..sessions import DEFAULT_SESSIONS_DIR
+from ..ssl import AVAILABLE_SSL_VERSION_ARG_MAPPING, DEFAULT_SSL_CIPHERS
 
 
 parser = HTTPieArgumentParser(

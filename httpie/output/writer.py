@@ -4,10 +4,10 @@ from typing import IO, TextIO, Tuple, Type, Union
 
 import requests
 
-from httpie.context import Environment
-from httpie.models import HTTPRequest, HTTPResponse
-from httpie.output.processing import Conversion, Formatting
-from httpie.output.streams import (
+from ..context import Environment
+from ..models import HTTPRequest, HTTPResponse
+from .processing import Conversion, Formatting
+from .streams import (
     BaseStream, BufferedPrettyStream, EncodedStream, PrettyStream, RawStream,
 )
 

@@ -1,8 +1,8 @@
-from httpie.plugins.manager import PluginManager
-from httpie.plugins.builtin import BasicAuthPlugin, DigestAuthPlugin
-from httpie.output.formatters.headers import HeadersFormatter
-from httpie.output.formatters.json import JSONFormatter
-from httpie.output.formatters.colors import ColorFormatter
+from .manager import PluginManager
+from .builtin import BasicAuthPlugin, DigestAuthPlugin
+from ..output.formatters.headers import HeadersFormatter
+from ..output.formatters.json import JSONFormatter
+from ..output.formatters.colors import ColorFormatter
 
 
 plugin_manager = PluginManager()

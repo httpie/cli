@@ -7,7 +7,7 @@ import sys
 
 def main():
     try:
-        from .core import main
+        from httpie.core import main
         exit_status = main()
     except KeyboardInterrupt:
         from httpie.status import ExitStatus

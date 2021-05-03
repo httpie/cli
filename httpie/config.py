@@ -4,8 +4,8 @@ import os
 from pathlib import Path
 from typing import Union
 
-from httpie import __version__
-from httpie.compat import is_windows
+from . import __version__
+from .compat import is_windows
 
 
 ENV_XDG_CONFIG_HOME = 'XDG_CONFIG_HOME'
