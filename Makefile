@@ -172,14 +172,19 @@ uninstall-httpie:
 
 ###############################################################################
 # Docs
+# WIP: tables are not formatted + not sure whether you can use
+# grep and sed within a Makefile?
 ###############################################################################
 
 pdf:
-	@echo "Converting README.rst to PDF…"
-	rst2pdf \
-		--strip-elements-with-class=no-pdf \
-		README.rst \
-		-o README.pdf
+	@echo "Converting docs/README.md to PDF…"
+	grep -v '^\[!\[' docs/README.md > docs/tempfile.md &
+	sed -i -e -r "s/(#[^ ][--]*[^\)]*)\)/https:\/\/httpie.io\/docs\1\)/g" docs/tempfile.md &
+	mdpdf \
+		-o \
+		docs.pdf \
+		docs/tempfile.md
+	rm docs/temp*
 	@echo "Done"
 	@echo
 

@@ -7,3 +7,4 @@ wheel
 pycodestyle
 twine
 recommonmark
+mdpdf
