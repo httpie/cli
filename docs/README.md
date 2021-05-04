@@ -1487,6 +1487,8 @@ $ http -dco file.zip example.org/file
 ```
 
 
+`-dco` is shorthand for `--download` `--continue` `--output`.
+
 ### Other notes
 
 - The `--download` option only changes how the response body is treated.
