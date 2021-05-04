@@ -135,9 +135,9 @@ and always provides the latest version) is to use `pip`_:
 .. code-block:: bash
 
     # Make sure we have an up-to-date version of pip and setuptools:
-    $ python -m pip install --upgrade pip setuptools
+    $ python -m pip install -U pip setuptools
 
-    $ python -m pip install --upgrade httpie
+    $ python -m pip install -U httpie
 
 
 (If ``pip`` installation fails for some reason, you can try
@@ -175,7 +175,7 @@ Otherwise with ``pip``:
 
 .. code-block:: bash
 
-    $ pip install --upgrade https://github.com/httpie/httpie/archive/master.tar.gz
+    $ python -m pip install -U https://github.com/httpie/httpie/archive/master.tar.gz
 
 
 Verify that now we have the

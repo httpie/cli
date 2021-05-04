@@ -172,7 +172,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 * Added fish shell completion (located in ``extras/httpie-completion.fish``
   in the GitHub repo).
 * Updated ``requests`` to 2.10.0 so that SOCKS support can be added via
-  ``pip install requests[socks]``.
+  ``python -m pip install requests[socks]``.
 * Changed the default JSON ``Accept`` header from ``application/json``
   to ``application/json, */*``.
 * Changed the pre-processing of request HTTP headers so that any leading
