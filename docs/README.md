@@ -17,7 +17,7 @@
 - [Request URL](#request-url)
     - [Querystring parameters](#querystring-parameters)
     - [URL shortcuts for localhost](#url-shortcuts-for-localhost)
-    - [Other default schemes](other-default-schemes)
+    - [Other default schemes](#other-default-schemes)
     - [--path-as-is](#--path-as-is)
 - [Request items](#request-items)
     - [Escaping rules](#escaping-rules)
@@ -1777,7 +1777,7 @@ You most likely want to use the `--ignore-stdin` option to disable it.
 It is a common *gotcha* that without this option HTTPie seemingly hangs.
 What happens is that when HTTPie is invoked, for example, from a cron job, `stdin` is not connected to a terminal.
 Therefore, the rules for [redirected input](#redirected-input) apply, i.e. HTTPie starts to read it expecting that the request body will be passed through.
-And since there’s neither data nor `EOF`, it will get stuck. So unless you’re piping some data to HTTPie, this flag should not be used in scripts.
+And since there’s neither data nor `EOF`, it will get stuck. So unless you’re piping some data to HTTPie, the `--ignore-stdin` flag should be used in scripts.
 
 Also, it might be good to set a connection `--timeout` limit to prevent your program from hanging if the server never responds.
 

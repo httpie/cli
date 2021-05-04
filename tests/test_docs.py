@@ -15,10 +15,10 @@ SOURCE_DIRECTORIES = [
 ]
 
 
-def has_docutils():
+def has_recommonmark():
     try:
         # noinspection PyUnresolvedReferences,PyPackageRequirements
-        import docutils
+        import recommonmark
         return True
     except ImportError:
         return False
