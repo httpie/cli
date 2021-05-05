@@ -175,7 +175,7 @@ Otherwise with ``pip``:
 
 .. code-block:: bash
 
-    $ pip install --upgrade https://github.com/httpie/httpie/archive/master.tar.gz
+    $ python -m pip install --upgrade https://github.com/httpie/httpie/archive/master.tar.gz
 
 
 Verify that now we have the
