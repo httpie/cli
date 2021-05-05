@@ -193,7 +193,7 @@ Install HTTPie in editable mode with all the dependencies:
 
 .. code-block:: powershell
 
-    python -m pip install -U -e . -r requirements-dev.txt
+    python -m pip install --upgrade --editable . -r requirements-dev.txt
 
 You should now see ``(httpie)`` next to your shell prompt, and
 the ``http`` command should point to your development copy:
