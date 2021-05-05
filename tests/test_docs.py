@@ -10,6 +10,7 @@ from utils import TESTS_ROOT
 
 SOURCE_DIRECTORIES = [
     'extras',
+    'docs',
     'httpie',
     'tests',
 ]
