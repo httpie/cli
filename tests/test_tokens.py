@@ -9,8 +9,8 @@ TODO: cover more scenarios
  * streamed uploads
 
 """
-from tests.utils.matching import assert_output_matches, Expect
-from utils import http, HTTP_OK, MockEnvironment, HTTPBIN_WITH_CHUNKED_SUPPORT
+from .utils.matching import assert_output_matches, Expect
+from .utils import http, HTTP_OK, MockEnvironment, HTTPBIN_WITH_CHUNKED_SUPPORT
 
 
 RAW_REQUEST = [

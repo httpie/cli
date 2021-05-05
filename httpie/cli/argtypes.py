@@ -5,8 +5,8 @@ import sys
 from copy import deepcopy
 from typing import List, Optional, Union
 
-from httpie.cli.constants import DEFAULT_FORMAT_OPTIONS, SEPARATOR_CREDENTIALS
-from httpie.sessions import VALID_SESSION_NAME_PATTERN
+from .constants import DEFAULT_FORMAT_OPTIONS, SEPARATOR_CREDENTIALS
+from ..sessions import VALID_SESSION_NAME_PATTERN
 
 
 class KeyValueArg:

@@ -2,7 +2,7 @@ from base64 import b64encode
 
 import requests.auth
 
-from httpie.plugins.base import AuthPlugin
+from .base import AuthPlugin
 
 
 # noinspection PyAbstractClass

@@ -1,21 +1,21 @@
 import os
 from typing import Callable, Dict, IO, List, Optional, Tuple, Union
 
-from httpie.cli.argtypes import KeyValueArg
-from httpie.cli.constants import (
+from .argtypes import KeyValueArg
+from .constants import (
     SEPARATORS_GROUP_MULTIPART, SEPARATOR_DATA_EMBED_FILE_CONTENTS,
     SEPARATOR_DATA_EMBED_RAW_JSON_FILE,
     SEPARATOR_DATA_RAW_JSON, SEPARATOR_DATA_STRING, SEPARATOR_FILE_UPLOAD,
     SEPARATOR_FILE_UPLOAD_TYPE, SEPARATOR_HEADER, SEPARATOR_HEADER_EMPTY,
     SEPARATOR_QUERY_PARAM,
 )
-from httpie.cli.dicts import (
+from .dicts import (
     MultipartRequestDataDict, RequestDataDict, RequestFilesDict,
     RequestHeadersDict, RequestJSONDataDict,
     RequestQueryParamsDict,
 )
-from httpie.cli.exceptions import ParseError
-from httpie.utils import (get_content_type, load_json_preserve_order)
+from .exceptions import ParseError
+from ..utils import get_content_type, load_json_preserve_order
 
 
 class RequestItems:

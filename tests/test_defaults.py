@@ -5,8 +5,8 @@ Tests for the provided defaults regarding HTTP method, and --json vs. --form.
 from io import BytesIO
 
 from httpie.client import JSON_ACCEPT
-from utils import MockEnvironment, http, HTTP_OK
-from fixtures import FILE_PATH
+from .utils import MockEnvironment, http, HTTP_OK
+from .fixtures import FILE_PATH
 
 
 def test_default_headers_case_insensitive(httpbin):

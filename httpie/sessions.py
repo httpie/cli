@@ -13,9 +13,9 @@ from urllib.parse import urlsplit
 from requests.auth import AuthBase
 from requests.cookies import RequestsCookieJar, create_cookie
 
-from httpie.cli.dicts import RequestHeadersDict
-from httpie.config import BaseConfigDict, DEFAULT_CONFIG_DIR
-from httpie.plugins.registry import plugin_manager
+from .cli.dicts import RequestHeadersDict
+from .config import BaseConfigDict, DEFAULT_CONFIG_DIR
+from .plugins.registry import plugin_manager
 
 
 SESSIONS_DIR_NAME = 'sessions'
@@ -141,7 +141,7 @@ class Session(BaseConfigDict):
             }
         else:
             if plugin.auth_parse:
-                from httpie.cli.argtypes import parse_auth
+                from .cli.argtypes import parse_auth
                 parsed = parse_auth(plugin.raw_auth)
                 credentials = {
                     'username': parsed.key,

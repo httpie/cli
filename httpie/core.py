@@ -8,14 +8,14 @@ import requests
 from pygments import __version__ as pygments_version
 from requests import __version__ as requests_version
 
-from httpie import __version__ as httpie_version
-from httpie.cli.constants import OUT_REQ_BODY, OUT_REQ_HEAD, OUT_RESP_BODY, OUT_RESP_HEAD
-from httpie.client import collect_messages
-from httpie.context import Environment
-from httpie.downloads import Downloader
-from httpie.output.writer import write_message, write_stream, MESSAGE_SEPARATOR_BYTES
-from httpie.plugins.registry import plugin_manager
-from httpie.status import ExitStatus, http_status_to_exit_status
+from . import __version__ as httpie_version
+from .cli.constants import OUT_REQ_BODY, OUT_REQ_HEAD, OUT_RESP_BODY, OUT_RESP_HEAD
+from .client import collect_messages
+from .context import Environment
+from .downloads import Downloader
+from .output.writer import write_message, write_stream, MESSAGE_SEPARATOR_BYTES
+from .plugins.registry import plugin_manager
+from .status import ExitStatus, http_status_to_exit_status
 
 
 # noinspection PyDefaultArgument
@@ -34,7 +34,7 @@ def main(args: List[Union[str, bytes]] = sys.argv, env=Environment()) -> ExitSta
     args = decode_raw_args(args, env.stdin_encoding)
     plugin_manager.load_installed_plugins()
 
-    from httpie.cli.definition import parser
+    from .cli.definition import parser
 
     if env.config.default_options:
         args = env.config.default_options + args

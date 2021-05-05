@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 import json
 
-from httpie.plugins import FormatterPlugin
+from ...plugins import FormatterPlugin
 
 
 class JSONFormatter(FormatterPlugin):

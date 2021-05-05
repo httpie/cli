@@ -5,11 +5,11 @@ import pytest
 from httpie.cli.exceptions import ParseError
 from httpie.client import FORM_CONTENT_TYPE
 from httpie.status import ExitStatus
-from utils import (
+from .utils import (
     HTTPBIN_WITH_CHUNKED_SUPPORT, MockEnvironment, StdinBytesIO, http,
     HTTP_OK,
 )
-from fixtures import FILE_PATH_ARG, FILE_PATH, FILE_CONTENT
+from .fixtures import FILE_PATH_ARG, FILE_PATH, FILE_CONTENT
 
 
 def test_chunked_json():

@@ -3,8 +3,8 @@
 Various unicode handling related tests.
 
 """
-from utils import http, HTTP_OK
-from fixtures import UNICODE
+from .utils import http, HTTP_OK
+from .fixtures import UNICODE
 
 
 def test_unicode_headers(httpbin):

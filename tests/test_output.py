@@ -19,7 +19,7 @@ from httpie.cli.argtypes import (
 from httpie.cli.definition import parser
 from httpie.output.formatters.colors import get_lexer
 from httpie.status import ExitStatus
-from utils import COLOR, CRLF, HTTP_OK, MockEnvironment, http
+from .utils import COLOR, CRLF, HTTP_OK, MockEnvironment, http
 
 
 @pytest.mark.parametrize('stdout_isatty', [True, False])

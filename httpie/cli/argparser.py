@@ -9,23 +9,23 @@ from urllib.parse import urlsplit
 
 from requests.utils import get_netrc_auth
 
-from httpie.cli.argtypes import (
+from .argtypes import (
     AuthCredentials, KeyValueArgType, PARSED_DEFAULT_FORMAT_OPTIONS,
     parse_auth,
     parse_format_options,
 )
-from httpie.cli.constants import (
+from .constants import (
     HTTP_GET, HTTP_POST, OUTPUT_OPTIONS, OUTPUT_OPTIONS_DEFAULT,
     OUTPUT_OPTIONS_DEFAULT_OFFLINE, OUTPUT_OPTIONS_DEFAULT_STDOUT_REDIRECTED,
     OUT_RESP_BODY, PRETTY_MAP, PRETTY_STDOUT_TTY_ONLY, RequestType,
     SEPARATOR_CREDENTIALS,
     SEPARATOR_GROUP_ALL_ITEMS, SEPARATOR_GROUP_DATA_ITEMS, URL_SCHEME_RE,
 )
-from httpie.cli.exceptions import ParseError
-from httpie.cli.requestitems import RequestItems
-from httpie.context import Environment
-from httpie.plugins.registry import plugin_manager
-from httpie.utils import ExplicitNullAuth, get_content_type
+from .exceptions import ParseError
+from .requestitems import RequestItems
+from ..context import Environment
+from ..plugins.registry import plugin_manager
+from ..utils import ExplicitNullAuth, get_content_type
 
 
 class HTTPieHelpFormatter(RawDescriptionHelpFormatter):

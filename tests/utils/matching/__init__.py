@@ -2,7 +2,7 @@ from typing import Iterable
 
 import pytest
 
-from tests.utils.matching.parsing import OutputMatchingError, expect_tokens, Expect
+from .parsing import OutputMatchingError, expect_tokens, Expect
 
 
 __all__ = [

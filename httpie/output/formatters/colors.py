@@ -15,9 +15,9 @@ from pygments.lexers.special import TextLexer
 from pygments.lexers.text import HttpLexer as PygmentsHttpLexer
 from pygments.util import ClassNotFound
 
-from httpie.compat import is_windows
-from httpie.context import Environment
-from httpie.plugins import FormatterPlugin
+from ...compat import is_windows
+from ...context import Environment
+from ...plugins import FormatterPlugin
 
 
 AUTO_STYLE = 'auto'  # Follows terminal ANSI color styles
