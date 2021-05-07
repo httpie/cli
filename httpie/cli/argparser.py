@@ -114,7 +114,6 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
             RequestType.MULTIPART,
         } or bool(self.args.data_raw)
 
-
     def _process_url(self):
         if not URL_SCHEME_RE.match(self.args.url):
             if os.path.basename(self.env.program_name) == 'https':
