@@ -105,6 +105,11 @@ class TestAutoContentTypeAndAcceptHeaders:
         assert '"Accept": "application/xml"' in r
         assert '"Content-Type": "application/xml"' in r
 
+    def test_POST_data_raw_auto_Content_Type(self, httpbin):
+        r = http('--data-raw', 'user=Alice', 'POST', httpbin.url + '/post')
+        assert HTTP_OK in r
+        assert '"Content-Type": "application/x-www-form-urlencoded' in r
+
     def test_POST_form_auto_Content_Type(self, httpbin):
         r = http('--form', 'POST', httpbin.url + '/post')
         assert HTTP_OK in r

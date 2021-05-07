@@ -10,6 +10,17 @@ def test_offline():
     assert 'GET /foo' in r
 
 
+def test_offline_data_raw():
+    r = http(
+        '--offline',
+        '--data-raw',
+        'foo=bar',
+        'https://this-should.never-resolve/foo',
+    )
+    assert 'POST /foo' in r
+    assert 'foo=bar' in r
+
+
 def test_offline_form():
     r = http(
         '--offline',

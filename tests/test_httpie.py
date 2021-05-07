@@ -89,6 +89,31 @@ def test_POST_JSON_data(httpbin_both):
     assert r.json['json']['foo'] == 'bar'
 
 
+def test_POST_data_raw(httpbin_both):
+    r = http('--data-raw', 'foo=bar', 'POST', httpbin_both + '/post')
+    assert HTTP_OK in r
+    assert '"foo": "bar"' in r
+
+
+def test_POST_data_raw_multiple_calls(httpbin_both):
+    r = http('--data-raw', 'foo=bar', '--data-raw', 'baz=42',
+             'POST', httpbin_both + '/post')
+    assert HTTP_OK in r
+    assert r.json['form'] == {
+        'foo': 'bar',
+        'baz': '42',
+    }
+
+
+def test_POST_data_raw_multiple_values(httpbin_both):
+    r = http('--data-raw', 'foo=bar', '--data-raw', 'foo=42',
+             '--data-raw', 'foo=', 'POST', httpbin_both + '/post')
+    assert HTTP_OK in r
+    assert r.json['form'] == {
+        'foo': ['bar', '42', ''],
+    }
+
+
 def test_POST_form(httpbin_both):
     r = http('--form', 'POST', httpbin_both + '/post', 'foo=bar')
     assert HTTP_OK in r

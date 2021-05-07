@@ -236,6 +236,7 @@ class TestArgumentParser:
         self.parser.args.method = None
         self.parser.args.url = 'http://example.com/'
         self.parser.args.request_items = []
+        self.parser.args.data_raw = []
         self.parser.args.ignore_stdin = False
         self.parser.env = MockEnvironment()
         self.parser._guess_method()

@@ -141,6 +141,12 @@ class TestVerboseFlag:
         assert HTTP_OK in r
         assert r.count('__test__') == 2
 
+    def test_verbose_data_raw(self, httpbin):
+        r = http('--verbose', '--data-raw', 'A=B', '--data-raw', 'C=D',
+                 'POST', httpbin.url + '/post')
+        assert HTTP_OK in r
+        assert 'A=B&C=D' in r
+
     def test_verbose_form(self, httpbin):
         # https://github.com/httpie/httpie/issues/53
         r = http('--verbose', '--form', 'POST', httpbin.url + '/post',

@@ -16,7 +16,7 @@ from .constants import (
     OUTPUT_OPTIONS_DEFAULT, OUT_REQ_BODY, OUT_REQ_HEAD,
     OUT_RESP_BODY, OUT_RESP_HEAD, PRETTY_MAP, PRETTY_STDOUT_TTY_ONLY,
     RequestType, SEPARATOR_GROUP_ALL_ITEMS, SEPARATOR_PROXY,
-    SORTED_FORMAT_OPTIONS_STRING,
+    SORTED_FORMAT_OPTIONS_STRING, SEPARATOR_DATA_STRING,
     UNSORTED_FORMAT_OPTIONS_STRING,
 )
 from ..output.formatters.colors import (
@@ -182,6 +182,20 @@ content_type.add_argument(
     help='''
     Specify a custom boundary string for multipart/form-data requests.
     Only has effect only together with --form.
+
+    '''
+)
+content_type.add_argument(
+    '--data-raw',
+    action='append',
+    type=KeyValueArgType(SEPARATOR_DATA_STRING),
+    help='''
+    Sends the specified data in a POST request to the HTTP server, in the
+    same way that a browser does when a user has filled in an HTML form
+    and presses the submit button.
+    This will cause HTTPie to pass the data to the server using the
+    content-type application/x-www-form-urlencoded.
+    Compare to -f, --form.
 
     '''
 )

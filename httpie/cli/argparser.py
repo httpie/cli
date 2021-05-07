@@ -112,7 +112,8 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
         self.args.form = request_type in {
             RequestType.FORM,
             RequestType.MULTIPART,
-        }
+        } or bool(self.args.data_raw)
+
 
     def _process_url(self):
         if not URL_SCHEME_RE.match(self.args.url):
@@ -301,12 +302,15 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
 
         """
         if self.args.method is None:
-            # Invoked as `http URL'.
-            assert not self.args.request_items
-            if self.has_stdin_data:
+            if self.args.data_raw:
                 self.args.method = HTTP_POST
             else:
-                self.args.method = HTTP_GET
+                # Invoked as `http URL'.
+                assert not self.args.request_items
+                if self.has_stdin_data:
+                    self.args.method = HTTP_POST
+                else:
+                    self.args.method = HTTP_GET
 
         # FIXME: False positive, e.g., "localhost" matches but is a valid URL.
         elif not re.match('^[a-zA-Z]+$', self.args.method):
@@ -340,6 +344,9 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
         `args.params`, and `args.files`.
 
         """
+        if self.args.data_raw:
+            self.args.request_items.extend(self.args.data_raw)
+
         try:
             request_items = RequestItems.from_args(
                 request_item_args=self.args.request_items,

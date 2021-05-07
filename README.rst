@@ -227,6 +227,13 @@ Submitting `forms`_:
     $ http -f POST pie.dev/post hello=World
 
 
+Submitting `forms`_, alternative way:
+
+.. code-block:: bash
+
+    $ http --data-raw 'hello=World' POST pie.dev/post
+
+
 See the request that is being sent using one of the `output options`_:
 
 .. code-block:: bash
@@ -481,8 +488,9 @@ their type is distinguished only by the separator used:
 +------------------------------+---------------------------------------------------+
 | Data Fields                  | Request data fields to be serialized as a JSON    |
 | ``field=value``,             | object (default), to be form-encoded              |
-| ``field=@file.txt``          | (with ``--form, -f``), or to be serialized as     |
-|                              | ``multipart/form-data`` (with ``--multipart``).   |
+| ``field=@file.txt``          | (with ``--form, -f`` or ``--data-raw``), or to    |
+|                              | be serialized as ``multipart/form-data`` (with    |
+|                              | ``--multipart``).                                 |
 +------------------------------+---------------------------------------------------+
 | Raw JSON fields              | Useful when sending JSON and one or               |
 | ``field:=json``,             | more fields need to be a ``Boolean``, ``Number``, |
@@ -673,6 +681,21 @@ Regular forms
     Content-Type: application/x-www-form-urlencoded; charset=utf-8
 
     name=John+Smith
+
+
+Regular forms, alternative way
+------------------------------
+
+.. code-block:: bash
+
+    $ http --data-raw 'name=John Smith' --data-raw 'press=OK' POST pie.dev/post
+
+.. code-block:: http
+
+    POST /post HTTP/1.1
+    Content-Type: application/x-www-form-urlencoded; charset=utf-8
+
+    name=John+Smith&press=OK
 
 
 File upload forms
