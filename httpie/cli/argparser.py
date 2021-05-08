@@ -64,6 +64,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
         self.env = None
         self.args = None
         self.has_stdin_data = False
+        self.has_input_data = False
 
     # noinspection PyMethodOverriding
     def parse_args(
@@ -81,6 +82,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
             and not self.args.ignore_stdin
             and not self.env.stdin_isatty
         )
+        self.has_input_data = self.has_stdin_data or bool(self.args.raw)
         # Arguments processing and environment setup.
         self._apply_no_options(no_options)
         self._process_request_type()
@@ -91,10 +93,13 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
         self._process_format_options()
         self._guess_method()
         self._parse_items()
-        if self.has_stdin_data:
-            self._body_from_file(self.env.stdin)
         self._process_url()
         self._process_auth()
+
+        if self.args.raw:
+            self._body_from_input(self.args.raw)
+        elif self.has_stdin_data:
+            self._body_from_file(self.env.stdin)
 
         if self.args.compress:
             # TODO: allow --compress with --chunked / --multipart
@@ -283,17 +288,31 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
             self.error(msg % ' '.join(invalid))
 
     def _body_from_file(self, fd):
-        """There can only be one source of request data.
+        """Read the data from a file-like object.
 
         Bytes are always read.
 
         """
-        if self.args.data or self.args.files:
-            self.error('Request body (from stdin or a file) and request '
+        self._ensure_one_data_source(self.args.data, self.args.files)
+        self.args.data = getattr(fd, 'buffer', fd)
+
+    def _body_from_input(self, data):
+        """Read the data from the CLI.
+
+        """
+        self._ensure_one_data_source(self.has_stdin_data, self.args.data,
+                                     self.args.files)
+        self.args.data = data.encode('utf-8')
+
+    def _ensure_one_data_source(self, *other_sources):
+        """There can only be one source of input request data.
+
+        """
+        if any(other_sources):
+            self.error('Request body (from stdin, --raw or a file) and request '
                        'data (key=value) cannot be mixed. Pass '
                        '--ignore-stdin to let key/value take priority. '
                        'See https://httpie.org/doc#scripting for details.')
-        self.args.data = getattr(fd, 'buffer', fd)
 
     def _guess_method(self):
         """Set `args.method` if not specified to either POST or GET
@@ -303,7 +322,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
         if self.args.method is None:
             # Invoked as `http URL'.
             assert not self.args.request_items
-            if self.has_stdin_data:
+            if self.has_input_data:
                 self.args.method = HTTP_POST
             else:
                 self.args.method = HTTP_GET
@@ -327,7 +346,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
                 self.args.url = self.args.method
                 # Infer the method
                 has_data = (
-                    self.has_stdin_data
+                    self.has_input_data
                     or any(
                         item.sep in SEPARATOR_GROUP_DATA_ITEMS
                         for item in self.args.request_items)

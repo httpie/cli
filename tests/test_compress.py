@@ -92,6 +92,19 @@ def test_compress_form(httpbin_both):
     assert '"foo": "bar"' not in r
 
 
+def test_compress_raw(httpbin_both):
+    r = http(
+        '--raw',
+        FILE_CONTENT,
+        '--compress',
+        '--compress',
+        httpbin_both + '/post',
+    )
+    assert HTTP_OK in r
+    assert r.json['headers']['Content-Encoding'] == 'deflate'
+    assert_decompressed_equal(r.json['data'], FILE_CONTENT.strip())
+
+
 def test_compress_stdin(httpbin_both):
     env = MockEnvironment(
         stdin=StdinBytesIO(FILE_PATH.read_bytes()),

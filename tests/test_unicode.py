@@ -20,6 +20,19 @@ def test_unicode_headers_verbose(httpbin):
     assert UNICODE in r
 
 
+def test_unicode_raw(httpbin):
+    r = http('--raw', u'test %s' % UNICODE, 'POST', httpbin.url + '/post')
+    assert HTTP_OK in r
+    assert r.json['data'] == u'test %s' % UNICODE
+
+
+def test_unicode_raw_verbose(httpbin):
+    r = http('--verbose', '--raw', u'test %s' % UNICODE,
+             'POST', httpbin.url + '/post')
+    assert HTTP_OK in r
+    assert UNICODE in r
+
+
 def test_unicode_form_item(httpbin):
     r = http('--form', 'POST', httpbin.url + '/post', u'test=%s' % UNICODE)
     assert HTTP_OK in r

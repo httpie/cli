@@ -185,6 +185,25 @@ content_type.add_argument(
 
     '''
 )
+content_type.add_argument(
+    '--raw',
+    help='''
+    This option allows you to pass raw request data without extra processing
+    (as opposed to the structured request items syntax):
+
+        $ http --raw='data' pie.dev/post
+
+    You can achieve the same by piping the data via stdin:
+
+        $ echo data | http pie.dev/post
+
+    Or have HTTPie load the raw data from a file:
+
+        $ http pie.dev/post @data.txt
+
+
+    '''
+)
 
 
 #######################################################################
