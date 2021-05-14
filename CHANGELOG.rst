@@ -6,6 +6,10 @@ This document records all notable changes to `HTTPie <https://httpie.org>`_.
 This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 
+`2.4.1-ses`_ (2021-05-14)
+---------------------
+* Added support for ``--auth`` client side certificate/key password. (`#946`_)
+* Added support for output full HTTP request and response in a JSON structure. (`#1007`_)
 
 `2.5.0-dev`_ (unreleased)
 -------------------------
