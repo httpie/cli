@@ -1358,7 +1358,7 @@ Specifying raw request body
 
 In addition to crafting structured `JSON`_ and `forms`_ requests with the
 `request items`_ syntax, you can provide a raw request body that will be
-sent without further processing. These two approaches specifying request
+sent without further processing. These two approaches for specifying request
 data (i.e., structured and raw) cannot be combined.
 
 There’re three methods for passing raw request data: piping via ``stdin``,
