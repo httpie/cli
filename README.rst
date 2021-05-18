@@ -500,7 +500,7 @@ their type is distinguished only by the separator used:
 
 
 Note that data fields aren’t the only way to specify request data:
-`Specifying raw request body`_ has mechanisms for passing arbitrary request data.
+The `specifying raw request body`_ section describes mechanisms for passing arbitrary request data.
 
 
 Escaping rules
