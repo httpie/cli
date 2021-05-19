@@ -21,6 +21,16 @@ def test_offline_raw():
     assert 'foo bar' in r
 
 
+def test_offline_raw_empty_should_use_POST():
+    r = http(
+        '--offline',
+        '--raw',
+        '',
+        'https://this-should.never-resolve/foo',
+    )
+    assert 'POST /foo' in r
+
+
 def test_offline_form():
     r = http(
         '--offline',

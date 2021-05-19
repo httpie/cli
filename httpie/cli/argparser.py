@@ -82,7 +82,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
             and not self.args.ignore_stdin
             and not self.env.stdin_isatty
         )
-        self.has_input_data = self.has_stdin_data or bool(self.args.raw)
+        self.has_input_data = self.has_stdin_data or self.args.raw is not None
         # Arguments processing and environment setup.
         self._apply_no_options(no_options)
         self._process_request_type()
@@ -96,7 +96,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
         self._process_url()
         self._process_auth()
 
-        if self.args.raw:
+        if self.args.raw is not None:
             self._body_from_input(self.args.raw)
         elif self.has_stdin_data:
             self._body_from_file(self.env.stdin)
