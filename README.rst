@@ -499,8 +499,8 @@ their type is distinguished only by the separator used:
 +------------------------------+---------------------------------------------------+
 
 
-Note that data fields aren’t the only way to specify request data:
-The `specifying raw request body`_ section describes mechanisms for passing arbitrary request data.
+Note that the structured data fields aren’t the only way to specify request data:
+The `raw request body`_ section describes mechanisms for passing arbitrary request data.
 
 
 Escaping rules
@@ -632,14 +632,17 @@ fields using ``=@`` and ``:=@``:
 Raw and complex JSON
 --------------------
 
-Please note that with the `request items`_ data field syntax, commands
+Please note that with the structured `request items`_ data field syntax, commands
 can quickly become unwieldy when sending complex structures.
-In such cases, it’s better to pass the full raw JSON data via
-`redirected input`_, for example:
+In such cases, it’s better to pass the full raw JSON data as a `raw request body`_, for example:
 
 .. code-block:: bash
 
     $ echo '{"hello": "world"}' | http POST pie.dev/post
+
+.. code-block:: bash
+
+    $ http --raw '{"hello": "world"}' POST pie.dev/post
 
 .. code-block:: bash
 
@@ -1353,8 +1356,8 @@ which you don’t care about. The response headers are downloaded always,
 even if they are not part of the output
 
 
-Specifying raw request body
-===========================
+Raw request body
+================
 
 In addition to crafting structured `JSON`_ and `forms`_ requests with the
 `request items`_ syntax, you can provide a raw request body that will be
