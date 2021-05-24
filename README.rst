@@ -500,7 +500,7 @@ their type is distinguished only by the separator used:
 
 
 Note that data fields aren’t the only way to specify request data:
-`Redirected input`_ is a mechanism for passing arbitrary request data.
+The `specifying raw request body`_ section describes mechanisms for passing arbitrary request data.
 
 
 Escaping rules
@@ -1353,8 +1353,20 @@ which you don’t care about. The response headers are downloaded always,
 even if they are not part of the output
 
 
+Specifying raw request body
+===========================
+
+In addition to crafting structured `JSON`_ and `forms`_ requests with the
+`request items`_ syntax, you can provide a raw request body that will be
+sent without further processing. These two approaches for specifying request
+data (i.e., structured and raw) cannot be combined.
+
+There’re three methods for passing raw request data: piping via ``stdin``,
+``--raw='data'``, and ``@/file/path``.
+
+
 Redirected Input
-================
+----------------
 
 The universal method for passing request data is through redirected ``stdin``
 (standard input)—piping.
@@ -1428,7 +1440,6 @@ On OS X, you can send the contents of the clipboard with ``pbpaste``:
 Passing data through ``stdin`` cannot be combined with data fields specified
 on the command line:
 
-
 .. code-block:: bash
 
     $ echo 'data' | http POST example.org more=data   # This is invalid
@@ -1436,6 +1447,22 @@ on the command line:
 
 To prevent HTTPie from reading ``stdin`` data you can use the
 ``--ignore-stdin`` option.
+
+
+Request data via ``--raw``
+--------------------------
+
+In a situation when piping data via ``stdin`` is not convenient (for example,
+when generating API docs examples), you can specify the raw request body via
+the ``--raw`` option.
+
+.. code-block:: bash
+
+    $ http --raw 'Hello, world!' pie.dev/post
+
+.. code-block:: bash
+
+    $ http --raw '{"name": "John"}' pie.dev/post
 
 
 Request data from a filename

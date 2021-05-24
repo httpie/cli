@@ -45,6 +45,11 @@ class TestImplicitHTTPMethod:
         assert HTTP_OK in r
         assert r.json['form'] == {'foo': 'bar'}
 
+    def test_implicit_POST_raw(self, httpbin):
+        r = http('--raw', 'foo bar', httpbin.url + '/post')
+        assert HTTP_OK in r
+        assert r.json['data'] == 'foo bar'
+
     def test_implicit_POST_stdin(self, httpbin):
         env = MockEnvironment(
             stdin_isatty=False,
