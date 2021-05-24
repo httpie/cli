@@ -648,8 +648,8 @@ In such cases, it’s better to pass the full raw JSON data as a `raw request bo
 
     $ http POST pie.dev/post < files/data.json
 
-Furthermore, this syntax only allows you to send an object as the JSON document, but not an array, etc.
-Here, again, the solution is to use `redirected input`_.
+Furthermore, the structure syntax only allows you to send an object as the JSON document, but not an array, etc.
+Here, again, the solution is to use a `raw request body`_.
 
 Forms
 =====
