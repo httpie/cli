@@ -284,8 +284,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
                 invalid.append(option)
 
         if invalid:
-            msg = 'unrecognized arguments: %s'
-            self.error(msg % ' '.join(invalid))
+            self.error(f'unrecognized arguments: {" ".join(invalid)}')
 
     def _body_from_file(self, fd):
         """Read the data from a file-like object.
@@ -381,8 +380,8 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
             for key, file in self.args.files.items():
                 if key != '':
                     self.error(
-                        'Invalid file fields (perhaps you meant --form?): %s'
-                        % ','.join(self.args.files.keys()))
+                        'Invalid file fields (perhaps you meant --form?):'
+                        f' {",".join(self.args.files.keys())}')
                 if request_file is not None:
                     self.error("Can't read request from multiple files")
                 request_file = file
@@ -407,10 +406,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
         def check_options(value, option):
             unknown = set(value) - OUTPUT_OPTIONS
             if unknown:
-                self.error('Unknown output options: {0}={1}'.format(
-                    option,
-                    ','.join(unknown)
-                ))
+                self.error(f'Unknown output options: {option}={",".join(unknown)}')
 
         if self.args.verbose:
             self.args.all = True

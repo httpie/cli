@@ -120,8 +120,8 @@ def get_lexer(
         subtype_name, subtype_suffix = subtype.split('+', 1)
         lexer_names.extend([subtype_name, subtype_suffix])
         mime_types.extend([
-            '%s/%s' % (type_, subtype_name),
-            '%s/%s' % (type_, subtype_suffix)
+            f'{type_}/{subtype_name}',
+            f'{type_}/{subtype_suffix}',
         ])
 
     # As a last resort, if no lexer feels responsible, and
