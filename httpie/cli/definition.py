@@ -30,7 +30,7 @@ from ..ssl import AVAILABLE_SSL_VERSION_ARG_MAPPING, DEFAULT_SSL_CIPHERS
 
 parser = HTTPieArgumentParser(
     prog='http',
-    description='%s <https://httpie.org>' % __doc__.strip(),
+    description=f'{__doc__.strip()} <https://httpie.org>',
     epilog=dedent('''
     For every --OPTION there is also a --no-OPTION that reverts OPTION
     to its default value.
@@ -267,7 +267,7 @@ output_processing.add_argument(
     '''.format(
         default=DEFAULT_STYLE,
         available_styles='\n'.join(
-            '{0}{1}'.format(8 * ' ', line.strip())
+            f'        {line.strip()}'
             for line in wrap(', '.join(sorted(AVAILABLE_STYLES)), 60)
         ).strip(),
         auto_style=AUTO_STYLE,
@@ -330,7 +330,7 @@ output_processing.add_argument(
 
     '''.format(
         option_list='\n'.join(
-            (8 * ' ') + option for option in DEFAULT_FORMAT_OPTIONS).strip()
+            f'        {option}' for option in DEFAULT_FORMAT_OPTIONS).strip()
     )
 )
 
@@ -383,12 +383,12 @@ output_options.add_argument(
     '--verbose', '-v',
     dest='verbose',
     action='store_true',
-    help='''
+    help=f'''
     Verbose output. Print the whole request as well as the response. Also print
     any intermediary requests/responses (such as redirects).
-    It's a shortcut for: --all --print={0}
+    It's a shortcut for: --all --print={''.join(OUTPUT_OPTIONS)}
 
-    '''.format(''.join(OUTPUT_OPTIONS))
+    '''
 )
 output_options.add_argument(
     '--all',
@@ -562,7 +562,7 @@ auth.add_argument(
             name=plugin.name,
             package=(
                 '' if issubclass(plugin, BuiltinAuthPlugin)
-                else ' (provided by %s)' % plugin.package_name
+                else f' (provided by {plugin.package_name})'
             ),
             description=(
                 '' if not plugin.description else

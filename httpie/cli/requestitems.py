@@ -89,13 +89,11 @@ def process_header_arg(arg: KeyValueArg) -> Optional[str]:
 
 
 def process_empty_header_arg(arg: KeyValueArg) -> str:
-    if arg.value:
-        raise ParseError(
-            'Invalid item "%s" '
-            '(to specify an empty header use `Header;`)'
-            % arg.orig
-        )
-    return arg.value
+    if not arg.value:
+        return arg.value
+    raise ParseError(
+        f'Invalid item {arg.orig!r} (to specify an empty header use `Header;`)'
+    )
 
 
 def process_query_param_arg(arg: KeyValueArg) -> str:
@@ -109,7 +107,7 @@ def process_file_upload_arg(arg: KeyValueArg) -> Tuple[str, IO, str]:
     try:
         f = open(os.path.expanduser(filename), 'rb')
     except IOError as e:
-        raise ParseError('"%s": %s' % (arg.orig, e))
+        raise ParseError(f'{arg.orig!r}: {e}')
     return (
         os.path.basename(filename),
         f,
@@ -142,12 +140,11 @@ def load_text_file(item: KeyValueArg) -> str:
         with open(os.path.expanduser(path), 'rb') as f:
             return f.read().decode()
     except IOError as e:
-        raise ParseError('"%s": %s' % (item.orig, e))
+        raise ParseError(f'{item.orig!r}: {e}')
     except UnicodeDecodeError:
         raise ParseError(
-            '"%s": cannot embed the content of "%s",'
+            f'{item.orig!r}: cannot embed the content of {item.value!r},'
             ' not a UTF8 or ASCII-encoded text file'
-            % (item.orig, item.value)
         )
 
 
@@ -155,4 +152,4 @@ def load_json(arg: KeyValueArg, contents: str) -> JSONType:
     try:
         return load_json_preserve_order(contents)
     except ValueError as e:
-        raise ParseError('"%s": %s' % (arg.orig, e))
+        raise ParseError(f'{arg.orig!r}: {e}')

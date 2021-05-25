@@ -205,10 +205,9 @@ def program(args: argparse.Namespace, env: Environment) -> ExitStatus:
             if downloader.interrupted:
                 exit_status = ExitStatus.ERROR
                 env.log_error(
-                    'Incomplete download: size=%d; downloaded=%d' % (
-                        downloader.status.total_size,
-                        downloader.status.downloaded
-                    ))
+                    f'Incomplete download: size={downloader.status.total_size};'
+                    f' downloaded={downloader.status.downloaded}'
+                )
         return exit_status
 
     finally:

@@ -102,7 +102,7 @@ class HTTPRequest(HTTPMessage):
         request_line = '{method} {path}{query} HTTP/1.1'.format(
             method=self._orig.method,
             path=url.path or '/',
-            query='?' + url.query if url.query else ''
+            query=f'?{url.query}' if url.query else ''
         )
 
         headers = dict(self._orig.headers)
@@ -110,10 +110,7 @@ class HTTPRequest(HTTPMessage):
             headers['Host'] = url.netloc.split('@')[-1]
 
         headers = [
-            '%s: %s' % (
-                name,
-                value if isinstance(value, str) else value.decode('utf8')
-            )
+            f'{name}: {value if isinstance(value, str) else value.decode("utf-8")}'
             for name, value in headers.items()
         ]
 
