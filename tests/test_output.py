@@ -261,7 +261,7 @@ class TestLineEndings:
                 break
             assert header.endswith(CRLF), repr(header)
         else:
-            assert 0, 'CRLF between headers and body not found in %r' % msg
+            assert 0, f'CRLF between headers and body not found in {msg!r}'
         body = ''.join(lines)
         assert CRLF not in body
         return body
@@ -269,7 +269,7 @@ class TestLineEndings:
     def test_CRLF_headers_only(self, httpbin):
         r = http('--headers', 'GET', httpbin.url + '/get')
         body = self._validate_crlf(r)
-        assert not body, 'Garbage after headers: %r' % r
+        assert not body, f'Garbage after headers: {r!r}'
 
     def test_CRLF_ugly_response(self, httpbin):
         r = http('--pretty=none', 'GET', httpbin.url + '/get')

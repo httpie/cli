@@ -182,8 +182,8 @@ class TestSession(SessionTestBase):
     def test_session_unicode(self, httpbin):
         self.start_session(httpbin)
 
-        r1 = http('--session=test', u'--auth=test:' + UNICODE,
-                  'GET', httpbin.url + '/get', u'Test:%s' % UNICODE,
+        r1 = http('--session=test', f'--auth=test:{UNICODE}',
+                  'GET', httpbin.url + '/get', f'Test:{UNICODE}',
                   env=self.env())
         assert HTTP_OK in r1
 
@@ -443,7 +443,7 @@ class TestCookieStorage(CookieTestBase):
             'Cookie:' + new_cookies,
         )
         # Note: cookies in response are in alphabetical order
-        assert 'Cookie: ' + expected in r
+        assert f'Cookie: {expected}' in r
 
         updated_session = json.loads(self.session_path.read_text())
         for name, value in new_cookies_dict.items():

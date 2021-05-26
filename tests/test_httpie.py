@@ -33,7 +33,7 @@ def test_main_entry_point_keyboard_interrupt(main):
 def test_debug():
     r = http('--debug')
     assert r.exit_status == ExitStatus.SUCCESS
-    assert 'HTTPie %s' % httpie.__version__ in r.stderr
+    assert f'HTTPie {httpie.__version__}' in r.stderr
 
 
 def test_help():

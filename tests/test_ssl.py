@@ -53,7 +53,7 @@ def test_ssl_version(httpbin_secure, ssl_version):
             while root.__context__ is not None:
                 root = root.__context__
             if isinstance(root, ssl.SSLError) and root.reason == "TLSV1_ALERT_PROTOCOL_VERSION":
-                pytest.skip("Unsupported TLS version: {}".format(ssl_version))
+                pytest.skip(f'Unsupported TLS version: {ssl_version}')
         else:
             raise
 
