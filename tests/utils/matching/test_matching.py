@@ -15,7 +15,7 @@ def test_assert_output_matches_headers_unterminated():
     assert_output_does_not_match(
         (
             f'HTTP/1.1{CRLF}'
-            f'AAA:BBB'
+            'AAA:BBB'
             f'{CRLF}'
         ),
         [Expect.RESPONSE_HEADERS],
@@ -90,7 +90,7 @@ def test_assert_output_matches_headers_and_body():
             f'HTTP/1.1{CRLF}'
             f'AAA:BBB{CRLF}'
             f'{CRLF}'
-            f'CCC'
+            'CCC'
         ),
         [Expect.RESPONSE_HEADERS, Expect.BODY]
     )
@@ -121,7 +121,7 @@ def test_assert_output_matches_multiple_messages():
             f'EEE:FFF{CRLF}'
             f'{CRLF}'
 
-            f'GGG'
+            'GGG'
             f'{MESSAGE_SEPARATOR}'
         ), [
             Expect.REQUEST_HEADERS,

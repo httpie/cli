@@ -13,7 +13,7 @@ PASSWORD = 'password'
 # Basic auth encoded `USERNAME` and `PASSWORD`
 # noinspection SpellCheckingInspection
 BASIC_AUTH_HEADER_VALUE = 'Basic dXNlcjpwYXNzd29yZA=='
-BASIC_AUTH_URL = '/basic-auth/{0}/{1}'.format(USERNAME, PASSWORD)
+BASIC_AUTH_URL = f'/basic-auth/{USERNAME}/{PASSWORD}'
 AUTH_OK = {'authenticated': True, 'user': USERNAME}
 
 

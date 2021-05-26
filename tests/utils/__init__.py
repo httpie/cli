@@ -41,7 +41,7 @@ def mk_config_dir() -> Path:
 
 def add_auth(url, auth):
     proto, rest = url.split('://', 1)
-    return proto + '://' + auth + '@' + rest
+    return f'{proto}://{auth}@{rest}'
 
 
 class StdinBytesIO(BytesIO):
