@@ -59,6 +59,7 @@ if 'bdist_wheel' not in sys.argv:
 
 # bdist_wheel
 extras_require = {
+    'test':  tests_require,
     # https://wheel.readthedocs.io/en/latest/#defining-conditional-dependencies
     ':sys_platform == "win32"': install_requires_win_only,
 }
