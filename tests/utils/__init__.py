@@ -18,7 +18,8 @@ from httpie.core import main
 # pytest-httpbin currently does not support chunked requests:
 # <https://github.com/kevin1024/pytest-httpbin/issues/33>
 # <https://github.com/kevin1024/pytest-httpbin/issues/28>
-HTTPBIN_WITH_CHUNKED_SUPPORT = 'http://pie.dev'
+HTTPBIN_WITH_CHUNKED_SUPPORT_DOMAIN = 'pie.dev'
+HTTPBIN_WITH_CHUNKED_SUPPORT = 'http://' + HTTPBIN_WITH_CHUNKED_SUPPORT_DOMAIN
 
 
 TESTS_ROOT = Path(__file__).parent.parent
