@@ -1,5 +1,8 @@
+import socket
 import pytest
 from pytest_httpbin import certs
+
+from .utils import HTTPBIN_WITH_CHUNKED_SUPPORT_DOMAIN, HTTPBIN_WITH_CHUNKED_SUPPORT
 
 
 @pytest.fixture(scope='function', autouse=True)
@@ -22,3 +25,19 @@ def httpbin_secure_untrusted(monkeypatch, httpbin_secure):
     """
     monkeypatch.delenv('REQUESTS_CA_BUNDLE')
     return httpbin_secure
+
+
+@pytest.fixture(scope='session')
+def _httpbin_with_chunked_support_available():
+    try:
+        socket.gethostbyname(HTTPBIN_WITH_CHUNKED_SUPPORT_DOMAIN)
+        return True
+    except OSError:
+        return False
+
+
+@pytest.fixture(scope='function')
+def httpbin_with_chunked_support(_httpbin_with_chunked_support_available):
+    if _httpbin_with_chunked_support_available:
+        return HTTPBIN_WITH_CHUNKED_SUPPORT
+    pytest.skip('{} not resolvable'.format(HTTPBIN_WITH_CHUNKED_SUPPORT_DOMAIN))

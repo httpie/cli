@@ -10,7 +10,7 @@ TODO: cover more scenarios
 
 """
 from .utils.matching import assert_output_matches, Expect
-from .utils import http, HTTP_OK, MockEnvironment, HTTPBIN_WITH_CHUNKED_SUPPORT
+from .utils import http, HTTP_OK, MockEnvironment
 
 
 RAW_REQUEST = [
@@ -126,8 +126,8 @@ def test_redirected_headers_multipart_no_separator():
     assert_output_matches(r, RAW_REQUEST)
 
 
-def test_verbose_chunked():
-    r = http('--verbose', '--chunked', HTTPBIN_WITH_CHUNKED_SUPPORT + '/post', 'hello=world')
+def test_verbose_chunked(httpbin_with_chunked_support):
+    r = http('--verbose', '--chunked', httpbin_with_chunked_support + '/post', 'hello=world')
     assert HTTP_OK in r
     assert 'Transfer-Encoding: chunked' in r
     assert_output_matches(r, TERMINAL_EXCHANGE)

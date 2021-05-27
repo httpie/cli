@@ -6,17 +6,17 @@ from httpie.cli.exceptions import ParseError
 from httpie.client import FORM_CONTENT_TYPE
 from httpie.status import ExitStatus
 from .utils import (
-    HTTPBIN_WITH_CHUNKED_SUPPORT, MockEnvironment, StdinBytesIO, http,
+    MockEnvironment, StdinBytesIO, http,
     HTTP_OK,
 )
 from .fixtures import FILE_PATH_ARG, FILE_PATH, FILE_CONTENT
 
 
-def test_chunked_json():
+def test_chunked_json(httpbin_with_chunked_support):
     r = http(
         '--verbose',
         '--chunked',
-        HTTPBIN_WITH_CHUNKED_SUPPORT + '/post',
+        httpbin_with_chunked_support + '/post',
         'hello=world',
     )
     assert HTTP_OK in r
@@ -24,12 +24,12 @@ def test_chunked_json():
     assert r.count('hello') == 3
 
 
-def test_chunked_form():
+def test_chunked_form(httpbin_with_chunked_support):
     r = http(
         '--verbose',
         '--chunked',
         '--form',
-        HTTPBIN_WITH_CHUNKED_SUPPORT + '/post',
+        httpbin_with_chunked_support + '/post',
         'hello=world',
     )
     assert HTTP_OK in r
@@ -37,11 +37,11 @@ def test_chunked_form():
     assert r.count('hello') == 2
 
 
-def test_chunked_stdin():
+def test_chunked_stdin(httpbin_with_chunked_support):
     r = http(
         '--verbose',
         '--chunked',
-        HTTPBIN_WITH_CHUNKED_SUPPORT + '/post',
+        httpbin_with_chunked_support + '/post',
         env=MockEnvironment(
             stdin=StdinBytesIO(FILE_PATH.read_bytes()),
             stdin_isatty=False,
@@ -52,12 +52,12 @@ def test_chunked_stdin():
     assert r.count(FILE_CONTENT) == 2
 
 
-def test_chunked_stdin_multiple_chunks():
+def test_chunked_stdin_multiple_chunks(httpbin_with_chunked_support):
     stdin_bytes = FILE_PATH.read_bytes() + b'\n' + FILE_PATH.read_bytes()
     r = http(
         '--verbose',
         '--chunked',
-        HTTPBIN_WITH_CHUNKED_SUPPORT + '/post',
+        httpbin_with_chunked_support + '/post',
         env=MockEnvironment(
             stdin=StdinBytesIO(stdin_bytes),
             stdin_isatty=False,
@@ -182,12 +182,12 @@ class TestMultipartFormDataFileUpload:
         assert f'multipart/magic; boundary={boundary_in_header}' in r
         assert r.count(boundary_in_body) == 3
 
-    def test_multipart_chunked(self, httpbin):
+    def test_multipart_chunked(self, httpbin_with_chunked_support):
         r = http(
             '--verbose',
             '--multipart',
             '--chunked',
-            HTTPBIN_WITH_CHUNKED_SUPPORT + '/post',
+            httpbin_with_chunked_support + '/post',
             'AAA=AAA',
         )
         assert 'Transfer-Encoding: chunked' in r
@@ -231,10 +231,10 @@ class TestRequestBodyFromFilePath:
         assert r.count(FILE_CONTENT) == 2
         assert '"Content-Type": "text/plain"' in r
 
-    def test_request_body_from_file_by_path_chunked(self, httpbin):
+    def test_request_body_from_file_by_path_chunked(self, httpbin_with_chunked_support):
         r = http(
             '--verbose', '--chunked',
-            HTTPBIN_WITH_CHUNKED_SUPPORT + '/post',
+            httpbin_with_chunked_support + '/post',
             '@' + FILE_PATH_ARG,
         )
         assert HTTP_OK in r
