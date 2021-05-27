@@ -58,7 +58,7 @@ def write_stream(
 ):
     """Write the output stream."""
     try:
-        # Writing bytes so we use the buffer interface (Python 3).
+        # Writing bytes so we use the buffer interface.
         buf = outfile.buffer
     except AttributeError:
         buf = outfile
@@ -76,7 +76,7 @@ def write_stream_with_colors_win_py3(
 ):
     """Like `write`, but colorized chunks are written as text
     directly to `outfile` to ensure it gets processed by colorama.
-    Applies only to Windows with Python 3 and colorized terminal output.
+    Applies only to Windows and colorized terminal output.
 
     """
     color = b'\x1b['

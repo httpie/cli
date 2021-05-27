@@ -1,4 +1,3 @@
-# coding=utf-8
 """
 Various unicode handling related tests.
 

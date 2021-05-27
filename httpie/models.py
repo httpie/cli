@@ -63,16 +63,10 @@ class HTTPResponse(HTTPMessage):
 
         status_line = f'HTTP/{version} {original.status} {original.reason}'
         headers = [status_line]
-        try:
-            # `original.msg` is a `http.client.HTTPMessage` on Python 3
-            # `_headers` is a 2-tuple
-            headers.extend(
-                '%s: %s' % header for header in original.msg._headers)
-        except AttributeError:
-            # and a `httplib.HTTPMessage` on Python 2.x
-            # `headers` is a list of `name: val<CRLF>`.
-            headers.extend(h.strip() for h in original.msg.headers)
-
+        # `original.msg` is a `http.client.HTTPMessage`
+        # `_headers` is a 2-tuple
+        headers.extend(
+            f'{header[0]}: {header[1]}' for header in original.msg._headers)
         return '\r\n'.join(headers)
 
     @property
@@ -116,10 +110,6 @@ class HTTPRequest(HTTPMessage):
 
         headers.insert(0, request_line)
         headers = '\r\n'.join(headers).strip()
-
-        if isinstance(headers, bytes):
-            # Python < 3
-            headers = headers.decode('utf8')
         return headers
 
     @property

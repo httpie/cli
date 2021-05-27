@@ -1,4 +1,3 @@
-# coding=utf-8
 import json
 import os
 import shutil
@@ -193,7 +192,7 @@ class TestSession(SessionTestBase):
 
         # FIXME: Authorization *sometimes* is not present on Python3
         assert (r2.json['headers']['Authorization']
-                == HTTPBasicAuth.make_header(u'test', UNICODE))
+                == HTTPBasicAuth.make_header('test', UNICODE))
         # httpbin doesn't interpret utf8 headers
         assert UNICODE in r2
 
