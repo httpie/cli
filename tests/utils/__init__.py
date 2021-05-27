@@ -215,8 +215,8 @@ def http(
         >>> r = http('-a', 'user:pw', httpbin.url + '/basic-auth/user/pw')
         >>> type(r) == StrCLIResponse
         True
-        >>> r.exit_status
-        <ExitStatus.SUCCESS: 0>
+        >>> r.exit_status is ExitStatus.SUCCESS
+        True
         >>> r.stderr
         ''
         >>> 'HTTP/1.1 200 OK' in r
