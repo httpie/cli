@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 import json
 
 from ...plugins import FormatterPlugin

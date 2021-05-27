@@ -1,5 +1,3 @@
-from __future__ import division
-
 import json
 import mimetypes
 import time
@@ -24,8 +22,6 @@ def humanize_bytes(n, precision=2):
     # Licence: MIT
     # URL: https://code.activestate.com/recipes/577081/
     """Return a humanized string representation of a number of bytes.
-
-    Assumes `from __future__ import division`.
 
     >>> humanize_bytes(1)
     '1 B'

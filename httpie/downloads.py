@@ -1,10 +1,7 @@
-# coding=utf-8
 """
 Download mode implementation.
 
 """
-from __future__ import division
-
 import errno
 import mimetypes
 import os
@@ -131,7 +128,7 @@ def filename_from_url(url: str, content_type: Optional[str]) -> str:
         else:
             ext = mimetypes.guess_extension(content_type)
 
-        if ext == '.htm':  # Python 3
+        if ext == '.htm':
             ext = '.html'
 
         if ext:
