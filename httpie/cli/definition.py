@@ -256,7 +256,7 @@ output_processing.add_argument(
     help='''
     Output coloring style (default is "{default}"). It can be One of:
 
-    {available_styles}
+        {available_styles}
 
     The "{auto_style}" style follows your terminal's ANSI color styles.
 
