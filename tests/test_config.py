@@ -25,8 +25,7 @@ def test_default_options(httpbin):
 def test_config_file_not_valid(httpbin):
     env = MockEnvironment()
     env.create_temp_config_dir()
-    with (env.config_dir / Config.FILENAME).open('w') as f:
-        f.write('{invalid json}')
+    (env.config_dir / Config.FILENAME).write_text('{invalid json}')
     r = http(httpbin + '/get', env=env)
     assert HTTP_OK in r
     assert 'http: warning' in r.stderr

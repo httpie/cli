@@ -19,13 +19,10 @@ class TestWindowsOnly:
 
 
 class TestFakeWindows:
-    def test_output_file_pretty_not_allowed_on_windows(self, httpbin):
+    def test_output_file_pretty_not_allowed_on_windows(self, tmp_path, httpbin):
         env = MockEnvironment(is_windows=True)
-        output_file = os.path.join(
-            tempfile.gettempdir(),
-            self.test_output_file_pretty_not_allowed_on_windows.__name__
-        )
-        r = http('--output', output_file,
+        output_file = tmp_path / 'test_output_file_pretty_not_allowed_on_windows'
+        r = http('--output', str(output_file),
                  '--pretty=all', 'GET', httpbin.url + '/get',
                  env=env, tolerate_error_exit_status=True)
         assert 'Only terminal output can be colorized on Windows' in r.stderr

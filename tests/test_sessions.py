@@ -3,7 +3,6 @@ import os
 import shutil
 from datetime import datetime
 from unittest import mock
-from tempfile import gettempdir
 
 import pytest
 
@@ -209,11 +208,11 @@ class TestSession(SessionTestBase):
         assert HTTP_OK in r2
         assert r2.json['headers']['User-Agent'] == 'custom'
 
-    def test_download_in_session(self, httpbin):
+    def test_download_in_session(self, tmp_path, httpbin):
         # https://github.com/httpie/httpie/issues/412
         self.start_session(httpbin)
         cwd = os.getcwd()
-        os.chdir(gettempdir())
+        os.chdir(tmp_path)
         try:
             http('--session=test', '--download',
                  httpbin.url + '/get', env=self.env())

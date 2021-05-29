@@ -84,7 +84,7 @@ class BaseConfigDict(dict):
     def load(self):
         config_type = type(self).__name__.lower()
         try:
-            with self.path.open('rt') as f:
+            with self.path.open() as f:
                 try:
                     data = json.load(f)
                 except ValueError as e:

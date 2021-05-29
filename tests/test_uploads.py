@@ -53,7 +53,8 @@ def test_chunked_stdin(httpbin_with_chunked_support):
 
 
 def test_chunked_stdin_multiple_chunks(httpbin_with_chunked_support):
-    stdin_bytes = FILE_PATH.read_bytes() + b'\n' + FILE_PATH.read_bytes()
+    data = FILE_PATH.read_bytes()
+    stdin_bytes = data + b'\n' + data
     r = http(
         '--verbose',
         '--chunked',
