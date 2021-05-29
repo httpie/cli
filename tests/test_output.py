@@ -6,7 +6,6 @@ import json
 import os
 import tempfile
 import io
-from tempfile import gettempdir
 from urllib.request import urlopen
 
 import pytest
@@ -23,17 +22,16 @@ from .utils import COLOR, CRLF, HTTP_OK, MockEnvironment, http
 
 
 @pytest.mark.parametrize('stdout_isatty', [True, False])
-def test_output_option(httpbin, stdout_isatty):
-    output_filename = os.path.join(gettempdir(), test_output_option.__name__)
+def test_output_option(tmp_path, httpbin, stdout_isatty):
+    output_filename = tmp_path / 'test_output_option'
     url = httpbin + '/robots.txt'
 
-    r = http('--output', output_filename, url,
+    r = http('--output', str(output_filename), url,
              env=MockEnvironment(stdout_isatty=stdout_isatty))
     assert r == ''
 
     expected_body = urlopen(url).read().decode()
-    with open(output_filename, 'r') as f:
-        actual_body = f.read()
+    actual_body = output_filename.read_text()
 
     assert actual_body == expected_body
 
@@ -103,35 +101,34 @@ class TestQuietFlag:
         assert r.stderr == ''
 
     @pytest.mark.parametrize('with_download', [True, False])
-    def test_quiet_with_output_redirection(self, httpbin, with_download):
+    def test_quiet_with_output_redirection(self, tmp_path, httpbin, with_download):
         url = httpbin + '/robots.txt'
         output_path = Path('output.txt')
         env = MockEnvironment()
         orig_cwd = os.getcwd()
         output = requests.get(url).text
         extra_args = ['--download'] if with_download else []
-        with tempfile.TemporaryDirectory() as tmp_dirname:
-            os.chdir(tmp_dirname)
-            try:
-                assert os.listdir('.') == []
-                r = http(
-                    '--quiet',
-                    '--output', str(output_path),
-                    *extra_args,
-                    url,
-                    env=env
-                )
-                assert os.listdir('.') == [str(output_path)]
-                assert r == ''
-                assert r.stderr == ''
-                assert env.stderr is env.devnull
-                if with_download:
-                    assert env.stdout is env.devnull
-                else:
-                    assert env.stdout is not env.devnull  # --output swaps stdout.
-                assert output_path.read_text() == output
-            finally:
-                os.chdir(orig_cwd)
+        os.chdir(tmp_path)
+        try:
+            assert os.listdir('.') == []
+            r = http(
+                '--quiet',
+                '--output', str(output_path),
+                *extra_args,
+                url,
+                env=env
+            )
+            assert os.listdir('.') == [str(output_path)]
+            assert r == ''
+            assert r.stderr == ''
+            assert env.stderr is env.devnull
+            if with_download:
+                assert env.stdout is env.devnull
+            else:
+                assert env.stdout is not env.devnull  # --output swaps stdout.
+            assert output_path.read_text() == output
+        finally:
+            os.chdir(orig_cwd)
 
 
 class TestVerboseFlag:

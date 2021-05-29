@@ -40,4 +40,4 @@ def _httpbin_with_chunked_support_available():
 def httpbin_with_chunked_support(_httpbin_with_chunked_support_available):
     if _httpbin_with_chunked_support_available:
         return HTTPBIN_WITH_CHUNKED_SUPPORT
-    pytest.skip('{} not resolvable'.format(HTTPBIN_WITH_CHUNKED_SUPPORT_DOMAIN))
+    pytest.skip(f'{HTTPBIN_WITH_CHUNKED_SUPPORT_DOMAIN} not resolvable')
