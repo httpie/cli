@@ -106,7 +106,7 @@ def process_file_upload_arg(arg: KeyValueArg) -> Tuple[str, IO, str]:
     mime_type = parts[1] if len(parts) > 1 else None
     try:
         f = open(os.path.expanduser(filename), 'rb')
-    except IOError as e:
+    except OSError as e:
         raise ParseError(f'{arg.orig!r}: {e}')
     return (
         os.path.basename(filename),
@@ -139,7 +139,7 @@ def load_text_file(item: KeyValueArg) -> str:
     try:
         with open(os.path.expanduser(path), 'rb') as f:
             return f.read().decode()
-    except IOError as e:
+    except OSError as e:
         raise ParseError(f'{item.orig!r}: {e}')
     except UnicodeDecodeError:
         raise ParseError(

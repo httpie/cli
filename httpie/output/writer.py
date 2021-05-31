@@ -42,7 +42,7 @@ def write_message(
             write_stream_with_colors_win_py3(**write_stream_kwargs)
         else:
             write_stream(**write_stream_kwargs)
-    except IOError as e:
+    except OSError as e:
         show_traceback = args.debug or args.traceback
         if not show_traceback and e.errno == errno.EPIPE:
             # Ignore broken pipes unless --traceback.

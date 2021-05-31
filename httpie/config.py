@@ -72,11 +72,7 @@ class BaseConfigDict(dict):
         self.path = path
 
     def ensure_directory(self):
-        try:
-            self.path.parent.mkdir(mode=0o700, parents=True)
-        except OSError as e:
-            if e.errno != errno.EEXIST:
-                raise
+        self.path.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
 
     def is_new(self) -> bool:
         return not self.path.exists()
@@ -92,9 +88,10 @@ class BaseConfigDict(dict):
                         f'invalid {config_type} file: {e} [{self.path}]'
                     )
                 self.update(data)
-        except IOError as e:
-            if e.errno != errno.ENOENT:
-                raise ConfigFileError(f'cannot read {config_type} file: {e}')
+        except FileNotFoundError:
+            pass
+        except OSError as e:
+            raise ConfigFileError(f'cannot read {config_type} file: {e}')
 
     def save(self, fail_silently=False):
         self['__meta__'] = {
@@ -116,16 +113,16 @@ class BaseConfigDict(dict):
         )
         try:
             self.path.write_text(json_string + '\n')
-        except IOError:
+        except OSError:
             if not fail_silently:
                 raise
 
     def delete(self):
         try:
+            # TODO: use `missing_ok` kwarg when supporting Python 3.8+ only
             self.path.unlink()
-        except OSError as e:
-            if e.errno != errno.ENOENT:
-                raise
+        except FileNotFoundError:
+            pass
 
 
 class Config(BaseConfigDict):
