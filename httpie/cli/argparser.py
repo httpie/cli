@@ -176,7 +176,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
             self.args.output_file.seek(0)
             try:
                 self.args.output_file.truncate()
-            except IOError as e:
+            except OSError as e:
                 if e.errno == errno.EINVAL:
                     # E.g. /dev/null on Linux.
                     pass

@@ -267,7 +267,7 @@ class Downloader:
                 try:
                     self._output_file.seek(0)
                     self._output_file.truncate()
-                except IOError:
+                except OSError:
                     pass  # stdout
 
         self.status.started(

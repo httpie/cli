@@ -180,8 +180,8 @@ def readable_file_arg(filename):
     try:
         with open(filename, 'rb'):
             return filename
-    except IOError as ex:
-        raise argparse.ArgumentTypeError(f'{filename}: {ex.args[1]}')
+    except OSError as ex:
+        raise argparse.ArgumentTypeError(f'{ex.filename}: {ex.strerror}')
 
 
 def parse_format_options(s: str, defaults: Optional[dict]) -> dict:

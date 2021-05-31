@@ -76,7 +76,7 @@ class TestClientCert:
                  '--cert', '/__not_found__',
                  tolerate_error_exit_status=True)
         assert r.exit_status == ExitStatus.ERROR
-        assert 'No such file or directory' in r.stderr
+        assert '/__not_found__: No such file or directory' in r.stderr
 
     def test_cert_file_invalid(self, httpbin_secure):
         with pytest.raises(ssl_errors):
@@ -117,8 +117,8 @@ class TestServerCert:
             http(httpbin_secure_untrusted.url + '/get')
 
     def test_verify_custom_ca_bundle_invalid_path(self, httpbin_secure):
-        # since 2.14.0 requests raises IOError
-        with pytest.raises(ssl_errors + (IOError,)):
+        # since 2.14.0 requests raises IOError (an OSError subclass)
+        with pytest.raises(ssl_errors + (OSError,)):
             http(httpbin_secure.url + '/get', '--verify', '/__not_found__')
 
     def test_verify_custom_ca_bundle_invalid_bundle(self, httpbin_secure):
