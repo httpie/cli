@@ -18,7 +18,7 @@ SOURCE_DIRECTORIES = [
 def has_docutils():
     try:
         # noinspection PyUnresolvedReferences,PyPackageRequirements
-        import docutils
+        import docutils  # noqa
         return True
     except ImportError:
         return False
@@ -35,7 +35,7 @@ def rst_filenames():
         os.chdir(cwd)
 
 
-filenames = list(sorted(rst_filenames()))
+filenames = sorted(rst_filenames())
 assert filenames
 
 

@@ -4,7 +4,6 @@ from unittest import mock
 
 import json
 import os
-import tempfile
 import io
 from urllib.request import urlopen
 

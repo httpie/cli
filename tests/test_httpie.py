@@ -130,7 +130,7 @@ def test_form_POST_file_redirected_stdin(httpbin):
     <https://github.com/httpie/httpie/issues/840>
 
     """
-    with open(FILE_PATH) as f:
+    with open(FILE_PATH):
         r = http(
             '--form',
             'POST',
