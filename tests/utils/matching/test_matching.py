@@ -69,19 +69,19 @@ def test_assert_output_matches_body_and_separator():
 
 
 def test_assert_output_matches_body_r():
-    assert_output_matches(f'AAA\r', [Expect.BODY])
+    assert_output_matches('AAA\r', [Expect.BODY])
 
 
 def test_assert_output_matches_body_n():
-    assert_output_matches(f'AAA\n', [Expect.BODY])
+    assert_output_matches('AAA\n', [Expect.BODY])
 
 
 def test_assert_output_matches_body_r_body():
-    assert_output_matches(f'AAA\rBBB', [Expect.BODY])
+    assert_output_matches('AAA\rBBB', [Expect.BODY])
 
 
 def test_assert_output_matches_body_n_body():
-    assert_output_matches(f'AAA\nBBB', [Expect.BODY])
+    assert_output_matches('AAA\nBBB', [Expect.BODY])
 
 
 def test_assert_output_matches_headers_and_body():

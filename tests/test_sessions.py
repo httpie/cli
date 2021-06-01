@@ -479,7 +479,7 @@ class TestCookieStorage(CookieTestBase):
         2. command line arg
         3. cookie already stored in session file
         """
-        r = http(
+        http(
             '--session', str(self.session_path),
             httpbin.url + set_cookie,
             'Cookie:' + cli_cookie,

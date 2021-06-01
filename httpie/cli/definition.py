@@ -709,7 +709,7 @@ ssl.add_argument(
 ssl.add_argument(
     '--ssl',
     dest='ssl_version',
-    choices=list(sorted(AVAILABLE_SSL_VERSION_ARG_MAPPING.keys())),
+    choices=sorted(AVAILABLE_SSL_VERSION_ARG_MAPPING.keys()),
     help='''
     The desired protocol version to use. This will default to
     SSL v2.3 which will negotiate the highest protocol that both
