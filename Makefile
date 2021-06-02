@@ -88,7 +88,7 @@ test-cover: test
 
 
 # test-all is meant to test everything — even this Makefile
-test-all: clean install test test-dist pycodestyle
+test-all: clean install test test-dist codestyle
 	@echo
 
 
@@ -116,10 +116,15 @@ test-bdist-wheel: clean venv
 twine-check:
 	twine check dist/*
 
-pycodestyle:
-	@echo $(H1)Running pycodestyle$(H1END)
-	@[ -f $(VENV_BIN)/pycodestyle ] || $(VENV_PIP) install pycodestyle
-	$(VENV_BIN)/pycodestyle httpie/ tests/ extras/ *.py
+
+# Kept for convenience, "make codestyle" is preferred though
+pycodestyle: codestyle
+
+
+codestyle:
+	@echo $(H1)Running flake8$(H1END)
+	@[ -f $(VENV_BIN)/flake8 ] || $(VENV_PIP) install --upgrade -r $(REQUIREMENTS)
+	$(VENV_BIN)/flake8 httpie/ tests/ extras/ *.py
 	@echo
 
 

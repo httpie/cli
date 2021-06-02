@@ -52,7 +52,7 @@ class StdinBytesIO(BytesIO):
 class MockEnvironment(Environment):
     """Environment subclass with reasonable defaults for testing."""
     colors = 0  # For easier debugging
-    stdin_isatty = True,
+    stdin_isatty = True
     stdout_isatty = True
     is_windows = False
 

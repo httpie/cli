@@ -123,7 +123,7 @@ Making Changes
 --------------
 
 Please make sure your changes conform to `Style Guide for Python Code`_ (PEP8)
-and that ``make pycodestyle`` passes.
+and that ``make codestyle`` passes.
 
 
 Testing & CI
@@ -152,7 +152,7 @@ HTTPie uses the `pytest`_ runner.
     make test-cover
 
     # Test PEP8 compliance
-    make pycodestyle
+    make codestyle
 
     # Run extended tests — for code as well as .rst files syntax, packaging, etc.
     make test-all
