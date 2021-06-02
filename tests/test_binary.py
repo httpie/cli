@@ -1,9 +1,9 @@
 """Tests for dealing with binary request and response data."""
 import requests
 
-from fixtures import BIN_FILE_PATH, BIN_FILE_CONTENT, BIN_FILE_PATH_ARG
+from .fixtures import BIN_FILE_PATH, BIN_FILE_CONTENT, BIN_FILE_PATH_ARG
 from httpie.output.streams import BINARY_SUPPRESSED_NOTICE
-from utils import MockEnvironment, http
+from .utils import MockEnvironment, http
 
 
 class TestBinaryRequestData:

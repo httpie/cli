@@ -10,16 +10,16 @@ from urllib.parse import urlparse, urlunparse
 import requests
 # noinspection PyPackageRequirements
 import urllib3
-from httpie import __version__
-from httpie.cli.dicts import RequestHeadersDict
-from httpie.plugins.registry import plugin_manager
-from httpie.sessions import get_httpie_session
-from httpie.ssl import AVAILABLE_SSL_VERSION_ARG_MAPPING, HTTPieHTTPSAdapter
-from httpie.uploads import (
+from . import __version__
+from .cli.dicts import RequestHeadersDict
+from .plugins.registry import plugin_manager
+from .sessions import get_httpie_session
+from .ssl import AVAILABLE_SSL_VERSION_ARG_MAPPING, HTTPieHTTPSAdapter
+from .uploads import (
     compress_request, prepare_request_body,
     get_multipart_data_and_content_type,
 )
-from httpie.utils import get_expired_cookies, repr_dict
+from .utils import get_expired_cookies, repr_dict
 
 
 urllib3.disable_warnings()
@@ -134,7 +134,7 @@ def collect_messages(
 # noinspection PyProtectedMember
 @contextmanager
 def max_headers(limit):
-    # <https://github.com/jakubroztocil/httpie/issues/802>
+    # <https://github.com/httpie/httpie/issues/802>
     # noinspection PyUnresolvedReferences
     orig = http.client._MAXHEADERS
     http.client._MAXHEADERS = limit or float('Inf')
@@ -188,7 +188,7 @@ def finalize_headers(headers: RequestHeadersDict) -> RequestHeadersDict:
             # Also, requests raises `InvalidHeader` for leading spaces.
             value = value.strip()
             if isinstance(value, str):
-                # See <https://github.com/jakubroztocil/httpie/issues/212>
+                # See <https://github.com/httpie/httpie/issues/212>
                 value = value.encode('utf8')
         final_headers[name] = value
     return final_headers
@@ -304,7 +304,7 @@ def ensure_path_as_is(orig_url: str, prepped_url: str) -> str:
     untouched because other (welcome) processing on the URL might have
     taken place.
 
-    <https://github.com/jakubroztocil/httpie/issues/895>
+    <https://github.com/httpie/httpie/issues/895>
 
 
     <https://ec.haxx.se/http/http-basics#path-as-is>

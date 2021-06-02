@@ -8,7 +8,7 @@ HTTPie authors
 Patches and ideas
 -----------------
 
-`Complete list of contributors on GitHub <https://github.com/jakubroztocil/httpie/graphs/contributors>`_
+`Complete list of contributors on GitHub <https://github.com/httpie/httpie/graphs/contributors>`_
 
 * `Cláudia T. Delgado <https://github.com/claudiatd>`_ (logo)
 * `Hank Gay <https://github.com/gthank>`_
@@ -38,5 +38,7 @@ Patches and ideas
 * `Edward Yang <https://github.com/honorabrutroll>`_
 * `Aleksandr Vinokurov <https://github.com/aleksandr-vin>`_
 * `Jeff Byrnes <https://github.com/jeffbyrnes>`_
+* `Denis Belavin <https://github.com/LuckyDenis>`_
+* `Mickaël Schoentgen <https://github.com/BoboTiG>`_
 
 

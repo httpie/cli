@@ -1,5 +1,3 @@
-from __future__ import division
-
 import json
 import mimetypes
 import time
@@ -24,8 +22,6 @@ def humanize_bytes(n, precision=2):
     # Licence: MIT
     # URL: https://code.activestate.com/recipes/577081/
     """Return a humanized string representation of a number of bytes.
-
-    Assumes `from __future__ import division`.
 
     >>> humanize_bytes(1)
     '1 B'
@@ -62,7 +58,7 @@ def humanize_bytes(n, precision=2):
             break
 
     # noinspection PyUnboundLocalVariable
-    return '%.*f %s' % (precision, n / factor, suffix)
+    return f'{n / factor:.{precision}f} {suffix}'
 
 
 class ExplicitNullAuth(requests.auth.AuthBase):
@@ -85,7 +81,7 @@ def get_content_type(filename):
     if mime:
         content_type = mime
         if encoding:
-            content_type = '%s; charset=%s' % (mime, encoding)
+            content_type = f'{mime}; charset={encoding}'
         return content_type
 
 
@@ -109,6 +105,8 @@ def get_expired_cookies(
         for attrs in attr_sets
     ]
 
+    _max_age_to_expires(cookies=cookies, now=now)
+
     return [
         {
             'name': cookie['name'],
@@ -117,3 +115,18 @@ def get_expired_cookies(
         for cookie in cookies
         if is_expired(expires=cookie.get('expires'))
     ]
+
+
+def _max_age_to_expires(cookies, now):
+    """
+    Translate `max-age` into `expires` for Requests to take it into account.
+
+    HACK/FIXME: <https://github.com/psf/requests/issues/5743>
+
+    """
+    for cookie in cookies:
+        if 'expires' in cookie:
+            continue
+        max_age = cookie.get('max-age')
+        if max_age and max_age.isdigit():
+            cookie['expires'] = now + float(max_age)

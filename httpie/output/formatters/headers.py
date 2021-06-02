@@ -1,4 +1,4 @@
-from httpie.plugins import FormatterPlugin
+from ...plugins import FormatterPlugin
 
 
 class HeadersFormatter(FormatterPlugin):

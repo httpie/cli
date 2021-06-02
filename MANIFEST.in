@@ -3,5 +3,5 @@ include README.rst
 include CHANGELOG.rst
 include AUTHORS.rst
 
-# <https://github.com/jakubroztocil/httpie/issues/182>
+# <https://github.com/httpie/httpie/issues/182>
 recursive-include tests/ *

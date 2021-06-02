@@ -53,7 +53,7 @@ Development Environment
 Getting the code
 ****************
 
-Go to https://github.com/jakubroztocil/httpie and fork the project repository.
+Go to https://github.com/httpie/httpie and fork the project repository.
 
 
 .. code-block:: bash
@@ -116,7 +116,7 @@ the ``http`` command should point to your development copy:
 (Btw, you don’t need to activate the virtual environment if you just want
 run some of the ``make`` tasks. You can also invoke the development
 version of HTTPie directly with ``./venv/bin/http`` without having to activate
-the environment first. The same goes for ``./venv/bin/py.test``, etc.).
+the environment first. The same goes for ``./venv/bin/pytest``, etc.).
 
 
 Making Changes
@@ -132,7 +132,7 @@ Testing & CI
 Please add tests for any new features and bug fixes.
 
 When you open a pull request,
-`GitHub Actions <https://github.com/jakubroztocil/httpie/actions>`_
+`GitHub Actions <https://github.com/httpie/httpie/actions>`_
 will automatically run HTTPie’s `test suite`_ against your code
 so please make sure all checks pass.
 
@@ -167,9 +167,9 @@ can run specific tests from the terminal:
 .. code-block:: bash
 
     # Run specific tests on the current Python
-    py.test tests/test_uploads.py
-    py.test tests/test_uploads.py::TestMultipartFormDataFileUpload
-    py.test tests/test_uploads.py::TestMultipartFormDataFileUpload::test_upload_ok
+    python -m pytest tests/test_uploads.py
+    python -m pytest tests/test_uploads.py::TestMultipartFormDataFileUpload
+    python -m pytest tests/test_uploads.py::TestMultipartFormDataFileUpload::test_upload_ok
 
 -----
 
@@ -193,7 +193,7 @@ Install HTTPie in editable mode with all the dependencies:
 
 .. code-block:: powershell
 
-    pip install --upgrade -e . -r requirements-dev.txt
+    python -m pip install --upgrade --editable . -r requirements-dev.txt
 
 You should now see ``(httpie)`` next to your shell prompt, and
 the ``http`` command should point to your development copy:
@@ -221,7 +221,7 @@ Use ``pytest`` to run tests locally with an active virtual environment:
 .. code-block:: bash
 
     # Run all tests
-    py.test
+    python -m pytest
 
 
 -----
@@ -230,10 +230,10 @@ Use ``pytest`` to run tests locally with an active virtual environment:
 Finally, feel free to add yourself to `AUTHORS`_!
 
 
-.. _existing issues: https://github.com/jakubroztocil/httpie/issues?state=open
-.. _AUTHORS: https://github.com/jakubroztocil/httpie/blob/master/AUTHORS.rst
-.. _Makefile: https://github.com/jakubroztocil/httpie/blob/master/Makefile
+.. _existing issues: https://github.com/httpie/httpie/issues?state=open
+.. _AUTHORS: https://github.com/httpie/httpie/blob/master/AUTHORS.rst
+.. _Makefile: https://github.com/httpie/httpie/blob/master/Makefile
 .. _venv: https://docs.python.org/3/library/venv.html
 .. _pytest: https://pytest.org/
 .. _Style Guide for Python Code: https://python.org/dev/peps/pep-0008/
-.. _test suite: https://github.com/jakubroztocil/httpie/tree/master/tests
+.. _test suite: https://github.com/httpie/httpie/tree/master/tests

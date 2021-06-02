@@ -1,11 +1,11 @@
 """HTTP authentication-related tests."""
-import mock
+from unittest import mock
 import pytest
 
 from httpie.plugins.builtin import HTTPBasicAuth
 from httpie.status import ExitStatus
 from httpie.utils import ExplicitNullAuth
-from utils import http, add_auth, HTTP_OK, MockEnvironment
+from .utils import http, add_auth, HTTP_OK, MockEnvironment
 import httpie.cli.constants
 import httpie.cli.definition
 
@@ -58,7 +58,7 @@ def test_credentials_in_url_auth_flag_has_priority(httpbin_both):
 ])
 def test_only_username_in_url(url):
     """
-    https://github.com/jakubroztocil/httpie/issues/242
+    https://github.com/httpie/httpie/issues/242
 
     """
     args = httpie.cli.definition.parser.parse_args(args=[url], env=MockEnvironment())

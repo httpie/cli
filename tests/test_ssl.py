@@ -6,12 +6,12 @@ import urllib3
 
 from httpie.ssl import AVAILABLE_SSL_VERSION_ARG_MAPPING, DEFAULT_SSL_CIPHERS
 from httpie.status import ExitStatus
-from utils import HTTP_OK, TESTS_ROOT, http
+from .utils import HTTP_OK, TESTS_ROOT, http
 
 
 try:
     # Handle OpenSSL errors, if installed.
-    # See <https://github.com/jakubroztocil/httpie/issues/729>
+    # See <https://github.com/httpie/httpie/issues/729>
     # noinspection PyUnresolvedReferences
     import OpenSSL.SSL
     ssl_errors = (
@@ -53,7 +53,7 @@ def test_ssl_version(httpbin_secure, ssl_version):
             while root.__context__ is not None:
                 root = root.__context__
             if isinstance(root, ssl.SSLError) and root.reason == "TLSV1_ALERT_PROTOCOL_VERSION":
-                pytest.skip("Unsupported TLS version: {}".format(ssl_version))
+                pytest.skip(f'Unsupported TLS version: {ssl_version}')
         else:
             raise
 
@@ -76,7 +76,7 @@ class TestClientCert:
                  '--cert', '/__not_found__',
                  tolerate_error_exit_status=True)
         assert r.exit_status == ExitStatus.ERROR
-        assert 'No such file or directory' in r.stderr
+        assert '/__not_found__: No such file or directory' in r.stderr
 
     def test_cert_file_invalid(self, httpbin_secure):
         with pytest.raises(ssl_errors):
@@ -117,8 +117,8 @@ class TestServerCert:
             http(httpbin_secure_untrusted.url + '/get')
 
     def test_verify_custom_ca_bundle_invalid_path(self, httpbin_secure):
-        # since 2.14.0 requests raises IOError
-        with pytest.raises(ssl_errors + (IOError,)):
+        # since 2.14.0 requests raises IOError (an OSError subclass)
+        with pytest.raises(ssl_errors + (OSError,)):
             http(httpbin_secure.url + '/get', '--verify', '/__not_found__')
 
     def test_verify_custom_ca_bundle_invalid_bundle(self, httpbin_secure):

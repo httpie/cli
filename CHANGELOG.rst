@@ -6,13 +6,31 @@ This document records all notable changes to `HTTPie <https://httpie.org>`_.
 This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 
-`2.3.0-dev`_ (unreleased)
+
+`2.5.0-dev`_ (unreleased)
+-------------------------
+* Fixed ``--continue --download`` with a single byte to be downloaded left. (`#1032`_)
+* Added ``--raw`` to allow specifying the raw request body without extra processing as
+  an alternative to ``stdin``. (`#534`_)
+
+
+`2.4.0`_ (2021-02-06)
+---------------------
+* Added support for ``--session`` cookie expiration based on ``Set-Cookie: max-age=<n>``. (`#1029`_)
+* Show a ``--check-status`` warning with ``--quiet`` as well, not only when the output is redirected. (`#1026`_)
+* Fixed upload with ``--session`` (`#1020`_).
+* Fixed a missing blank line between request and response (`#1006`_).
+
+
+`2.3.0`_ (2020-10-25)
 -------------------------
 
+* Added support for streamed uploads (`#201`_).
 * Added support for multipart upload streaming (`#684`_).
-* Added support for body-from-file upload streaming (``http httpbin.org/post @file``).
-* Added ``--chunked`` to allow chunked transfer encoding.
+* Added support for body-from-file upload streaming (``http pie.dev/post @file``).
+* Added ``--chunked`` to enable chunked transfer encoding (`#753`_).
 * Added ``--multipart`` to allow ``multipart/form-data`` encoding for non-file ``--form`` requests as well.
+* Added support for preserving field order in multipart requests (`#903`_).
 * Added ``--boundary`` to allow a custom boundary string for ``multipart/form-data`` requests.
 * Added support for combining cookies specified on the CLI and in a session file (`#932`_).
 * Added out of the box SOCKS support with no extra installation (`#904`_).
@@ -156,7 +174,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 * Added fish shell completion (located in ``extras/httpie-completion.fish``
   in the GitHub repo).
 * Updated ``requests`` to 2.10.0 so that SOCKS support can be added via
-  ``pip install requests[socks]``.
+  ``python -m pip install requests[socks]``.
 * Changed the default JSON ``Accept`` header from ``application/json``
   to ``application/json, */*``.
 * Changed the pre-processing of request HTTP headers so that any leading
@@ -419,57 +437,66 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 * Initial public release
 
 
-.. _`0.1.0`: https://github.com/jakubroztocil/httpie/commit/b966efa
-.. _0.1.4: https://github.com/jakubroztocil/httpie/compare/b966efa...0.1.4
-.. _0.1.5: https://github.com/jakubroztocil/httpie/compare/0.1.4...0.1.5
-.. _0.1.6: https://github.com/jakubroztocil/httpie/compare/0.1.5...0.1.6
-.. _0.2.0: https://github.com/jakubroztocil/httpie/compare/0.1.6...0.2.0
-.. _0.2.1: https://github.com/jakubroztocil/httpie/compare/0.2.0...0.2.1
-.. _0.2.2: https://github.com/jakubroztocil/httpie/compare/0.2.1...0.2.2
-.. _0.2.5: https://github.com/jakubroztocil/httpie/compare/0.2.2...0.2.5
-.. _0.2.6: https://github.com/jakubroztocil/httpie/compare/0.2.5...0.2.6
-.. _0.2.7: https://github.com/jakubroztocil/httpie/compare/0.2.5...0.2.7
-.. _0.3.0: https://github.com/jakubroztocil/httpie/compare/0.2.7...0.3.0
-.. _0.4.0: https://github.com/jakubroztocil/httpie/compare/0.3.0...0.4.0
-.. _0.4.1: https://github.com/jakubroztocil/httpie/compare/0.4.0...0.4.1
-.. _0.5.0: https://github.com/jakubroztocil/httpie/compare/0.4.1...0.5.0
-.. _0.5.1: https://github.com/jakubroztocil/httpie/compare/0.5.0...0.5.1
-.. _0.6.0: https://github.com/jakubroztocil/httpie/compare/0.5.1...0.6.0
-.. _0.7.1: https://github.com/jakubroztocil/httpie/compare/0.6.0...0.7.1
-.. _0.8.0: https://github.com/jakubroztocil/httpie/compare/0.7.1...0.8.0
-.. _0.9.0: https://github.com/jakubroztocil/httpie/compare/0.8.0...0.9.0
-.. _0.9.1: https://github.com/jakubroztocil/httpie/compare/0.9.0...0.9.1
-.. _0.9.2: https://github.com/jakubroztocil/httpie/compare/0.9.1...0.9.2
-.. _0.9.3: https://github.com/jakubroztocil/httpie/compare/0.9.2...0.9.3
-.. _0.9.4: https://github.com/jakubroztocil/httpie/compare/0.9.3...0.9.4
-.. _0.9.6: https://github.com/jakubroztocil/httpie/compare/0.9.4...0.9.6
-.. _0.9.8: https://github.com/jakubroztocil/httpie/compare/0.9.6...0.9.8
-.. _0.9.9: https://github.com/jakubroztocil/httpie/compare/0.9.8...0.9.9
-.. _1.0.0: https://github.com/jakubroztocil/httpie/compare/0.9.9...1.0.0
-.. _1.0.1: https://github.com/jakubroztocil/httpie/compare/1.0.0...1.0.1
-.. _1.0.2: https://github.com/jakubroztocil/httpie/compare/1.0.1...1.0.2
-.. _1.0.3: https://github.com/jakubroztocil/httpie/compare/1.0.2...1.0.3
-.. _2.0.0: https://github.com/jakubroztocil/httpie/compare/1.0.3...2.0.0
-.. _2.1.0: https://github.com/jakubroztocil/httpie/compare/2.0.0...2.1.0
-.. _2.2.0: https://github.com/jakubroztocil/httpie/compare/2.1.0...2.2.0
-.. _2.3.0-dev: https://github.com/jakubroztocil/httpie/compare/2.2.0...master
+.. _`0.1.0`: https://github.com/httpie/httpie/commit/b966efa
+.. _0.1.4: https://github.com/httpie/httpie/compare/b966efa...0.1.4
+.. _0.1.5: https://github.com/httpie/httpie/compare/0.1.4...0.1.5
+.. _0.1.6: https://github.com/httpie/httpie/compare/0.1.5...0.1.6
+.. _0.2.0: https://github.com/httpie/httpie/compare/0.1.6...0.2.0
+.. _0.2.1: https://github.com/httpie/httpie/compare/0.2.0...0.2.1
+.. _0.2.2: https://github.com/httpie/httpie/compare/0.2.1...0.2.2
+.. _0.2.5: https://github.com/httpie/httpie/compare/0.2.2...0.2.5
+.. _0.2.6: https://github.com/httpie/httpie/compare/0.2.5...0.2.6
+.. _0.2.7: https://github.com/httpie/httpie/compare/0.2.5...0.2.7
+.. _0.3.0: https://github.com/httpie/httpie/compare/0.2.7...0.3.0
+.. _0.4.0: https://github.com/httpie/httpie/compare/0.3.0...0.4.0
+.. _0.4.1: https://github.com/httpie/httpie/compare/0.4.0...0.4.1
+.. _0.5.0: https://github.com/httpie/httpie/compare/0.4.1...0.5.0
+.. _0.5.1: https://github.com/httpie/httpie/compare/0.5.0...0.5.1
+.. _0.6.0: https://github.com/httpie/httpie/compare/0.5.1...0.6.0
+.. _0.7.1: https://github.com/httpie/httpie/compare/0.6.0...0.7.1
+.. _0.8.0: https://github.com/httpie/httpie/compare/0.7.1...0.8.0
+.. _0.9.0: https://github.com/httpie/httpie/compare/0.8.0...0.9.0
+.. _0.9.1: https://github.com/httpie/httpie/compare/0.9.0...0.9.1
+.. _0.9.2: https://github.com/httpie/httpie/compare/0.9.1...0.9.2
+.. _0.9.3: https://github.com/httpie/httpie/compare/0.9.2...0.9.3
+.. _0.9.4: https://github.com/httpie/httpie/compare/0.9.3...0.9.4
+.. _0.9.6: https://github.com/httpie/httpie/compare/0.9.4...0.9.6
+.. _0.9.8: https://github.com/httpie/httpie/compare/0.9.6...0.9.8
+.. _0.9.9: https://github.com/httpie/httpie/compare/0.9.8...0.9.9
+.. _1.0.0: https://github.com/httpie/httpie/compare/0.9.9...1.0.0
+.. _1.0.1: https://github.com/httpie/httpie/compare/1.0.0...1.0.1
+.. _1.0.2: https://github.com/httpie/httpie/compare/1.0.1...1.0.2
+.. _1.0.3: https://github.com/httpie/httpie/compare/1.0.2...1.0.3
+.. _2.0.0: https://github.com/httpie/httpie/compare/1.0.3...2.0.0
+.. _2.1.0: https://github.com/httpie/httpie/compare/2.0.0...2.1.0
+.. _2.2.0: https://github.com/httpie/httpie/compare/2.1.0...2.2.0
+.. _2.3.0: https://github.com/httpie/httpie/compare/2.2.0...2.3.0
+.. _2.4.0: https://github.com/httpie/httpie/compare/2.3.0...2.4.0
+.. _2.5.0-dev: https://github.com/httpie/httpie/compare/2.4.0...master
 
-
-.. _#128: https://github.com/jakubroztocil/httpie/issues/128
-.. _#488: https://github.com/jakubroztocil/httpie/issues/488
-.. _#668: https://github.com/jakubroztocil/httpie/issues/668
-.. _#684: https://github.com/jakubroztocil/httpie/issues/684
-.. _#718: https://github.com/jakubroztocil/httpie/issues/718
-.. _#719: https://github.com/jakubroztocil/httpie/issues/719
-.. _#840: https://github.com/jakubroztocil/httpie/issues/840
-.. _#853: https://github.com/jakubroztocil/httpie/issues/853
-.. _#852: https://github.com/jakubroztocil/httpie/issues/852
-.. _#870: https://github.com/jakubroztocil/httpie/issues/870
-.. _#895: https://github.com/jakubroztocil/httpie/issues/895
-.. _#920: https://github.com/jakubroztocil/httpie/issues/920
-.. _#904: https://github.com/jakubroztocil/httpie/issues/904
-.. _#925: https://github.com/jakubroztocil/httpie/issues/925
-.. _#932: https://github.com/jakubroztocil/httpie/issues/932
-.. _#934: https://github.com/jakubroztocil/httpie/issues/934
-.. _#943: https://github.com/jakubroztocil/httpie/issues/943
-.. _#963: https://github.com/jakubroztocil/httpie/issues/963
+.. _#128: https://github.com/httpie/httpie/issues/128
+.. _#201: https://github.com/httpie/httpie/issues/201
+.. _#488: https://github.com/httpie/httpie/issues/488
+.. _#668: https://github.com/httpie/httpie/issues/668
+.. _#684: https://github.com/httpie/httpie/issues/684
+.. _#718: https://github.com/httpie/httpie/issues/718
+.. _#719: https://github.com/httpie/httpie/issues/719
+.. _#753: https://github.com/httpie/httpie/issues/753
+.. _#840: https://github.com/httpie/httpie/issues/840
+.. _#853: https://github.com/httpie/httpie/issues/853
+.. _#852: https://github.com/httpie/httpie/issues/852
+.. _#870: https://github.com/httpie/httpie/issues/870
+.. _#895: https://github.com/httpie/httpie/issues/895
+.. _#903: https://github.com/httpie/httpie/issues/903
+.. _#920: https://github.com/httpie/httpie/issues/920
+.. _#904: https://github.com/httpie/httpie/issues/904
+.. _#925: https://github.com/httpie/httpie/issues/925
+.. _#932: https://github.com/httpie/httpie/issues/932
+.. _#934: https://github.com/httpie/httpie/issues/934
+.. _#943: https://github.com/httpie/httpie/issues/943
+.. _#963: https://github.com/httpie/httpie/issues/963
+.. _#1006: https://github.com/httpie/httpie/issues/1006
+.. _#1020: https://github.com/httpie/httpie/issues/1020
+.. _#1026: https://github.com/httpie/httpie/issues/1026
+.. _#1029: https://github.com/httpie/httpie/issues/1029
+.. _#1032: https://github.com/httpie/httpie/issues/1032

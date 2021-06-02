@@ -6,11 +6,11 @@ import pytest
 
 import httpie
 import httpie.__main__
-from fixtures import FILE_CONTENT, FILE_PATH
+from .fixtures import FILE_CONTENT, FILE_PATH
 from httpie.cli.exceptions import ParseError
 from httpie.context import Environment
 from httpie.status import ExitStatus
-from utils import HTTP_OK, MockEnvironment, StdinBytesIO, http
+from .utils import HTTP_OK, MockEnvironment, StdinBytesIO, http
 
 
 def test_main_entry_point():
@@ -33,13 +33,13 @@ def test_main_entry_point_keyboard_interrupt(main):
 def test_debug():
     r = http('--debug')
     assert r.exit_status == ExitStatus.SUCCESS
-    assert 'HTTPie %s' % httpie.__version__ in r.stderr
+    assert f'HTTPie {httpie.__version__}' in r.stderr
 
 
 def test_help():
     r = http('--help', tolerate_error_exit_status=True)
     assert r.exit_status == ExitStatus.SUCCESS
-    assert 'https://github.com/jakubroztocil/httpie/issues' in r
+    assert 'https://github.com/httpie/httpie/issues' in r
 
 
 def test_version():
@@ -103,6 +103,12 @@ def test_POST_form_multiple_values(httpbin_both):
     }
 
 
+def test_POST_raw(httpbin_both):
+    r = http('--raw', 'foo bar', 'POST', httpbin_both + '/post')
+    assert HTTP_OK in r
+    assert '"foo bar"' in r
+
+
 def test_POST_stdin(httpbin_both):
     env = MockEnvironment(
         stdin=StdinBytesIO(FILE_PATH.read_bytes()),
@@ -121,10 +127,10 @@ def test_POST_file(httpbin_both):
 
 def test_form_POST_file_redirected_stdin(httpbin):
     """
-    <https://github.com/jakubroztocil/httpie/issues/840>
+    <https://github.com/httpie/httpie/issues/840>
 
     """
-    with open(FILE_PATH) as f:
+    with open(FILE_PATH):
         r = http(
             '--form',
             'POST',
@@ -136,6 +142,35 @@ def test_form_POST_file_redirected_stdin(httpbin):
                 stdin_isatty=False,
             ),
         )
+    assert r.exit_status == ExitStatus.ERROR
+    assert 'cannot be mixed' in r.stderr
+
+
+def test_raw_POST_key_values_supplied(httpbin):
+    r = http(
+        '--raw',
+        'foo bar',
+        'POST',
+        httpbin + '/post',
+        'foo=bar',
+        tolerate_error_exit_status=True,
+    )
+    assert r.exit_status == ExitStatus.ERROR
+    assert 'cannot be mixed' in r.stderr
+
+
+def test_raw_POST_redirected_stdin(httpbin):
+    r = http(
+        '--raw',
+        'foo bar',
+        'POST',
+        httpbin + '/post',
+        tolerate_error_exit_status=True,
+        env=MockEnvironment(
+            stdin='some=value',
+            stdin_isatty=False,
+        ),
+    )
     assert r.exit_status == ExitStatus.ERROR
     assert 'cannot be mixed' in r.stderr
 
@@ -182,4 +217,4 @@ def test_json_input_preserve_order(httpbin_both):
              'order:={"map":{"1":"first","2":"second"}}')
     assert HTTP_OK in r
     assert r.json['data'] == \
-           '{"order": {"map": {"1": "first", "2": "second"}}}'
+        '{"order": {"map": {"1": "first", "2": "second"}}}'

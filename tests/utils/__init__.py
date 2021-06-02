@@ -1,12 +1,13 @@
-# coding=utf-8
 """Utilities for HTTPie test suite."""
+import re
+import shlex
 import sys
 import time
 import json
 import tempfile
 from io import BytesIO
 from pathlib import Path
-from typing import Optional, Union
+from typing import Optional, Union, List
 
 from httpie.status import ExitStatus
 from httpie.config import Config
@@ -17,10 +18,11 @@ from httpie.core import main
 # pytest-httpbin currently does not support chunked requests:
 # <https://github.com/kevin1024/pytest-httpbin/issues/33>
 # <https://github.com/kevin1024/pytest-httpbin/issues/28>
-HTTPBIN_WITH_CHUNKED_SUPPORT = 'http://httpbin.org'
+HTTPBIN_WITH_CHUNKED_SUPPORT_DOMAIN = 'pie.dev'
+HTTPBIN_WITH_CHUNKED_SUPPORT = 'http://' + HTTPBIN_WITH_CHUNKED_SUPPORT_DOMAIN
 
 
-TESTS_ROOT = Path(__file__).parent
+TESTS_ROOT = Path(__file__).parent.parent
 CRLF = '\r\n'
 COLOR = '\x1b['
 HTTP_OK = '200 OK'
@@ -39,7 +41,7 @@ def mk_config_dir() -> Path:
 
 def add_auth(url, auth):
     proto, rest = url.split('://', 1)
-    return proto + '://' + auth + '@' + rest
+    return f'{proto}://{auth}@{rest}'
 
 
 class StdinBytesIO(BytesIO):
@@ -49,7 +51,7 @@ class StdinBytesIO(BytesIO):
 
 class MockEnvironment(Environment):
     """Environment subclass with reasonable defaults for testing."""
-    colors = 0
+    colors = 0  # For easier debugging
     stdin_isatty = True,
     stdout_isatty = True
     is_windows = False
@@ -113,6 +115,15 @@ class BaseCLIResponse:
     devnull: str = None
     json: dict = None
     exit_status: ExitStatus = None
+    command: str = None
+    args: List[str] = []
+    complete_args: List[str] = []
+
+    @property
+    def command(self):
+        cmd = ' '.join(shlex.quote(arg) for arg in ['http', *self.args])
+        # pytest-httpbin to real httpbin.
+        return re.sub(r'127\.0\.0\.1:\d+', 'httpbin.org', cmd)
 
 
 class BytesCLIResponse(bytes, BaseCLIResponse):
@@ -198,14 +209,14 @@ def http(
 
     Example:
 
-    $ http --auth=user:password GET httpbin.org/basic-auth/user/password
+    $ http --auth=user:password GET pie.dev/basic-auth/user/password
 
         >>> httpbin = getfixture('httpbin')
         >>> r = http('-a', 'user:pw', httpbin.url + '/basic-auth/user/pw')
         >>> type(r) == StrCLIResponse
         True
-        >>> r.exit_status
-        <ExitStatus.SUCCESS: 0>
+        >>> r.exit_status is ExitStatus.SUCCESS
+        True
         >>> r.stderr
         ''
         >>> 'HTTP/1.1 200 OK' in r
@@ -284,10 +295,13 @@ def http(
         r.devnull = devnull_output
         r.stderr = stderr.read()
         r.exit_status = exit_status
+        r.args = args
+        r.complete_args = ' '.join(complete_args)
 
         if r.exit_status != ExitStatus.SUCCESS:
             sys.stderr.write(r.stderr)
 
+        # print(f'\n\n$ {r.command}\n')
         return r
 
     finally:

@@ -15,11 +15,14 @@ class PyTest(TestCommand):
     and runs the tests with no fancy stuff like parallel execution.
 
     """
+
     def finalize_options(self):
         TestCommand.finalize_options(self)
         self.test_args = [
-            '--doctest-modules', '--verbose',
-            './httpie', './tests'
+            '--doctest-modules',
+            '--verbose',
+            './httpie',
+            './tests',
         ]
         self.test_suite = True
 
@@ -31,7 +34,6 @@ class PyTest(TestCommand):
 tests_require = [
     'pytest-httpbin',
     'pytest',
-    'mock',
 ]
 
 
@@ -39,6 +41,7 @@ install_requires = [
     'requests[socks]>=2.22.0',
     'Pygments>=2.5.2',
     'requests-toolbelt>=0.9.1',
+    'setuptools',
 ]
 install_requires_win_only = [
     'colorama>=0.2.4',
@@ -56,6 +59,7 @@ if 'bdist_wheel' not in sys.argv:
 
 # bdist_wheel
 extras_require = {
+    'test': tests_require,
     # https://wheel.readthedocs.io/en/latest/#defining-conditional-dependencies
     ':sys_platform == "win32"': install_requires_win_only,
 }
@@ -71,8 +75,9 @@ setup(
     version=httpie.__version__,
     description=httpie.__doc__.strip(),
     long_description=long_description(),
+    long_description_content_type='text/x-rst',
     url='https://httpie.org/',
-    download_url=f'https://github.com/jakubroztocil/httpie/archive/{httpie.__version__}.tar.gz',
+    download_url=f'https://github.com/httpie/httpie/archive/{httpie.__version__}.tar.gz',
     author=httpie.__author__,
     author_email='jakub@roztocil.co',
     license=httpie.__licence__,
@@ -104,10 +109,9 @@ setup(
         'Topic :: Utilities'
     ],
     project_urls={
-        'Documentation': 'https://httpie.org/docs',
-        'Source': 'https://github.com/jakubroztocil/httpie',
-        'Online Demo': 'https://httpie.org/run',
-        'Donate': 'https://httpie.org/donate',
+        'GitHub': 'https://github.com/httpie/httpie',
         'Twitter': 'https://twitter.com/httpie',
+        'Documentation': 'https://httpie.org/docs',
+        'Online Demo': 'https://httpie.org/run',
     },
 )

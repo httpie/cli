@@ -1,21 +1,19 @@
-# coding=utf-8
 import json
 import os
 import shutil
 from datetime import datetime
-from mock import mock
-from tempfile import gettempdir
+from unittest import mock
 
 import pytest
 
-from fixtures import UNICODE
+from .fixtures import FILE_PATH_ARG, UNICODE
 from httpie.plugins import AuthPlugin
 from httpie.plugins.builtin import HTTPBasicAuth
 from httpie.plugins.registry import plugin_manager
 from httpie.sessions import Session
 from httpie.utils import get_expired_cookies
-from tests.test_auth_plugins import basic_auth
-from utils import HTTP_OK, MockEnvironment, http, mk_config_dir
+from .test_auth_plugins import basic_auth
+from .utils import HTTP_OK, MockEnvironment, http, mk_config_dir
 
 
 class SessionTestBase:
@@ -161,6 +159,12 @@ class TestSession(SessionTestBase):
         assert 'Content-Type' not in r2.json['headers']
         assert 'If-Unmodified-Since' not in r2.json['headers']
 
+    def test_session_with_upload(self, httpbin):
+        self.start_session(httpbin)
+        r = http('--session=test', '--form', '--verbose', 'POST', httpbin.url + '/post',
+                 f'test-file@{FILE_PATH_ARG}', 'foo=bar', env=self.env())
+        assert HTTP_OK in r
+
     def test_session_by_path(self, httpbin):
         self.start_session(httpbin)
         session_path = self.config_dir / 'session-by-path.json'
@@ -176,8 +180,8 @@ class TestSession(SessionTestBase):
     def test_session_unicode(self, httpbin):
         self.start_session(httpbin)
 
-        r1 = http('--session=test', u'--auth=test:' + UNICODE,
-                  'GET', httpbin.url + '/get', u'Test:%s' % UNICODE,
+        r1 = http('--session=test', f'--auth=test:{UNICODE}',
+                  'GET', httpbin.url + '/get', f'Test:{UNICODE}',
                   env=self.env())
         assert HTTP_OK in r1
 
@@ -187,13 +191,13 @@ class TestSession(SessionTestBase):
 
         # FIXME: Authorization *sometimes* is not present on Python3
         assert (r2.json['headers']['Authorization']
-                == HTTPBasicAuth.make_header(u'test', UNICODE))
+                == HTTPBasicAuth.make_header('test', UNICODE))
         # httpbin doesn't interpret utf8 headers
         assert UNICODE in r2
 
     def test_session_default_header_value_overwritten(self, httpbin):
         self.start_session(httpbin)
-        # https://github.com/jakubroztocil/httpie/issues/180
+        # https://github.com/httpie/httpie/issues/180
         r1 = http('--session=test',
                   httpbin.url + '/headers', 'User-Agent:custom',
                   env=self.env())
@@ -204,11 +208,11 @@ class TestSession(SessionTestBase):
         assert HTTP_OK in r2
         assert r2.json['headers']['User-Agent'] == 'custom'
 
-    def test_download_in_session(self, httpbin):
-        # https://github.com/jakubroztocil/httpie/issues/412
+    def test_download_in_session(self, tmp_path, httpbin):
+        # https://github.com/httpie/httpie/issues/412
         self.start_session(httpbin)
         cwd = os.getcwd()
-        os.chdir(gettempdir())
+        os.chdir(tmp_path)
         try:
             http('--session=test', '--download',
                  httpbin.url + '/get', env=self.env())
@@ -338,6 +342,15 @@ class TestExpiredCookies(CookieTestBase):
         assert 'cookie1' in updated_session['cookies']
         assert 'cookie2' not in updated_session['cookies']
 
+    def test_get_expired_cookies_using_max_age(self):
+        headers = [
+            ('Set-Cookie', 'one=two; Max-Age=0; path=/; domain=.tumblr.com; HttpOnly')
+        ]
+        expected_expired = [
+            {'name': 'one', 'path': '/'}
+        ]
+        assert get_expired_cookies(headers, now=None) == expected_expired
+
     @pytest.mark.parametrize(
         argnames=['headers', 'now', 'expected_expired'],
         argvalues=[
@@ -428,7 +441,7 @@ class TestCookieStorage(CookieTestBase):
             'Cookie:' + new_cookies,
         )
         # Note: cookies in response are in alphabetical order
-        assert 'Cookie: ' + expected in r
+        assert f'Cookie: {expected}' in r
 
         updated_session = json.loads(self.session_path.read_text())
         for name, value in new_cookies_dict.items():
@@ -466,7 +479,7 @@ class TestCookieStorage(CookieTestBase):
         2. command line arg
         3. cookie already stored in session file
         """
-        r = http(
+        http(
             '--session', str(self.session_path),
             httpbin.url + set_cookie,
             'Cookie:' + cli_cookie,

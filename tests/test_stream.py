@@ -2,8 +2,8 @@ import pytest
 
 from httpie.compat import is_windows
 from httpie.output.streams import BINARY_SUPPRESSED_NOTICE
-from utils import StdinBytesIO, http, MockEnvironment
-from fixtures import BIN_FILE_CONTENT, BIN_FILE_PATH
+from .utils import StdinBytesIO, http, MockEnvironment
+from .fixtures import BIN_FILE_CONTENT, BIN_FILE_PATH
 
 
 # GET because httpbin 500s with binary POST body.

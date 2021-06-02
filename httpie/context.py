@@ -9,10 +9,10 @@ try:
 except ImportError:
     curses = None  # Compiled w/o curses
 
-from httpie.compat import is_windows
-from httpie.config import DEFAULT_CONFIG_DIR, Config, ConfigFileError
+from .compat import is_windows
+from .config import DEFAULT_CONFIG_DIR, Config, ConfigFileError
 
-from httpie.utils import repr_dict
+from .utils import repr_dict
 
 
 class Environment:

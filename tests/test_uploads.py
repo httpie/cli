@@ -5,18 +5,18 @@ import pytest
 from httpie.cli.exceptions import ParseError
 from httpie.client import FORM_CONTENT_TYPE
 from httpie.status import ExitStatus
-from utils import (
-    HTTPBIN_WITH_CHUNKED_SUPPORT, MockEnvironment, StdinBytesIO, http,
+from .utils import (
+    MockEnvironment, StdinBytesIO, http,
     HTTP_OK,
 )
-from fixtures import FILE_PATH_ARG, FILE_PATH, FILE_CONTENT
+from .fixtures import FILE_PATH_ARG, FILE_PATH, FILE_CONTENT
 
 
-def test_chunked_json():
+def test_chunked_json(httpbin_with_chunked_support):
     r = http(
         '--verbose',
         '--chunked',
-        HTTPBIN_WITH_CHUNKED_SUPPORT + '/post',
+        httpbin_with_chunked_support + '/post',
         'hello=world',
     )
     assert HTTP_OK in r
@@ -24,12 +24,12 @@ def test_chunked_json():
     assert r.count('hello') == 3
 
 
-def test_chunked_form():
+def test_chunked_form(httpbin_with_chunked_support):
     r = http(
         '--verbose',
         '--chunked',
         '--form',
-        HTTPBIN_WITH_CHUNKED_SUPPORT + '/post',
+        httpbin_with_chunked_support + '/post',
         'hello=world',
     )
     assert HTTP_OK in r
@@ -37,11 +37,11 @@ def test_chunked_form():
     assert r.count('hello') == 2
 
 
-def test_chunked_stdin():
+def test_chunked_stdin(httpbin_with_chunked_support):
     r = http(
         '--verbose',
         '--chunked',
-        HTTPBIN_WITH_CHUNKED_SUPPORT + '/post',
+        httpbin_with_chunked_support + '/post',
         env=MockEnvironment(
             stdin=StdinBytesIO(FILE_PATH.read_bytes()),
             stdin_isatty=False,
@@ -50,6 +50,24 @@ def test_chunked_stdin():
     assert HTTP_OK in r
     assert 'Transfer-Encoding: chunked' in r
     assert r.count(FILE_CONTENT) == 2
+
+
+def test_chunked_stdin_multiple_chunks(httpbin_with_chunked_support):
+    data = FILE_PATH.read_bytes()
+    stdin_bytes = data + b'\n' + data
+    r = http(
+        '--verbose',
+        '--chunked',
+        httpbin_with_chunked_support + '/post',
+        env=MockEnvironment(
+            stdin=StdinBytesIO(stdin_bytes),
+            stdin_isatty=False,
+            stdout_isatty=True,
+        )
+    )
+    assert HTTP_OK in r
+    assert 'Transfer-Encoding: chunked' in r
+    assert r.count(FILE_CONTENT) == 4
 
 
 class TestMultipartFormDataFileUpload:
@@ -165,12 +183,12 @@ class TestMultipartFormDataFileUpload:
         assert f'multipart/magic; boundary={boundary_in_header}' in r
         assert r.count(boundary_in_body) == 3
 
-    def test_multipart_chunked(self, httpbin):
+    def test_multipart_chunked(self, httpbin_with_chunked_support):
         r = http(
             '--verbose',
             '--multipart',
             '--chunked',
-            HTTPBIN_WITH_CHUNKED_SUPPORT + '/post',
+            httpbin_with_chunked_support + '/post',
             'AAA=AAA',
         )
         assert 'Transfer-Encoding: chunked' in r
@@ -214,10 +232,10 @@ class TestRequestBodyFromFilePath:
         assert r.count(FILE_CONTENT) == 2
         assert '"Content-Type": "text/plain"' in r
 
-    def test_request_body_from_file_by_path_chunked(self, httpbin):
+    def test_request_body_from_file_by_path_chunked(self, httpbin_with_chunked_support):
         r = http(
             '--verbose', '--chunked',
-            HTTPBIN_WITH_CHUNKED_SUPPORT + '/post',
+            httpbin_with_chunked_support + '/post',
             '@' + FILE_PATH_ARG,
         )
         assert HTTP_OK in r
@@ -253,3 +271,16 @@ class TestRequestBodyFromFilePath:
         )
         assert r.exit_status == ExitStatus.ERROR
         assert 'cannot be mixed' in r.stderr
+
+    def test_multiple_request_bodies_from_file_by_path(self, httpbin):
+        env = MockEnvironment(stdin_isatty=True)
+        r = http(
+            '--verbose',
+            'POST', httpbin.url + '/post',
+            '@' + FILE_PATH_ARG,
+            '@' + FILE_PATH_ARG,
+            env=env,
+            tolerate_error_exit_status=True,
+        )
+        assert r.exit_status == ExitStatus.ERROR
+        assert 'from multiple files' in r.stderr

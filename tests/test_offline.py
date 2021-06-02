@@ -1,5 +1,5 @@
-from fixtures import FILE_CONTENT, FILE_PATH_ARG
-from utils import http
+from .fixtures import FILE_CONTENT, FILE_PATH_ARG
+from .utils import http
 
 
 def test_offline():
@@ -8,6 +8,27 @@ def test_offline():
         'https://this-should.never-resolve/foo',
     )
     assert 'GET /foo' in r
+
+
+def test_offline_raw():
+    r = http(
+        '--offline',
+        '--raw',
+        'foo bar',
+        'https://this-should.never-resolve/foo',
+    )
+    assert 'POST /foo' in r
+    assert 'foo bar' in r
+
+
+def test_offline_raw_empty_should_use_POST():
+    r = http(
+        '--offline',
+        '--raw',
+        '',
+        'https://this-should.never-resolve/foo',
+    )
+    assert 'POST /foo' in r
 
 
 def test_offline_form():
