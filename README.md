@@ -3,7 +3,7 @@
     <img width="285" alt="Httpie-Logo-Lockup-Pink@2x" src="https://user-images.githubusercontent.com/22844059/112143133-5fff7380-8bcf-11eb-85d0-8efdf27f3991.png">
 </a>
 
-# The human-friendly HTTP CLI client for working with APIs
+# HTTPie: the human-friendly HTTP CLI client for working with APIs
 
 <img src="https://raw.githubusercontent.com/httpie/httpie/master/httpie.gif" width="600"/>
 
