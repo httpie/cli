@@ -81,7 +81,7 @@ setup(
     author=httpie.__author__,
     author_email='jakub@roztocil.co',
     license=httpie.__licence__,
-    packages=find_packages(),
+    packages=find_packages(include=['httpie', 'httpie.*']),
     entry_points={
         'console_scripts': [
             'http = httpie.__main__:main',
