@@ -30,5 +30,5 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - run: python -m pip install --upgrade pip setuptools wheel
-      - run: python -m pip install --upgrade --editable .
-      - run: python setup.py test
+      - run: python -m pip install --upgrade '.[dev]'
+      - run: python -m pytest --verbose ./httpie ./tests
