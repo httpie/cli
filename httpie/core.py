@@ -177,10 +177,10 @@ def program(args: argparse.Namespace, env: Environment) -> ExitStatus:
             if is_request:
                 if not initial_request:
                     initial_request = message
+                if with_body:
                     is_streamed_upload = not isinstance(message.body, (str, bytes))
-                    if with_body:
-                        do_write_body = not is_streamed_upload
-                        force_separator = is_streamed_upload and env.stdout_isatty
+                    do_write_body = not is_streamed_upload
+                    force_separator = is_streamed_upload and env.stdout_isatty
             else:
                 final_response = message
                 if args.check_status or downloader:
