@@ -1,10 +1,11 @@
 HTTPie: Human-friendly CLI HTTP client for the API era
 ######################################################
 
-HTTPie (pronounced *aitch-tee-tee-pie*) is a command-line HTTP client.
+HTTPie (pronounced *aitch-tee-tee-pie*) is a command-line HTTP client that
+can be used to test, debug, and interact with APIs and HTTP servers.
 Its goal is to make command-line interactions with web services as
 human-friendly as possible. The ``http`` & ``https`` commands create and
-send HTTP/S requests using a simple and natural syntax. Response data is
+send HTTP requests using a simple and natural syntax. Response data is
 colorized in an easy-to-read format.
 
 
@@ -149,14 +150,12 @@ HTTPie:
     $ easy_install httpie
 
 
-Development version
--------------------
+Unstable version
+----------------
 
-You can install the latest unreleased development version from the
+You can install the latest unreleased unstable version from the
 ``master`` branch of the
 `HTTPie GitHub repository <https://github.com/httpie/httpie>`_.
-The development version is a work-in-progress that may not be as stable
-as a released version.
 
 
 .. class:: no-pdf
@@ -164,7 +163,7 @@ as a released version.
 |build|
 
 
-On macOS, the development version can be installed with Homebrew:
+On macOS, the unstable version can be installed with Homebrew:
 
 .. code-block:: bash
 
@@ -172,7 +171,7 @@ On macOS, the development version can be installed with Homebrew:
     $ brew install --HEAD httpie
 
 
-On all operating systems, the development version can be installed with
+On all operating systems, the unstable version can be installed with
 ``pip``:
 
 .. code-block:: bash
@@ -180,7 +179,7 @@ On all operating systems, the development version can be installed with
     $ pip install --upgrade https://github.com/httpie/httpie/archive/master.tar.gz
 
 
-The development version number always includes the ``-dev`` suffix.
+The unstable version number always includes the ``-dev`` suffix.
 
 .. code-block:: bash
 
@@ -227,7 +226,7 @@ Submitting `forms`_:
     $ http -f POST pie.dev/post hello=World
 
 
-View the request data sent. Several `output options`_ are supported.
+View the sent request. Several `output options`_ are supported.
 
 .. code-block:: bash
 
@@ -430,7 +429,7 @@ example for the
 ----------------
 
 The standard behavior of HTTP clients is to normalize the path portion of
-URLs by squashing dot segments in the same manner that many filesystems do:
+URLs by converting a relative path to an absolute path:
 
 .. code-block:: bash
 
@@ -469,7 +468,7 @@ In addition, arbitrary request data can be passed by using `Redirected input`_.
 | Item Type                    | Description                                       |
 +==============================+===================================================+
 | HTTP Headers                 | Arbitrary HTTP header, e.g. ``X-API-Token:123``   |
-| ``name:value``               |                                                   |
+| ``Name:Value``               |                                                   |
 +------------------------------+---------------------------------------------------+
 | URL parameters               | Appends the given name/value pair as a query      |
 | ``name==value``              | string parameter to the URL                       |
