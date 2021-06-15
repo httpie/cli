@@ -2,6 +2,7 @@
 import pytest
 
 from httpie.status import ExitStatus
+from .fixtures import FILE_PATH_ARG
 from .utils import http, HTTP_OK
 
 
@@ -57,3 +58,19 @@ def test_max_redirects(httpbin):
         tolerate_error_exit_status=True,
     )
     assert r.exit_status == ExitStatus.ERROR_TOO_MANY_REDIRECTS
+
+
+def test_http_307_allow_redirect_post(httpbin):
+    r = http('--follow', 'POST', httpbin.url + '/redirect-to',
+             f'url=={httpbin.url}/post', 'status_code==307',
+             '@' + FILE_PATH_ARG)
+    assert HTTP_OK in r
+
+
+def test_http_307_allow_redirect_post_verbose(httpbin):
+    r = http('--follow', '--verbose', 'POST', httpbin.url + '/redirect-to',
+             f'url=={httpbin.url}/post', 'status_code==307',
+             '@' + FILE_PATH_ARG)
+    assert r.count('POST /redirect-to') == 1
+    assert r.count('POST /post') == 1
+    assert HTTP_OK in r
