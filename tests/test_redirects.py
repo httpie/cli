@@ -7,6 +7,10 @@ from .utils import http, HTTP_OK
 from .utils.matching import assert_output_matches, Expect, ExpectSequence
 
 
+# <https://developer.mozilla.org/en-US/docs/Web/HTTP/Redirections>
+REDIRECTS_WITH_METHOD_BODY_PRESERVED = [307, 308]
+
+
 def test_follow_all_redirects_shown(httpbin):
     r = http('--follow', '--all', httpbin.url + '/redirect/2')
     assert r.count('HTTP/1.1') == 3
@@ -37,6 +41,7 @@ def test_follow_all_output_options_used_for_redirects(httpbin):
     assert r.count('GET /') == 3
     assert HTTP_OK not in r
 
+
 #
 # def test_follow_redirect_output_options(httpbin):
 #     r = http('--check-status',
@@ -61,16 +66,21 @@ def test_max_redirects(httpbin):
     assert r.exit_status == ExitStatus.ERROR_TOO_MANY_REDIRECTS
 
 
-def test_http_307_allow_redirect_post(httpbin):
-    r = http('--follow', 'POST', httpbin.url + '/redirect-to',
-             f'url=={httpbin.url}/post', 'status_code==307',
-             '@' + FILE_PATH_ARG)
+@pytest.mark.parametrize('status_code', REDIRECTS_WITH_METHOD_BODY_PRESERVED)
+def test_follow_redirect_with_repost(httpbin, status_code):
+    r = http(
+        '--follow',
+        httpbin.url + '/redirect-to',
+        f'url=={httpbin.url}/post',
+        f'status_code=={status_code}',
+        '@' + FILE_PATH_ARG,
+    )
     assert HTTP_OK in r
+    assert FILE_CONTENT in r
 
 
-@pytest.mark.parametrize('status_code', [307, 308])
+@pytest.mark.parametrize('status_code', REDIRECTS_WITH_METHOD_BODY_PRESERVED)
 def test_verbose_follow_redirect_with_repost(httpbin, status_code):
-    # <https://developer.mozilla.org/en-US/docs/Web/HTTP/Redirections>
     r = http(
         '--follow',
         '--verbose',
