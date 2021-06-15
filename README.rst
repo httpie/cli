@@ -1071,6 +1071,10 @@ and show the final response instead, use the ``--follow, -F`` option:
     $ http --follow pie.dev/redirect/3
 
 
+With ``HTTP 307 Temporary Redirect``, the method and the body of the original request
+are reused to perform the redirected request. Otherwise a body-less ``GET`` request is performed.
+
+
 Showing intermediary redirect responses
 ---------------------------------------
 
