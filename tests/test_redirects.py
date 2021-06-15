@@ -68,10 +68,18 @@ def test_http_307_allow_redirect_post(httpbin):
     assert HTTP_OK in r
 
 
-def test_http_307_allow_redirect_post_verbose(httpbin):
-    r = http('--follow', '--verbose', 'POST', httpbin.url + '/redirect-to',
-             f'url=={httpbin.url}/post', 'status_code==307',
-             '@' + FILE_PATH_ARG)
+@pytest.mark.parametrize('status_code', [307, 308])
+def test_verbose_follow_redirect_with_repost(httpbin, status_code):
+    # <https://developer.mozilla.org/en-US/docs/Web/HTTP/Redirections>
+    r = http(
+        '--follow',
+        '--verbose',
+        httpbin.url + '/redirect-to',
+        f'url=={httpbin.url}/post',
+        f'status_code=={status_code}',
+        '@' + FILE_PATH_ARG,
+    )
+    assert f'HTTP/1.1 {status_code}' in r
     assert r.count('POST /redirect-to') == 1
     assert r.count('POST /post') == 1
     assert r.count(FILE_CONTENT) == 3  # two requests + final response contain it
