@@ -1,20 +1,9 @@
 import re
 from typing import Iterable
-from enum import Enum, auto
 
 from httpie.output.writer import MESSAGE_SEPARATOR
+from .tokens import Expect
 from ...utils import CRLF
-
-
-class Expect(Enum):
-    """
-    Predefined token types we can expect in the output.
-
-    """
-    REQUEST_HEADERS = auto()
-    RESPONSE_HEADERS = auto()
-    BODY = auto()
-    SEPARATOR = auto()
 
 
 SEPARATOR_RE = re.compile(f'^{MESSAGE_SEPARATOR}')

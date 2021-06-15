@@ -2,8 +2,9 @@
 import pytest
 
 from httpie.status import ExitStatus
-from .fixtures import FILE_PATH_ARG
+from .fixtures import FILE_PATH_ARG, FILE_CONTENT
 from .utils import http, HTTP_OK
+from .utils.matching import assert_output_matches, Expect, ExpectSequence
 
 
 def test_follow_all_redirects_shown(httpbin):
@@ -73,4 +74,11 @@ def test_http_307_allow_redirect_post_verbose(httpbin):
              '@' + FILE_PATH_ARG)
     assert r.count('POST /redirect-to') == 1
     assert r.count('POST /post') == 1
+    assert r.count(FILE_CONTENT) == 3  # two requests + final response contain it
     assert HTTP_OK in r
+    assert_output_matches(r, [
+        *ExpectSequence.TERMINAL_REQUEST,
+        Expect.RESPONSE_HEADERS,
+        Expect.SEPARATOR,
+        *ExpectSequence.TERMINAL_EXCHANGE,
+    ])
