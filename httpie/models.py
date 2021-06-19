@@ -1,5 +1,6 @@
 from typing import Iterable, Optional
 from urllib.parse import urlsplit
+import urllib3
 
 
 class HTTPMessage:
@@ -49,9 +50,8 @@ class HTTPResponse(HTTPMessage):
     def iter_lines(self, chunk_size):
         return ((line, b'\n') for line in self._orig.iter_lines(chunk_size))
 
-    # noinspection PyProtectedMember
-    @property
-    def headers(self):
+    def _headers_http_client_http_message(self):
+        """ Extract header information from http.client.HTTPMessage """
         original = self._orig.raw._original_response
 
         version = {
@@ -61,12 +61,25 @@ class HTTPResponse(HTTPMessage):
             20: '2',
         }[original.version]
 
-        status_line = f'HTTP/{version} {original.status} {original.reason}'
+        return version, original.status, original.reason, original.msg._headers
+
+    def _headers_requests_response(self):
+        """ Extract header information from Requests.models.Response """
+        version = '1.1'
+        return version, self._orig.status_code, self._orig.reason, self._orig.headers.items()
+
+    @property
+    def headers(self):
+        if isinstance(self._orig.raw, urllib3.HTTPResponse):
+            header_extract_method = self._headers_http_client_http_message
+        else:
+            header_extract_method = self._headers_requests_response
+        version, status, reason, http_headers = header_extract_method()
+
+        status_line = f'HTTP/{version} {status} {reason}'
         headers = [status_line]
-        # `original.msg` is a `http.client.HTTPMessage`
-        # `_headers` is a 2-tuple
         headers.extend(
-            f'{header[0]}: {header[1]}' for header in original.msg._headers)
+            ': '.join(header) for header in http_headers)
         return '\r\n'.join(headers)
 
     @property
