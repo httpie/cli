@@ -1,6 +1,5 @@
 from typing import Iterable, Optional
 from urllib.parse import urlsplit
-import urllib3
 
 
 class HTTPMessage:
@@ -50,31 +49,24 @@ class HTTPResponse(HTTPMessage):
     def iter_lines(self, chunk_size):
         return ((line, b'\n') for line in self._orig.iter_lines(chunk_size))
 
-    def _headers_http_client_http_message(self):
-        """ Extract header information from http.client.HTTPMessage """
-        original = self._orig.raw._original_response
-
-        version = {
+    def _headers_extract_version(self):
+        try:
+            raw_version = self._orig.raw._original_response.version
+        except AttributeError:
+            raw_version = None
+        return {
             9: '0.9',
             10: '1.0',
             11: '1.1',
             20: '2',
-        }[original.version]
-
-        return version, original.status, original.reason, original.msg._headers
-
-    def _headers_requests_response(self):
-        """ Extract header information from Requests.models.Response """
-        version = '1.1'
-        return version, self._orig.status_code, self._orig.reason, self._orig.headers.items()
+        }.get(raw_version, '1.1')
 
     @property
     def headers(self):
-        if isinstance(self._orig.raw, urllib3.HTTPResponse):
-            header_extract_method = self._headers_http_client_http_message
-        else:
-            header_extract_method = self._headers_requests_response
-        version, status, reason, http_headers = header_extract_method()
+        version = self._headers_extract_version()
+        status = self._orig.status_code
+        reason = self._orig.reason
+        http_headers = self._orig.headers.items()
 
         status_line = f'HTTP/{version} {status} {reason}'
         headers = [status_line]
