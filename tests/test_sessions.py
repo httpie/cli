@@ -343,22 +343,17 @@ class TestExpiredCookies(CookieTestBase):
         assert 'cookie2' not in updated_session['cookies']
 
     def test_get_expired_cookies_using_max_age(self):
-        headers = [
-            ('Set-Cookie', 'one=two; Max-Age=0; path=/; domain=.tumblr.com; HttpOnly')
-        ]
+        cookies = 'one=two; Max-Age=0; path=/; domain=.tumblr.com; HttpOnly'
         expected_expired = [
             {'name': 'one', 'path': '/'}
         ]
-        assert get_expired_cookies(headers, now=None) == expected_expired
+        assert get_expired_cookies(cookies, now=None) == expected_expired
 
     @pytest.mark.parametrize(
-        argnames=['headers', 'now', 'expected_expired'],
+        argnames=['cookies', 'now', 'expected_expired'],
         argvalues=[
             (
-                [
-                    ('Set-Cookie', 'hello=world; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; HttpOnly'),
-                    ('Connection', 'keep-alive')
-                ],
+                'hello=world; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; HttpOnly',
                 None,
                 [
                     {
@@ -368,11 +363,10 @@ class TestExpiredCookies(CookieTestBase):
                 ]
             ),
             (
-                [
-                    ('Set-Cookie', 'hello=world; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; HttpOnly'),
-                    ('Set-Cookie', 'pea=pod; Path=/ab; Expires=Thu, 01-Jan-1970 00:00:00 GMT; HttpOnly'),
-                    ('Connection', 'keep-alive')
-                ],
+                (
+                    'hello=world; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; HttpOnly, '
+                    'pea=pod; Path=/ab; Expires=Thu, 01-Jan-1970 00:00:00 GMT; HttpOnly'
+                ),
                 None,
                 [
                     {'name': 'hello', 'path': '/'},
@@ -382,24 +376,19 @@ class TestExpiredCookies(CookieTestBase):
             (
                 # Checks we gracefully ignore expires date in invalid format.
                 # <https://github.com/httpie/httpie/issues/963>
-                [
-                    ('Set-Cookie', 'pfg=; Expires=Sat, 19-Sep-2020 06:58:14 GMT+0000; Max-Age=0; path=/; domain=.tumblr.com; secure; HttpOnly'),
-                ],
+                'pfg=; Expires=Sat, 19-Sep-2020 06:58:14 GMT+0000; Max-Age=0; path=/; domain=.tumblr.com; secure; HttpOnly',
                 None,
                 []
             ),
             (
-                [
-                    ('Set-Cookie', 'hello=world; Path=/; Expires=Fri, 12 Jun 2020 12:28:55 GMT; HttpOnly'),
-                    ('Connection', 'keep-alive')
-                ],
+                'hello=world; Path=/; Expires=Fri, 12 Jun 2020 12:28:55 GMT; HttpOnly',
                 datetime(2020, 6, 11).timestamp(),
                 []
             ),
         ]
     )
-    def test_get_expired_cookies_manages_multiple_cookie_headers(self, headers, now, expected_expired):
-        assert get_expired_cookies(headers, now=now) == expected_expired
+    def test_get_expired_cookies_manages_multiple_cookie_headers(self, cookies, now, expected_expired):
+        assert get_expired_cookies(cookies, now=now) == expected_expired
 
 
 class TestCookieStorage(CookieTestBase):
