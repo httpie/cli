@@ -49,29 +49,26 @@ class HTTPResponse(HTTPMessage):
     def iter_lines(self, chunk_size):
         return ((line, b'\n') for line in self._orig.iter_lines(chunk_size))
 
-    def _headers_extract_version(self):
+    # noinspection PyProtectedMember
+    @property
+    def headers(self):
         try:
             raw_version = self._orig.raw._original_response.version
         except AttributeError:
-            raw_version = None
-        return {
+            # Assume HTTP/1.1
+            raw_version = '1.1'
+        version = {
             9: '0.9',
             10: '1.0',
             11: '1.1',
             20: '2',
-        }.get(raw_version, '1.1')
+        }[raw_version]
 
-    @property
-    def headers(self):
-        version = self._headers_extract_version()
-        status = self._orig.status_code
-        reason = self._orig.reason
-        http_headers = self._orig.headers.items()
-
-        status_line = f'HTTP/{version} {status} {reason}'
+        original = self._orig
+        status_line = f'HTTP/{version} {original.status_code} {original.reason}'
         headers = [status_line]
         headers.extend(
-            ': '.join(header) for header in http_headers)
+            ': '.join(header) for header in original.headers.items())
         return '\r\n'.join(headers)
 
     @property
