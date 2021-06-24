@@ -56,7 +56,7 @@ class HTTPResponse(HTTPMessage):
             raw_version = self._orig.raw._original_response.version
         except AttributeError:
             # Assume HTTP/1.1
-            raw_version = '1.1'
+            raw_version = 11
         version = {
             9: '0.9',
             10: '1.0',
