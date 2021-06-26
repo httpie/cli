@@ -143,6 +143,12 @@ and always provides the latest version) is to use `pip`_:
 (If ``pip`` installation fails for some reason, you can try
 ``easy_install httpie`` as a fallback.)
 
+Windows users can also install HTTPie with `Chocolatey <https://chocolatey.org>`_:
+
+.. code-block:: bash
+
+    $ choco install httpie
+
 
 Python version
 --------------
