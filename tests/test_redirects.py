@@ -1,6 +1,7 @@
 """High-level tests."""
 import pytest
 
+from httpie.compat import is_windows
 from httpie.status import ExitStatus
 from .fixtures import FILE_PATH_ARG, FILE_CONTENT
 from .utils import http, HTTP_OK
@@ -66,6 +67,7 @@ def test_max_redirects(httpbin):
     assert r.exit_status == ExitStatus.ERROR_TOO_MANY_REDIRECTS
 
 
+@pytest.mark.skipif(is_windows, reason='occasionally fails w/ ConnectionError for no apparent reason')
 @pytest.mark.parametrize('status_code', REDIRECTS_WITH_METHOD_BODY_PRESERVED)
 def test_follow_redirect_with_repost(httpbin, status_code):
     r = http(
@@ -79,6 +81,7 @@ def test_follow_redirect_with_repost(httpbin, status_code):
     assert FILE_CONTENT in r
 
 
+@pytest.mark.skipif(is_windows, reason='occasionally fails w/ ConnectionError for no apparent reason')
 @pytest.mark.parametrize('status_code', REDIRECTS_WITH_METHOD_BODY_PRESERVED)
 def test_verbose_follow_redirect_with_repost(httpbin, status_code):
     r = http(
