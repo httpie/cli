@@ -8,7 +8,6 @@ from typing import Callable, Iterable, Union
 from urllib.parse import urlparse, urlunparse
 
 import requests
-
 # noinspection PyPackageRequirements
 import urllib3
 from . import __version__
@@ -17,8 +16,7 @@ from .plugins.registry import plugin_manager
 from .sessions import get_httpie_session
 from .ssl import AVAILABLE_SSL_VERSION_ARG_MAPPING, HTTPieHTTPSAdapter
 from .uploads import (
-    compress_request,
-    prepare_request_body,
+    compress_request, prepare_request_body,
     get_multipart_data_and_content_type,
 )
 from .utils import get_expired_cookies, repr_dict
@@ -26,10 +24,10 @@ from .utils import get_expired_cookies, repr_dict
 
 urllib3.disable_warnings()
 
-FORM_CONTENT_TYPE = "application/x-www-form-urlencoded; charset=utf-8"
-JSON_CONTENT_TYPE = "application/json"
-JSON_ACCEPT = f"{JSON_CONTENT_TYPE}, */*;q=0.5"
-DEFAULT_UA = f"HTTPie/{__version__}"
+FORM_CONTENT_TYPE = 'application/x-www-form-urlencoded; charset=utf-8'
+JSON_CONTENT_TYPE = 'application/json'
+JSON_ACCEPT = f'{JSON_CONTENT_TYPE}, */*;q=0.5'
+DEFAULT_UA = f'HTTPie/{__version__}'
 
 
 def collect_messages(
@@ -43,7 +41,7 @@ def collect_messages(
         httpie_session = get_httpie_session(
             config_dir=config_dir,
             session_name=args.session or args.session_read_only,
-            host=args.headers.get("Host"),
+            host=args.headers.get('Host'),
             url=args.url,
         )
         httpie_session_headers = httpie_session.headers
@@ -51,28 +49,28 @@ def collect_messages(
     request_kwargs = make_request_kwargs(
         args=args,
         base_headers=httpie_session_headers,
-        request_body_read_callback=request_body_read_callback,
+        request_body_read_callback=request_body_read_callback
     )
     send_kwargs = make_send_kwargs(args)
     send_kwargs_mergeable_from_env = make_send_kwargs_mergeable_from_env(args)
     requests_session = build_requests_session(
         ssl_version=args.ssl_version,
         ciphers=args.ciphers,
-        verify=bool(send_kwargs_mergeable_from_env["verify"]),
+        verify=bool(send_kwargs_mergeable_from_env['verify'])
     )
 
     if httpie_session:
-        httpie_session.update_headers(request_kwargs["headers"])
+        httpie_session.update_headers(request_kwargs['headers'])
         requests_session.cookies = httpie_session.cookies
         if args.auth_plugin:
             # Save auth from CLI to HTTPie session.
             httpie_session.auth = {
-                "type": args.auth_plugin.auth_type,
-                "raw_auth": args.auth_plugin.raw_auth,
+                'type': args.auth_plugin.auth_type,
+                'raw_auth': args.auth_plugin.raw_auth,
             }
         elif httpie_session.auth:
             # Apply auth from HTTPie session
-            request_kwargs["auth"] = httpie_session.auth
+            request_kwargs['auth'] = httpie_session.auth
 
     if args.debug:
         # TODO: reflect the split between request and send kwargs.
@@ -128,8 +126,7 @@ def collect_messages(
             httpie_session.cookies = requests_session.cookies
             httpie_session.remove_cookies(
                 # TODO: take path & domain into account?
-                cookie["name"]
-                for cookie in expired_cookies
+                cookie['name'] for cookie in expired_cookies
             )
             httpie_session.save()
 
@@ -140,7 +137,7 @@ def max_headers(limit):
     # <https://github.com/httpie/httpie/issues/802>
     # noinspection PyUnresolvedReferences
     orig = http.client._MAXHEADERS
-    http.client._MAXHEADERS = limit or float("Inf")
+    http.client._MAXHEADERS = limit or float('Inf')
     try:
         yield
     finally:
@@ -159,10 +156,11 @@ def build_requests_session(
         ciphers=ciphers,
         verify=verify,
         ssl_version=(
-            AVAILABLE_SSL_VERSION_ARG_MAPPING[ssl_version] if ssl_version else None
+            AVAILABLE_SSL_VERSION_ARG_MAPPING[ssl_version]
+            if ssl_version else None
         ),
     )
-    requests_session.mount("https://", https_adapter)
+    requests_session.mount('https://', https_adapter)
 
     # Install adapters from plugins.
     for plugin_cls in plugin_manager.get_transport_plugins():
@@ -176,7 +174,8 @@ def build_requests_session(
 
 
 def dump_request(kwargs: dict):
-    sys.stderr.write(f"\n>>> requests.request(**{repr_dict(kwargs)})\n\n")
+    sys.stderr.write(
+        f'\n>>> requests.request(**{repr_dict(kwargs)})\n\n')
 
 
 def finalize_headers(headers: RequestHeadersDict) -> RequestHeadersDict:
@@ -190,31 +189,33 @@ def finalize_headers(headers: RequestHeadersDict) -> RequestHeadersDict:
             value = value.strip()
             if isinstance(value, str):
                 # See <https://github.com/httpie/httpie/issues/212>
-                value = value.encode("utf8")
+                value = value.encode('utf8')
         final_headers[name] = value
     return final_headers
 
 
 def make_default_headers(args: argparse.Namespace) -> RequestHeadersDict:
-    default_headers = RequestHeadersDict({"User-Agent": DEFAULT_UA})
+    default_headers = RequestHeadersDict({
+        'User-Agent': DEFAULT_UA
+    })
 
     auto_json = args.data and not args.form
     if args.json or auto_json:
-        default_headers["Accept"] = JSON_ACCEPT
+        default_headers['Accept'] = JSON_ACCEPT
         if args.json or (auto_json and args.data):
-            default_headers["Content-Type"] = JSON_CONTENT_TYPE
+            default_headers['Content-Type'] = JSON_CONTENT_TYPE
 
     elif args.form and not args.files:
         # If sending files, `requests` will set
         # the `Content-Type` for us.
-        default_headers["Content-Type"] = FORM_CONTENT_TYPE
+        default_headers['Content-Type'] = FORM_CONTENT_TYPE
     return default_headers
 
 
 def make_send_kwargs(args: argparse.Namespace) -> dict:
     return {
-        "timeout": args.timeout or None,
-        "allow_redirects": False,
+        'timeout': args.timeout or None,
+        'allow_redirects': False,
     }
 
 
@@ -225,22 +226,22 @@ def make_send_kwargs_mergeable_from_env(args: argparse.Namespace) -> dict:
         if args.cert_key:
             cert = cert, args.cert_key
     return {
-        "proxies": {p.key: p.value for p in args.proxy},
-        "stream": True,
-        "verify": {
-            "yes": True,
-            "true": True,
-            "no": False,
-            "false": False,
+        'proxies': {p.key: p.value for p in args.proxy},
+        'stream': True,
+        'verify': {
+            'yes': True,
+            'true': True,
+            'no': False,
+            'false': False,
         }.get(args.verify.lower(), args.verify),
-        "cert": cert,
+        'cert': cert,
     }
 
 
 def make_request_kwargs(
     args: argparse.Namespace,
     base_headers: RequestHeadersDict = None,
-    request_body_read_callback=lambda chunk: chunk,
+    request_body_read_callback=lambda chunk: chunk
 ) -> dict:
     """
     Translate our `args` into `requests.Request` keyword arguments.
@@ -256,38 +257,38 @@ def make_request_kwargs(
         else:
             # We need to set data to an empty string to prevent requests
             # from assigning an empty list to `response.request.data`.
-            data = ""
+            data = ''
     # Finalize headers.
     headers = make_default_headers(args)
     if base_headers:
         headers.update(base_headers)
     headers.update(args.headers)
-    if args.offline and args.chunked and "Transfer-Encoding" not in headers:
+    if args.offline and args.chunked and 'Transfer-Encoding' not in headers:
         # When online, we let requests set the header instead to be able more
         # easily verify chunking is taking place.
-        headers["Transfer-Encoding"] = "chunked"
+        headers['Transfer-Encoding'] = 'chunked'
     headers = finalize_headers(headers)
 
     if (args.form and files) or args.multipart:
-        data, headers["Content-Type"] = get_multipart_data_and_content_type(
+        data, headers['Content-Type'] = get_multipart_data_and_content_type(
             data=args.multipart_data,
             boundary=args.boundary,
-            content_type=args.headers.get("Content-Type"),
+            content_type=args.headers.get('Content-Type'),
         )
 
     return {
-        "method": args.method.lower(),
-        "url": args.url,
-        "headers": headers,
-        "data": prepare_request_body(
+        'method': args.method.lower(),
+        'url': args.url,
+        'headers': headers,
+        'data': prepare_request_body(
             body=data,
             body_read_callback=request_body_read_callback,
             chunked=args.chunked,
             offline=args.offline,
-            content_length_header_value=headers.get("Content-Length"),
+            content_length_header_value=headers.get('Content-Length'),
         ),
-        "auth": args.auth,
-        "params": args.params.items(),
+        'auth': args.auth,
+        'params': args.params.items(),
     }
 
 
@@ -312,7 +313,7 @@ def ensure_path_as_is(orig_url: str, prepped_url: str) -> str:
     final_dict = {
         # noinspection PyProtectedMember
         **parsed_prepped._asdict(),
-        "path": parsed_orig.path,
+        'path': parsed_orig.path,
     }
-
+     
     return urlunparse(tuple(final_dict.values()))
