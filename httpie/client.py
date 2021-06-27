@@ -254,13 +254,7 @@ def make_request_kwargs(
     data = args.data
     auto_json = data and not args.form
     if (args.json or auto_json) and isinstance(data, dict):
-        if data:
-            data = json.dumps(data)
-        else:
-            # We need to set data to an empty string to prevent requests
-            # from assigning an empty list to `response.request.data`.
-            data = ''
-
+        data = json.dumps(data) if data else ''
     # Finalize headers.
     headers = make_default_headers(args)
     if base_headers:
@@ -279,7 +273,7 @@ def make_request_kwargs(
             content_type=args.headers.get('Content-Type'),
         )
 
-    kwargs = {
+    return {
         'method': args.method.lower(),
         'url': args.url,
         'headers': headers,
@@ -293,8 +287,6 @@ def make_request_kwargs(
         'auth': args.auth,
         'params': args.params.items(),
     }
-
-    return kwargs
 
 
 def ensure_path_as_is(orig_url: str, prepped_url: str) -> str:
@@ -320,5 +312,5 @@ def ensure_path_as_is(orig_url: str, prepped_url: str) -> str:
         **parsed_prepped._asdict(),
         'path': parsed_orig.path,
     }
-    final_url = urlunparse(tuple(final_dict.values()))
-    return final_url
+     
+    return urlunparse(tuple(final_dict.values()))
