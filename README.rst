@@ -91,13 +91,7 @@ A MacPorts *port* is also available:
 Linux
 -----
 
-HTTPie is available on the `Snap Store <https://snapcraft.io/http>`_:
-
-.. code-block:: bash
-
-    $ snap install http
-
-And most Linux distributions provide a package that can be installed using the
+Most Linux distributions provide a package that can be installed using the
 system package manager, for example:
 
 .. code-block:: bash
@@ -134,8 +128,9 @@ system package manager, for example:
 Windows, etc.
 -------------
 
-A universal installation method (that works on Windows, macOS, Linux, …,
+A universal installation method (that works on Windows, Mac OS X, Linux, …,
 and always provides the latest version) is to use `pip`_:
+
 
 .. code-block:: bash
 
@@ -152,7 +147,7 @@ Windows users can also install HTTPie with `Chocolatey <https://chocolatey.org>`
 
 .. code-block:: bash
 
-    $ choco upgrade httpie
+    $ choco install httpie
 
 
 Python version
