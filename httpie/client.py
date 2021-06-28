@@ -316,5 +316,4 @@ def ensure_path_as_is(orig_url: str, prepped_url: str) -> str:
         **parsed_prepped._asdict(),
         'path': parsed_orig.path,
     }
-     
     return urlunparse(tuple(final_dict.values()))
