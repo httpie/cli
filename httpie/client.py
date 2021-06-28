@@ -258,6 +258,7 @@ def make_request_kwargs(
             # We need to set data to an empty string to prevent requests
             # from assigning an empty list to `response.request.data`.
             data = ''
+
     # Finalize headers.
     headers = make_default_headers(args)
     if base_headers:
