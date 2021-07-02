@@ -57,7 +57,13 @@ $ port install httpie
 
 ### Linux
 
-Most Linux distributions provide a package that can be installed using the
+HTTPie is available on the [Snap Store](https://snapcraft.io/httpie):
+
+```bash
+$ snap install httpie
+```
+
+And most Linux distributions provide a package that can be installed using the
 system package manager, for example:
 
 ```bash
@@ -351,12 +357,12 @@ There are a few different *request item* types that provide a convenient mechani
 
 They are key/value pairs specified after the URL. All have in common that they become part of the actual request that is sent and that their type is distinguished only by the separator used: `:`, `=`, `:=`, `==`, `@`, `=@`, and `:=@`. The ones with an `@` expect a file path as value.
 
-| Item Type                                                    | Description                                                                                                                                                                                                            |
+|                                                    Item Type | Description                                                                                                                                                                                                            |
 | -----------------------------------------------------------: | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| HTTP Headers `Name:Value`                                    | Arbitrary HTTP header, e.g. `X-API-Token:123`                                                                                                                                                                          |
-| URL parameters `name==value`                                 | Appends the given name/value pair as a querystring parameter to the URL. The `==` separator is used.                                                                                                                   |
-| Data Fields `field=value`, `field=@file.txt`                 | Request data fields to be serialized as a JSON object (default), to be form-encoded (with `--form, -f`), or to be serialized as `multipart/form-data` (with `--multipart`)                                             |
-| Raw JSON fields `field:=json`                                | Useful when sending JSON and one or more fields need to be a `Boolean`, `Number`, nested `Object`, or an `Array`, e.g., `meals:='["ham","spam"]'` or `pies:=[1,2,3]` (note the quotes)                                 |
+|                                    HTTP Headers `Name:Value` | Arbitrary HTTP header, e.g. `X-API-Token:123`                                                                                                                                                                          |
+|                                 URL parameters `name==value` | Appends the given name/value pair as a querystring parameter to the URL. The `==` separator is used.                                                                                                                   |
+|                 Data Fields `field=value`, `field=@file.txt` | Request data fields to be serialized as a JSON object (default), to be form-encoded (with `--form, -f`), or to be serialized as `multipart/form-data` (with `--multipart`)                                             |
+|                                Raw JSON fields `field:=json` | Useful when sending JSON and one or more fields need to be a `Boolean`, `Number`, nested `Object`, or an `Array`, e.g., `meals:='["ham","spam"]'` or `pies:=[1,2,3]` (note the quotes)                                 |
 | File upload fields `field@/dir/file`, `field@file;type=mime` | Only available with `--form`, `-f` and `--multipart`. For example `screenshot@~/Pictures/img.png`, or `'cv@cv.txt;type=text/markdown'`. With `--form`, the presence of a file field results in a `--multipart` request |
 
 Note that the structured data fields aren’t the only way to specify request data:
@@ -411,10 +417,10 @@ Host: pie.dev
 
 If your command includes some data [request items](#request-items), they are serialized as a JSON object by default. HTTPie also automatically sets the following headers, both of which can be overwritten:
 
-| Header         | Value                         |
+|         Header | Value                         |
 | -------------: | ----------------------------- |
 | `Content-Type` | `application/json`            |
-| `Accept`       | `application/json, */*;q=0.5` |
+|       `Accept` | `application/json, */*;q=0.5` |
 
 ### Explicit JSON
 
@@ -717,9 +723,9 @@ the [sessions](#sessions) feature.
 
 The currently supported authentication schemes are Basic and Digest (see [auth plugins](#auth-plugins) for more). There are two flags that control authentication:
 
-| Flag              | Arguments                                                                                                                                                                                                                                                                                                                                 |
+|              Flag | Arguments                                                                                                                                                                                                                                                                                                                                 |
 | ----------------: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--auth, -a`      | Pass a `username:password` pair as the argument. Or, if you only specify a username (`-a username`), you’ll be prompted for the password before the request is sent. To send an empty password, pass `username:`. The `username:password@hostname` URL syntax is supported as well (but credentials passed via `-a` have higher priority) |
+|      `--auth, -a` | Pass a `username:password` pair as the argument. Or, if you only specify a username (`-a username`), you’ll be prompted for the password before the request is sent. To send an empty password, pass `username:`. The `username:password@hostname` URL syntax is supported as well (but credentials passed via `-a` have higher priority) |
 | `--auth-type, -A` | Specify the auth mechanism. Possible values are `basic`, `digest`, or the name of any [auth plugins](#auth-plugins) you have installed. The default value is `basic` so it can often be omitted                                                                                                                                           |
 
 ### Basic auth
@@ -927,13 +933,13 @@ By default, HTTPie only outputs the final response and the whole response
 message is printed (headers as well as the body). You can control what should
 be printed via several options:
 
-| Option          | What is printed                                                                                    |
+|          Option | What is printed                                                                                    |
 | --------------: | -------------------------------------------------------------------------------------------------- |
 | `--headers, -h` | Only the response headers are printed                                                              |
-| `--body, -b`    | Only the response body is printed                                                                  |
+|    `--body, -b` | Only the response body is printed                                                                  |
 | `--verbose, -v` | Print the whole HTTP exchange (request and response). This option also enables `--all` (see below) |
-| `--print, -p`   | Selects parts of the HTTP exchange                                                                 |
-| `--quiet, -q`   | Don't print anything to `stdout` and `stderr`                                                      |
+|   `--print, -p` | Selects parts of the HTTP exchange                                                                 |
+|   `--quiet, -q` | Don't print anything to `stdout` and `stderr`                                                      |
 
 ### What parts of the HTTP exchange should be printed
 
@@ -942,10 +948,10 @@ It accepts a string of characters each of which represents a specific part of th
 
 | Character | Stands for       |
 | --------: | ---------------- |
-| `H`       | request headers  |
-| `B`       | request body     |
-| `h`       | response headers |
-| `b`       | response body    |
+|       `H` | request headers  |
+|       `B` | request body     |
+|       `h` | response headers |
+|       `b` | response body    |
 
 Print request and response headers:
 
@@ -1162,13 +1168,13 @@ Syntax highlighting is applied to HTTP headers and bodies (where it makes sense)
 You can choose your preferred color scheme via the `--style` option if you don’t like the default one.
 There are dozens of styles available, here are just a few notable ones:
 
-| Style     | Description                                                                                                                         |
+|     Style | Description                                                                                                                         |
 | --------: | ----------------------------------------------------------------------------------------------------------------------------------- |
-| `auto`    | Follows your terminal ANSI color styles. This is the default style used by HTTPie                                                   |
+|    `auto` | Follows your terminal ANSI color styles. This is the default style used by HTTPie                                                   |
 | `default` | Default styles of the underlying Pygments library. Not actually used by default by HTTPie. You can enable it with `--style=default` |
 | `monokai` | A popular color scheme. Enable with `--style=monokai`                                                                               |
-| `fruity`  | A bold, colorful scheme. Enable with `--style=fruity`                                                                               |
-| …         | See `$ http --help` for all the possible `--style` values                                                                           |
+|  `fruity` | A bold, colorful scheme. Enable with `--style=fruity`                                                                               |
+|         … | See `$ http --help` for all the possible `--style` values                                                                           |
 
 Also, the following formatting is applied:
 
@@ -1178,12 +1184,12 @@ Also, the following formatting is applied:
 
 Use one of these options to control output processing:
 
-| Option            | Description                                                   |
+|            Option | Description                                                   |
 | ----------------: | ------------------------------------------------------------- |
-| `--pretty=all`    | Apply both colors and formatting. Default for terminal output |
+|    `--pretty=all` | Apply both colors and formatting. Default for terminal output |
 | `--pretty=colors` | Apply colors                                                  |
 | `--pretty=format` | Apply formatting                                              |
-| `--pretty=none`   | Disables output processing. Default for redirected output     |
+|   `--pretty=none` | Disables output processing. Default for redirected output     |
 
 You can further control the applied formatting via the more granular [format options](#format-options).
 
@@ -1192,14 +1198,14 @@ You can further control the applied formatting via the more granular [format opt
 The `--format-options=opt1:value,opt2:value` option allows you to control how the output should be formatted
 when formatting is applied. The following options are available:
 
-| Option           | Default value | Shortcuts                |
+|           Option | Default value | Shortcuts                |
 | ---------------: | :-----------: | ------------------------ |
-| `headers.sort`   | `true`        | `--sorted`, `--unsorted` |
-| `json.format`    | `true`        | N/A                      |
-| `json.indent`    | `4`           | N/A                      |
-| `json.sort_keys` | `true`        | `--sorted`, `--unsorted` |
-| `xml.format`     | `true`        | N/A                      |
-| `xml.indent`     | `2`           | N/A                      |
+|   `headers.sort` |    `true`     | `--sorted`, `--unsorted` |
+|    `json.format` |    `true`     | N/A                      |
+|    `json.indent` |      `4`      | N/A                      |
+| `json.sort_keys` |    `true`     | `--sorted`, `--unsorted` |
+|     `xml.format` |    `true`     | N/A                      |
+|     `xml.indent` |      `2`      | N/A                      |
 
 For example, this is how you would disable the default header and JSON key
 sorting, and specify a custom JSON indent size:
