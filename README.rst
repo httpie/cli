@@ -644,7 +644,7 @@ In such cases, it’s better to pass the full raw JSON data as a `raw request bo
 
 .. code-block:: bash
 
-    $ echo '{"hello": "world"}' | http POST pie.dev/post
+    $ echo -n '{"hello": "world"}' | http POST pie.dev/post
 
 .. code-block:: bash
 
@@ -1409,7 +1409,7 @@ You can use ``echo`` for simple data:
 
 .. code-block:: bash
 
-    $ echo '{"name": "John"}' | http PATCH pie.dev/patch X-API-Token:123
+    $ echo -n '{"name": "John"}' | http PATCH pie.dev/patch X-API-Token:123
 
 
 You can also use a Bash *here string*:
@@ -1455,7 +1455,7 @@ on the command line:
 
 .. code-block:: bash
 
-    $ echo 'data' | http POST example.org more=data   # This is invalid
+    $ echo -n 'data' | http POST example.org more=data   # This is invalid
 
 
 To prevent HTTPie from reading ``stdin`` data you can use the
