@@ -128,9 +128,8 @@ system package manager, for example:
 Windows, etc.
 -------------
 
-A universal installation method (that works on Windows, Mac OS X, Linux, …,
+A universal installation method (that works on Windows, macOS, Linux, …,
 and always provides the latest version) is to use `pip`_:
-
 
 .. code-block:: bash
 
@@ -147,7 +146,7 @@ Windows users can also install HTTPie with `Chocolatey <https://chocolatey.org>`
 
 .. code-block:: bash
 
-    $ choco install httpie
+    $ choco upgrade httpie
 
 
 Python version
