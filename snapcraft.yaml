@@ -1,0 +1,108 @@
+name: httpie
+title: HTTPie
+summary: Modern, user-friendly command-line HTTP client for the API era
+description: |
+  HTTPie *aitch-tee-tee-pie* is a user-friendly command-line HTTP client
+  for the API era.
+  It comes with JSON support, syntax highlighting, persistent sessions,
+  wget-like downloads, plugins, and more.
+
+  The project's goal is to make CLI interaction with web services as
+  human-friendly as possible. HTTPie is designed for testing, debugging,
+  and generally interacting with APIs & HTTP servers.
+  The http & https commands allow for creating and sending arbitrary HTTP
+  requests. They use simple and natural syntax and provide formatted and
+  colorized output.
+
+  Main features:
+    - Built-in JSON support
+    - Colorized and formatted terminal output
+    - Sensible defaults for the API era
+    - Persistent sessions
+    - Forms and file uploads
+    - HTTPS, proxies, and authentication support
+    - Support for arbitrary request data and headers
+    - Wget-like downloads
+    - Extensions API
+    - Expressive and intuitive syntax
+    - Linux, macOS, and Windows support
+    - All that & more in 2 simple commands: http + https
+
+  Links
+    - Documentation: https://httpie.io/docs
+    - Try in browser: https://httpie.io/run
+    - GitHub: https://github.com/httpie/httpie
+    - Twitter: https://twitter.com/httpie
+    - Discord: https://httpie.io/chat
+license: BSD-3-Clause-LBNL
+
+# Automatically change the current version based on the source code
+adopt-info: httpie
+
+# https://snapcraft.io/docs/snapcraft-top-level-metadata#heading--icon
+# icon:
+
+base: core20
+confinement: strict
+grade: stable
+
+parts:
+  httpie:
+    source: .
+    plugin: python
+
+    # Guess the current version from sources
+    override-pull: |
+      snapcraftctl pull
+      snapcraftctl set-version $(grep '__version__' httpie/__init__.py | cut -d"'" -f2)
+
+    override-build: |
+      snapcraftctl build
+
+      echo "Adding HTTPie plugins ..."
+      python -m pip install httpie-unixsocket
+      python -m pip install httpie-snapdsocket
+
+      echo "Removing no more needed modules ..."
+      python -m pip uninstall -y pip wheel
+
+    override-prime: |
+      snapcraftctl prime
+
+      echo "Removing useless files ..."
+      packages=$SNAPCRAFT_PRIME/lib/python3.8/site-packages
+      rm -rfv $packages/_distutils_hack
+      rm -rfv $packages/pkg_resources/tests
+      rm -rfv $packages/requests_unixsocket/test*
+      rm -rfv $packages/setuptools
+
+      echo "Compiling pyc files ..."
+      python -m compileall -f $packages
+
+      echo "Copying extra files ..."
+      cp $SNAPCRAFT_PART_SRC/extras/httpie-completion.bash $SNAPCRAFT_PRIME/bin/
+
+plugs:
+  dot-config-httpie:
+    interface: personal-files
+    write:
+      - $HOME/.config/httpie
+
+apps:
+  http:
+    command: bin/http
+    plugs: &plugs
+      - dot-config-httpie
+      - home
+      - network
+      - removable-media
+    completer: bin/httpie-completion.bash
+    environment:
+      LC_ALL: C.UTF-8
+
+  https:
+    command: bin/https
+    plugs: *plugs
+    completer: bin/httpie-completion.bash
+    environment:
+      LC_ALL: C.UTF-8
