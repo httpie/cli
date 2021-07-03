@@ -23,6 +23,7 @@ dev_require = [
     'pytest-cov',
     'twine',
     'wheel',
+    'flask',
 ]
 install_requires = [
     'requests[socks]>=2.22.0',

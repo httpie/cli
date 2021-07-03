@@ -1,6 +1,8 @@
 from typing import Iterable, Optional
 from urllib.parse import urlsplit
 
+from httpie.utils import split_cookies
+
 
 class HTTPMessage:
     """Abstract class for HTTP messages."""
@@ -68,7 +70,14 @@ class HTTPResponse(HTTPMessage):
         status_line = f'HTTP/{version} {original.status_code} {original.reason}'
         headers = [status_line]
         headers.extend(
-            ': '.join(header) for header in original.headers.items())
+            ': '.join(header)
+            for header in original.headers.items()
+            if header[0] != "Set-Cookie"
+        )
+        headers.extend(
+            f'Set-Cookie: {cookie}'
+            for cookie in split_cookies(original.headers.get('Set-Cookie'))
+        )
         return '\r\n'.join(headers)
 
     @property

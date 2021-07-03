@@ -88,6 +88,19 @@ def get_content_type(filename):
         return content_type
 
 
+def split_cookies(cookies):
+    """
+    When Requests stores cookies in ``response.headers['Set-Cookie']``
+    it concatenates all of them through ``, ``
+
+    This function splits cookies apart being careful to not to
+    split on ``, `` which may be part of cookie value.
+    """
+    if not cookies:
+        return []
+    return RE_COOKIE_SPLIT.split(cookies)
+
+
 def get_expired_cookies(
     cookies: str,
     now: float = None
@@ -99,7 +112,7 @@ def get_expired_cookies(
         return expires is not None and expires <= now
 
     attr_sets: List[Tuple[str, str]] = parse_ns_headers(
-        RE_COOKIE_SPLIT.split(cookies)
+        split_cookies(cookies)
     )
 
     cookies = [
