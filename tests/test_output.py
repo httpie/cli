@@ -1,12 +1,10 @@
 import argparse
 from pathlib import Path
+from unittest import mock
 
-import mock
 import json
 import os
-import tempfile
 import io
-from tempfile import gettempdir
 from urllib.request import urlopen
 
 import pytest
@@ -19,21 +17,20 @@ from httpie.cli.argtypes import (
 from httpie.cli.definition import parser
 from httpie.output.formatters.colors import get_lexer
 from httpie.status import ExitStatus
-from utils import COLOR, CRLF, HTTP_OK, MockEnvironment, http
+from .utils import COLOR, CRLF, HTTP_OK, MockEnvironment, http
 
 
 @pytest.mark.parametrize('stdout_isatty', [True, False])
-def test_output_option(httpbin, stdout_isatty):
-    output_filename = os.path.join(gettempdir(), test_output_option.__name__)
+def test_output_option(tmp_path, httpbin, stdout_isatty):
+    output_filename = tmp_path / 'test_output_option'
     url = httpbin + '/robots.txt'
 
-    r = http('--output', output_filename, url,
+    r = http('--output', str(output_filename), url,
              env=MockEnvironment(stdout_isatty=stdout_isatty))
     assert r == ''
 
     expected_body = urlopen(url).read().decode()
-    with open(output_filename, 'r') as f:
-        actual_body = f.read()
+    actual_body = output_filename.read_text()
 
     assert actual_body == expected_body
 
@@ -103,35 +100,34 @@ class TestQuietFlag:
         assert r.stderr == ''
 
     @pytest.mark.parametrize('with_download', [True, False])
-    def test_quiet_with_output_redirection(self, httpbin, with_download):
+    def test_quiet_with_output_redirection(self, tmp_path, httpbin, with_download):
         url = httpbin + '/robots.txt'
         output_path = Path('output.txt')
         env = MockEnvironment()
         orig_cwd = os.getcwd()
         output = requests.get(url).text
         extra_args = ['--download'] if with_download else []
-        with tempfile.TemporaryDirectory() as tmp_dirname:
-            os.chdir(tmp_dirname)
-            try:
-                assert os.listdir('.') == []
-                r = http(
-                    '--quiet',
-                    '--output', str(output_path),
-                    *extra_args,
-                    url,
-                    env=env
-                )
-                assert os.listdir('.') == [str(output_path)]
-                assert r == ''
-                assert r.stderr == ''
-                assert env.stderr is env.devnull
-                if with_download:
-                    assert env.stdout is env.devnull
-                else:
-                    assert env.stdout is not env.devnull  # --output swaps stdout.
-                assert output_path.read_text() == output
-            finally:
-                os.chdir(orig_cwd)
+        os.chdir(tmp_path)
+        try:
+            assert os.listdir('.') == []
+            r = http(
+                '--quiet',
+                '--output', str(output_path),
+                *extra_args,
+                url,
+                env=env
+            )
+            assert os.listdir('.') == [str(output_path)]
+            assert r == ''
+            assert r.stderr == ''
+            assert env.stderr is env.devnull
+            if with_download:
+                assert env.stdout is env.devnull
+            else:
+                assert env.stdout is not env.devnull  # --output swaps stdout.
+            assert output_path.read_text() == output
+        finally:
+            os.chdir(orig_cwd)
 
 
 class TestVerboseFlag:
@@ -140,6 +136,12 @@ class TestVerboseFlag:
                  'GET', httpbin.url + '/get', 'test-header:__test__')
         assert HTTP_OK in r
         assert r.count('__test__') == 2
+
+    def test_verbose_raw(self, httpbin):
+        r = http('--verbose', '--raw', 'foo bar',
+                 'POST', httpbin.url + '/post',)
+        assert HTTP_OK in r
+        assert 'foo bar' in r
 
     def test_verbose_form(self, httpbin):
         # https://github.com/httpie/httpie/issues/53
@@ -255,7 +257,7 @@ class TestLineEndings:
                 break
             assert header.endswith(CRLF), repr(header)
         else:
-            assert 0, 'CRLF between headers and body not found in %r' % msg
+            assert 0, f'CRLF between headers and body not found in {msg!r}'
         body = ''.join(lines)
         assert CRLF not in body
         return body
@@ -263,7 +265,7 @@ class TestLineEndings:
     def test_CRLF_headers_only(self, httpbin):
         r = http('--headers', 'GET', httpbin.url + '/get')
         body = self._validate_crlf(r)
-        assert not body, 'Garbage after headers: %r' % r
+        assert not body, f'Garbage after headers: {r!r}'
 
     def test_CRLF_ugly_response(self, httpbin):
         r = http('--pretty=none', 'GET', httpbin.url + '/get')

@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from utils import TESTS_ROOT
+from .utils import TESTS_ROOT
 
 
 SOURCE_DIRECTORIES = [
@@ -19,7 +19,11 @@ SOURCE_DIRECTORIES = [
 def has_recommonmark():
     try:
         # noinspection PyUnresolvedReferences,PyPackageRequirements
+<<<<<<< HEAD
         import recommonmark
+=======
+        import docutils  # noqa
+>>>>>>> b7300c1096796dce127152016dbc138145bf1001
         return True
     except ImportError:
         return False
@@ -36,7 +40,11 @@ def md_filenames():
         os.chdir(cwd)
 
 
+<<<<<<< HEAD
 filenames = list(sorted(md_filenames()))
+=======
+filenames = sorted(rst_filenames())
+>>>>>>> b7300c1096796dce127152016dbc138145bf1001
 assert filenames
 
 

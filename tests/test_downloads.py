@@ -1,17 +1,17 @@
 import os
 import tempfile
 import time
+from unittest import mock
 from urllib.request import urlopen
 
 import pytest
-import mock
 from requests.structures import CaseInsensitiveDict
 
 from httpie.downloads import (
     parse_content_range, filename_from_content_disposition, filename_from_url,
     get_unique_filename, ContentRangeError, Downloader,
 )
-from utils import http, MockEnvironment
+from .utils import http, MockEnvironment
 
 
 class Response:

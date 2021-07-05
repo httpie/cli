@@ -6,7 +6,6 @@
 
 ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 VERSION=$(shell grep __version__ httpie/__init__.py)
-REQUIREMENTS=requirements-dev.txt
 H1="\n\n\033[0;32m\#\#\# "
 H1END=" \#\#\# \033[0m\n"
 
@@ -28,7 +27,7 @@ all: uninstall-httpie install test
 
 install: venv
 	@echo $(H1)Installing dev requirements$(H1END)
-	$(VENV_PIP) install --upgrade -r $(REQUIREMENTS)
+	$(VENV_PIP) install --upgrade --editable '.[dev]'
 
 	@echo $(H1)Installing HTTPie$(H1END)
 	$(VENV_PIP) install --upgrade --editable .
@@ -78,7 +77,7 @@ venv:
 
 test:
 	@echo $(H1)Running tests$(HEADER_EXTRA)$(H1END)
-	$(VENV_BIN)/py.test $(COV) ./httpie $(COV) ./tests --doctest-modules --verbose ./httpie ./tests
+	$(VENV_BIN)/python -m pytest $(COV) ./httpie $(COV) ./tests --doctest-modules --verbose ./httpie ./tests
 	@echo
 
 
@@ -88,7 +87,7 @@ test-cover: test
 
 
 # test-all is meant to test everything — even this Makefile
-test-all: clean install test test-dist pycodestyle
+test-all: clean install test test-dist codestyle
 	@echo
 
 
@@ -116,10 +115,15 @@ test-bdist-wheel: clean venv
 twine-check:
 	twine check dist/*
 
-pycodestyle:
-	@echo $(H1)Running pycodestyle$(H1END)
-	@[ -f $(VENV_BIN)/pycodestyle ] || $(VENV_PIP) install pycodestyle
-	$(VENV_BIN)/pycodestyle httpie/ tests/ extras/ *.py
+
+# Kept for convenience, "make codestyle" is preferred though
+pycodestyle: codestyle
+
+
+codestyle:
+	@echo $(H1)Running flake8$(H1END)
+	@[ -f $(VENV_BIN)/flake8 ] || $(VENV_PIP) install --upgrade --editable '.[dev]'
+	$(VENV_BIN)/flake8 httpie/ tests/ extras/ *.py
 	@echo
 
 

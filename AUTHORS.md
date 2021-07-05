@@ -35,4 +35,5 @@
 - [Aleksandr Vinokurov](https://github.com/aleksandr-vin)
 - [Jeff Byrnes](https://github.com/jeffbyrnes)
 - [Denis Belavin](https://github.com/LuckyDenis)
+- [Mickaël Schoentgen](https://github.com/BoboTiG)
 - [Elena Lape](https://github.com/elenalape)

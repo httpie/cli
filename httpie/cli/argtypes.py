@@ -5,8 +5,8 @@ import sys
 from copy import deepcopy
 from typing import List, Optional, Union
 
-from httpie.cli.constants import DEFAULT_FORMAT_OPTIONS, SEPARATOR_CREDENTIALS
-from httpie.sessions import VALID_SESSION_NAME_PATTERN
+from .constants import DEFAULT_FORMAT_OPTIONS, SEPARATOR_CREDENTIALS
+from ..sessions import VALID_SESSION_NAME_PATTERN
 
 
 class KeyValueArg:
@@ -180,8 +180,8 @@ def readable_file_arg(filename):
     try:
         with open(filename, 'rb'):
             return filename
-    except IOError as ex:
-        raise argparse.ArgumentTypeError(f'{filename}: {ex.args[1]}')
+    except OSError as ex:
+        raise argparse.ArgumentTypeError(f'{ex.filename}: {ex.strerror}')
 
 
 def parse_format_options(s: str, defaults: Optional[dict]) -> dict:

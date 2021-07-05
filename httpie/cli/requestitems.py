@@ -1,21 +1,21 @@
 import os
 from typing import Callable, Dict, IO, List, Optional, Tuple, Union
 
-from httpie.cli.argtypes import KeyValueArg
-from httpie.cli.constants import (
+from .argtypes import KeyValueArg
+from .constants import (
     SEPARATORS_GROUP_MULTIPART, SEPARATOR_DATA_EMBED_FILE_CONTENTS,
     SEPARATOR_DATA_EMBED_RAW_JSON_FILE,
     SEPARATOR_DATA_RAW_JSON, SEPARATOR_DATA_STRING, SEPARATOR_FILE_UPLOAD,
     SEPARATOR_FILE_UPLOAD_TYPE, SEPARATOR_HEADER, SEPARATOR_HEADER_EMPTY,
     SEPARATOR_QUERY_PARAM,
 )
-from httpie.cli.dicts import (
+from .dicts import (
     MultipartRequestDataDict, RequestDataDict, RequestFilesDict,
     RequestHeadersDict, RequestJSONDataDict,
     RequestQueryParamsDict,
 )
-from httpie.cli.exceptions import ParseError
-from httpie.utils import (get_content_type, load_json_preserve_order)
+from .exceptions import ParseError
+from ..utils import get_content_type, load_json_preserve_order
 
 
 class RequestItems:
@@ -89,13 +89,11 @@ def process_header_arg(arg: KeyValueArg) -> Optional[str]:
 
 
 def process_empty_header_arg(arg: KeyValueArg) -> str:
-    if arg.value:
-        raise ParseError(
-            'Invalid item "%s" '
-            '(to specify an empty header use `Header;`)'
-            % arg.orig
-        )
-    return arg.value
+    if not arg.value:
+        return arg.value
+    raise ParseError(
+        f'Invalid item {arg.orig!r} (to specify an empty header use `Header;`)'
+    )
 
 
 def process_query_param_arg(arg: KeyValueArg) -> str:
@@ -108,8 +106,8 @@ def process_file_upload_arg(arg: KeyValueArg) -> Tuple[str, IO, str]:
     mime_type = parts[1] if len(parts) > 1 else None
     try:
         f = open(os.path.expanduser(filename), 'rb')
-    except IOError as e:
-        raise ParseError('"%s": %s' % (arg.orig, e))
+    except OSError as e:
+        raise ParseError(f'{arg.orig!r}: {e}')
     return (
         os.path.basename(filename),
         f,
@@ -141,13 +139,12 @@ def load_text_file(item: KeyValueArg) -> str:
     try:
         with open(os.path.expanduser(path), 'rb') as f:
             return f.read().decode()
-    except IOError as e:
-        raise ParseError('"%s": %s' % (item.orig, e))
+    except OSError as e:
+        raise ParseError(f'{item.orig!r}: {e}')
     except UnicodeDecodeError:
         raise ParseError(
-            '"%s": cannot embed the content of "%s",'
+            f'{item.orig!r}: cannot embed the content of {item.value!r},'
             ' not a UTF8 or ASCII-encoded text file'
-            % (item.orig, item.value)
         )
 
 
@@ -155,4 +152,4 @@ def load_json(arg: KeyValueArg, contents: str) -> JSONType:
     try:
         return load_json_preserve_order(contents)
     except ValueError as e:
-        raise ParseError('"%s": %s' % (arg.orig, e))
+        raise ParseError(f'{arg.orig!r}: {e}')

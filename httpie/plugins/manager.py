@@ -4,8 +4,8 @@ from typing import Dict, List, Type
 
 from pkg_resources import iter_entry_points
 
-from httpie.plugins import AuthPlugin, ConverterPlugin, FormatterPlugin
-from httpie.plugins.base import BasePlugin, TransportPlugin
+from . import AuthPlugin, ConverterPlugin, FormatterPlugin
+from .base import BasePlugin, TransportPlugin
 
 
 ENTRY_POINT_NAMES = [

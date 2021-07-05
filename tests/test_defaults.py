@@ -5,8 +5,8 @@ Tests for the provided defaults regarding HTTP method, and --json vs. --form.
 from io import BytesIO
 
 from httpie.client import JSON_ACCEPT
-from utils import MockEnvironment, http, HTTP_OK
-from fixtures import FILE_PATH
+from .utils import MockEnvironment, http, HTTP_OK
+from .fixtures import FILE_PATH
 
 
 def test_default_headers_case_insensitive(httpbin):
@@ -44,6 +44,11 @@ class TestImplicitHTTPMethod:
         r = http('--form', httpbin.url + '/post', 'foo=bar')
         assert HTTP_OK in r
         assert r.json['form'] == {'foo': 'bar'}
+
+    def test_implicit_POST_raw(self, httpbin):
+        r = http('--raw', 'foo bar', httpbin.url + '/post')
+        assert HTTP_OK in r
+        assert r.json['data'] == 'foo bar'
 
     def test_implicit_POST_stdin(self, httpbin):
         env = MockEnvironment(

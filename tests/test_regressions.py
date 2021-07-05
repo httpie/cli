@@ -2,8 +2,8 @@
 import pytest
 
 from httpie.compat import is_windows
-from tests.utils.matching import assert_output_matches, Expect
-from utils import HTTP_OK, MockEnvironment, http
+from .utils.matching import assert_output_matches, Expect
+from .utils import HTTP_OK, MockEnvironment, http
 
 
 def test_Host_header_overwrite(httpbin):
@@ -13,10 +13,10 @@ def test_Host_header_overwrite(httpbin):
     """
     host = 'pie.dev'
     url = httpbin.url + '/get'
-    r = http('--print=hH', url, 'host:{0}'.format(host))
+    r = http('--print=hH', url, f'host:{host}')
     assert HTTP_OK in r
     assert r.lower().count('host:') == 1
-    assert 'host: {0}'.format(host) in r
+    assert f'host: {host}' in r
 
 
 @pytest.mark.skipif(is_windows, reason='Unix-only')

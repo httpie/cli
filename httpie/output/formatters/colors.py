@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 import json
 from typing import Optional, Type
 
@@ -15,9 +13,9 @@ from pygments.lexers.special import TextLexer
 from pygments.lexers.text import HttpLexer as PygmentsHttpLexer
 from pygments.util import ClassNotFound
 
-from httpie.compat import is_windows
-from httpie.context import Environment
-from httpie.plugins import FormatterPlugin
+from ...compat import is_windows
+from ...context import Environment
+from ...plugins import FormatterPlugin
 
 
 AUTO_STYLE = 'auto'  # Follows terminal ANSI color styles
@@ -120,8 +118,8 @@ def get_lexer(
         subtype_name, subtype_suffix = subtype.split('+', 1)
         lexer_names.extend([subtype_name, subtype_suffix])
         mime_types.extend([
-            '%s/%s' % (type_, subtype_name),
-            '%s/%s' % (type_, subtype_suffix)
+            f'{type_}/{subtype_name}',
+            f'{type_}/{subtype_suffix}',
         ])
 
     # As a last resort, if no lexer feels responsible, and

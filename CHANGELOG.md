@@ -6,7 +6,10 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [2.5.0-dev](https://github.com/httpie/httpie/compare/2.4.0...master) (unreleased)
 
+- Added `--raw` to allow specifying the raw request body without extra processing as
+  an alternative to `stdin`. ([#534](https://github.com/httpie/httpie/issues/534))
 - Fixed `--continue --download` with a single byte to be downloaded left. ([#1032](https://github.com/httpie/httpie/issues/1032))
+- Fixed `--verbose` HTTP 307 redirects with streamed request body. ([#1088](https://github.com/httpie/httpie/issues/1088))
 
 
 ## [2.4.0](https://github.com/httpie/httpie/compare/2.3.0...2.4.0) (2021-02-06)

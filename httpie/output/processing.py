@@ -1,9 +1,9 @@
 import re
 from typing import Optional, List
 
-from httpie.plugins import ConverterPlugin
-from httpie.plugins.registry import plugin_manager
-from httpie.context import Environment
+from ..plugins import ConverterPlugin
+from ..plugins.registry import plugin_manager
+from ..context import Environment
 
 
 MIME_RE = re.compile(r'^[^/]+/[^/]+$')

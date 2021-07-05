@@ -4,40 +4,26 @@ import sys
 import codecs
 
 from setuptools import setup, find_packages
-from setuptools.command.test import test as TestCommand
 
 import httpie
 
-
-class PyTest(TestCommand):
-    """
-    Running `$ python setup.py test' simply installs minimal requirements
-    and runs the tests with no fancy stuff like parallel execution.
-
-    """
-
-    def finalize_options(self):
-        TestCommand.finalize_options(self)
-        self.test_args = [
-            '--doctest-modules',
-            '--verbose',
-            './httpie',
-            './tests',
-        ]
-        self.test_suite = True
-
-    def run_tests(self):
-        import pytest
-        sys.exit(pytest.main(self.test_args))
-
-
+# Note: keep requirements here to ease distributions packaging
 tests_require = [
-    'pytest-httpbin',
+    'docutils',
     'pytest',
-    'mock',
+    'pytest-httpbin>=0.0.6',
 ]
-
-
+dev_require = [
+    *tests_require,
+    'flake8',
+    'flake8-comprehensions',
+    'flake8-deprecated',
+    'flake8-mutable',
+    'flake8-tuple',
+    'pytest-cov',
+    'twine',
+    'wheel',
+]
 install_requires = [
     'requests[socks]>=2.22.0',
     'Pygments>=2.5.2',
@@ -60,6 +46,8 @@ if 'bdist_wheel' not in sys.argv:
 
 # bdist_wheel
 extras_require = {
+    'dev': dev_require,
+    'test': tests_require,
     # https://wheel.readthedocs.io/en/latest/#defining-conditional-dependencies
     ':sys_platform == "win32"': install_requires_win_only,
 }
@@ -81,7 +69,7 @@ setup(
     author=httpie.__author__,
     author_email='jakub@roztocil.co',
     license=httpie.__licence__,
-    packages=find_packages(),
+    packages=find_packages(include=['httpie', 'httpie.*']),
     entry_points={
         'console_scripts': [
             'http = httpie.__main__:main',
@@ -91,8 +79,6 @@ setup(
     python_requires='>=3.6',
     extras_require=extras_require,
     install_requires=install_requires,
-    tests_require=tests_require,
-    cmdclass={'test': PyTest},
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Programming Language :: Python',

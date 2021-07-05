@@ -1,10 +1,7 @@
-# coding=utf-8
 """
 Download mode implementation.
 
 """
-from __future__ import division
-
 import errno
 import mimetypes
 import os
@@ -18,9 +15,9 @@ from urllib.parse import urlsplit
 
 import requests
 
-from httpie.models import HTTPResponse
-from httpie.output.streams import RawStream
-from httpie.utils import humanize_bytes
+from .models import HTTPResponse
+from .output.streams import RawStream
+from .utils import humanize_bytes
 
 
 PARTIAL_CONTENT = 206
@@ -64,7 +61,7 @@ def parse_content_range(content_range: str, resumed_from: int) -> int:
 
     if not match:
         raise ContentRangeError(
-            'Invalid Content-Range format %r' % content_range)
+            f'Invalid Content-Range format {content_range!r}')
 
     content_range_dict = match.groupdict()
     first_byte_pos = int(content_range_dict['first_byte_pos'])
@@ -85,16 +82,15 @@ def parse_content_range(content_range: str, resumed_from: int) -> int:
         or (instance_length is not None
             and instance_length <= last_byte_pos)):
         raise ContentRangeError(
-            'Invalid Content-Range returned: %r' % content_range)
+            f'Invalid Content-Range returned: {content_range!r}')
 
     if (first_byte_pos != resumed_from
         or (instance_length is not None
             and last_byte_pos + 1 != instance_length)):
         # Not what we asked for.
         raise ContentRangeError(
-            'Unexpected Content-Range returned (%r)'
-            ' for the requested Range ("bytes=%d-")'
-            % (content_range, resumed_from)
+            f'Unexpected Content-Range returned ({content_range!r})'
+            f' for the requested Range ("bytes={resumed_from}-")'
         )
 
     return last_byte_pos + 1
@@ -112,7 +108,7 @@ def filename_from_content_disposition(
     """
     # attachment; filename=jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz
 
-    msg = Message('Content-Disposition: %s' % content_disposition)
+    msg = Message(f'Content-Disposition: {content_disposition}')
     filename = msg.get_filename()
     if filename:
         # Basic sanitation.
@@ -132,7 +128,7 @@ def filename_from_url(url: str, content_type: Optional[str]) -> str:
         else:
             ext = mimetypes.guess_extension(content_type)
 
-        if ext == '.htm':  # Python 3
+        if ext == '.htm':
             ext = '.html'
 
         if ext:
@@ -177,7 +173,7 @@ def trim_filename_if_needed(filename: str, directory='.', extra=0) -> str:
 def get_unique_filename(filename: str, exists=os.path.exists) -> str:
     attempt = 0
     while True:
-        suffix = '-' + str(attempt) if attempt > 0 else ''
+        suffix = f'-{attempt}' if attempt > 0 else ''
         try_filename = trim_filename_if_needed(filename, extra=len(suffix))
         try_filename += suffix
         if not exists(try_filename):
@@ -226,7 +222,7 @@ class Downloader:
             if bytes_have:
                 # Set ``Range`` header to resume the download
                 # TODO: Use "If-Range: mtime" to make sure it's fresh?
-                request_headers['Range'] = 'bytes=%d-' % bytes_have
+                request_headers['Range'] = f'bytes={bytes_have}-'
                 self._resumed_from = bytes_have
 
     def start(
@@ -271,7 +267,7 @@ class Downloader:
                 try:
                     self._output_file.seek(0)
                     self._output_file.truncate()
-                except IOError:
+                except OSError:
                     pass  # stdout
 
         self.status.started(
@@ -288,12 +284,8 @@ class Downloader:
         )
 
         self._progress_reporter.output.write(
-            'Downloading %sto "%s"\n' % (
-                (humanize_bytes(total_size) + ' '
-                 if total_size is not None
-                 else ''),
-                self._output_file.name
-            )
+            f'Downloading {humanize_bytes(total_size) + " " if total_size is not None else ""}'
+            f'to "{self._output_file.name}"\n'
         )
         self._progress_reporter.start()
 
@@ -442,7 +434,7 @@ class ProgressReporterThread(threading.Thread):
                     s = int((self.status.total_size - downloaded) / speed)
                     h, s = divmod(s, 60 * 60)
                     m, s = divmod(s, 60)
-                    eta = '{0}:{1:0>2}:{2:0>2}'.format(h, m, s)
+                    eta = f'{h}:{m:0>2}:{s:0>2}'
 
                 self._status_line = PROGRESS.format(
                     percentage=percentage,
@@ -455,11 +447,7 @@ class ProgressReporterThread(threading.Thread):
             self._prev_bytes = downloaded
 
         self.output.write(
-            CLEAR_LINE
-            + ' '
-            + SPINNER[self._spinner_pos]
-            + ' '
-            + self._status_line
+            f'{CLEAR_LINE} {SPINNER[self._spinner_pos]} {self._status_line}'
         )
         self.output.flush()
 

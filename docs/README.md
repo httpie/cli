@@ -80,7 +80,7 @@
     - [Named sessions](#named-sessions)
     - [Anonymous sessions](#anonymous-sessions)
     - [Readonly session](#readonly-session)
-    - [Cookie storage behaviour](#cookie-storage-behaviour)
+    - [Cookie storage behavior](#cookie-storage-behavior)
 - [Config](#config)
     - [Config file directory](#config-file-directory)
     - [Configurable options](#configurable-options)
@@ -114,42 +114,24 @@ You are invited to submit fixes and improvements to the the docs by editing [thi
 
 ## Main features
 
-* Expressive and intuitive syntax
-* Formatted and colorized terminal output
-* Built-in JSON support
-* Forms and file uploads
-* HTTPS, proxies, and authentication
-* Arbitrary request data
-* Custom headers
-* Persistent sessions
-* Wget-like downloads
-* Linux, macOS and Windows support
-* Plugins
-* Documentation
-* Test coverage
+- Expressive and intuitive syntax
+- Formatted and colorized terminal output
+- Built-in JSON support
+- Forms and file uploads
+- HTTPS, proxies, and authentication
+- Arbitrary request data
+- Custom headers
+- Persistent sessions
+- Wget-like downloads
+- Linux, macOS and Windows support
+- Plugins
+- Documentation
+- Test coverage
 
 
 ### Installation
 
-
-#### Linux, macOS and Windows
-
-A universal installation method (that works on Linux, macOS and Windows, and always provides the latest version) is to use [pip](https://pypi.org/project/pip/):
-
-
-```bash
-# Make sure we have an up-to-date version of pip and setuptools:
-$ python -m pip install --upgrade pip setuptools
-
-$ python -m pip install --upgrade httpie
-```
-
-
-(If `pip` installation fails for some reason, you can try
-`easy_install httpie` as a fallback.)
-
-
-#### macOS only
+#### macOS
 
 On macOS, HTTPie can also be installed via [Homebrew](https://brew.sh/):
 
@@ -165,6 +147,70 @@ $ port install httpie
 ```
 
 
+#### Linux
+
+Most Linux distributions provide a package that can be installed using the
+system package manager, for example:
+
+```bash
+# Debian, Ubuntu, etc.
+$ apt install httpie
+```
+
+
+```bash
+# Fedora
+$ dnf install httpie
+```
+
+
+```bash
+# CentOS, RHEL, ...
+$ yum install httpie
+```
+
+
+```bash
+# Gentoo
+$ emerge httpie
+```
+
+
+```bash
+# Arch Linux
+$ pacman -S httpie
+```
+
+
+```bash
+# Solus
+$ eopkg install httpie
+```
+
+
+#### Windows, etc.
+
+A universal installation method (that works on Linux, macOS and Windows, and always provides the latest version) is to use [pip](https://pypi.org/project/pip/):
+
+
+```bash
+# Make sure we have an up-to-date version of pip and setuptools:
+$ python -m pip install --upgrade pip setuptools
+
+$ python -m pip install --upgrade httpie
+```
+
+
+(If `pip` installation fails for some reason, you can try
+`easy_install httpie` as a fallback.)
+
+Windows users can also install HTTPie with [Chocolatey](https://chocolatey.org):
+
+```bash
+$ choco upgrade httpie
+```
+
+
 #### Python version
 
 Python version 3.6 or greater is required.
@@ -172,7 +218,8 @@ Python version 3.6 or greater is required.
 
 #### Unstable version
 
-You can also install the latest unreleased development version directly from the `master` branch on GitHub.  It is a work-in-progress of a future stable release so the experience might be not as smooth.
+You can also install the latest unreleased development version directly from the `master` branch on GitHub.
+It is a work-in-progress of a future stable release so the experience might be not as smooth.
 
 [![Build](https://img.shields.io/github/workflow/status/httpie/httpie/Build?color=%2373DC8C&label=Build&logo=github)](https://github.com/httpie/httpie/actions)
 
@@ -196,7 +243,7 @@ Verify that now you have the [current development version identifier](https://gi
 
 ```bash
 $ http --version
-# 2.0.0-dev
+# 2.5.0-dev
 ```
 
 
@@ -417,7 +464,7 @@ $ http-unix %2Fvar%2Frun%2Fdocker.sock/info
 
 #### `--path-as-is`
 
-The standard behaviour of HTTP clients is to normalize the path portion of URLs by squashing dot segments as a typically filesystem would:
+The standard behavior of HTTP clients is to normalize the path portion of URLs by squashing dot segments as a typically filesystem would:
 
 ```bash
 $ http -v example.org/./../../etc/password
@@ -465,7 +512,7 @@ You can use `\` to escape characters that shouldn’t be used as separators (or 
 
 Often it is necessary to quote the values, e.g. `foo='bar baz'`.
 
-If any of the field names or headers starts with a minus (e.g., `-fieldname`), you need to place all such items after the special token `--` to prevent confusion with `--arguments`:
+If any of the field names or headers starts with a minus (e.g. `-fieldname`), you need to place all such items after the special token `--` to prevent confusion with `--arguments`:
 
 ```bash
 $ http pie.dev/post  --  -name-starting-with-dash=foo -Unusual-Header:bar
@@ -1076,7 +1123,7 @@ Note: these cipher strings do not change the negotiated version of SSL or TLS, t
 To see the default cipher string, run `http --help` and see the `--ciphers` section under SSL.
 
 
-### Output options
+## Output options
 
 By default, HTTPie only outputs the final response and the whole response
 message is printed (headers as well as the body). You can control what should
@@ -1193,6 +1240,14 @@ Therefore, bandwidth and time isn’t wasted downloading the body which you don�
 The response headers are downloaded always, even if they are not part of the output
 
 
+## Raw request body
+
+In addition to crafting structured [JSON](#json) and [forms](#forms) requests with the [request items](#request-items) syntax, you can provide a raw request body that will be sent without further processing.
+These two approaches for specifying request data (i.e., structured and raw) cannot be combined.
+
+There’re three methods for passing raw request data: piping via `stdin`,
+`--raw='data'`, and `@/file/path`.
+
 ### Redirected Input
 
 The universal method for passing request data is through redirected `stdin`
@@ -1200,7 +1255,7 @@ The universal method for passing request data is through redirected `stdin`
 
 By default, `stdin` data is buffered and then with no further processing used as the request body.
 If you provide `Content-Length`, then the request body is streamed without buffering.
-You can also use `--chunked` to enable streaming via [chunked transfer encoding](#chunked-transfer-encoding).
+You may also use `--chunked` to enable streaming via [chunked transfer encoding](#chunked-transfer-encoding).
 
 There are multiple useful ways to use piping:
 
@@ -1274,12 +1329,27 @@ $ echo 'data' | http POST example.org more=data   # This is invalid
 To prevent HTTPie from reading `stdin` data you can use the `--ignore-stdin` option.
 
 
+### Request data via `--raw`
+
+In a situation when piping data via `stdin` is not convenient (for example,
+when generating API docs examples), you can specify the raw request body via
+the `--raw` option.
+
+```bash
+$ http --raw 'Hello, world!' pie.dev/post
+```
+
+
+```bash
+$ http --raw '{"name": "John"}' pie.dev/post
+```
+
+
 ### Request data from a filename
 
 An alternative to redirected `stdin` is specifying a filename (as `@/path/to/file`) whose content is used as if it came from `stdin`.
 
-It has the advantage that the `Content-Type` header is automatically set to the appropriate value based on the
-filename extension.
+It has the advantage that the `Content-Type` header is automatically set to the appropriate value based on the filename extension.
 For example, the following request sends the verbatim contents of that XML file with `Content-Type: application/xml`:
 
 ```bash
@@ -1321,7 +1391,7 @@ HTTPie does several things by default in order to make its terminal output easy 
 
 Syntax highlighting is applied to HTTP headers and bodies (where it makes sense).
 You can choose your preferred color scheme via the `--style` option if you don’t like the default one.
-There are dozens of styles available, here are just a few special or notable ones:
+There are dozens of styles available, here are just a few notable ones:
 
 | Style      | Description |
 |------------|-------------|
@@ -1338,7 +1408,7 @@ Also, the following formatting is applied:
 - JSON data is indented, sorted by keys, and unicode escapes are converted
   to the characters they represent.
 
-One of these options can be used to control output processing:
+Use one of these options to control output processing:
 
 | Option            | Description |
 |-------------------|-------------|
@@ -1637,7 +1707,7 @@ $ http --session-read-only=./ro-session.json pie.dev/headers Custom-Header:new-v
 ```
 
 
-### Cookie Storage Behaviour
+### Cookie Storage Behavior
 
 **TL;DR:** Cookie storage priority: Server response > Command line request > Session file
 
@@ -1739,7 +1809,8 @@ $ cat ~/.config/httpie/config.json
 ```
 
 
-Technically, it is possible to include any HTTPie options in there. However, it is not recommended to modify the default behavior in a way that would break your compatibility with the wider world as that may become confusing.
+Technically, it is possible to include any HTTPie options in there.
+However, it is not recommended to modify the default behavior in a way that would break your compatibility with the wider world as that may become confusing.
 
 
 ### Un-setting previously specified options

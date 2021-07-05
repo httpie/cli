@@ -3,8 +3,8 @@ Here we test our output parsing and matching implementation, not HTTPie itself.
 
 """
 from httpie.output.writer import MESSAGE_SEPARATOR
-from tests.utils import CRLF
-from tests.utils.matching import assert_output_does_not_match, assert_output_matches, Expect
+from ...utils import CRLF
+from . import assert_output_does_not_match, assert_output_matches, Expect
 
 
 def test_assert_output_matches_headers_incomplete():
@@ -15,7 +15,7 @@ def test_assert_output_matches_headers_unterminated():
     assert_output_does_not_match(
         (
             f'HTTP/1.1{CRLF}'
-            f'AAA:BBB'
+            'AAA:BBB'
             f'{CRLF}'
         ),
         [Expect.RESPONSE_HEADERS],
@@ -69,19 +69,19 @@ def test_assert_output_matches_body_and_separator():
 
 
 def test_assert_output_matches_body_r():
-    assert_output_matches(f'AAA\r', [Expect.BODY])
+    assert_output_matches('AAA\r', [Expect.BODY])
 
 
 def test_assert_output_matches_body_n():
-    assert_output_matches(f'AAA\n', [Expect.BODY])
+    assert_output_matches('AAA\n', [Expect.BODY])
 
 
 def test_assert_output_matches_body_r_body():
-    assert_output_matches(f'AAA\rBBB', [Expect.BODY])
+    assert_output_matches('AAA\rBBB', [Expect.BODY])
 
 
 def test_assert_output_matches_body_n_body():
-    assert_output_matches(f'AAA\nBBB', [Expect.BODY])
+    assert_output_matches('AAA\nBBB', [Expect.BODY])
 
 
 def test_assert_output_matches_headers_and_body():
@@ -90,7 +90,7 @@ def test_assert_output_matches_headers_and_body():
             f'HTTP/1.1{CRLF}'
             f'AAA:BBB{CRLF}'
             f'{CRLF}'
-            f'CCC'
+            'CCC'
         ),
         [Expect.RESPONSE_HEADERS, Expect.BODY]
     )
@@ -121,7 +121,7 @@ def test_assert_output_matches_multiple_messages():
             f'EEE:FFF{CRLF}'
             f'{CRLF}'
 
-            f'GGG'
+            'GGG'
             f'{MESSAGE_SEPARATOR}'
         ), [
             Expect.REQUEST_HEADERS,

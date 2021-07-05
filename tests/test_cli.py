@@ -6,7 +6,7 @@ import pytest
 from requests.exceptions import InvalidSchema
 
 import httpie.cli.argparser
-from fixtures import (
+from .fixtures import (
     FILE_CONTENT, FILE_PATH, FILE_PATH_ARG, JSON_FILE_CONTENT,
     JSON_FILE_PATH_ARG,
 )
@@ -15,7 +15,7 @@ from httpie.cli import constants
 from httpie.cli.definition import parser
 from httpie.cli.argtypes import KeyValueArg, KeyValueArgType
 from httpie.cli.requestitems import RequestItems
-from utils import HTTP_OK, MockEnvironment, StdinBytesIO, http
+from .utils import HTTP_OK, MockEnvironment, StdinBytesIO, http
 
 
 class TestItemParsing:
@@ -36,7 +36,7 @@ class TestItemParsing:
             self.key_value_arg(r'baz\=bar=foo'),
 
             # files
-            self.key_value_arg(r'bar\@baz@%s' % FILE_PATH_ARG),
+            self.key_value_arg(fr'bar\@baz@{FILE_PATH_ARG}'),
         ])
         # `requests.structures.CaseInsensitiveDict` => `dict`
         headers = dict(items.headers._store.values())
@@ -148,16 +148,16 @@ class TestQuerystring:
         path = '/get?a=1&b=2'
         url = httpbin.url + path
         assert HTTP_OK in r
-        assert 'GET %s HTTP/1.1' % path in r
-        assert '"url": "%s"' % url in r
+        assert f'GET {path} HTTP/1.1' in r
+        assert f'"url": "{url}"' in r
 
     def test_query_string_params_items(self, httpbin):
         r = http('--print=Hhb', 'GET', httpbin.url + '/get', 'a==1')
         path = '/get?a=1'
         url = httpbin.url + path
         assert HTTP_OK in r
-        assert 'GET %s HTTP/1.1' % path in r
-        assert '"url": "%s"' % url in r
+        assert f'GET {path} HTTP/1.1' in r
+        assert f'"url": "{url}"' in r
 
     def test_query_string_params_in_url_and_items_with_duplicates(self,
                                                                   httpbin):
@@ -166,8 +166,8 @@ class TestQuerystring:
         path = '/get?a=1&a=1&a=1&a=1'
         url = httpbin.url + path
         assert HTTP_OK in r
-        assert 'GET %s HTTP/1.1' % path in r
-        assert '"url": "%s"' % url in r
+        assert f'GET {path} HTTP/1.1' in r
+        assert f'"url": "{url}"' in r
 
 
 class TestLocalhostShorthand:
@@ -347,9 +347,9 @@ class TestSchemes:
             http('bah', '--default=scheme=foo+bar-BAZ.123')
 
     def test_default_scheme_option(self, httpbin_secure):
-        url = '{0}:{1}'.format(httpbin_secure.host, httpbin_secure.port)
+        url = f'{httpbin_secure.host}:{httpbin_secure.port}'
         assert HTTP_OK in http(url, '--default-scheme=https')
 
     def test_scheme_when_invoked_as_https(self, httpbin_secure):
-        url = '{0}:{1}'.format(httpbin_secure.host, httpbin_secure.port)
+        url = f'{httpbin_secure.host}:{httpbin_secure.port}'
         assert HTTP_OK in http(url, program_name='https')
