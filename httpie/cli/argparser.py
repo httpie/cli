@@ -9,23 +9,23 @@ from urllib.parse import urlsplit
 
 from requests.utils import get_netrc_auth
 
-from httpie.cli.argtypes import (
+from .argtypes import (
     AuthCredentials, KeyValueArgType, PARSED_DEFAULT_FORMAT_OPTIONS,
     parse_auth,
     parse_format_options,
 )
-from httpie.cli.constants import (
+from .constants import (
     HTTP_GET, HTTP_POST, OUTPUT_OPTIONS, OUTPUT_OPTIONS_DEFAULT,
     OUTPUT_OPTIONS_DEFAULT_OFFLINE, OUTPUT_OPTIONS_DEFAULT_STDOUT_REDIRECTED,
     OUT_RESP_BODY, PRETTY_MAP, PRETTY_STDOUT_TTY_ONLY, RequestType,
     SEPARATOR_CREDENTIALS,
     SEPARATOR_GROUP_ALL_ITEMS, SEPARATOR_GROUP_DATA_ITEMS, URL_SCHEME_RE,
 )
-from httpie.cli.exceptions import ParseError
-from httpie.cli.requestitems import RequestItems
-from httpie.context import Environment
-from httpie.plugins.registry import plugin_manager
-from httpie.utils import ExplicitNullAuth, get_content_type
+from .exceptions import ParseError
+from .requestitems import RequestItems
+from ..context import Environment
+from ..plugins.registry import plugin_manager
+from ..utils import ExplicitNullAuth, get_content_type
 
 
 class HTTPieHelpFormatter(RawDescriptionHelpFormatter):
@@ -64,6 +64,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
         self.env = None
         self.args = None
         self.has_stdin_data = False
+        self.has_input_data = False
 
     # noinspection PyMethodOverriding
     def parse_args(
@@ -81,6 +82,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
             and not self.args.ignore_stdin
             and not self.env.stdin_isatty
         )
+        self.has_input_data = self.has_stdin_data or self.args.raw is not None
         # Arguments processing and environment setup.
         self._apply_no_options(no_options)
         self._process_request_type()
@@ -91,10 +93,13 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
         self._process_format_options()
         self._guess_method()
         self._parse_items()
-        if self.has_stdin_data:
-            self._body_from_file(self.env.stdin)
         self._process_url()
         self._process_auth()
+
+        if self.args.raw is not None:
+            self._body_from_input(self.args.raw)
+        elif self.has_stdin_data:
+            self._body_from_file(self.env.stdin)
 
         if self.args.compress:
             # TODO: allow --compress with --chunked / --multipart
@@ -171,7 +176,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
             self.args.output_file.seek(0)
             try:
                 self.args.output_file.truncate()
-            except IOError as e:
+            except OSError as e:
                 if e.errno == errno.EINVAL:
                     # E.g. /dev/null on Linux.
                     pass
@@ -279,21 +284,34 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
                 invalid.append(option)
 
         if invalid:
-            msg = 'unrecognized arguments: %s'
-            self.error(msg % ' '.join(invalid))
+            self.error(f'unrecognized arguments: {" ".join(invalid)}')
 
     def _body_from_file(self, fd):
-        """There can only be one source of request data.
+        """Read the data from a file-like object.
 
         Bytes are always read.
 
         """
-        if self.args.data or self.args.files:
-            self.error('Request body (from stdin or a file) and request '
+        self._ensure_one_data_source(self.args.data, self.args.files)
+        self.args.data = getattr(fd, 'buffer', fd)
+
+    def _body_from_input(self, data):
+        """Read the data from the CLI.
+
+        """
+        self._ensure_one_data_source(self.has_stdin_data, self.args.data,
+                                     self.args.files)
+        self.args.data = data.encode('utf-8')
+
+    def _ensure_one_data_source(self, *other_sources):
+        """There can only be one source of input request data.
+
+        """
+        if any(other_sources):
+            self.error('Request body (from stdin, --raw or a file) and request '
                        'data (key=value) cannot be mixed. Pass '
                        '--ignore-stdin to let key/value take priority. '
                        'See https://httpie.org/doc#scripting for details.')
-        self.args.data = getattr(fd, 'buffer', fd)
 
     def _guess_method(self):
         """Set `args.method` if not specified to either POST or GET
@@ -303,7 +321,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
         if self.args.method is None:
             # Invoked as `http URL'.
             assert not self.args.request_items
-            if self.has_stdin_data:
+            if self.has_input_data:
                 self.args.method = HTTP_POST
             else:
                 self.args.method = HTTP_GET
@@ -327,7 +345,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
                 self.args.url = self.args.method
                 # Infer the method
                 has_data = (
-                    self.has_stdin_data
+                    self.has_input_data
                     or any(
                         item.sep in SEPARATOR_GROUP_DATA_ITEMS
                         for item in self.args.request_items)
@@ -362,8 +380,8 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
             for key, file in self.args.files.items():
                 if key != '':
                     self.error(
-                        'Invalid file fields (perhaps you meant --form?): %s'
-                        % ','.join(self.args.files.keys()))
+                        'Invalid file fields (perhaps you meant --form?):'
+                        f' {",".join(self.args.files.keys())}')
                 if request_file is not None:
                     self.error("Can't read request from multiple files")
                 request_file = file
@@ -388,10 +406,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
         def check_options(value, option):
             unknown = set(value) - OUTPUT_OPTIONS
             if unknown:
-                self.error('Unknown output options: {0}={1}'.format(
-                    option,
-                    ','.join(unknown)
-                ))
+                self.error(f'Unknown output options: {option}={",".join(unknown)}')
 
         if self.args.verbose:
             self.args.all = True

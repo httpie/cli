@@ -1,4 +1,3 @@
-# coding=utf-8
 """Utilities for HTTPie test suite."""
 import re
 import shlex
@@ -19,7 +18,8 @@ from httpie.core import main
 # pytest-httpbin currently does not support chunked requests:
 # <https://github.com/kevin1024/pytest-httpbin/issues/33>
 # <https://github.com/kevin1024/pytest-httpbin/issues/28>
-HTTPBIN_WITH_CHUNKED_SUPPORT = 'http://pie.dev'
+HTTPBIN_WITH_CHUNKED_SUPPORT_DOMAIN = 'pie.dev'
+HTTPBIN_WITH_CHUNKED_SUPPORT = 'http://' + HTTPBIN_WITH_CHUNKED_SUPPORT_DOMAIN
 
 
 TESTS_ROOT = Path(__file__).parent.parent
@@ -41,7 +41,7 @@ def mk_config_dir() -> Path:
 
 def add_auth(url, auth):
     proto, rest = url.split('://', 1)
-    return proto + '://' + auth + '@' + rest
+    return f'{proto}://{auth}@{rest}'
 
 
 class StdinBytesIO(BytesIO):
@@ -52,7 +52,7 @@ class StdinBytesIO(BytesIO):
 class MockEnvironment(Environment):
     """Environment subclass with reasonable defaults for testing."""
     colors = 0  # For easier debugging
-    stdin_isatty = True,
+    stdin_isatty = True
     stdout_isatty = True
     is_windows = False
 
@@ -215,8 +215,8 @@ def http(
         >>> r = http('-a', 'user:pw', httpbin.url + '/basic-auth/user/pw')
         >>> type(r) == StrCLIResponse
         True
-        >>> r.exit_status
-        <ExitStatus.SUCCESS: 0>
+        >>> r.exit_status is ExitStatus.SUCCESS
+        True
         >>> r.stderr
         ''
         >>> 'HTTP/1.1 200 OK' in r

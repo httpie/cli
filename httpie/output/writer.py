@@ -4,10 +4,10 @@ from typing import IO, TextIO, Tuple, Type, Union
 
 import requests
 
-from httpie.context import Environment
-from httpie.models import HTTPRequest, HTTPResponse
-from httpie.output.processing import Conversion, Formatting
-from httpie.output.streams import (
+from ..context import Environment
+from ..models import HTTPRequest, HTTPResponse
+from .processing import Conversion, Formatting
+from .streams import (
     BaseStream, BufferedPrettyStream, EncodedStream, PrettyStream, RawStream,
 )
 
@@ -42,7 +42,7 @@ def write_message(
             write_stream_with_colors_win_py3(**write_stream_kwargs)
         else:
             write_stream(**write_stream_kwargs)
-    except IOError as e:
+    except OSError as e:
         show_traceback = args.debug or args.traceback
         if not show_traceback and e.errno == errno.EPIPE:
             # Ignore broken pipes unless --traceback.
@@ -58,7 +58,7 @@ def write_stream(
 ):
     """Write the output stream."""
     try:
-        # Writing bytes so we use the buffer interface (Python 3).
+        # Writing bytes so we use the buffer interface.
         buf = outfile.buffer
     except AttributeError:
         buf = outfile
@@ -76,7 +76,7 @@ def write_stream_with_colors_win_py3(
 ):
     """Like `write`, but colorized chunks are written as text
     directly to `outfile` to ensure it gets processed by colorama.
-    Applies only to Windows with Python 3 and colorized terminal output.
+    Applies only to Windows and colorized terminal output.
 
     """
     color = b'\x1b['

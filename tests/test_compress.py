@@ -11,9 +11,9 @@ our zlib-encoded request data.
 import base64
 import zlib
 
-from fixtures import FILE_PATH, FILE_CONTENT
+from .fixtures import FILE_PATH, FILE_CONTENT
 from httpie.status import ExitStatus
-from utils import StdinBytesIO, http, HTTP_OK, MockEnvironment
+from .utils import StdinBytesIO, http, HTTP_OK, MockEnvironment
 
 
 def assert_decompressed_equal(base64_compressed_data, expected_str):
@@ -90,6 +90,19 @@ def test_compress_form(httpbin_both):
     assert r.json['headers']['Content-Encoding'] == 'deflate'
     assert r.json['data'] == ""
     assert '"foo": "bar"' not in r
+
+
+def test_compress_raw(httpbin_both):
+    r = http(
+        '--raw',
+        FILE_CONTENT,
+        '--compress',
+        '--compress',
+        httpbin_both + '/post',
+    )
+    assert HTTP_OK in r
+    assert r.json['headers']['Content-Encoding'] == 'deflate'
+    assert_decompressed_equal(r.json['data'], FILE_CONTENT.strip())
 
 
 def test_compress_stdin(httpbin_both):

@@ -1,9 +1,9 @@
-from mock import mock
+from unittest import mock
 
 from httpie.cli.constants import SEPARATOR_CREDENTIALS
 from httpie.plugins import AuthPlugin
 from httpie.plugins.registry import plugin_manager
-from utils import http, HTTP_OK
+from .utils import http, HTTP_OK
 
 
 # TODO: run all these tests in session mode as well
@@ -13,7 +13,7 @@ PASSWORD = 'password'
 # Basic auth encoded `USERNAME` and `PASSWORD`
 # noinspection SpellCheckingInspection
 BASIC_AUTH_HEADER_VALUE = 'Basic dXNlcjpwYXNzd29yZA=='
-BASIC_AUTH_URL = '/basic-auth/{0}/{1}'.format(USERNAME, PASSWORD)
+BASIC_AUTH_URL = f'/basic-auth/{USERNAME}/{PASSWORD}'
 AUTH_OK = {'authenticated': True, 'user': USERNAME}
 
 

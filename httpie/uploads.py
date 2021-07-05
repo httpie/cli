@@ -6,7 +6,7 @@ import requests
 from requests.utils import super_len
 from requests_toolbelt import MultipartEncoder
 
-from httpie.cli.dicts import MultipartRequestDataDict, RequestDataDict
+from .cli.dicts import MultipartRequestDataDict, RequestDataDict
 
 
 class ChunkedUploadStream:

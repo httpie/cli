@@ -1,10 +1,10 @@
-import mock
+from unittest import mock
 from pytest import raises
 from requests import Request
 from requests.exceptions import ConnectionError
 
 from httpie.status import ExitStatus
-from utils import HTTP_OK, http
+from .utils import HTTP_OK, http
 
 
 @mock.patch('httpie.core.program')

@@ -20,7 +20,7 @@ $ http --debug <COMPLETE ARGUMENT LIST THAT TRIGGERS THE ERROR>
 ## 2. Contributing Code and Docs
 
 Before working on a new feature or a bug, please browse [existing issues](https://github.com/httpie/httpie/issues)
-to see whether it has previously  been discussed.
+to see whether it has previously been discussed.
 
 If your change alters HTTPie’s behaviour or interface, it's a good idea to
 discuss it before you start working on it.
@@ -118,8 +118,7 @@ and that `make pycodestyle` passes.
 
 Please add tests for any new features and bug fixes.
 
-When you open a pull request, [GitHub Actions](https://github.com/httpie/httpie/actions) will automatically run HTTPie’s [test suite](https://github.com/httpie/httpie/tree/master/tests) against your code, 
-so please make sure all checks pass.
+When you open a Pull Request, [GitHub Actions](https://github.com/httpie/httpie/actions) will automatically run HTTPie’s [test suite](https://github.com/httpie/httpie/tree/master/tests) against your code, so please make sure all checks pass.
 
 
 #### Running tests locally
@@ -135,7 +134,7 @@ make test
 make test-cover
 
 # Test PEP8 compliance
-make pycodestyle
+make codestyle
 
 # Run extended tests — for code as well as .md files syntax, packaging, etc.
 make test-all

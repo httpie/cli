@@ -139,3 +139,8 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Packit
+/httpie.spec
+/httpie-*.rpm
+/httpie-*.tar.gz
