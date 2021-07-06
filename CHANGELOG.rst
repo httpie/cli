@@ -13,6 +13,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
   an alternative to ``stdin``. (`#534`_)
 * Fixed ``--continue --download`` with a single byte to be downloaded left. (`#1032`_)
 * Fixed ``--verbose`` HTTP 307 redirects with streamed request body. (`#1088`_)
+* Add internal support for file-like object responses to improve adapter plugin support. (`#1094`_)
 
 
 `2.4.0`_ (2021-02-06)

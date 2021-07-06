@@ -104,9 +104,8 @@ def collect_messages(
                     **send_kwargs,
                 )
 
-            # noinspection PyProtectedMember
             expired_cookies += get_expired_cookies(
-                headers=response.raw._original_response.msg._headers
+                response.headers.get('Set-Cookie', '')
             )
 
             response_count += 1

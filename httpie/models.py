@@ -1,6 +1,8 @@
 from typing import Iterable, Optional
 from urllib.parse import urlsplit
 
+from .utils import split_cookies
+
 
 class HTTPMessage:
     """Abstract class for HTTP messages."""
@@ -52,21 +54,30 @@ class HTTPResponse(HTTPMessage):
     # noinspection PyProtectedMember
     @property
     def headers(self):
-        original = self._orig.raw._original_response
-
+        try:
+            raw_version = self._orig.raw._original_response.version
+        except AttributeError:
+            # Assume HTTP/1.1
+            raw_version = 11
         version = {
             9: '0.9',
             10: '1.0',
             11: '1.1',
             20: '2',
-        }[original.version]
+        }[raw_version]
 
-        status_line = f'HTTP/{version} {original.status} {original.reason}'
+        original = self._orig
+        status_line = f'HTTP/{version} {original.status_code} {original.reason}'
         headers = [status_line]
-        # `original.msg` is a `http.client.HTTPMessage`
-        # `_headers` is a 2-tuple
         headers.extend(
-            f'{header[0]}: {header[1]}' for header in original.msg._headers)
+            ': '.join(header)
+            for header in original.headers.items()
+            if header[0] != 'Set-Cookie'
+        )
+        headers.extend(
+            f'Set-Cookie: {cookie}'
+            for cookie in split_cookies(original.headers.get('Set-Cookie'))
+        )
         return '\r\n'.join(headers)
 
     @property
