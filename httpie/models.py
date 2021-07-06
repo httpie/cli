@@ -72,7 +72,7 @@ class HTTPResponse(HTTPMessage):
         headers.extend(
             ': '.join(header)
             for header in original.headers.items()
-            if header[0] != "Set-Cookie"
+            if header[0] != 'Set-Cookie'
         )
         headers.extend(
             f'Set-Cookie: {cookie}'
