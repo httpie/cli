@@ -32,9 +32,9 @@ class TestIntegration:
                 # Craft multiple cookies
                 cookie = SimpleCookie()
                 cookie['hello'] = 'world'
-                cookie['hello']['path'] = '/'
+                cookie['hello']['path'] = self.path
                 cookie['oatmeal_raisin'] = 'is the best'
-                cookie['oatmeal_raisin']['path'] = '/'
+                cookie['oatmeal_raisin']['path'] = self.path
 
                 # Send HTTP headers
                 self.send_response(200)
