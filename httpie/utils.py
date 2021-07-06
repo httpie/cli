@@ -90,8 +90,8 @@ def get_content_type(filename):
 
 def split_cookies(cookies):
     """
-    When Requests stores cookies in ``response.headers['Set-Cookie']``
-    it concatenates all of them through ``, ``
+    When ``requests`` stores cookies in ``response.headers['Set-Cookie']``
+    it concatenates all of them through ``, ``.
 
     This function splits cookies apart being careful to not to
     split on ``, `` which may be part of cookie value.
