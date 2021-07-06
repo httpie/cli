@@ -1,7 +1,7 @@
 from typing import Iterable, Optional
 from urllib.parse import urlsplit
 
-from httpie.utils import split_cookies
+from .utils import split_cookies
 
 
 class HTTPMessage:
