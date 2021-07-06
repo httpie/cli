@@ -25,8 +25,8 @@ def available_port():
 
 
 def test_cookie_parser():
-    port = available_port()
-    server = Process(target=app.run, kwargs={'port': 8888})
+    port = 8080
+    server = Process(target=app.run, kwargs={'port': port})
     try:
         server.start()
         response = http(f'http://localhost:{port}/')
