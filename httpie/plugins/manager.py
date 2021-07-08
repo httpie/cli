@@ -1,8 +1,11 @@
+import os.path
+import site
+import sys
 from itertools import groupby
 from operator import attrgetter
 from typing import Dict, List, Type
 
-from pkg_resources import iter_entry_points
+from pkg_resources import iter_entry_points, working_set
 
 from . import AuthPlugin, ConverterPlugin, FormatterPlugin
 from .base import BasePlugin, TransportPlugin
@@ -13,6 +16,17 @@ ENTRY_POINT_NAMES = [
     'httpie.plugins.formatter.v1',
     'httpie.plugins.converter.v1',
     'httpie.plugins.transport.v1',
+]
+
+# TODO: Should be moved to a specific file when needed elsewhere.
+PY_VER = f'{sys.version_info.major}.{sys.version_info.minor}'
+
+EXTENDED_PLUGINS_SEARCH_AREA = [
+    site.getuserbase(),
+    site.getusersitepackages(),
+    # macOS specific
+    f'~/Library/Python/{PY_VER}/lib/python/site-packages',
+    f'/usr/local/lib/python{PY_VER}/site-packages',
 ]
 
 
@@ -28,7 +42,17 @@ class PluginManager(list):
     def filter(self, by_type=Type[BasePlugin]):
         return [plugin for plugin in self if issubclass(plugin, by_type)]
 
+    def extend_plugins_search_area(self):
+        """Extend locations where plugins will be looked for."""
+        for path in EXTENDED_PLUGINS_SEARCH_AREA:
+            path = os.path.expanduser(path)
+            if not os.path.isdir(path):
+                continue
+            site.addsitedir(path)
+            working_set.add_entry(path)
+
     def load_installed_plugins(self):
+        self.extend_plugins_search_area()
         for entry_point_name in ENTRY_POINT_NAMES:
             for entry_point in iter_entry_points(entry_point_name):
                 plugin = entry_point.load()

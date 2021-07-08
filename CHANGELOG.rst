@@ -13,6 +13,8 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
   an alternative to ``stdin``. (`#534`_)
 * Fixed ``--continue --download`` with a single byte to be downloaded left. (`#1032`_)
 * Fixed ``--verbose`` HTTP 307 redirects with streamed request body. (`#1088`_)
+* Extended plugins lookup paths. For instance on macOS, it now allows loading plugins
+  installed via ``pip`` while running HTTPie from Homebrew. (`#566`_)
 * Add internal support for file-like object responses to improve adapter plugin support. (`#1094`_)
 
 
