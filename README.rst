@@ -202,7 +202,7 @@ Hello World:
 
 .. code-block:: bash
 
-    $ https httpie.io/hello
+    $ http httpie.io/hello
 
 
 Synopsis:
