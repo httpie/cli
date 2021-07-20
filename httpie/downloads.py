@@ -451,9 +451,7 @@ class ProgressReporterThread(threading.Thread):
         )
         self.output.flush()
 
-        self._spinner_pos = (self._spinner_pos + 1
-                             if self._spinner_pos + 1 != len(SPINNER)
-                             else 0)
+        self._spinner_pos = (self._spinner_pos + 1) % len(SPINNER)
 
     def sum_up(self):
         actually_downloaded = (
