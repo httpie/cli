@@ -39,7 +39,7 @@ def write_message(
     }
     try:
         if env.is_windows and 'colors' in args.prettify:
-            write_stream_with_colors_win_py3(**write_stream_kwargs)
+            write_stream_with_colors_win(**write_stream_kwargs)
         else:
             write_stream(**write_stream_kwargs)
     except OSError as e:
@@ -69,7 +69,7 @@ def write_stream(
             outfile.flush()
 
 
-def write_stream_with_colors_win_py3(
+def write_stream_with_colors_win(
     stream: 'BaseStream',
     outfile: TextIO,
     flush: bool
