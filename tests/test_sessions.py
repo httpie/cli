@@ -189,7 +189,7 @@ class TestSession(SessionTestBase):
                   httpbin.url + '/get', env=self.env())
         assert HTTP_OK in r2
 
-        # FIXME: Authorization *sometimes* is not present on Python3
+        # FIXME: Authorization *sometimes* is not present
         assert (r2.json['headers']['Authorization']
                 == HTTPBasicAuth.make_header('test', UNICODE))
         # httpbin doesn't interpret utf8 headers

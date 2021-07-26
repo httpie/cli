@@ -119,10 +119,6 @@ class Environment:
             self._devnull = open(os.devnull, 'w+')
         return self._devnull
 
-    @devnull.setter
-    def devnull(self, value):
-        self._devnull = value
-
     def log_error(self, msg, level='error'):
         assert level in ['error', 'warning']
         self._orig_stderr.write(f'\n{self.program_name}: {level}: {msg}\n\n')

@@ -2,7 +2,6 @@
 Download mode implementation.
 
 """
-import errno
 import mimetypes
 import os
 import re
@@ -150,16 +149,8 @@ def trim_filename(filename: str, max_len: int) -> str:
 
 def get_filename_max_length(directory: str) -> int:
     max_len = 255
-    try:
-        pathconf = os.pathconf
-    except AttributeError:
-        pass  # non-posix
-    else:
-        try:
-            max_len = pathconf(directory, 'PC_NAME_MAX')
-        except OSError as e:
-            if e.errno != errno.EINVAL:
-                raise
+    if hasattr(os, 'pathconf') and 'PC_NAME_MAX' in os.pathconf_names:
+        max_len = os.pathconf(directory, 'PC_NAME_MAX')
     return max_len
 
 
