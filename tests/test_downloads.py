@@ -9,7 +9,7 @@ from requests.structures import CaseInsensitiveDict
 
 from httpie.downloads import (
     parse_content_range, filename_from_content_disposition, filename_from_url,
-    get_unique_filename, ContentRangeError, Downloader,
+    get_unique_filename, ContentRangeError, Downloader, PARTIAL_CONTENT
 )
 from .utils import http, MockEnvironment
 
@@ -120,7 +120,6 @@ class TestDownloadUtils:
 
 
 class TestDownloads:
-    # TODO: more tests
 
     def test_actual_download(self, httpbin_both, httpbin):
         robots_txt = '/robots.txt'
@@ -163,6 +162,35 @@ class TestDownloads:
             assert not downloader.interrupted
             downloader._progress_reporter.join()
 
+    def test_download_output_from_content_disposition(self, httpbin_both):
+        with tempfile.TemporaryDirectory() as tmp_dirname, open(os.devnull, 'w') as devnull:
+            orig_cwd = os.getcwd()
+            os.chdir(tmp_dirname)
+            try:
+                assert not os.path.isfile('filename.bin')
+                downloader = Downloader(progress_file=devnull)
+                downloader.start(
+                    final_response=Response(
+                        url=httpbin_both.url + '/',
+                        headers={
+                            'Content-Length': 5,
+                            'Content-Disposition': 'attachment; filename="filename.bin"',
+                        }
+                    ),
+                    initial_url='/'
+                )
+                downloader.chunk_downloaded(b'12345')
+                downloader.finish()
+                downloader.failed()  # Stop the reporter
+                assert not downloader.interrupted
+                downloader._progress_reporter.join()
+
+                # TODO: Auto-close the file in that case?
+                downloader._output_file.close()
+                assert os.path.isfile('filename.bin')
+            finally:
+                os.chdir(orig_cwd)
+
     def test_download_interrupted(self, httpbin_both):
         with open(os.devnull, 'w') as devnull:
             downloader = Downloader(output_file=devnull, progress_file=devnull)
@@ -177,6 +205,54 @@ class TestDownloads:
             downloader.finish()
             assert downloader.interrupted
             downloader._progress_reporter.join()
+
+    def test_download_resumed(self, httpbin_both):
+        with tempfile.TemporaryDirectory() as tmp_dirname:
+            file = os.path.join(tmp_dirname, 'file.bin')
+            with open(file, 'a'):
+                pass
+
+            with open(os.devnull, 'w') as devnull, open(file, 'a+b') as output_file:
+                # Start and interrupt the transfer after 3 bytes written
+                downloader = Downloader(output_file=output_file, progress_file=devnull)
+                downloader.start(
+                    final_response=Response(
+                        url=httpbin_both.url + '/',
+                        headers={'Content-Length': 5}
+                    ),
+                    initial_url='/'
+                )
+                downloader.chunk_downloaded(b'123')
+                downloader.finish()
+                downloader.failed()
+                assert downloader.interrupted
+                downloader._progress_reporter.join()
+
+            # Write bytes
+            with open(file, 'wb') as fh:
+                fh.write(b'123')
+
+            with open(os.devnull, 'w') as devnull, open(file, 'a+b') as output_file:
+                # Resume the transfer
+                downloader = Downloader(output_file=output_file, progress_file=devnull, resume=True)
+
+                # Ensure `pre_request()` is working as expected too
+                headers = {}
+                downloader.pre_request(headers)
+                assert headers['Accept-Encoding'] == 'identity'
+                assert headers['Range'] == 'bytes=3-'
+
+                downloader.start(
+                    final_response=Response(
+                        url=httpbin_both.url + '/',
+                        headers={'Content-Length': 5, 'Content-Range': 'bytes 3-4/5'},
+                        status_code=PARTIAL_CONTENT
+                    ),
+                    initial_url='/'
+                )
+                downloader.chunk_downloaded(b'45')
+                downloader.finish()
+                downloader._progress_reporter.join()
 
     def test_download_with_redirect_original_url_used_for_filename(self, httpbin):
         # Redirect from `/redirect/1` to `/get`.
