@@ -9,7 +9,7 @@ import re
 import sys
 import threading
 from mailbox import Message
-from time import sleep, time
+from time import sleep, monotonic
 from typing import IO, Optional, Tuple
 from urllib.parse import urlsplit
 
@@ -350,7 +350,7 @@ class DownloadStatus:
         assert self.time_started is None
         self.total_size = total_size
         self.downloaded = self.resumed_from = resumed_from
-        self.time_started = time()
+        self.time_started = monotonic()
 
     def chunk_downloaded(self, size):
         assert self.time_finished is None
@@ -363,7 +363,7 @@ class DownloadStatus:
     def finished(self):
         assert self.time_started is not None
         assert self.time_finished is None
-        self.time_finished = time()
+        self.time_finished = monotonic()
 
 
 class ProgressReporterThread(threading.Thread):
@@ -389,7 +389,7 @@ class ProgressReporterThread(threading.Thread):
         self._spinner_pos = 0
         self._status_line = ''
         self._prev_bytes = 0
-        self._prev_time = time()
+        self._prev_time = monotonic()
         self._should_stop = threading.Event()
 
     def stop(self):
@@ -406,16 +406,11 @@ class ProgressReporterThread(threading.Thread):
             sleep(self._tick)
 
     def report_speed(self):
-
-        now = time()
-
+        now = monotonic()
         if now - self._prev_time >= self._update_interval:
             downloaded = self.status.downloaded
-            try:
-                speed = ((downloaded - self._prev_bytes)
-                         / (now - self._prev_time))
-            except ZeroDivisionError:
-                speed = 0
+            speed = ((downloaded - self._prev_bytes)
+                     / (now - self._prev_time))
 
             if not self.status.total_size:
                 self._status_line = PROGRESS_NO_CONTENT_LENGTH.format(
@@ -423,10 +418,9 @@ class ProgressReporterThread(threading.Thread):
                     speed=humanize_bytes(speed),
                 )
             else:
-                try:
-                    percentage = downloaded / self.status.total_size * 100
-                except ZeroDivisionError:
-                    percentage = 0
+                percentage = (downloaded / self.status.total_size * 100
+                              if self.status.total_size
+                              else 0)
 
                 if not speed:
                     eta = '-:--:--'
@@ -457,16 +451,9 @@ class ProgressReporterThread(threading.Thread):
         actually_downloaded = (
             self.status.downloaded - self.status.resumed_from)
         time_taken = self.status.time_finished - self.status.time_started
+        speed = actually_downloaded / time_taken if time_taken else actually_downloaded
 
         self.output.write(CLEAR_LINE)
-
-        try:
-            speed = actually_downloaded / time_taken
-        except ZeroDivisionError:
-            # Either time is 0 (not all systems provide `time.time`
-            # with a better precision than 1 second), and/or nothing
-            # has been downloaded.
-            speed = actually_downloaded
 
         self.output.write(SUMMARY.format(
             downloaded=humanize_bytes(actually_downloaded),
