@@ -66,4 +66,4 @@ def test_rst_file_syntax(filename):
         shell=True,
     )
     err = p.communicate()[1]
-    assert p.returncode == 0, err.decode('utf8')
+    assert p.returncode == 0, err.decode('utf-8')

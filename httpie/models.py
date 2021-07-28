@@ -38,7 +38,7 @@ class HTTPMessage:
         """Return the message content type."""
         ct = self._orig.headers.get('Content-Type', '')
         if not isinstance(ct, str):
-            ct = ct.decode('utf8')
+            ct = ct.decode('utf-8')
         return ct
 
 
@@ -82,7 +82,7 @@ class HTTPResponse(HTTPMessage):
 
     @property
     def encoding(self):
-        return self._orig.encoding or 'utf8'
+        return self._orig.encoding or 'utf-8'
 
     @property
     def body(self):
@@ -125,12 +125,12 @@ class HTTPRequest(HTTPMessage):
 
     @property
     def encoding(self):
-        return 'utf8'
+        return 'utf-8'
 
     @property
     def body(self):
         body = self._orig.body
         if isinstance(body, str):
             # Happens with JSON/form request data parsed from the command line.
-            body = body.encode('utf8')
+            body = body.encode('utf-8')
         return body or b''

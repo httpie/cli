@@ -7,13 +7,13 @@ from .fixtures import UNICODE
 
 
 def test_unicode_headers(httpbin):
-    # httpbin doesn't interpret utf8 headers
+    # httpbin doesn't interpret UFT-8 headers
     r = http(httpbin.url + '/headers', f'Test:{UNICODE}')
     assert HTTP_OK in r
 
 
 def test_unicode_headers_verbose(httpbin):
-    # httpbin doesn't interpret utf8 headers
+    # httpbin doesn't interpret UTF-8 headers
     r = http('--verbose', httpbin.url + '/headers', f'Test:{UNICODE}')
     assert HTTP_OK in r
     assert UNICODE in r
@@ -96,14 +96,14 @@ def test_unicode_url(httpbin):
 
 def test_unicode_basic_auth(httpbin):
     # it doesn't really authenticate us because httpbin
-    # doesn't interpret the utf8-encoded auth
+    # doesn't interpret the UTF-8-encoded auth
     http('--verbose', '--auth', f'test:{UNICODE}',
          f'{httpbin.url}/basic-auth/test/{UNICODE}')
 
 
 def test_unicode_digest_auth(httpbin):
     # it doesn't really authenticate us because httpbin
-    # doesn't interpret the utf8-encoded auth
+    # doesn't interpret the UTF-8-encoded auth
     http('--auth-type=digest',
          '--auth', f'test:{UNICODE}',
          f'{httpbin.url}/digest-auth/auth/test/{UNICODE}')

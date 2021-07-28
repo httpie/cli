@@ -192,7 +192,7 @@ class TestSession(SessionTestBase):
         # FIXME: Authorization *sometimes* is not present
         assert (r2.json['headers']['Authorization']
                 == HTTPBasicAuth.make_header('test', UNICODE))
-        # httpbin doesn't interpret utf8 headers
+        # httpbin doesn't interpret UTF-8 headers
         assert UNICODE in r2
 
     def test_session_default_header_value_overwritten(self, httpbin):
