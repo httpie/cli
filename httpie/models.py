@@ -1,32 +1,33 @@
+from abc import ABCMeta, abstractmethod
 from typing import Iterable, Optional
 from urllib.parse import urlsplit
 
 from .utils import split_cookies
 
 
-class HTTPMessage:
+class HTTPMessage(metaclass=ABCMeta):
     """Abstract class for HTTP messages."""
 
     def __init__(self, orig):
         self._orig = orig
 
+    @abstractmethod
     def iter_body(self, chunk_size: int) -> Iterable[bytes]:
         """Return an iterator over the body."""
-        raise NotImplementedError()
 
+    @abstractmethod
     def iter_lines(self, chunk_size: int) -> Iterable[bytes]:
         """Return an iterator over the body yielding (`line`, `line_feed`)."""
-        raise NotImplementedError()
 
     @property
+    @abstractmethod
     def headers(self) -> str:
         """Return a `str` with the message's headers."""
-        raise NotImplementedError()
 
     @property
+    @abstractmethod
     def encoding(self) -> Optional[str]:
         """Return a `str` with the message's encoding, if known."""
-        raise NotImplementedError()
 
     @property
     def body(self) -> bytes:

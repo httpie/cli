@@ -1,3 +1,4 @@
+from abc import ABCMeta, abstractmethod
 from itertools import chain
 from typing import Callable, Iterable, Union
 
@@ -24,7 +25,7 @@ class BinarySuppressedError(DataSuppressedError):
     message = BINARY_SUPPRESSED_NOTICE
 
 
-class BaseStream:
+class BaseStream(metaclass=ABCMeta):
     """Base HTTP message output stream class."""
 
     def __init__(
@@ -50,9 +51,9 @@ class BaseStream:
         """Return the headers' bytes."""
         return self.msg.headers.encode('utf8')
 
+    @abstractmethod
     def iter_body(self) -> Iterable[bytes]:
         """Return an iterator over the message body."""
-        raise NotImplementedError()
 
     def __iter__(self) -> Iterable[bytes]:
         """Return an iterator over `self.msg`."""
