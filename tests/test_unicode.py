@@ -2,8 +2,16 @@
 Various unicode handling related tests.
 
 """
-from .utils import http, HTTP_OK
+import pytest
+import responses
+
+from httpie.cli.constants import PRETTY_MAP
+from httpie.constants import UTF8
+
+from .utils import http, HTTP_OK, URL_EXAMPLE
 from .fixtures import UNICODE
+
+ENCODINGS = [UTF8, 'windows-1250']
 
 
 def test_unicode_headers(httpbin):
@@ -109,3 +117,95 @@ def test_unicode_digest_auth(httpbin):
     http('--auth-type=digest',
          '--auth', f'test:{UNICODE}',
          f'{httpbin.url}/digest-auth/auth/test/{UNICODE}')
+
+
+@pytest.mark.parametrize('encoding', ENCODINGS)
+@responses.activate
+def test_GET_encoding_detection_from_content_type_header(encoding):
+    responses.add(responses.GET,
+                  URL_EXAMPLE,
+                  body='<?xml version="1.0"?>\n<c>Financiën</c>'.encode(encoding),
+                  content_type=f'text/xml; charset={encoding.upper()}')
+    r = http('GET', URL_EXAMPLE)
+    assert 'Financiën' in r
+
+
+@pytest.mark.parametrize('encoding', ENCODINGS)
+@responses.activate
+def test_GET_encoding_detection_from_content(encoding):
+    body = f'<?xml version="1.0" encoding="{encoding.upper()}"?>\n<c>Financiën</c>'
+    responses.add(responses.GET,
+                  URL_EXAMPLE,
+                  body=body.encode(encoding),
+                  content_type='text/xml')
+    r = http('GET', URL_EXAMPLE)
+    assert 'Financiën' in r
+
+
+@responses.activate
+def test_GET_encoding_provided_by_format_options_argument():
+    responses.add(responses.GET,
+                  URL_EXAMPLE,
+                  body='▒▒▒'.encode('johab'),
+                  content_type='text/plain')
+    r = http('--format-options', 'response.as:text/plain; charset=johab',
+             'GET', URL_EXAMPLE)
+    assert '▒▒▒' in r
+
+
+@responses.activate
+def test_GET_encoding_provided_by_charset_argument():
+    responses.add(responses.GET,
+                  URL_EXAMPLE,
+                  body='▒▒▒'.encode('johab'),
+                  content_type='text/plain')
+    r = http('--response-as', 'text/plain; charset=johab',
+             'GET', URL_EXAMPLE)
+    assert '▒▒▒' in r
+
+
+@pytest.mark.parametrize('encoding', ENCODINGS)
+@responses.activate
+def test_GET_encoding_provided_by_empty_charset_argument_should_use_content_detection(encoding):
+    body = f'<?xml version="1.0" encoding="{encoding.upper()}"?>\n<c>Financiën</c>'
+    responses.add(responses.GET,
+                  URL_EXAMPLE,
+                  body=body.encode(encoding),
+                  content_type='text/xml')
+    r = http('--response-as', 's', 'GET', URL_EXAMPLE)
+    assert 'Financiën' in r
+
+
+@pytest.mark.parametrize('encoding', ENCODINGS)
+@responses.activate
+def test_POST_encoding_detection_from_content_type_header(encoding):
+    responses.add(responses.POST,
+                  URL_EXAMPLE,
+                  body='Všichni lidé jsou si rovni.'.encode(encoding),
+                  content_type=f'text/plain; charset={encoding.upper()}')
+    r = http('--form', 'POST', URL_EXAMPLE)
+    assert 'Všichni lidé jsou si rovni.' in r
+
+
+@pytest.mark.parametrize('encoding', ENCODINGS)
+@responses.activate
+def test_POST_encoding_detection_from_content(encoding):
+    responses.add(responses.POST,
+                  URL_EXAMPLE,
+                  body='Všichni lidé jsou si rovni.'.encode(encoding),
+                  content_type='text/plain')
+    r = http('--form', 'POST', URL_EXAMPLE)
+    assert 'Všichni lidé jsou si rovni.' in r
+
+
+@pytest.mark.parametrize('encoding', ENCODINGS)
+@pytest.mark.parametrize('pretty', PRETTY_MAP.keys())
+@responses.activate
+def test_stream_encoding_detection_from_content_type_header(encoding, pretty):
+    responses.add(responses.GET,
+                  URL_EXAMPLE,
+                  body='<?xml version="1.0"?>\n<c>Financiën</c>'.encode(encoding),
+                  stream=True,
+                  content_type=f'text/xml; charset={encoding.upper()}')
+    r = http('--pretty=' + pretty, '--stream', 'GET', URL_EXAMPLE)
+    assert 'Financiën' in r

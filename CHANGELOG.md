@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - Added support for formatting & coloring of JSON bodies preceded by non-JSON data (e.g., an XXSI prefix). ([#1130](https://github.com/httpie/httpie/issues/1130))
 - Added `--format-options=response.as:CONTENT_TYPE` to allow overriding the response `Content-Type`. ([#1134](https://github.com/httpie/httpie/issues/1134))
 - Added `--response-as` shortcut for setting the response `Content-Type`-related `--format-options`. ([#1134](https://github.com/httpie/httpie/issues/1134))
+- Improved handling of responses without correct `Content-Type` charset. ([#1110](https://github.com/httpie/httpie/issues/1110))
 - Installed plugins are now listed in `--debug` output. ([#1165](https://github.com/httpie/httpie/issues/1165))
 - Fixed duplicate keys preservation of JSON data. ([#1163](https://github.com/httpie/httpie/issues/1163))
 
