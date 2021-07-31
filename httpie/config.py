@@ -5,6 +5,7 @@ from typing import Union
 
 from . import __version__
 from .compat import is_windows
+from .constants import UTF8
 
 
 ENV_XDG_CONFIG_HOME = 'XDG_CONFIG_HOME'
@@ -79,7 +80,7 @@ class BaseConfigDict(dict):
     def load(self):
         config_type = type(self).__name__.lower()
         try:
-            with self.path.open() as f:
+            with self.path.open(encoding=UTF8) as f:
                 try:
                     data = json.load(f)
                 except ValueError as e:
@@ -111,7 +112,7 @@ class BaseConfigDict(dict):
             ensure_ascii=True,
         )
         try:
-            self.path.write_text(json_string + '\n')
+            self.path.write_text(json_string + '\n', encoding=UTF8)
         except OSError:
             if not fail_silently:
                 raise

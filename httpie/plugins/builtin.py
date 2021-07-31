@@ -3,6 +3,7 @@ from base64 import b64encode
 import requests.auth
 
 from .base import AuthPlugin
+from ..constants import UTF8
 
 
 # noinspection PyAbstractClass
@@ -30,7 +31,7 @@ class HTTPBasicAuth(requests.auth.HTTPBasicAuth):
     @staticmethod
     def make_header(username: str, password: str) -> str:
         credentials = f'{username}:{password}'
-        token = b64encode(credentials.encode('utf-8')).strip().decode('latin1')
+        token = b64encode(credentials.encode(UTF8)).strip().decode('latin1')
         return f'Basic {token}'
 
 

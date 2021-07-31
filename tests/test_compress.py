@@ -12,6 +12,7 @@ import base64
 import zlib
 
 from .fixtures import FILE_PATH, FILE_CONTENT
+from httpie.constants import UTF8
 from httpie.status import ExitStatus
 from .utils import StdinBytesIO, http, HTTP_OK, MockEnvironment
 
@@ -20,7 +21,7 @@ def assert_decompressed_equal(base64_compressed_data, expected_str):
     compressed_data = base64.b64decode(
         base64_compressed_data.split(',', 1)[1])
     data = zlib.decompress(compressed_data)
-    actual_str = data.decode()
+    actual_str = data.decode(UTF8)
 
     # FIXME: contains a trailing linebreak with an uploaded file
     actual_str = actual_str.rstrip()

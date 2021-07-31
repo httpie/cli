@@ -1,3 +1,4 @@
+from httpie.constants import UTF8
 from io import BytesIO
 
 from requests.adapters import BaseAdapter
@@ -18,7 +19,7 @@ class FakeAdapter(BaseAdapter):
         response.status_code = 200
         response.reason = 'OK'
         response.headers = {
-            'Content-Type': 'text/html; charset=UTF-8',
+            'Content-Type': 'text/html; charset=' + UTF8,
         }
         response.encoding = get_encoding_from_headers(response.headers)
         response.raw = BytesIO(b'<!doctype html><html>Hello</html>')
@@ -40,6 +41,6 @@ def test_transport_from_requests_response(httpbin):
         r = http(f'{SCHEME}://example.com')
         assert HTTP_OK in r
         assert 'Hello' in r
-        assert 'Content-Type: text/html; charset=UTF-8' in r
+        assert 'Content-Type: text/html; charset=' + UTF8 in r
     finally:
         plugin_manager.unregister(FakeTransportPlugin)

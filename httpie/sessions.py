@@ -15,6 +15,7 @@ from requests.cookies import RequestsCookieJar, create_cookie
 
 from .cli.dicts import RequestHeadersDict
 from .config import BaseConfigDict, DEFAULT_CONFIG_DIR
+from .constants import UTF8
 from .plugins.registry import plugin_manager
 
 
@@ -78,7 +79,7 @@ class Session(BaseConfigDict):
                 continue  # Ignore explicitly unset headers
 
             if type(value) is not str:
-                value = value.decode('utf-8')
+                value = value.decode(UTF8)
 
             if name.lower() == 'user-agent' and value.startswith('HTTPie/'):
                 continue

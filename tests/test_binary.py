@@ -2,6 +2,7 @@
 import requests
 
 from .fixtures import BIN_FILE_PATH, BIN_FILE_CONTENT, BIN_FILE_PATH_ARG
+from httpie.constants import UTF8
 from httpie.output.streams import BINARY_SUPPRESSED_NOTICE
 from .utils import MockEnvironment, http
 
@@ -35,12 +36,12 @@ class TestBinaryResponseData:
 
     def test_binary_suppresses_when_terminal(self, httpbin):
         r = http('GET', httpbin + '/bytes/1024?seed=1')
-        assert BINARY_SUPPRESSED_NOTICE.decode() in r
+        assert BINARY_SUPPRESSED_NOTICE.decode(UTF8) in r
 
     def test_binary_suppresses_when_not_terminal_but_pretty(self, httpbin):
         env = MockEnvironment(stdin_isatty=True, stdout_isatty=False)
         r = http('--pretty=all', 'GET', httpbin + '/bytes/1024?seed=1', env=env)
-        assert BINARY_SUPPRESSED_NOTICE.decode() in r
+        assert BINARY_SUPPRESSED_NOTICE.decode(UTF8) in r
 
     def test_binary_included_and_correct_when_suitable(self, httpbin):
         env = MockEnvironment(stdin_isatty=True, stdout_isatty=False)

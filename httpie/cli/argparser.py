@@ -24,6 +24,7 @@ from .constants import (
 from .exceptions import ParseError
 from .requestitems import RequestItems
 from ..context import Environment
+from ..constants import UTF8
 from ..plugins.registry import plugin_manager
 from ..utils import ExplicitNullAuth, get_content_type
 
@@ -301,7 +302,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
         """
         self._ensure_one_data_source(self.has_stdin_data, self.args.data,
                                      self.args.files)
-        self.args.data = data.encode('utf-8')
+        self.args.data = data.encode(UTF8)
 
     def _ensure_one_data_source(self, *other_sources):
         """There can only be one source of input request data.

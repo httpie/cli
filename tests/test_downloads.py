@@ -7,6 +7,7 @@ from urllib.request import urlopen
 import pytest
 from requests.structures import CaseInsensitiveDict
 
+from httpie.constants import UTF8
 from httpie.downloads import (
     parse_content_range, filename_from_content_disposition, filename_from_url,
     get_unique_filename, ContentRangeError, Downloader, PARTIAL_CONTENT
@@ -66,7 +67,7 @@ class TestDownloadUtils:
         )
         assert 'foo.html' == filename_from_url(
             url='http://example.org/foo',
-            content_type='text/html; charset=UTF-8'
+            content_type='text/html; charset=' + UTF8
         )
         assert 'foo' == filename_from_url(
             url='http://example.org/foo',
@@ -123,7 +124,7 @@ class TestDownloads:
 
     def test_actual_download(self, httpbin_both, httpbin):
         robots_txt = '/robots.txt'
-        body = urlopen(httpbin + robots_txt).read().decode()
+        body = urlopen(httpbin + robots_txt).read().decode(UTF8)
         env = MockEnvironment(stdin_isatty=True, stdout_isatty=False)
         r = http('--download', httpbin_both.url + robots_txt, env=env)
         assert 'Downloading' in r.stderr

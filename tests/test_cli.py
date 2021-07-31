@@ -6,6 +6,7 @@ import pytest
 from requests.exceptions import InvalidSchema
 
 import httpie.cli.argparser
+from httpie.constants import UTF8
 from .fixtures import (
     FILE_CONTENT, FILE_PATH, FILE_PATH_ARG, JSON_FILE_CONTENT,
     JSON_FILE_PATH_ARG,
@@ -118,7 +119,7 @@ class TestItemParsing:
         # Parsed file fields
         assert 'file' in items.files
         assert (items.files['file'][1].read().strip().
-                decode('utf-8') == FILE_CONTENT)
+                decode(UTF8) == FILE_CONTENT)
 
     def test_multiple_file_fields_with_same_field_name(self):
         items = RequestItems.from_args([

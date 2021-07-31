@@ -5,6 +5,7 @@ from typing import IO, TextIO, Tuple, Type, Union
 import requests
 
 from ..context import Environment
+from ..constants import UTF8
 from ..models import HTTPRequest, HTTPResponse
 from .processing import Conversion, Formatting
 from .streams import (
@@ -13,7 +14,7 @@ from .streams import (
 
 
 MESSAGE_SEPARATOR = '\n\n'
-MESSAGE_SEPARATOR_BYTES = MESSAGE_SEPARATOR.encode()
+MESSAGE_SEPARATOR_BYTES = MESSAGE_SEPARATOR.encode(UTF8)
 
 
 def write_message(

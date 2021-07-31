@@ -5,6 +5,8 @@ from pathlib import Path
 
 import pytest
 
+from httpie.constants import UTF8
+
 from .utils import TESTS_ROOT
 
 
@@ -66,4 +68,4 @@ def test_rst_file_syntax(filename):
         shell=True,
     )
     err = p.communicate()[1]
-    assert p.returncode == 0, err.decode('utf-8')
+    assert p.returncode == 0, err.decode(UTF8)

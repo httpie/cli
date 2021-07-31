@@ -12,6 +12,7 @@ from typing import Optional, Union, List
 from httpie.status import ExitStatus
 from httpie.config import Config
 from httpie.context import Environment
+from httpie.constants import UTF8
 from httpie.core import main
 
 
@@ -281,14 +282,14 @@ def http(
         output = stdout.read()
         devnull_output = devnull.read()
         try:
-            output = output.decode('utf-8')
+            output = output.decode(UTF8)
         except UnicodeDecodeError:
             r = BytesCLIResponse(output)
         else:
             r = StrCLIResponse(output)
 
         try:
-            devnull_output = devnull_output.decode('utf-8')
+            devnull_output = devnull_output.decode(UTF8)
         except Exception:
             pass
 
