@@ -90,6 +90,8 @@ DEFAULT_FORMAT_OPTIONS = [
     'json.format:true',
     'json.indent:4',
     'json.sort_keys:true',
+    'xml.format:true',
+    'xml.indent:4',
 ]
 SORTED_FORMAT_OPTIONS = [
     'headers.sort:true',

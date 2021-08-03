@@ -1580,6 +1580,10 @@ The following options are available:
 +--------------------+----------+---------------+------------------------------+
 | ``json.sort_keys``            | ``true``      | ``--sorted``, ``--unsorted`` |
 +--------------------+----------+---------------+------------------------------+
+| ``xml.format``                | ``true``      | N/A                          |
++-------------------------------+---------------+------------------------------+
+| ``xml.indent``                | ``4``         | N/A                          |
++--------------------+----------+---------------+------------------------------+
 
 For example, this is how you would disable the default header and JSON key
 sorting, and specify a custom JSON indent size:

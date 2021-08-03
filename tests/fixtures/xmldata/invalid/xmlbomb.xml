@@ -1,0 +1,7 @@
+<!DOCTYPE xmlbomb [
+<!ENTITY a "1234567890" >
+<!ENTITY b "&a;&a;&a;&a;&a;&a;&a;&a;">
+<!ENTITY c "&b;&b;&b;&b;&b;&b;&b;&b;">
+<!ENTITY d "&c;&c;&c;&c;&c;&c;&c;&c;">
+]>
+<bomb>&c;</bomb>

@@ -1,0 +1,4 @@
+<!DOCTYPE external [
+<!ENTITY ee SYSTEM "http://www.w3schools.com/xml/note.xml">
+]>
+<root>&ee;</root>

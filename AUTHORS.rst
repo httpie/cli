@@ -40,5 +40,4 @@ Patches and ideas
 * `Jeff Byrnes <https://github.com/jeffbyrnes>`_
 * `Denis Belavin <https://github.com/LuckyDenis>`_
 * `Mickaël Schoentgen <https://github.com/BoboTiG>`_
-
-
+* `Rohit Sehgal <https://github.com/r0hi7>`_

@@ -17,6 +17,9 @@ FIXTURES_ROOT = Path(__file__).parent
 FILE_PATH = FIXTURES_ROOT / 'test.txt'
 JSON_FILE_PATH = FIXTURES_ROOT / 'test.json'
 BIN_FILE_PATH = FIXTURES_ROOT / 'test.bin'
+XML_FILES_PATH = FIXTURES_ROOT / 'xmldata'
+XML_FILES_VALID = list((XML_FILES_PATH / 'valid').glob('*_raw.xml'))
+XML_FILES_INVALID = list((XML_FILES_PATH / 'invalid').glob('*.xml'))
 
 FILE_PATH_ARG = patharg(FILE_PATH)
 BIN_FILE_PATH_ARG = patharg(BIN_FILE_PATH)

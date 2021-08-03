@@ -1,0 +1,5 @@
+<!DOCTYPE external [
+<!ENTITY ee SYSTEM "file:///PATH/TO/xmltestdata/simple.xml">
+]>
+<root>&ee;</root>
+
