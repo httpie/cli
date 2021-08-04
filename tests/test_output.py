@@ -207,7 +207,7 @@ class TestPrettyOptions:
 
     def test_force_pretty(self, httpbin):
         env = MockEnvironment(stdout_isatty=False, colors=256)
-        r = http('--pretty=all', 'GET', httpbin.url + '/get', env=env, )
+        r = http('--pretty=all', 'GET', httpbin.url + '/get', env=env)
         assert COLOR in r
 
     def test_force_ugly(self, httpbin):
