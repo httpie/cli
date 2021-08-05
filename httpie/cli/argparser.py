@@ -301,7 +301,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
         """
         self._ensure_one_data_source(self.has_stdin_data, self.args.data,
                                      self.args.files)
-        self.args.data = data.encode('utf-8')
+        self.args.data = data.encode()
 
     def _ensure_one_data_source(self, *other_sources):
         """There can only be one source of input request data.

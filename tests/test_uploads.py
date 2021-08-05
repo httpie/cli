@@ -247,10 +247,10 @@ class TestRequestBodyFromFilePath:
             self, httpbin):
         r = http('--verbose',
                  'POST', httpbin.url + '/post', '@' + FILE_PATH_ARG,
-                 'Content-Type:text/plain; charset=utf8')
+                 'Content-Type:text/plain; charset=UTF-8')
         assert HTTP_OK in r
         assert FILE_CONTENT in r
-        assert 'Content-Type: text/plain; charset=utf8' in r
+        assert 'Content-Type: text/plain; charset=UTF-8' in r
 
     def test_request_body_from_file_by_path_no_field_name_allowed(
             self, httpbin):

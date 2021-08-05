@@ -2,6 +2,7 @@ from abc import ABCMeta, abstractmethod
 from typing import Iterable, Optional
 from urllib.parse import urlsplit
 
+from .constants import UTF8
 from .utils import split_cookies
 
 
@@ -39,7 +40,7 @@ class HTTPMessage(metaclass=ABCMeta):
         """Return the message content type."""
         ct = self._orig.headers.get('Content-Type', '')
         if not isinstance(ct, str):
-            ct = ct.decode('utf8')
+            ct = ct.decode()
         return ct
 
 
@@ -83,7 +84,7 @@ class HTTPResponse(HTTPMessage):
 
     @property
     def encoding(self):
-        return self._orig.encoding or 'utf8'
+        return self._orig.encoding or UTF8
 
     @property
     def body(self):
@@ -116,7 +117,7 @@ class HTTPRequest(HTTPMessage):
             headers['Host'] = url.netloc.split('@')[-1]
 
         headers = [
-            f'{name}: {value if isinstance(value, str) else value.decode("utf-8")}'
+            f'{name}: {value if isinstance(value, str) else value.decode()}'
             for name, value in headers.items()
         ]
 
@@ -126,12 +127,12 @@ class HTTPRequest(HTTPMessage):
 
     @property
     def encoding(self):
-        return 'utf8'
+        return UTF8
 
     @property
     def body(self):
         body = self._orig.body
         if isinstance(body, str):
             # Happens with JSON/form request data parsed from the command line.
-            body = body.encode('utf8')
+            body = body.encode()
         return body or b''

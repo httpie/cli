@@ -9,6 +9,7 @@ import httpie.__main__
 from .fixtures import FILE_CONTENT, FILE_PATH
 from httpie.cli.exceptions import ParseError
 from httpie.context import Environment
+from httpie.constants import UTF8
 from httpie.status import ExitStatus
 from .utils import HTTP_OK, MockEnvironment, StdinBytesIO, http
 
@@ -130,7 +131,7 @@ def test_form_POST_file_redirected_stdin(httpbin):
     <https://github.com/httpie/httpie/issues/840>
 
     """
-    with open(FILE_PATH):
+    with open(FILE_PATH, encoding=UTF8):
         r = http(
             '--form',
             'POST',

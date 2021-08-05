@@ -11,6 +11,7 @@ except ImportError:
 
 from .compat import is_windows
 from .config import DEFAULT_CONFIG_DIR, Config, ConfigFileError
+from .constants import UTF8
 
 from .utils import repr_dict
 
@@ -70,10 +71,10 @@ class Environment:
         self._orig_stderr = self.stderr
         self._devnull = devnull
 
-        # Keyword arguments > stream.encoding > default utf8
+        # Keyword arguments > stream.encoding > default UTF-8
         if self.stdin and self.stdin_encoding is None:
             self.stdin_encoding = getattr(
-                self.stdin, 'encoding', None) or 'utf8'
+                self.stdin, 'encoding', None) or UTF8
         if self.stdout_encoding is None:
             actual_stdout = self.stdout
             if is_windows:
@@ -83,7 +84,7 @@ class Environment:
                     # noinspection PyUnresolvedReferences
                     actual_stdout = self.stdout.wrapped
             self.stdout_encoding = getattr(
-                actual_stdout, 'encoding', None) or 'utf8'
+                actual_stdout, 'encoding', None) or UTF8
 
     def __str__(self):
         defaults = dict(type(self).__dict__)

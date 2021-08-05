@@ -7,6 +7,7 @@ from unittest import mock
 import pytest
 
 from .fixtures import FILE_PATH_ARG, UNICODE
+from httpie.constants import UTF8
 from httpie.plugins import AuthPlugin
 from httpie.plugins.builtin import HTTPBasicAuth
 from httpie.plugins.registry import plugin_manager
@@ -52,7 +53,7 @@ class CookieTestBase:
             }
         }
         self.session_path = self.config_dir / 'test-session.json'
-        self.session_path.write_text(json.dumps(orig_session))
+        self.session_path.write_text(json.dumps(orig_session), encoding=UTF8)
 
     def teardown_method(self, method):
         shutil.rmtree(self.config_dir)
@@ -192,7 +193,7 @@ class TestSession(SessionTestBase):
         # FIXME: Authorization *sometimes* is not present
         assert (r2.json['headers']['Authorization']
                 == HTTPBasicAuth.make_header('test', UNICODE))
-        # httpbin doesn't interpret utf8 headers
+        # httpbin doesn't interpret UTF-8 headers
         assert UNICODE in r2
 
     def test_session_default_header_value_overwritten(self, httpbin):
@@ -309,7 +310,7 @@ class TestSession(SessionTestBase):
              Plugin.auth_type,
              '--auth', 'user:password',
              )
-        updated_session = json.loads(self.session_path.read_text())
+        updated_session = json.loads(self.session_path.read_text(encoding=UTF8))
         assert updated_session['auth']['type'] == 'test-saved'
         assert updated_session['auth']['raw_auth'] == "user:password"
         plugin_manager.unregister(Plugin)
@@ -338,7 +339,7 @@ class TestExpiredCookies(CookieTestBase):
         )
         assert 'Cookie: cookie1=foo; cookie2=foo' in r
 
-        updated_session = json.loads(self.session_path.read_text())
+        updated_session = json.loads(self.session_path.read_text(encoding=UTF8))
         assert 'cookie1' in updated_session['cookies']
         assert 'cookie2' not in updated_session['cookies']
 
@@ -432,7 +433,7 @@ class TestCookieStorage(CookieTestBase):
         # Note: cookies in response are in alphabetical order
         assert f'Cookie: {expected}' in r
 
-        updated_session = json.loads(self.session_path.read_text())
+        updated_session = json.loads(self.session_path.read_text(encoding=UTF8))
         for name, value in new_cookies_dict.items():
             assert name, value in updated_session['cookies']
             assert 'Cookie' not in updated_session['headers']
@@ -473,6 +474,6 @@ class TestCookieStorage(CookieTestBase):
             httpbin.url + set_cookie,
             'Cookie:' + cli_cookie,
         )
-        updated_session = json.loads(self.session_path.read_text())
+        updated_session = json.loads(self.session_path.read_text(encoding=UTF8))
 
         assert updated_session['cookies']['cookie1']['value'] == expected

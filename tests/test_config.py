@@ -4,6 +4,7 @@ import pytest
 from _pytest.monkeypatch import MonkeyPatch
 
 from httpie.compat import is_windows
+from httpie.constants import UTF8
 from httpie.config import (
     Config, DEFAULT_CONFIG_DIRNAME, DEFAULT_RELATIVE_LEGACY_CONFIG_DIR,
     DEFAULT_RELATIVE_XDG_CONFIG_HOME, DEFAULT_WINDOWS_CONFIG_DIR,
@@ -25,7 +26,7 @@ def test_default_options(httpbin):
 def test_config_file_not_valid(httpbin):
     env = MockEnvironment()
     env.create_temp_config_dir()
-    (env.config_dir / Config.FILENAME).write_text('{invalid json}')
+    (env.config_dir / Config.FILENAME).write_text('{invalid json}', encoding=UTF8)
     r = http(httpbin + '/get', env=env)
     assert HTTP_OK in r
     assert 'http: warning' in r.stderr

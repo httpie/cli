@@ -3,6 +3,7 @@ from itertools import chain
 from typing import Callable, Iterable, Union
 
 from ..context import Environment
+from ..constants import UTF8
 from ..models import HTTPMessage
 from .processing import Conversion, Formatting
 
@@ -49,7 +50,7 @@ class BaseStream(metaclass=ABCMeta):
 
     def get_headers(self) -> bytes:
         """Return the headers' bytes."""
-        return self.msg.headers.encode('utf8')
+        return self.msg.headers.encode()
 
     @abstractmethod
     def iter_body(self) -> Iterable[bytes]:
@@ -105,8 +106,8 @@ class EncodedStream(BaseStream):
         else:
             # Preserve the message encoding.
             output_encoding = self.msg.encoding
-        # Default to utf8 when unsure.
-        self.output_encoding = output_encoding or 'utf8'
+        # Default to UTF-8 when unsure.
+        self.output_encoding = output_encoding or UTF8
 
     def iter_body(self) -> Iterable[bytes]:
         for line, lf in self.msg.iter_lines(self.CHUNK_SIZE):

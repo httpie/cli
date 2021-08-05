@@ -281,14 +281,14 @@ def http(
         output = stdout.read()
         devnull_output = devnull.read()
         try:
-            output = output.decode('utf8')
+            output = output.decode()
         except UnicodeDecodeError:
             r = BytesCLIResponse(output)
         else:
             r = StrCLIResponse(output)
 
         try:
-            devnull_output = devnull_output.decode('utf8')
+            devnull_output = devnull_output.decode()
         except Exception:
             pass
 

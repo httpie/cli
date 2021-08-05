@@ -24,7 +24,7 @@ from .utils import get_expired_cookies, repr_dict
 
 urllib3.disable_warnings()
 
-FORM_CONTENT_TYPE = 'application/x-www-form-urlencoded; charset=utf-8'
+FORM_CONTENT_TYPE = 'application/x-www-form-urlencoded; charset=UTF-8'
 JSON_CONTENT_TYPE = 'application/json'
 JSON_ACCEPT = f'{JSON_CONTENT_TYPE}, */*;q=0.5'
 DEFAULT_UA = f'HTTPie/{__version__}'
@@ -188,7 +188,7 @@ def finalize_headers(headers: RequestHeadersDict) -> RequestHeadersDict:
             value = value.strip()
             if isinstance(value, str):
                 # See <https://github.com/httpie/httpie/issues/212>
-                value = value.encode('utf8')
+                value = value.encode()
         final_headers[name] = value
     return final_headers
 

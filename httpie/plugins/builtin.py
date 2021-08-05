@@ -30,7 +30,7 @@ class HTTPBasicAuth(requests.auth.HTTPBasicAuth):
     @staticmethod
     def make_header(username: str, password: str) -> str:
         credentials = f'{username}:{password}'
-        token = b64encode(credentials.encode('utf-8')).strip().decode('latin1')
+        token = b64encode(credentials.encode()).strip().decode('latin1')
         return f'Basic {token}'
 
 

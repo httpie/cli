@@ -15,6 +15,7 @@ from httpie.cli.argtypes import (
     parse_format_options,
 )
 from httpie.cli.definition import parser
+from httpie.constants import UTF8
 from httpie.output.formatters.colors import get_lexer
 from httpie.status import ExitStatus
 from .utils import COLOR, CRLF, HTTP_OK, MockEnvironment, http
@@ -30,7 +31,7 @@ def test_output_option(tmp_path, httpbin, stdout_isatty):
     assert r == ''
 
     expected_body = urlopen(url).read().decode()
-    actual_body = output_filename.read_text()
+    actual_body = output_filename.read_text(encoding=UTF8)
 
     assert actual_body == expected_body
 
@@ -125,7 +126,7 @@ class TestQuietFlag:
                 assert env.stdout is env.devnull
             else:
                 assert env.stdout is not env.devnull  # --output swaps stdout.
-            assert output_path.read_text() == output
+            assert output_path.read_text(encoding=UTF8) == output
         finally:
             os.chdir(orig_cwd)
 
