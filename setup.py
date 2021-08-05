@@ -1,7 +1,6 @@
 # This is purely the result of trial and error.
 
 import sys
-import codecs
 
 from setuptools import setup, find_packages
 
@@ -55,7 +54,7 @@ extras_require = {
 
 
 def long_description():
-    with codecs.open('README.rst', encoding='utf8') as f:
+    with open('README.rst', encoding='utf-8') as f:
         return f.read()
 
 
