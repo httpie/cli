@@ -1,9 +1,29 @@
+import json
+
 import pytest
+import responses
 
 from httpie.compat import is_windows
+from httpie.cli.constants import PRETTY_MAP
 from httpie.output.streams import BINARY_SUPPRESSED_NOTICE
+from httpie.plugins import ConverterPlugin
+from httpie.plugins.registry import plugin_manager
+
 from .utils import StdinBytesIO, http, MockEnvironment
 from .fixtures import BIN_FILE_CONTENT, BIN_FILE_PATH
+
+PRETTY_OPTIONS = list(PRETTY_MAP.keys())
+
+
+class SortJSONConverterPlugin(ConverterPlugin):
+    @classmethod
+    def supports(cls, mime):
+        return mime == 'json/bytes'
+
+    def convert(self, body):
+        body = body.lstrip(b'\x00')
+        data = json.loads(body)
+        return 'application/json', json.dumps(data, sort_keys=True)
 
 
 # GET because httpbin 500s with binary POST body.
@@ -22,6 +42,47 @@ def test_pretty_redirected_stream(httpbin):
     r = http('--verbose', '--pretty=all', '--stream', 'GET',
              httpbin.url + '/get', env=env)
     assert BINARY_SUPPRESSED_NOTICE.decode() in r
+
+
+def test_pretty_stream_ensure_full_stream_is_retrieved(httpbin):
+    env = MockEnvironment(
+        stdin=StdinBytesIO(),
+        stdin_isatty=False,
+        stdout_isatty=False,
+    )
+    r = http('--pretty=format', '--stream', 'GET',
+             httpbin.url + '/stream/3', env=env)
+    assert r.count('/stream/3') == 3
+
+
+@pytest.mark.parametrize('pretty', PRETTY_OPTIONS)
+@pytest.mark.parametrize('stream', [True, False])
+@responses.activate
+def test_pretty_options_with_and_without_stream_with_converter(pretty, stream):
+    plugin_manager.register(SortJSONConverterPlugin)
+    try:
+        # Cover PluginManager.__repr__()
+        assert 'SortJSONConverterPlugin' in str(plugin_manager)
+
+        url = 'http://example.org'  # Note: URL never fetched
+        body = b'\x00{"foo":42,\n"bar":"baz"}'
+        responses.add(responses.GET, url, body=body,
+                      stream=True, content_type='json/bytes')
+
+        args = ['--pretty=' + pretty, 'GET', url]
+        if stream:
+            args.insert(0, '--stream')
+        r = http(*args)
+
+        assert 'json/bytes' in r
+        if pretty == 'none':
+            assert BINARY_SUPPRESSED_NOTICE.decode() in r
+        else:
+            # Ensure the plugin was effectively used and the resulting JSON is sorted
+            assert '"bar": "baz",' in r
+            assert '"foo": 42' in r
+    finally:
+        plugin_manager.unregister(SortJSONConverterPlugin)
 
 
 def test_encoded_stream(httpbin):

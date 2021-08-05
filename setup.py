@@ -12,6 +12,7 @@ tests_require = [
     'docutils',
     'pytest',
     'pytest-httpbin>=0.0.6',
+    'responses',
 ]
 dev_require = [
     *tests_require,

@@ -89,9 +89,11 @@ def test_unicode_url(httpbin):
     assert HTTP_OK in r
     assert r.json['args'] == {'test': UNICODE}
 
-# def test_unicode_url_verbose(self):
-#     r = http(httpbin.url + '--verbose', f'/get?test={UNICODE}')
-#     assert HTTP_OK in r
+
+def test_unicode_url_verbose(httpbin):
+    r = http('--verbose', f'{httpbin.url}/get?test={UNICODE}')
+    assert HTTP_OK in r
+    assert r.json['args'] == {'test': UNICODE}
 
 
 def test_unicode_basic_auth(httpbin):
