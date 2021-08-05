@@ -15,7 +15,7 @@ from .fixtures import BIN_FILE_CONTENT, BIN_FILE_PATH
 PRETTY_OPTIONS = list(PRETTY_MAP.keys())
 
 
-class FakeConverterPlugin(ConverterPlugin):
+class SortJSONConverterPlugin(ConverterPlugin):
     @classmethod
     def supports(cls, mime):
         return mime == 'json/bytes'
@@ -59,9 +59,10 @@ def test_pretty_stream_ensure_full_stream_is_retrieved(httpbin):
 @pytest.mark.parametrize('stream', [True, False])
 @responses.activate
 def test_pretty_options_with_and_without_stream_with_converter(pretty, stream):
-    plugin_manager.register(FakeConverterPlugin)
+    plugin_manager.register(SortJSONConverterPlugin)
     try:
-        assert 'FakeConverterPlugin' in str(plugin_manager)
+        # Cover PluginManager.__repr__()
+        assert 'SortJSONConverterPlugin' in str(plugin_manager)
 
         url = 'http://example.org'  # Note: URL never fetched
         body = b'\x00{"foo":42,\n"bar":"baz"}'
@@ -77,10 +78,11 @@ def test_pretty_options_with_and_without_stream_with_converter(pretty, stream):
         if pretty == 'none':
             assert BINARY_SUPPRESSED_NOTICE.decode() in r
         else:
+            # Ensure the plugin was effectively used and the resulting JSON is sorted
             assert '"bar": "baz",' in r
             assert '"foo": 42' in r
     finally:
-        plugin_manager.unregister(FakeConverterPlugin)
+        plugin_manager.unregister(SortJSONConverterPlugin)
 
 
 def test_encoded_stream(httpbin):
