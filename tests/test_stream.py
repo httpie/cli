@@ -1,7 +1,6 @@
 import pytest
 
 from httpie.compat import is_windows
-from httpie.constants import UTF8
 from httpie.output.streams import BINARY_SUPPRESSED_NOTICE
 from .utils import StdinBytesIO, http, MockEnvironment
 from .fixtures import BIN_FILE_CONTENT, BIN_FILE_PATH
@@ -22,7 +21,7 @@ def test_pretty_redirected_stream(httpbin):
     )
     r = http('--verbose', '--pretty=all', '--stream', 'GET',
              httpbin.url + '/get', env=env)
-    assert BINARY_SUPPRESSED_NOTICE.decode(UTF8) in r
+    assert BINARY_SUPPRESSED_NOTICE.decode() in r
 
 
 def test_encoded_stream(httpbin):
@@ -34,7 +33,7 @@ def test_encoded_stream(httpbin):
     )
     r = http('--pretty=none', '--stream', '--verbose', 'GET',
              httpbin.url + '/get', env=env)
-    assert BINARY_SUPPRESSED_NOTICE.decode(UTF8) in r
+    assert BINARY_SUPPRESSED_NOTICE.decode() in r
 
 
 def test_redirected_stream(httpbin):

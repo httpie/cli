@@ -124,7 +124,7 @@ class TestDownloads:
 
     def test_actual_download(self, httpbin_both, httpbin):
         robots_txt = '/robots.txt'
-        body = urlopen(httpbin + robots_txt).read().decode(UTF8)
+        body = urlopen(httpbin + robots_txt).read().decode()
         env = MockEnvironment(stdin_isatty=True, stdout_isatty=False)
         r = http('--download', httpbin_both.url + robots_txt, env=env)
         assert 'Downloading' in r.stderr

@@ -189,7 +189,7 @@ def finalize_headers(headers: RequestHeadersDict) -> RequestHeadersDict:
             value = value.strip()
             if isinstance(value, str):
                 # See <https://github.com/httpie/httpie/issues/212>
-                value = value.encode(UTF8)
+                value = value.encode()
         final_headers[name] = value
     return final_headers
 

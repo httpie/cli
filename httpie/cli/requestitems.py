@@ -15,7 +15,6 @@ from .dicts import (
     RequestQueryParamsDict,
 )
 from .exceptions import ParseError
-from ..constants import UTF8
 from ..utils import get_content_type, load_json_preserve_order
 
 
@@ -139,7 +138,7 @@ def load_text_file(item: KeyValueArg) -> str:
     path = item.value
     try:
         with open(os.path.expanduser(path), 'rb') as f:
-            return f.read().decode(UTF8)
+            return f.read().decode()
     except OSError as e:
         raise ParseError(f'{item.orig!r}: {e}')
     except UnicodeDecodeError:

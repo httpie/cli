@@ -49,7 +49,7 @@ class BaseStream:
 
     def get_headers(self) -> bytes:
         """Return the headers' bytes."""
-        return self.msg.headers.encode(UTF8)
+        return self.msg.headers.encode()
 
     def iter_body(self) -> Iterable[bytes]:
         """Return an iterator over the message body."""

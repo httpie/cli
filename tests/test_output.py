@@ -30,7 +30,7 @@ def test_output_option(tmp_path, httpbin, stdout_isatty):
              env=MockEnvironment(stdout_isatty=stdout_isatty))
     assert r == ''
 
-    expected_body = urlopen(url).read().decode(UTF8)
+    expected_body = urlopen(url).read().decode()
     actual_body = output_filename.read_text(encoding=UTF8)
 
     assert actual_body == expected_body

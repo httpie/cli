@@ -7,7 +7,6 @@ from requests.utils import super_len
 from requests_toolbelt import MultipartEncoder
 
 from .cli.dicts import MultipartRequestDataDict, RequestDataDict
-from .constants import UTF8
 
 
 class ChunkedUploadStream:
@@ -57,7 +56,7 @@ def prepare_request_body(
         if chunked:
             body = ChunkedUploadStream(
                 # Pass the entire body as one chunk.
-                stream=(chunk.encode(UTF8) for chunk in [body]),
+                stream=(chunk.encode() for chunk in [body]),
                 callback=body_read_callback,
             )
     else:
@@ -125,7 +124,7 @@ def compress_request(
 ):
     deflater = zlib.compressobj()
     if isinstance(request.body, str):
-        body_bytes = request.body.encode(UTF8)
+        body_bytes = request.body.encode()
     elif hasattr(request.body, 'read'):
         body_bytes = request.body.read()
     else:
