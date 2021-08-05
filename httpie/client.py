@@ -12,7 +12,6 @@ import requests
 import urllib3
 from . import __version__
 from .cli.dicts import RequestHeadersDict
-from .constants import UTF8
 from .plugins.registry import plugin_manager
 from .sessions import get_httpie_session
 from .ssl import AVAILABLE_SSL_VERSION_ARG_MAPPING, HTTPieHTTPSAdapter
@@ -25,7 +24,7 @@ from .utils import get_expired_cookies, repr_dict
 
 urllib3.disable_warnings()
 
-FORM_CONTENT_TYPE = 'application/x-www-form-urlencoded; charset=' + UTF8
+FORM_CONTENT_TYPE = 'application/x-www-form-urlencoded; charset=UTF-8'
 JSON_CONTENT_TYPE = 'application/json'
 JSON_ACCEPT = f'{JSON_CONTENT_TYPE}, */*;q=0.5'
 DEFAULT_UA = f'HTTPie/{__version__}'

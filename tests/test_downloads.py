@@ -7,7 +7,6 @@ from urllib.request import urlopen
 import pytest
 from requests.structures import CaseInsensitiveDict
 
-from httpie.constants import UTF8
 from httpie.downloads import (
     parse_content_range, filename_from_content_disposition, filename_from_url,
     get_unique_filename, ContentRangeError, Downloader, PARTIAL_CONTENT
@@ -67,7 +66,7 @@ class TestDownloadUtils:
         )
         assert 'foo.html' == filename_from_url(
             url='http://example.org/foo',
-            content_type='text/html; charset=' + UTF8
+            content_type='text/html; charset=UTF-8'
         )
         assert 'foo' == filename_from_url(
             url='http://example.org/foo',

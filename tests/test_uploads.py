@@ -4,7 +4,6 @@ import pytest
 
 from httpie.cli.exceptions import ParseError
 from httpie.client import FORM_CONTENT_TYPE
-from httpie.constants import UTF8
 from httpie.status import ExitStatus
 from .utils import (
     MockEnvironment, StdinBytesIO, http,
@@ -248,10 +247,10 @@ class TestRequestBodyFromFilePath:
             self, httpbin):
         r = http('--verbose',
                  'POST', httpbin.url + '/post', '@' + FILE_PATH_ARG,
-                 'Content-Type:text/plain; charset=' + UTF8)
+                 'Content-Type:text/plain; charset=UTF-8')
         assert HTTP_OK in r
         assert FILE_CONTENT in r
-        assert 'Content-Type: text/plain; charset=' + UTF8 in r
+        assert 'Content-Type: text/plain; charset=UTF-8' in r
 
     def test_request_body_from_file_by_path_no_field_name_allowed(
             self, httpbin):
