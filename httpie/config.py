@@ -93,7 +93,7 @@ class BaseConfigDict(dict):
         except OSError as e:
             raise ConfigFileError(f'cannot read {config_type} file: {e}')
 
-    def save(self, fail_silently=False):
+    def save(self):
         self['__meta__'] = {
             'httpie': __version__
         }
@@ -111,18 +111,7 @@ class BaseConfigDict(dict):
             sort_keys=True,
             ensure_ascii=True,
         )
-        try:
-            self.path.write_text(json_string + '\n', encoding=UTF8)
-        except OSError:
-            if not fail_silently:
-                raise
-
-    def delete(self):
-        try:
-            # TODO: use `missing_ok` kwarg when supporting Python 3.8+ only
-            self.path.unlink()
-        except FileNotFoundError:
-            pass
+        self.path.write_text(json_string + '\n', encoding=UTF8)
 
 
 class Config(BaseConfigDict):
