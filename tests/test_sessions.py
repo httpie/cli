@@ -178,6 +178,25 @@ class TestSession(SessionTestBase):
         assert HTTP_OK in r2
         assert r2.json['headers']['Foo'] == 'Bar'
 
+    def test_session_with_cookie_followed_by_another_header(self, httpbin):
+        """Non-regression test for issue #1126 where request headers were mutated during iteration:
+
+            RuntimeError: OrderedDict mutated during iteration
+        """
+        self.start_session(httpbin)
+        session_data = {
+            "headers": {
+                "cookie": "...",
+                "zzz": "..."
+            }
+        }
+        session_path = self.config_dir / 'session-data.json'
+        session_path.write_text(json.dumps(session_data))
+        r = http('--session', str(session_path), 'GET', httpbin.url + '/get',
+                 env=self.env())
+        assert HTTP_OK in r
+        assert 'Zzz' in r
+
     def test_session_unicode(self, httpbin):
         self.start_session(httpbin)
 
