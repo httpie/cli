@@ -181,7 +181,6 @@ class TestSession(SessionTestBase):
     def test_session_with_cookie_followed_by_another_header(self, httpbin):
         """
         Make sure headers don’t get mutated — <https://github.com/httpie/httpie/issues/1126>
-        
         """
         self.start_session(httpbin)
         session_data = {
