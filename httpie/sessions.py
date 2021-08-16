@@ -72,7 +72,7 @@ class Session(BaseConfigDict):
 
         """
         headers = self.headers
-        for name, value in request_headers.items():
+        for name, value in request_headers.copy().items():
 
             if value is None:
                 continue  # Ignore explicitly unset headers
