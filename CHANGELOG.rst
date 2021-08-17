@@ -13,7 +13,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
   an alternative to ``stdin``. (`#534`_)
 * Fixed ``--continue --download`` with a single byte to be downloaded left. (`#1032`_)
 * Fixed ``--verbose`` HTTP 307 redirects with streamed request body. (`#1088`_)
-* Fixed handling of session files with `Cookie:` followed by other headers. (`#1126`_)
+* Fixed handling of session files with ``Cookie:`` followed by other headers. (`#1126`_)
 * Add internal support for file-like object responses to improve adapter plugin support. (`#1094`_)
 
 
@@ -505,3 +505,5 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 .. _#1029: https://github.com/httpie/httpie/issues/1029
 .. _#1032: https://github.com/httpie/httpie/issues/1032
 .. _#1088: https://github.com/httpie/httpie/issues/1088
+.. _#1094: https://github.com/httpie/httpie/issues/1094
+.. _#1126: https://github.com/httpie/httpie/issues/1126
