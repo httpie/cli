@@ -1560,24 +1560,43 @@ One of these options can be used to control output processing:
                        Default for redirected output.
 ====================   ========================================================
 
+You can control the applied formatting via the `formatting options`_.
 
-You can control the applied formatting via the ``--format-options`` option.
+
+Formatting options
+------------------
+
 The following options are available:
+
++-------------------------------+---------------+------------------------------+
+| Option                        | Default value | Shortcut(s)                  |
++===============================+===============+==============================+
+| ``headers.sort``              | ``true``      | ``--sorted``, ``--unsorted`` |
++-------------------------------+---------------+------------------------------+
+| ``json.format``               | ``true``      | N/A                          |
++-------------------------------+---------------+------------------------------+
+| ``json.indent``               | ``4``         | N/A                          |
++--------------------+----------+---------------+------------------------------+
+| ``json.sort_keys``            | ``true``      | ``--sorted``, ``--unsorted`` |
++--------------------+----------+---------------+------------------------------+
 
 For example, this is how you would disable the default header and JSON key
 sorting, and specify a custom JSON indent size:
-
 
 .. code-block:: bash
 
     $ http --format-options headers.sort:false,json.sort_keys:false,json.indent:2 pie.dev/get
 
-This is something you will typically store as one of the default options in your
-`config`_ file. See ``http --help`` for all the available formatting options.
+There are also shortcuts that allow you to quickly disable and re-enable options.
+For example, ``--sorted`` and ``--unsorted`` arguments would respectively enable
+and disable sorting-related format options:
 
-There are also two shortcuts that allow you to quickly disable and re-enable
-sorting-related format options (currently it means JSON keys and headers):
-``--unsorted`` and ``--sorted``.
+.. code-block:: bash
+
+    $ http --sorted pie.dev/get
+    $ http --unsorted pie.dev/get
+
+This is something you will typically store as one of the default options in your `config`_ file.
 
 
 Binary data
