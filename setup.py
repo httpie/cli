@@ -25,6 +25,7 @@ dev_require = [
     'wheel',
 ]
 install_requires = [
+    'defusedxml>=0.6.0',
     'requests[socks]>=2.22.0',
     'Pygments>=2.5.2',
     'requests-toolbelt>=0.9.1',

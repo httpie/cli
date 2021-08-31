@@ -29,6 +29,7 @@ PACKAGES = [
     'idna',
     'chardet',
     'PySocks',
+    'defusedxml',
 ]
 
 

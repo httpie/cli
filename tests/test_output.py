@@ -377,6 +377,10 @@ class TestFormatOptions:
                         'indent': 10,
                         'format': True
                     },
+                    'xml': {
+                        'format': True,
+                        'indent': 4,
+                    },
                 }
             ),
             (
@@ -392,6 +396,10 @@ class TestFormatOptions:
                         'indent': 4,
                         'format': True
                     },
+                    'xml': {
+                        'format': True,
+                        'indent': 4,
+                    },
                 }
             ),
             (
@@ -409,6 +417,10 @@ class TestFormatOptions:
                         'indent': 4,
                         'format': True
                     },
+                    'xml': {
+                        'format': True,
+                        'indent': 4,
+                    },
                 }
             ),
             (
@@ -423,6 +435,8 @@ class TestFormatOptions:
             (
                 [
                     '--format-options=json.indent:2',
+                    '--format-options=xml.format:false',
+                    '--format-options=xml.indent:2',
                     '--unsorted',
                     '--no-unsorted',
                 ],
@@ -434,6 +448,10 @@ class TestFormatOptions:
                         'sort_keys': True,
                         'indent': 2,
                         'format': True
+                    },
+                    'xml': {
+                        'format': False,
+                        'indent': 2,
                     },
                 }
             ),
@@ -451,6 +469,10 @@ class TestFormatOptions:
                         'sort_keys': True,
                         'indent': 2,
                         'format': True
+                    },
+                    'xml': {
+                        'format': True,
+                        'indent': 4,
                     },
                 }
             ),
@@ -469,6 +491,10 @@ class TestFormatOptions:
                         'sort_keys': True,
                         'indent': 2,
                         'format': True
+                    },
+                    'xml': {
+                        'format': True,
+                        'indent': 4,
                     },
                 }
             ),
