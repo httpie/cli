@@ -1566,8 +1566,8 @@ You can further control the applied formatting via the more granular `format opt
 Format options
 --------------
 
-The ``--format-options`` option allows you to control how the output should be formatted when formatting is applied.
-The following options are available:
+The ``--format-options=opt1:value,opt2:value`` option allows you to control how the output should be formatted
+when formatting is applied. The following options are available:
 
 +-------------------------------+---------------+------------------------------+
 | Option                        | Default value | Shortcuts                    |
@@ -1582,7 +1582,7 @@ The following options are available:
 +--------------------+----------+---------------+------------------------------+
 | ``xml.format``                | ``true``      | N/A                          |
 +-------------------------------+---------------+------------------------------+
-| ``xml.indent``                | ``4``         | N/A                          |
+| ``xml.indent``                | ``2``         | N/A                          |
 +--------------------+----------+---------------+------------------------------+
 
 For example, this is how you would disable the default header and JSON key
