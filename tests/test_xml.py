@@ -7,7 +7,7 @@ from httpie.constants import UTF8
 from httpie.output.formatters.xml import parse_xml, pretty_xml
 
 from .fixtures import XML_FILES_PATH, XML_FILES_VALID, XML_FILES_INVALID
-from .utils import http
+from .utils import http, URL_EXAMPLE
 
 SAMPLE_XML_DATA = '<?xml version="1.0" encoding="utf-8"?><root><e>text</e></root>'
 
@@ -22,11 +22,10 @@ SAMPLE_XML_DATA = '<?xml version="1.0" encoding="utf-8"?><root><e>text</e></root
 )
 @responses.activate
 def test_xml_format_options(options, expected_xml):
-    url = 'https://example.org'
-    responses.add(responses.GET, url, body=SAMPLE_XML_DATA,
+    responses.add(responses.GET, URL_EXAMPLE, body=SAMPLE_XML_DATA,
                   content_type='application/xml')
 
-    r = http('--format-options', options, url)
+    r = http('--format-options', options, URL_EXAMPLE)
     assert expected_xml in r
 
 
@@ -39,21 +38,19 @@ def test_valid_xml(file):
     if 'standalone' in file.stem and sys.version_info < (3, 9):
         pytest.skip('Standalone XML requires Python 3.9+')
 
-    url = 'https://example.org'
     xml_data = file.read_text(encoding=UTF8)
     expected_xml_file = file.with_name(file.name.replace('_raw', '_formatted'))
     expected_xml_output = expected_xml_file.read_text(encoding=UTF8)
-    responses.add(responses.GET, url, body=xml_data,
+    responses.add(responses.GET, URL_EXAMPLE, body=xml_data,
                   content_type='application/xml')
 
-    r = http(url)
+    r = http(URL_EXAMPLE)
     assert expected_xml_output in r
 
 
 @responses.activate
 def test_xml_xhtml():
     """XHTML responses are handled by the XML formatter."""
-    url = 'https://example.org'
     file = XML_FILES_PATH / 'xhtml' / 'xhtml_raw.xml'
     xml_data = file.read_text(encoding=UTF8)
 
@@ -66,10 +63,10 @@ def test_xml_xhtml():
     )
     expected_xml_file = file.with_name(expected_file_name)
     expected_xml_output = expected_xml_file.read_text(encoding=UTF8)
-    responses.add(responses.GET, url, body=xml_data,
+    responses.add(responses.GET, URL_EXAMPLE, body=xml_data,
                   content_type='application/xhtml+xml')
 
-    r = http(url)
+    r = http(URL_EXAMPLE)
     assert expected_xml_output in r
 
 
@@ -79,11 +76,10 @@ def test_invalid_xml(file):
     """Testing several problematic XML files, none should be formatted
     and none should make HTTPie to crash.
     """
-    url = 'https://example.org'
     xml_data = file.read_text(encoding=UTF8)
-    responses.add(responses.GET, url, body=xml_data,
+    responses.add(responses.GET, URL_EXAMPLE, body=xml_data,
                   content_type='application/xml')
 
     # No formatting done, data is simply printed as-is
-    r = http(url)
+    r = http(URL_EXAMPLE)
     assert xml_data in r
