@@ -379,7 +379,7 @@ class TestFormatOptions:
                     },
                     'xml': {
                         'format': True,
-                        'indent': 4,
+                        'indent': 2,
                     },
                 }
             ),
@@ -398,7 +398,7 @@ class TestFormatOptions:
                     },
                     'xml': {
                         'format': True,
-                        'indent': 4,
+                        'indent': 2,
                     },
                 }
             ),
@@ -419,7 +419,7 @@ class TestFormatOptions:
                     },
                     'xml': {
                         'format': True,
-                        'indent': 4,
+                        'indent': 2,
                     },
                 }
             ),
@@ -436,7 +436,7 @@ class TestFormatOptions:
                 [
                     '--format-options=json.indent:2',
                     '--format-options=xml.format:false',
-                    '--format-options=xml.indent:2',
+                    '--format-options=xml.indent:4',
                     '--unsorted',
                     '--no-unsorted',
                 ],
@@ -451,7 +451,7 @@ class TestFormatOptions:
                     },
                     'xml': {
                         'format': False,
-                        'indent': 2,
+                        'indent': 4,
                     },
                 }
             ),
@@ -472,7 +472,7 @@ class TestFormatOptions:
                     },
                     'xml': {
                         'format': True,
-                        'indent': 4,
+                        'indent': 2,
                     },
                 }
             ),
@@ -494,7 +494,7 @@ class TestFormatOptions:
                     },
                     'xml': {
                         'format': True,
-                        'indent': 4,
+                        'indent': 2,
                     },
                 }
             ),

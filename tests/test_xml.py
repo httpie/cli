@@ -16,8 +16,8 @@ SAMPLE_XML_DATA = '<?xml version="1.0" encoding="utf-8"?><root><e>text</e></root
     'options, expected_xml',
     [
         ('xml.format:false', SAMPLE_XML_DATA),
-        ('xml.indent:2', pretty_xml(parse_xml(SAMPLE_XML_DATA), indent=2)),
-        ('xml.indent:4', pretty_xml(parse_xml(SAMPLE_XML_DATA))),
+        ('xml.indent:2', pretty_xml(parse_xml(SAMPLE_XML_DATA))),
+        ('xml.indent:4', pretty_xml(parse_xml(SAMPLE_XML_DATA), indent=4)),
     ]
 )
 @responses.activate
@@ -70,7 +70,6 @@ def test_xml_xhtml():
                   content_type='application/xhtml+xml')
 
     r = http(url)
-    print(r)
     assert expected_xml_output in r
 
 

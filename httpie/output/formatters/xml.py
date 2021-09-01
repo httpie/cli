@@ -16,7 +16,7 @@ def parse_xml(data: str) -> 'Document':
 
 def pretty_xml(document: 'Document',
                encoding: Optional[str] = UTF8,
-               indent: int = 4,
+               indent: int = 2,
                standalone: Optional[bool] = None) -> str:
     """Render the given :class:`~xml.dom.minidom.Document` `document` into a prettified string."""
     kwargs = {
