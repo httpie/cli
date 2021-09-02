@@ -1,6 +1,5 @@
 """CLI argument parsing related tests."""
 import argparse
-import json
 
 import pytest
 from requests.exceptions import InvalidSchema
@@ -15,6 +14,7 @@ from httpie.cli import constants
 from httpie.cli.definition import parser
 from httpie.cli.argtypes import KeyValueArg, KeyValueArgType
 from httpie.cli.requestitems import RequestItems
+from httpie.utils import load_json_preserve_order_and_dupe_keys
 from .utils import HTTP_OK, MockEnvironment, StdinBytesIO, http
 
 
@@ -97,16 +97,14 @@ class TestItemParsing:
 
         # Parsed data
         raw_json_embed = items.data.pop('raw-json-embed')
-        assert raw_json_embed == json.loads(JSON_FILE_CONTENT)
+        assert raw_json_embed == load_json_preserve_order_and_dupe_keys(JSON_FILE_CONTENT)
         items.data['string-embed'] = items.data['string-embed'].strip()
         assert dict(items.data) == {
             "ed": "",
             "string": "value",
             "bool": True,
-            "list": ["a", 1, {}, False],
-            "obj": {
-                "a": "b"
-            },
+            "list": ["a", 1, load_json_preserve_order_and_dupe_keys('{}'), False],
+            "obj": load_json_preserve_order_and_dupe_keys('{"a": "b"}'),
             "string-embed": FILE_CONTENT,
         }
 

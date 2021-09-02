@@ -1,6 +1,7 @@
 import json
 
 from ...plugins import FormatterPlugin
+from ...utils import load_json_preserve_order_and_dupe_keys
 
 
 class JSONFormatter(FormatterPlugin):
@@ -18,7 +19,7 @@ class JSONFormatter(FormatterPlugin):
         if (self.kwargs['explicit_json']
                 or any(token in mime for token in maybe_json)):
             try:
-                obj = json.loads(body)
+                obj = load_json_preserve_order_and_dupe_keys(body)
             except ValueError:
                 pass  # Invalid JSON, ignore.
             else:

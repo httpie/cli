@@ -12,8 +12,46 @@ import requests.auth
 RE_COOKIE_SPLIT = re.compile(r', (?=[^ ;]+=)')
 
 
-def load_json_preserve_order(s):
-    return json.loads(s, object_pairs_hook=OrderedDict)
+class JsonDictPreservingDuplicateKeys(OrderedDict):
+    """A specialized JSON dict preserving duplicate keys.
+
+    Note: Python 3.6 & 3.7 do not support duplicate keys sorting.
+          See https://bugs.python.org/issue23493#msg400929.
+
+    """
+
+    def __init__(self, items):
+        self._items = items
+        if not items:
+            return
+
+        # HACK: Force `json.dumps()` to use `self.items()` instead of an empty dict.
+        #
+        # Two JSON encoders are available on CPython: pure-Python (1) and C (2) implementations.
+        #
+        # (1) The pure-python implementation will do a simple `if not dict: return '{}'`,
+        # and we could fake that check by implementing the `__bool__()` method.
+        # Source:
+        #     - https://github.com/python/cpython/blob/9d318ad/Lib/json/encoder.py#L334-L336
+        #
+        # (2) On the other hand, the C implementation will do a check on the number of
+        # items contained inside the dict, using a verification on `dict->ma_used`, which
+        # is updated only when an item is added/removed from the dict. For that case,
+        # there is no workaround but to add an item into the dict.
+        # Sources:
+        #     - https://github.com/python/cpython/blob/9d318ad/Modules/_json.c#L1581-L1582
+        #     - https://github.com/python/cpython/blob/9d318ad/Include/cpython/dictobject.h#L53
+        #     - https://github.com/python/cpython/blob/9d318ad/Include/cpython/dictobject.h#L17-L18
+        #
+        # To please both implementations, we simply add one item to the dict.
+        self['__hack__'] = '__hack__'
+
+    def items(self):
+        return self._items
+
+
+def load_json_preserve_order_and_dupe_keys(s):
+    return json.loads(s, object_pairs_hook=JsonDictPreservingDuplicateKeys)
 
 
 def repr_dict(d: dict) -> str:

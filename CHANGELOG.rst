@@ -16,6 +16,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 * Fixed ``--continue --download`` with a single byte to be downloaded left. (`#1032`_)
 * Fixed ``--verbose`` HTTP 307 redirects with streamed request body. (`#1088`_)
 * Fixed handling of session files with ``Cookie:`` followed by other headers. (`#1126`_)
+* Fixed duplicate keys preservation of JSON data. (`#1136`_)
 
 
 `2.4.0`_ (2021-02-06)
@@ -509,3 +510,4 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 .. _#1094: https://github.com/httpie/httpie/issues/1094
 .. _#1126: https://github.com/httpie/httpie/issues/1126
 .. _#1129: https://github.com/httpie/httpie/issues/1129
+.. _#1136: https://github.com/httpie/httpie/issues/1136
