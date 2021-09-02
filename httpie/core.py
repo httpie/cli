@@ -213,7 +213,7 @@ def program(args: argparse.Namespace, env: Environment) -> ExitStatus:
     finally:
         if downloader and not downloader.finished:
             downloader.failed()
-        if not isinstance(args, list) and args.output_file and args.output_file_specified:
+        if args.output_file and args.output_file_specified:
             args.output_file.close()
 
 
