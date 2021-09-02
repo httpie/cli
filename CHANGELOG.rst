@@ -12,10 +12,10 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 * Added ``--raw`` to allow specifying the raw request body without extra processing as
   an alternative to ``stdin``. (`#534`_)
 * Added support for XML formatting. (`#1129`_)
+* Added internal support for file-like object responses to improve adapter plugin support. (`#1094`_)
 * Fixed ``--continue --download`` with a single byte to be downloaded left. (`#1032`_)
 * Fixed ``--verbose`` HTTP 307 redirects with streamed request body. (`#1088`_)
 * Fixed handling of session files with ``Cookie:`` followed by other headers. (`#1126`_)
-* Add internal support for file-like object responses to improve adapter plugin support. (`#1094`_)
 
 
 `2.4.0`_ (2021-02-06)
