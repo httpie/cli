@@ -1,11 +1,8 @@
-#!/usr/bin/env bash
-
-
 _http_complete() {
     local cur_word=${COMP_WORDS[COMP_CWORD]}
     local prev_word=${COMP_WORDS[COMP_CWORD - 1]}
 
-    if [[ "$cur_word" == -*  ]]; then
+    if [[ "$cur_word" == -* ]]; then
         _http_complete_options "$cur_word"
     fi
 }

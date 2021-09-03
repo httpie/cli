@@ -10,7 +10,7 @@ assignees: ''
 **Checklist**
 
 - [ ] I've searched for similar issues.
-- [ ] I'm using the the latest version of HTTPie.
+- [ ] I'm using the latest version of HTTPie.
 
 ---
 

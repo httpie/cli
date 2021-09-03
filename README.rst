@@ -36,7 +36,7 @@ You can select your corresponding HTTPie version as well as run examples directl
 browser using a `termible.io <https://termible.io?utm_source=httpie-readme>`_ embedded terminal.
 
 If you are reading this on GitHub, then this text covers the current *development* version.
-You are invited to submit fixes and improvements to the the docs by editing
+You are invited to submit fixes and improvements to the docs by editing
 `README.rst <https://github.com/httpie/httpie/blob/master/README.rst>`_.
 
 
@@ -159,7 +159,7 @@ Unstable version
 ----------------
 
 You can also install the latest unreleased development version directly from
-the ``master`` branch on GitHub.  It is a work-in-progress of a future stable
+the ``master`` branch on GitHub. It is a work-in-progress of a future stable
 release so the experience might be not as smooth.
 
 
@@ -1319,7 +1319,7 @@ Viewing intermediary requests/responses
 ---------------------------------------
 
 To see all the HTTP communication, i.e. the final request/response as
-well as any possible  intermediary requests/responses, use the ``--all``
+well as any possible intermediary requests/responses, use the ``--all``
 option. The intermediary HTTP communication include followed redirects
 (with ``--follow``), the first unauthorized request when HTTP digest
 authentication is used (``--auth=digest``), etc.
@@ -1727,7 +1727,7 @@ headers and progress are still shown in the terminal:
 
 .. code-block:: bash
 
-    $ http -d https://github.com/httpie/httpie/archive/master.tar.gz |  tar zxf -
+    $ http -d https://github.com/httpie/httpie/archive/master.tar.gz | tar zxf -
 
 
 
@@ -2104,7 +2104,7 @@ Interface design
 ----------------
 
 The syntax of the command arguments closely corresponds to the actual HTTP
-requests sent over the wire. It has the advantage  that it’s easy to remember
+requests sent over the wire. It has the advantage that it’s easy to remember
 and read. It is often possible to translate an HTTP request to an HTTPie
 argument list just by inlining the request elements. For example, compare this
 HTTP request:
