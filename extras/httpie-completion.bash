@@ -1,6 +1,3 @@
-#!/usr/bin/env bash
-
-
 _http_complete() {
     local cur_word=${COMP_WORDS[COMP_CWORD]}
     local prev_word=${COMP_WORDS[COMP_CWORD - 1]}
