@@ -25,7 +25,7 @@ to your bug report, e.g.:
 =============================
 
 Before working on a new feature or a bug, please browse `existing issues`_
-to see whether it has previously  been discussed.
+to see whether it has previously been discussed.
 
 If your change alters HTTPie’s behaviour or interface, it's a good idea to
 discuss it before you start working on it.

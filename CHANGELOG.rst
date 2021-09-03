@@ -110,7 +110,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
   2. The server handling the request has been modified by an attacker and
      instead of the expected response the URL returns a redirect to another
      URL, e.g., ``attacker.example.org/.bash_profile``, whose response does
-     not provide  a ``Content-Disposition`` header (i.e., the base for the
+     not provide a ``Content-Disposition`` header (i.e., the base for the
      generated filename becomes ``.bash_profile`` instead of ``file.txt``).
   3. Your current directory doesn’t already contain ``.bash_profile``
      (i.e., no unique suffix is added to the generated filename).
