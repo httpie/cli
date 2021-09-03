@@ -286,7 +286,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 * XML data is now formatted
 * ``--session`` and ``--session-read-only`` now also accept paths to
-  session files (eg. ``http --session=/tmp/session.json example.org``)
+  session files (e.g. ``http --session=/tmp/session.json example.org``)
 
 
 `0.5.1`_ (2013-05-13)
