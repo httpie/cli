@@ -1,12 +1,9 @@
 <br/>
 
-<div align="center">
 
-<a href="https://httpie.io" target="blank_">
-    <img width="285" alt="HTTPie" src="docs/httpie-logo.svg">
-</a>
+# <a href="https://httpie.io" target="blank_"><img width="285" alt="HTTPie" src="docs/httpie-logo.svg"></a>
 
-# HTTPie: the human-friendly HTTP CLI client for working with APIs
+## HTTPie: the human-friendly HTTP CLI client for working with APIs
 
 <img src="docs/httpie-animation.gif" width="600"/>
 
@@ -23,8 +20,6 @@ HTTPie (pronounced _aitch-tee-tee-pie_ 🥧) is a command-line HTTP client.
 The `http` and `https` commands let you send arbitrary HTTP requests for testing, debugging, and generally interacting with APIs & HTTP servers. Commands use simple, natural syntax and provide a formatted and colorized output.
 
 **Visit [httpie.io](https://httpie.io) to learn more**
-
-</div>
 
 ## Features
 
