@@ -23,8 +23,8 @@ They use simple and natural syntax and provide formatted and colorized output.
 
 ## Getting started
 
-* [Installation instructions →](https://httpie.io/docs#installation)
-* [Full documentation →](https://httpie.io/docs)
+- [Installation instructions →](https://httpie.io/docs#installation)
+- [Full documentation →](https://httpie.io/docs)
 
 ## Features
 
@@ -37,7 +37,6 @@ They use simple and natural syntax and provide formatted and colorized output.
 - Custom headers
 - Persistent sessions
 - `wget`-like downloads
-
 
 [See for all features →](https://httpie.io/docs)
 
