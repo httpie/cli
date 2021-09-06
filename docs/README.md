@@ -1674,7 +1674,6 @@ See [CHANGELOG](https://github.com/httpie/httpie/blob/master/CHANGELOG.md).
 
 ### Artwork
 
-- Logo and branding by [HTTPie](https://httpie.io).
 - [README Animation](https://raw.githubusercontent.com/httpie/httpie/master/httpie.gif) by [Allen Smith](https://github.com/loranallensmith).
 
 ### Licence
