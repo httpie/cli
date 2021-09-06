@@ -16,10 +16,11 @@ They use simple and natural syntax and provide formatted and colorized output.
 [![Latest version](https://img.shields.io/pypi/v/httpie.svg?style=flat&label=Latest&color=%234B78E6&logo=&logoColor=white)](https://pypi.python.org/pypi/httpie)
 [![Build](https://img.shields.io/github/workflow/status/httpie/httpie/Build?color=%23FA9BFA&label=Build)](https://github.com/httpie/httpie/actions)
 [![Coverage](https://img.shields.io/codecov/c/github/httpie/httpie?style=flat&label=Coverage&color=%2373DC8C)](https://codecov.io/gh/httpie/httpie)
-[![Twitter](https://img.shields.io/twitter/follow/httpie?style=flat&logo=twitter&color=%234B78E6&logoColor=%234B78E6)](https://twitter.com/httpie)
-[![Chat](https://img.shields.io/badge/chat-Discord-brightgreen?style=flat&label=Chat%20on&logo=discord&color=%23FA9BFA)](https://httpie.io/chat)
+[![Twitter](https://img.shields.io/twitter/follow/httpie?style=flat&color=%234B78E6&logoColor=%234B78E6)](https://twitter.com/httpie)
+[![Chat](https://img.shields.io/badge/chat-Discord-brightgreen?style=flat&label=Chat%20on&color=%23FA9BFA)](https://httpie.io/chat)
 
 <img src="docs/httpie-animation.gif" alt="HTTPie in action" width="100%"/>
+
 
 ## Main features
 
@@ -32,18 +33,13 @@ They use simple and natural syntax and provide formatted and colorized output.
 - Custom headers
 - Persistent sessions
 - `wget`-like downloads
+- And more…
 
-See the [complete list of features](https://httpie.io/docs).
+## Getting started
 
-## Documentation
+* [Installation instructions (httpie.io/docs#installation)](https://httpie.io/docs#installation)
+* [Full documentation (httpie.io/docs)](https://httpie.io/docs)
 
-Visit full documentation and installation guides at [httpie.io/docs](https://httpie.io/docs).
-
-## Installation
-
-HTTPie can be installed using Homebrew on macOS (`brew install httpie`), and `pip` on Linux, Windows and other Operating Systems (e.g. `python -m pip install --upgrade httpie`).
-
-Learn more at [httpie.io/docs#installation](https://httpie.io/docs#installation)
 
 ## Examples
 
@@ -73,11 +69,6 @@ $ http -a USERNAME POST https://api.github.com/repos/httpie/httpie/issues/83/com
 
 See [the documentation](https://httpie.io/docs) for a complete list of examples and use cases.
 
-## Contributing
-
-Please read the [contribution guide](https://github.com/httpie/httpie/blob/master/CONTRIBUTING.md) for how to contribute.
-Have a look through existing [Issues](https://github.com/httpie/httpie/issues) and [Pull Requests](https://github.com/httpie/httpie/pulls) that you could help with. If you'd like to request a feature or report a bug, please [create a GitHub Issue](https://github.com/httpie/httpie/issues) using one of the templates provided.
-
 ## Community & support
 
 - Visit the [HTTPie website](https://httpie.io) for full documentation and useful links.
@@ -86,3 +77,8 @@ Have a look through existing [Issues](https://github.com/httpie/httpie/issues) a
 - Use [StackOverflow](https://stackoverflow.com/questions/tagged/httpie) to ask questions and include a `httpie` tag.
 - Create [GitHub Issues](https://github.com/httpie/httpie/issues) for bug reports and feature requests.
 - Subscribe to the [HTTPie newsletter](https://httpie.io) for occasional updates.
+
+## Contributing
+
+Please read the [contribution guide](https://github.com/httpie/httpie/blob/master/CONTRIBUTING.md) for how to contribute.
+Have a look through existing [Issues](https://github.com/httpie/httpie/issues) and [Pull Requests](https://github.com/httpie/httpie/pulls) that you could help with. If you'd like to request a feature or report a bug, please [create a GitHub Issue](https://github.com/httpie/httpie/issues) using one of the templates provided.
