@@ -1,7 +1,8 @@
 include LICENSE
-include README.rst
-include CHANGELOG.rst
-include AUTHORS.rst
+include README.md
+include CHANGELOG.md
+include AUTHORS.md
+include docs/README.md
 
 # <https://github.com/httpie/httpie/issues/182>
 recursive-include tests/ *

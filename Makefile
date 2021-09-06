@@ -1,5 +1,5 @@
 ###############################################################################
-# See ./CONTRIBUTING.rst
+# See ./CONTRIBUTING.md
 ###############################################################################
 
 .PHONY: build
@@ -170,20 +170,6 @@ uninstall-httpie:
 	@echo "Verifying…"
 	cd .. && ! $(VENV_PYTHON) -m httpie --version &2>/dev/null
 
-	@echo "Done"
-	@echo
-
-
-###############################################################################
-# Docs
-###############################################################################
-
-pdf:
-	@echo "Converting README.rst to PDF…"
-	rst2pdf \
-		--strip-elements-with-class=no-pdf \
-		README.rst \
-		-o README.pdf
 	@echo "Done"
 	@echo
 
