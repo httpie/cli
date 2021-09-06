@@ -14,10 +14,10 @@ They use simple and natural syntax and provide formatted and colorized output.
 
 [![Docs](https://img.shields.io/badge/stable%20docs-httpie.io%2Fdocs-brightgreen?style=flat&color=%2373DC8C&label=Docs)](https://httpie.org/docs)
 [![Chat](https://img.shields.io/badge/chat-Discord-brightgreen?style=flat&label=Chat%20on&color=%23FA9BFA)](https://httpie.io/chat)
-[![Twitter](https://img.shields.io/twitter/follow/httpie?color=%234B78E6&logoColor=%234B78E6)](https://twitter.com/httpie)
+[![Twitter](https://img.shields.io/twitter/follow/httpie?color=%234B78E6&logoColor=%234B78E6)](https://twitter.io/httpie)
 [![Latest version](https://img.shields.io/pypi/v/httpie.svg?style=flat&label=Latest&color=%234B78E6&logo=&logoColor=white)](https://pypi.python.org/pypi/httpie)
 [![Build](https://img.shields.io/github/workflow/status/httpie/httpie/Build?color=%2373DC8C&label=Build)](https://github.com/httpie/httpie/actions)
-[![Coverage](https://img.shields.io/codecov/c/github/httpie/httpie?style=flat&label=Coverage&color=%2373DC8C)](https://codecov.io/gh/httpie/httpie)
+[![Coverage](https://img.shields.io/codecov/c/github/httpie/httpie?style=flat&label=Coverage&color=%23FA9BFA)](https://codecov.io/gh/httpie/httpie)
 
 
 ## Main features
