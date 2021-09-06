@@ -1,10 +1,7 @@
-<br/>
-<br/>
 <div align="center">
+    <br/><br/>
     <a href="https://httpie.io" target="blank_"><img width="285" alt="HTTPie" src="docs/httpie-logo.svg"></a>
-</div>
-<br/>
-<br/>
+    <br/><br/>
 
 # HTTPie: human-friendly CLI HTTP client for the API era
 
@@ -22,6 +19,8 @@ The `http` & `https` commands allow for creating and sending arbitrary HTTP requ
 They use simple and natural syntax and provide formatted and colorized output.
 
 <img src="docs/httpie-animation.gif" width="600"/>
+
+</div>
 
 ## Main features
 
