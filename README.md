@@ -23,8 +23,8 @@ They use simple and natural syntax and provide formatted and colorized output.
 
 ## Getting started
 
-- [Full documentation →](https://httpie.io/docs)
 - [Installation instructions →](https://httpie.io/docs#installation)
+- [Full documentation →](https://httpie.io/docs)
 
 ## Features
 
