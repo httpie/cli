@@ -1,9 +1,19 @@
-<div align="center">
-    <br/><br/>
-    <a href="https://httpie.io" target="blank_"><img width="285" alt="HTTPie" src="docs/httpie-logo.svg"></a>
-    <br/><br/>
+
+<br/><br/>
+<a href="https://httpie.io" target="blank_"><img width="285" alt="HTTPie" src="docs/httpie-logo.svg"></a>
+<br/><br/>
 
 # HTTPie: human-friendly CLI HTTP client for the API era
+
+
+HTTPie (pronounced _aitch-tee-tee-pie_) is a command-line HTTP client.
+Its goal is to make CLI interaction with web services as human-friendly as possible.
+HTTPie is designed for testing, debugging, and generally interacting with APIs & HTTP servers.
+The `http` & `https` commands allow for creating and sending arbitrary HTTP requests.
+They use simple and natural syntax and provide formatted and colorized output.
+    
+
+<img src="docs/httpie-animation.gif" width="600"/>
 
 [![Docs](https://img.shields.io/badge/stable%20docs-httpie.io%2Fdocs-brightgreen?style=flat&color=%2373DC8C&label=Docs)](https://httpie.org/docs)
 [![Chat](https://img.shields.io/badge/chat-Discord-brightgreen?style=flat&label=Chat%20on&color=%23FA9BFA)](https://httpie.io/chat)
@@ -12,15 +22,6 @@
 [![Build](https://img.shields.io/github/workflow/status/httpie/httpie/Build?color=%2373DC8C&label=Build)](https://github.com/httpie/httpie/actions)
 [![Coverage](https://img.shields.io/codecov/c/github/httpie/httpie?style=flat&label=Coverage&color=%23FA9BFA)](https://codecov.io/gh/httpie/httpie)
 
-HTTPie (pronounced _aitch-tee-tee-pie_) is a command-line HTTP client.
-Its goal is to make CLI interaction with web services as human-friendly as possible.
-HTTPie is designed for testing, debugging, and generally interacting with APIs & HTTP servers.
-The `http` & `https` commands allow for creating and sending arbitrary HTTP requests.
-They use simple and natural syntax and provide formatted and colorized output.
-
-<img src="docs/httpie-animation.gif" width="600"/>
-
-</div>
 
 ## Main features
 
