@@ -20,6 +20,7 @@ dev_require = [
     'flake8-mutable',
     'flake8-tuple',
     'mdformat',
+    'mdformat-gfm',
     'pytest-cov',
     'twine',
     'wheel',
