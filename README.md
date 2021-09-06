@@ -3,7 +3,13 @@
 
 <a href="https://httpie.io" target="blank_"><img width="285" alt="HTTPie" src="docs/httpie-logo.svg"></a>
 
-# HTTPie: the human-friendly HTTP CLI client for working with APIs
+# HTTPie: human-friendly CLI HTTP client for the API era
+
+HTTPie (pronounced _aitch-tee-tee-pie_) is a command-line HTTP client.
+Its goal is to make CLI interaction with web services as human-friendly as possible.
+HTTPie is designed for testing, debugging, and generally interacting with APIs & HTTP servers.
+The `http` & `https` commands allow for creating and sending arbitrary HTTP requests.
+They use simple and natural syntax and provide formatted and colorized output.
 
 <img src="docs/httpie-animation.gif" width="600"/>
 
@@ -15,27 +21,21 @@
 [![Downloads](https://img.shields.io/pypi/dm/httpie?color=%23DBDE52&label=Downloads&logo=python)](https://pepy.tech/project/httpie)
 [![Issues](https://img.shields.io/github/issues/httpie/httpie?style=flat&color=%23FFA24E&label=Issues&logo=github)](https://github.com/httpie/httpie/issues)
 
-**HTTPie (pronounced _aitch-tee-tee-pie_) is a command-line HTTP client.
-Its goal is to make CLI interaction with web services as human-friendly as possible.
-HTTPie is designed for testing, debugging, and generally interacting with APIs & HTTP servers.
-The `http` & `https` commands allow for creating and sending arbitrary HTTP requests.
-They use simple and natural syntax and provide formatted and colorized output.**
-
-- Simple syntax
+- Expressive and intuitive syntax
 - Formatted and colorized terminal output
 - Built-in JSON support
 - Forms and file uploads
 - HTTPS, proxies, and authentication
+- Arbitrary request data
+- Custom headers
 - Persistent sessions
-- Wget-like downloads
-- Linux, macOS and Windows support
-- Plugins, such as JWTAuth and OAuth
+- `wget`-like downloads
 
 See the [complete list of features](https://httpie.io/docs).
 
 ## Documentation
 
-Full documentation and installation guides live in [httpie.io/docs](https://httpie.io/docs).
+Visit full documentation and installation guides at [httpie.io/docs](https://httpie.io/docs).
 
 ## Installation
 
