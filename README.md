@@ -75,13 +75,8 @@ See [the documentation](https://httpie.io/docs) for a complete list of examples 
 
 ## Contributing
 
-We ♥️ our contributors! Please read the [contribution guide](https://github.com/httpie/httpie/blob/master/CONTRIBUTING.md) for how to contribute.
-Have a look through existing [Issues](https://github.com/httpie/httpie/issues) and [Pull Requests](https://github.com/httpie/httpie/pulls) that you could help with.
-
-[![Issues](https://img.shields.io/github/issues/httpie/httpie?style=flat&color=%23FFA24E&label=Issues&logo=github)](https://github.com/httpie/httpie/issues)
-[![PRs](https://img.shields.io/github/issues-pr/httpie/httpie?color=%23FA9BFA&label=Pull%20Requests&logo=github)](https://github.com/httpie/httpie/pulls)
-
-If you'd like to request a feature or report a bug, please [create a GitHub Issue](https://github.com/httpie/httpie/issues) using one of the templates provided.
+Please read the [contribution guide](https://github.com/httpie/httpie/blob/master/CONTRIBUTING.md) for how to contribute.
+Have a look through existing [Issues](https://github.com/httpie/httpie/issues) and [Pull Requests](https://github.com/httpie/httpie/pulls) that you could help with. If you'd like to request a feature or report a bug, please [create a GitHub Issue](https://github.com/httpie/httpie/issues) using one of the templates provided.
 
 ## Community & support
 
