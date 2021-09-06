@@ -69,7 +69,7 @@ $ http -a USERNAME POST https://api.github.com/repos/httpie/httpie/issues/83/com
 
 [See more examples →](https://httpie.io/docs#examples)
 
-## Support & community
+## Community & support
 
 - Visit the [HTTPie website](https://httpie.io) for full documentation and useful links.
 - Join our [Discord server](https://httpie.io/chat) is to ask questions, discuss features, and for general API chat.
