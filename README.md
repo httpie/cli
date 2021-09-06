@@ -7,13 +7,13 @@
 
 <img src="docs/httpie-animation.gif" width="600"/>
 
-[![Build](https://img.shields.io/github/workflow/status/httpie/httpie/Build?color=%2373DC8C&label=Build&logo=github)](https://github.com/httpie/httpie/actions)
-[![Latest version](https://img.shields.io/pypi/v/httpie.svg?style=flat&label=Latest%20stable%20version&color=%23FA9BFA&logo=pypi&logoColor=white)](https://pypi.python.org/pypi/httpie)
-[![Coverage](https://img.shields.io/codecov/c/github/httpie/httpie?style=flat&label=Coverage&color=%237D7D7D&logo=codecov)](https://codecov.io/gh/httpie/httpie)
-[![Downloads](https://img.shields.io/pypi/dm/httpie?color=%23DBDE52&label=Downloads&logo=python)](https://pepy.tech/project/httpie)
-[![Issues](https://img.shields.io/github/issues/httpie/httpie?style=flat&color=%23FFA24E&label=Issues&logo=github)](https://github.com/httpie/httpie/issues)
+[![Latest version](https://img.shields.io/pypi/v/httpie.svg?style=flat&label=Latest%20stable%20version&color=%23FA9BFA&logo=&logoColor=white)](https://pypi.python.org/pypi/httpie)
 [![Docs](https://img.shields.io/badge/stable%20docs-httpie.org%2Fdocs-brightgreen?style=flat&color=%234B78E6&label=Stable%20docs)](https://httpie.org/docs)
 [![Chat](https://img.shields.io/badge/chat-on%20Discord-brightgreen?style=flat&logo=discord&label=Chat%20on&color=%23B464F0)](https://httpie.io/chat)
+[![Issues](https://img.shields.io/github/issues/httpie/httpie?style=flat&color=%23FFA24E&label=Issues&logo=github)](https://github.com/httpie/httpie/issues)
+[![Build](https://img.shields.io/github/workflow/status/httpie/httpie/Build?color=%2373DC8C&label=Build&logo=github)](https://github.com/httpie/httpie/actions)
+[![Coverage](https://img.shields.io/codecov/c/github/httpie/httpie?style=flat&label=Coverage&color=%237D7D7D&logo=codecov)](https://codecov.io/gh/httpie/httpie)
+[![Downloads](https://img.shields.io/pypi/dm/httpie?color=%23DBDE52&label=Downloads&logo=python)](https://pepy.tech/project/httpie)
 
 HTTPie (pronounced _aitch-tee-tee-pie_ 🥧) is a command-line HTTP client.
 
