@@ -116,12 +116,6 @@ Python version 3.6 or greater is required.
 You can also install the latest unreleased development version directly from the `master` branch on GitHub.
 It is a work-in-progress of a future stable release so the experience might be not as smooth.
 
-<div class='hidden-website'>
-
-[![Build](https://img.shields.io/github/workflow/status/httpie/httpie/Build?color=%2373DC8C&label=Build&logo=github)](https://github.com/httpie/httpie/actions)
-
-</div>
-
 You can install it on Linux, macOS or Windows with `pip`:
 
 ```bash

@@ -81,4 +81,4 @@ $ http -a USERNAME POST https://api.github.com/repos/httpie/httpie/issues/83/com
 
 Have a look through existing [Issues](https://github.com/httpie/httpie/issues) and [Pull Requests](https://github.com/httpie/httpie/pulls) that you could help with. If you'd like to request a feature or report a bug, please [create a GitHub Issue](https://github.com/httpie/httpie/issues) using one of the templates provided.
 
-[See full contribution guide →](https://github.com/httpie/httpie/blob/master/CONTRIBUTING.md)
+[See contribution guide →](https://github.com/httpie/httpie/blob/master/CONTRIBUTING.md)
