@@ -12,9 +12,9 @@ They use simple and natural syntax and provide formatted and colorized output.
 <img src="docs/httpie-animation.gif" width="600"/>
 
 
-[![Docs](https://img.shields.io/badge/stable%20docs-httpie.org%2Fdocs-brightgreen?style=flat&color=%2373DC8C&label=Documentation)](https://httpie.org/docs)
+[![Docs](https://img.shields.io/badge/stable%20docs-httpie.io%2Fdocs-brightgreen?style=flat&color=%2373DC8C&label=Docs)](https://httpie.org/docs)
 [![Latest version](https://img.shields.io/pypi/v/httpie.svg?style=flat&label=Latest&color=%234B78E6&logo=&logoColor=white)](https://pypi.python.org/pypi/httpie)
-[![Chat](https://img.shields.io/badge/chat-on%20Discord-brightgreen?style=flat&label=Chat%20on&color=%23FA9BFA)](https://httpie.io/chat)
+[![Chat](https://img.shields.io/badge/chat-Discord-brightgreen?style=flat&label=Chat%20on&color=%23FA9BFA)](https://httpie.io/chat)
 [![Build](https://img.shields.io/github/workflow/status/httpie/httpie/Build?color=%2373DC8C&label=Build)](https://github.com/httpie/httpie/actions)
 [![Coverage](https://img.shields.io/codecov/c/github/httpie/httpie?style=flat&label=Coverage&color=%2373DC8C)](https://codecov.io/gh/httpie/httpie)
 [![Downloads](https://img.shields.io/pypi/dm/httpie?color=%234B78E6&label=Downloads)](https://pepy.tech/project/httpie)
