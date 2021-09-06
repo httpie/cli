@@ -23,8 +23,8 @@ They use simple and natural syntax and provide formatted and colorized output.
 
 ## Getting started
 
-* [See installation instructions →](https://httpie.io/docs#installation)
-* [See full documentation →](https://httpie.io/docs)
+* [Installation instructions →](https://httpie.io/docs#installation)
+* [Full documentation →](https://httpie.io/docs)
 
 ## Main features
 
@@ -39,7 +39,7 @@ They use simple and natural syntax and provide formatted and colorized output.
 - `wget`-like downloads
 
 
-[See docs for all features →](https://httpie.io/docs)
+[See for all features →](https://httpie.io/docs)
 
 ## Examples
 
@@ -67,7 +67,7 @@ Use [GitHub API](https://developer.github.com/v3/issues/comments/#create-a-comme
 $ http -a USERNAME POST https://api.github.com/repos/httpie/httpie/issues/83/comments body='HTTPie is awesome! :heart:'
 ```
 
-[See more examples in the docs →](https://httpie.io/docs#examples)
+[See more examples →](https://httpie.io/docs#examples)
 
 ## Community & support
 
