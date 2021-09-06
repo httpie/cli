@@ -1,11 +1,11 @@
 <br/>
 <a href="https://httpie.io" target="blank_">
-    <img width="285" alt="Httpie-Logo-Lockup-Pink@2x" src="https://user-images.githubusercontent.com/22844059/112143133-5fff7380-8bcf-11eb-85d0-8efdf27f3991.png">
+    <img width="285" alt="HTTPie" src="docs/httpie-logo.svg">
 </a>
 
 # HTTPie: the human-friendly HTTP CLI client for working with APIs
 
-<img src="https://raw.githubusercontent.com/httpie/httpie/master/httpie.gif" width="600"/>
+<img src="docs/httpie-animation.gif" width="600"/>
 
 [![Build](https://img.shields.io/github/workflow/status/httpie/httpie/Build?color=%2373DC8C&label=Build&logo=github)](https://github.com/httpie/httpie/actions)
 [![Latest version](https://img.shields.io/pypi/v/httpie.svg?style=flat&label=Latest%20stable%20version&color=%23FA9BFA&logo=pypi&logoColor=white)](https://pypi.python.org/pypi/httpie)
