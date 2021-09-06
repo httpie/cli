@@ -21,6 +21,10 @@ They use simple and natural syntax and provide formatted and colorized output.
 
 <img src="docs/httpie-animation.gif" alt="HTTPie in action" width="100%"/>
 
+## Getting started
+
+* [Installation instructions (httpie.io/docs#installation)](https://httpie.io/docs#installation)
+* [Full documentation (httpie.io/docs)](https://httpie.io/docs)
 
 ## Main features
 
@@ -34,12 +38,6 @@ They use simple and natural syntax and provide formatted and colorized output.
 - Persistent sessions
 - `wget`-like downloads
 - And more…
-
-## Getting started
-
-* [Installation instructions (httpie.io/docs#installation)](https://httpie.io/docs#installation)
-* [Full documentation (httpie.io/docs)](https://httpie.io/docs)
-
 
 ## Examples
 
