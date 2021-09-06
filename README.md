@@ -1,6 +1,6 @@
 <br/>
 <a href="https://httpie.io" target="blank_">
-    <img height="100" alt="HTTPie" src="docs/httpie-logo.svg" />
+    <img height="100" alt="HTTPie" src="https://raw.githubusercontent.com/httpie/httpie/master/docs/httpie-logo.svg" />
 </a>
 <br/>
 
@@ -19,12 +19,12 @@ They use simple and natural syntax and provide formatted and colorized output.
 [![Twitter](https://img.shields.io/twitter/follow/httpie?style=flat&color=%234B78E6&logoColor=%234B78E6)](https://twitter.com/httpie)
 [![Chat](https://img.shields.io/badge/chat-Discord-brightgreen?style=flat&label=Chat%20on&color=%23FA9BFA)](https://httpie.io/chat)
 
-<img src="docs/httpie-animation.gif" alt="HTTPie in action" width="100%"/>
+<img src="https://raw.githubusercontent.com/httpie/httpie/master/docs/httpie-animation.gif" alt="HTTPie in action" width="100%"/>
 
 ## Getting started
 
-* [Installation instructions (httpie.io/docs#installation)](https://httpie.io/docs#installation)
-* [Full documentation (httpie.io/docs)](https://httpie.io/docs)
+* [Installation instructions](https://httpie.io/docs#installation)
+* [Full documentation](https://httpie.io/docs)
 
 ## Main features
 
@@ -37,7 +37,9 @@ They use simple and natural syntax and provide formatted and colorized output.
 - Custom headers
 - Persistent sessions
 - `wget`-like downloads
-- And more…
+
+
+[See the docs for all features →](https://httpie.io/docs)
 
 ## Examples
 
@@ -65,7 +67,7 @@ Use [GitHub API](https://developer.github.com/v3/issues/comments/#create-a-comme
 $ http -a USERNAME POST https://api.github.com/repos/httpie/httpie/issues/83/comments body='HTTPie is awesome! :heart:'
 ```
 
-See [the documentation](https://httpie.io/docs) for a complete list of examples and use cases.
+[See more examples in the docs →](https://httpie.io/docs#examples)
 
 ## Community & support
 
@@ -78,5 +80,6 @@ See [the documentation](https://httpie.io/docs) for a complete list of examples 
 
 ## Contributing
 
-Please read the [contribution guide](https://github.com/httpie/httpie/blob/master/CONTRIBUTING.md) for how to contribute.
 Have a look through existing [Issues](https://github.com/httpie/httpie/issues) and [Pull Requests](https://github.com/httpie/httpie/pulls) that you could help with. If you'd like to request a feature or report a bug, please [create a GitHub Issue](https://github.com/httpie/httpie/issues) using one of the templates provided.
+
+[See the full contributing guide →](https://github.com/httpie/httpie/blob/master/CONTRIBUTING.md)
