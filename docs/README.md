@@ -1,5 +1,7 @@
 <div class='hidden-website'>
+
 # HTTPie Documentation
+
 </div>
 
 HTTPie (pronounced _aitch-tee-tee-pie_) is a command-line HTTP client.
@@ -9,6 +11,7 @@ The `http` & `https` commands allow for creating and sending arbitrary HTTP requ
 They use simple and natural syntax and provide formatted and colorized output.
 
 <div class='hidden-website'>
+
 ## About this document
 
 This documentation is best viewed at [httpie.io/docs](https://httpie.org/docs).
