@@ -1,7 +1,7 @@
 <br/>
 
 
-# <a href="https://httpie.io" target="blank_"><img width="285" alt="HTTPie" src="docs/httpie-logo.svg"></a>
+<a href="https://httpie.io" target="blank_"><img width="285" alt="HTTPie" src="docs/httpie-logo.svg"></a>
 
 ## HTTPie: the human-friendly HTTP CLI client for working with APIs
 
