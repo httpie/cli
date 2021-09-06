@@ -8,7 +8,7 @@ import httpie
 
 # Note: keep requirements here to ease distributions packaging
 tests_require = [
-    'docutils',
+    'mdformat',
     'pytest',
     'pytest-httpbin>=0.0.6',
     'responses',
@@ -55,7 +55,7 @@ extras_require = {
 
 
 def long_description():
-    with open('README.rst', encoding='utf-8') as f:
+    with open('README.md', encoding='utf-8') as f:
         return f.read()
 
 
@@ -64,7 +64,7 @@ setup(
     version=httpie.__version__,
     description=httpie.__doc__.strip(),
     long_description=long_description(),
-    long_description_content_type='text/x-rst',
+    long_description_content_type='text/markdown',
     url='https://httpie.org/',
     download_url=f'https://github.com/httpie/httpie/archive/{httpie.__version__}.tar.gz',
     author=httpie.__author__,
