@@ -1,7 +1,6 @@
 <br/>
 <a href="https://httpie.io" target="blank_">
-    <img height="100" alt="HTTPie" src="
-docs/httpie-logo.svg" />
+    <img height="100" alt="HTTPie" src="docs/httpie-logo.svg" />
 </a>
 <br/>
 
