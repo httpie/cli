@@ -11,9 +11,9 @@ Its goal is to make CLI interaction with web services as human-friendly as possi
 HTTPie is designed for testing, debugging, and generally interacting with APIs & HTTP servers.
 The `http` & `https` commands allow for creating and sending arbitrary HTTP requests.
 They use simple and natural syntax and provide formatted and colorized output.
-    
 
-<img src="docs/httpie-animation.gif" width="600"/>
+
+<img src="docs/httpie-animation.gif" width="100%"/>
 
 [![Docs](https://img.shields.io/badge/stable%20docs-httpie.io%2Fdocs-brightgreen?style=flat&color=%2373DC8C&label=Docs)](https://httpie.org/docs)
 [![Chat](https://img.shields.io/badge/chat-Discord-brightgreen?style=flat&label=Chat%20on&color=%23FA9BFA)](https://httpie.io/chat)
