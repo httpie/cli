@@ -25,5 +25,6 @@ assert filenames
 @pytest.mark.parametrize('filename', filenames)
 def test_md_file_syntax(filename):
     mdformat = pytest.importorskip('mdformat._cli')
-    err = f'Running "python -m mdformat --number {filename}; git diff" should help.'
-    assert mdformat.run(['--check', '--number', str(filename)]) == 0, err
+    args = ['--end-of-line', 'lf', '--check', '--number']
+    err = f'Running "python -m mdformat {" ".join(args)} {filename}; git diff" should help.'
+    assert mdformat.run(args + [str(filename)]) == 0, err
