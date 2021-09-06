@@ -1,6 +1,7 @@
 <br/>
 <a href="https://httpie.io" target="blank_">
-    <img height="100" alt="HTTPie" src="docs/httpie-logo.svg" />
+    <img height="100" alt="HTTPie" src="
+docs/httpie-logo.svg" />
 </a>
 <br/>
 
@@ -23,8 +24,8 @@ They use simple and natural syntax and provide formatted and colorized output.
 
 ## Getting started
 
-* [Installation instructions](https://httpie.io/docs#installation)
-* [Full documentation](https://httpie.io/docs)
+* [See installation instructions →](https://httpie.io/docs#installation)
+* [See full documentation →](https://httpie.io/docs)
 
 ## Main features
 
