@@ -136,7 +136,7 @@ Verify that now you have the [current development version identifier](https://gi
 
 ```bash
 $ http --version
-# 2.5.0-dev
+# 2.5.0
 ```
 
 ## Usage
