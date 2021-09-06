@@ -1,6 +1,6 @@
 <br/>
 <a href="https://httpie.io" target="blank_">
-    <img height="100" alt="HTTPie" src="docs/httpie-logo.svg" />
+    <img height="100" alt="HTTPie" src="https://raw.githubusercontent.com/httpie/httpie/master/docs/httpie-logo.svg" />
 </a>
 <br/>
 
@@ -19,7 +19,7 @@ They use simple and natural syntax and provide formatted and colorized output.
 [![Twitter](https://img.shields.io/twitter/follow/httpie?style=flat&color=%234B78E6&logoColor=%234B78E6)](https://twitter.com/httpie)
 [![Chat](https://img.shields.io/badge/chat-Discord-brightgreen?style=flat&label=Chat%20on&color=%23FA9BFA)](https://httpie.io/chat)
 
-<img src="docs/httpie-animation.gif" alt="HTTPie in action" width="100%"/>
+<img src="https://raw.githubusercontent.com/httpie/httpie/master/docs/httpie-animation.gif" alt="HTTPie in action" width="100%"/>
 
 ## Getting started
 
