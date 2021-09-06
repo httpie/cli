@@ -26,7 +26,7 @@ They use simple and natural syntax and provide formatted and colorized output.
 * [Installation instructions →](https://httpie.io/docs#installation)
 * [Full documentation →](https://httpie.io/docs)
 
-## Main features
+## Features
 
 - Expressive and intuitive syntax
 - Formatted and colorized terminal output
