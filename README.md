@@ -12,8 +12,6 @@ HTTPie is designed for testing, debugging, and generally interacting with APIs &
 The `http` & `https` commands allow for creating and sending arbitrary HTTP requests.
 They use simple and natural syntax and provide formatted and colorized output.
 
-<img src="docs/httpie-animation.gif" alt="HTTPie in action" width="100%"/>
-
 [![Docs](https://img.shields.io/badge/stable%20docs-httpie.io%2Fdocs-brightgreen?style=flat&color=%2373DC8C&label=Docs)](https://httpie.org/docs)
 [![Latest version](https://img.shields.io/pypi/v/httpie.svg?style=flat&label=Latest&color=%234B78E6&logo=&logoColor=white)](https://pypi.python.org/pypi/httpie)
 [![Build](https://img.shields.io/github/workflow/status/httpie/httpie/Build?color=%23FA9BFA&label=Build)](https://github.com/httpie/httpie/actions)
@@ -21,6 +19,7 @@ They use simple and natural syntax and provide formatted and colorized output.
 [![Twitter](https://img.shields.io/twitter/follow/httpie?style=flat&logo=twitter&color=%234B78E6&logoColor=%234B78E6)](https://twitter.com/httpie)
 [![Chat](https://img.shields.io/badge/chat-Discord-brightgreen?style=flat&label=Chat%20on&logo=discord&color=%23FA9BFA)](https://httpie.io/chat)
 
+<img src="docs/httpie-animation.gif" alt="HTTPie in action" width="100%"/>
 
 ## Main features
 
