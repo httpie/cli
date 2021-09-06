@@ -1,4 +1,5 @@
 <br/>
+
 <a href="https://httpie.io" target="blank_">
     <img width="285" alt="HTTPie" src="docs/httpie-logo.svg">
 </a>
@@ -10,6 +11,7 @@
 [![Build](https://img.shields.io/github/workflow/status/httpie/httpie/Build?color=%2373DC8C&label=Build&logo=github)](https://github.com/httpie/httpie/actions)
 [![Latest version](https://img.shields.io/pypi/v/httpie.svg?style=flat&label=Latest%20stable%20version&color=%23FA9BFA&logo=pypi&logoColor=white)](https://pypi.python.org/pypi/httpie)
 [![Coverage](https://img.shields.io/codecov/c/github/httpie/httpie?style=flat&label=Coverage&color=%237D7D7D&logo=codecov)](https://codecov.io/gh/httpie/httpie)
+
 [![Downloads](https://img.shields.io/pypi/dm/httpie?color=%23DBDE52&label=Downloads&logo=python)](https://pepy.tech/project/httpie)
 
 [![Issues](https://img.shields.io/github/issues/httpie/httpie?style=flat&color=%23FFA24E&label=Issues&logo=github)](https://github.com/httpie/httpie/issues)
@@ -72,11 +74,11 @@ Use [GitHub API](https://developer.github.com/v3/issues/comments/#create-a-comme
 $ http -a USERNAME POST https://api.github.com/repos/httpie/httpie/issues/83/comments body='HTTPie is awesome! :heart:'
 ```
 
-**See [the documentation](https://httpie.io/docs) for a complete list of examples and use cases.**
+See [the documentation](https://httpie.io/docs) for a complete list of examples and use cases.
 
 ## Contributing
 
-We :sparkling_heart: our contributors! Please read the [contribution guide](https://github.com/httpie/httpie/blob/master/CONTRIBUTING.md) for how to contribute.
+We ♥️ our contributors! Please read the [contribution guide](https://github.com/httpie/httpie/blob/master/CONTRIBUTING.md) for how to contribute.
 Have a look through existing [Issues](https://github.com/httpie/httpie/issues) and [Pull Requests](https://github.com/httpie/httpie/pulls) that you could help with.
 
 [![Issues](https://img.shields.io/github/issues/httpie/httpie?style=flat&color=%23FFA24E&label=Issues&logo=github)](https://github.com/httpie/httpie/issues)
@@ -84,22 +86,11 @@ Have a look through existing [Issues](https://github.com/httpie/httpie/issues) a
 
 If you'd like to request a feature or report a bug, please [create a GitHub Issue](https://github.com/httpie/httpie/issues) using one of the templates provided.
 
-## Community & Support
+## Community & support
 
 - Visit the [HTTPie website](https://httpie.io) for full documentation and useful links.
-
 - Join our [Discord server](https://httpie.io/chat) is to ask questions, discuss features, and for general API chat.
-
 - Tweet at [@httpie](https://twitter.com/httpie) on Twitter.
-
 - Use [StackOverflow](https://stackoverflow.com/questions/tagged/httpie) to ask questions and include a `httpie` tag.
-
 - Create [GitHub Issues](https://github.com/httpie/httpie/issues) for bug reports and feature requests.
-
 - Subscribe to the [HTTPie newsletter](https://httpie.io) for occasional updates.
-
-## License
-
-[![License](https://img.shields.io/github/license/httpie/httpie?color=%2373DC8C&label=License)](https://github.com/httpie/httpie/blob/master/LICENSE)
-
-HTTPie is licensed under the [BSD-3-Clause License](https://github.com/httpie/httpie/blob/master/LICENSE).
