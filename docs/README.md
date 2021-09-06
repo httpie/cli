@@ -17,6 +17,7 @@ You can select your corresponding HTTPie version as well as run examples directl
 
 If you are reading this on GitHub, then this text covers the current *development* version.
 You are invited to submit fixes and improvements to the docs by editing [this file](https://github.com/httpie/httpie/blob/master/docs/README.md).
+
 </div>
 
 ## Main features
