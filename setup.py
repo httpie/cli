@@ -8,7 +8,6 @@ import httpie
 
 # Note: keep requirements here to ease distributions packaging
 tests_require = [
-    'mdformat',
     'pytest',
     'pytest-httpbin>=0.0.6',
     'responses',
@@ -20,6 +19,7 @@ dev_require = [
     'flake8-deprecated',
     'flake8-mutable',
     'flake8-tuple',
+    'mdformat',
     'pytest-cov',
     'twine',
     'wheel',
