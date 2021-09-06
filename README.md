@@ -17,7 +17,6 @@ They use simple and natural syntax and provide formatted and colorized output.
 [![Chat](https://img.shields.io/badge/chat-Discord-brightgreen?style=flat&label=Chat%20on&color=%23FA9BFA)](https://httpie.io/chat)
 [![Build](https://img.shields.io/github/workflow/status/httpie/httpie/Build?color=%2373DC8C&label=Build)](https://github.com/httpie/httpie/actions)
 [![Coverage](https://img.shields.io/codecov/c/github/httpie/httpie?style=flat&label=Coverage&color=%2373DC8C)](https://codecov.io/gh/httpie/httpie)
-[![Downloads](https://img.shields.io/pypi/dm/httpie?color=%234B78E6&label=Downloads)](https://pepy.tech/project/httpie)
 
 
 ## Main features
