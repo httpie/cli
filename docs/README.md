@@ -1,15 +1,14 @@
 <div class='hidden-website'>
-
 # HTTPie Documentation
-
 </div>
 
-**HTTPie (pronounced aitch-tee-tee-pie) is a command-line HTTP client.
+HTTPie (pronounced _aitch-tee-tee-pie_) is a command-line HTTP client.
 Its goal is to make CLI interaction with web services as human-friendly as possible.
 HTTPie is designed for testing, debugging, and generally interacting with APIs & HTTP servers.
-The http & https commands allow for creating and sending arbitrary HTTP requests.
-They use simple and natural syntax and provide formatted and colorized output.**
+The `http` & `https` commands allow for creating and sending arbitrary HTTP requests.
+They use simple and natural syntax and provide formatted and colorized output.
 
+<div class='hidden-website'>
 ## About this document
 
 This documentation is best viewed at [httpie.io/docs](https://httpie.org/docs).
@@ -18,6 +17,8 @@ You can select your corresponding HTTPie version as well as run examples directl
 
 If you are reading this on GitHub, then this text covers the current *development* version.
 You are invited to submit fixes and improvements to the docs by editing [this file](https://github.com/httpie/httpie/blob/master/docs/README.md).
+
+</div>
 
 ## Main features
 
@@ -1674,7 +1675,6 @@ See [CHANGELOG](https://github.com/httpie/httpie/blob/master/CHANGELOG.md).
 
 ### Artwork
 
-- Logo and branding by [HTTPie](https://httpie.io).
 - [README Animation](https://raw.githubusercontent.com/httpie/httpie/master/httpie.gif) by [Allen Smith](https://github.com/loranallensmith).
 
 ### Licence
