@@ -15,11 +15,11 @@ class Httpie < Formula
   head "https://github.com/httpie/httpie.git"
 
   bottle do
-    rebuild 1
-    sha256 cellar: :any_skip_relocation, arm64_big_sur: "a01ce8767f6ea88eb8e7894347ba64eb29294053a8ee91eed44dfaf0ab5e7ea2"
-    sha256 cellar: :any_skip_relocation, big_sur:       "bdffeff349595ed3c528ed791d568e308b0877246b49e05e867143ba3415a70f"
-    sha256 cellar: :any_skip_relocation, catalina:      "ba0627d70f0ee49c64677f5554881ebd56371f47d45196b6564680089ce69152"
-    sha256 cellar: :any_skip_relocation, mojave:        "0b87901e88bdcf53c55c5138677087b4621c5aaf1fca67b53b730d5a2fd5a40a"
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "a0c123788163512698a0d284cfd6cb8125d8355aa59c3e4639df90b4388f94b5"
+    sha256 cellar: :any_skip_relocation, big_sur:       "4e4bc9dd47e194bd45e9c0e36039942aed76a465871980924f0f27e83681d918"
+    sha256 cellar: :any_skip_relocation, catalina:      "72dfebccff912bdb3913860983faf59c07c74db737ad4bf56143713236803821"
+    sha256 cellar: :any_skip_relocation, mojave:        "4733686b9a1564835b6662e758dd39dd80fcb940b684af57485392bb9d6bf04e"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "914d67f6d9f732a7888ba2e35cf9c00525fb24917b6610544125b7bba545c7fc"
     sha256 cellar: :any_skip_relocation, high_sierra:   "87e7348b6fb40fd8e4f7597937952469601962189e62d321b8cb4fa421e035ef"
   end
 
