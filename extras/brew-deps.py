@@ -19,17 +19,18 @@ VERSIONS = {
 }
 
 
+# Note: Keep that list sorted.
 PACKAGES = [
+    'certifi',
+    'charset-normalizer',
+    'defusedxml',
     'httpie',
+    'idna',
     'Pygments',
+    'PySocks',
     'requests',
     'requests-toolbelt',
-    'certifi',
     'urllib3',
-    'idna',
-    'chardet',
-    'PySocks',
-    'defusedxml',
 ]
 
 
