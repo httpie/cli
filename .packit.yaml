@@ -2,10 +2,8 @@
 # https://packit.dev/docs/configuration/
 specfile_path: httpie.spec
 actions:
-  # the current Fedora Rawhide specfile has some patches
-  # so we get it from @hroncok's (= churchyard in Fedora) fork for now
-  # once we have a new release, we'll use: https://src.fedoraproject.org/rpms/httpie/raw/rawhide/f/httpie.spec
-  post-upstream-clone: "wget https://src.fedoraproject.org/fork/churchyard/rpms/httpie/raw/packit/f/httpie.spec -O httpie.spec"
+  # get the current Fedora Rawhide specfile:
+  post-upstream-clone: "wget https://src.fedoraproject.org/rpms/httpie/raw/rawhide/f/httpie.spec -O httpie.spec"
 jobs:
 - job: copr_build
   trigger: pull_request
