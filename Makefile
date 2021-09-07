@@ -182,7 +182,14 @@ brew-deps:
 	extras/brew-deps.py
 
 brew-test:
+	@echo $(H1)Uninstalling httpie$(H1END)
 	- brew uninstall httpie
-	brew install --build-from-source ./extras/httpie.rb
+
+	@echo $(H1)Building from source…$(H1END)
+	- brew install --build-from-source ./extras/httpie.rb
+
+	@echo $(H1)Verifying…$(H1END)
 	brew test httpie
+
+	@echo $(H1)Auditing…$(H1END)
 	brew audit --strict httpie
