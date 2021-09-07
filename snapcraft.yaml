@@ -45,6 +45,7 @@ adopt-info: httpie
 base: core20
 confinement: strict
 grade: stable
+compression: lzo
 
 parts:
   httpie:
