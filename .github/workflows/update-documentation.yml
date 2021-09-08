@@ -16,5 +16,7 @@ jobs:
   trigger-doc-build:
     runs-on: ubuntu-latest
     steps:
+      - name: Install HTTPie
+        run: sudo snap install --edge httpie
       - name: Trigger new documentation build
-        run: curl -X POST ${{ secrets.DOCS_UPDATE_VERCEL_HOOK }}
+        run: http POST ${{ secrets.DOCS_UPDATE_VERCEL_HOOK }}
