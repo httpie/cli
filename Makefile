@@ -26,6 +26,9 @@ all: uninstall-httpie install test
 
 
 install: venv
+	@echo $(H1)Updating package tools$(H1END)
+	$(VENV_PIP) install --upgrade pip wheel
+
 	@echo $(H1)Installing dev requirements$(H1END)
 	$(VENV_PIP) install --upgrade --editable '.[dev]'
 
