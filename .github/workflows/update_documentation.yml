@@ -24,4 +24,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Trigger new documentation build
-        run: curl -X POST ${{ secrets.DOCS_UPDATE_VERCEL_HOOK }}
+        run: |
+          curl -X POST ${{ secrets.DOCS_UPDATE_VERCEL_HOOK }}
