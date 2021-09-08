@@ -1,0 +1,32 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - httpie/**/*.py
+      - setup.*
+  pull_request:
+    paths:
+      - .github/workflows/tests.yml
+      - httpie/**/*.py
+      - setup.*
+      - tests/**/*.py
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+        python-version: [3.6, 3.7, 3.8, 3.9, "3.10.0-rc.2"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: python -m pip install --upgrade pip setuptools wheel
+      - run: make install
+      - run: python -m pytest --verbose ./httpie ./tests

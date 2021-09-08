@@ -1,0 +1,22 @@
+name: Code style
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/code_style.yml
+      - extras/*.py
+      - httpie/**/*.py
+      - setup.py
+      - tests/**/*.py
+
+jobs:
+  code-style:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - run: python -m pip install --upgrade pip setuptools wheel
+      - run: make venv
+      - run: make codestyle
