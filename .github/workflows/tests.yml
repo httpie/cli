@@ -27,6 +27,5 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - run: python -m pip install --upgrade pip setuptools wheel
       - run: make install
-      - run: python -m pytest --verbose ./httpie ./tests
+      - run: make test

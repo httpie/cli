@@ -3,6 +3,7 @@ name: Check Brew Formula
 on:
   pull_request:
     paths:
+      - .github/workflows/packaging-mac-check-formula.yml
       - extras/httpie.rb
 
 jobs:
