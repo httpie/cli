@@ -38,7 +38,7 @@ You are invited to submit fixes and improvements to the docs by editing [this fi
 - Plugins
 - Documentation
 - Test coverage
-
+CHANGE
 ## Installation
 
 ### macOS
