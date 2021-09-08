@@ -15,21 +15,22 @@ import requests
 VERSIONS = {
     # By default, we use the latest packages. But sometimes Requests has a maximum supported versions.
     # Take a look here before making a release: <https://github.com/psf/requests/blob/master/setup.py>
-    'idna': '2.10',
+    'idna': '3.2',
 }
 
 
+# Note: Keep that list sorted.
 PACKAGES = [
+    'certifi',
+    'charset-normalizer',
+    'defusedxml',
     'httpie',
+    'idna',
     'Pygments',
+    'PySocks',
     'requests',
     'requests-toolbelt',
-    'certifi',
     'urllib3',
-    'idna',
-    'chardet',
-    'PySocks',
-    'defusedxml',
 ]
 
 
