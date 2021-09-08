@@ -92,6 +92,11 @@ $ pacman -S httpie
 ```
 
 ```bash
+# Alpine Linux
+$ apk add httpie
+```
+
+```bash
 # Solus
 $ eopkg install httpie
 ```
