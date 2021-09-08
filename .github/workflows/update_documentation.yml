@@ -1,0 +1,27 @@
+# Workkflow to trigger the official documentation build.
+# Website: https://httpie.io/docs
+name: Documentation
+
+on:
+  # # Changes pushed to the master branch.
+  # push:
+  #   branches:
+  #     - master
+  #   paths:
+  #     - docs/README.md
+
+  # # When a new release comes out.
+  # release:
+  #   types: [published]
+
+  # TESTING
+  pull_request:
+    paths:
+      - docs/README.md
+
+jobs:
+  trigger-doc-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger new documentation build
+        run: curl -X POST ${{ secrets.DOCS_UPDATE_VERCEL_HOOK }}
