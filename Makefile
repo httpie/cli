@@ -140,7 +140,7 @@ codecov-upload:
 
 doc-check:
 	@echo $(H1)Running documentations checks$(H1END)
-	mdl --style docs/linter/mdl-styles.rb *.md docs/*.md tests/*.md
+	mdl --git-recurse --style docs/linter/mdl-styles.rb .
 
 
 ###############################################################################

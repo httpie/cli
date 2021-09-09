@@ -7,34 +7,44 @@ assignees: ''
 
 ---
 
-**Checklist**
+## Checklist
 
 - [ ] I've searched for similar issues.
 - [ ] I'm using the latest version of HTTPie.
 
 ---
 
-**What are the steps to reproduce the problem?**
+## Minimal reproduction code and steps
 
 1.
 2.
 3.
 
+---
 
-**What is the expected result?**
+## Expected result
 
+…
 
-**What happens instead?**
+---
 
+## Current result
 
-**Debug output**
+…
+
+---
+
+## Debug output
 
 Please re-run the command with `--debug`, then copy the entire command & output and paste both below:
 
-```
+```bash
 $ http --debug <COMPLETE ARGUMENT LIST THAT TRIGGERS THE ERROR>
 <COMPLETE OUTPUT>
 ```
 
+---
 
-**Provide any additional information, screenshots, or code examples below:**
+## Additional information, screenshots, or code examples
+
+…
