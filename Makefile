@@ -138,6 +138,11 @@ codecov-upload:
 	@echo
 
 
+doc-check:
+	@echo $(H1)Running documentations checks$(H1END)
+	mdl --verbose --git-recurse --style docs/linter/mdl-styles.rb .
+
+
 ###############################################################################
 # Publishing to PyPi
 ###############################################################################
