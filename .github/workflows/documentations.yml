@@ -11,7 +11,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7
       - name: Install the linter
-        run: gem install mdl
+        run: sudo gem install mdl
       - name: Check files
         run: make doc-check
