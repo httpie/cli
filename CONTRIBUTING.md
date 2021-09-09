@@ -44,7 +44,7 @@ Consider also adding a [CHANGELOG](https://github.com/httpie/httpie/blob/master/
 
 #### Getting the code
 
-Go to https://github.com/httpie/httpie and fork the project repository.
+Go to <https://github.com/httpie/httpie> and fork the project repository.
 
 ```bash
 # Clone your fork
@@ -89,7 +89,7 @@ a hack but it works™.)
 You should now see `(httpie)` next to your shell prompt, and
 the `http` command should point to your development copy:
 
-```
+```bash
 (httpie) ~/Code/httpie $ which http
 /Users/<user>/Code/httpie/venv/bin/http
 (httpie) ~/Code/httpie $ http --version
