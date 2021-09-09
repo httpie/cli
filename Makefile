@@ -138,6 +138,11 @@ codecov-upload:
 	@echo
 
 
+doc-check:
+	@echo $(H1)Running documentations checks$(H1END)
+	mdl --style docs/linter/mdl-styles.rb *.md docs/*.md tests/*.md
+
+
 ###############################################################################
 # Publishing to PyPi
 ###############################################################################

@@ -19,7 +19,6 @@ dev_require = [
     'flake8-deprecated',
     'flake8-mutable',
     'flake8-tuple',
-    'mdformat',
     'pytest-cov',
     'twine',
     'wheel',
