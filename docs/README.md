@@ -78,6 +78,7 @@ $ dnf install httpie
 
 ```bash
 # CentOS, RHEL, ...
+$ yum install epel-release
 $ yum install httpie
 ```
 
