@@ -13,7 +13,7 @@ assignees: ''
 
 ---
 
-## Enhancement would you like to see
+## Enhancement request
 
 …
 
