@@ -1,0 +1,46 @@
+# Maintainer: Jelle van der Waa <jelle@archlinux.org>
+# Maintainer: daurnimator <daurnimator@archlinux.org>
+# Contributor: Daniel Micay <danielmicay@gmail.com>
+# Contributor: Thomas Weißschuh <thomas_weissschuh lavabit com>
+
+pkgname=httpie
+pkgver=2.5.0
+pkgrel=1
+pkgdesc="human-friendly CLI HTTP client for the API era"
+url="https://github.com/httpie/httpie"
+depends=('python-defusedxml'
+         'python-pygments'
+         'python-pysocks'
+         'python-requests'
+         'python-requests-toolbelt')
+makedepends=('python-setuptools')
+checkdepends=('python-pytest'
+              'python-pytest-httpbin'
+              'python-responses')
+conflicts=(python-httpie)
+replaces=(python-httpie python2-httpie)
+license=('BSD')
+arch=('any')
+source=($pkgname-$pkgver.tar.gz::"https://github.com/httpie/httpie/archive/$pkgver.tar.gz")
+sha256sums=('66af56e0efc1ca6237323f1186ba34bca1be24e67a4319fd5df7228ab986faea')
+
+build() {
+  cd $pkgname-$pkgver
+  python3 setup.py build
+}
+
+package() {
+  cd $pkgname-$pkgver
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/httpie/LICENSE"
+  python3 setup.py install --root="$pkgdir" --optimize=1
+
+  # Fix upstream, include them in MANIFEST.in and use data_files in setup.py to install them automatically
+  # TODO: add zsh support
+  install -Dm644 extras/httpie-completion.bash "$pkgdir"/usr/share/bash-completion/completions/http
+  install -Dm644 extras/httpie-completion.fish "$pkgdir"/usr/share/fish/vendor_completions.d/http.fish
+}
+
+check() {
+  cd $pkgname-$pkgver
+  PYTHONDONTWRITEBYTECODE=1 python3 setup.py test
+}

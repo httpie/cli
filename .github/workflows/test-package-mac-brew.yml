@@ -1,10 +1,8 @@
-name: Mac brew
-
 on:
   pull_request:
     paths:
       - .github/workflows/test-package-mac-brew.yml
-      - extras/httpie.rb
+      - docs/packaging/brew/httpie.rb
 
 jobs:
   brew:

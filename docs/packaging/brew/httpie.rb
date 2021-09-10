@@ -1,9 +1,3 @@
-# The latest Homebrew formula as submitted to Homebrew/homebrew-core.
-# Only useful for testing until it gets accepted by homebrew maintainers.
-# (It will need to be updated from the repo version before next release.)
-#
-# https://github.com/Homebrew/homebrew-core/blob/master/Formula/httpie.rb
-#
 class Httpie < Formula
   include Language::Python::Virtualenv
 
@@ -15,12 +9,11 @@ class Httpie < Formula
   head "https://github.com/httpie/httpie.git"
 
   bottle do
-    sha256 cellar: :any_skip_relocation, arm64_big_sur: "a0c123788163512698a0d284cfd6cb8125d8355aa59c3e4639df90b4388f94b5"
-    sha256 cellar: :any_skip_relocation, big_sur:       "4e4bc9dd47e194bd45e9c0e36039942aed76a465871980924f0f27e83681d918"
-    sha256 cellar: :any_skip_relocation, catalina:      "72dfebccff912bdb3913860983faf59c07c74db737ad4bf56143713236803821"
-    sha256 cellar: :any_skip_relocation, mojave:        "4733686b9a1564835b6662e758dd39dd80fcb940b684af57485392bb9d6bf04e"
-    sha256 cellar: :any_skip_relocation, x86_64_linux:  "914d67f6d9f732a7888ba2e35cf9c00525fb24917b6610544125b7bba545c7fc"
-    sha256 cellar: :any_skip_relocation, high_sierra:   "87e7348b6fb40fd8e4f7597937952469601962189e62d321b8cb4fa421e035ef"
+    sha256 cellar: :any_skip_relocation, arm64_big_sur: "01115f69aff0399b3f73af09899a42a14343638a4624a35749059cc732c49cdc"
+    sha256 cellar: :any_skip_relocation, big_sur:       "53f07157f00edf8193b7d4f74f247f53e1796fbc3e675cd2fbaa4b9dc2bad62c"
+    sha256 cellar: :any_skip_relocation, catalina:      "7cf216fdee98208856d654060fdcad3968623d7ed27fcdeba27d3120354c9a9f"
+    sha256 cellar: :any_skip_relocation, mojave:        "28adb5aed8c1c2b39c51789f242ff0dffde39073e161deb379c79184d787d063"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "91cb8c332c643bd8b1d0a8f3ec0acd4770b407991f6de1fd320d675f2b2e95ec"
   end
 
   depends_on "python@3.9"

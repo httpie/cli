@@ -1,0 +1,28 @@
+# Template file for 'httpie'
+pkgname=httpie
+version=2.5.0
+revision=1
+build_style=python3-module
+hostmakedepends="python3-setuptools"
+depends="python3-setuptools python3-requests python3-requests-toolbelt
+ python3-Pygments python3-pysocks python3-defusedxml"
+short_desc="Human-friendly command line HTTP client"
+maintainer="Mickaël Schoentgen <mickael@apible.io>"
+license="BSD-3-Clause"
+homepage="https://httpie.io/"
+changelog="https://raw.githubusercontent.com/httpie/httpie/${version}/CHANGELOG.md"
+distfiles="https://github.com/httpie/httpie/archive/${version}.tar.gz"
+checksum=66af56e0efc1ca6237323f1186ba34bca1be24e67a4319fd5df7228ab986faea
+make_check=no # needs pytest_httpbin which is not packaged
+
+post_install() {
+	vcompletion extras/httpie-completion.bash bash http
+	vcompletion extras/httpie-completion.fish fish http
+	vlicense LICENSE
+}
+
+python3-httpie_package() {
+	build_style=meta
+	short_desc+=" (transitional dummy package)"
+	depends="httpie>=${version}_${revision}"
+}
