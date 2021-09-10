@@ -93,7 +93,7 @@ apps:
   http:
     command: bin/http
     plugs: &plugs
-      - dot-config-httpie
+    # - dot-config-httpie
       - home
       - network
       - removable-media

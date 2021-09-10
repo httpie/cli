@@ -1,19 +1,19 @@
-name: Check Brew Formula
+name: Mac brew
 
 on:
   pull_request:
     paths:
-      - .github/workflows/packaging-mac-check-formula.yml
+      - .github/workflows/packaging-mac-brew.yml
       - extras/httpie.rb
 
 jobs:
-  check-formula:
+  brew:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Setup Brew
+      - name: Setup brew
         run: |
           brew developer on
           brew update
-      - name: Build and test the Formula
+      - name: Build and test the formula
         run: make brew-test
