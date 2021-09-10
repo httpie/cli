@@ -10,7 +10,8 @@ on:
   release:
     types:
       - published
-
+      - unpublished
+      - deleted
 jobs:
   trigger-doc-build:
     runs-on: ubuntu-latest
