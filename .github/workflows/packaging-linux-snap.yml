@@ -1,0 +1,25 @@
+name: Linux snap
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/packaging-linux-snap.yml
+      - snapcraft.yaml
+
+jobs:
+  snap:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build
+        uses: snapcore/action-build@v1
+        id: snapcraft
+      - name: Install
+        run: sudo snap install --dangerous ${{ steps.snapcraft.outputs.snap }}
+      - name: Test
+        run: |
+          httpie.http --version
+          httpie.https --version
+          # Auto-aliases cannot be tested when installing a snap outside the store.
+          # http --version
+          # https --version
