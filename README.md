@@ -38,7 +38,7 @@ They use simple and natural syntax and provide formatted and colorized output.
 - Persistent sessions
 - `wget`-like downloads
 
-[See for features →](https://httpie.io/docs)
+[See all features →](https://httpie.io/docs)
 
 ## Examples
 
