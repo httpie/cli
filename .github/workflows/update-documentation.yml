@@ -6,6 +6,7 @@ on:
       - master
     paths:
       - docs/README.md
+      - docs/config.json
   release:
     types:
       - published
