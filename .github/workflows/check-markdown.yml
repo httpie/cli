@@ -1,4 +1,4 @@
-name: Check documentations
+name: Check markdown
 
 on:
   pull_request:
