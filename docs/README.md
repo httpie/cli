@@ -1,6 +1,6 @@
 <div class='hidden-website'>
 
-# HTTPie Documentation
+# HTTPie documentation
 
 </div>
 
