@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [2.5.0](https://github.com/httpie/httpie/compare/2.4.0...2.5.0) (2021-09-06)
 
+Blog post: [What’s new in HTTPie 2.5.0](https://httpie.io/blog/httpie-2.5.0)
+
 - Added `--raw` to allow specifying the raw request body without extra processing as
   an alternative to `stdin`. ([#534](https://github.com/httpie/httpie/issues/534))
 - Added support for XML formatting. ([#1129](https://github.com/httpie/httpie/issues/1129))
