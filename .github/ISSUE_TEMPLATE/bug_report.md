@@ -3,7 +3,7 @@ name: Bug report
 about: Report a possible bug in HTTPie
 title: ''
 labels: "new, bug"
-assignees: ''
+assignees: 'BoboTiG'
 
 ---
 
@@ -20,13 +20,9 @@ assignees: ''
 2.
 3.
 
----
-
 ## Current result
 
 …
-
----
 
 ## Expected result
 
@@ -42,8 +38,6 @@ Please re-run the command with `--debug`, then copy the entire command & output 
 $ http --debug <COMPLETE ARGUMENT LIST THAT TRIGGERS THE ERROR>
 <COMPLETE OUTPUT>
 ```
-
----
 
 ## Additional information, screenshots, or code examples
 
