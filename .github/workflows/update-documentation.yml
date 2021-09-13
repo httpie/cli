@@ -19,4 +19,4 @@ jobs:
       - name: Install HTTPie
         run: sudo snap install --edge httpie
       - name: Trigger new documentation build
-        run: http POST ${{ secrets.DOCS_UPDATE_VERCEL_HOOK }}
+        run: http --ignore-stdin POST ${{ secrets.DOCS_UPDATE_VERCEL_HOOK }}
