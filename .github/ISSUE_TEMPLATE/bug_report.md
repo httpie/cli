@@ -22,13 +22,13 @@ assignees: ''
 
 ---
 
-## Expected result
+## Current result
 
 …
 
 ---
 
-## Current result
+## Expected result
 
 …
 
