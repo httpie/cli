@@ -1,0 +1,87 @@
+Agnostic:
+  pip:
+    install: python -m pip install httpie
+    update: python -m pip install --upgrade httpie
+
+FreeBSD:
+  FreshPorts:
+    install: pkg install www/py-httpie
+
+Linux:
+  Snapcraft:
+    setup-install: |
+      1. [Install snap support](https://snapcraft.io/docs/installing-snapd), if you don't have it already.
+      2. Install Snapcraft, the command-line tool for building snaps:
+
+        ```bash
+        $ snap install snapcraft --classic
+        ```
+
+      3. Refresh your path:
+
+        ```bash
+        $ hash -r
+        ```
+    install: |
+      ```bash
+      $ snap install httpie
+      ```
+    update: |
+      ```bash
+      $ snap refresh httpie
+      ```
+  Alpine:
+    install: apk add httpie
+    update: apk add --upgrade httpie
+  Arch Linux:
+    install: pacman -Sy httpie
+    update: pacman -Suy httpie
+  CentOS, RHEL:
+    setup: |
+      yum update
+      yum install epel-release
+    install: yum install httpie
+    update: yum upgrade httpie
+  Debian and derived:
+    setup: apt update
+    install: apt install httpie
+    update: apt upgrade httpie
+  Fedora:
+    setup: dnf update
+    install: dnf install httpie
+    update: dnf upgrade httpie
+  Gentoo:
+    setup: emerge --sync
+    install: emerge httpie
+    update: emerge --update httpie
+  Linuxbrew:
+    setup: "[Install Homebrew](https://brew.sh/), if you don’t have it already."
+    install: brew install httpie
+    update: brew upgrade httpie
+  Spack: &spack
+    url: https://spack.io/
+    setup: \# See installations instructions on [the website](https://spack.readthedocs.io).
+    install: spack install httpie
+    update: spack install httpie
+  Solus:
+    install: eopkg install httpie
+    update: eopkg upgrade httpie
+  VoidLinux:
+    install: xbps-install -Sy httpie
+    update: xbps-install -Suy httpie
+
+Mac:
+  Homebrew: *brew
+  MacPorts:
+    url: https://www.macports.org/
+    setup: \# See installations instructions on [the website](https://www.macports.org/install.php).
+    install: port install httpie
+    update: port upgrade httpie
+  Spack: *spack
+
+Windows:
+  Chocolatey:
+    url: https://chocolatey.org/
+    setup: \# See installations instructions on [the website](https://chocolatey.org/install).
+    install: choco install httpie
+    update: choco upgrade httpie
