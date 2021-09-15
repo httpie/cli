@@ -83,17 +83,22 @@ parts:
       echo "Copying extra files ..."
       cp $SNAPCRAFT_PART_SRC/extras/httpie-completion.bash $SNAPCRAFT_PRIME/bin/
 
-# plugs:
-#   dot-config-httpie:
-#     interface: personal-files
-#     write:
-#       - $HOME/.config/httpie
+plugs:
+  dot-config-httpie:
+    interface: personal-files
+    write:
+      - $HOME/.config/httpie
+  dot-httpie:
+    interface: personal-files
+    write:
+      - $HOME/.httpie
 
 apps:
   http:
     command: bin/http
     plugs: &plugs
-    # - dot-config-httpie
+      - dot-config-httpie
+      - dot-httpie
       - home
       - network
       - removable-media
