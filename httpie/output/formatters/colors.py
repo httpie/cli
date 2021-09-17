@@ -9,10 +9,12 @@ import pygments.token
 from pygments.formatters.terminal import TerminalFormatter
 from pygments.formatters.terminal256 import Terminal256Formatter
 from pygments.lexer import Lexer
+from pygments.lexers.data import JsonLexer
 from pygments.lexers.special import TextLexer
 from pygments.lexers.text import HttpLexer as PygmentsHttpLexer
 from pygments.util import ClassNotFound
 
+from ..lexers.json import EnhancedJsonLexer
 from ...compat import is_windows
 from ...context import Environment
 from ...plugins import FormatterPlugin
@@ -60,6 +62,7 @@ class ColorFormatter(FormatterPlugin):
             http_lexer = PygmentsHttpLexer()
             formatter = TerminalFormatter()
         else:
+            from ..lexers.http import SimplifiedHTTPLexer
             http_lexer = SimplifiedHTTPLexer()
             formatter = Terminal256Formatter(
                 style=self.get_style_class(color_scheme)
@@ -151,55 +154,12 @@ def get_lexer(
         else:
             lexer = pygments.lexers.get_lexer_by_name('json')
 
+    # Use our own JSON lexer: it supports JSON bodies preceded by non-JSON data
+    # as well as legit JSON bodies.
+    if isinstance(lexer, JsonLexer):
+        lexer = EnhancedJsonLexer()
+
     return lexer
-
-
-class SimplifiedHTTPLexer(pygments.lexer.RegexLexer):
-    """Simplified HTTP lexer for Pygments.
-
-    It only operates on headers and provides a stronger contrast between
-    their names and values than the original one bundled with Pygments
-    (:class:`pygments.lexers.text import HttpLexer`), especially when
-    Solarized color scheme is used.
-
-    """
-    name = 'HTTP'
-    aliases = ['http']
-    filenames = ['*.http']
-    tokens = {
-        'root': [
-            # Request-Line
-            (r'([A-Z]+)( +)([^ ]+)( +)(HTTP)(/)(\d+\.\d+)',
-             pygments.lexer.bygroups(
-                 pygments.token.Name.Function,
-                 pygments.token.Text,
-                 pygments.token.Name.Namespace,
-                 pygments.token.Text,
-                 pygments.token.Keyword.Reserved,
-                 pygments.token.Operator,
-                 pygments.token.Number
-             )),
-            # Response Status-Line
-            (r'(HTTP)(/)(\d+\.\d+)( +)(\d{3})( +)(.+)',
-             pygments.lexer.bygroups(
-                 pygments.token.Keyword.Reserved,  # 'HTTP'
-                 pygments.token.Operator,  # '/'
-                 pygments.token.Number,  # Version
-                 pygments.token.Text,
-                 pygments.token.Number,  # Status code
-                 pygments.token.Text,
-                 pygments.token.Name.Exception,  # Reason
-             )),
-            # Header
-            (r'(.*?)( *)(:)( *)(.+)', pygments.lexer.bygroups(
-                pygments.token.Name.Attribute,  # Name
-                pygments.token.Text,
-                pygments.token.Operator,  # Colon
-                pygments.token.Text,
-                pygments.token.String  # Value
-            ))
-        ]
-    }
 
 
 class Solarized256Style(pygments.style.Style):
