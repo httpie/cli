@@ -4,13 +4,14 @@ import pytest
 import responses
 
 from httpie.cli.constants import PRETTY_MAP
+from httpie.compat import is_windows
 from httpie.output.formatters.colors import ColorFormatter
 
 from .utils import MockEnvironment, http, URL_EXAMPLE
 
 TEST_JSON_XXSI_PREFIXES = (r")]}',\n", ")]}',", 'while(1);', 'for(;;)', ')', ']', '}')
 TEST_JSON_VALUES = ({}, {'a': 0, 'b': 0}, [], ['a', 'b'], 'foo', True, False, None)  # FIX: missing int & float
-TEST_PREFIX_TOKEN_COLOR = '\x1b[04m\x1b[91m'
+TEST_PREFIX_TOKEN_COLOR = '\x1b[38;5;15m' if is_windows else '\x1b[04m\x1b[91m'
 
 
 @pytest.mark.parametrize('data_prefix', TEST_JSON_XXSI_PREFIXES)
