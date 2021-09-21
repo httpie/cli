@@ -1,4 +1,3 @@
-import sys
 import json
 
 import pytest
@@ -7,6 +6,7 @@ import responses
 from httpie.cli.constants import PRETTY_MAP
 from httpie.compat import is_windows
 from httpie.output.formatters.colors import ColorFormatter
+from httpie.utils import JsonDictPreservingDuplicateKeys
 
 from .fixtures import JSON_WITH_DUPE_KEYS_FILE_PATH
 from .utils import MockEnvironment, http, URL_EXAMPLE
@@ -61,32 +61,28 @@ def test_duplicate_keys_support_from_response():
     """JSON with duplicate keys should be handled correctly."""
     responses.add(responses.GET, URL_EXAMPLE, body=JSON_WITH_DUPES_RAW,
                   content_type='application/json')
+    args = ('--pretty', 'format', URL_EXAMPLE)
 
-    # JSON keys are sorted by default, but it will work only on Python 3.8+.
-    # See `utils.JsonDictPreservingDuplicateKeys` class docstring for details.
-    if sys.version_info >= (3, 8):
-        r = http('--pretty', 'format', URL_EXAMPLE)
+    # Check implicit --sorted
+    if JsonDictPreservingDuplicateKeys.SUPPORTS_SORTING:
+        r = http(*args)
         assert JSON_WITH_DUPES_FORMATTED_SORTED in r
 
-    # Ensure --unsorted also does a good job.
-    r = http('--unsorted', '--pretty', 'format', URL_EXAMPLE)
+    # Check --unsorted
+    r = http(*args, '--unsorted')
     assert JSON_WITH_DUPES_FORMATTED_UNSORTED in r
 
 
-def test_duplicate_keys_support_from_input_file(httpbin):
+def test_duplicate_keys_support_from_input_file():
     """JSON file with duplicate keys should be handled correctly."""
-    # JSON keys are sorted by default, but it will work only on Python 3.8+.
-    # See `utils.JsonDictPreservingDuplicateKeys` class docstring for details.
-    if sys.version_info >= (3, 8):
-        r = http('--verbose', httpbin.url + '/post',
-                 f'@{JSON_WITH_DUPE_KEYS_FILE_PATH}')
-        # FIXME: count should be 2 (1 for the request, 1 for the response)
-        #        but httpbin does not support duplicate keys.
-        assert r.count(JSON_WITH_DUPES_FORMATTED_SORTED) == 1
+    args = ('--verbose', '--offline', URL_EXAMPLE,
+            f'@{JSON_WITH_DUPE_KEYS_FILE_PATH}')
 
-    # Ensure --unsorted also does a good job.
-    r = http('--verbose', '--unsorted', httpbin.url + '/post',
-             f'@{JSON_WITH_DUPE_KEYS_FILE_PATH}')
-    # FIXME: count should be 2 (1 for the request, 1 for the response)
-    #        but httpbin does not support duplicate keys.
-    assert r.count(JSON_WITH_DUPES_FORMATTED_UNSORTED) == 1
+    # Check implicit --sorted
+    if JsonDictPreservingDuplicateKeys.SUPPORTS_SORTING:
+        r = http(*args)
+        assert JSON_WITH_DUPES_FORMATTED_SORTED in r
+
+    # Check --unsorted
+    r = http(*args, '--unsorted')
+    assert JSON_WITH_DUPES_FORMATTED_UNSORTED in r
