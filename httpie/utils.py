@@ -11,6 +11,8 @@ from typing import Any, List, Optional, Tuple
 import requests.auth
 
 RE_COOKIE_SPLIT = re.compile(r', (?=[^ ;]+=)')
+Item = Tuple[str, Any]
+Items = List[Item]
 
 
 class JsonDictPreservingDuplicateKeys(OrderedDict):
@@ -21,7 +23,7 @@ class JsonDictPreservingDuplicateKeys(OrderedDict):
 
     """
 
-    def __init__(self, items: Tuple[Any, Any]):
+    def __init__(self, items: Items):
         self._items = items
 
         # HACK: Force `json.dumps()` to use `self.items()` instead of an empty dict.
@@ -46,7 +48,7 @@ class JsonDictPreservingDuplicateKeys(OrderedDict):
         if items:
             self['__hack__'] = '__hack__'
 
-    def items(self) -> Tuple[Any, Any]:
+    def items(self) -> Items:
         """Return all items, duplicate ones included.
 
         """
