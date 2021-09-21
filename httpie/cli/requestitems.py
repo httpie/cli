@@ -15,7 +15,7 @@ from .dicts import (
     RequestQueryParamsDict,
 )
 from .exceptions import ParseError
-from ..utils import get_content_type, load_json_preserve_order
+from ..utils import get_content_type, load_json_preserve_order_and_dupe_keys
 
 
 class RequestItems:
@@ -150,6 +150,6 @@ def load_text_file(item: KeyValueArg) -> str:
 
 def load_json(arg: KeyValueArg, contents: str) -> JSONType:
     try:
-        return load_json_preserve_order(contents)
+        return load_json_preserve_order_and_dupe_keys(contents)
     except ValueError as e:
         raise ParseError(f'{arg.orig!r}: {e}')

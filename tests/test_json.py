@@ -1,3 +1,4 @@
+import sys
 import json
 
 import pytest
@@ -7,11 +8,26 @@ from httpie.cli.constants import PRETTY_MAP
 from httpie.compat import is_windows
 from httpie.output.formatters.colors import ColorFormatter
 
+from .fixtures import JSON_WITH_DUPE_KEYS_FILE_PATH
 from .utils import MockEnvironment, http, URL_EXAMPLE
 
 TEST_JSON_XXSI_PREFIXES = (r")]}',\n", ")]}',", 'while(1);', 'for(;;)', ')', ']', '}')
 TEST_JSON_VALUES = ({}, {'a': 0, 'b': 0}, [], ['a', 'b'], 'foo', True, False, None)  # FIX: missing int & float
 TEST_PREFIX_TOKEN_COLOR = '\x1b[38;5;15m' if is_windows else '\x1b[04m\x1b[91m'
+
+JSON_WITH_DUPES_RAW = '{"key": 15, "key": 15, "key": 3, "key": 7}'
+JSON_WITH_DUPES_FORMATTED_SORTED = '''{
+    "key": 3,
+    "key": 7,
+    "key": 15,
+    "key": 15
+}'''
+JSON_WITH_DUPES_FORMATTED_UNSORTED = '''{
+    "key": 15,
+    "key": 15,
+    "key": 3,
+    "key": 7
+}'''
 
 
 @pytest.mark.parametrize('data_prefix', TEST_JSON_XXSI_PREFIXES)
@@ -38,3 +54,39 @@ def test_json_formatter_with_body_preceded_by_non_json_data(data_prefix, json_da
         # meaning it was correctly handled as a whole.
         assert TEST_PREFIX_TOKEN_COLOR + data_prefix in expected_body, expected_body
     assert expected_body in r
+
+
+@responses.activate
+def test_duplicate_keys_support_from_response():
+    """JSON with duplicate keys should be handled correctly."""
+    responses.add(responses.GET, URL_EXAMPLE, body=JSON_WITH_DUPES_RAW,
+                  content_type='application/json')
+
+    # JSON keys are sorted by default, but it will work only on Python 3.8+.
+    # See `utils.JsonDictPreservingDuplicateKeys` class docstring for details.
+    if sys.version_info >= (3, 8):
+        r = http('--pretty', 'format', URL_EXAMPLE)
+        assert JSON_WITH_DUPES_FORMATTED_SORTED in r
+
+    # Ensure --unsorted also does a good job.
+    r = http('--unsorted', '--pretty', 'format', URL_EXAMPLE)
+    assert JSON_WITH_DUPES_FORMATTED_UNSORTED in r
+
+
+def test_duplicate_keys_support_from_input_file(httpbin):
+    """JSON file with duplicate keys should be handled correctly."""
+    # JSON keys are sorted by default, but it will work only on Python 3.8+.
+    # See `utils.JsonDictPreservingDuplicateKeys` class docstring for details.
+    if sys.version_info >= (3, 8):
+        r = http('--verbose', httpbin.url + '/post',
+                 f'@{JSON_WITH_DUPE_KEYS_FILE_PATH}')
+        # FIXME: count should be 2 (1 for the request, 1 for the response)
+        #        but httpbin does not support duplicate keys.
+        assert r.count(JSON_WITH_DUPES_FORMATTED_SORTED) == 1
+
+    # Ensure --unsorted also does a good job.
+    r = http('--verbose', '--unsorted', httpbin.url + '/post',
+             f'@{JSON_WITH_DUPE_KEYS_FILE_PATH}')
+    # FIXME: count should be 2 (1 for the request, 1 for the response)
+    #        but httpbin does not support duplicate keys.
+    assert r.count(JSON_WITH_DUPES_FORMATTED_UNSORTED) == 1

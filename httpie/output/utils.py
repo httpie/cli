@@ -2,6 +2,7 @@ import json
 import re
 from typing import Tuple
 
+from ..utils import load_json_preserve_order_and_dupe_keys
 from .lexers.json import PREFIX_REGEX
 
 
@@ -11,14 +12,14 @@ def load_prefixed_json(data: str) -> Tuple[str, json.JSONDecoder]:
     """
     # First, the full data.
     try:
-        return '', json.loads(data)
+        return '', load_json_preserve_order_and_dupe_keys(data)
     except ValueError:
         pass
 
     # Then, try to find the start of the actual body.
     data_prefix, body = parse_prefixed_json(data)
     try:
-        return data_prefix, json.loads(body)
+        return data_prefix, load_json_preserve_order_and_dupe_keys(body)
     except ValueError:
         raise ValueError('Invalid JSON')
 
