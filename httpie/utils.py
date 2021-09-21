@@ -20,7 +20,7 @@ class JsonDictPreservingDuplicateKeys(OrderedDict):
 
     """
 
-    # Python versions prior to 3.8 suffer from an issue with multiples keys having the same name.
+    # Python versions prior to 3.8 suffer from an issue with multiple keys with the same name.
     # `json.dumps(obj, indent=N, sort_keys=True)` will output sorted keys when they are unique, and
     # duplicate keys will be outputted as they were defined in the original data.
     # See <https://bugs.python.org/issue23493#msg400929> for the behavior change between Python versions.
