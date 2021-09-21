@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [2.6.0.dev0](https://github.com/httpie/httpie/compare/2.5.0...master) (unreleased)
 
-- Fixed duplicate keys preservation of JSON data. ([#1136](https://github.com/httpie/httpie/issues/1136))
+- Fixed duplicate keys preservation of JSON data. ([#1163](https://github.com/httpie/httpie/issues/1163))
 - Added support for formatting & coloring of JSON bodies preceded by non-JSON data (e.g., an XXSI prefix). ([#1130](https://github.com/httpie/httpie/issues/1130))
 
 ## [2.5.0](https://github.com/httpie/httpie/compare/2.4.0...2.5.0) (2021-09-06)
