@@ -3,6 +3,8 @@
 This document records all notable changes to [HTTPie](https://httpie.io).
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## [2.6.0.dev0](https://github.com/httpie/httpie/compare/2.5.0...master) (unreleased)
+
 ## [2.5.0](https://github.com/httpie/httpie/compare/2.4.0...2.5.0) (2021-09-06)
 
 Blog post: [What’s new in HTTPie 2.5.0](https://httpie.io/blog/httpie-2.5.0)
