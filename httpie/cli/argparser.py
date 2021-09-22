@@ -457,7 +457,10 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
             self.error('--continue requires --output to be specified')
 
     def _process_format_options(self):
+        format_options = self.args.format_options or []
+        if self.args.response_content_type is not None:
+            format_options.append('response.content_type:' + self.args.response_content_type)
         parsed_options = PARSED_DEFAULT_FORMAT_OPTIONS
-        for options_group in self.args.format_options or []:
+        for options_group in format_options:
             parsed_options = parse_format_options(options_group, defaults=parsed_options)
         self.args.format_options = parsed_options

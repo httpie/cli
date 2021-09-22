@@ -377,6 +377,9 @@ class TestFormatOptions:
                         'indent': 10,
                         'format': True
                     },
+                    'response': {
+                        'content_type': "''",
+                    },
                     'xml': {
                         'format': True,
                         'indent': 2,
@@ -396,6 +399,9 @@ class TestFormatOptions:
                         'indent': 4,
                         'format': True
                     },
+                    'response': {
+                        'content_type': "''",
+                    },
                     'xml': {
                         'format': True,
                         'indent': 2,
@@ -417,6 +423,9 @@ class TestFormatOptions:
                         'indent': 4,
                         'format': True
                     },
+                    'response': {
+                        'content_type': "''",
+                    },
                     'xml': {
                         'format': True,
                         'indent': 2,
@@ -435,6 +444,7 @@ class TestFormatOptions:
             (
                 [
                     '--format-options=json.indent:2',
+                    '--format-options=response.content_type:application/xml; charset=utf-8',
                     '--format-options=xml.format:false',
                     '--format-options=xml.indent:4',
                     '--unsorted',
@@ -448,6 +458,9 @@ class TestFormatOptions:
                         'sort_keys': True,
                         'indent': 2,
                         'format': True
+                    },
+                    'response': {
+                        'content_type': 'application/xml; charset=utf-8',
                     },
                     'xml': {
                         'format': False,
@@ -470,6 +483,9 @@ class TestFormatOptions:
                         'indent': 2,
                         'format': True
                     },
+                    'response': {
+                        'content_type': "''",
+                    },
                     'xml': {
                         'format': True,
                         'indent': 2,
@@ -491,6 +507,9 @@ class TestFormatOptions:
                         'sort_keys': True,
                         'indent': 2,
                         'format': True
+                    },
+                    'response': {
+                        'content_type': "''",
                     },
                     'xml': {
                         'format': True,

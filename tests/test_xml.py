@@ -9,20 +9,21 @@ from httpie.output.formatters.xml import parse_xml, pretty_xml
 from .fixtures import XML_FILES_PATH, XML_FILES_VALID, XML_FILES_INVALID
 from .utils import http, URL_EXAMPLE
 
-SAMPLE_XML_DATA = '<?xml version="1.0" encoding="utf-8"?><root><e>text</e></root>'
+XML_DATA_RAW = '<?xml version="1.0" encoding="utf-8"?><root><e>text</e></root>'
+XML_DATA_FORMATTED = pretty_xml(parse_xml(XML_DATA_RAW))
 
 
 @pytest.mark.parametrize(
     'options, expected_xml',
     [
-        ('xml.format:false', SAMPLE_XML_DATA),
-        ('xml.indent:2', pretty_xml(parse_xml(SAMPLE_XML_DATA))),
-        ('xml.indent:4', pretty_xml(parse_xml(SAMPLE_XML_DATA), indent=4)),
+        ('xml.format:false', XML_DATA_RAW),
+        ('xml.indent:2', XML_DATA_FORMATTED),
+        ('xml.indent:4', pretty_xml(parse_xml(XML_DATA_RAW), indent=4)),
     ]
 )
 @responses.activate
 def test_xml_format_options(options, expected_xml):
-    responses.add(responses.GET, URL_EXAMPLE, body=SAMPLE_XML_DATA,
+    responses.add(responses.GET, URL_EXAMPLE, body=XML_DATA_RAW,
                   content_type='application/xml')
 
     r = http('--format-options', options, URL_EXAMPLE)
@@ -83,3 +84,56 @@ def test_invalid_xml(file):
     # No formatting done, data is simply printed as-is
     r = http(URL_EXAMPLE)
     assert xml_data in r
+
+
+@responses.activate
+def test_content_type_from_format_options_argument():
+    """Test server XML with a incorrect Content-Type header.
+    Using the --format-options to force the good one.
+    """
+    responses.add(responses.GET, URL_EXAMPLE, body=XML_DATA_RAW,
+                  content_type='plain/text')
+    args = ('--format-options', 'response.content_type:application/xml',
+            URL_EXAMPLE)
+
+    # Ensure the option is taken into account only for responses.
+    # Request
+    r = http('--offline', '--raw', XML_DATA_RAW, *args)
+    assert XML_DATA_RAW in r
+
+    # Response
+    r = http(*args)
+    assert XML_DATA_FORMATTED in r
+
+
+@responses.activate
+def test_content_type_from_shortcut_argument():
+    """Test server XML with a incorrect Content-Type header.
+    Using the --format-options shortcut to force the good one.
+    """
+    responses.add(responses.GET, URL_EXAMPLE, body=XML_DATA_RAW,
+                  content_type='text/plain')
+    args = ('--response-content-type', 'application/xml',
+            URL_EXAMPLE)
+
+    # Ensure the option is taken into account only for responses.
+    # Request
+    r = http('--offline', '--raw', XML_DATA_RAW, *args)
+    assert XML_DATA_RAW in r
+
+    # Response
+    r = http(*args)
+    assert XML_DATA_FORMATTED in r
+
+
+@responses.activate
+def test_content_type_from_incomplete_format_options_argument():
+    """Test server XML with a incorrect Content-Type header.
+    Using the --format-options to use a partial Content-Type without mime type.
+    """
+    responses.add(responses.GET, URL_EXAMPLE, body=XML_DATA_RAW,
+                  content_type='text/plain')
+
+    # The provided Content-Type is simply ignored, and so no formatting is done.
+    r = http('--response-content-type', 'charset=utf-8', URL_EXAMPLE)
+    assert XML_DATA_RAW in r

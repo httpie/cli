@@ -85,11 +85,13 @@ PRETTY_MAP = {
 PRETTY_STDOUT_TTY_ONLY = object()
 
 
+EMPTY_FORMAT_OPTION = "''"
 DEFAULT_FORMAT_OPTIONS = [
     'headers.sort:true',
     'json.format:true',
     'json.indent:4',
     'json.sort_keys:true',
+    'response.content_type:' + EMPTY_FORMAT_OPTION,
     'xml.format:true',
     'xml.indent:2',
 ]

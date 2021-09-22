@@ -1214,14 +1214,15 @@ You can further control the applied formatting via the more granular [format opt
 The `--format-options=opt1:value,opt2:value` option allows you to control how the output should be formatted
 when formatting is applied. The following options are available:
 
-|           Option | Default value | Shortcuts                |
-| ---------------: | :-----------: | ------------------------ |
-|   `headers.sort` |    `true`     | `--sorted`, `--unsorted` |
-|    `json.format` |    `true`     | N/A                      |
-|    `json.indent` |      `4`      | N/A                      |
-| `json.sort_keys` |    `true`     | `--sorted`, `--unsorted` |
-|     `xml.format` |    `true`     | N/A                      |
-|     `xml.indent` |      `2`      | N/A                      |
+|                  Option | Default value | Shortcuts                                           |
+| ----------------------: | :-----------: | --------------------------------------------------- |
+|          `headers.sort` |    `true`     | `--sorted`, `--unsorted`                            |
+|           `json.format` |    `true`     | N/A                                                 |
+|           `json.indent` |      `4`      | N/A                                                 |
+|        `json.sort_keys` |    `true`     | `--sorted`, `--unsorted`                            |
+| `response.content_type` |     `''`      | [`--response-content-type`](#response-content-type) |
+|            `xml.format` |    `true`     | N/A                                                 |
+|            `xml.indent` |      `2`      | N/A                                                 |
 
 For example, this is how you would disable the default header and JSON key
 sorting, and specify a custom JSON indent size:
@@ -1235,6 +1236,17 @@ sorting-related format options (currently it means JSON keys and headers):
 `--unsorted` and `--sorted`.
 
 This is something you will typically store as one of the default options in your [config](#config) file.
+
+#### Response `Content-Type`
+
+The `--response-content-type` option is a shortcut for `--format-options response.content_type`, and allows you to override the response `Content-Type`.
+It will be effective when the response is pretty-printed, and can be used when the server returns an incorrect `Content-Type` regarding the contents.
+
+For example, the following request will force the response to be treated as XML:
+
+```bash
+$ http --response-content-type 'application/xml' pie.dev/get
+```
 
 ### Binary data
 
