@@ -1,4 +1,6 @@
+import os
 import socket
+
 import pytest
 from pytest_httpbin import certs
 
@@ -41,3 +43,19 @@ def httpbin_with_chunked_support(_httpbin_with_chunked_support_available):
     if _httpbin_with_chunked_support_available:
         return HTTPBIN_WITH_CHUNKED_SUPPORT
     pytest.skip(f'{HTTPBIN_WITH_CHUNKED_SUPPORT_DOMAIN} not resolvable')
+
+
+@pytest.fixture(autouse=True, scope='session')
+def pyopenssl_inject():
+    """
+    Injects `pyOpenSSL` module to make sure `requests` will use it.
+    <https://github.com/psf/requests/pull/5443#issuecomment-645740394>
+    """
+    if os.getenv('HTTPIE_TEST_WITH_PYOPENSSL', '0') == '1':
+        try:
+            import urllib3.contrib.pyopenssl
+            urllib3.contrib.pyopenssl.inject_into_urllib3()
+        except ModuleNotFoundError:
+            pytest.fail('Missing "pyopenssl" module.')
+
+    yield
