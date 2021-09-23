@@ -1,11 +1,14 @@
+import os
+import ssl
+
 import pytest
 import pytest_httpbin.certs
 import requests.exceptions
-import ssl
 import urllib3
 
 from httpie.ssl import AVAILABLE_SSL_VERSION_ARG_MAPPING, DEFAULT_SSL_CIPHERS
 from httpie.status import ExitStatus
+
 from .utils import HTTP_OK, TESTS_ROOT, http
 
 
@@ -17,6 +20,7 @@ try:
     ssl_errors = (
         requests.exceptions.SSLError,
         OpenSSL.SSL.Error,
+        ValueError,  # TODO: Remove with OSS-65
     )
 except ImportError:
     ssl_errors = (
@@ -54,6 +58,8 @@ def test_ssl_version(httpbin_secure, ssl_version):
                 root = root.__context__
             if isinstance(root, ssl.SSLError) and root.reason == "TLSV1_ALERT_PROTOCOL_VERSION":
                 pytest.skip(f'Unsupported TLS version: {ssl_version}')
+        elif 'No such protocol' in str(e):  # TODO: Remove with OSS-65
+            pytest.skip(f'Unsupported TLS version: {ssl_version}')
         else:
             raise
 
@@ -149,3 +155,13 @@ def test_ciphers_none_can_be_selected(httpbin_secure):
     #   <https://marc.info/?l=openbsd-ports&m=159251948515635&w=2>
     #   http: error: Error: [('SSL routines', '(UNKNOWN)SSL_internal', 'no cipher match')]
     assert 'cipher' in r.stderr
+
+
+def test_pyopenssl_presence():
+    using_pyopenssl = os.getenv('HTTPIE_TEST_WITH_PYOPENSSL', '0')
+    if using_pyopenssl == '0':
+        assert not urllib3.util.ssl_.IS_PYOPENSSL
+        assert not urllib3.util.IS_PYOPENSSL
+    else:
+        assert urllib3.util.ssl_.IS_PYOPENSSL
+        assert urllib3.util.IS_PYOPENSSL
