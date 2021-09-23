@@ -20,6 +20,7 @@ try:
     ssl_errors = (
         requests.exceptions.SSLError,
         OpenSSL.SSL.Error,
+        ValueError,  # TODO: Remove with OSS-65
     )
 except ImportError:
     ssl_errors = (
@@ -57,6 +58,8 @@ def test_ssl_version(httpbin_secure, ssl_version):
                 root = root.__context__
             if isinstance(root, ssl.SSLError) and root.reason == "TLSV1_ALERT_PROTOCOL_VERSION":
                 pytest.skip(f'Unsupported TLS version: {ssl_version}')
+        elif 'No such protocol' in str(e):  # TODO: Remove with OSS-65
+            pytest.skip(f'Unsupported TLS version: {ssl_version}')
         else:
             raise
 
