@@ -227,6 +227,8 @@ def print_debug_info(env: Environment):
     ])
     env.stderr.write('\n\n')
     env.stderr.write(repr(env))
+    env.stderr.write('\n\n')
+    env.stderr.write(repr(plugin_manager))
     env.stderr.write('\n')
 
 

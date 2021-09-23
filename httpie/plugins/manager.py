@@ -4,6 +4,7 @@ from typing import Dict, List, Type
 
 from pkg_resources import iter_entry_points
 
+from ..utils import repr_dict
 from . import AuthPlugin, ConverterPlugin, FormatterPlugin
 from .base import BasePlugin, TransportPlugin
 
@@ -65,5 +66,13 @@ class PluginManager(list):
     def get_transport_plugins(self) -> List[Type[TransportPlugin]]:
         return self.filter(TransportPlugin)
 
+    def __str__(self):
+        return repr_dict({
+            'adapters': self.get_transport_plugins(),
+            'auth': self.get_auth_plugins(),
+            'converters': self.get_converters(),
+            'formatters': self.get_formatters(),
+        })
+
     def __repr__(self):
-        return f'<PluginManager: {list(self)}>'
+        return f'<{type(self).__name__} {self}>'

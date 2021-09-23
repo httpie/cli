@@ -1200,7 +1200,6 @@ Use one of these options to control output processing:
 | `--pretty=format` | Apply formatting                                              |
 |   `--pretty=none` | Disables output processing. Default for redirected output     |
 
-
 Formatting has the following effects:
 
 - HTTP headers are sorted by name.
