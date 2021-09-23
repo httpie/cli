@@ -7,7 +7,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 - Fixed duplicate keys preservation of JSON data. ([#1163](https://github.com/httpie/httpie/issues/1163))
 - Added support for formatting & coloring of JSON bodies preceded by non-JSON data (e.g., an XXSI prefix). ([#1130](https://github.com/httpie/httpie/issues/1130))
-- Installed plugins are now listed in `--debug` output. ([#1130](https://github.com/httpie/httpie/issues/1130))
+- Installed plugins are now listed in `--debug` output. ([#1165](https://github.com/httpie/httpie/issues/1165))
 
 ## [2.5.0](https://github.com/httpie/httpie/compare/2.4.0...2.5.0) (2021-09-06)
 
