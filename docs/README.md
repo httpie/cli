@@ -1191,12 +1191,6 @@ There are dozens of styles available, here are just a few notable ones:
 |  `fruity` | A bold, colorful scheme. Enable with `--style=fruity`                                                                               |
 |         … | See `$ http --help` for all the possible `--style` values                                                                           |
 
-Also, the following formatting is applied:
-
-- HTTP headers are sorted by name.
-- JSON data is indented, sorted by keys, and unicode escapes are converted
-  to the characters they represent.
-
 Use one of these options to control output processing:
 
 |            Option | Description                                                   |
@@ -1205,6 +1199,14 @@ Use one of these options to control output processing:
 | `--pretty=colors` | Apply colors                                                  |
 | `--pretty=format` | Apply formatting                                              |
 |   `--pretty=none` | Disables output processing. Default for redirected output     |
+
+
+Formatting has the following effects:
+
+- HTTP headers are sorted by name.
+- JSON data is indented, sorted by keys, and unicode escapes are converted
+  to the characters they represent.
+- XML and XHTML data is indented.
 
 You can further control the applied formatting via the more granular [format options](#format-options).
 
