@@ -21,7 +21,7 @@ class TestBinaryRequestData:
     def test_binary_file_path(self, httpbin):
         env = MockEnvironment(stdin_isatty=True, stdout_isatty=False)
         r = http('--print=B', 'POST', httpbin.url + '/post',
-                 '@' + BIN_FILE_PATH_ARG, env=env, )
+                 '@' + BIN_FILE_PATH_ARG, env=env)
         assert r == BIN_FILE_CONTENT
 
     def test_binary_file_form(self, httpbin):
