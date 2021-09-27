@@ -33,6 +33,7 @@ class Formatting:
         :param kwargs: additional keyword arguments for processors
 
         """
+        self.options = kwargs['format_options']
         available_plugins = plugin_manager.get_formatters_grouped()
         self.enabled_plugins = []
         for group in groups:

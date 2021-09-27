@@ -2,11 +2,12 @@ from abc import ABCMeta, abstractmethod
 from itertools import chain
 from typing import Callable, Iterable, Union
 
+from ..cli.constants import EMPTY_FORMAT_OPTION
 from ..context import Environment
 from ..constants import UTF8
-from ..models import HTTPMessage
+from ..models import HTTPMessage, HTTPResponse
 from .processing import Conversion, Formatting
-
+from .utils import parse_header_content_type
 
 BINARY_SUPPRESSED_NOTICE = (
     b'\n'
@@ -136,7 +137,15 @@ class PrettyStream(EncodedStream):
         super().__init__(**kwargs)
         self.formatting = formatting
         self.conversion = conversion
-        self.mime = self.msg.content_type.split(';')[0]
+        self.mime = self.get_mime()
+
+    def get_mime(self) -> str:
+        mime = parse_header_content_type(self.msg.content_type)[0]
+        if isinstance(self.msg, HTTPResponse):
+            forced_content_type = self.formatting.options['response']['as']
+            if forced_content_type != EMPTY_FORMAT_OPTION:
+                mime = parse_header_content_type(forced_content_type)[0] or mime
+        return mime
 
     def get_headers(self) -> bytes:
         return self.formatting.format_headers(
