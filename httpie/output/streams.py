@@ -142,7 +142,7 @@ class PrettyStream(EncodedStream):
     def get_mime(self) -> str:
         mime = parse_header_content_type(self.msg.content_type)[0]
         if isinstance(self.msg, HTTPResponse):
-            forced_content_type = self.formatting.options['response']['content_type']
+            forced_content_type = self.formatting.options['response']['as']
             if forced_content_type != EMPTY_FORMAT_OPTION:
                 mime = parse_header_content_type(forced_content_type)[0] or mime
         return mime

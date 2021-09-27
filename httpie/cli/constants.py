@@ -91,7 +91,7 @@ DEFAULT_FORMAT_OPTIONS = [
     'json.format:true',
     'json.indent:4',
     'json.sort_keys:true',
-    'response.content_type:' + EMPTY_FORMAT_OPTION,
+    'response.as:' + EMPTY_FORMAT_OPTION,
     'xml.format:true',
     'xml.indent:2',
 ]

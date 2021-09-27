@@ -378,7 +378,7 @@ class TestFormatOptions:
                         'format': True
                     },
                     'response': {
-                        'content_type': "''",
+                        'as': "''",
                     },
                     'xml': {
                         'format': True,
@@ -400,7 +400,7 @@ class TestFormatOptions:
                         'format': True
                     },
                     'response': {
-                        'content_type': "''",
+                        'as': "''",
                     },
                     'xml': {
                         'format': True,
@@ -424,7 +424,7 @@ class TestFormatOptions:
                         'format': True
                     },
                     'response': {
-                        'content_type': "''",
+                        'as': "''",
                     },
                     'xml': {
                         'format': True,
@@ -444,7 +444,7 @@ class TestFormatOptions:
             (
                 [
                     '--format-options=json.indent:2',
-                    '--format-options=response.content_type:application/xml; charset=utf-8',
+                    '--format-options=response.as:application/xml; charset=utf-8',
                     '--format-options=xml.format:false',
                     '--format-options=xml.indent:4',
                     '--unsorted',
@@ -460,7 +460,7 @@ class TestFormatOptions:
                         'format': True
                     },
                     'response': {
-                        'content_type': 'application/xml; charset=utf-8',
+                        'as': 'application/xml; charset=utf-8',
                     },
                     'xml': {
                         'format': False,
@@ -484,7 +484,7 @@ class TestFormatOptions:
                         'format': True
                     },
                     'response': {
-                        'content_type': "''",
+                        'as': "''",
                     },
                     'xml': {
                         'format': True,
@@ -509,7 +509,7 @@ class TestFormatOptions:
                         'format': True
                     },
                     'response': {
-                        'content_type': "''",
+                        'as': "''",
                     },
                     'xml': {
                         'format': True,

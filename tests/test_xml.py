@@ -88,12 +88,12 @@ def test_invalid_xml(file):
 
 @responses.activate
 def test_content_type_from_format_options_argument():
-    """Test server XML with a incorrect Content-Type header.
+    """Test XML response with a incorrect Content-Type header.
     Using the --format-options to force the good one.
     """
     responses.add(responses.GET, URL_EXAMPLE, body=XML_DATA_RAW,
                   content_type='plain/text')
-    args = ('--format-options', 'response.content_type:application/xml',
+    args = ('--format-options', 'response.as:application/xml',
             URL_EXAMPLE)
 
     # Ensure the option is taken into account only for responses.
@@ -108,13 +108,12 @@ def test_content_type_from_format_options_argument():
 
 @responses.activate
 def test_content_type_from_shortcut_argument():
-    """Test server XML with a incorrect Content-Type header.
+    """Test XML response with a incorrect Content-Type header.
     Using the --format-options shortcut to force the good one.
     """
     responses.add(responses.GET, URL_EXAMPLE, body=XML_DATA_RAW,
                   content_type='text/plain')
-    args = ('--response-content-type', 'application/xml',
-            URL_EXAMPLE)
+    args = ('--response-as', 'application/xml', URL_EXAMPLE)
 
     # Ensure the option is taken into account only for responses.
     # Request
@@ -128,12 +127,12 @@ def test_content_type_from_shortcut_argument():
 
 @responses.activate
 def test_content_type_from_incomplete_format_options_argument():
-    """Test server XML with a incorrect Content-Type header.
+    """Test XML response with a incorrect Content-Type header.
     Using the --format-options to use a partial Content-Type without mime type.
     """
     responses.add(responses.GET, URL_EXAMPLE, body=XML_DATA_RAW,
                   content_type='text/plain')
 
     # The provided Content-Type is simply ignored, and so no formatting is done.
-    r = http('--response-content-type', 'charset=utf-8', URL_EXAMPLE)
+    r = http('--response-as', 'charset=utf-8', URL_EXAMPLE)
     assert XML_DATA_RAW in r
