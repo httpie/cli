@@ -313,9 +313,11 @@ output_processing.add_argument(
     '--response-content-type',
     metavar='CONTENT_TYPE',
     help='''
-    Override the response Content-Type. It will be effective when the response
-    is pretty-printed, and can be used when the server returns an incorrect
-    Content-Type regarding the contents. It is a shortcut for:
+    Override the response Content-Type for formatting purposes, e.g.:
+    
+        --response-content-type=application/xml
+    
+    It is a shortcut for:
 
         --format-options=response.content_type:CONTENT_TYPE
     '''

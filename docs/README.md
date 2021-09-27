@@ -1239,13 +1239,14 @@ This is something you will typically store as one of the default options in your
 
 #### Response `Content-Type`
 
-The `--response-content-type` option is a shortcut for `--format-options response.content_type`, and allows you to override the response `Content-Type`.
-It will be effective when the response is pretty-printed, and can be used when the server returns an incorrect `Content-Type` regarding the contents.
+The `--response-content-type=value` option is a shortcut for `--format-options response.content_type:value`, 
+and it allows you to override the response `Content-Type` sent by the server. 
+That makes it possible for HTTPie to pretty-print the response even when the server specifies the type incorrectly.
 
 For example, the following request will force the response to be treated as XML:
 
 ```bash
-$ http --response-content-type 'application/xml' pie.dev/get
+$ http --response-content-type=application/xml pie.dev/get
 ```
 
 ### Binary data
