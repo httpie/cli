@@ -252,7 +252,7 @@ output_processing.add_argument(
     dest='style',
     metavar='STYLE',
     default=DEFAULT_STYLE,
-    choices=AVAILABLE_STYLES,
+    choices=sorted(AVAILABLE_STYLES),
     help='''
     Output coloring style (default is "{default}"). It can be One of:
 
