@@ -143,7 +143,7 @@ def test_GET_encoding_detection_from_content(encoding):
 
 
 @responses.activate
-def test_GET_encoding_provided_by_format_options_argument():
+def test_GET_encoding_provided_by_format_options():
     responses.add(responses.GET,
                   URL_EXAMPLE,
                   body='▒▒▒'.encode('johab'),
@@ -154,7 +154,7 @@ def test_GET_encoding_provided_by_format_options_argument():
 
 
 @responses.activate
-def test_GET_encoding_provided_by_charset_argument():
+def test_GET_encoding_provided_by_shortcut_option():
     responses.add(responses.GET,
                   URL_EXAMPLE,
                   body='▒▒▒'.encode('johab'),
@@ -166,13 +166,13 @@ def test_GET_encoding_provided_by_charset_argument():
 
 @pytest.mark.parametrize('encoding', ENCODINGS)
 @responses.activate
-def test_GET_encoding_provided_by_empty_charset_argument_should_use_content_detection(encoding):
+def test_GET_encoding_provided_by_empty_shortcut_option_should_use_content_detection(encoding):
     body = f'<?xml version="1.0" encoding="{encoding.upper()}"?>\n<c>Financiën</c>'
     responses.add(responses.GET,
                   URL_EXAMPLE,
                   body=body.encode(encoding),
                   content_type='text/xml')
-    r = http('--response-as', 's', 'GET', URL_EXAMPLE)
+    r = http('--response-as', '', 'GET', URL_EXAMPLE)
     assert 'Financiën' in r
 
 
