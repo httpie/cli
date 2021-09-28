@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from itertools import chain
-from typing import Any, Callable, Iterable, Tuple, Union
+from typing import Any, Callable, Dict, Iterable, Tuple, Union
 
 from .. import codec
 from ..cli.constants import EMPTY_FORMAT_OPTION
@@ -141,7 +141,7 @@ class PrettyStream(EncodedStream):
         self.mime, mime_options = self._get_mime_and_options()
         self.encoding = mime_options.get('charset') or ''
 
-    def _get_mime_and_options(self) -> Tuple[str, dict[str, Any]]:
+    def _get_mime_and_options(self) -> Tuple[str, Dict[str, Any]]:
         # Defaults from the `Content-Type` header.
         mime, options = parse_header_content_type(self.msg.content_type)
 
