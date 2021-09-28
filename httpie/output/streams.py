@@ -2,8 +2,8 @@ from abc import ABCMeta, abstractmethod
 from itertools import chain
 from typing import Any, Callable, Iterable, Tuple, Union
 
+from .. import codec
 from ..cli.constants import EMPTY_FORMAT_OPTION
-from ..codec import TextDecoderStrategy
 from ..context import Environment
 from ..constants import UTF8
 from ..models import HTTPMessage, HTTPResponse
@@ -217,6 +217,6 @@ class BufferedPrettyStream(PrettyStream):
 
         # Decode the body using the most appropriate encoding.
         # This is a no-op if it is already a string (likely altered by a converter).
-        body = TextDecoderStrategy(self.charset).decode(body)
+        body = codec.decode(body, self.charset)
 
         yield self.process_body(body)

@@ -5,7 +5,7 @@ from charset_normalizer import from_bytes
 from .constants import UTF8
 
 
-def detect(content: bytes) -> str:
+def detect_encoding(content: bytes) -> str:
     """Detect the `content` charset encoding.
     Fallback to UTF-8 when no suitable encoding found.
 
@@ -14,24 +14,17 @@ def detect(content: bytes) -> str:
     return match.encoding if match else UTF8
 
 
-class TextDecoderStrategy:
-    """Content decoding strategy.
+def decode(content: Union[bytearray, bytes, str], encoding: str) -> str:
+    """Decode `content` using the provided `encoding`.
+    If no `encoding` is provided, the best effort is to guess it from `content`.
+
+    Unicode errors are replaced.
 
     """
+    if isinstance(content, str):
+        return content
 
-    def __init__(self, encoding: str):
-        self.encoding = encoding
+    if not encoding:
+        encoding = detect_encoding(content)
 
-    def get_encoding(self, content: bytes) -> str:
-        """Return the `content` charset encoding.
-
-        """
-        return self.encoding or detect(content)
-
-    def decode(self, content: Union[bytearray, bytes, str]) -> str:
-        """Decode `content`. Unicode errors are replaced.
-
-        """
-        if isinstance(content, str):
-            return content
-        return content.decode(self.get_encoding(content), 'replace')
+    return content.decode(encoding, 'replace')
