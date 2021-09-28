@@ -311,7 +311,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
             self.error('Request body (from stdin, --raw or a file) and request '
                        'data (key=value) cannot be mixed. Pass '
                        '--ignore-stdin to let key/value take priority. '
-                       'See https://httpie.org/doc#scripting for details.')
+                       'See https://httpie.io/docs#scripting for details.')
 
     def _guess_method(self):
         """Set `args.method` if not specified to either POST or GET

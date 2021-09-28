@@ -52,7 +52,7 @@ def get_httpie_session(
 
 
 class Session(BaseConfigDict):
-    helpurl = 'https://httpie.org/doc#sessions'
+    helpurl = 'https://httpie.io/docs#sessions'
     about = 'HTTPie session file'
 
     def __init__(self, path: Union[str, Path]):

@@ -30,7 +30,7 @@ from ..ssl import AVAILABLE_SSL_VERSION_ARG_MAPPING, DEFAULT_SSL_CIPHERS
 
 parser = HTTPieArgumentParser(
     prog='http',
-    description=f'{__doc__.strip()} <https://httpie.org>',
+    description=f'{__doc__.strip()} <https://httpie.io>',
     epilog=dedent('''
     For every --OPTION there is also a --no-OPTION that reverts OPTION
     to its default value.
@@ -96,7 +96,7 @@ positional.add_argument(
 
     ':' HTTP headers:
 
-        Referer:http://httpie.org  Cookie:foo=bar  User-Agent:bacon/1.0
+        Referer:https://httpie.io  Cookie:foo=bar  User-Agent:bacon/1.0
 
     '==' URL parameters to be appended to the request URI:
 
