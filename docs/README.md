@@ -113,7 +113,7 @@ $ pkg install www/py-httpie
 
 ### Windows, universal
 
-A universal installation method (that works on Linux, macOS, Windows, FreeBSD, and always provides the latest version) is to use [pip](https://pypi.org/project/):
+A universal installation method (that works on Linux, macOS, Windows, FreeBSD, and always provides the latest version) is to use [pip](https://pypi.org/project/pip/):
 
 ```bash
 # Make sure we have an up-to-date version of pip and setuptools:
