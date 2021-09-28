@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from itertools import chain
-from typing import Callable, Iterable, Tuple, Union
+from typing import Any, Callable, Iterable, Tuple, Union
 
 from ..cli.constants import EMPTY_FORMAT_OPTION
 from ..codec import TextDecoderStrategy
@@ -138,25 +138,22 @@ class PrettyStream(EncodedStream):
         super().__init__(**kwargs)
         self.formatting = formatting
         self.conversion = conversion
-        self.mime, self.charset = self._get_mime_and_charset()
+        self.mime, mime_options = self._get_mime_and_options()
+        self.charset = mime_options.get('charset') or ''
 
-    def _get_mime_and_charset(self) -> Tuple[str, str]:
+    def _get_mime_and_options(self) -> Tuple[str, dict[str, Any]]:
         # Defaults from the message `Content-Type`.
         mime, options = parse_header_content_type(self.msg.content_type)
-        charset = options.get('charset') or ''
-
         if not isinstance(self.msg, HTTPResponse):
-            return mime, charset
+            return mime, options
 
-        # The response `Content-Type` could be overridden from options.
+        # The response `Content-Type` could be overridden from the CLI.
         forced_content_type = self.formatting.options['response']['as']
         if forced_content_type == EMPTY_FORMAT_OPTION:
-            return mime, charset
+            return mime, options
 
         forced_mime, forced_options = parse_header_content_type(forced_content_type)
-        mime = forced_mime or mime
-        charset = forced_options.get('charset') or ''
-        return mime, charset
+        return (forced_mime or mime, forced_options or options)
 
     def get_headers(self) -> bytes:
         return self.formatting.format_headers(
