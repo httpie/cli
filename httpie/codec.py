@@ -6,7 +6,7 @@ from .constants import UTF8
 
 
 def detect_encoding(content: bytes) -> str:
-    """Detect the `content` charset encoding.
+    """Detect the `content` encoding.
     Fallback to UTF-8 when no suitable encoding found.
 
     """

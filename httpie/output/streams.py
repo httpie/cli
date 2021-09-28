@@ -139,7 +139,7 @@ class PrettyStream(EncodedStream):
         self.formatting = formatting
         self.conversion = conversion
         self.mime, mime_options = self._get_mime_and_options()
-        self.charset = mime_options.get('charset') or ''
+        self.encoding = mime_options.get('charset') or ''
 
     def _get_mime_and_options(self) -> Tuple[str, dict[str, Any]]:
         # Defaults from the message `Content-Type`.
@@ -217,6 +217,6 @@ class BufferedPrettyStream(PrettyStream):
 
         # Decode the body using the most appropriate encoding.
         # This is a no-op if it is already a string (likely altered by a converter).
-        body = codec.decode(body, self.charset)
+        body = codec.decode(body, self.encoding)
 
         yield self.process_body(body)
