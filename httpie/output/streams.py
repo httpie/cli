@@ -215,8 +215,8 @@ class BufferedPrettyStream(PrettyStream):
         if converter:
             self.mime, body = converter.convert(body)
 
-        # Decode the body using the most appropriate encoding.
-        # This is a no-op if it is already a string (likely altered by a converter).
-        body = codec.decode(body, self.encoding)
+        if not isinstance(body, str):
+            # Decode the body using the most appropriate encoding.
+            body = codec.decode(body, self.encoding)
 
         yield self.process_body(body)

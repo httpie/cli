@@ -15,15 +15,12 @@ def detect_encoding(content: bytes) -> str:
 
 
 def decode(content: Union[bytearray, bytes, str], encoding: str) -> str:
-    """Decode `content` using the provided `encoding`.
+    """Decode `content` using the given `encoding`.
     If no `encoding` is provided, the best effort is to guess it from `content`.
 
     Unicode errors are replaced.
 
     """
-    if isinstance(content, str):
-        return content
-
     if not encoding:
         encoding = detect_encoding(content)
 
