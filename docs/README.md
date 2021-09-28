@@ -1259,7 +1259,7 @@ $ http --response-as='charset=big5' pie.dev/get
 $ http --response-as='text/plain; charset=big5' pie.dev/get
 ```
 
-Given the charset encoding is not sent by the server, HTTPie will auto-detect it.
+Given the encoding is not sent by the server, HTTPie will auto-detect it.
 
 ### Binary data
 
