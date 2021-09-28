@@ -142,12 +142,13 @@ class PrettyStream(EncodedStream):
         self.encoding = mime_options.get('charset') or ''
 
     def _get_mime_and_options(self) -> Tuple[str, dict[str, Any]]:
-        # Defaults from the message `Content-Type`.
+        # Defaults from the `Content-Type` header.
         mime, options = parse_header_content_type(self.msg.content_type)
+
         if not isinstance(self.msg, HTTPResponse):
             return mime, options
 
-        # The response `Content-Type` could be overridden from the CLI.
+        # Override from the `--response-as` option.
         forced_content_type = self.formatting.options['response']['as']
         if forced_content_type == EMPTY_FORMAT_OPTION:
             return mime, options
