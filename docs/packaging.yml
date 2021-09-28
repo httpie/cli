@@ -288,7 +288,7 @@ tools:
     setup-snippet: |
       ```bash
       # Void Linux
-      $ xbps-install -Syu httpie
+      $ xbps-install -Sy httpie
       ```
     hint: First installation? [Check out the docs page →](/docs#void-linux)
 
