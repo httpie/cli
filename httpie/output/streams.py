@@ -115,8 +115,8 @@ class EncodedStream(BaseStream):
         for line, lf in self.msg.iter_lines(self.CHUNK_SIZE):
             if b'\0' in line:
                 raise BinarySuppressedError()
-            yield line.decode(self.msg.encoding) \
-                      .encode(self.output_encoding, 'replace') + lf
+            line = codec.decode(line, self.msg.encoding)
+            yield codec.encode(line, self.output_encoding) + lf
 
 
 class PrettyStream(EncodedStream):
@@ -187,7 +187,7 @@ class PrettyStream(EncodedStream):
             # otherwise it will always be bytes.
             chunk = codec.decode(chunk, self.encoding)
         chunk = self.formatting.format_body(content=chunk, mime=self.mime)
-        return chunk.encode(self.output_encoding, 'replace')
+        return codec.encode(chunk, self.output_encoding)
 
 
 class BufferedPrettyStream(PrettyStream):

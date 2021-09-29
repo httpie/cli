@@ -26,3 +26,12 @@ def decode(content: Bytes, encoding: str) -> str:
     if not encoding:
         encoding = detect_encoding(content)
     return content.decode(encoding, 'replace')
+
+
+def encode(content: str, encoding: str) -> bytes:
+    """Encode `content` using the given `encoding`.
+
+    Unicode errors are replaced.
+
+    """
+    return content.encode(encoding, 'replace')
