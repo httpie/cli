@@ -25,7 +25,7 @@ def pretty_xml(document: 'Document',
     }
     if standalone is not None and sys.version_info >= (3, 9):
         kwargs['standalone'] = standalone
-    body = document.toprettyxml(**kwargs).decode()
+    body = document.toprettyxml(**kwargs).decode(kwargs['encoding'])
 
     # Remove blank lines automatically added by `toprettyxml()`.
     return '\n'.join(line for line in body.splitlines() if line.strip())

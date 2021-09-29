@@ -1249,6 +1249,18 @@ For example, the following request will force the response to be treated as XML:
 $ http --response-as=application/xml pie.dev/get
 ```
 
+And the following requests will force the response to use the [big5](https://docs.python.org/3/library/codecs.html#standard-encodings) encoding:
+
+```bash
+$ http --response-as='charset=big5' pie.dev/get
+```
+
+```bash
+$ http --response-as='text/plain; charset=big5' pie.dev/get
+```
+
+Given the encoding is not sent by the server, HTTPie will auto-detect it.
+
 ### Binary data
 
 Binary data is suppressed for terminal output, which makes it safe to perform requests to URLs that send back binary data.
