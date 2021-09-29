@@ -61,7 +61,7 @@ tools:
       ```bash
       $ choco upgrade httpie
       ```
-    hint: First installation? [Check out the docs page →](/docs#choco)
+    hint: First installation? [Check out the docs page →](/docs#chocolatey)
 
   debian:
     name: apt
@@ -77,14 +77,14 @@ tools:
       And most Linux distributions provide a package that can be installed using the system package manager, for example:
 
       ```bash
-      # # Debian, Ubuntu, etc.
+      # Debian, Ubuntu, etc.
       $ apt install httpie
       ```
     hint: First installation? [Check out the docs page →](/docs#debian)
 
   fedora:
     name: dnf
-    official: true
+    official: false
     commands:
       install:
         display-text: install httpie
@@ -101,8 +101,7 @@ tools:
 
   fresh-ports:
     name: pkg
-    official: true
-    enabled: false
+    official: false
     commands:
       install:
         display-text: install www/py-httpie
@@ -133,7 +132,7 @@ tools:
       ```
     hint: First installation? [Check out the docs page →](/docs#gentoo)
 
-  homebrew: &brew
+  homebrew:
     name: brew
     official: true
     commands:
@@ -149,7 +148,20 @@ tools:
       ```
     hint: First installation? [Check out the docs page →](/docs#homebrew)
 
-  linuxbrew: *brew
+  linuxbrew:
+    name: brew
+    official: true
+    commands:
+      install:
+        display-text: install httpie
+      update:
+        display-text: upgrade httpie
+    setup-snippet: |
+      ```bash
+      # Linuxbrew
+      $ brew install httpie
+      ```
+    hint: First installation? [Check out the docs page →](/docs#linuxbrew)
 
   macports:
     name: port
@@ -242,7 +254,7 @@ tools:
 
   solus:
     name: eopkg
-    official: true
+    official: false
     enabled: false
     commands:
       install:
@@ -259,7 +271,6 @@ tools:
   spack: &spack
     name: spack
     official: true
-    enabled: false
     commands:
       install:
         display-text: install httpie
