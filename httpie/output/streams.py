@@ -185,7 +185,7 @@ class PrettyStream(EncodedStream):
         if not isinstance(chunk, str):
             # Text when a converter has been used,
             # otherwise it will always be bytes.
-            chunk = chunk.decode(self.msg.encoding, 'replace')
+            chunk = codec.decode(chunk, self.encoding)
         chunk = self.formatting.format_body(content=chunk, mime=self.mime)
         return chunk.encode(self.output_encoding, 'replace')
 
@@ -215,9 +215,5 @@ class BufferedPrettyStream(PrettyStream):
 
         if converter:
             self.mime, body = converter.convert(body)
-
-        if not isinstance(body, str):
-            # Decode the body using the most appropriate encoding.
-            body = codec.decode(body, self.encoding)
 
         yield self.process_body(body)
