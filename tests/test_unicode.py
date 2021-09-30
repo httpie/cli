@@ -142,31 +142,29 @@ def test_GET_encoding_detection_from_content(encoding):
     assert 'Financiën' in r
 
 
+@pytest.mark.parametrize('pretty', PRETTY_MAP.keys())
 @responses.activate
-def test_GET_encoding_provided_by_format_options():
+def test_GET_encoding_provided_by_option(pretty):
     responses.add(responses.GET,
                   URL_EXAMPLE,
-                  body='▒▒▒'.encode('johab'),
-                  content_type='text/plain')
-    r = http('--format-options', 'response.as:text/plain; charset=johab',
-             'GET', URL_EXAMPLE)
-    assert '▒▒▒' in r
+                  body='卷首'.encode('big5'),
+                  content_type='text/plain; charset=utf-8')
+    args = ('--pretty=' + pretty, 'GET', URL_EXAMPLE)
 
+    # Encoding provided by Content-Type is incorrect, thus it should print something unreadable.
+    r = http(*args)
+    assert '卷首' not in r
 
-@responses.activate
-def test_GET_encoding_provided_by_shortcut_option():
-    responses.add(responses.GET,
-                  URL_EXAMPLE,
-                  body='▒▒▒'.encode('johab'),
-                  content_type='text/plain')
-    r = http('--response-as', 'text/plain; charset=johab',
-             'GET', URL_EXAMPLE)
-    assert '▒▒▒' in r
+    # Specifying the correct encoding, both in short & long versions, should fix it.
+    r = http('--response-as', 'charset=big5', *args)
+    assert '卷首' in r
+    r = http('--response-as', 'text/plain; charset=big5', *args)
+    assert '卷首' in r
 
 
 @pytest.mark.parametrize('encoding', ENCODINGS)
 @responses.activate
-def test_GET_encoding_provided_by_empty_shortcut_option_should_use_content_detection(encoding):
+def test_GET_encoding_provided_by_empty_option_should_use_content_detection(encoding):
     body = f'<?xml version="1.0" encoding="{encoding.upper()}"?>\n<c>Financiën</c>'
     responses.add(responses.GET,
                   URL_EXAMPLE,

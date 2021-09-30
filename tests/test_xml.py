@@ -87,29 +87,9 @@ def test_invalid_xml(file):
 
 
 @responses.activate
-def test_content_type_from_format_options_argument():
+def test_content_type_from_option():
     """Test XML response with a incorrect Content-Type header.
-    Using the --format-options to force the good one.
-    """
-    responses.add(responses.GET, URL_EXAMPLE, body=XML_DATA_RAW,
-                  content_type='plain/text')
-    args = ('--format-options', 'response.as:application/xml',
-            URL_EXAMPLE)
-
-    # Ensure the option is taken into account only for responses.
-    # Request
-    r = http('--offline', '--raw', XML_DATA_RAW, *args)
-    assert XML_DATA_RAW in r
-
-    # Response
-    r = http(*args)
-    assert XML_DATA_FORMATTED in r
-
-
-@responses.activate
-def test_content_type_from_shortcut_argument():
-    """Test XML response with a incorrect Content-Type header.
-    Using the --format-options shortcut to force the good one.
+    Using the --response-as option to force the good one.
     """
     responses.add(responses.GET, URL_EXAMPLE, body=XML_DATA_RAW,
                   content_type='text/plain')
@@ -126,9 +106,9 @@ def test_content_type_from_shortcut_argument():
 
 
 @responses.activate
-def test_content_type_from_incomplete_format_options_argument():
+def test_content_type_from_option_incomplete():
     """Test XML response with a incorrect Content-Type header.
-    Using the --format-options to use a partial Content-Type without mime type.
+    Using the --response-as option to set a partial Content-Type without mime type.
     """
     responses.add(responses.GET, URL_EXAMPLE, body=XML_DATA_RAW,
                   content_type='text/plain')

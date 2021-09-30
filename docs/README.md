@@ -1214,15 +1214,14 @@ You can further control the applied formatting via the more granular [format opt
 The `--format-options=opt1:value,opt2:value` option allows you to control how the output should be formatted
 when formatting is applied. The following options are available:
 
-|           Option | Default value | Shortcuts                                 |
-| ---------------: | :-----------: | ----------------------------------------- |
-|   `headers.sort` |    `true`     | `--sorted`, `--unsorted`                  |
-|    `json.format` |    `true`     | N/A                                       |
-|    `json.indent` |      `4`      | N/A                                       |
-| `json.sort_keys` |    `true`     | `--sorted`, `--unsorted`                  |
-|    `response.as` |     `''`      | [`--response-as`](#response-content-type) |
-|     `xml.format` |    `true`     | N/A                                       |
-|     `xml.indent` |      `2`      | N/A                                       |
+|           Option | Default value | Shortcuts                |
+| ---------------: | :-----------: | ------------------------ |
+|   `headers.sort` |    `true`     | `--sorted`, `--unsorted` |
+|    `json.format` |    `true`     | N/A                      |
+|    `json.indent` |      `4`      | N/A                      |
+| `json.sort_keys` |    `true`     | `--sorted`, `--unsorted` |
+|     `xml.format` |    `true`     | N/A                      |
+|     `xml.indent` |      `2`      | N/A                      |
 
 For example, this is how you would disable the default header and JSON key
 sorting, and specify a custom JSON indent size:
@@ -1237,11 +1236,10 @@ sorting-related format options (currently it means JSON keys and headers):
 
 This is something you will typically store as one of the default options in your [config](#config) file.
 
-#### Response `Content-Type`
+### Response `Content-Type`
 
-The `--response-as=value` option is a shortcut for `--format-options response.as:value`,
-and it allows you to override the response `Content-Type` sent by the server.
-That makes it possible for HTTPie to pretty-print the response even when the server specifies the type incorrectly.
+The `--response-as=value` option allows you to override the response `Content-Type` sent by the server.
+That makes it possible for HTTPie to print the response even when the server specifies the type incorrectly.
 
 For example, the following request will force the response to be treated as XML:
 

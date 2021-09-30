@@ -313,15 +313,12 @@ output_processing.add_argument(
     '--response-as',
     metavar='CONTENT_TYPE',
     help='''
-    Override the response Content-Type for formatting purposes, e.g.:
+    Override the response Content-Type for display purposes, e.g.:
 
         --response-as=application/xml
         --response-as=charset=utf-8
         --response-as='application/xml; charset=utf-8'
 
-    It is a shortcut for:
-
-        --format-options=response.as:CONTENT_TYPE
     '''
 )
 

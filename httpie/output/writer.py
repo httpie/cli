@@ -134,23 +134,23 @@ def get_stream_type_and_kwargs(
                 else RawStream.CHUNK_SIZE
             )
         }
-    elif args.prettify:
-        stream_class = PrettyStream if args.stream else BufferedPrettyStream
-        stream_kwargs = {
-            'env': env,
-            'conversion': Conversion(),
-            'formatting': Formatting(
-                env=env,
-                groups=args.prettify,
-                color_scheme=args.style,
-                explicit_json=args.json,
-                format_options=args.format_options,
-            )
-        }
     else:
         stream_class = EncodedStream
         stream_kwargs = {
-            'env': env
+            'env': env,
+            'response_as': args.response_as,
         }
+        if args.prettify:
+            stream_class = PrettyStream if args.stream else BufferedPrettyStream
+            stream_kwargs.update({
+                'conversion': Conversion(),
+                'formatting': Formatting(
+                    env=env,
+                    groups=args.prettify,
+                    color_scheme=args.style,
+                    explicit_json=args.json,
+                    format_options=args.format_options,
+                )
+            })
 
     return stream_class, stream_kwargs
