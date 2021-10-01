@@ -1,329 +1,228 @@
 tools:
-  alpine:
-    name: apk
-    official: true
+  apk:
+    name: Alpine Linux
+    links:
+      homepage: https://wiki.alpinelinux.org/wiki/Alpine_Linux_package_management
+      project: https://pkgs.alpinelinux.org/package/edge/community/x86/httpie
     commands:
       install:
-        display-text: add httpie
+        - apk add httpie
       update:
-        display-text: add --upgrade httpie
-    setup-snippet: |
-      ```bash
-      # Alpine Linux
-      $ apk add httpie
-      ```
-    hint: First installation? [Check out the docs page →](/docs#alpine)
+        - apk add --upgrade httpie
 
-  arch-linux:
-    name: pacman
-    official: true
+  pacman:
+    name: Arch Linux
+    links:
+      homepage: https://archlinux.org/pacman/
+      project: https://archlinux.org/packages/community/any/httpie/
     commands:
       install:
-        display-text: -Sy httpie
+        - pacman -s httpie
       update:
-        display-text: -Syu httpie
-    setup-snippet: |
-      ```bash
-      # Arch Linux
-      $ pacman -Sy httpie
-      ```
-    hint: First installation? [Check out the docs page →](/docs#arch-linux)
+        - pacman -Su httpie
 
-  centos:
-    name: yum
-    official: false
+  yum:
+    name: CentOS & RHEL
+    links:
+      homepage: http://yum.baseurl.org/
+      project: https://src.fedoraproject.org/rpms/httpie
     commands:
       install:
-        display-text: install httpie
-        copy-text: sudo yum update && sudo yum install epel-release && yum install httpie
+        - yum update
+        - yum install epel-release
+        - yum install httpie
       update:
-        display-text: upgrade httpie
-        copy-text: sudo yum update && sudo yum upgrade httpie
-    setup-snippet: |
-      ```bash
-      # CentOS, RHEL, etc.
-      $ yum install epel-release
-      $ yum install httpie
-      ```
-    hint: First installation? [Check out the docs page →](/docs#centos)
+        - yum update
+        - yum upgrade httpie
 
   chocolatey:
-    name: choco
-    official: false
+    name: Windows — Chocolatey
+    links:
+      homepage: https://community.chocolatey.org/
+      installation: https://chocolatey.org/install
+      project: https://community.chocolatey.org/packages/httpie/
+    commands:
+      install: choco install httpie
+      update: choco upgrade httpie
+
+  apt:
+    name: Debian, Unbuntu, etc.
+    links:
+      homepage: https://wiki.debian.org/Apt
+      project: https://packages.debian.org/sid/web/httpie
     commands:
       install:
-        display-text: install httpie
+        - apt update
+        - apt install httpie
       update:
-        display-text: upgrade httpie
-    setup-snippet: |
-      Windows users can also install HTTPie with [Chocolatey](https://community.chocolatey.org/packages/httpie/):
+        - apt update
+        - apt upgrade httpie
 
-      ```bash
-      $ choco upgrade httpie
-      ```
-    hint: First installation? [Check out the docs page →](/docs#chocolatey)
-
-  debian:
-    name: apt
-    official: false
+  dnf:
+    name: Fedora
+    links:
+      homepage: https://fedoraproject.org/wiki/DNF
+      project: https://src.fedoraproject.org/rpms/httpie
     commands:
       install:
-        display-text: install httpie
-        copy-text: sudo apt update && sudo apt install httpie
+        - dnf update
+        - dnf install httpie
       update:
-        display-text: upgrade httpie
-        copy-text: sudo apt update && sudo apt upgrade httpie
-    setup-snippet: |
-      And most Linux distributions provide a package that can be installed using the system package manager, for example:
+        - dnf update
+        - dnf upgrade httpie
 
-      ```bash
-      # Debian, Ubuntu, etc.
-      $ apt install httpie
-      ```
-    hint: First installation? [Check out the docs page →](/docs#debian)
-
-  fedora:
-    name: dnf
-    official: false
+  pkg:
+    name: FressBSD — FreshPorts
+    links:
+      homepage: https://www.freebsd.org/cgi/man.cgi?query=pkg&sektion=8&n=1
+      project: https://www.freshports.org/www/py-httpie/
     commands:
       install:
-        display-text: install httpie
-        copy-text: sudo dnf update && sudo dnf install httpie
+        - pkg install www/py-httpie
       update:
-        display-text: upgrade httpie
-        copy-text: sudo dnf update && sudo dnf upgrade httpie
-    setup-snippet: |
-      ```bash
-      # Fedora
-      $ apt install httpie
-      ```
-    hint: First installation? [Check out the docs page →](/docs#fedora)
+        - pkg upgrade www/py-httpie
 
-  fresh-ports:
-    name: pkg
-    official: false
+  emerge:
+    name: Gentoo
+    links:
+      homepage: https://wiki.gentoo.org/wiki/Portage
+      project: https://packages.gentoo.org/packages/net-misc/httpie
     commands:
       install:
-        display-text: install www/py-httpie
+        - emerge --sync
+        - emerge httpie
       update:
-        display-text: upgrade www/py-httpie
-    setup-snippet: |
-      On FreeBSD, HTTPie is available in the ports collection. A prebuilt package can be installed via [pkg(8)](https://man.freebsd.org/pkg/8):
+        - emerge --sync
+        - emerge --update httpie
 
-      ```bash
-      $ pkg install httpie
-      ```
-    hint: First installation? [Check out the docs page →](/docs#fresh-ports)
-
-  gentoo:
-    name: emerge
-    official: true
+  brew-mac:
+    name: macOS — Homebrew
+    links:
+      homepage: https://brew.sh/
+      installation: https://docs.brew.sh/Installation
+      project: https://formulae.brew.sh/formula/httpie
     commands:
       install:
-        display-text: httpie
-        copy-text: sudo emerge --sync && sudo emerge httpie
+        - brew update
+        - brew install httpie
       update:
-        display-text: --update httpie
-        copy-text: sudo emerge --sync && sudo emerge --update httpie
-    setup-snippet: |
-      ```bash
-      # Gentoo
-      $ emerge httpie
-      ```
-    hint: First installation? [Check out the docs page →](/docs#gentoo)
+        - brew update
+        - brew upgrade httpie
 
-  homebrew:
-    name: brew
-    official: true
+  brew-linux:
+    name: Linux — Homebrew
+    links:
+      homepage: https://docs.brew.sh/Homebrew-on-Linux
+      installation: https://docs.brew.sh/Homebrew-on-Linux#install
+      project: https://formulae.brew.sh/formula/httpie
     commands:
       install:
-        display-text: install httpie
+        - brew update
+        - brew install httpie
       update:
-        display-text: upgrade httpie
-    setup-snippet: |
-      On macOS, HTTPie can also be installed via [Homebrew](https://brew.sh/):
+        - brew update
+        - brew upgrade httpie
 
-      ```bash
-      $ brew install httpie
-      ```
-    hint: First installation? [Check out the docs page →](/docs#homebrew)
-
-  linuxbrew:
-    name: brew
-    official: true
+  port:
+    name: macOS — Homebrew
+    links:
+      homepage: https://ports.macports.org/
+      installation: https://www.macports.org/install.php
+      project: https://ports.macports.org/port/httpie/
     commands:
       install:
-        display-text: install httpie
+        - port install httpie
       update:
-        display-text: upgrade httpie
-    setup-snippet: |
-      ```bash
-      # Linuxbrew
-      $ brew install httpie
-      ```
-    hint: First installation? [Check out the docs page →](/docs#linuxbrew)
-
-  macports:
-    name: port
-    official: true
-    commands:
-      install:
-        display-text: install httpie
-      update:
-        display-text: upgrade httpie
-    setup-snippet: |
-      A [MacPorts *port*](https://ports.macports.org/port/httpie/) is also available:
-
-      ```bash
-      $ port install httpie
-      ```
-    hint: First installation? [Check out the docs page →](/docs#macports)
+        - port upgrade httpie
 
   pypi:
-    name: pip
-    official: true
+    name: Universal — pip
+    links:
+      homepage: https://pypi.org/
+      installation: https://pip.pypa.io/en/stable/installation/
+      project: https://pypi.org/project/httpie/
     commands:
       install:
-        display-text: install httpie
-        copy-text: python -m pip install httpie
+        - python -m pip install httpie
       update:
-        display-text: --update httpie
-        copy-text: python -m pip install --upgrade httpie
-    setup-snippet: |
-      A universal installation method (that works on Linux, macOS, Windows, FreeBSD, and always provides the latest version) is to use [pip](https://pypi.org/project/httpie/):
-
-      ```bash
-      # Make sure we have an up-to-date version of pip and setuptools:
-      $ python -m pip install --upgrade pip setuptools
-
-      $ python -m pip install --upgrade httpie
-      ```
-
-      (If `pip` installation fails for some reason, you can try `easy_install httpie` as a fallback.)
-    hint: First installation? [Check out the docs page →](/docs#pypi)
+        - python -m pip install --upgrade httpie
 
   snap-linux:
-    name: snap
-    official: true
+    name: Linux — Snap
+    links:
+      homepage: https://snapcraft.io/
+      installation: https://snapcraft.io/docs/installing-snapd
+      project: https://snapcraft.io/httpie
     commands:
       install:
-        display-text: install httpie
+        - snap install httpie
       update:
-        display-text: refresh httpie
-    setup-snippet: |
-      HTTPie is available on the [Snap Store](https://snapcraft.io/httpie):
-
-      1. [Install snap support](https://snapcraft.io/docs/installing-snapd), if you don't have it already.
-      2. Install Snapcraft, the command-line tool for building snaps:
-        ```bash
-        $ snap install snapcraft --classic
-        ```
-      3. Refresh your path:
-        ```bash
-        $ hash -r
-        ```
-      4. Install httpie:
-        ```bash
-        $ snap install httpie
-        ```
-    hint: First installation? [Check out the docs page →](/docs#snap-linux)
+        - snap refresh httpie
 
   snap-mac:
-    name: snap
-    official: true
+    name: macOS — Snap
+    links:
+      homepage: https://snapcraft.io/
+      installation: https://snapcraft.io/docs/installing-snapd
+      project: https://snapcraft.io/httpie
     commands:
       install:
-        display-text: install httpie
+        - snap install httpie
       update:
-        display-text: refresh httpie
-    setup-snippet: |
-      1. [Install Homebrew](https://brew.sh/), if you don't have it already.
-      2. [Install Snapcraft](https://snapcraft.io/docs/snapcraft-overview), the command-line tool for building snaps:
-        ```bash
-        $ brew install snapcraft
-        ```
-      3. [Install Multipass](https://multipass.run/install), a virtualisation product from Canonical that can set up a complete Linux environment in a couple of minutes: 
-        ```bash
-        $ brew cask install multipass
-        ```
-      4. Install httpie:
-        ```bash
-        $ snap install httpie
-        ```
-    hint: First installation? [Check out the docs page →](/docs#snap-mac)
+        - snap refresh httpie
 
-  solus:
-    name: eopkg
-    official: false
-    enabled: false
+  spack-linux:
+    name: Linux — Spack
+    links:
+      homepage: https://spack.readthedocs.io/en/latest/index.html
+      installation: https://spack.readthedocs.io/en/latest/getting_started.html#installation
     commands:
       install:
-        display-text: install httpie
+        - spack install httpie
       update:
-        display-text: upgrade httpie
-    setup-snippet: |
-      ```bash
-      # Solus
-      $ eopkg install httpie
-      ```
-    hint: First installation? [Check out the docs page →](/docs#solus)
+        - spack install httpie
 
-  spack: &spack
-    name: spack
-    official: true
+  spack-mac:
+    name: macOS — Spack
+    links:
+      homepage: https://spack.readthedocs.io/en/latest/index.html
+      installation: https://spack.readthedocs.io/en/latest/getting_started.html#installation
     commands:
       install:
-        display-text: install httpie
+        - spack install httpie
       update:
-        display-text: install httpie
-    setup-snippet: |
-      HTTPie is also available on [Spack](https://spack.readthedocs.io/en/latest/getting_started.html#installation):
+        - spack install httpie
 
-      ```bash
-      $ spack install httpie
-      ```
-    hint: First installation? [Check out the docs page →](/docs#spack)
-
-  spack-linux: *spack
-
-  spack-mac: *spack
-
-  void-linux:
-    name: xbps-install
-    official: true
+  xbps-install:
+    name: Void Linux
+    links:
+      homepage: https://docs.voidlinux.org/xbps/index.html
     commands:
       install:
-        display-text: -Sy httpie
+        - xbps-install -S httpie
       update:
-        display-text: -Syu httpie
-    setup-snippet: |
-      ```bash
-      # Void Linux
-      $ xbps-install -Sy httpie
-      ```
-    hint: First installation? [Check out the docs page →](/docs#void-linux)
+        - xbps-install -Su httpie
 
 docs-structure:
   Universal:
     - pypi
   macOS:
-    - homebrew
-    - macports
+    - brew-mac
+    - port
     - snap-mac
     - spack-mac
   Windows:
     - chocolatey
   Linux:
     - snap-linux
-    - debian
-    - fedora
-    - centos
-    - gentoo
-    - arch-linux
-    - alpine
-    - solus
-    - void-linux
-    - linuxbrew
+    - apt
+    - dnf
+    - yum
+    - emerge
+    - apk
+    - pacman
+    - xbps-install
+    - brew-linux
     - spack-linux
   FreeBSD:
-    - fresh-ports
+    - pkg
