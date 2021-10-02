@@ -6,6 +6,7 @@ from setuptools import setup, find_packages
 
 import httpie
 
+
 # Note: keep requirements here to ease distributions packaging
 tests_require = [
     'pytest',
