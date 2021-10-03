@@ -279,7 +279,7 @@ $ http GET pie.dev/get hello=world
 
 The `METHOD` argument is optional, and when you don’t specify it, HTTPie defaults to:
 
-* `GET` for requests without a body
+* `GET` for requests without body
 * `POST` for requests with body
 
 Here we don’t specify any request data, so both commands will send the same `GET` request:
