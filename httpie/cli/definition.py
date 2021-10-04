@@ -9,7 +9,7 @@ from .. import __doc__, __version__
 from .argparser import HTTPieArgumentParser
 from .argtypes import (
     KeyValueArgType, SessionNameValidator,
-    readable_file_arg,
+    readable_file_arg, response_charset_type, response_mime_type,
 )
 from .constants import (
     DEFAULT_FORMAT_OPTIONS, OUTPUT_OPTIONS,
@@ -310,18 +310,28 @@ output_processing.add_argument(
 )
 
 output_processing.add_argument(
-    '--response-as',
-    metavar='CONTENT_TYPE',
+    '--response-charset',
+    metavar='ENCODING',
+    type=response_charset_type,
     help='''
-    Override the response Content-Type for display purposes, e.g.:
-
-        --response-as=application/xml
-        --response-as=charset=utf-8
-        --response-as='application/xml; charset=utf-8'
-
+    Override the response encoding for terminal display purposes, e.g.:
+        --response-charset=utf8
+        --response-charset=big5
     '''
 )
 
+output_processing.add_argument(
+    '--response-mime',
+    metavar='MIME_TYPE',
+    type=response_mime_type,
+    help='''
+    Override the response mime type for coloring and formatting for the terminal, e.g.:
+
+        --response-mime=application/json
+        --response-mime=text/xml
+
+    '''
+)
 
 output_processing.add_argument(
     '--format-options',

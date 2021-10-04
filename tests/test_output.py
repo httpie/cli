@@ -15,7 +15,7 @@ from httpie.cli.argtypes import (
     parse_format_options,
 )
 from httpie.cli.definition import parser
-from httpie.constants import UTF8
+from httpie.encoding import UTF8
 from httpie.output.formatters.colors import get_lexer
 from httpie.status import ExitStatus
 from .utils import COLOR, CRLF, HTTP_OK, MockEnvironment, http

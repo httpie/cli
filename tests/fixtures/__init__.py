@@ -1,7 +1,7 @@
 """Test data"""
 from pathlib import Path
 
-from httpie.constants import UTF8
+from httpie.encoding import UTF8
 
 
 def patharg(path):

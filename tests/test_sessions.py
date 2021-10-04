@@ -7,7 +7,7 @@ from unittest import mock
 import pytest
 
 from .fixtures import FILE_PATH_ARG, UNICODE
-from httpie.constants import UTF8
+from httpie.encoding import UTF8
 from httpie.plugins import AuthPlugin
 from httpie.plugins.builtin import HTTPBasicAuth
 from httpie.plugins.registry import plugin_manager

@@ -4,14 +4,19 @@ Various unicode handling related tests.
 """
 import pytest
 import responses
+from charset_normalizer.constant import TOO_SMALL_SEQUENCE
 
 from httpie.cli.constants import PRETTY_MAP
-from httpie.constants import UTF8
+from httpie.encoding import UTF8
 
-from .utils import http, HTTP_OK, URL_EXAMPLE
+from .utils import http, HTTP_OK, URL_EXAMPLE, MockEnvironment, StdinBytesIO
 from .fixtures import UNICODE
 
-ENCODINGS = [UTF8, 'windows-1250']
+
+CZECH_TEXT = 'Všichni lidé jsou si rovni. Všichni lidé jsou si rovni.'
+assert len(CZECH_TEXT) > TOO_SMALL_SEQUENCE
+CZECH_TEXT_SPECIFIC_CHARSET = 'windows-1250'
+ENCODINGS = [UTF8, CZECH_TEXT_SPECIFIC_CHARSET]
 
 
 def test_unicode_headers(httpbin):
@@ -122,24 +127,28 @@ def test_unicode_digest_auth(httpbin):
 @pytest.mark.parametrize('encoding', ENCODINGS)
 @responses.activate
 def test_GET_encoding_detection_from_content_type_header(encoding):
-    responses.add(responses.GET,
-                  URL_EXAMPLE,
-                  body='<?xml version="1.0"?>\n<c>Financiën</c>'.encode(encoding),
-                  content_type=f'text/xml; charset={encoding.upper()}')
+    responses.add(
+        responses.GET,
+        URL_EXAMPLE,
+        body=f'<?xml version="1.0"?>\n<c>{CZECH_TEXT}</c>'.encode(encoding),
+        content_type=f'text/xml; charset={encoding.upper()}'
+    )
     r = http('GET', URL_EXAMPLE)
-    assert 'Financiën' in r
+    assert CZECH_TEXT in r
 
 
 @pytest.mark.parametrize('encoding', ENCODINGS)
 @responses.activate
-def test_GET_encoding_detection_from_content(encoding):
-    body = f'<?xml version="1.0" encoding="{encoding.upper()}"?>\n<c>Financiën</c>'
-    responses.add(responses.GET,
-                  URL_EXAMPLE,
-                  body=body.encode(encoding),
-                  content_type='text/xml')
-    r = http('GET', URL_EXAMPLE)
-    assert 'Financiën' in r
+def test_encoding_detection_from_content(encoding):
+    body = f'<?xml version="1.0" encoding="{encoding.upper()}"?>\n<c>{CZECH_TEXT}</c>'
+    responses.add(
+        responses.GET,
+        URL_EXAMPLE,
+        body=body.encode(encoding),
+        content_type='text/xml'
+    )
+    r = http(URL_EXAMPLE)
+    assert CZECH_TEXT in r
 
 
 @pytest.mark.parametrize('pretty', PRETTY_MAP.keys())
@@ -149,40 +158,45 @@ def test_GET_encoding_provided_by_option(pretty):
                   URL_EXAMPLE,
                   body='卷首'.encode('big5'),
                   content_type='text/plain; charset=utf-8')
-    args = ('--pretty=' + pretty, 'GET', URL_EXAMPLE)
+    args = ('--pretty', pretty, URL_EXAMPLE)
 
     # Encoding provided by Content-Type is incorrect, thus it should print something unreadable.
     r = http(*args)
     assert '卷首' not in r
-
-    # Specifying the correct encoding, both in short & long versions, should fix it.
-    r = http('--response-as', 'charset=big5', *args)
-    assert '卷首' in r
-    r = http('--response-as', 'text/plain; charset=big5', *args)
+    r = http('--response-charset=big5', *args)
     assert '卷首' in r
 
 
 @pytest.mark.parametrize('encoding', ENCODINGS)
 @responses.activate
-def test_GET_encoding_provided_by_empty_option_should_use_content_detection(encoding):
-    body = f'<?xml version="1.0" encoding="{encoding.upper()}"?>\n<c>Financiën</c>'
-    responses.add(responses.GET,
-                  URL_EXAMPLE,
-                  body=body.encode(encoding),
-                  content_type='text/xml')
-    r = http('--response-as', '', 'GET', URL_EXAMPLE)
-    assert 'Financiën' in r
-
-
-@pytest.mark.parametrize('encoding', ENCODINGS)
-@responses.activate
-def test_POST_encoding_detection_from_content_type_header(encoding):
-    responses.add(responses.POST,
-                  URL_EXAMPLE,
-                  body='Všichni lidé jsou si rovni.'.encode(encoding),
-                  content_type=f'text/plain; charset={encoding.upper()}')
+def test_encoding_detection_from_content_type_header(encoding):
+    responses.add(
+        responses.POST,
+        URL_EXAMPLE,
+        body=CZECH_TEXT.encode(encoding),
+        content_type=f'text/plain; charset={encoding.upper()}'
+    )
     r = http('--form', 'POST', URL_EXAMPLE)
-    assert 'Všichni lidé jsou si rovni.' in r
+    assert CZECH_TEXT in r
+
+
+@pytest.mark.parametrize('encoding', ENCODINGS)
+def test_request_body_content_type_charset_used(encoding):
+    body_str = CZECH_TEXT
+    body_bytes = body_str.encode(encoding)
+    if encoding != UTF8:
+        with pytest.raises(UnicodeDecodeError):
+            assert body_str != body_bytes.decode()
+    r = http(
+        '--offline',
+        URL_EXAMPLE,
+        f'Content-Type: text/plain; charset={encoding.upper()}',
+        env=MockEnvironment(
+            stdin=StdinBytesIO(body_bytes),
+            stdin_isatty=False,
+        )
+    )
+    assert body_str in r
 
 
 @pytest.mark.parametrize('encoding', ENCODINGS)
@@ -190,10 +204,10 @@ def test_POST_encoding_detection_from_content_type_header(encoding):
 def test_POST_encoding_detection_from_content(encoding):
     responses.add(responses.POST,
                   URL_EXAMPLE,
-                  body='Všichni lidé jsou si rovni.'.encode(encoding),
+                  body=CZECH_TEXT.encode(encoding),
                   content_type='text/plain')
     r = http('--form', 'POST', URL_EXAMPLE)
-    assert 'Všichni lidé jsou si rovni.' in r
+    assert CZECH_TEXT in r
 
 
 @pytest.mark.parametrize('encoding', ENCODINGS)
@@ -202,8 +216,8 @@ def test_POST_encoding_detection_from_content(encoding):
 def test_stream_encoding_detection_from_content_type_header(encoding, pretty):
     responses.add(responses.GET,
                   URL_EXAMPLE,
-                  body='<?xml version="1.0"?>\n<c>Financiën</c>'.encode(encoding),
+                  body=f'<?xml version="1.0"?>\n<c>{CZECH_TEXT}</c>'.encode(encoding),
                   stream=True,
                   content_type=f'text/xml; charset={encoding.upper()}')
     r = http('--pretty=' + pretty, '--stream', 'GET', URL_EXAMPLE)
-    assert 'Financiën' in r
+    assert CZECH_TEXT in r

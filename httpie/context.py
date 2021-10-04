@@ -11,7 +11,7 @@ except ImportError:
 
 from .compat import is_windows
 from .config import DEFAULT_CONFIG_DIR, Config, ConfigFileError
-from .constants import UTF8
+from .encoding import UTF8
 
 from .utils import repr_dict
 

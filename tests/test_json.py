@@ -11,8 +11,25 @@ from httpie.utils import JsonDictPreservingDuplicateKeys
 from .fixtures import JSON_WITH_DUPE_KEYS_FILE_PATH
 from .utils import MockEnvironment, http, URL_EXAMPLE
 
-TEST_JSON_XXSI_PREFIXES = (r")]}',\n", ")]}',", 'while(1);', 'for(;;)', ')', ']', '}')
-TEST_JSON_VALUES = ({}, {'a': 0, 'b': 0}, [], ['a', 'b'], 'foo', True, False, None)  # FIX: missing int & float
+TEST_JSON_XXSI_PREFIXES = [
+    r")]}',\n", ")]}',",
+    'while(1);',
+    'for(;;)',
+    ')',
+    ']',
+    '}'
+]
+TEST_JSON_VALUES = [
+    # FIXME: missing int & float
+    {},
+    {'a': 0, 'b': 0},
+    [],
+    ['a', 'b'],
+    'foo',
+    True,
+    False,
+    None
+]
 TEST_PREFIX_TOKEN_COLOR = '\x1b[38;5;15m' if is_windows else '\x1b[04m\x1b[91m'
 
 JSON_WITH_DUPES_RAW = '{"key": 15, "key": 15, "key": 3, "key": 7}'
@@ -37,15 +54,19 @@ JSON_WITH_DUPES_FORMATTED_UNSORTED = '''{
 def test_json_formatter_with_body_preceded_by_non_json_data(data_prefix, json_data, pretty):
     """Test JSON bodies preceded by non-JSON data."""
     body = data_prefix + json.dumps(json_data)
-    content_type = 'application/json'
-    responses.add(responses.GET, URL_EXAMPLE, body=body,
-                  content_type=content_type)
+    content_type = 'application/json;charset=utf8'
+    responses.add(
+        responses.GET,
+        URL_EXAMPLE,
+        body=body,
+        content_type=content_type
+    )
 
-    colored_output = pretty in ('all', 'colors')
+    colored_output = pretty in {'all', 'colors'}
     env = MockEnvironment(colors=256) if colored_output else None
-    r = http('--pretty=' + pretty, URL_EXAMPLE, env=env)
+    r = http('--pretty', pretty, URL_EXAMPLE, env=env)
 
-    indent = None if pretty in ('none', 'colors') else 4
+    indent = None if pretty in {'none', 'colors'} else 4
     expected_body = data_prefix + json.dumps(json_data, indent=indent)
     if colored_output:
         fmt = ColorFormatter(env, format_options={'json': {'format': True, 'indent': 4}})

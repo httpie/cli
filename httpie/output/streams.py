@@ -1,13 +1,13 @@
 from abc import ABCMeta, abstractmethod
 from itertools import chain
-from typing import Callable, Dict, Iterable, Tuple, Union
+from typing import Callable, Iterable, Union
 
-from .. import codec
-from ..context import Environment
-from ..constants import UTF8
-from ..models import HTTPMessage, HTTPRequest
 from .processing import Conversion, Formatting
-from .utils import parse_header_content_type
+from .. import encoding
+from ..context import Environment
+from ..encoding import smart_decode, smart_encode, UTF8
+from ..models import HTTPMessage
+
 
 BINARY_SUPPRESSED_NOTICE = (
     b'\n'
@@ -99,11 +99,16 @@ class EncodedStream(BaseStream):
     """
     CHUNK_SIZE = 1
 
-    def __init__(self, env=Environment(), response_as: str = None, **kwargs):
+    def __init__(
+        self,
+        env=Environment(),
+        mime_overwrite: str = None,
+        encoding_overwrite: str = None,
+        **kwargs
+    ):
         super().__init__(**kwargs)
-        self.response_as = response_as
-        self.mime, self.encoding = self._get_mime_and_encoding()
-
+        self.mime = mime_overwrite or self.msg.content_type
+        self.encoding = encoding_overwrite or self.msg.encoding
         if env.stdout_isatty:
             # Use the encoding supported by the terminal.
             output_encoding = env.stdout_encoding
@@ -113,32 +118,12 @@ class EncodedStream(BaseStream):
         # Default to UTF-8 when unsure.
         self.output_encoding = output_encoding or UTF8
 
-    def _get_mime_and_encoding(self) -> Tuple[str, Dict[str, str]]:
-        """Parse `Content-Type` header or `--response-as` value to guess
-        correct mime type and encoding.
-
-        """
-        # Defaults from the `Content-Type` header.
-        mime, options = parse_header_content_type(self.msg.content_type)
-
-        if isinstance(self.msg, HTTPRequest):
-            encoding = self.msg.encoding
-        elif self.response_as is None:
-            encoding = options.get('charset')
-        else:
-            # Override from the `--response-as` option.
-            forced_mime, forced_options = parse_header_content_type(self.response_as)
-            mime = forced_mime or mime
-            encoding = forced_options.get('charset') or options.get('charset')
-
-        return mime, encoding or ''
-
     def iter_body(self) -> Iterable[bytes]:
         for line, lf in self.msg.iter_lines(self.CHUNK_SIZE):
             if b'\0' in line:
                 raise BinarySuppressedError()
-            line = codec.decode(line, self.encoding)
-            yield codec.encode(line, self.output_encoding) + lf
+            line = smart_decode(line, self.encoding)
+            yield smart_encode(line, self.output_encoding) + lf
 
 
 class PrettyStream(EncodedStream):
@@ -190,9 +175,9 @@ class PrettyStream(EncodedStream):
         if not isinstance(chunk, str):
             # Text when a converter has been used,
             # otherwise it will always be bytes.
-            chunk = codec.decode(chunk, self.encoding)
+            chunk = encoding.smart_decode(chunk, self.encoding)
         chunk = self.formatting.format_body(content=chunk, mime=self.mime)
-        return codec.encode(chunk, self.output_encoding)
+        return encoding.smart_encode(chunk, self.output_encoding)
 
 
 class BufferedPrettyStream(PrettyStream):

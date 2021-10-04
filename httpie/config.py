@@ -5,7 +5,7 @@ from typing import Union
 
 from . import __version__
 from .compat import is_windows
-from .constants import UTF8
+from .encoding import UTF8
 
 
 ENV_XDG_CONFIG_HOME = 'XDG_CONFIG_HOME'

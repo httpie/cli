@@ -3,7 +3,7 @@ import sys
 import pytest
 import responses
 
-from httpie.constants import UTF8
+from httpie.encoding import UTF8
 from httpie.output.formatters.xml import parse_xml, pretty_xml
 
 from .fixtures import XML_FILES_PATH, XML_FILES_VALID, XML_FILES_INVALID
@@ -93,7 +93,7 @@ def test_content_type_from_option():
     """
     responses.add(responses.GET, URL_EXAMPLE, body=XML_DATA_RAW,
                   content_type='text/plain')
-    args = ('--response-as', 'application/xml', URL_EXAMPLE)
+    args = ('--response-mime', 'application/xml', URL_EXAMPLE)
 
     # Ensure the option is taken into account only for responses.
     # Request
@@ -114,5 +114,5 @@ def test_content_type_from_option_incomplete():
                   content_type='text/plain')
 
     # The provided Content-Type is simply ignored, and so no formatting is done.
-    r = http('--response-as', 'charset=utf-8', URL_EXAMPLE)
+    r = http('--response-charset', 'utf-8', URL_EXAMPLE)
     assert XML_DATA_RAW in r
