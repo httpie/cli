@@ -145,7 +145,7 @@ $ xbps-install -Su
 $ xbps-install -S httpie
 ```
 
-#### Homebrew
+#### Linuxbrew
 
 ```bash
 $ brew update
