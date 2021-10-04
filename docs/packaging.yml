@@ -6,8 +6,10 @@ tools:
       project: https://pkgs.alpinelinux.org/package/edge/community/x86/httpie
     commands:
       install:
+        - apk update
         - apk add httpie
       update:
+        - apk update
         - apk add --upgrade httpie
 
   pacman:
@@ -17,9 +19,9 @@ tools:
       project: https://archlinux.org/packages/community/any/httpie/
     commands:
       install:
-        - pacman -s httpie
+        - pacman -Sy httpie
       update:
-        - pacman -Su httpie
+        - pacman -Syu httpie
 
   yum:
     name: CentOS & RHEL
@@ -126,13 +128,15 @@ tools:
   port:
     name: macOS — Homebrew
     links:
-      homepage: https://ports.macports.org/
+      homepage: https://www.macports.org/
       installation: https://www.macports.org/install.php
       project: https://ports.macports.org/port/httpie/
     commands:
       install:
+        - port selfupdate
         - port install httpie
       update:
+        - port selfupdate
         - port upgrade httpie
 
   pypi:
@@ -143,8 +147,10 @@ tools:
       project: https://pypi.org/project/httpie/
     commands:
       install:
+        - python -m pip install --upgrade pip setuptools wheel
         - python -m pip install httpie
       update:
+        - python -m pip install --upgrade pip setuptools wheel
         - python -m pip install --upgrade httpie
 
   snap-linux:
@@ -199,8 +205,10 @@ tools:
       homepage: https://docs.voidlinux.org/xbps/index.html
     commands:
       install:
+        - xbps-install -Su
         - xbps-install -S httpie
       update:
+        - xbps-install -Su
         - xbps-install -Su httpie
 
 docs-structure:
