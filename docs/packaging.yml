@@ -60,8 +60,10 @@ tools:
       installation: https://chocolatey.org/install
       project: https://community.chocolatey.org/packages/httpie/
     commands:
-      install: choco install httpie
-      update: choco upgrade httpie
+      install:
+        - choco install httpie
+      update:
+        - choco upgrade httpie
 
   dnf:
     name: Fedora
@@ -126,7 +128,7 @@ tools:
         - port upgrade httpie
 
   pypi:
-    name: Universal — pip
+    name: Universal — PyPi
     links:
       homepage: https://pypi.org/
       installation: https://pip.pypa.io/en/stable/installation/

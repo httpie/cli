@@ -41,95 +41,132 @@ You are invited to submit fixes and improvements to the docs by editing [this fi
 
 ## Installation
 
-### macOS
+<!-- Auto-generation on -->
 
-On macOS, HTTPie can also be installed via [Homebrew](https://brew.sh/):
+### Universal
+
+#### PyPi
 
 ```bash
+$ python -m pip install --upgrade pip setuptools wheel
+$ python -m pip install httpie
+```
+
+### macOS
+
+#### Homebrew
+
+```bash
+$ brew update
 $ brew install httpie
 ```
 
-A MacPorts *port* is also available:
+#### Homebrew
 
 ```bash
+$ port selfupdate
 $ port install httpie
 ```
 
-### Linux
-
-HTTPie is available on the [Snap Store](https://snapcraft.io/httpie):
+#### Snap
 
 ```bash
 $ snap install httpie
 ```
 
-And most Linux distributions provide a package that can be installed using the
-system package manager, for example:
+#### Spack
 
 ```bash
-# Debian, Ubuntu, etc.
+$ spack install httpie
+```
+
+### Windows
+
+#### Chocolatey
+
+```bash
+$ choco install httpie
+```
+
+### Linux
+
+#### Snap
+
+```bash
+$ snap install httpie
+```
+
+#### Debian, Unbuntu, etc.
+
+```bash
+$ apt update
 $ apt install httpie
 ```
 
+#### Fedora
+
 ```bash
-# Fedora
+$ dnf update
 $ dnf install httpie
 ```
 
+#### CentOS & RHEL
+
 ```bash
-# CentOS, RHEL, ...
+$ yum update
 $ yum install epel-release
 $ yum install httpie
 ```
 
+#### Gentoo
+
 ```bash
-# Gentoo
+$ emerge --sync
 $ emerge httpie
 ```
 
-```bash
-# Arch Linux
-$ pacman -S httpie
-```
+#### Alpine Linux
 
 ```bash
-# Alpine Linux
+$ apk update
 $ apk add httpie
 ```
 
+#### Arch Linux
+
 ```bash
-# Solus
-$ eopkg install httpie
+$ pacman -Sy httpie
+```
+
+#### Void Linux
+
+```bash
+$ xbps-install -Su
+$ xbps-install -S httpie
+```
+
+#### Homebrew
+
+```bash
+$ brew update
+$ brew install httpie
+```
+
+#### Spack
+
+```bash
+$ spack install httpie
 ```
 
 ### FreeBSD
 
-On FreeBSD, HTTPie is available in the ports collection. A prebuilt package
-can be installed via [pkg(8)](https://man.freebsd.org/pkg/8>):
+#### FreshPorts
 
 ```bash
 $ pkg install www/py-httpie
 ```
 
-### Windows, universal
-
-A universal installation method (that works on Linux, macOS, Windows, FreeBSD, and always provides the latest version) is to use [pip](https://pypi.org/project/pip/):
-
-```bash
-# Make sure we have an up-to-date version of pip and setuptools:
-$ python -m pip install --upgrade pip setuptools
-
-$ python -m pip install --upgrade httpie
-```
-
-(If `pip` installation fails for some reason, you can try
-`easy_install httpie` as a fallback.)
-
-Windows users can also install HTTPie with [Chocolatey](https://chocolatey.org):
-
-```bash
-$ choco upgrade httpie
-```
+<!-- Auto-generation off -->
 
 ### Python version
 
