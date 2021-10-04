@@ -48,11 +48,8 @@ def generate_documentation_section(section, database: Database) -> str:
     content = MD_SECTION_FORMAT.format(section=section)
     for tool in database[DTB_KEY_DOC_STRUCTURE][section]:
         details = database[DTB_KEY_TOOLS][tool]
-        name = details['name']
-        if ' — ' in name:
-            name = name.split(' — ')[1]
         content += MD_TOOL_FORMAT.format(
-            name=name,
+            name=details['name'],
             cmds_install='\n'.join(f'$ {cmd}' for cmd in details['commands']['install']))
     return content
 

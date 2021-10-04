@@ -26,7 +26,7 @@ tools:
         - apt upgrade httpie
 
   brew-mac:
-    name: macOS — Homebrew
+    name: Homebrew
     links:
       homepage: https://brew.sh/
       installation: https://docs.brew.sh/Installation
@@ -40,7 +40,7 @@ tools:
         - brew upgrade httpie
 
   brew-linux:
-    name: Linux — Homebrew
+    name: Linuxbrew
     links:
       homepage: https://docs.brew.sh/Homebrew-on-Linux
       installation: https://docs.brew.sh/Homebrew-on-Linux#install
@@ -54,7 +54,7 @@ tools:
         - brew upgrade httpie
 
   chocolatey:
-    name: Windows — Chocolatey
+    name: Chocolatey
     links:
       homepage: https://community.chocolatey.org/
       installation: https://chocolatey.org/install
@@ -103,7 +103,7 @@ tools:
         - pacman -Syu httpie
 
   pkg:
-    name: FressBSD — FreshPorts
+    name: FreshPorts
     links:
       homepage: https://www.freebsd.org/cgi/man.cgi?query=pkg&sektion=8&n=1
       project: https://www.freshports.org/www/py-httpie/
@@ -114,7 +114,7 @@ tools:
         - pkg upgrade www/py-httpie
 
   port:
-    name: macOS — Homebrew
+    name: Homebrew
     links:
       homepage: https://www.macports.org/
       installation: https://www.macports.org/install.php
@@ -128,7 +128,7 @@ tools:
         - port upgrade httpie
 
   pypi:
-    name: Universal — PyPi
+    name: PyPi
     links:
       homepage: https://pypi.org/
       installation: https://pip.pypa.io/en/stable/installation/
@@ -142,7 +142,7 @@ tools:
         - python -m pip install --upgrade httpie
 
   snap-linux:
-    name: Linux — Snap
+    name: Snap
     links:
       homepage: https://snapcraft.io/
       installation: https://snapcraft.io/docs/installing-snapd
@@ -154,7 +154,7 @@ tools:
         - snap refresh httpie
 
   snap-mac:
-    name: macOS — Snap
+    name: Snap
     links:
       homepage: https://snapcraft.io/
       installation: https://snapcraft.io/docs/installing-snapd
@@ -166,7 +166,7 @@ tools:
         - snap refresh httpie
 
   spack-linux:
-    name: Linux — Spack
+    name: Spack
     links:
       homepage: https://spack.readthedocs.io/en/latest/index.html
       installation: https://spack.readthedocs.io/en/latest/getting_started.html#installation
@@ -177,7 +177,7 @@ tools:
         - spack install httpie
 
   spack-mac:
-    name: macOS — Spack
+    name: Spack
     links:
       homepage: https://spack.readthedocs.io/en/latest/index.html
       installation: https://spack.readthedocs.io/en/latest/getting_started.html#installation
