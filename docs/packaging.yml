@@ -12,41 +12,6 @@ tools:
         - apk update
         - apk add --upgrade httpie
 
-  pacman:
-    name: Arch Linux
-    links:
-      homepage: https://archlinux.org/pacman/
-      project: https://archlinux.org/packages/community/any/httpie/
-    commands:
-      install:
-        - pacman -Sy httpie
-      update:
-        - pacman -Syu httpie
-
-  yum:
-    name: CentOS & RHEL
-    links:
-      homepage: http://yum.baseurl.org/
-      project: https://src.fedoraproject.org/rpms/httpie
-    commands:
-      install:
-        - yum update
-        - yum install epel-release
-        - yum install httpie
-      update:
-        - yum update
-        - yum upgrade httpie
-
-  chocolatey:
-    name: Windows — Chocolatey
-    links:
-      homepage: https://community.chocolatey.org/
-      installation: https://chocolatey.org/install
-      project: https://community.chocolatey.org/packages/httpie/
-    commands:
-      install: choco install httpie
-      update: choco upgrade httpie
-
   apt:
     name: Debian, Unbuntu, etc.
     links:
@@ -59,43 +24,6 @@ tools:
       update:
         - apt update
         - apt upgrade httpie
-
-  dnf:
-    name: Fedora
-    links:
-      homepage: https://fedoraproject.org/wiki/DNF
-      project: https://src.fedoraproject.org/rpms/httpie
-    commands:
-      install:
-        - dnf update
-        - dnf install httpie
-      update:
-        - dnf update
-        - dnf upgrade httpie
-
-  pkg:
-    name: FressBSD — FreshPorts
-    links:
-      homepage: https://www.freebsd.org/cgi/man.cgi?query=pkg&sektion=8&n=1
-      project: https://www.freshports.org/www/py-httpie/
-    commands:
-      install:
-        - pkg install www/py-httpie
-      update:
-        - pkg upgrade www/py-httpie
-
-  emerge:
-    name: Gentoo
-    links:
-      homepage: https://wiki.gentoo.org/wiki/Portage
-      project: https://packages.gentoo.org/packages/net-misc/httpie
-    commands:
-      install:
-        - emerge --sync
-        - emerge httpie
-      update:
-        - emerge --sync
-        - emerge --update httpie
 
   brew-mac:
     name: macOS — Homebrew
@@ -124,6 +52,64 @@ tools:
       update:
         - brew update
         - brew upgrade httpie
+
+  chocolatey:
+    name: Windows — Chocolatey
+    links:
+      homepage: https://community.chocolatey.org/
+      installation: https://chocolatey.org/install
+      project: https://community.chocolatey.org/packages/httpie/
+    commands:
+      install: choco install httpie
+      update: choco upgrade httpie
+
+  dnf:
+    name: Fedora
+    links:
+      homepage: https://fedoraproject.org/wiki/DNF
+      project: https://src.fedoraproject.org/rpms/httpie
+    commands:
+      install:
+        - dnf update
+        - dnf install httpie
+      update:
+        - dnf update
+        - dnf upgrade httpie
+
+  emerge:
+    name: Gentoo
+    links:
+      homepage: https://wiki.gentoo.org/wiki/Portage
+      project: https://packages.gentoo.org/packages/net-misc/httpie
+    commands:
+      install:
+        - emerge --sync
+        - emerge httpie
+      update:
+        - emerge --sync
+        - emerge --update httpie
+
+  pacman:
+    name: Arch Linux
+    links:
+      homepage: https://archlinux.org/pacman/
+      project: https://archlinux.org/packages/community/any/httpie/
+    commands:
+      install:
+        - pacman -Sy httpie
+      update:
+        - pacman -Syu httpie
+
+  pkg:
+    name: FressBSD — FreshPorts
+    links:
+      homepage: https://www.freebsd.org/cgi/man.cgi?query=pkg&sektion=8&n=1
+      project: https://www.freshports.org/www/py-httpie/
+    commands:
+      install:
+        - pkg install www/py-httpie
+      update:
+        - pkg upgrade www/py-httpie
 
   port:
     name: macOS — Homebrew
@@ -210,6 +196,20 @@ tools:
       update:
         - xbps-install -Su
         - xbps-install -Su httpie
+
+  yum:
+    name: CentOS & RHEL
+    links:
+      homepage: http://yum.baseurl.org/
+      project: https://src.fedoraproject.org/rpms/httpie
+    commands:
+      install:
+        - yum update
+        - yum install epel-release
+        - yum install httpie
+      update:
+        - yum update
+        - yum upgrade httpie
 
 docs-structure:
   Universal:
