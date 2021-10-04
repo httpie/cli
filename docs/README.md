@@ -48,7 +48,7 @@ You are invited to submit fixes and improvements to the docs by editing [this fi
 #### PyPi
 
 ```bash
-$ python -m pip install --upgrade pip setuptools wheel
+$ python -m pip install --upgrade pip wheel
 $ python -m pip install httpie
 ```
 
