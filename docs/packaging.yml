@@ -135,10 +135,10 @@ tools:
       project: https://pypi.org/project/httpie/
     commands:
       install:
-        - python -m pip install --upgrade pip setuptools wheel
+        - python -m pip install --upgrade pip wheel
         - python -m pip install httpie
       update:
-        - python -m pip install --upgrade pip setuptools wheel
+        - python -m pip install --upgrade pip wheel
         - python -m pip install --upgrade httpie
 
   snap-linux:
