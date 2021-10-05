@@ -315,8 +315,10 @@ output_processing.add_argument(
     type=response_charset_type,
     help='''
     Override the response encoding for terminal display purposes, e.g.:
+
         --response-charset=utf8
         --response-charset=big5
+
     '''
 )
 

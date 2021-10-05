@@ -7,8 +7,8 @@ is_windows = 'win32' in str(sys.platform).lower()
 try:
     from functools import cached_property
 except ImportError:
-    # Can be removed once we drop Pyth on <3.8 support
-    # Taken from: `django.utils.functional.cached_property`
+    # Can be removed once we drop Python <3.8 support.
+    # Taken from `django.utils.functional.cached_property`.
     class cached_property:
         """
         Decorator that converts a method with a single self argument into a

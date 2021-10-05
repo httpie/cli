@@ -9,7 +9,7 @@ ContentBytes = Union[bytearray, bytes]
 
 def detect_encoding(content: ContentBytes) -> str:
     """
-    We default to utf8 if text too short, because the detection
+    We default to UTF-8 if text too short, because the detection
     can return a random encoding leading to confusing results:
 
     >>> too_short = ']"foo"'
