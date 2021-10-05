@@ -6,9 +6,9 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 ## [2.6.0.dev0](https://github.com/httpie/httpie/compare/2.5.0...master) (unreleased)
 
 - Added support for formatting & coloring of JSON bodies preceded by non-JSON data (e.g., an XXSI prefix). ([#1130](https://github.com/httpie/httpie/issues/1130))
-- Added `--format-options=response.as:CONTENT_TYPE` to allow overriding the response `Content-Type`. ([#1134](https://github.com/httpie/httpie/issues/1134))
-- Added `--response-as` shortcut for setting the response `Content-Type`-related `--format-options`. ([#1134](https://github.com/httpie/httpie/issues/1134))
-- Improved handling of responses without correct `Content-Type` encoding. ([#1110](https://github.com/httpie/httpie/issues/1110), [#1168](https://github.com/httpie/httpie/issues/1168))
+- Added `--response-encoding` to allow overriding the response encoding for terminal display purposes. ([#1168](https://github.com/httpie/httpie/issues/1168))
+- Added `--response-mime` to allow overriding the response mime type for coloring and formatting for the terminal. ([#1168](https://github.com/httpie/httpie/issues/1168))
+- Improved handling of responses with incorrect `Content-Type`. ([#1110](https://github.com/httpie/httpie/issues/1110), [#1168](https://github.com/httpie/httpie/issues/1168))
 - Installed plugins are now listed in `--debug` output. ([#1165](https://github.com/httpie/httpie/issues/1165))
 - Fixed duplicate keys preservation of JSON data. ([#1163](https://github.com/httpie/httpie/issues/1163))
 
