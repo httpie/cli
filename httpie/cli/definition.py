@@ -316,6 +316,8 @@ output_processing.add_argument(
     Override the response Content-Type for formatting purposes, e.g.:
 
         --response-as=application/xml
+        --response-as=charset=utf-8
+        --response-as='application/xml; charset=utf-8'
 
     It is a shortcut for:
 

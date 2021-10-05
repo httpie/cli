@@ -329,11 +329,18 @@ You can install it on Linux, macOS, Windows, or FreeBSD with `pip`:
 $ python -m pip install --upgrade https://github.com/httpie/httpie/archive/master.tar.gz
 ```
 
-Or on macOS with Homebrew:
+Or on macOS, and Linux, with Homebrew:
 
 ```bash
 $ brew uninstall --force httpie
 $ brew install --HEAD httpie
+```
+
+And even on macOS, and Linux, with Snapcraft:
+
+```bash
+$ snap remove httpie
+$ snap install httpie --edge
 ```
 
 Verify that now you have the [current development version identifier](https://github.com/httpie/httpie/blob/master/httpie__init__.py#L6) with the `-dev` suffix, for example:
@@ -439,7 +446,50 @@ Which looks similar to the actual `Request-Line` that is sent:
 DELETE /delete HTTP/1.1
 ```
 
-When the `METHOD` argument is omitted from the command, HTTPie defaults to either `GET` (with no request data) or `POST` (with request data).
+In addition to the standard methods (`GET`, `POST`, `HEAD`, `PUT`, `PATCH`, `DELETE`, etc.), you can use custom method names, for example:
+
+```bash
+$ http AHOY pie.dev/post
+```
+
+There are no restrictions regarding which request methods can include a body. You can send an empty `POST` request:
+
+```bash
+$ http POST pie.dev/post
+```
+
+You can also make `GET` requests contaning a body:
+
+```bash
+$ http GET pie.dev/get hello=world
+```
+
+### Optional `GET` and `POST`
+
+The `METHOD` argument is optional, and when you don’t specify it, HTTPie defaults to:
+
+- `GET` for requests without body
+- `POST` for requests with body
+
+Here we don’t specify any request data, so both commands will send the same `GET` request:
+
+```bash
+$ http GET pie.dev/get
+```
+
+```bash
+$ http pie.dev/get
+```
+
+Here, on the other hand, we do have some data, so both commands will make the same `POST` request:
+
+```bash
+$ http POST pie.dev/post hello=world
+```
+
+```bash
+$ http pie.dev/post hello=world
+```
 
 ## Request URL
 
@@ -1431,6 +1481,18 @@ For example, the following request will force the response to be treated as XML:
 ```bash
 $ http --response-as=application/xml pie.dev/get
 ```
+
+And the following requests will force the response to use the [big5](https://docs.python.org/3/library/codecs.html#standard-encodings) encoding:
+
+```bash
+$ http --response-as='charset=big5' pie.dev/get
+```
+
+```bash
+$ http --response-as='text/plain; charset=big5' pie.dev/get
+```
+
+Given the encoding is not sent by the server, HTTPie will auto-detect it.
 
 ### Binary data
 

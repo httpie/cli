@@ -39,3 +39,10 @@ def test_max_headers_limit(httpbin_both):
 
 def test_max_headers_no_limit(httpbin_both):
     assert HTTP_OK in http('--max-headers=0', httpbin_both + '/get')
+
+
+def test_charset_argument_unknown_encoding(httpbin_both):
+    with raises(LookupError) as e:
+        http('--response-as', 'charset=foobar',
+             'GET', httpbin_both + '/get')
+    assert 'unknown encoding: foobar' in str(e.value)

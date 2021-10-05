@@ -16,9 +16,7 @@ Items = List[Item]
 
 
 class JsonDictPreservingDuplicateKeys(OrderedDict):
-    """A specialized JSON dict preserving duplicate keys.
-
-    """
+    """A specialized JSON dict preserving duplicate keys."""
 
     # Python versions prior to 3.8 suffer from an issue with multiple keys with the same name.
     # `json.dumps(obj, indent=N, sort_keys=True)` will output sorted keys when they are unique, and

@@ -31,11 +31,6 @@ class HTTPMessage(metaclass=ABCMeta):
         """Return a `str` with the message's encoding, if known."""
 
     @property
-    def body(self) -> bytes:
-        """Return a `bytes` with the message's body."""
-        raise NotImplementedError()
-
-    @property
     def content_type(self) -> str:
         """Return the message content type."""
         ct = self._orig.headers.get('Content-Type', '')
@@ -85,12 +80,6 @@ class HTTPResponse(HTTPMessage):
     @property
     def encoding(self):
         return self._orig.encoding or UTF8
-
-    @property
-    def body(self):
-        # Only now the response body is fetched.
-        # Shouldn't be touched unless the body is actually needed.
-        return self._orig.content
 
 
 class HTTPRequest(HTTPMessage):

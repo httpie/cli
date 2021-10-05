@@ -1,7 +1,8 @@
 from abc import ABCMeta, abstractmethod
 from itertools import chain
-from typing import Callable, Iterable, Union
+from typing import Any, Callable, Dict, Iterable, Tuple, Union
 
+from .. import codec
 from ..cli.constants import EMPTY_FORMAT_OPTION
 from ..context import Environment
 from ..constants import UTF8
@@ -114,8 +115,8 @@ class EncodedStream(BaseStream):
         for line, lf in self.msg.iter_lines(self.CHUNK_SIZE):
             if b'\0' in line:
                 raise BinarySuppressedError()
-            yield line.decode(self.msg.encoding) \
-                      .encode(self.output_encoding, 'replace') + lf
+            line = codec.decode(line, self.msg.encoding)
+            yield codec.encode(line, self.output_encoding) + lf
 
 
 class PrettyStream(EncodedStream):
@@ -137,15 +138,23 @@ class PrettyStream(EncodedStream):
         super().__init__(**kwargs)
         self.formatting = formatting
         self.conversion = conversion
-        self.mime = self.get_mime()
+        self.mime, mime_options = self._get_mime_and_options()
+        self.encoding = mime_options.get('charset') or ''
 
-    def get_mime(self) -> str:
-        mime = parse_header_content_type(self.msg.content_type)[0]
-        if isinstance(self.msg, HTTPResponse):
-            forced_content_type = self.formatting.options['response']['as']
-            if forced_content_type != EMPTY_FORMAT_OPTION:
-                mime = parse_header_content_type(forced_content_type)[0] or mime
-        return mime
+    def _get_mime_and_options(self) -> Tuple[str, Dict[str, Any]]:
+        # Defaults from the `Content-Type` header.
+        mime, options = parse_header_content_type(self.msg.content_type)
+
+        if not isinstance(self.msg, HTTPResponse):
+            return mime, options
+
+        # Override from the `--response-as` option.
+        forced_content_type = self.formatting.options['response']['as']
+        if forced_content_type == EMPTY_FORMAT_OPTION:
+            return mime, options
+
+        forced_mime, forced_options = parse_header_content_type(forced_content_type)
+        return (forced_mime or mime, forced_options or options)
 
     def get_headers(self) -> bytes:
         return self.formatting.format_headers(
@@ -176,9 +185,9 @@ class PrettyStream(EncodedStream):
         if not isinstance(chunk, str):
             # Text when a converter has been used,
             # otherwise it will always be bytes.
-            chunk = chunk.decode(self.msg.encoding, 'replace')
+            chunk = codec.decode(chunk, self.encoding)
         chunk = self.formatting.format_body(content=chunk, mime=self.mime)
-        return chunk.encode(self.output_encoding, 'replace')
+        return codec.encode(chunk, self.output_encoding)
 
 
 class BufferedPrettyStream(PrettyStream):
