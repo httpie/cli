@@ -184,7 +184,7 @@ def test_response_body_encoding_override_by_option(pretty):
 
 
 @pytest.mark.parametrize('encoding', ENCODINGS)
-def test_request_body_encoding_used(encoding):
+def test_request_content_type_charset_used(encoding):
     body_str = CZECH_TEXT
     body_bytes = body_str.encode(encoding)
     if encoding != UTF8:
