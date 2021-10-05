@@ -93,7 +93,7 @@ def save_doc_file(content: str) -> bool:
 
 def main() -> int:
     content = generate_documentation()
-    return int(not save_doc_file(content))
+    return int(save_doc_file(content))
 
 
 if __name__ == '__main__':
