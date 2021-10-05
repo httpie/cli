@@ -143,6 +143,14 @@ doc-check:
 	mdl --git-recurse --style docs/linter/mdl-styles.rb .
 
 
+doc-install-inst:
+	@echo $(H1)Checking validity of installation instructions$(H1END)
+	@$(VENV_PYTHON) docs/generate-install-instructions.py \
+		|| (echo 'docs/README.md: installation instructions are outdated.' \
+			&& echo 'Run docs/generate-install-instructions.py to fix it.' \
+			&& exit 1)
+
+
 ###############################################################################
 # Publishing to PyPi
 ###############################################################################

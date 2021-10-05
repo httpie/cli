@@ -13,11 +13,5 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: 3.9
-      - name: Install requirements
-        run: python -m pip install pyyaml
-      - name: Check for outdated installation instructions
-        run: |
-          python docs/generate-install-instructions.py \
-            || (echo 'docs/README.md: installation instructions are outdated.' \
-              && echo 'Run docs/generate-install-instructions.py to fix it.' \
-              && exit 1)
+      - run: make install
+      - run: make doc-install-inst
