@@ -146,11 +146,18 @@ You can install it on Linux, macOS, Windows, or FreeBSD with `pip`:
 $ python -m pip install --upgrade https://github.com/httpie/httpie/archive/master.tar.gz
 ```
 
-Or on macOS with Homebrew:
+Or on macOS, and Linux, with Homebrew:
 
 ```bash
 $ brew uninstall --force httpie
 $ brew install --HEAD httpie
+```
+
+And even on macOS, and Linux, with Snapcraft:
+
+```bash
+$ snap remove httpie
+$ snap install httpie --edge
 ```
 
 Verify that now you have the [current development version identifier](https://github.com/httpie/httpie/blob/master/httpie__init__.py#L6) with the `-dev` suffix, for example:
