@@ -76,7 +76,7 @@ def load_doc_file() -> str:
     return DOC_FILE.read_text(encoding='utf-8')
 
 
-def save_doc_file(content: str) -> None:
+def save_doc_file(content: str) -> bool:
     current_doc = load_doc_file()
     marker_start = current_doc.find(MARKER_START) + len(MARKER_START) + 2
     marker_end = current_doc.find(MARKER_END, marker_start)
@@ -85,13 +85,15 @@ def save_doc_file(content: str) -> None:
         + content
         + current_doc[marker_end:]
     )
-    return DOC_FILE.write_text(updated_doc, encoding='utf-8')
+    if current_doc != updated_doc:
+        DOC_FILE.write_text(updated_doc, encoding='utf-8')
+        return True
+    return False
 
 
 def main() -> int:
     content = generate_documentation()
-    save_doc_file(content)
-    return 0
+    return int(not save_doc_file(content))
 
 
 if __name__ == '__main__':

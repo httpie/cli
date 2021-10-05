@@ -1,0 +1,19 @@
+name: Check installation instructions
+
+on:
+  pull_request:
+    paths:
+      - docs/generate-install-doc.py
+
+jobs:
+  doc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Install requirements
+        run: python -m pip install pyyaml
+      - name: Check for outdated installation instructions
+        run: python docs/generate-install-doc.py
