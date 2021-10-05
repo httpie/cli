@@ -9,7 +9,7 @@ from httpie.output.formatters.colors import ColorFormatter
 from httpie.utils import JsonDictPreservingDuplicateKeys
 
 from .fixtures import JSON_WITH_DUPE_KEYS_FILE_PATH
-from .utils import MockEnvironment, http, URL_EXAMPLE
+from .utils import MockEnvironment, http, DUMMY_URL
 
 TEST_JSON_XXSI_PREFIXES = [
     r")]}',\n",
@@ -58,14 +58,14 @@ def test_json_formatter_with_body_preceded_by_non_json_data(data_prefix, json_da
     content_type = 'application/json;charset=utf8'
     responses.add(
         responses.GET,
-        URL_EXAMPLE,
+        DUMMY_URL,
         body=body,
         content_type=content_type,
     )
 
     colored_output = pretty in {'all', 'colors'}
     env = MockEnvironment(colors=256) if colored_output else None
-    r = http('--pretty', pretty, URL_EXAMPLE, env=env)
+    r = http('--pretty', pretty, DUMMY_URL, env=env)
 
     indent = None if pretty in {'none', 'colors'} else 4
     expected_body = data_prefix + json.dumps(json_data, indent=indent)
@@ -83,11 +83,11 @@ def test_duplicate_keys_support_from_response():
     """JSON with duplicate keys should be handled correctly."""
     responses.add(
         responses.GET,
-        URL_EXAMPLE,
+        DUMMY_URL,
         body=JSON_WITH_DUPES_RAW,
         content_type='application/json',
     )
-    args = ('--pretty', 'format', URL_EXAMPLE)
+    args = ('--pretty', 'format', DUMMY_URL)
 
     # Check implicit --sorted
     if JsonDictPreservingDuplicateKeys.SUPPORTS_SORTING:
@@ -104,7 +104,7 @@ def test_duplicate_keys_support_from_input_file():
     args = (
         '--verbose',
         '--offline',
-        URL_EXAMPLE,
+        DUMMY_URL,
         f'@{JSON_WITH_DUPE_KEYS_FILE_PATH}',
     )
 

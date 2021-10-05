@@ -2,6 +2,7 @@
 from pathlib import Path
 
 from httpie.encoding import UTF8
+from httpie.output.formatters.xml import pretty_xml, parse_xml
 
 
 def patharg(path):
@@ -35,3 +36,5 @@ FILE_CONTENT = FILE_PATH.read_text(encoding=UTF8).strip()
 JSON_FILE_CONTENT = JSON_FILE_PATH.read_text(encoding=UTF8)
 BIN_FILE_CONTENT = BIN_FILE_PATH.read_bytes()
 UNICODE = FILE_CONTENT
+XML_DATA_RAW = '<?xml version="1.0" encoding="utf-8"?><root><e>text</e></root>'
+XML_DATA_FORMATTED = pretty_xml(parse_xml(XML_DATA_RAW))

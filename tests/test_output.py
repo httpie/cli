@@ -9,6 +9,7 @@ from urllib.request import urlopen
 
 import pytest
 import requests
+import responses
 
 from httpie.cli.argtypes import (
     PARSED_DEFAULT_FORMAT_OPTIONS,
@@ -18,7 +19,8 @@ from httpie.cli.definition import parser
 from httpie.encoding import UTF8
 from httpie.output.formatters.colors import get_lexer
 from httpie.status import ExitStatus
-from .utils import COLOR, CRLF, HTTP_OK, MockEnvironment, http
+from .fixtures import XML_DATA_RAW, XML_DATA_FORMATTED
+from .utils import COLOR, CRLF, HTTP_OK, MockEnvironment, http, DUMMY_URL
 
 
 @pytest.mark.parametrize('stdout_isatty', [True, False])
@@ -506,3 +508,35 @@ class TestFormatOptions:
             env=MockEnvironment(),
         )
         assert parsed_args.format_options == expected_format_options
+
+
+@responses.activate
+def test_response_mime_overwrite():
+    responses.add(
+        method=responses.GET,
+        url=DUMMY_URL,
+        body=XML_DATA_RAW,
+        content_type='text/plain',
+    )
+    r = http(
+        '--offline',
+        '--raw', XML_DATA_RAW,
+        '--response-mime=application/xml', DUMMY_URL
+    )
+    assert XML_DATA_RAW in r  # not affecting request bodies
+
+    r = http('--response-mime=application/xml', DUMMY_URL)
+    assert XML_DATA_FORMATTED in r
+
+
+@responses.activate
+def test_response_mime_overwrite_incorrect():
+    responses.add(
+        method=responses.GET,
+        url=DUMMY_URL,
+        body=XML_DATA_RAW,
+        content_type='text/xml',
+    )
+    # The provided Content-Type is simply ignored, and so no formatting is done.
+    r = http('--response-mime=incorrect/type', DUMMY_URL)
+    assert XML_DATA_RAW in r

@@ -1,5 +1,5 @@
 """
-Various unicode handling related tests.
+Various encoding handling related tests.
 
 """
 import pytest
@@ -9,7 +9,7 @@ from charset_normalizer.constant import TOO_SMALL_SEQUENCE
 from httpie.cli.constants import PRETTY_MAP
 from httpie.encoding import UTF8
 
-from .utils import http, HTTP_OK, URL_EXAMPLE, MockEnvironment
+from .utils import http, HTTP_OK, DUMMY_URL, MockEnvironment
 from .fixtures import UNICODE
 
 
@@ -20,7 +20,8 @@ CHARSET_TEXT_PAIRS = [
 ]
 
 
-def test_fixtures():
+def test_charset_text_pairs():
+    # Verify our test data is legit.
     for charset, text in CHARSET_TEXT_PAIRS:
         assert len(text) > TOO_SMALL_SEQUENCE
         if charset != UTF8:
@@ -135,59 +136,58 @@ def test_unicode_digest_auth(httpbin):
 
 @pytest.mark.parametrize(['charset', 'text'], CHARSET_TEXT_PAIRS)
 @responses.activate
-def test_response_body_encoding_detection_from_content(text, charset):
+def test_terminal_output_response_charset_detection(text, charset):
     responses.add(
-        responses.POST,
-        URL_EXAMPLE,
+        method=responses.POST,
+        url=DUMMY_URL,
         body=text.encode(charset),
         content_type='text/plain',
     )
-    r = http('--form', 'POST', URL_EXAMPLE)
+    r = http('--form', 'POST', DUMMY_URL)
     assert text in r
 
 
 @pytest.mark.parametrize(['charset', 'text'], CHARSET_TEXT_PAIRS)
 @responses.activate
-def test_response_body_encoding_detection_from_content_type_header(charset, text):
+def test_terminal_output_response_content_type_charset(charset, text):
     responses.add(
-        responses.POST,
-        URL_EXAMPLE,
+        method=responses.POST,
+        url=DUMMY_URL,
         body=text.encode(charset),
         content_type=f'text/plain; charset={charset}',
     )
-    r = http('--form', 'POST', URL_EXAMPLE)
+    r = http('--form', 'POST', DUMMY_URL)
     assert text in r
 
 
 @pytest.mark.parametrize(['charset', 'text'], CHARSET_TEXT_PAIRS)
 @pytest.mark.parametrize('pretty', PRETTY_MAP.keys())
 @responses.activate
-def test_response_body_encoding_detection_from_content_type_header_stream(charset, text, pretty):
+def test_terminal_output_response_content_type_charset_with_stream(charset, text, pretty):
     responses.add(
-        responses.GET,
-        URL_EXAMPLE,
+        method=responses.GET,
+        url=DUMMY_URL,
         body=f'<?xml version="1.0"?>\n<c>{text}</c>'.encode(charset),
         stream=True,
         content_type=f'text/xml; charset={charset.upper()}',
     )
-    r = http('--pretty', pretty, '--stream', URL_EXAMPLE)
+    r = http('--pretty', pretty, '--stream', DUMMY_URL)
     assert text in r
 
 
 @pytest.mark.parametrize(['charset', 'text'], CHARSET_TEXT_PAIRS)
 @pytest.mark.parametrize('pretty', PRETTY_MAP.keys())
 @responses.activate
-def test_response_body_encoding_override_by_option(charset, text, pretty):
+def test_terminal_output_response_charset_override(charset, text, pretty):
     responses.add(
         responses.GET,
-        URL_EXAMPLE,
+        DUMMY_URL,
         body=text.encode(charset),
         content_type='text/plain; charset=utf-8',
     )
-    args = ('--pretty', pretty, URL_EXAMPLE)
-
+    args = ['--pretty', pretty, DUMMY_URL]
     if charset != UTF8:
-        # Encoding provided by Content-Type is incorrect, thus it should print something unreadable.
+        # Content-Type charset wrong -> garbled text expected.
         r = http(*args)
         assert text not in r
     r = http('--response-charset', charset, *args)
@@ -195,25 +195,22 @@ def test_response_body_encoding_override_by_option(charset, text, pretty):
 
 
 @pytest.mark.parametrize(['charset', 'text'], CHARSET_TEXT_PAIRS)
-def test_request_content_type_charset_used(charset, text):
-    body_bytes = text.encode(charset)
-
+def test_terminal_output_request_content_type_charset(charset, text):
     r = http(
         '--offline',
-        URL_EXAMPLE,
+        DUMMY_URL,
         f'Content-Type: text/plain; charset={charset.upper()}',
-        env=MockEnvironment(stdin=body_bytes, stdin_isatty=False),
+        env=MockEnvironment(stdin=text.encode(charset), stdin_isatty=False),
     )
     assert text in r
 
 
 @pytest.mark.parametrize(['charset', 'text'], CHARSET_TEXT_PAIRS)
-def test_request_charset_detected(charset, text):
-    body_bytes = text.encode(charset)
+def test_terminal_output_request_charset_detection(charset, text):
     r = http(
         '--offline',
-        URL_EXAMPLE,
+        DUMMY_URL,
         f'Content-Type: text/plain',
-        env=MockEnvironment(stdin=body_bytes, stdin_isatty=False),
+        env=MockEnvironment(stdin=text.encode(charset), stdin_isatty=False),
     )
     assert text in r
