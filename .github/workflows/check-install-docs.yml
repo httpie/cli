@@ -3,7 +3,7 @@ name: Check installation instructions
 on:
   pull_request:
     paths:
-      - docs/generate-install-doc.py
+      - docs/generate-install-instructions.py
 
 jobs:
   doc:
@@ -17,5 +17,7 @@ jobs:
         run: python -m pip install pyyaml
       - name: Check for outdated installation instructions
         run: |
-          python docs/generate-install-doc.py || \
-            (echo 'docs/README.md: installation instructions are outdated.'; exit 1)
+          python docs/generate-install-instructions.py \
+            || (echo 'docs/README.md: installation instructions are outdated.' \
+              && echo 'Run docs/generate-install-instructions.py to fix it.' \
+              && exit 1)
