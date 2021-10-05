@@ -124,38 +124,53 @@ def test_unicode_digest_auth(httpbin):
 
 @pytest.mark.parametrize('encoding', ENCODINGS)
 @responses.activate
-def test_GET_encoding_detection_from_content_type_header(encoding):
+def test_response_encoding_detection_from_content(encoding):
     responses.add(
-        responses.GET,
+        responses.POST,
         URL_EXAMPLE,
-        body=f'<?xml version="1.0"?>\n<c>{CZECH_TEXT}</c>'.encode(encoding),
-        content_type=f'text/xml; charset={encoding.upper()}'
+        body=CZECH_TEXT.encode(encoding),
+        content_type='text/plain',
     )
-    r = http('GET', URL_EXAMPLE)
+    r = http('--form', 'POST', URL_EXAMPLE)
     assert CZECH_TEXT in r
 
 
 @pytest.mark.parametrize('encoding', ENCODINGS)
 @responses.activate
-def test_encoding_detection_from_content(encoding):
+def test_response_encoding_detection_from_content_xml(encoding):
     body = f'<?xml version="1.0" encoding="{encoding.upper()}"?>\n<c>{CZECH_TEXT}</c>'
     responses.add(
         responses.GET,
         URL_EXAMPLE,
         body=body.encode(encoding),
-        content_type='text/xml'
+        content_type='text/xml',
     )
     r = http(URL_EXAMPLE)
     assert CZECH_TEXT in r
 
 
+@pytest.mark.parametrize('encoding', ENCODINGS)
+@responses.activate
+def test_response_encoding_detection_from_content_type_header(encoding):
+    responses.add(
+        responses.POST,
+        URL_EXAMPLE,
+        body=CZECH_TEXT.encode(encoding),
+        content_type=f'text/plain; charset={encoding.upper()}',
+    )
+    r = http('--form', 'POST', URL_EXAMPLE)
+    assert CZECH_TEXT in r
+
+
 @pytest.mark.parametrize('pretty', PRETTY_MAP.keys())
 @responses.activate
-def test_GET_encoding_provided_by_option(pretty):
-    responses.add(responses.GET,
-                  URL_EXAMPLE,
-                  body='卷首'.encode('big5'),
-                  content_type='text/plain; charset=utf-8')
+def test_response_encoding_provided_by_option(pretty):
+    responses.add(
+        responses.GET,
+        URL_EXAMPLE,
+        body='卷首'.encode('big5'),
+        content_type='text/plain; charset=utf-8',
+    )
     args = ('--pretty', pretty, URL_EXAMPLE)
 
     # Encoding provided by Content-Type is incorrect, thus it should print something unreadable.
@@ -166,15 +181,17 @@ def test_GET_encoding_provided_by_option(pretty):
 
 
 @pytest.mark.parametrize('encoding', ENCODINGS)
+@pytest.mark.parametrize('pretty', PRETTY_MAP.keys())
 @responses.activate
-def test_encoding_detection_from_content_type_header(encoding):
+def test_streamed_response_encoding_detection_from_content_type_header(encoding, pretty):
     responses.add(
-        responses.POST,
+        responses.GET,
         URL_EXAMPLE,
-        body=CZECH_TEXT.encode(encoding),
-        content_type=f'text/plain; charset={encoding.upper()}'
+        body=f'<?xml version="1.0"?>\n<c>{CZECH_TEXT}</c>'.encode(encoding),
+        stream=True,
+        content_type=f'text/xml; charset={encoding.upper()}',
     )
-    r = http('--form', 'POST', URL_EXAMPLE)
+    r = http('--pretty', pretty, '--stream', URL_EXAMPLE)
     assert CZECH_TEXT in r
 
 
@@ -185,6 +202,7 @@ def test_request_body_content_type_charset_used(encoding):
     if encoding != UTF8:
         with pytest.raises(UnicodeDecodeError):
             assert body_str != body_bytes.decode()
+
     r = http(
         '--offline',
         URL_EXAMPLE,
@@ -195,27 +213,3 @@ def test_request_body_content_type_charset_used(encoding):
         )
     )
     assert body_str in r
-
-
-@pytest.mark.parametrize('encoding', ENCODINGS)
-@responses.activate
-def test_POST_encoding_detection_from_content(encoding):
-    responses.add(responses.POST,
-                  URL_EXAMPLE,
-                  body=CZECH_TEXT.encode(encoding),
-                  content_type='text/plain')
-    r = http('--form', 'POST', URL_EXAMPLE)
-    assert CZECH_TEXT in r
-
-
-@pytest.mark.parametrize('encoding', ENCODINGS)
-@pytest.mark.parametrize('pretty', PRETTY_MAP.keys())
-@responses.activate
-def test_stream_encoding_detection_from_content_type_header(encoding, pretty):
-    responses.add(responses.GET,
-                  URL_EXAMPLE,
-                  body=f'<?xml version="1.0"?>\n<c>{CZECH_TEXT}</c>'.encode(encoding),
-                  stream=True,
-                  content_type=f'text/xml; charset={encoding.upper()}')
-    r = http('--pretty=' + pretty, '--stream', 'GET', URL_EXAMPLE)
-    assert CZECH_TEXT in r

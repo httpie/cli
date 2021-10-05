@@ -23,8 +23,12 @@ XML_DATA_FORMATTED = pretty_xml(parse_xml(XML_DATA_RAW))
 )
 @responses.activate
 def test_xml_format_options(options, expected_xml):
-    responses.add(responses.GET, URL_EXAMPLE, body=XML_DATA_RAW,
-                  content_type='application/xml')
+    responses.add(
+        responses.GET,
+        URL_EXAMPLE,
+        body=XML_DATA_RAW,
+        content_type='application/xml',
+    )
 
     r = http('--format-options', options, URL_EXAMPLE)
     assert expected_xml in r
@@ -42,8 +46,12 @@ def test_valid_xml(file):
     xml_data = file.read_text(encoding=UTF8)
     expected_xml_file = file.with_name(file.name.replace('_raw', '_formatted'))
     expected_xml_output = expected_xml_file.read_text(encoding=UTF8)
-    responses.add(responses.GET, URL_EXAMPLE, body=xml_data,
-                  content_type='application/xml')
+    responses.add(
+        responses.GET,
+        URL_EXAMPLE,
+        body=xml_data,
+        content_type='application/xml',
+    )
 
     r = http(URL_EXAMPLE)
     assert expected_xml_output in r
@@ -64,8 +72,12 @@ def test_xml_xhtml():
     )
     expected_xml_file = file.with_name(expected_file_name)
     expected_xml_output = expected_xml_file.read_text(encoding=UTF8)
-    responses.add(responses.GET, URL_EXAMPLE, body=xml_data,
-                  content_type='application/xhtml+xml')
+    responses.add(
+        responses.GET,
+        URL_EXAMPLE,
+        body=xml_data,
+        content_type='application/xhtml+xml',
+    )
 
     r = http(URL_EXAMPLE)
     assert expected_xml_output in r
@@ -78,22 +90,30 @@ def test_invalid_xml(file):
     and none should make HTTPie to crash.
     """
     xml_data = file.read_text(encoding=UTF8)
-    responses.add(responses.GET, URL_EXAMPLE, body=xml_data,
-                  content_type='application/xml')
+    responses.add(
+        responses.GET,
+        URL_EXAMPLE,
+        body=xml_data,
+        content_type='application/xml',
+    )
 
-    # No formatting done, data is simply printed as-is
+    # No formatting done, data is simply printed as-is.
     r = http(URL_EXAMPLE)
     assert xml_data in r
 
 
 @responses.activate
-def test_content_type_from_option():
+def test_response_mime_type_from_option():
     """Test XML response with a incorrect Content-Type header.
-    Using the --response-as option to force the good one.
+    Using the appropriate option to force the good one.
     """
-    responses.add(responses.GET, URL_EXAMPLE, body=XML_DATA_RAW,
-                  content_type='text/plain')
-    args = ('--response-mime', 'application/xml', URL_EXAMPLE)
+    responses.add(
+        responses.GET,
+        URL_EXAMPLE,
+        body=XML_DATA_RAW,
+        content_type='text/plain',
+    )
+    args = ('--response-mime=application/xml', URL_EXAMPLE)
 
     # Ensure the option is taken into account only for responses.
     # Request
@@ -106,13 +126,17 @@ def test_content_type_from_option():
 
 
 @responses.activate
-def test_content_type_from_option_incomplete():
+def test_reponse_mime_type_from_option_incomplete():
     """Test XML response with a incorrect Content-Type header.
-    Using the --response-as option to set a partial Content-Type without mime type.
+    Using the appropriate option to set an incorrect mime type.
     """
-    responses.add(responses.GET, URL_EXAMPLE, body=XML_DATA_RAW,
-                  content_type='text/plain')
+    responses.add(
+        responses.GET,
+        URL_EXAMPLE,
+        body=XML_DATA_RAW,
+        content_type='text/plain',
+    )
 
     # The provided Content-Type is simply ignored, and so no formatting is done.
-    r = http('--response-charset', 'utf-8', URL_EXAMPLE)
+    r = http('--response-mime=incorrect/type', URL_EXAMPLE)
     assert XML_DATA_RAW in r
