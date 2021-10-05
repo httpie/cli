@@ -21,6 +21,7 @@ dev_require = [
     'flake8-tuple',
     'pyopenssl',
     'pytest-cov',
+    'pyyaml',
     'twine',
     'wheel',
 ]
