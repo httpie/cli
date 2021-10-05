@@ -25,7 +25,10 @@ export PATH := $(VENV_BIN):$(PATH)
 all: uninstall-httpie install test
 
 
-install: venv
+install: venv install-reqs
+
+
+install-reqs:
 	@echo $(H1)Updating package tools$(H1END)
 	$(VENV_PIP) install --upgrade pip wheel
 
@@ -36,6 +39,7 @@ install: venv
 	$(VENV_PIP) install --upgrade --editable .
 
 	@echo
+
 
 clean:
 	@echo $(H1)Cleaning up$(H1END)
