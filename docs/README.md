@@ -41,258 +41,97 @@ You are invited to submit fixes and improvements to the docs by editing [this fi
 
 ## Installation
 
-<!-- Auto-generation on -->
+<div data-installation-instructions>
+
+<!-- GENERATED SECTION (edit in docs/installation) -->
+
+- [Universal](#universal)
+
+- [macOS](#macos)
+
+- [Windows](#windows)
+
+- [Linux](#linux)
+
+- [FreeBSD](#freebsd)
 
 ### Universal
 
 #### PyPi
 
-HTTPie can be installed *via* [pip](https://pip.pypa.io/en/stable/installation/):
+Please make sure you have Python 3.6 or newer (`python --version`).
 
 ```bash
+# Install
 $ python -m pip install --upgrade pip wheel
 $ python -m pip install httpie
 ```
 
-And to upgrade to the latest available version:
-
 ```bash
+# Upgrade
 $ python -m pip install --upgrade pip wheel
 $ python -m pip install --upgrade httpie
-```
-
-### FreeBSD
-
-#### FreshPorts
-
-HTTPie can be installed *via* [FreshPorts](https://www.freshports.org/www/py-httpie/):
-
-```bash
-$ pkg install www/py-httpie
-```
-
-And to upgrade to the latest available version:
-
-```bash
-$ pkg upgrade www/py-httpie
-```
-
-### Linux
-
-#### Snapcraft (Linux)
-
-HTTPie can be installed *via* [Snapcraft](https://snapcraft.io/docs/installing-snapd):
-
-```bash
-$ snap install httpie
-```
-
-And to upgrade to the latest available version:
-
-```bash
-$ snap refresh httpie
-```
-
-#### Alpine Linux
-
-HTTPie can be installed *via* [apk](https://pkgs.alpinelinux.org/package/edge/community/x86/httpie):
-
-```bash
-$ apk update
-$ apk add httpie
-```
-
-And to upgrade to the latest available version:
-
-```bash
-$ apk update
-$ apk add --upgrade httpie
-```
-
-#### Arch Linux
-
-HTTPie can be installed *via* [pacman](https://archlinux.org/packages/community/any/httpie/):
-
-```bash
-$ pacman -Sy httpie
-```
-
-And to upgrade to the latest available version:
-
-```bash
-$ pacman -Syu httpie
-```
-
-#### CentOS & RHEL
-
-HTTPie can be installed *via* [Yum](https://src.fedoraproject.org/rpms/httpie):
-
-```bash
-$ yum update
-$ yum install epel-release
-$ yum install httpie
-```
-
-And to upgrade to the latest available version:
-
-```bash
-$ yum update
-$ yum upgrade httpie
-```
-
-#### Debian, Ubuntu, etc
-
-HTTPie can be installed *via* [APT](https://packages.debian.org/sid/web/httpie):
-
-```bash
-$ apt update
-$ apt install httpie
-```
-
-And to upgrade to the latest available version:
-
-```bash
-$ apt update
-$ apt upgrade httpie
-```
-
-#### Fedora
-
-HTTPie can be installed *via* [DNF](https://src.fedoraproject.org/rpms/httpie):
-
-```bash
-$ dnf update
-$ dnf install httpie
-```
-
-And to upgrade to the latest available version:
-
-```bash
-$ dnf update
-$ dnf upgrade httpie
-```
-
-#### Gentoo
-
-HTTPie can be installed *via* [Portage](https://packages.gentoo.org/packages/net-misc/httpie):
-
-```bash
-$ emerge --sync
-$ emerge httpie
-```
-
-And to upgrade to the latest available version:
-
-```bash
-$ emerge --sync
-$ emerge --update httpie
-```
-
-#### Linuxbrew
-
-HTTPie can be installed *via* [Linuxbrew](https://docs.brew.sh/Homebrew-on-Linux#install):
-
-```bash
-$ brew update
-$ brew install httpie
-```
-
-And to upgrade to the latest available version:
-
-```bash
-$ brew update
-$ brew upgrade httpie
-```
-
-#### Spack (Linux)
-
-HTTPie can be installed *via* [Spack](https://spack.readthedocs.io/en/latest/getting_started.html#installation):
-
-```bash
-$ spack install httpie
-```
-
-And to upgrade to the latest available version:
-
-```bash
-$ spack install httpie
-```
-
-#### Void Linux
-
-HTTPie can be installed *via* [XBPS](https://docs.voidlinux.org/xbps/index.html):
-
-```bash
-$ xbps-install -Su
-$ xbps-install -S httpie
-```
-
-And to upgrade to the latest available version:
-
-```bash
-$ xbps-install -Su
-$ xbps-install -Su httpie
 ```
 
 ### macOS
 
 #### Homebrew
 
-HTTPie can be installed *via* [Homebrew](https://docs.brew.sh/Installation):
+To install [Homebrew](https://brew.sh/) follow [installation instructions](https://docs.brew.sh/Installation).
 
 ```bash
+# Install
 $ brew update
 $ brew install httpie
 ```
 
-And to upgrade to the latest available version:
-
 ```bash
+# Upgrade
 $ brew update
 $ brew upgrade httpie
 ```
 
 #### MacPorts
 
-HTTPie can be installed *via* [MacPorts](https://www.macports.org/install.php):
+To install [MacPorts](https://www.macports.org/) follow [installation instructions](https://www.macports.org/install.php).
 
 ```bash
+# Install
 $ port selfupdate
 $ port install httpie
 ```
 
-And to upgrade to the latest available version:
-
 ```bash
+# Upgrade
 $ port selfupdate
 $ port upgrade httpie
 ```
 
 #### Snapcraft (macOS)
 
-HTTPie can be installed *via* [Snapcraft](https://snapcraft.io/docs/installing-snapd):
+To install [Snapcraft](https://snapcraft.io/) follow [installation instructions](https://snapcraft.io/docs/installing-snapd).
 
 ```bash
+# Install
 $ snap install httpie
 ```
 
-And to upgrade to the latest available version:
-
 ```bash
+# Upgrade
 $ snap refresh httpie
 ```
 
 #### Spack (macOS)
 
-HTTPie can be installed *via* [Spack](https://spack.readthedocs.io/en/latest/getting_started.html#installation):
+To install [Spack](https://spack.readthedocs.io/en/latest/index.html) follow [installation instructions](https://spack.readthedocs.io/en/latest/getting_started.html#installation).
 
 ```bash
+# Install
 $ spack install httpie
 ```
 
-And to upgrade to the latest available version:
-
 ```bash
+# Upgrade
 $ spack install httpie
 ```
 
@@ -300,19 +139,180 @@ $ spack install httpie
 
 #### Chocolatey
 
-HTTPie can be installed *via* [Chocolatey](https://chocolatey.org/install):
+To install [Chocolatey](https://community.chocolatey.org/) follow [installation instructions](https://chocolatey.org/install).
 
 ```bash
+# Install
 $ choco install httpie
 ```
 
-And to upgrade to the latest available version:
-
 ```bash
+# Upgrade
 $ choco upgrade httpie
 ```
 
-<!-- Auto-generation off -->
+### Linux
+
+#### Snapcraft (Linux)
+
+To install [Snapcraft](https://snapcraft.io/) follow [installation instructions](https://snapcraft.io/docs/installing-snapd).
+
+```bash
+# Install
+$ snap install httpie
+```
+
+```bash
+# Upgrade
+$ snap refresh httpie
+```
+
+#### Linuxbrew
+
+To install [Linuxbrew](https://docs.brew.sh/Homebrew-on-Linux) follow [installation instructions](https://docs.brew.sh/Homebrew-on-Linux#install).
+
+```bash
+# Install
+$ brew update
+$ brew install httpie
+```
+
+```bash
+# Upgrade
+$ brew update
+$ brew upgrade httpie
+```
+
+#### Debian and Ubuntu
+
+Also works for other Debian-derived distributions like Kubuntu, Mint, etc.
+
+```bash
+# Install
+$ apt update
+$ apt install httpie
+```
+
+```bash
+# Upgrade
+$ apt update
+$ apt upgrade httpie
+```
+
+#### Fedora
+
+```bash
+# Install
+$ dnf update
+$ dnf install httpie
+```
+
+```bash
+# Upgrade
+$ dnf update
+$ dnf upgrade httpie
+```
+
+#### CentOS and RHEL
+
+Also works for other RHEL-derived distributions like ClearOS, Oracle Linux, etc.
+
+```bash
+# Install
+$ yum update
+$ yum install epel-release
+$ yum install httpie
+```
+
+```bash
+# Upgrade
+$ yum update
+$ yum upgrade httpie
+```
+
+#### Alpine Linux
+
+```bash
+# Install
+$ apk update
+$ apk add httpie
+```
+
+```bash
+# Upgrade
+$ apk update
+$ apk add --upgrade httpie
+```
+
+#### Gentoo
+
+```bash
+# Install
+$ emerge --sync
+$ emerge httpie
+```
+
+```bash
+# Upgrade
+$ emerge --sync
+$ emerge --update httpie
+```
+
+#### Arch Linux
+
+```bash
+# Install
+$ pacman -Sy httpie
+```
+
+```bash
+# Upgrade
+$ pacman -Syu httpie
+```
+
+#### Void Linux
+
+```bash
+# Install
+$ xbps-install -Su
+$ xbps-install -S httpie
+```
+
+```bash
+# Upgrade
+$ xbps-install -Su
+$ xbps-install -Su httpie
+```
+
+#### Spack (Linux)
+
+To install [Spack](https://spack.readthedocs.io/en/latest/index.html) follow [installation instructions](https://spack.readthedocs.io/en/latest/getting_started.html#installation).
+
+```bash
+# Install
+$ spack install httpie
+```
+
+```bash
+# Upgrade
+$ spack install httpie
+```
+
+### FreeBSD
+
+#### FreshPorts
+
+```bash
+# Install
+$ pkg install www/py-httpie
+```
+
+```bash
+# Upgrade
+$ pkg upgrade www/py-httpie
+```
+
+<!-- /GENERATED SECTION --></div>
 
 ### Python version
 

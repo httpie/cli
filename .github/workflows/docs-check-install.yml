@@ -1,5 +1,3 @@
-name: Check installation instructions
-
 on:
   pull_request:
     paths:
@@ -14,4 +12,4 @@ jobs:
         with:
           python-version: 3.9
       - run: make install
-      - run: make doc-install-inst
+      - run: make generate-install-instructions

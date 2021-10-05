@@ -140,10 +140,10 @@ codecov-upload:
 
 doc-check:
 	@echo $(H1)Running documentations checks$(H1END)
-	mdl --git-recurse --style docs/linter/mdl-styles.rb .
+	mdl --git-recurse --style docs/markdownlint.rb .
 
 
-doc-install-inst:
+generate-install-instructions.py:
 	@echo $(H1)Checking validity of installation instructions$(H1END)
 	@$(VENV_PYTHON) docs/generate-install-instructions.py \
 		|| (echo 'docs/README.md: installation instructions are outdated.' \

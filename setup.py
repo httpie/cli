@@ -25,6 +25,7 @@ dev_require = [
     'pyyaml',
     'twine',
     'wheel',
+    'Jinja2'
 ]
 install_requires = [
     'charset_normalizer>=2.0.0',

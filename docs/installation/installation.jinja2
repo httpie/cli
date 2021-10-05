@@ -1,0 +1,33 @@
+<!-- GENERATED SECTION (edit in docs/installation) -->
+{% for platform, tools in structure %}
+    - [{{ platform }}](#{{ platform.lower() }})
+{% endfor %}
+
+{% for platform, tools in structure %}
+
+    ### {{ platform }}
+
+    {% for tool in tools %}
+        #### {{ tool.title }}
+
+        {% if tool.note %}
+            {{ tool.note }}
+        {% endif %}
+
+        {% if tool.links.setup %}
+            To install [{{ tool.name }}]({{ tool.links.homepage }}) follow [installation instructions]({{ tool.links.setup }}).
+        {% endif %}
+
+        ```bash
+        # Install
+        $ {{ tool.commands.install|join('\n$ ') }}
+        ```
+
+        ```bash
+        # Upgrade
+        $ {{ tool.commands.upgrade|join('\n$ ') }}
+        ```
+    {% endfor %}
+
+{% endfor %}
+<!-- /GENERATED SECTION -->
