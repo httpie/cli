@@ -315,9 +315,6 @@ $ pkg upgrade www/py-httpie
 
 <!-- /GENERATED SECTION --></div>
 
-### Python version
-
-Python version 3.6 or greater is required.
 
 ### Unstable version
 
