@@ -96,7 +96,7 @@ tools:
     title: Chocolatey
     name: Chocolatey
     links:
-      homepage: https://community.chocolatey.org/
+      homepage: https://chocolatey.org/
       setup: https://chocolatey.org/install
       package: https://community.chocolatey.org/packages/httpie/
     commands:
