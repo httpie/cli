@@ -21,10 +21,10 @@ MARKER_START = '<!-- Auto-generation on -->'
 MARKER_END = '<!-- Auto-generation off -->'
 
 # Mardown templates
-MD_SECTION_FORMAT = '''### {section}
+MD_SECTION_TPL = '''### {section}
 
 '''
-MD_TOOL_FORMAT = '''#### {name}
+MD_TOOL_TPL = '''#### {name}
 
 HTTPie can be installed *via* [{tool}]({tool_url}):
 
@@ -50,7 +50,7 @@ def generate_documentation() -> str:
 
 
 def generate_documentation_section(section, database: Database) -> str:
-    content = MD_SECTION_FORMAT.format(section=section)
+    content = MD_SECTION_TPL.format(section=section)
     for tool in database[DTB_KEY_DOC_STRUCTURE][section]:
         details = database[DTB_KEY_TOOLS][tool]
         tool_url = (
@@ -58,7 +58,7 @@ def generate_documentation_section(section, database: Database) -> str:
             or details['links'].get('project')
             or details['links']['homepage']
         )
-        content += MD_TOOL_FORMAT.format(
+        content += MD_TOOL_TPL.format(
             name=details['title'],
             cmds_install='\n'.join(f'$ {cmd}' for cmd in details['commands']['install']),
             cmds_upgrade='\n'.join(f'$ {cmd}' for cmd in details['commands']['update']),
