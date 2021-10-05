@@ -51,6 +51,7 @@ def save_doc_file(content: str) -> bool:
 
 def build_docs_structure(database: Database):
     tools = database[KEY_TOOLS]
+    assert len(tools) == len({tool['title'] for tool in tools.values()}), 'tool titles need to be unique'
     tree = database[KEY_DOC_STRUCTURE]
     structure = []
     for platform, tools_ids in tree.items():

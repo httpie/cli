@@ -1,7 +1,11 @@
-<!-- GENERATED SECTION (edit in docs/installation) -->
+<!--
+THE INSTALLATION SECTION IS GENERATED
+
+Do not edit here, but in docs/installation/.
+
+-->
 {% for platform, tools in structure %}
-    - [{{ platform }}](#{{ platform.lower() }})
-{% endfor %}
+    - [{{ platform }}](#{{ platform.lower() }}){% endfor %} {# <= keep `endfor` here to prevent unwanted `\n` #}
 
 {% for platform, tools in structure %}
 

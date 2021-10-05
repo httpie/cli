@@ -46,14 +46,10 @@ You are invited to submit fixes and improvements to the docs by editing [this fi
 <!-- GENERATED SECTION (edit in docs/installation) -->
 
 - [Universal](#universal)
-
 - [macOS](#macos)
-
 - [Windows](#windows)
-
 - [Linux](#linux)
-
-- [FreeBSD](#freebsd)
+- [FreeBSD](#freebsd) 
 
 ### Universal
 
