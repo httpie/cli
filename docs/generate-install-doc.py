@@ -3,7 +3,6 @@ from pathlib import Path
 from typing import Dict
 
 import yaml
-from yaml.cyaml import CDumper
 
 # Types
 Database = Dict[str, str]
@@ -27,15 +26,22 @@ MD_SECTION_FORMAT = '''### {section}
 '''
 MD_TOOL_FORMAT = '''#### {name}
 
+HTTPie can be installed *via* [{tool}]({tool_url}):
+
 ```bash
 {cmds_install}
+```
+
+And to upgrade to the latest available version:
+
+```bash
+{cmds_upgrade}
 ```
 
 '''
 
 
 def generate_documentation() -> str:
-    """"""
     database = load_database()
     content = []
     for section in database[DTB_KEY_DOC_STRUCTURE]:
@@ -44,28 +50,33 @@ def generate_documentation() -> str:
 
 
 def generate_documentation_section(section, database: Database) -> str:
-    """"""
     content = MD_SECTION_FORMAT.format(section=section)
     for tool in database[DTB_KEY_DOC_STRUCTURE][section]:
         details = database[DTB_KEY_TOOLS][tool]
+        tool_url = (
+            details['links'].get('installation')
+            or details['links'].get('project')
+            or details['links']['homepage']
+        )
         content += MD_TOOL_FORMAT.format(
-            name=details['name'],
-            cmds_install='\n'.join(f'$ {cmd}' for cmd in details['commands']['install']))
+            name=details['title'],
+            cmds_install='\n'.join(f'$ {cmd}' for cmd in details['commands']['install']),
+            cmds_upgrade='\n'.join(f'$ {cmd}' for cmd in details['commands']['update']),
+            tool=details['name'],
+            tool_url=tool_url,
+        )
     return content
 
 
 def load_database() -> Database:
-    """"""
     return yaml.safe_load(DTB_FILE.read_text(encoding='utf-8'))
 
 
 def load_doc_file() -> str:
-    """"""
     return DOC_FILE.read_text(encoding='utf-8')
 
 
 def save_doc_file(content: str) -> None:
-    """"""
     current_doc = load_doc_file()
     marker_start = current_doc.find(MARKER_START) + len(MARKER_START) + 2
     marker_end = current_doc.find(MARKER_END, marker_start)
@@ -78,7 +89,6 @@ def save_doc_file(content: str) -> None:
 
 
 def main() -> int:
-    """"""
     content = generate_documentation()
     save_doc_file(content)
     return 0

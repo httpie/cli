@@ -1,6 +1,7 @@
 tools:
   apk:
-    name: Alpine Linux
+    title: Alpine Linux
+    name: apk
     links:
       homepage: https://wiki.alpinelinux.org/wiki/Alpine_Linux_package_management
       project: https://pkgs.alpinelinux.org/package/edge/community/x86/httpie
@@ -13,9 +14,10 @@ tools:
         - apk add --upgrade httpie
 
   apt:
-    name: Debian, Unbuntu, etc.
+    title: Debian, Unbuntu, etc
+    name: APT
     links:
-      homepage: https://wiki.debian.org/Apt
+      homepage: https://en.wikipedia.org/wiki/APT_(software)
       project: https://packages.debian.org/sid/web/httpie
     commands:
       install:
@@ -26,6 +28,7 @@ tools:
         - apt upgrade httpie
 
   brew-mac:
+    title: Homebrew
     name: Homebrew
     links:
       homepage: https://brew.sh/
@@ -40,6 +43,7 @@ tools:
         - brew upgrade httpie
 
   brew-linux:
+    title: Linuxbrew
     name: Linuxbrew
     links:
       homepage: https://docs.brew.sh/Homebrew-on-Linux
@@ -54,6 +58,7 @@ tools:
         - brew upgrade httpie
 
   chocolatey:
+    title: Chocolatey
     name: Chocolatey
     links:
       homepage: https://community.chocolatey.org/
@@ -66,7 +71,8 @@ tools:
         - choco upgrade httpie
 
   dnf:
-    name: Fedora
+    title: Fedora
+    name: DNF
     links:
       homepage: https://fedoraproject.org/wiki/DNF
       project: https://src.fedoraproject.org/rpms/httpie
@@ -79,7 +85,8 @@ tools:
         - dnf upgrade httpie
 
   emerge:
-    name: Gentoo
+    title: Gentoo
+    name: Portage
     links:
       homepage: https://wiki.gentoo.org/wiki/Portage
       project: https://packages.gentoo.org/packages/net-misc/httpie
@@ -92,7 +99,8 @@ tools:
         - emerge --update httpie
 
   pacman:
-    name: Arch Linux
+    title: Arch Linux
+    name: pacman
     links:
       homepage: https://archlinux.org/pacman/
       project: https://archlinux.org/packages/community/any/httpie/
@@ -103,6 +111,7 @@ tools:
         - pacman -Syu httpie
 
   pkg:
+    title: FreshPorts
     name: FreshPorts
     links:
       homepage: https://www.freebsd.org/cgi/man.cgi?query=pkg&sektion=8&n=1
@@ -114,7 +123,8 @@ tools:
         - pkg upgrade www/py-httpie
 
   port:
-    name: Homebrew
+    title: MacPorts
+    name: MacPorts
     links:
       homepage: https://www.macports.org/
       installation: https://www.macports.org/install.php
@@ -128,7 +138,8 @@ tools:
         - port upgrade httpie
 
   pypi:
-    name: PyPi
+    title: PyPi
+    name: pip
     links:
       homepage: https://pypi.org/
       installation: https://pip.pypa.io/en/stable/installation/
@@ -142,7 +153,8 @@ tools:
         - python -m pip install --upgrade httpie
 
   snap-linux:
-    name: Snap
+    title: Snapcraft (Linux)
+    name: Snapcraft
     links:
       homepage: https://snapcraft.io/
       installation: https://snapcraft.io/docs/installing-snapd
@@ -154,7 +166,8 @@ tools:
         - snap refresh httpie
 
   snap-mac:
-    name: Snap
+    title: Snapcraft (macOS)
+    name: Snapcraft
     links:
       homepage: https://snapcraft.io/
       installation: https://snapcraft.io/docs/installing-snapd
@@ -166,6 +179,7 @@ tools:
         - snap refresh httpie
 
   spack-linux:
+    title: Spack (Linux)
     name: Spack
     links:
       homepage: https://spack.readthedocs.io/en/latest/index.html
@@ -177,6 +191,7 @@ tools:
         - spack install httpie
 
   spack-mac:
+    title: Spack (macOS)
     name: Spack
     links:
       homepage: https://spack.readthedocs.io/en/latest/index.html
@@ -188,7 +203,8 @@ tools:
         - spack install httpie
 
   xbps-install:
-    name: Void Linux
+    title: Void Linux
+    name: XBPS
     links:
       homepage: https://docs.voidlinux.org/xbps/index.html
     commands:
@@ -200,7 +216,8 @@ tools:
         - xbps-install -Su httpie
 
   yum:
-    name: CentOS & RHEL
+    title: CentOS & RHEL
+    name: Yum
     links:
       homepage: http://yum.baseurl.org/
       project: https://src.fedoraproject.org/rpms/httpie
