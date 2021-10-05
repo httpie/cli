@@ -5,8 +5,10 @@ on:
     branches:
       - master
     paths:
+      - .github/workflows/tests.yml
       - httpie/**/*.py
       - setup.*
+      - tests/**/*.py
   pull_request:
     paths:
       - .github/workflows/tests.yml
