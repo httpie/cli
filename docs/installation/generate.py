@@ -62,7 +62,7 @@ def build_docs_structure(database: Database):
 
 
 def clean_template_output(output):
-    output = '\n'.join(line.lstrip() for line in output.strip().splitlines())
+    output = '\n'.join(line.strip() for line in output.strip().splitlines())
     output = re.sub('\n{3,}', '\n\n', output)
     return output
 
