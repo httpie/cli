@@ -3,7 +3,6 @@ from itertools import chain
 from typing import Callable, Iterable, Union
 
 from .processing import Conversion, Formatting
-from .. import encoding
 from ..context import Environment
 from ..encoding import smart_decode, smart_encode, UTF8
 from ..models import HTTPMessage
@@ -175,9 +174,9 @@ class PrettyStream(EncodedStream):
         if not isinstance(chunk, str):
             # Text when a converter has been used,
             # otherwise it will always be bytes.
-            chunk = encoding.smart_decode(chunk, self.encoding)
+            chunk = smart_decode(chunk, self.encoding)
         chunk = self.formatting.format_body(content=chunk, mime=self.mime)
-        return encoding.smart_encode(chunk, self.output_encoding)
+        return smart_encode(chunk, self.output_encoding)
 
 
 class BufferedPrettyStream(PrettyStream):

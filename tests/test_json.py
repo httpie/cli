@@ -12,12 +12,13 @@ from .fixtures import JSON_WITH_DUPE_KEYS_FILE_PATH
 from .utils import MockEnvironment, http, URL_EXAMPLE
 
 TEST_JSON_XXSI_PREFIXES = [
-    r")]}',\n", ")]}',",
+    r")]}',\n",
+    ")]}',",
     'while(1);',
     'for(;;)',
     ')',
     ']',
-    '}'
+    '}',
 ]
 TEST_JSON_VALUES = [
     # FIXME: missing int & float
@@ -28,7 +29,7 @@ TEST_JSON_VALUES = [
     'foo',
     True,
     False,
-    None
+    None,
 ]
 TEST_PREFIX_TOKEN_COLOR = '\x1b[38;5;15m' if is_windows else '\x1b[04m\x1b[91m'
 
@@ -59,7 +60,7 @@ def test_json_formatter_with_body_preceded_by_non_json_data(data_prefix, json_da
         responses.GET,
         URL_EXAMPLE,
         body=body,
-        content_type=content_type
+        content_type=content_type,
     )
 
     colored_output = pretty in {'all', 'colors'}
@@ -80,8 +81,12 @@ def test_json_formatter_with_body_preceded_by_non_json_data(data_prefix, json_da
 @responses.activate
 def test_duplicate_keys_support_from_response():
     """JSON with duplicate keys should be handled correctly."""
-    responses.add(responses.GET, URL_EXAMPLE, body=JSON_WITH_DUPES_RAW,
-                  content_type='application/json')
+    responses.add(
+        responses.GET,
+        URL_EXAMPLE,
+        body=JSON_WITH_DUPES_RAW,
+        content_type='application/json',
+    )
     args = ('--pretty', 'format', URL_EXAMPLE)
 
     # Check implicit --sorted
@@ -96,8 +101,12 @@ def test_duplicate_keys_support_from_response():
 
 def test_duplicate_keys_support_from_input_file():
     """JSON file with duplicate keys should be handled correctly."""
-    args = ('--verbose', '--offline', URL_EXAMPLE,
-            f'@{JSON_WITH_DUPE_KEYS_FILE_PATH}')
+    args = (
+        '--verbose',
+        '--offline',
+        URL_EXAMPLE,
+        f'@{JSON_WITH_DUPE_KEYS_FILE_PATH}',
+    )
 
     # Check implicit --sorted
     if JsonDictPreservingDuplicateKeys.SUPPORTS_SORTING:

@@ -45,7 +45,7 @@ def test_response_charset_option_unknown_encoding(httpbin_both):
     r = http(
         '--response-charset=foobar',
         httpbin_both + '/get',
-        tolerate_error_exit_status=True
+        tolerate_error_exit_status=True,
     )
     assert "'foobar' is not a supported encoding" in r.stderr
 
@@ -54,6 +54,6 @@ def test_response_mime_option_unknown_encoding(httpbin_both):
     r = http(
         '--response-mime=foobar',
         httpbin_both + '/get',
-        tolerate_error_exit_status=True
+        tolerate_error_exit_status=True,
     )
     assert "'foobar' doesn’t look like a mime type" in r.stderr
