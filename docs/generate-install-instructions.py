@@ -1,4 +1,5 @@
 import sys
+from operator import itemgetter
 from pathlib import Path
 from typing import Dict
 
@@ -51,18 +52,26 @@ def generate_documentation() -> str:
 
 def generate_documentation_section(section, database: Database) -> str:
     content = MD_SECTION_TPL.format(section=section)
-    for tool in database[DTB_KEY_DOC_STRUCTURE][section]:
-        details = database[DTB_KEY_TOOLS][tool]
+
+    def tool_details(name: str) -> database:
+        return database[DTB_KEY_TOOLS][name]
+
+    # The first tool is the primary we want to display,
+    # then they are simply sorted by `tool.title`.
+    tools = [tool_details(tool) for tool in database[DTB_KEY_DOC_STRUCTURE][section]]
+    tools = [tools[0]] + sorted(tools[1:], key=itemgetter('title'))
+
+    for tool in tools:
         tool_url = (
-            details['links'].get('installation')
-            or details['links'].get('project')
-            or details['links']['homepage']
+            tool['links'].get('installation')
+            or tool['links'].get('project')
+            or tool['links']['homepage']
         )
         content += MD_TOOL_TPL.format(
-            name=details['title'],
-            cmds_install='\n'.join(f'$ {cmd}' for cmd in details['commands']['install']),
-            cmds_upgrade='\n'.join(f'$ {cmd}' for cmd in details['commands']['update']),
-            tool=details['name'],
+            name=tool['title'],
+            cmds_install='\n'.join(f'$ {cmd}' for cmd in tool['commands']['install']),
+            cmds_upgrade='\n'.join(f'$ {cmd}' for cmd in tool['commands']['update']),
+            tool=tool['name'],
             tool_url=tool_url,
         )
     return content

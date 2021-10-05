@@ -155,7 +155,54 @@ And to upgrade to the latest available version:
 $ snap refresh httpie
 ```
 
-#### Debian, Unbuntu, etc
+#### Alpine Linux
+
+HTTPie can be installed *via* [apk](https://pkgs.alpinelinux.org/package/edge/community/x86/httpie):
+
+```bash
+$ apk update
+$ apk add httpie
+```
+
+And to upgrade to the latest available version:
+
+```bash
+$ apk update
+$ apk add --upgrade httpie
+```
+
+#### Arch Linux
+
+HTTPie can be installed *via* [pacman](https://archlinux.org/packages/community/any/httpie/):
+
+```bash
+$ pacman -Sy httpie
+```
+
+And to upgrade to the latest available version:
+
+```bash
+$ pacman -Syu httpie
+```
+
+#### CentOS & RHEL
+
+HTTPie can be installed *via* [Yum](https://src.fedoraproject.org/rpms/httpie):
+
+```bash
+$ yum update
+$ yum install epel-release
+$ yum install httpie
+```
+
+And to upgrade to the latest available version:
+
+```bash
+$ yum update
+$ yum upgrade httpie
+```
+
+#### Debian, Ubuntu, etc
 
 HTTPie can be installed *via* [APT](https://packages.debian.org/sid/web/httpie):
 
@@ -187,23 +234,6 @@ $ dnf update
 $ dnf upgrade httpie
 ```
 
-#### CentOS & RHEL
-
-HTTPie can be installed *via* [Yum](https://src.fedoraproject.org/rpms/httpie):
-
-```bash
-$ yum update
-$ yum install epel-release
-$ yum install httpie
-```
-
-And to upgrade to the latest available version:
-
-```bash
-$ yum update
-$ yum upgrade httpie
-```
-
 #### Gentoo
 
 HTTPie can be installed *via* [Portage](https://packages.gentoo.org/packages/net-misc/httpie):
@@ -218,52 +248,6 @@ And to upgrade to the latest available version:
 ```bash
 $ emerge --sync
 $ emerge --update httpie
-```
-
-#### Alpine Linux
-
-HTTPie can be installed *via* [apk](https://pkgs.alpinelinux.org/package/edge/community/x86/httpie):
-
-```bash
-$ apk update
-$ apk add httpie
-```
-
-And to upgrade to the latest available version:
-
-```bash
-$ apk update
-$ apk add --upgrade httpie
-```
-
-#### Arch Linux
-
-HTTPie can be installed *via* [pacman](https://archlinux.org/packages/community/any/httpie/):
-
-```bash
-$ pacman -Sy httpie
-```
-
-And to upgrade to the latest available version:
-
-```bash
-$ pacman -Syu httpie
-```
-
-#### Void Linux
-
-HTTPie can be installed *via* [XBPS](https://docs.voidlinux.org/xbps/index.html):
-
-```bash
-$ xbps-install -Su
-$ xbps-install -S httpie
-```
-
-And to upgrade to the latest available version:
-
-```bash
-$ xbps-install -Su
-$ xbps-install -Su httpie
 ```
 
 #### Linuxbrew
@@ -294,6 +278,22 @@ And to upgrade to the latest available version:
 
 ```bash
 $ spack install httpie
+```
+
+#### Void Linux
+
+HTTPie can be installed *via* [XBPS](https://docs.voidlinux.org/xbps/index.html):
+
+```bash
+$ xbps-install -Su
+$ xbps-install -S httpie
+```
+
+And to upgrade to the latest available version:
+
+```bash
+$ xbps-install -Su
+$ xbps-install -Su httpie
 ```
 
 ### FreeBSD

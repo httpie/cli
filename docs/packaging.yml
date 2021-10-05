@@ -14,7 +14,7 @@ tools:
         - apk add --upgrade httpie
 
   apt:
-    title: Debian, Unbuntu, etc
+    title: Debian, Ubuntu, etc
     name: APT
     links:
       homepage: https://en.wikipedia.org/wiki/APT_(software)
@@ -242,14 +242,14 @@ docs-structure:
     - chocolatey
   Linux:
     - snap-linux
-    - apt
-    - dnf
-    - yum
-    - emerge
     - apk
-    - pacman
-    - xbps-install
+    - apt
     - brew-linux
+    - dnf
+    - emerge
+    - pacman
     - spack-linux
+    - xbps-install
+    - yum
   FreeBSD:
     - pkg
