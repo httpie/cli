@@ -1,6 +1,7 @@
 from typing import Union
 
 from charset_normalizer import from_bytes
+from charset_normalizer.constant import TOO_SMALL_SEQUENCE
 
 UTF8 = 'utf-8'
 
@@ -20,9 +21,10 @@ def detect_encoding(content: ContentBytes) -> str:
     ']"foo"'
     """
     encoding = UTF8
-    match = from_bytes(bytes(content)).best()
-    if match:
-        encoding = match.encoding
+    if len(content) > TOO_SMALL_SEQUENCE:
+        match = from_bytes(bytes(content)).best()
+        if match:
+            encoding = match.encoding
     return encoding
 
 

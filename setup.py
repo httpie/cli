@@ -25,7 +25,7 @@ dev_require = [
     'wheel',
 ]
 install_requires = [
-    'charset_normalizer~=2.0.5',
+    'charset_normalizer>=2.0.0',
     'defusedxml>=0.6.0',
     'requests[socks]>=2.22.0',
     'Pygments>=2.5.2',
