@@ -50,7 +50,7 @@ def test_response_charset_option_unknown_encoding(httpbin_both):
     assert "'foobar' is not a supported encoding" in r.stderr
 
 
-def test_response_mime_option_unknown_encoding(httpbin_both):
+def test_response_mime_option_invalid_mime_type(httpbin_both):
     r = http(
         '--response-mime=foobar',
         httpbin_both + '/get',

@@ -103,7 +103,7 @@ def test_invalid_xml(file):
 
 
 @responses.activate
-def test_response_mime_type_from_option():
+def test_response_body_mime_type_override_from_option():
     """Test XML response with a incorrect Content-Type header.
     Using the appropriate option to force the good one.
     """
@@ -126,7 +126,7 @@ def test_response_mime_type_from_option():
 
 
 @responses.activate
-def test_reponse_mime_type_from_option_incomplete():
+def test_reponse_body_mime_type_override_from_option_incorrect():
     """Test XML response with a incorrect Content-Type header.
     Using the appropriate option to set an incorrect mime type.
     """

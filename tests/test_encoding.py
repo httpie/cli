@@ -9,7 +9,7 @@ from charset_normalizer.constant import TOO_SMALL_SEQUENCE
 from httpie.cli.constants import PRETTY_MAP
 from httpie.encoding import UTF8
 
-from .utils import http, HTTP_OK, URL_EXAMPLE, MockEnvironment, StdinBytesIO
+from .utils import http, HTTP_OK, URL_EXAMPLE, MockEnvironment
 from .fixtures import UNICODE
 
 
@@ -126,7 +126,7 @@ def test_unicode_digest_auth(httpbin):
 
 @pytest.mark.parametrize('encoding', ENCODINGS)
 @responses.activate
-def test_response_encoding_detection_from_content(encoding):
+def test_response_body_encoding_detection_from_content(encoding):
     responses.add(
         responses.POST,
         URL_EXAMPLE,
@@ -139,21 +139,7 @@ def test_response_encoding_detection_from_content(encoding):
 
 @pytest.mark.parametrize('encoding', ENCODINGS)
 @responses.activate
-def test_response_encoding_detection_from_content_xml(encoding):
-    body = f'<?xml version="1.0" encoding="{encoding.upper()}"?>\n<c>{CZECH_TEXT}</c>'
-    responses.add(
-        responses.GET,
-        URL_EXAMPLE,
-        body=body.encode(encoding),
-        content_type='text/xml',
-    )
-    r = http(URL_EXAMPLE)
-    assert CZECH_TEXT in r
-
-
-@pytest.mark.parametrize('encoding', ENCODINGS)
-@responses.activate
-def test_response_encoding_detection_from_content_type_header(encoding):
+def test_response_body_encoding_detection_from_content_type_header(encoding):
     responses.add(
         responses.POST,
         URL_EXAMPLE,
@@ -164,9 +150,24 @@ def test_response_encoding_detection_from_content_type_header(encoding):
     assert CZECH_TEXT in r
 
 
+@pytest.mark.parametrize('encoding', ENCODINGS)
 @pytest.mark.parametrize('pretty', PRETTY_MAP.keys())
 @responses.activate
-def test_response_encoding_provided_by_option(pretty):
+def test_response_body_encoding_detection_from_content_type_header_stream(encoding, pretty):
+    responses.add(
+        responses.GET,
+        URL_EXAMPLE,
+        body=f'<?xml version="1.0"?>\n<c>{CZECH_TEXT}</c>'.encode(encoding),
+        stream=True,
+        content_type=f'text/xml; charset={encoding.upper()}',
+    )
+    r = http('--pretty', pretty, '--stream', URL_EXAMPLE)
+    assert CZECH_TEXT in r
+
+
+@pytest.mark.parametrize('pretty', PRETTY_MAP.keys())
+@responses.activate
+def test_response_body_encoding_override_by_option(pretty):
     responses.add(
         responses.GET,
         URL_EXAMPLE,
@@ -183,22 +184,7 @@ def test_response_encoding_provided_by_option(pretty):
 
 
 @pytest.mark.parametrize('encoding', ENCODINGS)
-@pytest.mark.parametrize('pretty', PRETTY_MAP.keys())
-@responses.activate
-def test_streamed_response_encoding_detection_from_content_type_header(encoding, pretty):
-    responses.add(
-        responses.GET,
-        URL_EXAMPLE,
-        body=f'<?xml version="1.0"?>\n<c>{CZECH_TEXT}</c>'.encode(encoding),
-        stream=True,
-        content_type=f'text/xml; charset={encoding.upper()}',
-    )
-    r = http('--pretty', pretty, '--stream', URL_EXAMPLE)
-    assert CZECH_TEXT in r
-
-
-@pytest.mark.parametrize('encoding', ENCODINGS)
-def test_request_body_content_type_charset_used(encoding):
+def test_request_body_encoding_used(encoding):
     body_str = CZECH_TEXT
     body_bytes = body_str.encode(encoding)
     if encoding != UTF8:
@@ -209,9 +195,6 @@ def test_request_body_content_type_charset_used(encoding):
         '--offline',
         URL_EXAMPLE,
         f'Content-Type: text/plain; charset={encoding.upper()}',
-        env=MockEnvironment(
-            stdin=StdinBytesIO(body_bytes),
-            stdin_isatty=False,
-        )
+        env=MockEnvironment(stdin=body_bytes, stdin_isatty=False),
     )
     assert body_str in r
