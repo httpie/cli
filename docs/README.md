@@ -265,7 +265,6 @@ DELETE /delete HTTP/1.1
 
 In addition to the standard methods (`GET`, `POST`, `HEAD`, `PUT`, `PATCH`, `DELETE`, etc.), you can use custom method names, for example:
 
-
 ```bash
 $ http AHOY pie.dev/post
 ```
@@ -286,8 +285,8 @@ $ http GET pie.dev/get hello=world
 
 The `METHOD` argument is optional, and when you don’t specify it, HTTPie defaults to:
 
-* `GET` for requests without body
-* `POST` for requests with body
+- `GET` for requests without body
+- `POST` for requests with body
 
 Here we don’t specify any request data, so both commands will send the same `GET` request:
 
@@ -301,15 +300,13 @@ $ http pie.dev/get
 
 Here, on the other hand, we do have some data, so both commands will make the same `POST` request:
 
-```
+```bash
 $ http POST pie.dev/post hello=world
 ```
 
 ```bash
 $ http pie.dev/post hello=world
 ```
-
-
 
 ## Request URL
 
