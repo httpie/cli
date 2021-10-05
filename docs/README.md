@@ -61,82 +61,20 @@ $ python -m pip install --upgrade pip wheel
 $ python -m pip install --upgrade httpie
 ```
 
-### macOS
+### FreeBSD
 
-#### Homebrew
+#### FreshPorts
 
-HTTPie can be installed *via* [Homebrew](https://docs.brew.sh/Installation):
+HTTPie can be installed *via* [FreshPorts](https://www.freshports.org/www/py-httpie/):
 
 ```bash
-$ brew update
-$ brew install httpie
+$ pkg install www/py-httpie
 ```
 
 And to upgrade to the latest available version:
 
 ```bash
-$ brew update
-$ brew upgrade httpie
-```
-
-#### MacPorts
-
-HTTPie can be installed *via* [MacPorts](https://www.macports.org/install.php):
-
-```bash
-$ port selfupdate
-$ port install httpie
-```
-
-And to upgrade to the latest available version:
-
-```bash
-$ port selfupdate
-$ port upgrade httpie
-```
-
-#### Snapcraft (macOS)
-
-HTTPie can be installed *via* [Snapcraft](https://snapcraft.io/docs/installing-snapd):
-
-```bash
-$ snap install httpie
-```
-
-And to upgrade to the latest available version:
-
-```bash
-$ snap refresh httpie
-```
-
-#### Spack (macOS)
-
-HTTPie can be installed *via* [Spack](https://spack.readthedocs.io/en/latest/getting_started.html#installation):
-
-```bash
-$ spack install httpie
-```
-
-And to upgrade to the latest available version:
-
-```bash
-$ spack install httpie
-```
-
-### Windows
-
-#### Chocolatey
-
-HTTPie can be installed *via* [Chocolatey](https://chocolatey.org/install):
-
-```bash
-$ choco install httpie
-```
-
-And to upgrade to the latest available version:
-
-```bash
-$ choco upgrade httpie
+$ pkg upgrade www/py-httpie
 ```
 
 ### Linux
@@ -296,20 +234,82 @@ $ xbps-install -Su
 $ xbps-install -Su httpie
 ```
 
-### FreeBSD
+### macOS
 
-#### FreshPorts
+#### Homebrew
 
-HTTPie can be installed *via* [FreshPorts](https://www.freshports.org/www/py-httpie/):
+HTTPie can be installed *via* [Homebrew](https://docs.brew.sh/Installation):
 
 ```bash
-$ pkg install www/py-httpie
+$ brew update
+$ brew install httpie
 ```
 
 And to upgrade to the latest available version:
 
 ```bash
-$ pkg upgrade www/py-httpie
+$ brew update
+$ brew upgrade httpie
+```
+
+#### MacPorts
+
+HTTPie can be installed *via* [MacPorts](https://www.macports.org/install.php):
+
+```bash
+$ port selfupdate
+$ port install httpie
+```
+
+And to upgrade to the latest available version:
+
+```bash
+$ port selfupdate
+$ port upgrade httpie
+```
+
+#### Snapcraft (macOS)
+
+HTTPie can be installed *via* [Snapcraft](https://snapcraft.io/docs/installing-snapd):
+
+```bash
+$ snap install httpie
+```
+
+And to upgrade to the latest available version:
+
+```bash
+$ snap refresh httpie
+```
+
+#### Spack (macOS)
+
+HTTPie can be installed *via* [Spack](https://spack.readthedocs.io/en/latest/getting_started.html#installation):
+
+```bash
+$ spack install httpie
+```
+
+And to upgrade to the latest available version:
+
+```bash
+$ spack install httpie
+```
+
+### Windows
+
+#### Chocolatey
+
+HTTPie can be installed *via* [Chocolatey](https://chocolatey.org/install):
+
+```bash
+$ choco install httpie
+```
+
+And to upgrade to the latest available version:
+
+```bash
+$ choco upgrade httpie
 ```
 
 <!-- Auto-generation off -->

@@ -233,13 +233,8 @@ tools:
 docs-structure:
   Universal:
     - pypi
-  macOS:
-    - brew-mac
-    - port
-    - snap-mac
-    - spack-mac
-  Windows:
-    - chocolatey
+  FreeBSD:
+    - pkg
   Linux:
     - snap-linux
     - apk
@@ -251,5 +246,10 @@ docs-structure:
     - spack-linux
     - xbps-install
     - yum
-  FreeBSD:
-    - pkg
+  macOS:
+    - brew-mac
+    - port
+    - snap-mac
+    - spack-mac
+  Windows:
+    - chocolatey
