@@ -200,7 +200,10 @@ def test_terminal_output_request_content_type_charset(charset, text):
         '--offline',
         DUMMY_URL,
         f'Content-Type: text/plain; charset={charset.upper()}',
-        env=MockEnvironment(stdin=text.encode(charset), stdin_isatty=False),
+        env=MockEnvironment(
+            stdin=text.encode(charset),
+            stdin_isatty=False,
+        ),
     )
     assert text in r
 
@@ -211,6 +214,9 @@ def test_terminal_output_request_charset_detection(charset, text):
         '--offline',
         DUMMY_URL,
         f'Content-Type: text/plain',
-        env=MockEnvironment(stdin=text.encode(charset), stdin_isatty=False),
+        env=MockEnvironment(
+            stdin=text.encode(charset),
+            stdin_isatty=False,
+        ),
     )
     assert text in r
