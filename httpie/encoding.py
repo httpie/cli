@@ -1,7 +1,6 @@
 from typing import Union
 
 from charset_normalizer import from_bytes
-from charset_normalizer.constant import TOO_SMALL_SEQUENCE
 
 UTF8 = 'utf-8'
 
@@ -16,16 +15,14 @@ def detect_encoding(content: ContentBytes) -> str:
     >>> too_short = ']"foo"'
     >>> detected = from_bytes(too_short.encode()).best().encoding
     >>> detected
-    'utf_16_be'
+    'ascii'
     >>> too_short.encode().decode(detected)
-    '崢景漢'
-
+    ']"foo"'
     """
     encoding = UTF8
-    if len(content) > TOO_SMALL_SEQUENCE:
-        match = from_bytes(bytes(content)).best()
-        if match:
-            encoding = match.encoding
+    match = from_bytes(bytes(content)).best()
+    if match:
+        encoding = match.encoding
     return encoding
 
 

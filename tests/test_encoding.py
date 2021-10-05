@@ -4,7 +4,6 @@ Various unicode handling related tests.
 """
 import pytest
 import responses
-from charset_normalizer.constant import TOO_SMALL_SEQUENCE
 
 from httpie.cli.constants import PRETTY_MAP
 from httpie.encoding import UTF8
@@ -13,8 +12,7 @@ from .utils import http, HTTP_OK, URL_EXAMPLE, MockEnvironment, StdinBytesIO
 from .fixtures import UNICODE
 
 
-CZECH_TEXT = 'Všichni lidé jsou si rovni. Všichni lidé jsou si rovni.'
-assert len(CZECH_TEXT) > TOO_SMALL_SEQUENCE
+CZECH_TEXT = 'Všichni lidé jsou si rovni.'
 CZECH_TEXT_SPECIFIC_CHARSET = 'windows-1250'
 ENCODINGS = [UTF8, CZECH_TEXT_SPECIFIC_CHARSET]
 
