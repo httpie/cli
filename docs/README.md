@@ -43,7 +43,12 @@ You are invited to submit fixes and improvements to the docs by editing [this fi
 
 <div data-installation-instructions>
 
-<!-- GENERATED SECTION (edit in docs/installation) -->
+<!--
+THE INSTALLATION SECTION IS GENERATED
+
+Do not edit here, but in docs/installation/.
+
+-->
 
 - [Universal](#universal)
 - [macOS](#macos)
