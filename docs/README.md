@@ -149,8 +149,6 @@ HTTPie can be installed *via* [Snapcraft](https://snapcraft.io/docs/installing-s
 $ snap install httpie
 ```
 
-ddd
-
 And to upgrade to the latest available version:
 
 ```bash
