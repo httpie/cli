@@ -3,7 +3,7 @@
 # We currently only include here methods for popular systems where we take care of the package,
 # or have a good relationship with the maintainers.
 #
-# Each tool name should be unique (it becomes a linkable header)
+# Each tool name should be unique (it becomes a linkable header).
 # If a tools have `links.setup`, it also needs `links.homepage`.
 # Some tools are available on multiple platforms, take into account when editing.
 #
@@ -49,7 +49,7 @@ tools:
 
   apt:
     title: Debian and Ubuntu
-    note: Also works for other Debian-derived distributions like Kubuntu, Mint, etc.
+    note: Also works for other Debian-derived distributions like MX Linux, Linux Mint, deepin, Pop!_OS, KDE neon, Zorin OS, elementary OS, Kubuntu, Devuan, Linux Lite, Peppermint OS, Lubuntu, antiX, Xubuntu, etc.
     name: APT
     links:
       homepage: https://en.wikipedia.org/wiki/APT_(software)
@@ -136,6 +136,7 @@ tools:
   pacman:
     title: Arch Linux
     name: pacman
+    note: Also works for other Arch-derived distributions like ArcoLinux, EndeavourOS, Artix Linux, etc.
     links:
       homepage: https://archlinux.org/pacman/
       package: https://archlinux.org/packages/community/any/httpie/

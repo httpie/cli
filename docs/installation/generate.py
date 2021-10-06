@@ -7,7 +7,6 @@ import yaml
 
 from jinja2 import Template
 
-
 Database = Dict[str, dict]
 
 # Files
@@ -38,6 +37,7 @@ def save_doc_file(content: str) -> bool:
     current_doc = load_doc_file()
     marker_start = current_doc.find(MARKER_START) + len(MARKER_START) + 2
     marker_end = current_doc.find(MARKER_END, marker_start)
+    assert marker_start < marker_end, f'{marker_end=} < {marker_start=}'
     updated_doc = (
         current_doc[:marker_start]
         + content
@@ -55,7 +55,7 @@ def build_docs_structure(database: Database):
     tree = database[KEY_DOC_STRUCTURE]
     structure = []
     for platform, tools_ids in tree.items():
-        assert platform.isalnum()  # for generated links to work
+        assert platform.isalnum(), f'{platform=} must be alpha-numeric for generated links to work'
         platform_tools = [tools[tool_id] for tool_id in tools_ids]
         structure.append((platform, platform_tools))
     return structure

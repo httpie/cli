@@ -54,7 +54,7 @@ Do not edit here, but in docs/installation/.
 - [macOS](#macos)
 - [Windows](#windows)
 - [Linux](#linux)
-- [FreeBSD](#freebsd) 
+- [FreeBSD](#freebsd)
 
 ### Universal
 
@@ -140,7 +140,7 @@ $ spack install httpie
 
 #### Chocolatey
 
-To install [Chocolatey](https://community.chocolatey.org/) follow [installation instructions](https://chocolatey.org/install).
+To install [Chocolatey](https://chocolatey.org/) follow [installation instructions](https://chocolatey.org/install).
 
 ```bash
 # Install
@@ -186,7 +186,7 @@ $ brew upgrade httpie
 
 #### Debian and Ubuntu
 
-Also works for other Debian-derived distributions like Kubuntu, Mint, etc.
+Also works for other Debian-derived distributions like MX Linux, Linux Mint, deepin, Pop!_OS, KDE neon, Zorin OS, elementary OS, Kubuntu, Devuan, Linux Lite, Peppermint OS, Lubuntu, antiX, Xubuntu, etc.
 
 ```bash
 # Install
@@ -260,6 +260,8 @@ $ emerge --update httpie
 ```
 
 #### Arch Linux
+
+Also works for other Arch-derived distributions like ArcoLinux, EndeavourOS, Artix Linux, etc.
 
 ```bash
 # Install
@@ -341,7 +343,7 @@ $ snap remove httpie
 $ snap install httpie --edge
 ```
 
-Verify that now you have the [current development version identifier](https://github.com/httpie/httpie/blob/master/httpie__init__.py#L6) with the `-dev` suffix, for example:
+Verify that now you have the [current development version identifier](https://github.com/httpie/httpie/blob/master/httpie__init__.py#L6) with the `.dev0` suffix, for example:
 
 ```bash
 $ http --version
