@@ -1,5 +1,3 @@
-name: Update documentation
-
 on:
   push:
     branches:

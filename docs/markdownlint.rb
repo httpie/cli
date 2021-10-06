@@ -1,3 +1,5 @@
+# Rules for <https://github.com/markdownlint/markdownlint>
+
 # Load all rules by default
 all
 

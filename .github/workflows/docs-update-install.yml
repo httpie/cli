@@ -1,0 +1,26 @@
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - docs/installation/*
+
+  # Allow to call the workflow manually
+  workflow_dispatch:
+
+jobs:
+  doc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - run: make install
+      - run: make doc-update-install
+      - uses: Automattic/action-commit-to-branch@master
+        with:
+          branch: master
+          commit_message: Auto-update installation instructions in the docs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

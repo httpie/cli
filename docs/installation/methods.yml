@@ -1,0 +1,269 @@
+# Database of HTTPie installation methods. Used to build the docs.
+#
+# We currently only include here methods for popular systems where we take care of the package,
+# or have a good relationship with the maintainers.
+#
+# Each tool name should be unique (it becomes a linkable header).
+# If a tools have `links.setup`, it also needs `links.homepage`.
+# Some tools are available on multiple platforms, take into account when editing.
+#
+
+docs-structure:
+  Universal:
+    - pypi
+  macOS:
+    - brew-mac
+    - port
+    - snap-mac
+    - spack-mac
+  Windows:
+    - chocolatey
+  Linux:
+    - snap-linux
+    - brew-linux
+    - apt
+    - dnf
+    - yum
+    - apk
+    - emerge
+    - pacman
+    - xbps-install
+    - spack-linux
+  FreeBSD:
+    - pkg
+
+tools:
+  apk:
+    title: Alpine Linux
+    name: apk
+    links:
+      homepage: https://wiki.alpinelinux.org/wiki/Alpine_Linux_package_management
+      package: https://pkgs.alpinelinux.org/package/edge/community/x86/httpie
+    commands:
+      install:
+        - apk update
+        - apk add httpie
+      upgrade:
+        - apk update
+        - apk add --upgrade httpie
+
+  apt:
+    title: Debian and Ubuntu
+    note: Also works for other Debian-derived distributions like MX Linux, Linux Mint, deepin, Pop!_OS, KDE neon, Zorin OS, elementary OS, Kubuntu, Devuan, Linux Lite, Peppermint OS, Lubuntu, antiX, Xubuntu, etc.
+    name: APT
+    links:
+      homepage: https://en.wikipedia.org/wiki/APT_(software)
+      package: https://packages.debian.org/sid/web/httpie
+    commands:
+      install:
+        - apt update
+        - apt install httpie
+      upgrade:
+        - apt update
+        - apt upgrade httpie
+
+  brew-mac:
+    title: Homebrew
+    name: Homebrew
+    links:
+      homepage: https://brew.sh/
+      setup: https://docs.brew.sh/Installation
+      package: https://formulae.brew.sh/formula/httpie
+    commands:
+      install:
+        - brew update
+        - brew install httpie
+      upgrade:
+        - brew update
+        - brew upgrade httpie
+
+  brew-linux:
+    title: Linuxbrew
+    name: Linuxbrew
+    links:
+      homepage: https://docs.brew.sh/Homebrew-on-Linux
+      setup: https://docs.brew.sh/Homebrew-on-Linux#install
+      package: https://formulae.brew.sh/formula/httpie
+    commands:
+      install:
+        - brew update
+        - brew install httpie
+      upgrade:
+        - brew update
+        - brew upgrade httpie
+
+  chocolatey:
+    title: Chocolatey
+    name: Chocolatey
+    links:
+      homepage: https://chocolatey.org/
+      setup: https://chocolatey.org/install
+      package: https://community.chocolatey.org/packages/httpie/
+    commands:
+      install:
+        - choco install httpie
+      upgrade:
+        - choco upgrade httpie
+
+  dnf:
+    title: Fedora
+    name: DNF
+    links:
+      homepage: https://fedoraproject.org/wiki/DNF
+      package: https://src.fedoraproject.org/rpms/httpie
+    commands:
+      install:
+        - dnf update
+        - dnf install httpie
+      upgrade:
+        - dnf update
+        - dnf upgrade httpie
+
+  emerge:
+    title: Gentoo
+    name: Portage
+    links:
+      homepage: https://wiki.gentoo.org/wiki/Portage
+      package: https://packages.gentoo.org/packages/net-misc/httpie
+    commands:
+      install:
+        - emerge --sync
+        - emerge httpie
+      upgrade:
+        - emerge --sync
+        - emerge --update httpie
+
+  pacman:
+    title: Arch Linux
+    name: pacman
+    note: Also works for other Arch-derived distributions like ArcoLinux, EndeavourOS, Artix Linux, etc.
+    links:
+      homepage: https://archlinux.org/pacman/
+      package: https://archlinux.org/packages/community/any/httpie/
+    commands:
+      install:
+        - pacman -Sy httpie
+      upgrade:
+        - pacman -Syu httpie
+
+  pkg:
+    title: FreshPorts
+    name: FreshPorts
+    links:
+      homepage: https://www.freebsd.org/cgi/man.cgi?query=pkg&sektion=8&n=1
+      package: https://www.freshports.org/www/py-httpie/
+    commands:
+      install:
+        - pkg install www/py-httpie
+      upgrade:
+        - pkg upgrade www/py-httpie
+
+  port:
+    title: MacPorts
+    name: MacPorts
+    links:
+      homepage: https://www.macports.org/
+      setup: https://www.macports.org/install.php
+      package: https://ports.macports.org/port/httpie/
+    commands:
+      install:
+        - port selfupdate
+        - port install httpie
+      upgrade:
+        - port selfupdate
+        - port upgrade httpie
+
+  pypi:
+    title: PyPi
+    name: pip
+    note: Please make sure you have Python 3.6 or newer (`python --version`).
+    links:
+      homepage: https://pypi.org/
+      # setup: https://pip.pypa.io/en/stable/installation/
+      package: https://pypi.org/project/httpie/
+    commands:
+      install:
+        - python -m pip install --upgrade pip wheel
+        - python -m pip install httpie
+      upgrade:
+        - python -m pip install --upgrade pip wheel
+        - python -m pip install --upgrade httpie
+
+  snap-linux:
+    title: Snapcraft (Linux)
+    name: Snapcraft
+    links:
+      homepage: https://snapcraft.io/
+      setup: https://snapcraft.io/docs/installing-snapd
+      package: https://snapcraft.io/httpie
+    commands:
+      install:
+        - snap install httpie
+      upgrade:
+        - snap refresh httpie
+
+  snap-mac:
+    title: Snapcraft (macOS)
+    name: Snapcraft
+    links:
+      homepage: https://snapcraft.io/
+      setup: https://snapcraft.io/docs/installing-snapd
+      package: https://snapcraft.io/httpie
+    commands:
+      install:
+        - snap install httpie
+      upgrade:
+        - snap refresh httpie
+
+  spack-linux:
+    title: Spack (Linux)
+    name: Spack
+    links:
+      homepage: https://spack.readthedocs.io/en/latest/index.html
+      setup: https://spack.readthedocs.io/en/latest/getting_started.html#installation
+    commands:
+      install:
+        - spack install httpie
+      upgrade:
+        - spack install httpie
+
+  spack-mac:
+    title: Spack (macOS)
+    name: Spack
+    links:
+      homepage: https://spack.readthedocs.io/en/latest/index.html
+      setup: https://spack.readthedocs.io/en/latest/getting_started.html#installation
+    commands:
+      install:
+        - spack install httpie
+      upgrade:
+        - spack install httpie
+
+  xbps-install:
+    title: Void Linux
+    name: XBPS
+    links:
+      homepage: https://docs.voidlinux.org/xbps/index.html
+    commands:
+      install:
+        - xbps-install -Su
+        - xbps-install -S httpie
+      upgrade:
+        - xbps-install -Su
+        - xbps-install -Su httpie
+
+  yum:
+    title: CentOS and RHEL
+    name: Yum
+    note: Also works for other RHEL-derived distributions like ClearOS, Oracle Linux, etc.
+    links:
+      homepage: http://yum.baseurl.org/
+      package: https://src.fedoraproject.org/rpms/httpie
+    commands:
+      install:
+        - yum update
+        - yum install epel-release
+        - yum install httpie
+      upgrade:
+        - yum update
+        - yum upgrade httpie

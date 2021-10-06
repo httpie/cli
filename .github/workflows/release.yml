@@ -1,5 +1,3 @@
-name: Release
-
 on:
   # Add a "Trigger" button to manually start the workflow.
   workflow_dispatch:

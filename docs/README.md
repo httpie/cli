@@ -41,99 +41,283 @@ You are invited to submit fixes and improvements to the docs by editing [this fi
 
 ## Installation
 
-### macOS
+<div data-installation-instructions>
 
-On macOS, HTTPie can also be installed via [Homebrew](https://brew.sh/):
+<!--
+THE INSTALLATION SECTION IS GENERATED
+
+Do not edit here, but in docs/installation/.
+
+-->
+
+- [Universal](#universal)
+- [macOS](#macos)
+- [Windows](#windows)
+- [Linux](#linux)
+- [FreeBSD](#freebsd)
+
+### Universal
+
+#### PyPi
+
+Please make sure you have Python 3.6 or newer (`python --version`).
 
 ```bash
+# Install
+$ python -m pip install --upgrade pip wheel
+$ python -m pip install httpie
+```
+
+```bash
+# Upgrade
+$ python -m pip install --upgrade pip wheel
+$ python -m pip install --upgrade httpie
+```
+
+### macOS
+
+#### Homebrew
+
+To install [Homebrew](https://brew.sh/) follow [installation instructions](https://docs.brew.sh/Installation).
+
+```bash
+# Install
+$ brew update
 $ brew install httpie
 ```
 
-A MacPorts *port* is also available:
+```bash
+# Upgrade
+$ brew update
+$ brew upgrade httpie
+```
+
+#### MacPorts
+
+To install [MacPorts](https://www.macports.org/) follow [installation instructions](https://www.macports.org/install.php).
 
 ```bash
+# Install
+$ port selfupdate
 $ port install httpie
+```
+
+```bash
+# Upgrade
+$ port selfupdate
+$ port upgrade httpie
+```
+
+#### Snapcraft (macOS)
+
+To install [Snapcraft](https://snapcraft.io/) follow [installation instructions](https://snapcraft.io/docs/installing-snapd).
+
+```bash
+# Install
+$ snap install httpie
+```
+
+```bash
+# Upgrade
+$ snap refresh httpie
+```
+
+#### Spack (macOS)
+
+To install [Spack](https://spack.readthedocs.io/en/latest/index.html) follow [installation instructions](https://spack.readthedocs.io/en/latest/getting_started.html#installation).
+
+```bash
+# Install
+$ spack install httpie
+```
+
+```bash
+# Upgrade
+$ spack install httpie
+```
+
+### Windows
+
+#### Chocolatey
+
+To install [Chocolatey](https://chocolatey.org/) follow [installation instructions](https://chocolatey.org/install).
+
+```bash
+# Install
+$ choco install httpie
+```
+
+```bash
+# Upgrade
+$ choco upgrade httpie
 ```
 
 ### Linux
 
-HTTPie is available on the [Snap Store](https://snapcraft.io/httpie):
+#### Snapcraft (Linux)
+
+To install [Snapcraft](https://snapcraft.io/) follow [installation instructions](https://snapcraft.io/docs/installing-snapd).
 
 ```bash
+# Install
 $ snap install httpie
 ```
 
-And most Linux distributions provide a package that can be installed using the
-system package manager, for example:
+```bash
+# Upgrade
+$ snap refresh httpie
+```
+
+#### Linuxbrew
+
+To install [Linuxbrew](https://docs.brew.sh/Homebrew-on-Linux) follow [installation instructions](https://docs.brew.sh/Homebrew-on-Linux#install).
 
 ```bash
-# Debian, Ubuntu, etc.
+# Install
+$ brew update
+$ brew install httpie
+```
+
+```bash
+# Upgrade
+$ brew update
+$ brew upgrade httpie
+```
+
+#### Debian and Ubuntu
+
+Also works for other Debian-derived distributions like MX Linux, Linux Mint, deepin, Pop!_OS, KDE neon, Zorin OS, elementary OS, Kubuntu, Devuan, Linux Lite, Peppermint OS, Lubuntu, antiX, Xubuntu, etc.
+
+```bash
+# Install
+$ apt update
 $ apt install httpie
 ```
 
 ```bash
-# Fedora
+# Upgrade
+$ apt update
+$ apt upgrade httpie
+```
+
+#### Fedora
+
+```bash
+# Install
+$ dnf update
 $ dnf install httpie
 ```
 
 ```bash
-# CentOS, RHEL, ...
+# Upgrade
+$ dnf update
+$ dnf upgrade httpie
+```
+
+#### CentOS and RHEL
+
+Also works for other RHEL-derived distributions like ClearOS, Oracle Linux, etc.
+
+```bash
+# Install
+$ yum update
 $ yum install epel-release
 $ yum install httpie
 ```
 
 ```bash
-# Gentoo
-$ emerge httpie
+# Upgrade
+$ yum update
+$ yum upgrade httpie
 ```
 
-```bash
-# Arch Linux
-$ pacman -S httpie
-```
+#### Alpine Linux
 
 ```bash
-# Alpine Linux
+# Install
+$ apk update
 $ apk add httpie
 ```
 
 ```bash
-# Solus
-$ eopkg install httpie
+# Upgrade
+$ apk update
+$ apk add --upgrade httpie
+```
+
+#### Gentoo
+
+```bash
+# Install
+$ emerge --sync
+$ emerge httpie
+```
+
+```bash
+# Upgrade
+$ emerge --sync
+$ emerge --update httpie
+```
+
+#### Arch Linux
+
+Also works for other Arch-derived distributions like ArcoLinux, EndeavourOS, Artix Linux, etc.
+
+```bash
+# Install
+$ pacman -Sy httpie
+```
+
+```bash
+# Upgrade
+$ pacman -Syu httpie
+```
+
+#### Void Linux
+
+```bash
+# Install
+$ xbps-install -Su
+$ xbps-install -S httpie
+```
+
+```bash
+# Upgrade
+$ xbps-install -Su
+$ xbps-install -Su httpie
+```
+
+#### Spack (Linux)
+
+To install [Spack](https://spack.readthedocs.io/en/latest/index.html) follow [installation instructions](https://spack.readthedocs.io/en/latest/getting_started.html#installation).
+
+```bash
+# Install
+$ spack install httpie
+```
+
+```bash
+# Upgrade
+$ spack install httpie
 ```
 
 ### FreeBSD
 
-On FreeBSD, HTTPie is available in the ports collection. A prebuilt package
-can be installed via [pkg(8)](https://man.freebsd.org/pkg/8>):
+#### FreshPorts
 
 ```bash
+# Install
 $ pkg install www/py-httpie
 ```
 
-### Windows, universal
-
-A universal installation method (that works on Linux, macOS, Windows, FreeBSD, and always provides the latest version) is to use [pip](https://pypi.org/project/pip/):
-
 ```bash
-# Make sure we have an up-to-date version of pip and setuptools:
-$ python -m pip install --upgrade pip setuptools
-
-$ python -m pip install --upgrade httpie
+# Upgrade
+$ pkg upgrade www/py-httpie
 ```
 
-(If `pip` installation fails for some reason, you can try
-`easy_install httpie` as a fallback.)
+<!-- /GENERATED SECTION -->
 
-Windows users can also install HTTPie with [Chocolatey](https://chocolatey.org):
-
-```bash
-$ choco upgrade httpie
-```
-
-### Python version
-
-Python version 3.6 or greater is required.
+</div>
 
 ### Unstable version
 
@@ -160,7 +344,7 @@ $ snap remove httpie
 $ snap install httpie --edge
 ```
 
-Verify that now you have the [current development version identifier](https://github.com/httpie/httpie/blob/master/httpie__init__.py#L6) with the `-dev` suffix, for example:
+Verify that now you have the [current development version identifier](https://github.com/httpie/httpie/blob/master/httpie/__init__.py#L6) with the `.dev0` suffix, for example:
 
 ```bash
 $ http --version

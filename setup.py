@@ -22,8 +22,10 @@ dev_require = [
     'flake8-tuple',
     'pyopenssl',
     'pytest-cov',
+    'pyyaml',
     'twine',
     'wheel',
+    'Jinja2'
 ]
 install_requires = [
     'charset_normalizer>=2.0.0',

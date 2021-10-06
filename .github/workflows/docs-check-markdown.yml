@@ -1,5 +1,3 @@
-name: Check markdown
-
 on:
   pull_request:
     paths:
