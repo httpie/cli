@@ -1,4 +1,4 @@
-# HTTPie on Arch Linux and derived
+# HTTPie on Arch Linux, and derived
 
 Welcome to the documentation about **packaging HTTPie for Arch Linux**.
 

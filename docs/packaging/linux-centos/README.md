@@ -1,9 +1,9 @@
-# HTTPie on CentOS, RHEL and derived
+# HTTPie on CentOS, RHEL, and derived
 
 Welcome to the documentation about **packaging HTTPie for CentOS and RHEL**.
 
 - If you do not know HTTPie, have a look [here](https://httpie.io/cli).
-- If you are looking for HTTPie installation or upgrade instructions on CentOS, then you can find them on [that page](https://httpie.io/docs#centos).
+- If you are looking for HTTPie installation or upgrade instructions on CentOS, then you can find them on [that page](https://httpie.io/docs#centos-and-rhel).
 - If you are looking for technical information about the HTTPie packaging on CentOS, then you are in a good place.
 
 ## About

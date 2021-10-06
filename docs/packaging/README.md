@@ -3,7 +3,7 @@
 Welcome on the documentation part of the **HTTPie packaging process**.
 
 - If you do not know HTTPie, have a look [here](https://httpie.io/cli).
-- If you are looking for HTTPie installation or upgrade instructions, then you can find all you need for your OS on [that page](https://httpie.io/docs#install). In the case you do not find your OS, [let us know](https://github.com/httpie/httpie/issues/).
+- If you are looking for HTTPie installation or upgrade instructions, then you can find all you need for your OS on [that page](https://httpie.io/docs#installation). In the case you do not find your OS, [let us know](https://github.com/httpie/httpie/issues/).
 - If you are looking for technical information about the HTTPie packaging, then you are at the good place.
 
 ## About

@@ -5,7 +5,7 @@
 Welcome to the documentation about **packaging HTTPie for Homebrew**.
 
 - If you do not know HTTPie, have a look [here](https://httpie.io/cli).
-- If you are looking for HTTPie installation or upgrade instructions on Homebrew, then you can find them on [that page](https://httpie.io/docs#homebrew) ([that one] for Linuxbrew](https://httpie.io/docs#linuxbrew)).
+- If you are looking for HTTPie installation or upgrade instructions on Homebrew, then you can find them on [that page](https://httpie.io/docs#homebrew) ([that one](https://httpie.io/docs#linuxbrew) for Linuxbrew).
 - If you are looking for technical information about the HTTPie packaging on Homebrew, then you are in a good place.
 
 ## About

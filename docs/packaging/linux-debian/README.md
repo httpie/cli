@@ -1,4 +1,4 @@
-# HTTPie on Debian, Ubuntu and derived
+# HTTPie on Debian, Ubuntu, and derived
 
 Welcome to the documentation about **packaging HTTPie for Debian GNU/Linux**.
 
