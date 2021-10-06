@@ -145,7 +145,7 @@ doc-check:
 
 doc-update-install:
 	@echo $(H1)Updating installation instructions in the docs$(H1END)
-	@$(VENV_PYTHON) docs/installation/generate.py
+	$(VENV_PYTHON) docs/installation/generate.py
 
 
 ###############################################################################
