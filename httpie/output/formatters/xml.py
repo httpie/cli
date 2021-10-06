@@ -1,7 +1,7 @@
 import sys
 from typing import TYPE_CHECKING, Optional
 
-from ...constants import UTF8
+from ...encoding import UTF8
 from ...plugins import FormatterPlugin
 
 if TYPE_CHECKING:

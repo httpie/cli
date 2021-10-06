@@ -33,7 +33,7 @@ HTTP_OK_COLOR = (
     '\x1b[39m\x1b[38;5;245m \x1b[39m\x1b[38;5;136mOK'
 )
 
-URL_EXAMPLE = 'http://example.org'  # Note: URL never fetched
+DUMMY_URL = 'http://this-should.never-resolve'  # Note: URL never fetched
 
 
 def mk_config_dir() -> Path:

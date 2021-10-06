@@ -1,14 +1,12 @@
 from abc import ABCMeta, abstractmethod
 from itertools import chain
-from typing import Any, Callable, Dict, Iterable, Tuple, Union
+from typing import Callable, Iterable, Union
 
-from .. import codec
-from ..cli.constants import EMPTY_FORMAT_OPTION
-from ..context import Environment
-from ..constants import UTF8
-from ..models import HTTPMessage, HTTPResponse
 from .processing import Conversion, Formatting
-from .utils import parse_header_content_type
+from ..context import Environment
+from ..encoding import smart_decode, smart_encode, UTF8
+from ..models import HTTPMessage
+
 
 BINARY_SUPPRESSED_NOTICE = (
     b'\n'
@@ -100,8 +98,16 @@ class EncodedStream(BaseStream):
     """
     CHUNK_SIZE = 1
 
-    def __init__(self, env=Environment(), **kwargs):
+    def __init__(
+        self,
+        env=Environment(),
+        mime_overwrite: str = None,
+        encoding_overwrite: str = None,
+        **kwargs
+    ):
         super().__init__(**kwargs)
+        self.mime = mime_overwrite or self.msg.content_type
+        self.encoding = encoding_overwrite or self.msg.encoding
         if env.stdout_isatty:
             # Use the encoding supported by the terminal.
             output_encoding = env.stdout_encoding
@@ -115,8 +121,8 @@ class EncodedStream(BaseStream):
         for line, lf in self.msg.iter_lines(self.CHUNK_SIZE):
             if b'\0' in line:
                 raise BinarySuppressedError()
-            line = codec.decode(line, self.msg.encoding)
-            yield codec.encode(line, self.output_encoding) + lf
+            line = smart_decode(line, self.encoding)
+            yield smart_encode(line, self.output_encoding) + lf
 
 
 class PrettyStream(EncodedStream):
@@ -138,23 +144,6 @@ class PrettyStream(EncodedStream):
         super().__init__(**kwargs)
         self.formatting = formatting
         self.conversion = conversion
-        self.mime, mime_options = self._get_mime_and_options()
-        self.encoding = mime_options.get('charset') or ''
-
-    def _get_mime_and_options(self) -> Tuple[str, Dict[str, Any]]:
-        # Defaults from the `Content-Type` header.
-        mime, options = parse_header_content_type(self.msg.content_type)
-
-        if not isinstance(self.msg, HTTPResponse):
-            return mime, options
-
-        # Override from the `--response-as` option.
-        forced_content_type = self.formatting.options['response']['as']
-        if forced_content_type == EMPTY_FORMAT_OPTION:
-            return mime, options
-
-        forced_mime, forced_options = parse_header_content_type(forced_content_type)
-        return (forced_mime or mime, forced_options or options)
 
     def get_headers(self) -> bytes:
         return self.formatting.format_headers(
@@ -185,9 +174,9 @@ class PrettyStream(EncodedStream):
         if not isinstance(chunk, str):
             # Text when a converter has been used,
             # otherwise it will always be bytes.
-            chunk = codec.decode(chunk, self.encoding)
+            chunk = smart_decode(chunk, self.encoding)
         chunk = self.formatting.format_body(content=chunk, mime=self.mime)
-        return codec.encode(chunk, self.output_encoding)
+        return smart_encode(chunk, self.output_encoding)
 
 
 class BufferedPrettyStream(PrettyStream):

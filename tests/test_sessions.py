@@ -7,7 +7,7 @@ from unittest import mock
 import pytest
 
 from .fixtures import FILE_PATH_ARG, UNICODE
-from httpie.constants import UTF8
+from httpie.encoding import UTF8
 from httpie.plugins import AuthPlugin
 from httpie.plugins.builtin import HTTPBasicAuth
 from httpie.plugins.registry import plugin_manager
@@ -239,8 +239,8 @@ class TestSession(SessionTestBase):
             os.chdir(cwd)
 
     @pytest.mark.parametrize(
-        argnames=['auth_require_param', 'auth_parse_param'],
-        argvalues=[
+        'auth_require_param, auth_parse_param',
+        [
             (False, False),
             (False, True),
             (True, False)
@@ -337,8 +337,8 @@ class TestSession(SessionTestBase):
 class TestExpiredCookies(CookieTestBase):
 
     @pytest.mark.parametrize(
-        argnames=['initial_cookie', 'expired_cookie'],
-        argvalues=[
+        'initial_cookie, expired_cookie',
+        [
             ({'id': {'value': 123}}, 'id'),
             ({'id': {'value': 123}}, 'token')
         ]
@@ -369,8 +369,8 @@ class TestExpiredCookies(CookieTestBase):
         assert get_expired_cookies(cookies, now=None) == expected_expired
 
     @pytest.mark.parametrize(
-        argnames=['cookies', 'now', 'expected_expired'],
-        argvalues=[
+        'cookies, now, expected_expired',
+        [
             (
                 'hello=world; Path=/; Expires=Thu, 01-Jan-1970 00:00:00 GMT; HttpOnly',
                 None,
@@ -413,8 +413,8 @@ class TestExpiredCookies(CookieTestBase):
 class TestCookieStorage(CookieTestBase):
 
     @pytest.mark.parametrize(
-        argnames=['new_cookies', 'new_cookies_dict', 'expected'],
-        argvalues=[(
+        'new_cookies, new_cookies_dict, expected',
+        [(
             'new=bar',
             {'new': 'bar'},
             'cookie1=foo; cookie2=foo; new=bar'
@@ -457,8 +457,8 @@ class TestCookieStorage(CookieTestBase):
             assert 'Cookie' not in updated_session['headers']
 
     @pytest.mark.parametrize(
-        argnames=['cli_cookie', 'set_cookie', 'expected'],
-        argvalues=[(
+        'cli_cookie, set_cookie, expected',
+        [(
             '',
             '/cookies/set/cookie1/bar',
             'bar'

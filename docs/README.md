@@ -1413,6 +1413,8 @@ HTTPie does several things by default in order to make its terminal output easy 
 
 ### Colors and formatting
 
+<!-- TODO: mention body colors/formatting are based on content-type + --response-mime (heuristics for JSON content-type) -->
+
 Syntax highlighting is applied to HTTP headers and bodies (where it makes sense).
 You can choose your preferred color scheme via the `--style` option if you don’t like the default one.
 There are dozens of styles available, here are just a few notable ones:
@@ -1448,15 +1450,14 @@ You can further control the applied formatting via the more granular [format opt
 The `--format-options=opt1:value,opt2:value` option allows you to control how the output should be formatted
 when formatting is applied. The following options are available:
 
-|           Option | Default value | Shortcuts                                 |
-| ---------------: | :-----------: | ----------------------------------------- |
-|   `headers.sort` |    `true`     | `--sorted`, `--unsorted`                  |
-|    `json.format` |    `true`     | N/A                                       |
-|    `json.indent` |      `4`      | N/A                                       |
-| `json.sort_keys` |    `true`     | `--sorted`, `--unsorted`                  |
-|    `response.as` |     `''`      | [`--response-as`](#response-content-type) |
-|     `xml.format` |    `true`     | N/A                                       |
-|     `xml.indent` |      `2`      | N/A                                       |
+|           Option | Default value | Shortcuts                |
+| ---------------: | :-----------: | ------------------------ |
+|   `headers.sort` |    `true`     | `--sorted`, `--unsorted` |
+|    `json.format` |    `true`     | N/A                      |
+|    `json.indent` |      `4`      | N/A                      |
+| `json.sort_keys` |    `true`     | `--sorted`, `--unsorted` |
+|     `xml.format` |    `true`     | N/A                      |
+|     `xml.indent` |      `2`      | N/A                      |
 
 For example, this is how you would disable the default header and JSON key
 sorting, and specify a custom JSON indent size:
@@ -1471,11 +1472,10 @@ sorting-related format options (currently it means JSON keys and headers):
 
 This is something you will typically store as one of the default options in your [config](#config) file.
 
-#### Response `Content-Type`
+### Response `Content-Type`
 
-The `--response-as=value` option is a shortcut for `--format-options response.as:value`,
-and it allows you to override the response `Content-Type` sent by the server.
-That makes it possible for HTTPie to pretty-print the response even when the server specifies the type incorrectly.
+The `--response-as=value` option allows you to override the response `Content-Type` sent by the server.
+That makes it possible for HTTPie to print the response even when the server specifies the type incorrectly.
 
 For example, the following request will force the response to be treated as XML:
 
@@ -1494,27 +1494,6 @@ $ http --response-as='text/plain; charset=big5' pie.dev/get
 ```
 
 Given the encoding is not sent by the server, HTTPie will auto-detect it.
-
-### Binary data
-
-Binary data is suppressed for terminal output, which makes it safe to perform requests to URLs that send back binary data.
-Binary data is also suppressed in redirected but prettified output.
-The connection is closed as soon as we know that the response body is binary,
-
-```bash
-$ http pie.dev/bytes/2000
-```
-
-You will nearly instantly see something like this:
-
-```http
-HTTP/1.1 200 OK
-Content-Type: application/octet-stream
-
-+-----------------------------------------+
-| NOTE: binary data not shown in terminal |
-+-----------------------------------------+
-```
 
 ### Redirected output
 
@@ -1556,6 +1535,42 @@ function httpless {
     http --pretty=all --print=hb "$@" | less -R;
 }
 ```
+
+### Binary data
+
+Binary data is suppressed for terminal output, which makes it safe to perform requests to URLs that send back binary data.
+Binary data is also suppressed in redirected but prettified output.
+The connection is closed as soon as we know that the response body is binary,
+
+```bash
+$ http pie.dev/bytes/2000
+```
+
+You will nearly instantly see something like this:
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/octet-stream
+
++-----------------------------------------+
+| NOTE: binary data not shown in terminal |
++-----------------------------------------+
+```
+
+<!--
+### Display encoding
+
+TODO:
+(both request/response)
+
+- we look at content-type
+- else we detect
+- short texts default to utf8
+
+(only response)
+
+- --response-charset allows overwriting
+- -->
 
 ## Download mode
 

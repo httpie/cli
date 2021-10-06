@@ -1,34 +1,33 @@
-from abc import ABCMeta, abstractmethod
-from typing import Iterable, Optional
+from typing import Iterable
 from urllib.parse import urlsplit
 
-from .constants import UTF8
-from .utils import split_cookies
+from .utils import split_cookies, parse_content_type_header
+from .compat import cached_property
 
 
-class HTTPMessage(metaclass=ABCMeta):
+class HTTPMessage:
     """Abstract class for HTTP messages."""
 
     def __init__(self, orig):
         self._orig = orig
 
-    @abstractmethod
     def iter_body(self, chunk_size: int) -> Iterable[bytes]:
         """Return an iterator over the body."""
+        raise NotImplementedError
 
-    @abstractmethod
     def iter_lines(self, chunk_size: int) -> Iterable[bytes]:
         """Return an iterator over the body yielding (`line`, `line_feed`)."""
+        raise NotImplementedError
 
     @property
-    @abstractmethod
     def headers(self) -> str:
         """Return a `str` with the message's headers."""
+        raise NotImplementedError
 
-    @property
-    @abstractmethod
-    def encoding(self) -> Optional[str]:
-        """Return a `str` with the message's encoding, if known."""
+    @cached_property
+    def encoding(self) -> str:
+        ct, params = parse_content_type_header(self.content_type)
+        return params.get('charset', '')
 
     @property
     def content_type(self) -> str:
@@ -77,10 +76,6 @@ class HTTPResponse(HTTPMessage):
         )
         return '\r\n'.join(headers)
 
-    @property
-    def encoding(self):
-        return self._orig.encoding or UTF8
-
 
 class HTTPRequest(HTTPMessage):
     """A :class:`requests.models.Request` wrapper."""
@@ -113,10 +108,6 @@ class HTTPRequest(HTTPMessage):
         headers.insert(0, request_line)
         headers = '\r\n'.join(headers).strip()
         return headers
-
-    @property
-    def encoding(self):
-        return UTF8
 
     @property
     def body(self):

@@ -5,7 +5,7 @@ from typing import IO, TextIO, Tuple, Type, Union
 import requests
 
 from ..context import Environment
-from ..models import HTTPRequest, HTTPResponse
+from ..models import HTTPRequest, HTTPResponse, HTTPMessage
 from .processing import Conversion, Formatting
 from .streams import (
     BaseStream, BufferedPrettyStream, EncodedStream, PrettyStream, RawStream,
@@ -97,16 +97,17 @@ def build_output_stream_for_message(
     with_headers: bool,
     with_body: bool,
 ):
-    stream_class, stream_kwargs = get_stream_type_and_kwargs(
-        env=env,
-        args=args,
-    )
-    message_class = {
+    message_type = {
         requests.PreparedRequest: HTTPRequest,
         requests.Response: HTTPResponse,
     }[type(requests_message)]
+    stream_class, stream_kwargs = get_stream_type_and_kwargs(
+        env=env,
+        args=args,
+        message_type=message_type,
+    )
     yield from stream_class(
-        msg=message_class(requests_message),
+        msg=message_type(requests_message),
         with_headers=with_headers,
         with_body=with_body,
         **stream_kwargs,
@@ -120,7 +121,8 @@ def build_output_stream_for_message(
 
 def get_stream_type_and_kwargs(
     env: Environment,
-    args: argparse.Namespace
+    args: argparse.Namespace,
+    message_type: Type[HTTPMessage],
 ) -> Tuple[Type['BaseStream'], dict]:
     """Pick the right stream type and kwargs for it based on `env` and `args`.
 
@@ -134,23 +136,27 @@ def get_stream_type_and_kwargs(
                 else RawStream.CHUNK_SIZE
             )
         }
-    elif args.prettify:
-        stream_class = PrettyStream if args.stream else BufferedPrettyStream
-        stream_kwargs = {
-            'env': env,
-            'conversion': Conversion(),
-            'formatting': Formatting(
-                env=env,
-                groups=args.prettify,
-                color_scheme=args.style,
-                explicit_json=args.json,
-                format_options=args.format_options,
-            )
-        }
     else:
         stream_class = EncodedStream
         stream_kwargs = {
-            'env': env
+            'env': env,
         }
+        if message_type is HTTPResponse:
+            stream_kwargs.update({
+                'mime_overwrite': args.response_mime,
+                'encoding_overwrite': args.response_charset,
+            })
+        if args.prettify:
+            stream_class = PrettyStream if args.stream else BufferedPrettyStream
+            stream_kwargs.update({
+                'conversion': Conversion(),
+                'formatting': Formatting(
+                    env=env,
+                    groups=args.prettify,
+                    color_scheme=args.style,
+                    explicit_json=args.json,
+                    format_options=args.format_options,
+                )
+            })
 
     return stream_class, stream_kwargs

@@ -9,7 +9,7 @@ import httpie.__main__
 from .fixtures import FILE_CONTENT, FILE_PATH
 from httpie.cli.exceptions import ParseError
 from httpie.context import Environment
-from httpie.constants import UTF8
+from httpie.encoding import UTF8
 from httpie.status import ExitStatus
 from .utils import HTTP_OK, MockEnvironment, StdinBytesIO, http
 

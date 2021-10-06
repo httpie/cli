@@ -12,7 +12,7 @@ import requests
 import urllib3
 from . import __version__
 from .cli.dicts import RequestHeadersDict
-from .constants import UTF8
+from .encoding import UTF8
 from .plugins.registry import plugin_manager
 from .sessions import get_httpie_session
 from .ssl import AVAILABLE_SSL_VERSION_ARG_MAPPING, HTTPieHTTPSAdapter

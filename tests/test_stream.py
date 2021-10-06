@@ -9,7 +9,7 @@ from httpie.output.streams import BINARY_SUPPRESSED_NOTICE
 from httpie.plugins import ConverterPlugin
 from httpie.plugins.registry import plugin_manager
 
-from .utils import StdinBytesIO, http, MockEnvironment, URL_EXAMPLE
+from .utils import StdinBytesIO, http, MockEnvironment, DUMMY_URL
 from .fixtures import BIN_FILE_CONTENT, BIN_FILE_PATH
 
 PRETTY_OPTIONS = list(PRETTY_MAP.keys())
@@ -65,10 +65,10 @@ def test_pretty_options_with_and_without_stream_with_converter(pretty, stream):
         assert 'SortJSONConverterPlugin' in str(plugin_manager)
 
         body = b'\x00{"foo":42,\n"bar":"baz"}'
-        responses.add(responses.GET, URL_EXAMPLE, body=body,
+        responses.add(responses.GET, DUMMY_URL, body=body,
                       stream=True, content_type='json/bytes')
 
-        args = ['--pretty=' + pretty, 'GET', URL_EXAMPLE]
+        args = ['--pretty=' + pretty, 'GET', DUMMY_URL]
         if stream:
             args.insert(0, '--stream')
         r = http(*args)

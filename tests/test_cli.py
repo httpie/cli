@@ -51,7 +51,7 @@ class TestItemParsing:
         }
         assert 'bar@baz' in items.files
 
-    @pytest.mark.parametrize(('string', 'key', 'sep', 'value'), [
+    @pytest.mark.parametrize('string, key, sep, value', [
         ('path=c:\\windows', 'path', '=', 'c:\\windows'),
         ('path=c:\\windows\\', 'path', '=', 'c:\\windows\\'),
         ('path\\==c:\\windows', 'path=', '=', 'c:\\windows'),

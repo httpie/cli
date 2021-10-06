@@ -242,3 +242,19 @@ PARSED_DEFAULT_FORMAT_OPTIONS = parse_format_options(
     s=','.join(DEFAULT_FORMAT_OPTIONS),
     defaults=None,
 )
+
+
+def response_charset_type(encoding: str) -> str:
+    try:
+        ''.encode(encoding)
+    except LookupError:
+        raise argparse.ArgumentTypeError(
+            f'{encoding!r} is not a supported encoding')
+    return encoding
+
+
+def response_mime_type(mime_type: str) -> str:
+    if mime_type.count('/') != 1:
+        raise argparse.ArgumentTypeError(
+            f'{mime_type!r} doesn’t look like a mime type; use type/subtype')
+    return mime_type
