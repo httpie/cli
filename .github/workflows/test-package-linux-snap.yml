@@ -1,7 +1,7 @@
 on:
   pull_request:
     paths:
-      - .github/workflows/packaging-linux-snap.yml
+      - .github/workflows/test-package-linux-snap.yml
       - snapcraft.yaml
 
 jobs:

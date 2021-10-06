@@ -3,7 +3,7 @@ name: Mac brew
 on:
   pull_request:
     paths:
-      - .github/workflows/packaging-mac-brew.yml
+      - .github/workflows/test-package-mac-brew.yml
       - extras/httpie.rb
 
 jobs:
