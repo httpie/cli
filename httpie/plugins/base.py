@@ -95,7 +95,7 @@ class TransportPlugin(BasePlugin):
 
 class ConverterPlugin(BasePlugin):
     """
-    Possibly converts response data for prettified terminal display.
+    Possibly converts binary response data for prettified terminal display.
 
     See httpie-msgpack for an example converter plugin:
 
@@ -108,7 +108,9 @@ class ConverterPlugin(BasePlugin):
 
     def convert(self, body: bytes) -> Tuple[str, str]:
         """
-        Convert content bytes to a string and return a tuple containing the new Content-Type and content, e.g.:
+        Convert a binary body to a textual representation for the terminal
+        and return a tuple containing the new Content-Type and content, e.g.:
+
         ('application/json', '{}')
 
         """
