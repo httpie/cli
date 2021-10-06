@@ -213,7 +213,7 @@ def test_terminal_output_request_charset_detection(charset, text):
     r = http(
         '--offline',
         DUMMY_URL,
-        f'Content-Type: text/plain',
+        'Content-Type: text/plain',
         env=MockEnvironment(
             stdin=text.encode(charset),
             stdin_isatty=False,
