@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import Dict
 
 import yaml
-
 from jinja2 import Template
 
 Database = Dict[str, dict]
@@ -27,7 +26,7 @@ MARKER_END = '</div>'
 def generate_documentation() -> str:
     database = load_database()
     structure = build_docs_structure(database)
-    template = Template(source=TPL_FILE.read_text())
+    template = Template(source=TPL_FILE.read_text(encoding='utf-8'))
     output = template.render(structure=structure)
     output = clean_template_output(output)
     return output
@@ -35,12 +34,15 @@ def generate_documentation() -> str:
 
 def save_doc_file(content: str) -> bool:
     current_doc = load_doc_file()
-    marker_start = current_doc.find(MARKER_START) + len(MARKER_START) + 2
+    marker_start = current_doc.find(MARKER_START) + len(MARKER_START)
+    assert marker_start > 0, 'cannot find the start marker'
     marker_end = current_doc.find(MARKER_END, marker_start)
     assert marker_start < marker_end, f'{marker_end=} < {marker_start=}'
     updated_doc = (
         current_doc[:marker_start]
+        + '\n\n'
         + content
+        + '\n\n'
         + current_doc[marker_end:]
     )
     if current_doc != updated_doc:

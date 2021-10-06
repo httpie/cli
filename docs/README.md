@@ -315,8 +315,9 @@ $ pkg install www/py-httpie
 $ pkg upgrade www/py-httpie
 ```
 
-<!-- /GENERATED SECTION --></div>
+<!-- /GENERATED SECTION -->
 
+</div>
 
 ### Unstable version
 
@@ -343,7 +344,7 @@ $ snap remove httpie
 $ snap install httpie --edge
 ```
 
-Verify that now you have the [current development version identifier](https://github.com/httpie/httpie/blob/master/httpie__init__.py#L6) with the `.dev0` suffix, for example:
+Verify that now you have the [current development version identifier](https://github.com/httpie/httpie/blob/master/httpie/__init__.py#L6) with the `.dev0` suffix, for example:
 
 ```bash
 $ http --version
