@@ -1,7 +1,5 @@
 # HTTPie on Homebrew and Linuxbrew
 
-:construction: Work in progress.
-
 Welcome to the documentation about **packaging HTTPie for Homebrew**.
 
 - If you do not know HTTPie, have a look [here](https://httpie.io/cli).
