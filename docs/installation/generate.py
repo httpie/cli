@@ -47,8 +47,6 @@ def save_doc_file(content: str) -> None:
     )
     if current_doc != updated_doc:
         DOC_FILE.write_text(updated_doc, encoding='utf-8')
-        return True
-    return False
 
 
 def build_docs_structure(database: Database):
