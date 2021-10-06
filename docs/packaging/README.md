@@ -34,7 +34,7 @@ A more complete state of deployment can be found on [repology](https://repology.
 | ------------------------------------------------------------------: | -------------- |
 |                                    [Alpine](linux-alpine/README.md) | **HTTPie**     |
 |                     [Arch Linux, and derived](linux-arch/README.md) | trusted person |
-|                                     [AOSC OS](linux-aosc/README.md) | **HTTPie**     |
+|                      :construction: [AOSC OS](linux-aosc/README.md) | **HTTPie**     |
 |                 [CentOS, RHEL, and derived](linux-centos/README.md) | trusted person |
 |         [Debian, Ubuntu, Mint, and derived](linux-debian/README.md) | trusted person |
 |                                    [Fedora](linux-fedora/README.md) | trusted person |
