@@ -118,6 +118,7 @@ celerybeat.pid
 .venv
 env/
 venv/
+venv*/
 ENV/
 env.bak/
 venv.bak/
@@ -144,3 +145,6 @@ dmypy.json
 /httpie.spec
 /httpie-*.rpm
 /httpie-*.tar.gz
+
+# VS Code
+.vscode/
