@@ -143,12 +143,9 @@ doc-check:
 	mdl --git-recurse --style docs/markdownlint.rb .
 
 
-generate-install-instructions.py:
-	@echo $(H1)Checking validity of installation instructions$(H1END)
-	@$(VENV_PYTHON) docs/generate-install-instructions.py \
-		|| (echo 'docs/README.md: installation instructions are outdated.' \
-			&& echo 'Run docs/generate-install-instructions.py to fix it.' \
-			&& exit 1)
+doc-update-install:
+	@echo $(H1)Updating installation instructions in the docs$(H1END)
+	@$(VENV_PYTHON) docs/installation/generate.py
 
 
 ###############################################################################

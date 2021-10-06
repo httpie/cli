@@ -32,7 +32,7 @@ def generate_documentation() -> str:
     return output
 
 
-def save_doc_file(content: str) -> bool:
+def save_doc_file(content: str) -> None:
     current_doc = load_doc_file()
     marker_start = current_doc.find(MARKER_START) + len(MARKER_START)
     assert marker_start > 0, 'cannot find the start marker'
@@ -79,7 +79,8 @@ def load_doc_file() -> str:
 
 def main() -> int:
     content = generate_documentation()
-    return int(save_doc_file(content))
+    save_doc_file(content)
+    return 0
 
 
 if __name__ == '__main__':
