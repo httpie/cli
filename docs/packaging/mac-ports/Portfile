@@ -1,0 +1,49 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8::et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           python 1.0
+
+github.setup        httpie httpie 2.5.0
+
+maintainers         {g5pw @g5pw} openmaintainer
+categories          net
+description         HTTPie is a command line HTTP client, a user-friendly cURL replacement.
+long_description    HTTPie (pronounced aych-tee-tee-pie) is a command line HTTP \
+                    client. Its goal is to make CLI interaction with web \
+                    services as human-friendly as possible. It provides a simple \
+                    http command that allows for sending arbitrary HTTP requests \
+                    using a simple and natural syntax, and displays colorized \
+                    responses. HTTPie can be used for testing, debugging, and \
+                    generally interacting with HTTP servers.
+platforms           darwin
+license             BSD
+homepage            https://httpie.io/
+
+variant python36 conflicts python37 python38 python39 description "Use Python 3.6" {}
+variant python37 conflicts python36 python38 python39 description "Use Python 3.7" {}
+variant python38 conflicts python36 python37 python39 description "Use Python 3.8" {}
+variant python39 conflicts python36 python37 python38 description "Use Python 3.9" {}
+
+if {[variant_isset python36]} {
+    python.default_version 36
+} elseif {[variant_isset python37]} {
+    python.default_version 37
+} elseif {[variant_isset python39]} {
+    python.default_version 39
+} else {
+    default_variants +python38
+    python.default_version 38
+}
+
+depends_lib-append  port:py${python.version}-requests \
+                    port:py${python.version}-requests-toolbelt \
+                    port:py${python.version}-pygments \
+                    port:py${python.version}-socks \
+                    port:py${python.version}-defusedxml
+
+checksums           rmd160  88d227d52199c232c0ddf704a219d1781b1e77ee \
+                    sha256  00c4b7bbe7f65abe1473f37b39d9d9f8f53f44069a430ad143a404c01c2179fc \
+                    size    1105185
+
+python.link_binaries_suffix

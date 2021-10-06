@@ -130,7 +130,7 @@ pycodestyle: codestyle
 codestyle:
 	@echo $(H1)Running flake8$(H1END)
 	@[ -f $(VENV_BIN)/flake8 ] || $(VENV_PIP) install --upgrade --editable '.[dev]'
-	$(VENV_BIN)/flake8 httpie/ tests/ extras/ *.py
+	$(VENV_BIN)/flake8 httpie/ tests/ docs/packaging/brew/ *.py
 	@echo
 
 
@@ -196,14 +196,14 @@ uninstall-httpie:
 ###############################################################################
 
 brew-deps:
-	extras/brew-deps.py
+	docs/packaging/brew/brew-deps.py
 
 brew-test:
 	@echo $(H1)Uninstalling httpie$(H1END)
 	- brew uninstall httpie
 
 	@echo $(H1)Building from source…$(H1END)
-	- brew install --build-from-source ./extras/httpie.rb
+	- brew install --build-from-source ./docs/packaging/brew/httpie.rb
 
 	@echo $(H1)Verifying…$(H1END)
 	brew test httpie
