@@ -11,7 +11,8 @@ ContentBytes = Union[bytearray, bytes]
 def detect_encoding(content: ContentBytes) -> str:
     """
     We default to UTF-8 if text too short, because the detection
-    can return a random encoding leading to confusing results:
+    can return a random encoding leading to confusing results
+    given the `charset_normalizer` version (< 2.0.5).
 
     >>> too_short = ']"foo"'
     >>> detected = from_bytes(too_short.encode()).best().encoding
