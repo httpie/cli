@@ -1,4 +1,4 @@
-# HTTPie on Homebrew and Linuxbrew
+# HTTPie on Homebrew, and Linuxbrew
 
 Welcome to the documentation about **packaging HTTPie for Homebrew**.
 
@@ -28,6 +28,6 @@ That [GitHub workflow](https://github.com/httpie/httpie/actions/workflows/test-p
 
 Then, open a pull request with those changes to the [downstream file]([ file](https://github.com/Homebrew/homebrew-core/blob/master/Formula/httpie.rb)).
 
-## Hacing
+## Hacking
 
 :construction: Work in progress.

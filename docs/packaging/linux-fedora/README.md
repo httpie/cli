@@ -11,7 +11,7 @@ Welcome to the documentation about **packaging HTTPie for Fedora**.
 This document contains technical details, where we describe how to create a patch for the latest HTTPie version for Fedora.
 We will discuss setting up the environment, installing development tools, installing and testing changes before submitting a patch downstream.
 
-The current maintainer is Miro Hrončok (@hroncok).
+The current maintainer is [Miro Hrončok](https://github.com/hroncok).
 
 ## Overall process
 
