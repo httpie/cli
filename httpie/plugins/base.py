@@ -106,9 +106,9 @@ class ConverterPlugin(BasePlugin):
     def __init__(self, mime: str):
         self.mime = mime
 
-    def convert(self, content_bytes: bytes) -> Tuple[str, Union[str, bytes]]:
+    def convert(self, body: bytes) -> Tuple[str, str]:
         """
-        Convert content as needed and return a tuple containing the new Content-Type and content, e.g.:
+        Convert content bytes to a string and return a tuple containing the new Content-Type and content, e.g.:
         ('application/json', '{}')
 
         """
