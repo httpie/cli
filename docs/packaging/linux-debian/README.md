@@ -11,7 +11,7 @@ Welcome to the documentation about **packaging HTTPie for Debian GNU/Linux**.
 This document contains technical details, where we describe how to create a patch for the latest HTTPie version for Debian GNU/Linux. They apply to Ubuntu as well, and any Debian-derived distributions like MX Linux, Linux Mint, deepin, Pop!_OS, KDE neon, Zorin OS, elementary OS, Kubuntu, Devuan, Linux Lite, Peppermint OS, Lubuntu, antiX, Xubuntu, etc.
 We will discuss setting up the environment, installing development tools, installing and testing changes before submitting a patch downstream.
 
-The current maintainer is Bartosz Fenski <fenio@debian.org>.
+The current maintainer is Bartosz Fenski.
 
 ## Overall process
 
@@ -24,7 +24,6 @@ Open a new bug on the Debian Bug Tracking System by sending an email:
   ```email
   Package: httpie
   Severity: wishlist
-  X-Debbugs-Cc: Bartosz Fenski <fenio@debian.org>
 
   <MESSAGE>
   ```

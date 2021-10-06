@@ -11,7 +11,7 @@ Welcome to the documentation about **packaging HTTPie for CentOS and RHEL**.
 This document contains technical details, where we describe how to create a patch for the latest HTTPie version for CentOS. They apply to RHEL as well, and any RHEL-derived distributions like ClearOS, Oracle Linux, etc.
 We will discuss setting up the environment, installing development tools, installing and testing changes before submitting a patch downstream.
 
-The current maintainer is Mikel Olasagasti <mikel@olasagasti.info>.
+The current maintainer is Mikel Olasagasti.
 
 ## Overall process
 
