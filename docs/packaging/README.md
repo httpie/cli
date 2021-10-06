@@ -30,19 +30,19 @@ That is done quite easily by manually triggering the [release workflow](https://
 Find out how we do release new versions for each and every supported OS in the following table.
 A more complete state of deployment can be found on [repology](https://repology.org/project/httpie/versions), including unofficial packages.
 
-|                                                          OS | Maintainer     |
-| ----------------------------------------------------------: | -------------- |
-|                            [Alpine](linux-alpine/README.md) | **HTTPie**     |
-|             [Arch Linux, and derived](linux-arch/README.md) | trusted person |
-|         [CentOS, RHEL, and derived](linux-centos/README.md) | trusted person |
-| [Debian, Ubuntu, Mint, and derived](linux-debian/README.md) | trusted person |
-|                            [Fedora](linux-fedora/README.md) | trusted person |
-|                            [Gentoo](linux-gentoo/README.md) | **HTTPie**     |
-|    :construction: [Homebrew, Linuxbrew](mac/brew/README.md) | **HTTPie**     |
-|              :construction: [MacPorts](mac/ports/README.md) | **HTTPie**     |
-|                            [Snapcraft](snapcraft/README.md) | **HTTPie**     |
-|                                    [Spack](spack/README.md) | **HTTPie**     |
-|                          [Void Linux](linux-void/README.md) | **HTTPie**     |
-|   :construction: [Chocolatey](windows/chocolatey/README.md) | **HTTPie**     |
+|                                                                  OS | Maintainer     |
+| ------------------------------------------------------------------: | -------------- |
+|                                    [Alpine](linux-alpine/README.md) | **HTTPie**     |
+|                     [Arch Linux, and derived](linux-arch/README.md) | trusted person |
+|                 [CentOS, RHEL, and derived](linux-centos/README.md) | trusted person |
+|         [Debian, Ubuntu, Mint, and derived](linux-debian/README.md) | trusted person |
+|                                    [Fedora](linux-fedora/README.md) | trusted person |
+|                                    [Gentoo](linux-gentoo/README.md) | **HTTPie**     |
+|                :construction: [Homebrew, Linuxbrew](brew/README.md) | **HTTPie**     |
+|                      :construction: [MacPorts](mac-ports/README.md) | **HTTPie**     |
+|                                    [Snapcraft](snapcraft/README.md) | **HTTPie**     |
+|                                            [Spack](spack/README.md) | **HTTPie**     |
+|                                  [Void Linux](linux-void/README.md) | **HTTPie**     |
+| :construction: [Windows — Chocolatey](windows-chocolatey/README.md) | **HTTPie**     |
 
 :new: You do not find your system or you would like to see HTTPie supported on another OS? Then [let us know](https://github.com/httpie/httpie/issues/).
