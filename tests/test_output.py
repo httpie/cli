@@ -170,8 +170,8 @@ class TestVerboseFlag:
 class TestColors:
 
     @pytest.mark.parametrize(
-        argnames=['mime', 'explicit_json', 'body', 'expected_lexer_name'],
-        argvalues=[
+        'mime, explicit_json, body, expected_lexer_name',
+        [
             ('application/json', False, None, 'JSON'),
             ('application/json+foo', False, None, 'JSON'),
             ('application/foo+json', False, None, 'JSON'),
@@ -304,8 +304,8 @@ class TestFormatOptions:
         assert f'ZZZ: foo{CRLF}XXX: foo' in r_unsorted
 
     @pytest.mark.parametrize(
-        argnames=['options', 'expected_json'],
-        argvalues=[
+        'options, expected_json',
+        [
             # @formatter:off
             (
                 'json.sort_keys:true,json.indent:4',
@@ -331,8 +331,8 @@ class TestFormatOptions:
         assert expected_json in r
 
     @pytest.mark.parametrize(
-        argnames=['defaults', 'options_string', 'expected'],
-        argvalues=[
+        'defaults, options_string, expected',
+        [
             # @formatter:off
             ({'foo': {'bar': 1}}, 'foo.bar:2', {'foo': {'bar': 2}}),
             ({'foo': {'bar': True}}, 'foo.bar:false', {'foo': {'bar': False}}),
@@ -345,8 +345,8 @@ class TestFormatOptions:
         assert expected == actual
 
     @pytest.mark.parametrize(
-        argnames=['options_string', 'expected_error'],
-        argvalues=[
+        'options_string, expected_error',
+        [
             ('foo:2', 'invalid option'),
             ('foo.baz:2', 'invalid key'),
             ('foo.bar:false', 'expected int got bool'),
@@ -362,8 +362,8 @@ class TestFormatOptions:
             parse_format_options(s=options_string, defaults=defaults)
 
     @pytest.mark.parametrize(
-        argnames=['args', 'expected_format_options'],
-        argvalues=[
+        'args, expected_format_options',
+        [
             (
                 [
                     '--format-options',

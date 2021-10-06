@@ -119,11 +119,11 @@ def test_ignore_netrc_with_auth_type_resulting_in_missing_auth(httpbin):
 
 
 @pytest.mark.parametrize(
-    argnames=['auth_type', 'endpoint'],
-    argvalues=[
+    'auth_type, endpoint',
+    [
         ('basic', '/basic-auth/httpie/password'),
         ('digest', '/digest-auth/auth/httpie/password'),
-    ],
+    ]
 )
 def test_auth_plugin_netrc_parse(auth_type, endpoint, httpbin):
     # Test
