@@ -25,7 +25,7 @@ description: |
     - Wget-like downloads
     - Extensions API
     - Expressive and intuitive syntax
-    - Linux, macOS, and Windows support
+    - Linux, macOS, Windows, and FreeBSD support
     - All that & more in 2 simple commands: http + https
 
   Links
