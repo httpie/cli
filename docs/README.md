@@ -1297,7 +1297,8 @@ The universal method for passing request data is through redirected `stdin`
 
 By default, `stdin` data is buffered and then with no further processing used as the request body.
 If you provide `Content-Length`, then the request body is streamed without buffering.
-You may also use `--chunked` to enable streaming via [chunked transfer encoding](#chunked-transfer-encoding).
+You may also use `--chunked` to enable streaming via [chunked transfer encoding](#chunked-transfer-encoding)
+or `--compress` for [compressed transfer data](#compressed-transfer-data).
 
 There are multiple useful ways to use piping:
 
@@ -1405,6 +1406,29 @@ $ http --chunked pie.dev/post @files/data.xml
 
 ```bash
 $ cat files/data.xml | http --chunked pie.dev/post
+```
+
+## Compressed transfer data
+
+You can use the `--compress` flag to instruct HTTPie to use `Content-Encoding: deflate` and send compressed data:
+
+```bash
+$ http --compress pie.dev/post @files/data.xml
+```
+
+```bash
+$ cat files/data.xml | http --compress pie.dev/post
+```
+
+If the compressed data does not offer improvements, then the data will be sent untouched.
+Use `--compress` multiple times always to send compressed data:
+
+```bash
+$ http --compress --compress PUT pie.dev/put hello=world
+```
+
+```bash
+$ http -xx PUT pie.dev/put hello=world
 ```
 
 ## Terminal output
