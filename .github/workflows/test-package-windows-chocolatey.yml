@@ -10,13 +10,15 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
-      - run: cd docs/packaging/windows-chocolatey
       - name: Build
         run: choco pack
+        working-directory: docs/packaging/windows-chocolatey
       - name: Check metadata
         run: choco info httpie -s .
+        working-directory: docs/packaging/windows-chocolatey
       - name: Install
         run: choco install httpie -y -dv -s .
+        working-directory: docs/packaging/windows-chocolatey
       - name: Test
         run: |
           http --version
