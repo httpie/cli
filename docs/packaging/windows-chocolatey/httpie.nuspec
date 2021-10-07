@@ -40,7 +40,7 @@ Main features:
 		<docsUrl>https://httpie.io/docs</docsUrl>
 		<bugTrackerUrl>https://github.com/httpie/httpie/issues</bugTrackerUrl>
 		<dependencies>
-			<dependency id="python3" version="3.6" />
+			<dependency id="python" version="3.6" />
 		</dependencies>
 	</metadata>
 	<files>
