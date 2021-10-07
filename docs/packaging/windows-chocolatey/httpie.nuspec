@@ -3,6 +3,7 @@
 	<metadata>
 		<id>httpie</id>
 		<version>2.5.0</version>
+		<summary>Modern, user-friendly command-line HTTP client for the API era.</summary>
 		<description>
 HTTPie *aitch-tee-tee-pie* is a user-friendly command-line HTTP client for the API era.
 It comes with JSON support, syntax highlighting, persistent sessions, wget-like downloads, plugins, and more.
