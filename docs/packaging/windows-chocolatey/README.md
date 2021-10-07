@@ -17,7 +17,7 @@ After having successfully [built and tested](#hacking) the package, push it:
 
 ```bash
 # Replace 2.5.0 with the correct version
-choco push httpie.2.5.0.nupkg -s https://push.chocolatey.org/
+choco push httpie.2.5.0.nupkg -s https://push.chocolatey.org/ --api-key=API_KEY
 ```
 
 ## Hacking
