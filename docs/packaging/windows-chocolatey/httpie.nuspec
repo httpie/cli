@@ -30,7 +30,7 @@ Main features:
 		<owners>Tiger-222</owners>
 		<copyright>2012-2021 Jakub Roztocil</copyright>
 		<licenseUrl>https://raw.githubusercontent.com/httpie/httpie/master/LICENSE</licenseUrl>
-		<iconUrl>https://httpie.io/Images/Share/httpie-chocolatey.png</iconUrl>
+		<iconUrl>https://pie-assets.s3.eu-central-1.amazonaws.com/LogoIcons/GB.png</iconUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<releaseNotes>See the [changelog](https://github.com/httpie/httpie/blob/2.5.0/CHANGELOG.md).</releaseNotes>
 		<tags>httpie http https rest api client curl python ssl cli foss oss url</tags>
