@@ -1247,6 +1247,16 @@ This doesn’t affect output to a file via `--output` or `--download`.
 $ http --quiet pie.dev/post enjoy='the silence'
 ```
 
+#### Quiet output and `--check-status`
+
+When using `--quiet` with `--check-status`, errors and warnings are shown in case of erroneous responses.
+To suppress this behavior, use `-qq` or `--quiet` twice:
+
+```bash
+# There will be no output, even in case of errors:
+$ http --quiet --quiet pie.dev/post enjoy='the silence at all times'
+```
+
 ### Viewing intermediary requests/responses
 
 To see all the HTTP communication, i.e. the final request/response as well as any possible intermediary requests/responses, use the `--all` option.

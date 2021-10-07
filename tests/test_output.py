@@ -39,15 +39,16 @@ def test_output_option(tmp_path, httpbin, stdout_isatty):
 
 
 class TestQuietFlag:
+    QUIET_FLAGS = ['--quiet', '-q', '--quiet --quiet', '-qq']
 
-    @pytest.mark.parametrize('argument_name', ['--quiet', '-q'])
+    @pytest.mark.parametrize('argument_name', QUIET_FLAGS)
     def test_quiet(self, httpbin, argument_name):
         env = MockEnvironment(
             stdin_isatty=True,
             stdout_isatty=True,
             devnull=io.BytesIO()
         )
-        r = http(argument_name, 'GET', httpbin.url + '/get', env=env)
+        r = http(*argument_name.split(), 'GET', httpbin.url + '/get', env=env)
         assert env.stdout is env.devnull
         assert env.stderr is env.devnull
         assert HTTP_OK in r.devnull
@@ -69,9 +70,25 @@ class TestQuietFlag:
         )
         assert 'http: warning: HTTP 500' in r.stderr
 
+    def test_quiet_quiet_with_check_status_non_zero(self, httpbin):
+        r = http(
+            '--quiet', '--quiet', '--check-status', httpbin + '/status/500',
+            tolerate_error_exit_status=True,
+        )
+        assert 'http: warning: HTTP 500' not in r.stderr
+
+    def test_quiet_quiet_with_check_status_non_zero_pipe(self, httpbin):
+        r = http(
+            '--quiet', '--quiet', '--check-status', httpbin + '/status/500',
+            tolerate_error_exit_status=True,
+            env=MockEnvironment(stdout_isatty=False)
+        )
+        assert 'http: warning: HTTP 500' in r.stderr
+
+    @pytest.mark.parametrize('argument_name', QUIET_FLAGS)
     @mock.patch('httpie.cli.argtypes.AuthCredentials._getpass',
                 new=lambda self, prompt: 'password')
-    def test_quiet_with_password_prompt(self, httpbin):
+    def test_quiet_with_password_prompt(self, httpbin, argument_name):
         """
         Tests whether httpie still prompts for a password when request
         requires authentication and only username is provided
@@ -83,7 +100,7 @@ class TestQuietFlag:
             devnull=io.BytesIO()
         )
         r = http(
-            '--quiet', '--auth', 'user', 'GET',
+            *argument_name.split(), '--auth', 'user', 'GET',
             httpbin.url + '/basic-auth/user/password',
             env=env
         )
@@ -93,17 +110,19 @@ class TestQuietFlag:
         assert r == ''
         assert r.stderr == ''
 
-    @pytest.mark.parametrize('argument_name', ['-h', '-b', '-v', '-p=hH'])
-    def test_quiet_with_explicit_output_options(self, httpbin, argument_name):
+    @pytest.mark.parametrize('argument_name', QUIET_FLAGS)
+    @pytest.mark.parametrize('output_options', ['-h', '-b', '-v', '-p=hH'])
+    def test_quiet_with_explicit_output_options(self, httpbin, argument_name, output_options):
         env = MockEnvironment(stdin_isatty=True, stdout_isatty=True)
-        r = http('--quiet', argument_name, httpbin.url + '/get', env=env)
+        r = http(*argument_name.split(), output_options, httpbin.url + '/get', env=env)
         assert env.stdout is env.devnull
         assert env.stderr is env.devnull
         assert r == ''
         assert r.stderr == ''
 
+    @pytest.mark.parametrize('argument_name', QUIET_FLAGS)
     @pytest.mark.parametrize('with_download', [True, False])
-    def test_quiet_with_output_redirection(self, tmp_path, httpbin, with_download):
+    def test_quiet_with_output_redirection(self, tmp_path, httpbin, argument_name, with_download):
         url = httpbin + '/robots.txt'
         output_path = Path('output.txt')
         env = MockEnvironment()
@@ -114,7 +133,7 @@ class TestQuietFlag:
         try:
             assert os.listdir('.') == []
             r = http(
-                '--quiet',
+                *argument_name.split(),
                 '--output', str(output_path),
                 *extra_args,
                 url,
@@ -142,7 +161,7 @@ class TestVerboseFlag:
 
     def test_verbose_raw(self, httpbin):
         r = http('--verbose', '--raw', 'foo bar',
-                 'POST', httpbin.url + '/post',)
+                 'POST', httpbin.url + '/post', )
         assert HTTP_OK in r
         assert 'foo bar' in r
 
