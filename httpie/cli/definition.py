@@ -711,9 +711,11 @@ network.add_argument(
     '--chunked',
     default=False,
     action='store_true',
-    help="""
+    help='''
+    Enable streaming via chunked transfer encoding.
+    The Transfer-Encoding header is set to chunked.
 
-    """
+    '''
 )
 
 #######################################################################
