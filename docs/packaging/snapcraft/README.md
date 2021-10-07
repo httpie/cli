@@ -3,7 +3,7 @@
 Welcome to the documentation about **packaging HTTPie for Snapcraft**.
 
 - If you do not know HTTPie, have a look [here](https://httpie.io/cli).
-- If you are looking for HTTPie installation or upgrade instructions on Snapcraft, then you can find them on [that page](https://httpie.io/docs#snap-linux) ([that one](https://httpie.io/docs#snap-mac) for macOS).
+- If you are looking for HTTPie installation or upgrade instructions on Snapcraft, then you can find them on [that page](https://httpie.io/docs#snapcraft-linux) ([that one](https://httpie.io/docs#snapcraft-macos) for macOS).
 - If you are looking for technical information about the HTTPie packaging on Snapcraft, then you are in a good place.
 
 ## About

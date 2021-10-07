@@ -3,7 +3,7 @@
 Welcome to the documentation about **packaging HTTPie for Spack**.
 
 - If you do not know HTTPie, have a look [here](https://httpie.io/cli).
-- If you are looking for HTTPie installation or upgrade instructions on Spack, then you can find them on [that page](https://httpie.io/docs#spack-linux) ([that one](https://httpie.io/docs#spack-mac) for macOS).
+- If you are looking for HTTPie installation or upgrade instructions on Spack, then you can find them on [that page](https://httpie.io/docs#spack-linux) ([that one](https://httpie.io/docs#spack-macos) for macOS).
 - If you are looking for technical information about the HTTPie packaging on Spack, then you are in a good place.
 
 ## About
