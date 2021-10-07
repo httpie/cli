@@ -34,7 +34,7 @@ choco pack
 choco info httpie -s .
 
 # Install
-choco install httpie -y -dv -s .
+choco install httpie -y -dv -s "'.;https://community.chocolatey.org/api/v2/'"
 
 # Test
 http --version
