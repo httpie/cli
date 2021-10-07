@@ -1928,8 +1928,8 @@ All changes are recorded in the [change log](#change-log).
 
 HTTPie has the following community channels:
 
-- [GitHub Issues](https://github.com/jkbr/httpie/issues) for bug reports and feature requests
-- [Discord server](https://httpie.io/chat) to ask questions, discuss features, and for general API development discussion
+- [GitHub Issues](https://github.com/httpie/httpie/issues) for bug reports and feature requests
+- [Discord server](https://httpie.io/discord) to ask questions, discuss features, and for general API development discussion
 - [StackOverflow](https://stackoverflow.com) to ask questions (make sure to use the [httpie](https://stackoverflow.com/questions/tagged/httpie) tag)
 - Twitter; where you can tweet directly to (and follow!) [@httpie](https://twitter.com/httpie)
 
@@ -1955,7 +1955,7 @@ Helpers to convert from other client tools:
 
 #### Alternatives
 
-- [httpcat](https://github.com/jakubroztocil/httpcat) — a lower-level sister utility of HTTPie for constructing raw HTTP requests on the command line
+- [httpcat](https://github.com/httpie/httpcat) — a lower-level sister utility of HTTPie for constructing raw HTTP requests on the command line
 - [curl](https://curl.haxx.se) — a "Swiss knife" command line tool and an exceptional library for transferring data with URLs.
 
 ### Contributing
