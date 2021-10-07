@@ -1,0 +1,23 @@
+on:
+  pull_request:
+    paths:
+      - .github/workflows/windows-chocolatey.yml
+      - docs/packaging/windows-chocolatey/httpie.nuspec
+      - docs/packaging/windows-chocolateytools/*.ps1
+
+jobs:
+  snap:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: cd docs/packaging/windows-chocolatey
+      - name: Build
+        run: choco pack
+      - name: Check metadata
+        run: choco info httpie -s .
+      - name: Install
+        run: choco install httpie -y -dv -s .
+      - name: Test
+        run: |
+          http --version
+          https --version

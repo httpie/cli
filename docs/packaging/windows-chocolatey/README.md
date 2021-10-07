@@ -13,8 +13,33 @@ We will discuss setting up the environment, installing development tools, instal
 
 ## Overall process
 
-:construction: Work in progress.
+After having successfully [built and tested](#hacking) the package, push it:
+
+```bash
+# Replace 2.5.0 with the correct version
+choco push httpie.2.5.0.nupkg -s https://push.chocolatey.org/
+```
 
 ## Hacking
 
-:construction: Work in progress.
+```bash
+# Clone
+git clone --depth=1 https://github.com/httpie/httpie.git
+cd httpie/docs/packaging/windows-chocolatey
+
+# Build
+choco pack
+
+# Check metadata
+choco info httpie -s .
+
+# Install
+choco install httpie -y -dv -s .
+
+# Test
+http --version
+https --version
+
+# Remove
+choco uninstall -y httpie
+```

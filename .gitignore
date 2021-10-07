@@ -148,3 +148,6 @@ dmypy.json
 
 # VS Code
 .vscode/
+
+# Windows Chocolatey
+*.nupkg
