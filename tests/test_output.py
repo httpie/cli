@@ -39,7 +39,7 @@ def test_output_option(tmp_path, httpbin, stdout_isatty):
 
 
 class TestQuietFlag:
-    QUIET_SCENARIOS = ['--quiet', '-q', '--quiet --quiet', '-qq']
+    QUIET_SCENARIOS = [('--quiet',), ('-q',), ('--quiet', '--quiet'), ('-qq',)]
 
     @pytest.mark.parametrize('quiet_flags', QUIET_SCENARIOS)
     def test_quiet(self, httpbin, quiet_flags):
@@ -48,7 +48,7 @@ class TestQuietFlag:
             stdout_isatty=True,
             devnull=io.BytesIO()
         )
-        r = http(*quiet_flags.split(), 'GET', httpbin.url + '/get', env=env)
+        r = http(*quiet_flags, 'GET', httpbin.url + '/get', env=env)
         assert env.stdout is env.devnull
         assert env.stderr is env.devnull
         assert HTTP_OK in r.devnull
@@ -100,7 +100,7 @@ class TestQuietFlag:
             devnull=io.BytesIO()
         )
         r = http(
-            *quiet_flags.split(), '--auth', 'user', 'GET',
+            *quiet_flags, '--auth', 'user', 'GET',
             httpbin.url + '/basic-auth/user/password',
             env=env
         )
@@ -114,7 +114,7 @@ class TestQuietFlag:
     @pytest.mark.parametrize('output_options', ['-h', '-b', '-v', '-p=hH'])
     def test_quiet_with_explicit_output_options(self, httpbin, quiet_flags, output_options):
         env = MockEnvironment(stdin_isatty=True, stdout_isatty=True)
-        r = http(*quiet_flags.split(), output_options, httpbin.url + '/get', env=env)
+        r = http(*quiet_flags, output_options, httpbin.url + '/get', env=env)
         assert env.stdout is env.devnull
         assert env.stderr is env.devnull
         assert r == ''
@@ -133,7 +133,7 @@ class TestQuietFlag:
         try:
             assert os.listdir('.') == []
             r = http(
-                *quiet_flags.split(),
+                *quiet_flags,
                 '--output', str(output_path),
                 *extra_args,
                 url,
