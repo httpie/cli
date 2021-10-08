@@ -29,6 +29,10 @@ def main(args: List[Union[str, bytes]] = sys.argv, env=Environment()) -> ExitSta
     Return exit status code.
 
     """
+    if '--prompt' in args:
+        from .prompt.cli import cli
+        return cli(sys.argv[2:])
+
     program_name, *args = args
     env.program_name = os.path.basename(program_name)
     args = decode_raw_args(args, env.stdin_encoding)

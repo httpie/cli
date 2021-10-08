@@ -2,7 +2,7 @@
 CLI arguments definition.
 
 """
-from argparse import (FileType, OPTIONAL, SUPPRESS, ZERO_OR_MORE)
+from argparse import FileType, OPTIONAL, SUPPRESS, ZERO_OR_MORE
 from textwrap import dedent, wrap
 
 from .. import __doc__, __version__
@@ -73,6 +73,7 @@ positional.add_argument(
 positional.add_argument(
     dest='url',
     metavar='URL',
+    nargs=OPTIONAL,
     help='''
     The scheme defaults to 'http://' if the URL does not include one.
     (You can override this with: --default-scheme=https)
@@ -837,6 +838,15 @@ troubleshooting.add_argument(
     help='''
     Prints the exception traceback should one occur, as well as other
     information useful for debugging HTTPie itself and for reporting bugs.
+
+    '''
+)
+troubleshooting.add_argument(
+    '--prompt',
+    action='store_true',
+    default=False,
+    help='''
+    Start the shell!
 
     '''
 )

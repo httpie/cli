@@ -75,6 +75,8 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
     ) -> argparse.Namespace:
         self.env = env
         self.args, no_options = super().parse_known_args(args, namespace)
+        if self.args.prompt:
+            return self.args
         if self.args.debug:
             self.args.traceback = True
         self.has_stdin_data = (

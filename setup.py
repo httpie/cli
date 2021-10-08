@@ -9,6 +9,7 @@ import httpie
 
 # Note: keep requirements here to ease distributions packaging
 tests_require = [
+    'pexpect',
     'pytest',
     'pytest-httpbin>=0.0.6',
     'responses',
@@ -20,12 +21,12 @@ dev_require = [
     'flake8-deprecated',
     'flake8-mutable',
     'flake8-tuple',
+    'jinja2',
     'pyopenssl',
     'pytest-cov',
     'pyyaml',
     'twine',
     'wheel',
-    'Jinja2'
 ]
 install_requires = [
     'charset_normalizer>=2.0.0',
@@ -34,6 +35,11 @@ install_requires = [
     'Pygments>=2.5.2',
     'requests-toolbelt>=0.9.1',
     'setuptools',
+    # Prompt
+    'click>=5.0',
+    'parsimonious>=0.6.2',
+    'prompt-toolkit>=2.0.0,<3.0.0',
+    'pyyaml>=3.0',
 ]
 install_requires_win_only = [
     'colorama>=0.2.4',
@@ -79,6 +85,7 @@ setup(
         'console_scripts': [
             'http = httpie.__main__:main',
             'https = httpie.__main__:main',
+            'http-prompt=httpie.prompt.cli:cli',
         ],
     },
     python_requires='>=3.6',
