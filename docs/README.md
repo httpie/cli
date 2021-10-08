@@ -1298,7 +1298,7 @@ The universal method for passing request data is through redirected `stdin`
 By default, `stdin` data is buffered and then with no further processing used as the request body.
 If you provide `Content-Length`, then the request body is streamed without buffering.
 You may also use `--chunked` to enable streaming via [chunked transfer encoding](#chunked-transfer-encoding)
-or `--compress, -x` for [compressed request body](#compressed-request-body).
+or `--compress, -x` to [compress the request body](#compressed-request-body).
 
 There are multiple useful ways to use piping:
 
