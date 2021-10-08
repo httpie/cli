@@ -185,7 +185,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
             self.env.stdout = self.args.output_file
             self.env.stdout_isatty = False
 
-        if self.args.quiet > 0:
+        if self.args.quiet:
             self.env.stderr = self.env.devnull
             if not (self.args.output_file_specified and not self.args.download):
                 self.env.stdout = self.env.devnull

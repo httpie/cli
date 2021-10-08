@@ -1249,13 +1249,11 @@ $ http --quiet pie.dev/post enjoy='the silence'
 
 #### Quiet output and `--check-status`
 
-When using `--quiet` with `--check-status`, errors and warnings are shown in case of erroneous responses.
-To suppress this behavior, use `-qq` or `--quiet` twice:
+If you’d like to silence warnings as well, use `-q` or `--quiet` twice:
 
 ```bash
-# There will be no output, even in case of errors:
-$ http --quiet --quiet pie.dev/post enjoy='the silence at all times'
-```
+# There will be no output, even in case of an unexpected response status code:
+$ http --qq --check-status pie.dev/post enjoy='the silence without warnings'
 
 ### Viewing intermediary requests/responses
 

@@ -75,7 +75,7 @@ class TestQuietFlag:
             '--quiet', '--quiet', '--check-status', httpbin + '/status/500',
             tolerate_error_exit_status=True,
         )
-        assert 'http: warning: HTTP 500' not in r.stderr
+        assert not r.stderr
 
     def test_quiet_quiet_with_check_status_non_zero_pipe(self, httpbin):
         r = http(

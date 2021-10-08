@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [2.6.0.dev0](https://github.com/httpie/httpie/compare/2.5.0...master) (unreleased)
 
-- Changed behavior of `--quiet`: when passed twice with `--check-status`, silent behavior is enforced (so no errors or warnings are output) ([#1100](https://github.com/httpie/httpie/issues/1100))
+- Added the ability to silence warnings through using `-q` or `--quiet` twice (e.g. `-qq`) ([#1100](https://github.com/httpie/httpie/issues/1100))
 - Added support for formatting & coloring of JSON bodies preceded by non-JSON data (e.g., an XXSI prefix). ([#1130](https://github.com/httpie/httpie/issues/1130))
 - Added `--response-charset` to allow overriding the response encoding for terminal display purposes. ([#1168](https://github.com/httpie/httpie/issues/1168))
 - Added `--response-mime` to allow overriding the response mime type for coloring and formatting for the terminal. ([#1168](https://github.com/httpie/httpie/issues/1168))
