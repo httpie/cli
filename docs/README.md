@@ -1422,7 +1422,6 @@ $ cat files/data.xml | http --compress pie.dev/post
 
 If compressing the data does not save size, HTTPie sends it untouched. To always compress the data, specify `--compress, -x` twice:
 
-
 ```bash
 $ http -xx PUT pie.dev/put hello=world
 ```
