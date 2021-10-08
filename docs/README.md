@@ -1247,13 +1247,12 @@ This doesn’t affect output to a file via `--output` or `--download`.
 $ http --quiet pie.dev/post enjoy='the silence'
 ```
 
-#### Quiet output and `--check-status`
-
 If you’d like to silence warnings as well, use `-q` or `--quiet` twice:
 
 ```bash
 # There will be no output, even in case of an unexpected response status code:
 $ http --qq --check-status pie.dev/post enjoy='the silence without warnings'
+```
 
 ### Viewing intermediary requests/responses
 
