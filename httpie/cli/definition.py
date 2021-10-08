@@ -497,12 +497,14 @@ output_options.add_argument(
 
 output_options.add_argument(
     '--quiet', '-q',
-    action='store_true',
-    default=False,
+    action='count',
+    default=0,
     help='''
-    Do not print to stdout or stderr.
+    Do not print to stdout or stderr, except for errors and warnings when provided once.
+    Provide twice to suppress warnings as well.
     stdout is still redirected if --output is specified.
     Flag doesn't affect behaviour of download beyond not printing to terminal.
+
     '''
 )
 
