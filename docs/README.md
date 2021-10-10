@@ -110,7 +110,7 @@ $ port upgrade httpie
 
 #### Snapcraft (macOS)
 
-To install [Snapcraft](https://snapcraft.io/), see [its installation](https://snapcraft.io/docs/installing-snapd).
+To install [Snapcraft](https://snapcraft.io/), see [its installation](https://snapcraft.io/docs/installing-snapcraft).
 
 ```bash
 # Install httpie
