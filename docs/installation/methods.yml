@@ -14,7 +14,6 @@ docs-structure:
   macOS:
     - brew-mac
     - port
-    - snap-mac
     - spack-mac
   Windows:
     - chocolatey
@@ -195,19 +194,6 @@ tools:
     links:
       homepage: https://snapcraft.io/
       setup: https://snapcraft.io/docs/installing-snapd
-      package: https://snapcraft.io/httpie
-    commands:
-      install:
-        - snap install httpie
-      upgrade:
-        - snap refresh httpie
-
-  snap-mac:
-    title: Snapcraft (macOS)
-    name: Snapcraft
-    links:
-      homepage: https://snapcraft.io/
-      setup: https://snapcraft.io/docs/installing-snapcraft
       package: https://snapcraft.io/httpie
     commands:
       install:
