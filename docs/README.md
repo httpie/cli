@@ -108,20 +108,6 @@ $ port selfupdate
 $ port upgrade httpie
 ```
 
-#### Snapcraft (macOS)
-
-To install [Snapcraft](https://snapcraft.io/), see [its installation](https://snapcraft.io/docs/installing-snapcraft).
-
-```bash
-# Install httpie
-$ snap install httpie
-```
-
-```bash
-# Upgrade httpie
-$ snap refresh httpie
-```
-
 #### Spack (macOS)
 
 To install [Spack](https://spack.readthedocs.io/en/latest/index.html), see [its installation](https://spack.readthedocs.io/en/latest/getting_started.html#installation).
