@@ -22,6 +22,10 @@ jobs:
       - uses: Automattic/action-commit-to-branch@master
         with:
           branch: master
-          commit_message: Auto-update installation instructions in the docs
+          commit_message: |
+            Auto-update install docs
+
+            Via .github/workflows/docs-update-install.yml
+
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
