@@ -207,7 +207,7 @@ tools:
     name: Snapcraft
     links:
       homepage: https://snapcraft.io/
-      setup: https://snapcraft.io/docs/installing-snapd
+      setup: https://snapcraft.io/docs/installing-snapcraft
       package: https://snapcraft.io/httpie
     commands:
       install:
