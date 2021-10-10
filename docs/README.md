@@ -63,13 +63,13 @@ Do not edit here, but in docs/installation/.
 Please make sure you have Python 3.6 or newer (`python --version`).
 
 ```bash
-# Install
+# Install httpie
 $ python -m pip install --upgrade pip wheel
 $ python -m pip install httpie
 ```
 
 ```bash
-# Upgrade
+# Upgrade httpie
 $ python -m pip install --upgrade pip wheel
 $ python -m pip install --upgrade httpie
 ```
@@ -78,61 +78,61 @@ $ python -m pip install --upgrade httpie
 
 #### Homebrew
 
-To install [Homebrew](https://brew.sh/) follow [installation instructions](https://docs.brew.sh/Installation).
+To install [Homebrew](https://brew.sh/), see [its installation](https://docs.brew.sh/Installation).
 
 ```bash
-# Install
+# Install httpie
 $ brew update
 $ brew install httpie
 ```
 
 ```bash
-# Upgrade
+# Upgrade httpie
 $ brew update
 $ brew upgrade httpie
 ```
 
 #### MacPorts
 
-To install [MacPorts](https://www.macports.org/) follow [installation instructions](https://www.macports.org/install.php).
+To install [MacPorts](https://www.macports.org/), see [its installation](https://www.macports.org/install.php).
 
 ```bash
-# Install
+# Install httpie
 $ port selfupdate
 $ port install httpie
 ```
 
 ```bash
-# Upgrade
+# Upgrade httpie
 $ port selfupdate
 $ port upgrade httpie
 ```
 
 #### Snapcraft (macOS)
 
-To install [Snapcraft](https://snapcraft.io/) follow [installation instructions](https://snapcraft.io/docs/installing-snapd).
+To install [Snapcraft](https://snapcraft.io/), see [its installation](https://snapcraft.io/docs/installing-snapd).
 
 ```bash
-# Install
+# Install httpie
 $ snap install httpie
 ```
 
 ```bash
-# Upgrade
+# Upgrade httpie
 $ snap refresh httpie
 ```
 
 #### Spack (macOS)
 
-To install [Spack](https://spack.readthedocs.io/en/latest/index.html) follow [installation instructions](https://spack.readthedocs.io/en/latest/getting_started.html#installation).
+To install [Spack](https://spack.readthedocs.io/en/latest/index.html), see [its installation](https://spack.readthedocs.io/en/latest/getting_started.html#installation).
 
 ```bash
-# Install
+# Install httpie
 $ spack install httpie
 ```
 
 ```bash
-# Upgrade
+# Upgrade httpie
 $ spack install httpie
 ```
 
@@ -140,15 +140,15 @@ $ spack install httpie
 
 #### Chocolatey
 
-To install [Chocolatey](https://chocolatey.org/) follow [installation instructions](https://chocolatey.org/install).
+To install [Chocolatey](https://chocolatey.org/), see [its installation](https://chocolatey.org/install).
 
 ```bash
-# Install
+# Install httpie
 $ choco install httpie
 ```
 
 ```bash
-# Upgrade
+# Upgrade httpie
 $ choco upgrade httpie
 ```
 
@@ -156,30 +156,30 @@ $ choco upgrade httpie
 
 #### Snapcraft (Linux)
 
-To install [Snapcraft](https://snapcraft.io/) follow [installation instructions](https://snapcraft.io/docs/installing-snapd).
+To install [Snapcraft](https://snapcraft.io/), see [its installation](https://snapcraft.io/docs/installing-snapd).
 
 ```bash
-# Install
+# Install httpie
 $ snap install httpie
 ```
 
 ```bash
-# Upgrade
+# Upgrade httpie
 $ snap refresh httpie
 ```
 
 #### Linuxbrew
 
-To install [Linuxbrew](https://docs.brew.sh/Homebrew-on-Linux) follow [installation instructions](https://docs.brew.sh/Homebrew-on-Linux#install).
+To install [Linuxbrew](https://docs.brew.sh/Homebrew-on-Linux), see [its installation](https://docs.brew.sh/Homebrew-on-Linux#install).
 
 ```bash
-# Install
+# Install httpie
 $ brew update
 $ brew install httpie
 ```
 
 ```bash
-# Upgrade
+# Upgrade httpie
 $ brew update
 $ brew upgrade httpie
 ```
@@ -189,13 +189,13 @@ $ brew upgrade httpie
 Also works for other Debian-derived distributions like MX Linux, Linux Mint, deepin, Pop!_OS, KDE neon, Zorin OS, elementary OS, Kubuntu, Devuan, Linux Lite, Peppermint OS, Lubuntu, antiX, Xubuntu, etc.
 
 ```bash
-# Install
+# Install httpie
 $ apt update
 $ apt install httpie
 ```
 
 ```bash
-# Upgrade
+# Upgrade httpie
 $ apt update
 $ apt upgrade httpie
 ```
@@ -203,13 +203,13 @@ $ apt upgrade httpie
 #### Fedora
 
 ```bash
-# Install
+# Install httpie
 $ dnf update
 $ dnf install httpie
 ```
 
 ```bash
-# Upgrade
+# Upgrade httpie
 $ dnf update
 $ dnf upgrade httpie
 ```
@@ -219,14 +219,14 @@ $ dnf upgrade httpie
 Also works for other RHEL-derived distributions like ClearOS, Oracle Linux, etc.
 
 ```bash
-# Install
+# Install httpie
 $ yum update
 $ yum install epel-release
 $ yum install httpie
 ```
 
 ```bash
-# Upgrade
+# Upgrade httpie
 $ yum update
 $ yum upgrade httpie
 ```
@@ -234,13 +234,13 @@ $ yum upgrade httpie
 #### Alpine Linux
 
 ```bash
-# Install
+# Install httpie
 $ apk update
 $ apk add httpie
 ```
 
 ```bash
-# Upgrade
+# Upgrade httpie
 $ apk update
 $ apk add --upgrade httpie
 ```
@@ -248,13 +248,13 @@ $ apk add --upgrade httpie
 #### Gentoo
 
 ```bash
-# Install
+# Install httpie
 $ emerge --sync
 $ emerge httpie
 ```
 
 ```bash
-# Upgrade
+# Upgrade httpie
 $ emerge --sync
 $ emerge --update httpie
 ```
@@ -264,40 +264,40 @@ $ emerge --update httpie
 Also works for other Arch-derived distributions like ArcoLinux, EndeavourOS, Artix Linux, etc.
 
 ```bash
-# Install
+# Install httpie
 $ pacman -Sy httpie
 ```
 
 ```bash
-# Upgrade
+# Upgrade httpie
 $ pacman -Syu httpie
 ```
 
 #### Void Linux
 
 ```bash
-# Install
+# Install httpie
 $ xbps-install -Su
 $ xbps-install -S httpie
 ```
 
 ```bash
-# Upgrade
+# Upgrade httpie
 $ xbps-install -Su
 $ xbps-install -Su httpie
 ```
 
 #### Spack (Linux)
 
-To install [Spack](https://spack.readthedocs.io/en/latest/index.html) follow [installation instructions](https://spack.readthedocs.io/en/latest/getting_started.html#installation).
+To install [Spack](https://spack.readthedocs.io/en/latest/index.html), see [its installation](https://spack.readthedocs.io/en/latest/getting_started.html#installation).
 
 ```bash
-# Install
+# Install httpie
 $ spack install httpie
 ```
 
 ```bash
-# Upgrade
+# Upgrade httpie
 $ spack install httpie
 ```
 
@@ -306,12 +306,12 @@ $ spack install httpie
 #### FreshPorts
 
 ```bash
-# Install
+# Install httpie
 $ pkg install www/py-httpie
 ```
 
 ```bash
-# Upgrade
+# Upgrade httpie
 $ pkg upgrade www/py-httpie
 ```
 
