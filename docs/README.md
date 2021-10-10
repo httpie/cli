@@ -47,7 +47,7 @@ You are invited to submit fixes and improvements to the docs by editing [this fi
 THE INSTALLATION SECTION IS GENERATED
 
 Do not edit here, but in docs/installation/.
-TEST
+
 -->
 
 - [Universal](#universal)
