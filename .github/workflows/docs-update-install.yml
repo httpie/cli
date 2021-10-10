@@ -3,6 +3,7 @@ on:
     branches:
       - master
     paths:
+      - .github/workflows/docs-update-install.yml
       - docs/installation/*
 
   # Allow to call the workflow manually

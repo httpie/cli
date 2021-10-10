@@ -19,16 +19,16 @@ Do not edit here, but in docs/installation/.
         {% endif %}
 
         {% if tool.links.setup %}
-            To install [{{ tool.name }}]({{ tool.links.homepage }}) follow [installation instructions]({{ tool.links.setup }}).
+            To install [{{ tool.name }}]({{ tool.links.homepage }}), see [its installation]({{ tool.links.setup }}).
         {% endif %}
 
         ```bash
-        # Install
+        # Install httpie
         $ {{ tool.commands.install|join('\n$ ') }}
         ```
 
         ```bash
-        # Upgrade
+        # Upgrade httpie
         $ {{ tool.commands.upgrade|join('\n$ ') }}
         ```
     {% endfor %}
