@@ -23,7 +23,8 @@ That is done quite easily by manually triggering the [release workflow](https://
 
 ## Then, company-specific tasks
 
-- Update the HTTPie version bundled into termible ([example](https://github.com/httpie/termible/pull/1)).
+- Blank the `master_and_released_docs_differ_after` value in [config.json](https://github.com/httpie/httpie/blob/master/docs/config.json).
+- Update the HTTPie version bundled into [Termible](https://termible.io/) ([example](https://github.com/httpie/termible/pull/1)).
 
 ## Finally, spread dowstream
 
