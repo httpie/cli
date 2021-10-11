@@ -1426,7 +1426,7 @@ HTTPie does several things by default in order to make its terminal output easy 
 ### Colors and formatting
 
 Syntax highlighting applies to HTTP headers and bodies depending on the `Content-Type` header.
-When the `Content-Type` leads to unprocessable content, we use heuristics to detect JSON bodies.
+When the it leads to unprocessable content, we use heuristics to detect JSON bodies.
 
 You can still override the `Content-Type` via the `--response-mime` option:
 
