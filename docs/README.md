@@ -1425,10 +1425,8 @@ HTTPie does several things by default in order to make its terminal output easy 
 
 ### Colors and formatting
 
-<!-- TODO: mention body colors/formatting are based on content-type + --response-mime (heuristics for JSON content-type) -->
-
 Syntax highlighting is applied to HTTP headers and bodies (where it makes sense).
-You can choose your preferred color scheme via the `--style` option if you don’t like the default one.
+You can choose your preferred color scheme via the --style option if you don’t like the default one.
 There are dozens of styles available, here are just a few notable ones:
 
 |     Style | Description                                                                                                                         |
@@ -1447,6 +1445,12 @@ Use one of these options to control output processing:
 | `--pretty=colors` | Apply colors                                                  |
 | `--pretty=format` | Apply formatting                                              |
 |   `--pretty=none` | Disables output processing. Default for redirected output     |
+
+HTTPie looks at `Content-Type` to select the right syntax highlighter and formatter for each message body. If that fails (e.g., the server provides the wrong type), or you prefer a different treatment, you can manually overwrite the mime type for a response with `--response-mime`:
+
+```bash
+$ http --response-mime=text/yaml pie.dev/get
+```
 
 Formatting has the following effects:
 
@@ -1483,29 +1487,6 @@ sorting-related format options (currently it means JSON keys and headers):
 `--unsorted` and `--sorted`.
 
 This is something you will typically store as one of the default options in your [config](#config) file.
-
-### Response `Content-Type`
-
-The `--response-as=value` option allows you to override the response `Content-Type` sent by the server.
-That makes it possible for HTTPie to print the response even when the server specifies the type incorrectly.
-
-For example, the following request will force the response to be treated as XML:
-
-```bash
-$ http --response-as=application/xml pie.dev/get
-```
-
-And the following requests will force the response to use the [big5](https://docs.python.org/3/library/codecs.html#standard-encodings) encoding:
-
-```bash
-$ http --response-as='charset=big5' pie.dev/get
-```
-
-```bash
-$ http --response-as='text/plain; charset=big5' pie.dev/get
-```
-
-Given the encoding is not sent by the server, HTTPie will auto-detect it.
 
 ### Redirected output
 
@@ -1569,20 +1550,13 @@ Content-Type: application/octet-stream
 +-----------------------------------------+
 ```
 
-<!--
 ### Display encoding
 
-TODO:
-(both request/response)
+HTTPie tries to do its best to decode message bodies when printing them to the terminal correctly. It uses the encoding specified in the `Content-Type` `charset` attribute. If a message doesn’t define its charset, we auto-detect it. For very short messages (1–32B), where auto-detection would be unreliable, we default to UTF-8. For cases when the response encoding is still incorrect, you can manually overwrite the response charset with `--response-charset`:
 
-- we look at content-type
-- else we detect
-- short texts default to utf8
-
-(only response)
-
-- --response-charset allows overwriting
-- -->
+```bash
+$ http --response-charset=big5 pie.dev/get
+```
 
 ## Download mode
 
