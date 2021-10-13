@@ -1446,7 +1446,7 @@ Use one of these options to control output processing:
 | `--pretty=format` | Apply formatting                                              |
 |   `--pretty=none` | Disables output processing. Default for redirected output     |
 
-HTTPie uses `Content-Type` to select the right syntax highlighter and formatter for each message body. If that fails (e.g., the server provides the wrong type), or you prefer a different treatment, you can manually overwrite the mime type for a response with `--response-mime`:
+HTTPie looks at `Content-Type` to select the right syntax highlighter and formatter for each message body. If that fails (e.g., the server provides the wrong type), or you prefer a different treatment, you can manually overwrite the mime type for a response with `--response-mime`:
 
 ```bash
 $ http --response-mime=text/yaml pie.dev/get
@@ -1552,8 +1552,7 @@ Content-Type: application/octet-stream
 
 ### Display encoding
 
-HTTPie tries to do its best to correctly decode message bodies when they’re printed to the terminal. It uses the encoding specified in the `Content-Type` `charset` attribute. If a message doesn’t specify its charset, we auto-detect it. For very short messages (1–32B), where auto-detection would be unreliable, we default to UTF-8. For cases when the response encoding is still incorrect, you can manually overwrite the response charset with `--response-charset`:
-
+HTTPie tries to do its best to decode message bodies when printing them to the terminal correctly. It uses the encoding specified in the `Content-Type` `charset` attribute. If a message doesn’t define its charset, we auto-detect it. For very short messages (1–32B), where auto-detection would be unreliable, we default to UTF-8. For cases when the response encoding is still incorrect, you can manually overwrite the response charset with `--response-charset`:
 ```bash
 $ http --response-charset=big5 pie.dev/get
 ```
