@@ -1425,15 +1425,6 @@ HTTPie does several things by default in order to make its terminal output easy 
 
 ### Colors and formatting
 
-Syntax highlighting applies to HTTP headers and bodies depending on the `Content-Type` header.
-When the it leads to unprocessable content, we use heuristics to detect JSON bodies.
-
-You can still override the `Content-Type` via the `--response-mime` option:
-
-```bash
-$ http --response-mime=application/xml pie.dev/get
-```
-
 Syntax highlighting is applied to HTTP headers and bodies (where it makes sense).
 You can choose your preferred color scheme via the --style option if you don’t like the default one.
 There are dozens of styles available, here are just a few notable ones:
@@ -1455,7 +1446,7 @@ Use one of these options to control output processing:
 | `--pretty=format` | Apply formatting                                              |
 |   `--pretty=none` | Disables output processing. Default for redirected output     |
 
-HTTPie uses `Content-Type` to pick the right syntax highlighter and formatter for each message body. If that fails (e.g., the server provides the wrong type), or you prefer a different treatment, you can manually overwrite the mime type for a response with `--response-mime`:
+HTTPie uses `Content-Type` to select the right syntax highlighter and formatter for each message body. If that fails (e.g., the server provides the wrong type), or you prefer a different treatment, you can manually overwrite the mime type for a response with `--response-mime`:
 
 ```bash
 $ http --response-mime=text/yaml pie.dev/get
