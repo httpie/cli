@@ -1553,6 +1553,7 @@ Content-Type: application/octet-stream
 ### Display encoding
 
 HTTPie tries to do its best to decode message bodies when printing them to the terminal correctly. It uses the encoding specified in the `Content-Type` `charset` attribute. If a message doesn’t define its charset, we auto-detect it. For very short messages (1–32B), where auto-detection would be unreliable, we default to UTF-8. For cases when the response encoding is still incorrect, you can manually overwrite the response charset with `--response-charset`:
+
 ```bash
 $ http --response-charset=big5 pie.dev/get
 ```
