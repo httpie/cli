@@ -100,9 +100,11 @@ setup(
         'Topic :: Utilities'
     ],
     project_urls={
+        'Homepage': 'https://httpie.io/',
         'GitHub': 'https://github.com/httpie/httpie',
         'Twitter': 'https://twitter.com/httpie',
-        'Documentation': 'https://httpie.org/docs',
-        'Online Demo': 'https://httpie.org/run',
+        'Discord': 'https://httpie.io/discord',
+        'Documentation': 'https://httpie.io/docs',
+        'Online Demo': 'https://httpie.io/run',
     },
 )
