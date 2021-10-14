@@ -8,7 +8,12 @@ from jinja2 import Template
 from fetch import HERE, load_awesome_people
 
 TPL_FILE = HERE / 'snippet.jinja2'
-HTTPIE_TEAM = {'jakubroztocil', 'BoboTiG', 'claudiatd'}
+HTTPIE_TEAM = {
+    'BoboTiG',
+    'claudiatd',
+    'jakubroztocil',
+    'jkbr',
+}
 
 
 def generate_snippets(release: str) -> str:
