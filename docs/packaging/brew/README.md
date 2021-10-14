@@ -26,7 +26,7 @@ git commit -s -m 'Update brew formula to XXX'
 
 That [GitHub workflow](https://github.com/httpie/httpie/actions/workflows/test-package-mac-brew.yml) will test the formula when `downstream/mac/brew/httpie.rb` is changed in a pull request.
 
-Then, open a pull request with those changes to the [downstream file]([ file](https://github.com/Homebrew/homebrew-core/blob/master/Formula/httpie.rb)).
+Then, open a pull request with those changes to the [downstream file](https://github.com/Homebrew/homebrew-core/blob/master/Formula/httpie.rb).
 
 ## Hacking
 
