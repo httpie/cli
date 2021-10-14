@@ -13,7 +13,7 @@ We will discuss setting up the environment, installing development tools, instal
 
 ## Overall process
 
-Open a pull request to update the [downstream file](https://github.com/void-linux/void-packages/blob/master/srcpkgs/httpie/template) ([example](https://github.com/void-linux/void-packages/pull/32905)).
+Open a pull request to update the [downstream file](https://github.com/void-linux/void-packages/blob/master/srcpkgs/httpie/template) ([example](https://github.com/void-linux/void-packages/pull/33539)).
 
 - The `revision` must be set to `0`.
 - The commit message must be `httpie: update to XXX.`.
@@ -51,6 +51,10 @@ xlint srcpkgs/httpie/template
 ln -s / masterdir
 
 # Enable ethereal chroot-style
+echo XBPS_BUILD_ENVIRONMENT=void-packages-ci >> etc/conf
+echo XBPS_ALLOW_RESTRICTED=yes >> etc/conf
+echo XBPS_CHROOT_CMD=ethereal >> etc/conf
+echo XBPS_ALLOW_CHROOT_BREAKOUT=yes >> etc/conf
 export XBPS_ALLOW_CHROOT_BREAKOUT=yes
 ./xbps-src binary-bootstrap
 ./xbps-src chroot
