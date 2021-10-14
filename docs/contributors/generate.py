@@ -1,5 +1,5 @@
 """
-Generate .
+Generate snippets to copy-paste.
 """
 import sys
 
