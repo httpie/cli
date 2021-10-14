@@ -15,6 +15,7 @@ We will discuss setting up the environment, installing development tools, instal
 
 Open a pull request to update the [downstream file](https://github.com/void-linux/void-packages/blob/master/srcpkgs/httpie/template) ([example](https://github.com/void-linux/void-packages/pull/32905)).
 
+- The `revision` must be set to `0`.
 - The commit message must be `httpie: update to XXX.`.
 - The commit must be signed-off (`git commit -s`).
 
