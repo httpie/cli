@@ -14,10 +14,10 @@ HTTPIE_TEAM = {'jakubroztocil', 'BoboTiG', 'claudiatd'}
 def generate_snippets(release: str) -> str:
     people = load_awesome_people()
     contributors = {
-        name: person
-        for name, person in people.items()
-        if person['github'] not in HTTPIE_TEAM
-        and (release in person['committed'] or release in person['reported'])
+        name: details
+        for name, details in people.items()
+        if details['github'] not in HTTPIE_TEAM
+        and (release in details['committed'] or release in details['reported'])
     }
 
     template = Template(source=TPL_FILE.read_text(encoding='utf-8'))
@@ -38,6 +38,4 @@ Generate snippets for contributors to a release.
 Usage:
     python {sys.argv[0]} {sys.argv[0]} <RELEASE>
 ''')
-    except KeyboardInterrupt:
-        ret = 255
     sys.exit(ret)

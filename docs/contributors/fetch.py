@@ -140,15 +140,15 @@ def merge_all_the_people(release: str, contributors: People, committers: FullNam
 
     """
     # Update known contributors.
-    for name, person in contributors.items():
+    for name, details in contributors.items():
         if name in committers:
-            if release not in person['committed']:
-                person['committed'].append(release)
+            if release not in details['committed']:
+                details['committed'].append(release)
             committers.remove(name)
-        if person['github'] in reporters:
-            if release not in person['reported']:
-                person['reported'].append(release)
-            reporters.remove(person['github'])
+        if details['github'] in reporters:
+            if release not in details['reported']:
+                details['reported'].append(release)
+            reporters.remove(details['github'])
 
     # Add new committers.
     for name in committers:
@@ -234,14 +234,14 @@ def user(fullname: Optional[str] = '', github_username: Optional[str] = '') -> U
 
 
 def fetch_missing_users_details(people: People) -> None:
-    for name, person in people.items():
-        if person['github'] and person['twitter']:
+    for name, details in people.items():
+        if details['github'] and details['twitter']:
             continue
-        user_info = user(github_username=person['github'], fullname=name)
-        if not person['github']:
-            person['github'] = user_info['login']
-        if not person['twitter']:
-            person['twitter'] = user_info['twitter_username']
+        user_info = user(github_username=details['github'], fullname=name)
+        if not details['github']:
+            details['github'] = user_info['login']
+        if not details['twitter']:
+            details['twitter'] = user_info['twitter_username']
 
 
 def save_awesome_people(people: People) -> None:
