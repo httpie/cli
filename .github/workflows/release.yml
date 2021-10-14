@@ -21,7 +21,7 @@ jobs:
           ref: ${{ github.event.inputs.branch }}
       - name: PyPi configuration
         run: |
-          echo "[distutils]\nindex-servers=\n    httpie\n\n[httpie]\n" > $HOME/.pypirc
+          echo "[distutils]\nindex-servers=\n    httpie\n\n[httpie]\nrepository = https://upload.pypi.org/legacy/\n" > $HOME/.pypirc
       - uses: actions/setup-python@v2
         with:
           python-version: 3.9
