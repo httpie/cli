@@ -3,7 +3,7 @@
 This document records all notable changes to [HTTPie](https://httpie.io).
 This project adheres to [Semantic Versioning](https://semver.org/).
 
-## [2.6.0.dev0](https://github.com/httpie/httpie/compare/2.5.0...master) (unreleased)
+## [2.6.0](https://github.com/httpie/httpie/compare/2.5.0...2.6.0) (2021-10-14)
 
 - Added support for formatting & coloring of JSON bodies preceded by non-JSON data (e.g., an XXSI prefix). ([#1130](https://github.com/httpie/httpie/issues/1130))
 - Added charset auto-detection when `Content-Type` doesn’t include it. ([#1110](https://github.com/httpie/httpie/issues/1110), [#1168](https://github.com/httpie/httpie/issues/1168))
