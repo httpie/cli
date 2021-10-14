@@ -46,8 +46,13 @@ def main(previous_release: str, current_release: str) -> int:
     until = release_date(current_release)
 
     contributors = load_awesome_people()
-    committers = find_committers(since, until)
-    reporters = find_reporters(since, until)
+    try:
+        committers = find_committers(since, until)
+        reporters = find_reporters(since, until)
+    except Exception as exc:
+        # We want to save what we fetched so far. So pass.
+        print(' !! ', exc)
+
     try:
         merge_all_the_people(current_release, contributors, committers, reporters)
         fetch_missing_users_details(contributors)
