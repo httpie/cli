@@ -1,0 +1,13 @@
+<!-- Blog post -->
+
+## Community contributions
+
+We’d like to thank these amazing people for their contributions to this release: {% for name, details in contributors.items() -%}
+    [{{ name }}](https://github.com/{{ details.github }}){{ '' if loop.last else ', ' }}
+{%- endfor %}.
+
+<!-- Twitter -->
+
+We’d like to thank these amazing people for their contributions to HTTPie {{ release }}: {% for name, details in contributors.items() if details.twitter -%}
+    @{{ details.twitter }}{{ '' if loop.last else ', ' }}
+{%- endfor %} 🥧

@@ -1,17 +1,6 @@
 """
 Generate the contributors database.
 
-Usage:
-    python docs/contributors/people.py <RELEASE N-1> <RELEASE N>
-Example:
-    python docs/contributors/people.py 2.4.0 2.5.0
-
-Environment variables:
-    GITHUB_TOKEN=value
-        GitHub personal token (mandatory).
-    DEBUG=1
-        Display debug lines (optional).
-
 FIXME: replace `requests` calls with the HTTPie API, when available.
 """
 import json
@@ -39,10 +28,13 @@ REPO = OWNER = 'httpie'
 REPO_URL = f'{API_URL}/repos/{REPO}/{OWNER}'
 
 HERE = Path(__file__).parent
-PEOPLE = HERE / 'people.json'
+DB_FILE = HERE / 'people.json'
 
 DEFAULT_PERSON: Person = {'committed': [], 'reported': [], 'github': '', 'twitter': ''}
 SKIPPED_LABELS = {'invalid'}
+
+GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')
+assert GITHUB_TOKEN, 'GITHUB_TOKEN envar is missing'
 
 
 class FinishedForNow(Exception):
@@ -187,7 +179,7 @@ def release_date(release: str) -> str:
 
 def load_awesome_people() -> People:
     try:
-        with PEOPLE.open(encoding='utf-8') as fh:
+        with DB_FILE.open(encoding='utf-8') as fh:
             return json.load(fh)
     except (FileNotFoundError, ValueError):
         return {}
@@ -196,7 +188,7 @@ def load_awesome_people() -> People:
 def fetch(url: str, params: Optional[Dict[str, str]] = None) -> UserInfo:
     headers = {
         'Accept': 'application/vnd.github.v3+json',
-        'Authentication': f'token {os.environ["GITHUB_TOKEN"]}'
+        'Authentication': f'token {GITHUB_TOKEN}'
     }
     for retry in range(1, 6):
         debug(f'[{retry}/5]', f'{url = }', f'{params = }')
@@ -253,7 +245,7 @@ def fetch_missing_users_details(people: People) -> None:
 
 
 def save_awesome_people(people: People) -> None:
-    with PEOPLE.open(mode='w', encoding='utf-8') as fh:
+    with DB_FILE.open(mode='w', encoding='utf-8') as fh:
         json.dump(people, fh, indent=4, sort_keys=True)
 
 
@@ -263,7 +255,21 @@ def debug(*args: Any) -> None:
 
 
 if __name__ == '__main__':
+    ret = 1
     try:
-        sys.exit(main(*sys.argv[1:]))
+        ret = main(*sys.argv[1:])
+    except TypeError:
+        ret = 2
+        print(f'''
+Fetch contributors to a release.
+
+Usage:
+    python {sys.argv[0]} {sys.argv[0]} <RELEASE N-1> <RELEASE N>
+Example:
+    python {sys.argv[0]} 2.4.0 2.5.0
+
+Define the DEBUG=1 environment variable to enable verbose output.
+''')
     except KeyboardInterrupt:
-        sys.exit(255)
+        ret = 255
+    sys.exit(ret)

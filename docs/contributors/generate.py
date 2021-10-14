@@ -1,0 +1,43 @@
+"""
+Generate .
+"""
+import sys
+
+from jinja2 import Template
+
+from fetch import HERE, load_awesome_people
+
+TPL_FILE = HERE / 'snippet.jinja2'
+HTTPIE_TEAM = {'jakubroztocil', 'BoboTiG', 'claudiatd'}
+
+
+def generate_snippets(release: str) -> str:
+    people = load_awesome_people()
+    contributors = {
+        name: person
+        for name, person in people.items()
+        if person['github'] not in HTTPIE_TEAM
+        and (release in person['committed'] or release in person['reported'])
+    }
+
+    template = Template(source=TPL_FILE.read_text(encoding='utf-8'))
+    output = template.render(contributors=contributors, release=release)
+    print(output)
+    return 0
+
+
+if __name__ == '__main__':
+    ret = 1
+    try:
+        ret = generate_snippets(sys.argv[1])
+    except (IndexError, TypeError):
+        ret = 2
+        print(f'''
+Generate snippets for contributors to a release.
+
+Usage:
+    python {sys.argv[0]} {sys.argv[0]} <RELEASE>
+''')
+    except KeyboardInterrupt:
+        ret = 255
+    sys.exit(ret)
