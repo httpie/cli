@@ -5,7 +5,7 @@
 pkgname=httpie
 pkgver=2.6.0
 pkgrel=0
-pkgdesc="Modern, user-friendly command-line HTTP client for the API era."
+pkgdesc="Modern, user-friendly command-line HTTP client for the API era"
 url="https://httpie.org/"
 arch="noarch"
 license="BSD-3-Clause"

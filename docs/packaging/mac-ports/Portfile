@@ -8,7 +8,7 @@ github.setup        httpie httpie 2.6.0
 
 maintainers         {g5pw @g5pw} openmaintainer
 categories          net
-description         Modern, user-friendly command-line HTTP client for the API era.
+description         Modern, user-friendly command-line HTTP client for the API era
 long_description    HTTPie (pronounced aych-tee-tee-pie) is a command line HTTP \
                     client. Its goal is to make CLI interaction with web \
                     services as human-friendly as possible. It provides a simple \

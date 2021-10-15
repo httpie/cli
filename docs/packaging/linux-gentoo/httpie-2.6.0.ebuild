@@ -9,7 +9,7 @@ PYTHON_REQ_USE="ssl(+)"
 
 inherit bash-completion-r1 distutils-r1
 
-DESCRIPTION="Modern, user-friendly command-line HTTP client for the API era."
+DESCRIPTION="Modern, user-friendly command-line HTTP client for the API era"
 HOMEPAGE="https://httpie.io/ https://pypi.org/project/httpie/"
 SRC_URI="https://github.com/httpie/httpie/archive/${PV}.tar.gz -> ${P}.tar.gz"
 
