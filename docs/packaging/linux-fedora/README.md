@@ -42,7 +42,7 @@ Q: Are new versions backported automatically?
 A: No. The process is:
 
 1. A new HTTPie release is created on Github.
-2. A pull request for Fedora `rawhide` (the development version of Fedora, currently Fedora 35) is created.
+2. A pull request for Fedora `rawhide` (the development version of Fedora, currently Fedora 36) is created.
 3. A Fedora packager (usually Miro) sanity checks the pull request and merges, builds. HTTPie is updated in `rawhide` within 24 hours (sometimes more, for unrelated issues).
-4. A Fedora packager decides whether the upgrade is suitable for stable Fedora releases (currently 34, 33), if so, merges the changes there.
+4. A Fedora packager decides whether the upgrade is suitable for stable Fedora releases (currently 35, 34, 33), if so, merges the changes there.
 5. (if the above is yes) The new version of HTTPie lands in `updates-testing` repo where it waits for user feedback and lands within ~1 week for broad availability.
