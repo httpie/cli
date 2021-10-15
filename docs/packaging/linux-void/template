@@ -7,7 +7,7 @@ hostmakedepends="python3-setuptools"
 depends="python3-setuptools python3-requests python3-requests-toolbelt
  python3-Pygments python3-pysocks python3-defusedxml
  python3-charset-normalizer"
-short_desc="Human-friendly command line HTTP client"
+short_desc="Modern, user-friendly command-line HTTP client for the API era"
 maintainer="Mickaël Schoentgen <mickael@apible.io>"
 license="BSD-3-Clause"
 homepage="https://httpie.io/"
