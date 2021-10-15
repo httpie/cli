@@ -51,9 +51,14 @@ class XMLFormatter(FormatterPlugin):
         except DefusedXmlException:
             pass  # Unsafe XML, ignore.
         else:
-            body = pretty_xml(parsed_body,
+            pretty_body = pretty_xml(parsed_body,
                               encoding=parsed_body.encoding,
                               indent=self.format_options['xml']['indent'],
                               standalone=parsed_body.standalone)
-
-        return body
+            first_tag_closing = body.find('>')
+            if first_tag_closing != -1 :
+                first_tag = body[:first_tag_closing+1]
+                document_begins_at = pretty_body.find(first_tag)
+                if document_begins_at != -1:
+                    pretty_body = pretty_body[document_begins_at:]
+        return pretty_body
