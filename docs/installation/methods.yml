@@ -112,10 +112,8 @@ tools:
       package: https://src.fedoraproject.org/rpms/httpie
     commands:
       install:
-        - dnf update
         - dnf install httpie
       upgrade:
-        - dnf update
         - dnf upgrade httpie
 
   emerge:
@@ -247,9 +245,7 @@ tools:
       package: https://src.fedoraproject.org/rpms/httpie
     commands:
       install:
-        - yum update
         - yum install epel-release
         - yum install httpie
       upgrade:
-        - yum update
         - yum upgrade httpie

@@ -190,13 +190,11 @@ $ apt upgrade httpie
 
 ```bash
 # Install httpie
-$ dnf update
 $ dnf install httpie
 ```
 
 ```bash
 # Upgrade httpie
-$ dnf update
 $ dnf upgrade httpie
 ```
 
@@ -206,14 +204,12 @@ Also works for other RHEL-derived distributions like ClearOS, Oracle Linux, etc.
 
 ```bash
 # Install httpie
-$ yum update
 $ yum install epel-release
 $ yum install httpie
 ```
 
 ```bash
 # Upgrade httpie
-$ yum update
 $ yum upgrade httpie
 ```
 
