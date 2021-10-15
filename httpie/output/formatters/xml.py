@@ -43,22 +43,18 @@ class XMLFormatter(FormatterPlugin):
 
         from xml.parsers.expat import ExpatError
         from defusedxml.common import DefusedXmlException
-        pretty_body = body
         try:
             parsed_body = parse_xml(body)
         except ExpatError:
             pass  # Invalid XML, ignore.
         except DefusedXmlException:
             pass  # Unsafe XML, ignore.
-        else:
-            pretty_body = pretty_xml(parsed_body,
+        else: 
+            has_declaration = body.startswith('<?xml version')
+            body = pretty_xml(parsed_body,
                               encoding=parsed_body.encoding,
                               indent=self.format_options['xml']['indent'],
                               standalone=parsed_body.standalone)
-            first_tag_closing = body.find('>')
-            if first_tag_closing != -1 :
-                first_tag = body[:first_tag_closing+1]
-                document_begins_at = pretty_body.find(first_tag)
-                if document_begins_at != -1:
-                    pretty_body = pretty_body[document_begins_at:]
-        return pretty_body
+            if not has_declaration:
+                body = body[body.find('\n') + 1:]
+        return body
