@@ -160,7 +160,7 @@ C:\> venv\Scripts\activate
 Install HTTPie in editable mode with all the dependencies:
 
 ```powershell
-C:\> python -m pip install --upgrade -e . -r requirements-dev.txt
+C:\> python -m pip install --upgrade -e .[dev]
 ```
 
 You should now see `(httpie)` next to your shell prompt, and
