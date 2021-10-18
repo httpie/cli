@@ -4,15 +4,16 @@
 # Contributor: Thomas Weißschuh <thomas_weissschuh lavabit com>
 
 pkgname=httpie
-pkgver=2.5.0
+pkgver=2.6.0
 pkgrel=1
-pkgdesc="Modern, user-friendly command-line HTTP client for the API era"
+pkgdesc="human-friendly CLI HTTP client for the API era"
 url="https://github.com/httpie/httpie"
 depends=('python-defusedxml'
          'python-pygments'
          'python-pysocks'
          'python-requests'
-         'python-requests-toolbelt')
+         'python-requests-toolbelt'
+         'python-charset-normalizer')
 makedepends=('python-setuptools')
 checkdepends=('python-pytest'
               'python-pytest-httpbin'
@@ -22,7 +23,7 @@ replaces=(python-httpie python2-httpie)
 license=('BSD')
 arch=('any')
 source=($pkgname-$pkgver.tar.gz::"https://github.com/httpie/httpie/archive/$pkgver.tar.gz")
-sha256sums=('66af56e0efc1ca6237323f1186ba34bca1be24e67a4319fd5df7228ab986faea')
+sha256sums=('3bcd9a8cb2b11299da12d3af36c095c6d4b665e41c395898a07f1ae4d99fc14a')
 
 build() {
   cd $pkgname-$pkgver
@@ -42,5 +43,5 @@ package() {
 
 check() {
   cd $pkgname-$pkgver
-  PYTHONDONTWRITEBYTECODE=1 python3 setup.py test
+  PYTHONDONTWRITEBYTECODE=1 pytest tests
 }

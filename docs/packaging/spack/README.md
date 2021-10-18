@@ -30,19 +30,15 @@ docker run -it --rm spack/centos7
 From inside the container:
 
 ```bash
-# Clone
-git clone --depth=1 https://github.com/spack/spack.git
-cd spack
-
 # Retrieve the patch of the latest HTTPie version
 curl https://raw.githubusercontent.com/httpie/httpie/master/docs/packaging/spack/package.py \
-    -o var/spack/repos/builtin/packages/httpie/package.py
-
-# Check the package
-spack spec httpie
+    -o /opt/spack/var/spack/repos/builtin/packages/httpie/package.py
 
 # Check available versions (it should show the new version)
 spack versions httpie
+
+# Check the package
+spack spec httpie@XXX
 
 # Install the package
 spack install httpie@XXX
