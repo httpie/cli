@@ -43,6 +43,7 @@ class XMLFormatter(FormatterPlugin):
 
         from xml.parsers.expat import ExpatError
         from defusedxml.common import DefusedXmlException
+        
         try:
             parsed_body = parse_xml(body)
         except ExpatError:
@@ -57,4 +58,5 @@ class XMLFormatter(FormatterPlugin):
                               standalone=parsed_body.standalone)
             if not has_declaration:
                 body = body[body.find('\n') + 1:]
+                
         return body
