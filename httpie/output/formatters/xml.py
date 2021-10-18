@@ -43,7 +43,6 @@ class XMLFormatter(FormatterPlugin):
 
         from xml.parsers.expat import ExpatError
         from defusedxml.common import DefusedXmlException
-        
         try:
             parsed_body = parse_xml(body)
         except ExpatError:
