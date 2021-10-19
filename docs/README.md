@@ -1422,7 +1422,7 @@ HTTPie does several things by default in order to make its terminal output easy 
 ### Colors and formatting
 
 Syntax highlighting is applied to HTTP headers and bodies (where it makes sense).
-You can choose your preferred color scheme via the --style option if you don’t like the default one.
+You can choose your preferred color scheme via the `--style` option if you don’t like the default one.
 There are dozens of styles available, here are just a few notable ones:
 
 |     Style | Description                                                                                                                         |

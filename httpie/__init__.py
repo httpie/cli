@@ -1,5 +1,5 @@
 """
-HTTPie: command-line HTTP client for the API era.
+HTTPie: modern, user-friendly command-line HTTP client for the API era.
 
 """
 

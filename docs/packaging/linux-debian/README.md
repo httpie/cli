@@ -19,11 +19,11 @@ Open a new bug on the Debian Bug Tracking System by sending an email:
 
 - To: `Debian Bug Tracking System <submit@bugs.debian.org>`
 - Subject: `httpie: Version XXX available`
-- Message template ([example](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=993937)):
+- Message template (examples [1](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=993937), and [2](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=996479)):
 
   ```email
   Package: httpie
-  Severity: wishlist
+  Severity: normal
 
   <MESSAGE>
   ```

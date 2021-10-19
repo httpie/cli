@@ -3,14 +3,22 @@
 # Contributor: Daniel Isaksen <d@duniel.no>
 # Contributor: Mickaël Schoentgen <mickael@apible.io>
 pkgname=httpie
-pkgver=2.5.0
+pkgver=2.6.0
 pkgrel=0
-pkgdesc="CLI, cURL-like tool"
+pkgdesc="Modern, user-friendly command-line HTTP client for the API era"
 url="https://httpie.org/"
 arch="noarch"
 license="BSD-3-Clause"
-depends="python3 py3-setuptools py3-requests py3-pygments py3-requests-toolbelt py3-pysocks py3-defusedxml"
-makedepends="py3-setuptools"
+depends="
+	python3
+	py3-setuptools
+	py3-requests
+	py3-pygments
+	py3-requests-toolbelt
+	py3-pysocks
+	py3-defusedxml
+	py3-charset-normalizer
+	"
 checkdepends="py3-pytest py3-pytest-httpbin py3-responses"
 source="https://files.pythonhosted.org/packages/source/h/httpie/httpie-$pkgver.tar.gz"
 
@@ -30,4 +38,4 @@ package() {
 	python3 setup.py install --prefix=/usr --root="$pkgdir"
 }
 
-sha512sums="3bfe572b03bfde87d5a02f9ba238f9493b32e587c33fd30600a4dd6a45082eedcb2b507c7f1e3e75a423cbdcc1ff0556138897dffb7888d191834994eae9a2aa  httpie-2.5.0.tar.gz"
+sha512sums="a38e9769c1994fcb4e5f898e5a72283c636ea155f1fc4d594eb59c43fe98115335dec4fddd6d4e396bd11b674715c573d2fc40c4afb732ba31da0cb8e2068fd2  httpie-2.6.0.tar.gz"
