@@ -118,7 +118,7 @@ positional.add_argument(
 
     '=@' A data field like '=', but takes a file path and embeds its content:
 
-         essay=@Documents/essay.txt
+        essay=@Documents/essay.txt
 
     ':=@' A raw JSON field like ':=', but takes a file path and embeds its content:
 

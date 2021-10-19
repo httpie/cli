@@ -4,7 +4,7 @@ from typing import Callable, Dict, IO, List, Optional, Tuple, Union
 from .argtypes import KeyValueArg
 from .constants import (
     SEPARATORS_GROUP_MULTIPART, SEPARATOR_DATA_EMBED_FILE_CONTENTS,
-    SEPARATOR_DATA_EMBED_RAW_JSON_FILE,
+    SEPARATOR_DATA_EMBED_RAW_JSON_FILE, SEPARATOR_GROUP_NESTED_JSON_ITEMS,
     SEPARATOR_DATA_RAW_JSON, SEPARATOR_DATA_STRING, SEPARATOR_FILE_UPLOAD,
     SEPARATOR_FILE_UPLOAD_TYPE, SEPARATOR_HEADER, SEPARATOR_HEADER_EMPTY,
     SEPARATOR_QUERY_PARAM,
@@ -15,6 +15,7 @@ from .dicts import (
     RequestQueryParamsDict,
 )
 from .exceptions import ParseError
+from .json_form import interpret_json_form
 from ..utils import get_content_type, load_json_preserve_order_and_dupe_keys
 
 
@@ -60,6 +61,10 @@ class RequestItems:
                 process_data_embed_file_contents_arg,
                 instance.data,
             ),
+            SEPARATOR_GROUP_NESTED_JSON_ITEMS: (
+                process_data_nested_json_embed_args,
+                instance.data,
+            ),
             SEPARATOR_DATA_RAW_JSON: (
                 process_data_raw_json_embed_arg,
                 instance.data,
@@ -70,6 +75,27 @@ class RequestItems:
             ),
         }
 
+        # Nested JSON items must be treated as a whole.
+        nested_json_items = []
+        if not as_form:
+            nested_json_items.extend(
+                arg for arg in request_item_args
+                if arg.sep in SEPARATOR_GROUP_NESTED_JSON_ITEMS
+            )
+            if nested_json_items:
+                request_item_args = [
+                    arg for arg in request_item_args
+                    if arg not in nested_json_items
+                ]
+                pairs = [
+                    (arg.key, rules[arg.sep][0](arg))
+                    for arg in nested_json_items
+                ]
+                processor_func, target_dict = rules[SEPARATOR_GROUP_NESTED_JSON_ITEMS]
+                value = processor_func(pairs)
+                target_dict.update(value)
+
+        # Then handle all other items.
         for arg in request_item_args:
             processor_func, target_dict = rules[arg.sep]
             value = processor_func(arg)
@@ -136,6 +162,10 @@ def process_data_embed_raw_json_file_arg(arg: KeyValueArg) -> JSONType:
 def process_data_raw_json_embed_arg(arg: KeyValueArg) -> JSONType:
     value = load_json(arg, arg.value)
     return value
+
+
+def process_data_nested_json_embed_args(pairs) -> Dict[str, JSONType]:
+    return interpret_json_form(pairs)
 
 
 def load_text_file(item: KeyValueArg) -> str:

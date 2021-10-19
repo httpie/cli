@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - Added support for sending multiple HTTP headers with the same name. ([#130](https://github.com/httpie/httpie/issues/130))
 - Added support for receving multiple HTTP headers with the same name, individually. ([#1207](https://github.com/httpie/httpie/issues/1207))
 - Added support for keeping `://` in the URL argument to allow quick conversions of pasted URLs into HTTPie calls just by adding a space after the protocol name (`$ https ://pie.dev` → `https://pie.dev`). ([#1195](https://github.com/httpie/httpie/issues/1195))
+- Added support for nested JSON syntax. ([#1169](https://github.com/httpie/httpie/issues/1169))
 
 ## [2.6.0](https://github.com/httpie/httpie/compare/2.5.0...2.6.0) (2021-10-14)
 
