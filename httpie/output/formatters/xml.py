@@ -20,13 +20,15 @@ def pretty_xml(document: 'Document',
                standalone: Optional[bool] = None) -> str:
     """Render the given :class:`~xml.dom.minidom.Document` `document` into a prettified string."""
     kwargs = {
-        'encoding': encoding or UTF8,
         'indent': ' ' * indent,
     }
+    if encoding:
+        kwargs['encoding'] = encoding
     if standalone is not None and sys.version_info >= (3, 9):
         kwargs['standalone'] = standalone
-    body = document.toprettyxml(**kwargs).decode(kwargs['encoding'])
-
+    body = document.toprettyxml(**kwargs)
+    if type(body) == bytes:
+        body = body.decode(encoding or UTF8)
     # Remove blank lines automatically added by `toprettyxml()`.
     return '\n'.join(line for line in body.splitlines() if line.strip())
 
@@ -49,13 +51,14 @@ class XMLFormatter(FormatterPlugin):
             pass  # Invalid XML, ignore.
         except DefusedXmlException:
             pass  # Unsafe XML, ignore.
-        else: 
-            has_declaration = body.startswith('<?xml version')
+        else:
+            original_declaration = None
+            if body.startswith('<?xml version'):
+                original_declaration = body[:body.find("?>") + 2]
             body = pretty_xml(parsed_body,
                               encoding=parsed_body.encoding,
                               indent=self.format_options['xml']['indent'],
                               standalone=parsed_body.standalone)
-            if not has_declaration:
-                body = body[body.find('\n') + 1:]
-                
+            if original_declaration:
+                body = f"{original_declaration}\n" + body[body.find('\n') + 1:]
         return body
