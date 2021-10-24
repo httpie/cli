@@ -81,7 +81,7 @@ parts:
       python -m compileall -f $packages
 
       echo "Copying extra files ..."
-      cp $SNAPCRAFT_PART_SRC/extras/httpie-completion.bash $SNAPCRAFT_PRIME/bin/
+      cp $SNAPCRAFT_PART_SRC/extras/httpie-completion.bash $SNAPCRAFT_PRIME/
 
 plugs:
   dot-config-httpie:
@@ -102,13 +102,13 @@ apps:
       - home
       - network
       - removable-media
-    completer: bin/httpie-completion.bash
+    completer: httpie-completion.bash
     environment:
       LC_ALL: C.UTF-8
 
   https:
     command: bin/https
     plugs: *plugs
-    completer: bin/httpie-completion.bash
+    completer: httpie-completion.bash
     environment:
       LC_ALL: C.UTF-8
