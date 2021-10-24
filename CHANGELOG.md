@@ -7,6 +7,8 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [2.6.0](https://github.com/httpie/httpie/compare/2.5.0...2.6.0) (2021-10-14)
 
+[What’s new in HTTPie 2.6.0 →](https://httpie.io/blog/httpie-2.6.0)
+
 - Added support for formatting & coloring of JSON bodies preceded by non-JSON data (e.g., an XXSI prefix). ([#1130](https://github.com/httpie/httpie/issues/1130))
 - Added charset auto-detection when `Content-Type` doesn’t include it. ([#1110](https://github.com/httpie/httpie/issues/1110), [#1168](https://github.com/httpie/httpie/issues/1168))
 - Added `--response-charset` to allow overriding the response encoding for terminal display purposes. ([#1168](https://github.com/httpie/httpie/issues/1168))
@@ -17,7 +19,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [2.5.0](https://github.com/httpie/httpie/compare/2.4.0...2.5.0) (2021-09-06)
 
-Blog post: [What’s new in HTTPie 2.5.0](https://httpie.io/blog/httpie-2.5.0)
+[What’s new in HTTPie 2.5.0 →](https://httpie.io/blog/httpie-2.5.0)
 
 - Added `--raw` to allow specifying the raw request body without extra processing as
   an alternative to `stdin`. ([#534](https://github.com/httpie/httpie/issues/534))
@@ -26,6 +28,7 @@ Blog post: [What’s new in HTTPie 2.5.0](https://httpie.io/blog/httpie-2.5.0)
 - Fixed `--continue --download` with a single byte to be downloaded left. ([#1032](https://github.com/httpie/httpie/issues/1032))
 - Fixed `--verbose` HTTP 307 redirects with streamed request body. ([#1088](https://github.com/httpie/httpie/issues/1088))
 - Fixed handling of session files with `Cookie:` followed by other headers. ([#1126](https://github.com/httpie/httpie/issues/1126))
+
 
 ## [2.4.0](https://github.com/httpie/httpie/compare/2.3.0...2.4.0) (2021-02-06)
 
