@@ -209,6 +209,55 @@ def test_headers_empty_value_with_value_gives_error(httpbin):
         http('GET', httpbin + '/headers', 'Accept;SYNTAX_ERROR')
 
 
+def test_headers_omit(httpbin_both):
+    r = http('GET', httpbin_both + '/headers', 'Accept:')
+    assert 'Accept' not in r.json['headers']
+
+    r = http('GET', httpbin_both + '/headers', 'Foo:bar', 'Bar:baz',
+             'Foo:', 'Baz:quux')
+    assert 'Foo' not in r.json['headers']
+    assert r.json['headers']['Bar'] == 'baz'
+    assert r.json['headers']['Baz'] == 'quux'
+
+    r = http('GET', httpbin_both + '/headers', 'Foo:bar', 'Foo:',
+             'Foo:quux')
+    assert r.json['headers']['Foo'] == 'quux'
+
+
+def test_headers_multiple_values(httpbin_both):
+    r = http('GET', httpbin_both + '/headers', 'Vary:XXX', 'Vary:YYY')
+    assert r.json['headers']['Vary'] == 'XXX,YYY'
+
+    r = http('GET', httpbin_both + '/headers', 'Foo:bar', 'Vary:XXX',
+             'Bar:baz', 'Vary:YYY', 'Baz:quux')
+    assert r.json['headers']['Vary'] == 'XXX,YYY'
+    assert r.json['headers']['Foo'] == 'bar'
+    assert r.json['headers']['Bar'] == 'baz'
+    assert r.json['headers']['Baz'] == 'quux'
+
+    r = http('GET', httpbin_both + '/headers', 'Foo:bar', 'Vary:XXX',
+             'Foo:baz', 'Vary:YYY', 'Foo:quux')
+    assert r.json['headers']['Vary'] == 'XXX,YYY'
+    assert r.json['headers']['Foo'] == 'bar,baz,quux'
+
+    r = http('GET', httpbin_both + '/headers', 'Foo:bar', 'Foo:baz',
+             'Foo:')
+    assert 'Foo' not in r.json['headers']
+
+    r = http('GET', httpbin_both + '/headers', 'Foo:bar', 'Foo:baz',
+             'Foo:', 'Foo:quux')
+    assert r.json['headers']['Foo'] == 'quux'
+
+
+def test_headers_preserve_prepared_headers(httpbin_both):
+    r = http('POST', httpbin_both + '/post', '--raw', 'foo')
+    assert r.json['headers']['Content-Length'] == '3'
+
+    r = http('POST', httpbin_both + '/post', 'Content-Length:0',
+             '--raw', 'foo')
+    assert r.json['headers']['Content-Length'] == '3'
+
+
 def test_json_input_preserve_order(httpbin_both):
     r = http('PATCH', httpbin_both + '/patch',
              'order:={"map":{"1":"first","2":"second"}}')

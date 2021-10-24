@@ -869,6 +869,21 @@ To send a header with an empty value, use `Header;`, with a semicolon:
 $ http pie.dev/headers 'Header;'
 ```
 
+Please note that some internal headers, such as `Content-Length`, can't be unset if
+they are automatically added by the client itself.
+
+### Multiple header values with the same name
+
+If the request is sent with multiple headers that are sharing the same name, then
+the HTTPie will send them individually.
+
+```bash
+http pie.dev/headers Foo:bar Foo:baz
+```
+
+Also be aware that if the current session contains any headers they will get overwriten
+by individual commands when sending a request instead of being joined together.
+
 ### Limiting response headers
 
 The `--max-headers=n` options allows you to control the number of headers HTTPie reads before giving up (the default `0`, i.e., there’s no limit).

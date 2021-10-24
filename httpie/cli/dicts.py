@@ -1,13 +1,33 @@
 from collections import OrderedDict
 
-from requests.structures import CaseInsensitiveDict
+from multidict import CIMultiDict
 
 
-class RequestHeadersDict(CaseInsensitiveDict):
+class RequestHeadersDict(CIMultiDict):
     """
-    Headers are case-insensitive and multiple values are currently not supported.
-
+    Headers are case-insensitive and multiple values are supported
+    through the `add()` API.
     """
+
+    def add(self, key, value):
+        """
+        Add or update a new header.
+
+        If the given `value` is `None`, then all the previous
+        values will be overwritten and the value will be set
+        to `None`.
+        """
+        if value is None:
+            self[key] = value
+            return None
+
+        # If the previous value for the given header is `None`
+        # then discard it since we are explicitly giving a new
+        # value for it.
+        if key in self and self.getone(key) is None:
+            self.popone(key)
+
+        super().add(key, value)
 
 
 class RequestJSONDataDict(OrderedDict):

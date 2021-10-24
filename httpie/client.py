@@ -79,6 +79,7 @@ def collect_messages(
 
     request = requests.Request(**request_kwargs)
     prepared_request = requests_session.prepare_request(request)
+    update_missing_headers(prepared_request, request.headers)
     if args.path_as_is:
         prepared_request.url = ensure_path_as_is(
             orig_url=args.url,
@@ -190,8 +191,35 @@ def finalize_headers(headers: RequestHeadersDict) -> RequestHeadersDict:
             if isinstance(value, str):
                 # See <https://github.com/httpie/httpie/issues/212>
                 value = value.encode()
-        final_headers[name] = value
+        final_headers.add(name, value)
     return final_headers
+
+
+def update_missing_headers(
+    prepared_request: requests.PreparedRequest,
+    original_headers: RequestHeadersDict
+) -> None:
+    """Update the given `prepared_request`'s headers with the original
+    ones. This allows the requests to be prepared as usual, and then later
+    merged with headers that are specified multiple times."""
+
+    new_headers = RequestHeadersDict(prepared_request.headers)
+    for name, value in prepared_request.headers.items():
+        if name not in original_headers:
+            continue
+
+        original_values = original_headers.getall(name)
+        if value not in original_values:
+            # If the current value is not among the initial values
+            # set for this field, then it means that this field got
+            # overriden on the way, and we should preserve it.
+            continue
+
+        new_headers.popone(name)
+        for value in original_values:
+            new_headers.add(name, value)
+
+    prepared_request.headers = new_headers
 
 
 def make_default_headers(args: argparse.Namespace) -> RequestHeadersDict:
