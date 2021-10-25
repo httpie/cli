@@ -9,7 +9,6 @@ from fetch import HERE, load_awesome_people
 
 TPL_FILE = HERE / 'snippet.jinja2'
 HTTPIE_TEAM = {
-    'BoboTiG',
     'claudiatd',
     'jakubroztocil',
     'jkbr',
