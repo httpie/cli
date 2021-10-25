@@ -7,7 +7,7 @@ _http_complete() {
     fi
 }
 
-complete -o default -F _http_complete http
+complete -o default -F _http_complete http httpie.http httpie.https https
 
 _http_complete_options() {
     local cur_word=$1
