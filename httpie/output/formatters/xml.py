@@ -54,11 +54,11 @@ class XMLFormatter(FormatterPlugin):
         else:
             original_declaration = None
             if body.startswith('<?xml version'):
-                original_declaration = body[:body.find("?>") + 2]
+                original_declaration = body[:body.find("?>") + 2] + "\n"
             body = pretty_xml(parsed_body,
                               encoding=parsed_body.encoding,
                               indent=self.format_options['xml']['indent'],
                               standalone=parsed_body.standalone)
-            if original_declaration:
-                body = f"{original_declaration}\n" + body[body.find('\n') + 1:]
+            body = f"{original_declaration}" + body[body.find('\n') + 1:]
+
         return body
