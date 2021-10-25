@@ -28,7 +28,7 @@ Main features:
 		</description>
 		<title>HTTPie</title>
 		<authors>HTTPie</authors>
-		<owners>Tiger-222</owners>
+		<owners>jakubroztocil</owners>
 		<copyright>2012-2021 Jakub Roztocil</copyright>
 		<licenseUrl>https://raw.githubusercontent.com/httpie/httpie/master/LICENSE</licenseUrl>
 		<iconUrl>https://pie-assets.s3.eu-central-1.amazonaws.com/LogoIcons/GB.png</iconUrl>
