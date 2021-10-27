@@ -79,7 +79,7 @@ def collect_messages(
 
     request = requests.Request(**request_kwargs)
     prepared_request = requests_session.prepare_request(request)
-    update_missing_headers(prepared_request, request.headers)
+    apply_missing_repeated_headers(prepared_request, request.headers)
     if args.path_as_is:
         prepared_request.url = ensure_path_as_is(
             orig_url=args.url,
@@ -195,7 +195,7 @@ def finalize_headers(headers: RequestHeadersDict) -> RequestHeadersDict:
     return final_headers
 
 
-def update_missing_headers(
+def apply_missing_repeated_headers(
     prepared_request: requests.PreparedRequest,
     original_headers: RequestHeadersDict
 ) -> None:

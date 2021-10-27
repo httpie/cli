@@ -73,12 +73,17 @@ def test_follow_redirect_with_repost(httpbin, status_code):
     r = http(
         '--follow',
         httpbin.url + '/redirect-to',
+        'A:A',
+        'A:B',
+        'B:B',
         f'url=={httpbin.url}/post',
         f'status_code=={status_code}',
         '@' + FILE_PATH_ARG,
     )
     assert HTTP_OK in r
     assert FILE_CONTENT in r
+    assert r.json['headers']['A'] == 'A,B'
+    assert r.json['headers']['B'] == 'B'
 
 
 @pytest.mark.skipif(is_windows, reason='occasionally fails w/ ConnectionError for no apparent reason')
@@ -88,11 +93,17 @@ def test_verbose_follow_redirect_with_repost(httpbin, status_code):
         '--follow',
         '--verbose',
         httpbin.url + '/redirect-to',
+        'A:A',
+        'A:B',
+        'B:B',
         f'url=={httpbin.url}/post',
         f'status_code=={status_code}',
         '@' + FILE_PATH_ARG,
     )
     assert f'HTTP/1.1 {status_code}' in r
+    assert 'A: A' in r
+    assert 'A: B' in r
+    assert 'B: B' in r
     assert r.count('POST /redirect-to') == 1
     assert r.count('POST /post') == 1
     assert r.count(FILE_CONTENT) == 3  # two requests + final response contain it

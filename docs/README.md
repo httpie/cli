@@ -878,7 +878,27 @@ If the request is sent with multiple headers that are sharing the same name, the
 the HTTPie will send them individually.
 
 ```bash
-http pie.dev/headers Foo:bar Foo:baz
+http --offline example.org Cookie:one Cookie:two
+```
+
+```http
+GET / HTTP/1.1
+
+Cookie: one
+Cookie: two
+```
+
+It is also possible to pass a single header value pair, where the value is a comma
+separated list of header values. Then the client will send it as a single header.
+
+```bash
+http --offline example.org Numbers:one,two
+```
+
+```
+GET / HTTP/1.1
+
+Numbers: one,two
 ```
 
 Also be aware that if the current session contains any headers they will get overwriten

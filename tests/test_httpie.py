@@ -213,50 +213,81 @@ def test_headers_omit(httpbin_both):
     r = http('GET', httpbin_both + '/headers', 'Accept:')
     assert 'Accept' not in r.json['headers']
 
+
+def test_headers_multiple_omit(httpbin_both):
     r = http('GET', httpbin_both + '/headers', 'Foo:bar', 'Bar:baz',
              'Foo:', 'Baz:quux')
     assert 'Foo' not in r.json['headers']
     assert r.json['headers']['Bar'] == 'baz'
     assert r.json['headers']['Baz'] == 'quux'
 
+
+def test_headers_same_after_omit(httpbin_both):
     r = http('GET', httpbin_both + '/headers', 'Foo:bar', 'Foo:',
              'Foo:quux')
     assert r.json['headers']['Foo'] == 'quux'
 
 
+def test_headers_fully_omit(httpbin_both):
+    r = http('GET', httpbin_both + '/headers', 'Foo:bar', 'Foo:baz',
+             'Foo:')
+    assert 'Foo' not in r.json['headers']
+
+
 def test_headers_multiple_values(httpbin_both):
-    r = http('GET', httpbin_both + '/headers', 'Vary:XXX', 'Vary:YYY')
-    assert r.json['headers']['Vary'] == 'XXX,YYY'
+    r = http('GET', httpbin_both + '/headers', 'Foo:bar', 'Foo:baz')
+    assert r.json['headers']['Foo'] == 'bar,baz'
 
-    r = http('GET', httpbin_both + '/headers', 'Foo:bar', 'Vary:XXX',
-             'Bar:baz', 'Vary:YYY', 'Baz:quux')
-    assert r.json['headers']['Vary'] == 'XXX,YYY'
-    assert r.json['headers']['Foo'] == 'bar'
-    assert r.json['headers']['Bar'] == 'baz'
-    assert r.json['headers']['Baz'] == 'quux'
 
+def test_headers_multiple_values_repeated(httpbin_both):
+    r = http('GET', httpbin_both + '/headers', 'Foo:bar', 'Foo:baz',
+             'Foo:bar')
+    assert r.json['headers']['Foo'] == 'bar,baz,bar'
+
+
+@pytest.mark.parametrize("headers, expected", [
+    (
+        ["Foo;", "Foo:bar"],
+        ",bar"
+    ),
+    (
+        ["Foo:bar", "Foo;"],
+        "bar,"
+    ),
+    (
+        ["Foo:bar", "Foo;", "Foo:baz"],
+        "bar,,baz"
+    ),
+])
+def test_headers_multiple_values_with_empty(httpbin_both, headers, expected):
+    r = http('GET', httpbin_both + '/headers', *headers)
+    assert r.json['headers']['Foo'] == expected
+
+
+def test_headers_multiple_values_mixed(httpbin_both):
     r = http('GET', httpbin_both + '/headers', 'Foo:bar', 'Vary:XXX',
              'Foo:baz', 'Vary:YYY', 'Foo:quux')
     assert r.json['headers']['Vary'] == 'XXX,YYY'
     assert r.json['headers']['Foo'] == 'bar,baz,quux'
 
-    r = http('GET', httpbin_both + '/headers', 'Foo:bar', 'Foo:baz',
-             'Foo:')
-    assert 'Foo' not in r.json['headers']
-
-    r = http('GET', httpbin_both + '/headers', 'Foo:bar', 'Foo:baz',
-             'Foo:', 'Foo:quux')
-    assert r.json['headers']['Foo'] == 'quux'
-
 
 def test_headers_preserve_prepared_headers(httpbin_both):
-    r = http('POST', httpbin_both + '/post', '--raw', 'foo')
-    assert r.json['headers']['Content-Length'] == '3'
-
     r = http('POST', httpbin_both + '/post', 'Content-Length:0',
              '--raw', 'foo')
     assert r.json['headers']['Content-Length'] == '3'
 
+
+@pytest.mark.parametrize('pretty', ['format', 'none'])
+def test_headers_multiple_headers_representation(httpbin_both, pretty):
+    r = http('--offline', '--pretty', pretty, 'example.org',
+             'A:A', 'A:B', 'A:C', 'B:A', 'B:B', 'C:C')
+
+    assert 'A: A' in r
+    assert 'A: B' in r
+    assert 'A: C' in r
+    assert 'B: A' in r
+    assert 'B: B' in r
+    assert 'C: C' in r
 
 def test_json_input_preserve_order(httpbin_both):
     r = http('PATCH', httpbin_both + '/patch',

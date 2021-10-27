@@ -1,9 +1,15 @@
 from collections import OrderedDict
 
-from multidict import CIMultiDict
+from multidict import MultiDict, CIMultiDict
 
 
-class RequestHeadersDict(CIMultiDict):
+class BaseMultiDict(MultiDict):
+    """
+    Base class for all MultiDicts.
+    """
+
+
+class RequestHeadersDict(CIMultiDict, BaseMultiDict):
     """
     Headers are case-insensitive and multiple values are supported
     through the `add()` API.
