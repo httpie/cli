@@ -1913,7 +1913,7 @@ HTTPie has the following community channels:
 - [GitHub Issues](https://github.com/httpie/httpie/issues) for bug reports and feature requests
 - [Discord server](https://httpie.io/discord) to ask questions, discuss features, and for general API development discussion
 - [StackOverflow](https://stackoverflow.com) to ask questions (make sure to use the [httpie](https://stackoverflow.com/questions/tagged/httpie) tag)
-- Twitter; where you can tweet directly to (and follow!) [@httpie](https://twitter.com/httpie)
+
 
 ### Related projects
 
