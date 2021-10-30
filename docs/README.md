@@ -883,7 +883,6 @@ http --offline example.org Cookie:one Cookie:two
 
 ```http
 GET / HTTP/1.1
-
 Cookie: one
 Cookie: two
 ```
@@ -897,7 +896,6 @@ http --offline example.org Numbers:one,two
 
 ```http
 GET / HTTP/1.1
-
 Numbers: one,two
 ```
 

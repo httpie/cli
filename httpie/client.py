@@ -216,7 +216,7 @@ def apply_missing_repeated_headers(
         if prepared_value not in original_values:
             # If the current value is not among the initial values
             # set for this field, then it means that this field got
-            # overriden on the way, and we should preserve it.
+            # overridden on the way, and we should preserve it.
             continue
 
         new_headers.popone(prepared_name)
