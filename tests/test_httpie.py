@@ -280,7 +280,7 @@ def test_headers_preserve_prepared_headers(httpbin_both):
 @pytest.mark.parametrize('pretty', ['format', 'none'])
 def test_headers_multiple_headers_representation(httpbin_both, pretty):
     r = http('--offline', '--pretty', pretty, 'example.org',
-             'A:A', 'A:B', 'A:C', 'B:A', 'B:B', 'C:C')
+             'A:A', 'A:B', 'A:C', 'B:A', 'B:B', 'C:C', 'c:c')
 
     assert 'A: A' in r
     assert 'A: B' in r
@@ -288,6 +288,8 @@ def test_headers_multiple_headers_representation(httpbin_both, pretty):
     assert 'B: A' in r
     assert 'B: B' in r
     assert 'C: C' in r
+    assert 'c: c' in r
+
 
 def test_json_input_preserve_order(httpbin_both):
     r = http('PATCH', httpbin_both + '/patch',

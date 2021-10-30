@@ -895,7 +895,7 @@ separated list of header values. Then the client will send it as a single header
 http --offline example.org Numbers:one,two
 ```
 
-```
+```http
 GET / HTTP/1.1
 
 Numbers: one,two

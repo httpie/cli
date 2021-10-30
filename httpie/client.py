@@ -204,20 +204,23 @@ def apply_missing_repeated_headers(
     merged with headers that are specified multiple times."""
 
     new_headers = RequestHeadersDict(prepared_request.headers)
-    for name, value in prepared_request.headers.items():
-        if name not in original_headers:
+    for prepared_name, prepared_value in prepared_request.headers.items():
+        if prepared_name not in original_headers:
             continue
 
-        original_values = original_headers.getall(name)
-        if value not in original_values:
+        original_keys, original_values = zip(*filter(
+            lambda item: item[0].casefold() == prepared_name.casefold(),
+            original_headers.items()
+        ))
+
+        if prepared_value not in original_values:
             # If the current value is not among the initial values
             # set for this field, then it means that this field got
             # overriden on the way, and we should preserve it.
             continue
 
-        new_headers.popone(name)
-        for value in original_values:
-            new_headers.add(name, value)
+        new_headers.popone(prepared_name)
+        new_headers.update(zip(original_keys, original_values))
 
     prepared_request.headers = new_headers
 
