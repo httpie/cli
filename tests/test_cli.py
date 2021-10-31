@@ -39,8 +39,8 @@ class TestItemParsing:
             # files
             self.key_value_arg(fr'bar\@baz@{FILE_PATH_ARG}'),
         ])
-        # `requests.structures.CaseInsensitiveDict` => `dict`
-        headers = dict(items.headers._store.values())
+        # `RequestHeadersDict` => `dict`
+        headers = dict(items.headers)
 
         assert headers == {
             'foo:bar': 'baz',
@@ -88,8 +88,8 @@ class TestItemParsing:
         ])
 
         # Parsed headers
-        # `requests.structures.CaseInsensitiveDict` => `dict`
-        headers = dict(items.headers._store.values())
+        # `RequestHeadersDict` => `dict`
+        headers = dict(items.headers)
         assert headers == {
             'Header': 'value',
             'Unset-Header': None,

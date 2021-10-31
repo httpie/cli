@@ -79,6 +79,7 @@ def collect_messages(
 
     request = requests.Request(**request_kwargs)
     prepared_request = requests_session.prepare_request(request)
+    apply_missing_repeated_headers(prepared_request, request.headers)
     if args.path_as_is:
         prepared_request.url = ensure_path_as_is(
             orig_url=args.url,
@@ -190,8 +191,38 @@ def finalize_headers(headers: RequestHeadersDict) -> RequestHeadersDict:
             if isinstance(value, str):
                 # See <https://github.com/httpie/httpie/issues/212>
                 value = value.encode()
-        final_headers[name] = value
+        final_headers.add(name, value)
     return final_headers
+
+
+def apply_missing_repeated_headers(
+    prepared_request: requests.PreparedRequest,
+    original_headers: RequestHeadersDict
+) -> None:
+    """Update the given `prepared_request`'s headers with the original
+    ones. This allows the requests to be prepared as usual, and then later
+    merged with headers that are specified multiple times."""
+
+    new_headers = RequestHeadersDict(prepared_request.headers)
+    for prepared_name, prepared_value in prepared_request.headers.items():
+        if prepared_name not in original_headers:
+            continue
+
+        original_keys, original_values = zip(*filter(
+            lambda item: item[0].casefold() == prepared_name.casefold(),
+            original_headers.items()
+        ))
+
+        if prepared_value not in original_values:
+            # If the current value is not among the initial values
+            # set for this field, then it means that this field got
+            # overridden on the way, and we should preserve it.
+            continue
+
+        new_headers.popone(prepared_name)
+        new_headers.update(zip(original_keys, original_values))
+
+    prepared_request.headers = new_headers
 
 
 def make_default_headers(args: argparse.Namespace) -> RequestHeadersDict:

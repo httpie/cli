@@ -10,8 +10,8 @@ from .constants import (
     SEPARATOR_QUERY_PARAM,
 )
 from .dicts import (
-    MultipartRequestDataDict, RequestDataDict, RequestFilesDict,
-    RequestHeadersDict, RequestJSONDataDict,
+    BaseMultiDict, MultipartRequestDataDict, RequestDataDict,
+    RequestFilesDict, RequestHeadersDict, RequestJSONDataDict,
     RequestQueryParamsDict,
 )
 from .exceptions import ParseError
@@ -73,10 +73,14 @@ class RequestItems:
         for arg in request_item_args:
             processor_func, target_dict = rules[arg.sep]
             value = processor_func(arg)
-            target_dict[arg.key] = value
 
             if arg.sep in SEPARATORS_GROUP_MULTIPART:
                 instance.multipart_data[arg.key] = value
+
+            if isinstance(target_dict, BaseMultiDict):
+                target_dict.add(arg.key, value)
+            else:
+                target_dict[arg.key] = value
 
         return instance
 
