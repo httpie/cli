@@ -25,7 +25,7 @@ from ..output.formatters.colors import (
 from ..plugins.builtin import BuiltinAuthPlugin
 from ..plugins.registry import plugin_manager
 from ..sessions import DEFAULT_SESSIONS_DIR
-from ..ssl import AVAILABLE_SSL_VERSION_ARG_MAPPING, DEFAULT_SSL_CIPHERS
+from ..ssl_ import AVAILABLE_SSL_VERSION_ARG_MAPPING, DEFAULT_SSL_CIPHERS
 
 
 parser = HTTPieArgumentParser(

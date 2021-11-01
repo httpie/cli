@@ -50,14 +50,7 @@ class HTTPieHelpFormatter(RawDescriptionHelpFormatter):
 
 # TODO: refactor and design type-annotated data structures
 #       for raw args + parsed args and keep things immutable.
-class HTTPieArgumentParser(argparse.ArgumentParser):
-    """Adds additional logic to `argparse.ArgumentParser`.
-
-    Handles all input (CLI args, file args, stdin), applies defaults,
-    and performs extra validation.
-
-    """
-
+class BaseHTTPieArgumentParser(argparse.ArgumentParser):
     def __init__(self, *args, formatter_class=HTTPieHelpFormatter, **kwargs):
         kwargs['add_help'] = False
         super().__init__(*args, formatter_class=formatter_class, **kwargs)
@@ -65,6 +58,34 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
         self.args = None
         self.has_stdin_data = False
         self.has_input_data = False
+
+    # noinspection PyMethodOverriding
+    def parse_args(
+        self,
+        env: Environment,
+        args=None,
+        namespace=None
+    ) -> argparse.Namespace:
+        self.env = env
+        self.args, no_options = super().parse_known_args(args, namespace)
+        if self.args.debug:
+            self.args.traceback = True
+        self.has_stdin_data = (
+            self.env.stdin
+            and not getattr(self.args, 'ignore_stdin', False)
+            and not self.env.stdin_isatty
+        )
+        self.has_input_data = self.has_stdin_data or getattr(self.args, 'raw', None) is not None
+        return self.args
+
+
+class HTTPieArgumentParser(BaseHTTPieArgumentParser):
+    """Adds additional logic to `argparse.ArgumentParser`.
+
+    Handles all input (CLI args, file args, stdin), applies defaults,
+    and performs extra validation.
+
+    """
 
     # noinspection PyMethodOverriding
     def parse_args(

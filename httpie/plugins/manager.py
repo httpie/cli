@@ -1,10 +1,15 @@
+import sys
+import os
+
 from itertools import groupby
 from operator import attrgetter
-from typing import Dict, List, Type
+from typing import Dict, List, Type, Optional, ContextManager
+from pathlib import Path
+from contextlib import nullcontext, contextmanager
 
-from pkg_resources import iter_entry_points
+from importlib_metadata import entry_points
 
-from ..utils import repr_dict
+from ..utils import repr_dict, as_site
 from . import AuthPlugin, ConverterPlugin, FormatterPlugin
 from .base import BasePlugin, TransportPlugin
 
@@ -17,8 +22,24 @@ ENTRY_POINT_NAMES = [
 ]
 
 
-class PluginManager(list):
+@contextmanager
+def _load_directory(plugins_dir: Path) -> ContextManager[None]:
+    plugins_path = os.fspath(plugins_dir)
+    sys.path.insert(0, plugins_path)
+    try:
+        yield
+    finally:
+        sys.path.remove(plugins_path)
 
+
+def enable_plugins(plugins_dir: Optional[Path]) -> ContextManager[None]:
+    if plugins_dir is None:
+        return nullcontext()
+    else:
+        return _load_directory(as_site(plugins_dir))
+
+
+class PluginManager(list):
     def register(self, *plugins: Type[BasePlugin]):
         for plugin in plugins:
             self.append(plugin)
@@ -29,12 +50,18 @@ class PluginManager(list):
     def filter(self, by_type=Type[BasePlugin]):
         return [plugin for plugin in self if issubclass(plugin, by_type)]
 
-    def load_installed_plugins(self):
-        for entry_point_name in ENTRY_POINT_NAMES:
-            for entry_point in iter_entry_points(entry_point_name):
-                plugin = entry_point.load()
-                plugin.package_name = entry_point.dist.key
-                self.register(entry_point.load())
+    def iter_entry_points(self, directory: Optional[Path] = None):
+        with enable_plugins(directory):
+            eps = entry_points()
+
+            for entry_point_name in ENTRY_POINT_NAMES:
+                yield from eps.select(group=entry_point_name)
+
+    def load_installed_plugins(self, directory: Optional[Path] = None):
+        for entry_point in self.iter_entry_points():
+            plugin = entry_point.load()
+            plugin.package_name = entry_point.dist.name
+            self.register(entry_point.load())
 
     # Auth
     def get_auth_plugins(self) -> List[Type[AuthPlugin]]:

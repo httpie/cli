@@ -3,12 +3,17 @@ import mimetypes
 import re
 import sys
 import time
+import os
+import sysconfig
+
 from collections import OrderedDict
 from http.cookiejar import parse_ns_headers
+from pathlib import Path
 from pprint import pformat
 from typing import Any, List, Optional, Tuple
 
 import requests.auth
+
 
 RE_COOKIE_SPLIT = re.compile(r', (?=[^ ;]+=)')
 Item = Tuple[str, Any]
@@ -207,3 +212,12 @@ def parse_content_type_header(header):
                 value = param[index_of_equals + 1:].strip(items_to_strip)
             params_dict[key.lower()] = value
     return content_type, params_dict
+
+
+def as_site(path: Path) -> Path:
+    site_packages_path = sysconfig.get_path(
+        'purelib',
+        os.name + '_user',
+        vars={'userbase': str(path)}
+    )
+    return Path(site_packages_path)

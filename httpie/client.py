@@ -17,7 +17,7 @@ from .encoding import UTF8
 from .models import RequestsMessage
 from .plugins.registry import plugin_manager
 from .sessions import get_httpie_session
-from .ssl import AVAILABLE_SSL_VERSION_ARG_MAPPING, HTTPieHTTPSAdapter
+from .ssl_ import AVAILABLE_SSL_VERSION_ARG_MAPPING, HTTPieHTTPSAdapter
 from .uploads import (
     compress_request, prepare_request_body,
     get_multipart_data_and_content_type,
