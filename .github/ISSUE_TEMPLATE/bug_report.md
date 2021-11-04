@@ -3,7 +3,7 @@ name: Bug report
 about: Report a possible bug in HTTPie
 title: ''
 labels: "new, bug"
-assignees: 'BoboTiG'
+assignees: ''
 
 ---
 
