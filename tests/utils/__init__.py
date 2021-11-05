@@ -186,7 +186,7 @@ def http(
     # noinspection PyUnresolvedReferences
     """
     Run HTTPie and capture stderr/out and exit status.
-    Content writtent to devnull will be captured only if
+    Content written to devnull will be captured only if
     env.devnull is set manually.
 
     Invoke `httpie.core.main()` with `args` and `kwargs`,
