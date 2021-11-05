@@ -498,6 +498,7 @@ When you paste a URL into the terminal, you can even keep the `://` bit in the U
 # Paste https://example.org, add a space, submit:
 $ https ://example.org
 ```
+
 ```bash
 # Paste http://example.org, add a space, submit:
 $ http ://example.org
@@ -1957,7 +1958,6 @@ HTTPie has the following community channels:
 - [GitHub Issues](https://github.com/httpie/httpie/issues) for bug reports and feature requests
 - [Discord server](https://httpie.io/discord) to ask questions, discuss features, and for general API development discussion
 - [StackOverflow](https://stackoverflow.com) to ask questions (make sure to use the [httpie](https://stackoverflow.com/questions/tagged/httpie) tag)
-
 
 ### Related projects
 

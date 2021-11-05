@@ -32,7 +32,6 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - Fixed `--verbose` HTTP 307 redirects with streamed request body. ([#1088](https://github.com/httpie/httpie/issues/1088))
 - Fixed handling of session files with `Cookie:` followed by other headers. ([#1126](https://github.com/httpie/httpie/issues/1126))
 
-
 ## [2.4.0](https://github.com/httpie/httpie/compare/2.3.0...2.4.0) (2021-02-06)
 
 - Added support for `--session` cookie expiration based on `Set-Cookie: max-age=<n>`. ([#1029](https://github.com/httpie/httpie/issues/1029))
