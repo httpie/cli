@@ -179,6 +179,11 @@ def test_url_leading_colon_slash_slash(program_name, url_arg, parsed_url):
     assert args.url == parsed_url
 
 
+def test_url_colon_slash_slash_only():
+    r = http('://', tolerate_error_exit_status=True)
+    assert r.stderr.strip() == "http: error: InvalidURL: Invalid URL 'http://': No host supplied"
+
+
 class TestLocalhostShorthand:
     def test_expand_localhost_shorthand(self):
         args = parser.parse_args(args=[':'], env=MockEnvironment())
