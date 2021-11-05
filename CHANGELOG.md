@@ -6,7 +6,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 ## [2.7.0.dev0](https://github.com/httpie/httpie/compare/2.6.0...master) (unreleased)
 
 - Added support for sending multiple HTTP headers with the same name. ([#130](https://github.com/httpie/httpie/issues/130))
-- Added support for keeping `://` in the URL argument to allow quick conversions of pasted URLs into HTTPie calls just by adding a space after the protocol name (`$ https ://pie.dev/get` → `GET https://pie.dev/get`) . ([#1195](https://github.com/httpie/httpie/issues/1195))
+- Added support for keeping `://` in the URL argument to allow quick conversions of pasted URLs into HTTPie calls just by adding a space after the protocol name (`$ https ://pie.dev` → `https://pie.dev`) . ([#1195](https://github.com/httpie/httpie/issues/1195))
 
 ## [2.6.0](https://github.com/httpie/httpie/compare/2.5.0...2.6.0) (2021-10-14)
 
