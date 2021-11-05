@@ -501,7 +501,7 @@ $ https ://example.org
 
 ```bash
 $ http ://example.org
-# → https://example.org
+# → http://example.org
 ```
 
 ### Querystring parameters
