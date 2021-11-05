@@ -482,14 +482,25 @@ The default scheme is `http://` and can be omitted from the argument:
 
 ```bash
 $ http example.org
-# => http://example.org
+# → http://example.org
 ```
 
 HTTPie also installs an `https` executable, where the default scheme is `https://`:
 
 ```bash
 $ https example.org
-# => https://example.org
+# → https://example.org
+```
+
+When you paste a URL into the terminal, you can even keep the `://` bit in the URL argument to quickly convert the URL into an HTTPie call just by adding a space after the protocol name.
+
+```bash
+# Paste https://example.org, add a space, submit:
+$ https ://example.org
+```
+```bash
+# Paste http://example.org, add a space, submit:
+$ http ://example.org
 ```
 
 ### Querystring parameters

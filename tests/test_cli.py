@@ -169,6 +169,16 @@ class TestQuerystring:
         assert f'"url": "{url}"' in r
 
 
+@pytest.mark.parametrize(['program_name', 'url_arg', 'parsed_url'], [
+    ('http', '://pie.dev/get', 'http://pie.dev/get'),
+    ('https', '://pie.dev/get', 'https://pie.dev/get'),
+])
+def test_colon_slash_slash(program_name, url_arg, parsed_url):
+    env = MockEnvironment(program_name=program_name)
+    args = parser.parse_args(args=[url_arg], env=env)
+    assert args.url == parsed_url
+
+
 class TestLocalhostShorthand:
     def test_expand_localhost_shorthand(self):
         args = parser.parse_args(args=[':'], env=MockEnvironment())

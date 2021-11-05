@@ -120,6 +120,9 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
         }
 
     def _process_url(self):
+        if self.args.url.startswith('://'):
+            # Paste URL & add space shortcut: `http ://pie.dev` → `GET https://pie.dev/get`
+            self.args.url = self.args.url[3:]
         if not URL_SCHEME_RE.match(self.args.url):
             if os.path.basename(self.env.program_name) == 'https':
                 scheme = 'https://'
