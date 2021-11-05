@@ -482,14 +482,26 @@ The default scheme is `http://` and can be omitted from the argument:
 
 ```bash
 $ http example.org
-# => http://example.org
+# → http://example.org
 ```
 
 HTTPie also installs an `https` executable, where the default scheme is `https://`:
 
 ```bash
 $ https example.org
-# => https://example.org
+# → https://example.org
+```
+
+When you paste a URL into the terminal, you can even keep the `://` bit in the URL argument to quickly convert the URL into an HTTPie call just by adding a space after the protocol name.
+
+```bash
+$ https ://example.org
+# → https://example.org
+```
+
+```bash
+$ http ://example.org
+# → http://example.org
 ```
 
 ### Querystring parameters
@@ -1946,7 +1958,6 @@ HTTPie has the following community channels:
 - [GitHub Issues](https://github.com/httpie/httpie/issues) for bug reports and feature requests
 - [Discord server](https://httpie.io/discord) to ask questions, discuss features, and for general API development discussion
 - [StackOverflow](https://stackoverflow.com) to ask questions (make sure to use the [httpie](https://stackoverflow.com/questions/tagged/httpie) tag)
-
 
 ### Related projects
 
