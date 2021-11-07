@@ -5,7 +5,7 @@ from itertools import groupby
 from operator import attrgetter
 from typing import Dict, List, Type, Optional, ContextManager
 from pathlib import Path
-from contextlib import nullcontext, contextmanager
+from contextlib import contextmanager
 
 from importlib_metadata import entry_points
 
@@ -31,6 +31,12 @@ def _load_directory(plugins_dir: Path) -> ContextManager[None]:
         yield
     finally:
         sys.path.remove(plugins_path)
+
+
+@contextmanager
+def nullcontext(obj: T = None) -> ContextManager[T]:
+    # A naive replacement of the nullcontext() for 3.6
+    yield obj
 
 
 def enable_plugins(plugins_dir: Optional[Path]) -> ContextManager[None]:
