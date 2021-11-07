@@ -1,4 +1,6 @@
 import secrets
+import site
+import sys
 import textwrap
 
 import pytest
@@ -198,7 +200,9 @@ def cli(interface):
 
     def runner(*args):
         # Prevent installed plugins from showing up.
-        with patch("sys.path", []):
+
+        clean_sys_path = set(sys.path).difference(site.getsitepackages())
+        with patch("sys.path", list(clean_sys_path)):
             response = httpie(*args, env=interface.environment)
         assert response.exit_status == ExitStatus.SUCCESS
         return response.splitlines()
