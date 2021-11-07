@@ -56,7 +56,6 @@ def get_default_config_dir() -> Path:
 
 
 DEFAULT_CONFIG_DIR = get_default_config_dir()
-DEFAULT_PLUGINS_DIR = DEFAULT_CONFIG_DIR / "plugins"
 
 
 class ConfigFileError(Exception):
@@ -118,8 +117,7 @@ class BaseConfigDict(dict):
 class Config(BaseConfigDict):
     FILENAME = 'config.json'
     DEFAULTS = {
-        'default_options': [],
-        'plugins_dir': DEFAULT_PLUGINS_DIR
+        'default_options': []
     }
 
     def __init__(self, directory: Union[str, Path] = DEFAULT_CONFIG_DIR):
@@ -133,4 +131,4 @@ class Config(BaseConfigDict):
 
     @property
     def plugins_dir(self) -> Path:
-        return Path(self['plugins_dir']).resolve()
+        return Path(self.get('plugins_dir', self.directory / "plugins")).resolve()

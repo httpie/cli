@@ -1,17 +1,16 @@
 import argparse
 import subprocess
-import shutil
 import textwrap
+import sys
 import importlib_metadata
 
 from pathlib import Path
 from collections import defaultdict
 from typing import List, Optional
 
-from httpie.cli.manager import parser
-
 from httpie.context import Environment
 from httpie.status import ExitStatus
+from httpie.cli.manager import parser
 
 
 class Plugins:
@@ -47,10 +46,13 @@ class Plugins:
             message += f": {reason}"
 
         self.env.stderr.write(message + "\n")
+        return ExitStatus.ERROR
 
     def pip(self, *args, **kwargs) -> None:
         kwargs.setdefault("check", True)
-        kwargs.setdefault("stdout", subprocess.DEVNULL)
+
+        kwargs.setdefault("shell", False)
+        kwargs.setdefault("stdout", self.env.stdout)
         kwargs.setdefault("stderr", subprocess.PIPE)
 
         cmd = [sys.executable, "-m", "pip", *args]
@@ -59,14 +61,16 @@ class Plugins:
             **kwargs
         )
 
-    def _install(self, target: str) -> None:
+    def install(self, targets: str) -> None:
+        self.env.stdout.write(f"Installing {', '.join(targets)}...\n")
+        self.env.stdout.flush()
+
         try:
             self.pip(
                 "install",
                 f"--prefix={self.dir}",
                 "--no-warn-script-location",
-                target,
-                shell=False
+                *targets,
             )
         except subprocess.CalledProcessError as error:
             reason = None
@@ -83,11 +87,7 @@ class Plugins:
                 if severity == "ERROR":
                     reason = message
 
-            self.fail("install", target, reason)
-
-    def install(self, targets: List[str]) -> None:
-        for target in targets:
-            self._install(target)
+            return self.fail("install", ', '.join(targets), reason)
 
     def _uninstall(self, target: str) -> None:
         try:
@@ -96,20 +96,32 @@ class Plugins:
             return self.fail("uninstall", target, "package is not installed")
 
         base_dir = Path(distribution.locate_file(".")).resolve()
-
-        if not base_dir.exists():
-            return self.fail("uninstall", target, "couldn't locate the package")
-        elif self.dir not in base_dir.parents:
+        if self.dir not in base_dir.parents:
             # If the package is installed somewhere else (e.g on the site packages
             # of the real python interpreter), than that means this package is not
             # installed through us.
             return self.fail("uninstall", target,
-                             "package is not installed through httpie install")
+                             "package is not installed through httpie plugins"
+                             " interface")
 
-        # A package might leave more side-effects (e.g shell entrypoints, but clearing
-        # all of them without proper scheme support in pip is a tricky task and we
-        # generally won't be affected that much from these).
-        shutil.rmtree(base_dir)
+        files = distribution.files
+        if files is None:
+            return self.fail("uninstall", target, "couldn't locate the package")
+
+        # TODO: Consider handling failures here (e.g if it fails,
+        # just rever the operation and leave the site-packages
+        # in a proper shape).
+        for file in files:
+            distribution.locate_file(file).unlink()
+
+        metadata_path = getattr(distribution, "_path", None)
+        if (
+            metadata_path
+            and metadata_path.exists()
+            and not any(metadata_path.iterdir())
+        ):
+            metadata_path.rmdir()
+
         self.env.stdout.write(f"Successfully uninstalled {target}\n")
 
     def uninstall(self, targets: List[str]) -> None:
@@ -125,18 +137,20 @@ class Plugins:
     def list(self) -> None:
         from httpie.plugins.registry import plugin_manager
 
-        known_plugins = defaultdict(set)
+        known_plugins = defaultdict(list)
         for entry_point in plugin_manager.iter_entry_points(self.dir):
-            known_plugins[entry_point.group].add(entry_point.name)
+            known_plugins[entry_point.module].append((entry_point.group, entry_point.name))
 
-        for group, plugins in known_plugins.items():
-            self.env.stdout.write(group + "\n")
-            for plugin in plugins:
-                out = f"    {plugin}"
-                version = importlib_metadata.version(plugin)
-                if version is not None:
-                    out += f" ({version})"
-                self.env.stdout.write(out + "\n")
+        for plugin, entry_points in known_plugins.items():
+            self.env.stdout.write(plugin)
+
+            version = importlib_metadata.version(plugin)
+            if version is not None:
+                self.env.stdout.write(f" ({version})")
+            self.env.stdout.write("\n")
+
+            for group, entry_point in sorted(entry_points):
+                self.env.stdout.write(f"  {entry_point} ({group})\n")
 
     def run(
         self,
@@ -146,17 +160,17 @@ class Plugins:
         from httpie.plugins.manager import enable_plugins
 
         if action is None:
-            parser.error("please specify one of these: 'install', 'uninstall'")
+            parser.error("please specify one of these: 'install', 'uninstall', 'list'")
 
         with enable_plugins(self.dir):
             if action == "install":
-                self.install(args.targets)
+                status = self.install(args.targets)
             elif action == "uninstall":
-                self.uninstall(args.targets)
+                status = self.uninstall(args.targets)
             elif action == "list":
-                self.list()
+                status = self.list()
 
-        return ExitStatus.SUCCESS
+        return status or ExitStatus.SUCCESS
 
 
 def manager(args: argparse.Namespace, env: Environment) -> ExitStatus:
@@ -164,27 +178,31 @@ def manager(args: argparse.Namespace, env: Environment) -> ExitStatus:
         parser.error("please specify one of these: 'plugins'")
 
     if args.action == "plugins":
-        plugins = Plugins(env)
+        plugins = Plugins(env, debug=args.debug)
         return plugins.run(args.plugins_action, args)
-    else:
-        parser.error(f"unknown action: {args.action}")
+
+    return ExitStatus.SUCCESS
 
 
-def main() -> ExitStatus:
+def main(**kwargs) -> ExitStatus:
+    from httpie.core import raw_main
+
+    return raw_main(
+        parser=parser,
+        main_program=manager,
+        **kwargs
+    )
+
+
+def program():
     try:
-        from httpie.core import raw_main
-
-        exit_status = raw_main(
-            parser=parser,
-            main_program=manager
-        )
+        exit_status = main()
     except KeyboardInterrupt:
         from httpie.status import ExitStatus
         exit_status = ExitStatus.ERROR_CTRL_C
 
-    return exit_status.value
+    return exit_status
 
 
 if __name__ == '__main__':  # pragma: nocover
-    import sys
-    sys.exit(main())
+    sys.exit(program())

@@ -124,7 +124,12 @@ def main(
 
     from .cli.definition import parser
 
-    return raw_main(parser=parser, main_program=program)
+    return raw_main(
+        parser=parser,
+        main_program=program,
+        args=args,
+        env=env
+    )
 
 
 def get_output_options(

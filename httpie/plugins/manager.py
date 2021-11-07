@@ -10,16 +10,17 @@ from contextlib import nullcontext, contextmanager
 from importlib_metadata import entry_points
 
 from ..utils import repr_dict, as_site
-from . import AuthPlugin, ConverterPlugin, FormatterPlugin
-from .base import BasePlugin, TransportPlugin
+from . import AuthPlugin, ConverterPlugin, FormatterPlugin, TransportPlugin
+from .base import BasePlugin
 
 
-ENTRY_POINT_NAMES = [
-    'httpie.plugins.auth.v1',
-    'httpie.plugins.formatter.v1',
-    'httpie.plugins.converter.v1',
-    'httpie.plugins.transport.v1',
-]
+ENTRY_POINT_CLASSES = {
+    'httpie.plugins.auth.v1': AuthPlugin,
+    'httpie.plugins.converter.v1': ConverterPlugin,
+    'httpie.plugins.formatter.v1': FormatterPlugin,
+    'httpie.plugins.transport.v1': TransportPlugin
+}
+ENTRY_POINT_NAMES = list(ENTRY_POINT_CLASSES.keys())
 
 
 @contextmanager
