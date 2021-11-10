@@ -58,7 +58,7 @@ Do not edit here, but in docs/installation/.
 
 ### Universal
 
-#### PyPi
+#### PyPI
 
 Please make sure you have Python 3.6 or newer (`python --version`).
 
