@@ -3,7 +3,7 @@ import os
 
 from itertools import groupby
 from operator import attrgetter
-from typing import Dict, List, Type, Optional, ContextManager
+from typing import Dict, List, Type, TypeVar, Optional, ContextManager
 from pathlib import Path
 from contextlib import contextmanager
 
@@ -32,6 +32,8 @@ def _load_directory(plugins_dir: Path) -> ContextManager[None]:
     finally:
         sys.path.remove(plugins_path)
 
+
+T = TypeVar("T")
 
 @contextmanager
 def nullcontext(obj: T = None) -> ContextManager[T]:

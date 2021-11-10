@@ -35,6 +35,7 @@ install_requires = [
     'requests-toolbelt>=0.9.1',
     'multidict>=4.7.0',
     'setuptools',
+    'importlib-metadata>=4.4',
 ]
 install_requires_win_only = [
     'colorama>=0.2.4',

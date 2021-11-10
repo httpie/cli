@@ -28,10 +28,14 @@ class Plugins:
                 exist_ok=True,
                 parents=True
             )
-        except PermissionError as exc:
-            # We should probably throw a better error, in cases
-            # like snap etc. This is temporary.
-            raise ValueError("Invalid permissions!") from exc
+        except OSError:
+            self.env.stderr.write(
+                f'Couldn\'t create "{self.dir!s}"'
+                ' directory for plugin installation.'
+                ' Please re-check the permissions for that directory,'
+                ' and if needed, allow write-access.'
+            )
+            raise
 
     def fail(
         self,
@@ -49,16 +53,18 @@ class Plugins:
         return ExitStatus.ERROR
 
     def pip(self, *args, **kwargs) -> None:
-        kwargs.setdefault("check", True)
-
-        kwargs.setdefault("shell", False)
-        kwargs.setdefault("stdout", self.env.stdout)
-        kwargs.setdefault("stderr", subprocess.PIPE)
+        options = {
+            "check": True,
+            "shell": False,
+            "stdout": self.env.stdout,
+            "stderr": subprocess.PIPE,
+        }
+        options.update(kwargs)
 
         cmd = [sys.executable, "-m", "pip", *args]
         return subprocess.run(
             cmd,
-            **kwargs
+            **options
         )
 
     def install(self, targets: str) -> None:
