@@ -35,6 +35,7 @@ def _load_directory(plugins_dir: Path) -> ContextManager[None]:
 
 T = TypeVar("T")
 
+
 @contextmanager
 def nullcontext(obj: T = None) -> ContextManager[T]:
     # A naive replacement of the nullcontext() for 3.6

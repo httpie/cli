@@ -3,7 +3,6 @@ import mimetypes
 import re
 import sys
 import time
-import os
 import sysconfig
 
 from collections import OrderedDict
@@ -217,7 +216,6 @@ def parse_content_type_header(header):
 def as_site(path: Path) -> Path:
     site_packages_path = sysconfig.get_path(
         'purelib',
-        os.name + '_user',
-        vars={'userbase': str(path)}
+        vars={'base': str(path)}
     )
     return Path(site_packages_path)
