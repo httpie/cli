@@ -4,7 +4,7 @@ import json
 import sys
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Callable, Iterable, Union
+from typing import Callable, Iterable
 from urllib.parse import urlparse, urlunparse
 
 import requests
@@ -20,7 +20,7 @@ from .uploads import (
     compress_request, prepare_request_body,
     get_multipart_data_and_content_type,
 )
-from .utils import get_expired_cookies, repr_dict
+from .utils import Message, get_expired_cookies, repr_dict
 
 
 urllib3.disable_warnings()
@@ -35,7 +35,7 @@ def collect_messages(
     args: argparse.Namespace,
     config_dir: Path,
     request_body_read_callback: Callable[[bytes], None] = None,
-) -> Iterable[Union[requests.PreparedRequest, requests.Response]]:
+) -> Iterable[Message]:
     httpie_session = None
     httpie_session_headers = None
     if args.session or args.session_read_only:

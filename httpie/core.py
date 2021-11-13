@@ -16,6 +16,7 @@ from .downloads import Downloader
 from .output.writer import write_message, write_stream, MESSAGE_SEPARATOR_BYTES
 from .plugins.registry import plugin_manager
 from .status import ExitStatus, http_status_to_exit_status
+from .utils import Message, MessageType, infer_message_type
 
 
 # noinspection PyDefaultArgument
@@ -111,18 +112,18 @@ def main(args: List[Union[str, bytes]] = sys.argv, env=Environment()) -> ExitSta
 
 def get_output_options(
     args: argparse.Namespace,
-    message: Union[requests.PreparedRequest, requests.Response]
+    message: Message
 ) -> Tuple[bool, bool]:
     return {
-        requests.PreparedRequest: (
+        MessageType.REQUEST: (
             OUT_REQ_HEAD in args.output_options,
             OUT_REQ_BODY in args.output_options,
         ),
-        requests.Response: (
+        MessageType.RESPONSE: (
             OUT_RESP_HEAD in args.output_options,
             OUT_RESP_BODY in args.output_options,
         ),
-    }[type(message)]
+    }[infer_message_type(message)]
 
 
 def program(args: argparse.Namespace, env: Environment) -> ExitStatus:
