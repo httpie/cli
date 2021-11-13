@@ -119,11 +119,12 @@ class Interface:
         else:
             return True
 
-    def make_dummy_plugin(self, **kwargs) -> Plugin:
+    def make_dummy_plugin(self, build=True, **kwargs) -> Plugin:
         kwargs.setdefault('entry_points', [EntryPoint('test', 'httpie.plugins.auth.v1')])
 
         plugin = Plugin(self, **kwargs)
-        plugin.build()
+        if build:
+            plugin.build()
         return plugin
 
 
@@ -172,12 +173,12 @@ def interface(tmp_path):
     )
 
 
-@pytest.fixture
+@pytest.fixture(scope='function')
 def dummy_plugin(interface):
     return interface.make_dummy_plugin()
 
 
-@pytest.fixture
+@pytest.fixture(scope='function')
 def dummy_plugins(interface):
     # Multiple plugins with different configurations
     return [

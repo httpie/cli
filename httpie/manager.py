@@ -137,8 +137,10 @@ class Plugins:
         # so we have to implement our own uninstalling logic. Which works
         # on top of the importlib_metadata.
 
+        exit_code = ExitStatus.SUCCESS
         for target in targets:
-            self._uninstall(target)
+            exit_code |= self._uninstall(target) or ExitStatus.SUCCESS
+        return ExitStatus(exit_code)
 
     def list(self) -> None:
         from httpie.plugins.registry import plugin_manager

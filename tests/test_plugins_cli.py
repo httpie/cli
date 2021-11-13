@@ -1,3 +1,4 @@
+from httpie.status import ExitStatus
 from tests.utils.plugins_cli import parse_listing
 
 
@@ -57,3 +58,35 @@ def test_plugins_uninstall_specific(interface, httpie_plugins_success):
     assert interface.is_installed(new_plugin_1.name)
     assert interface.is_installed(new_plugin_2.name)
     assert not interface.is_installed(target_plugin.name)
+
+
+def test_plugins_installation_failed(httpie_plugins, interface):
+    plugin = interface.make_dummy_plugin(build=False)
+    result = httpie_plugins('install', plugin.path)
+
+    assert result.exit_status == ExitStatus.ERROR
+    assert result.stderr.splitlines()[-1].strip().startswith("Can't install")
+
+
+def test_plugins_uninstall_non_existent(httpie_plugins, interface):
+    plugin = interface.make_dummy_plugin(build=False)
+    result = httpie_plugins('uninstall', plugin.name)
+
+    assert result.exit_status == ExitStatus.ERROR
+    assert (
+        result.stderr.splitlines()[-1].strip()
+        == f"Can't uninstall '{plugin.name}': package is not installed"
+    )
+
+
+def test_plugins_double_uninstall(httpie_plugins, httpie_plugins_success, dummy_plugin):
+    httpie_plugins_success("install", dummy_plugin.path)
+    httpie_plugins_success("uninstall", dummy_plugin.name)
+
+    result = httpie_plugins("uninstall", dummy_plugin.name)
+
+    assert result.exit_status == ExitStatus.ERROR
+    assert (
+        result.stderr.splitlines()[-1].strip()
+        == f"Can't uninstall '{dummy_plugin.name}': package is not installed"
+    )
