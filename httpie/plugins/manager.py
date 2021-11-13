@@ -68,7 +68,7 @@ class PluginManager(list):
                 yield from eps.select(group=entry_point_name)
 
     def load_installed_plugins(self, directory: Optional[Path] = None):
-        for entry_point in self.iter_entry_points():
+        for entry_point in self.iter_entry_points(directory):
             plugin = entry_point.load()
             plugin.package_name = entry_point.dist.name
             self.register(entry_point.load())

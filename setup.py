@@ -81,6 +81,7 @@ setup(
         'console_scripts': [
             'http = httpie.__main__:main',
             'https = httpie.__main__:main',
+            'httpie = httpie.manager:main',
         ],
     },
     python_requires='>=3.6',

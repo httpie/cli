@@ -79,7 +79,7 @@ class Plugin:
         with open(self.path / (self.import_name + ".py"), "w") as stream:
             stream.write("from httpie.plugins import *\n")
             stream.writelines(
-                f"class {name}({CLASSES[group]}): ...\n"
+                f"class {name.title()}({CLASSES[group].__name__}): ...\n"
                 for group, names in groups.items()
                 for name in names
             )
@@ -197,13 +197,17 @@ def dummy_plugins(interface):
 @pytest.fixture
 def cli(interface):
     from tests.utils import httpie
+    from httpie.plugins.registry import plugin_manager
 
     def runner(*args):
         # Prevent installed plugins from showing up.
-
+        original_plugins = plugin_manager.copy()
         clean_sys_path = set(sys.path).difference(site.getsitepackages())
         with patch("sys.path", list(clean_sys_path)):
             response = httpie(*args, env=interface.environment)
+        plugin_manager.clear()
+        plugin_manager.extend(original_plugins)
+
         assert response.exit_status == ExitStatus.SUCCESS
         return response.splitlines()
 
