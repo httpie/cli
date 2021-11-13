@@ -60,7 +60,7 @@ class MockEnvironment(Environment):
     stdout_isatty = True
     is_windows = False
 
-    def __init__(self, create_temp_config_dir=True, *, stdout_mode="b", **kwargs):
+    def __init__(self, create_temp_config_dir=True, *, stdout_mode='b', **kwargs):
         if 'stdout' not in kwargs:
             kwargs['stdout'] = tempfile.TemporaryFile(
                 mode=f'w+{stdout_mode}',
@@ -193,8 +193,8 @@ def httpie(
     status.
     """
 
-    env = kwargs.setdefault("env", MockEnvironment())
-    args = ["httpie", "--debug"] + normalize_args(args)
+    env = kwargs.setdefault('env', MockEnvironment())
+    args = ['httpie', '--debug'] + normalize_args(args)
     exit_status = manager.main(
         args=args,
         **kwargs

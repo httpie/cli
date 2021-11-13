@@ -2,40 +2,40 @@ from textwrap import dedent
 from httpie.cli.argparser import BaseHTTPieArgumentParser
 
 COMMANDS = {
-    "plugins": {
-        "help": "Manage HTTPie plugins.",
-        "install": [
-            "Install the given targets from PyPI "
-            "or from a local paths.",
+    'plugins': {
+        'help': 'Manage HTTPie plugins.',
+        'install': [
+            'Install the given targets from PyPI '
+            'or from a local paths.',
             {
-                "dest": "targets",
-                "nargs": "+",
-                "help": "targets to install"
+                'dest': 'targets',
+                'nargs': '+',
+                'help': 'targets to install'
             }
         ],
-        "uninstall": [
-            "Uninstall the given HTTPie plugins.",
+        'uninstall': [
+            'Uninstall the given HTTPie plugins.',
             {
-                "dest": "targets",
-                "nargs": "+",
-                "help": "targets to install"
+                'dest': 'targets',
+                'nargs': '+',
+                'help': 'targets to install'
             }
         ],
-        "list": [
-            "List all installed HTTPie plugins."
+        'list': [
+            'List all installed HTTPie plugins.'
         ],
     },
 }
 
 
 def generate_subparsers(parent_parser, definitions):
-    action_dest = "_".join(parent_parser.prog.split()[1:] + ["action"])
+    action_dest = '_'.join(parent_parser.prog.split()[1:] + ['action'])
     actions = parent_parser.add_subparsers(
         dest=action_dest
     )
     for command, properties in definitions.items():
         is_subparser = isinstance(properties, dict)
-        descr = properties.pop("help", None) if is_subparser else properties.pop(0)
+        descr = properties.pop('help', None) if is_subparser else properties.pop(0)
         command_parser = actions.add_parser(command, description=descr)
         if is_subparser:
             generate_subparsers(command_parser, properties)
@@ -46,7 +46,7 @@ def generate_subparsers(parent_parser, definitions):
 
 
 parser = BaseHTTPieArgumentParser(
-    prog="httpie",
+    prog='httpie',
     description=dedent(
         '''
         Managing interface for the HTTPie itself. <https://httpie.io/docs#manager>

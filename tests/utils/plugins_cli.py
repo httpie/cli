@@ -21,7 +21,7 @@ from httpie.plugins.manager import (
 
 
 def make_name() -> str:
-    return "httpie-" + secrets.token_hex(4)
+    return 'httpie-' + secrets.token_hex(4)
 
 
 @dataclass
@@ -35,20 +35,20 @@ class EntryPoint:
 
 @dataclass
 class Plugin:
-    interface: "Interface"
+    interface: 'Interface'
 
     name: str = field(default_factory=make_name)
-    version: str = "1.0.0"
+    version: str = '1.0.0'
     entry_points: List[EntryPoint] = field(default_factory=list)
 
     def build(self) -> None:
-        """
+        '''
         Create an installable dummy plugin at the given path.
 
         It will create a setup.py with the specified entry points,
         as well as dummy classes in a python module to imitate
         real plugins.
-        """
+        '''
 
         groups = defaultdict(list)
         for entry_point in self.entry_points:
@@ -56,38 +56,38 @@ class Plugin:
 
         setup_eps = {
             group: [
-                f"{name} = {self.import_name}:{name.title()}"
+                f'{name} = {self.import_name}:{name.title()}'
                 for name in names
             ]
             for group, names in groups.items()
         }
 
         self.path.mkdir(parents=True, exist_ok=True)
-        with open(self.path / "setup.py", "w") as stream:
-            stream.write(textwrap.dedent(f"""
+        with open(self.path / 'setup.py', 'w') as stream:
+            stream.write(textwrap.dedent(f'''
             from setuptools import setup
 
             setup(
-                name="{self.name}",
-                version="{self.version}",
-                py_modules=["{self.import_name}"],
+                name='{self.name}',
+                version='{self.version}',
+                py_modules=['{self.import_name}'],
                 entry_points={setup_eps!r},
-                install_requires=["httpie"]
+                install_requires=['httpie']
             )
-            """))
+            '''))
 
-        with open(self.path / (self.import_name + ".py"), "w") as stream:
-            stream.write("from httpie.plugins import *\n")
+        with open(self.path / (self.import_name + '.py'), 'w') as stream:
+            stream.write('from httpie.plugins import *\n')
             stream.writelines(
-                f"class {name.title()}({CLASSES[group].__name__}): ...\n"
+                f'class {name.title()}({CLASSES[group].__name__}): ...\n'
                 for group, names in groups.items()
                 for name in names
             )
 
     def dump(self) -> Dict[str, Any]:
         return {
-            "version": self.version,
-            "entry_points": [
+            'version': self.version,
+            'entry_points': [
                 entry_point.dump()
                 for entry_point in self.entry_points
             ]
@@ -99,7 +99,7 @@ class Plugin:
 
     @property
     def import_name(self) -> str:
-        return self.name.replace("-", "_")
+        return self.name.replace('-', '_')
 
 
 @dataclass
@@ -120,7 +120,7 @@ class Interface:
             return True
 
     def make_dummy_plugin(self, **kwargs) -> Plugin:
-        kwargs.setdefault("entry_points", [EntryPoint("test", "httpie.plugins.auth.v1")])
+        kwargs.setdefault('entry_points', [EntryPoint('test', 'httpie.plugins.auth.v1')])
 
         plugin = Plugin(self, **kwargs)
         plugin.build()
@@ -147,28 +147,28 @@ def parse_listing(lines: List[str]) -> Dict[str, Any]:
             # <indent> $entry_point ($group)
             assert current_plugin is not None
             entry_point, group = parse_entry_point(line)
-            plugins[current_plugin]["entry_points"].append({
-                "name": entry_point,
-                "group": group
+            plugins[current_plugin]['entry_points'].append({
+                'name': entry_point,
+                'group': group
             })
         else:
             # $plugin ($version)
             current_plugin, version = parse_plugin(line)
             plugins[current_plugin] = {
-                "version": version,
-                "entry_points": []
+                'version': version,
+                'entry_points': []
             }
 
     return plugins
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope='function')
 def interface(tmp_path):
     from tests.utils import MockEnvironment
 
     return Interface(
-        path=tmp_path / "interface",
-        environment=MockEnvironment(stdout_mode="t")
+        path=tmp_path / 'interface',
+        environment=MockEnvironment(stdout_mode='t')
     )
 
 
@@ -183,19 +183,19 @@ def dummy_plugins(interface):
     return [
         interface.make_dummy_plugin(),
         interface.make_dummy_plugin(
-            version="3.2.0"
+            version='3.2.0'
         ),
         interface.make_dummy_plugin(
             entry_points=[
-                EntryPoint("test_1", "httpie.plugins.converter.v1"),
-                EntryPoint("test_2", "httpie.plugins.formatter.v1")
+                EntryPoint('test_1', 'httpie.plugins.converter.v1'),
+                EntryPoint('test_2', 'httpie.plugins.formatter.v1')
             ]
         ),
     ]
 
 
 @pytest.fixture
-def cli(interface):
+def httpie_plugins(interface):
     from tests.utils import httpie
     from httpie.plugins.registry import plugin_manager
 
@@ -203,12 +203,19 @@ def cli(interface):
         # Prevent installed plugins from showing up.
         original_plugins = plugin_manager.copy()
         clean_sys_path = set(sys.path).difference(site.getsitepackages())
-        with patch("sys.path", list(clean_sys_path)):
-            response = httpie(*args, env=interface.environment)
+        with patch('sys.path', list(clean_sys_path)):
+            response = httpie('plugins', *args, env=interface.environment)
         plugin_manager.clear()
         plugin_manager.extend(original_plugins)
+        return response
 
+    return runner
+
+
+@pytest.fixture
+def httpie_plugins_success(httpie_plugins):
+    def runner(*args):
+        response = httpie_plugins(*args)
         assert response.exit_status == ExitStatus.SUCCESS
         return response.splitlines()
-
     return runner

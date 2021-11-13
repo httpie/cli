@@ -131,4 +131,4 @@ class Config(BaseConfigDict):
 
     @property
     def plugins_dir(self) -> Path:
-        return Path(self.get('plugins_dir', self.directory / "plugins")).resolve()
+        return Path(self.get('plugins_dir', self.directory / 'plugins')).resolve()

@@ -87,7 +87,7 @@ class HTTPieArgumentParser(BaseHTTPieArgumentParser):
     """
 
     def __init__(self, *args, **kwargs):
-        kwargs.setdefault("add_help", False)
+        kwargs.setdefault('add_help', False)
         super().__init__(*args, **kwargs)
 
     # noinspection PyMethodOverriding

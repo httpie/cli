@@ -43,25 +43,25 @@ class Plugins:
         target: Optional[str] = None,
         reason: Optional[str] = None
     ) -> None:
-        message = f"Can't {command}"
+        message = f'Can\'t {command}'
         if target:
-            message += f" {target!r}"
+            message += f' {target!r}'
         if reason:
-            message += f": {reason}"
+            message += f': {reason}'
 
-        self.env.stderr.write(message + "\n")
+        self.env.stderr.write(message + '\n')
         return ExitStatus.ERROR
 
     def pip(self, *args, **kwargs) -> None:
         options = {
-            "check": True,
-            "shell": False,
-            "stdout": self.env.stdout,
-            "stderr": subprocess.PIPE,
+            'check': True,
+            'shell': False,
+            'stdout': self.env.stdout,
+            'stderr': subprocess.PIPE,
         }
         options.update(kwargs)
 
-        cmd = [sys.executable, "-m", "pip", *args]
+        cmd = [sys.executable, '-m', 'pip', *args]
         return subprocess.run(
             cmd,
             **options
@@ -73,9 +73,9 @@ class Plugins:
 
         try:
             self.pip(
-                "install",
-                f"--prefix={self.dir}",
-                "--no-warn-script-location",
+                'install',
+                f'--prefix={self.dir}',
+                '--no-warn-script-location',
                 *targets,
             )
         except subprocess.CalledProcessError as error:
@@ -84,35 +84,35 @@ class Plugins:
                 stderr = error.stderr.decode()
 
                 if self.debug:
-                    self.env.stderr.write("Command failed: ")
-                    self.env.stderr.write(" ".join(error.cmd) + "\n")
-                    self.env.stderr.write(textwrap.indent("  ", stderr))
+                    self.env.stderr.write('Command failed: ')
+                    self.env.stderr.write(' '.join(error.cmd) + '\n')
+                    self.env.stderr.write(textwrap.indent('  ', stderr))
 
                 last_line = stderr.strip().splitlines()[-1]
-                severity, _, message = last_line.partition(": ")
-                if severity == "ERROR":
+                severity, _, message = last_line.partition(': ')
+                if severity == 'ERROR':
                     reason = message
 
-            return self.fail("install", ', '.join(targets), reason)
+            return self.fail('install', ', '.join(targets), reason)
 
     def _uninstall(self, target: str) -> None:
         try:
             distribution = importlib_metadata.distribution(target)
         except importlib_metadata.PackageNotFoundError:
-            return self.fail("uninstall", target, "package is not installed")
+            return self.fail('uninstall', target, 'package is not installed')
 
-        base_dir = Path(distribution.locate_file(".")).resolve()
+        base_dir = Path(distribution.locate_file('.')).resolve()
         if self.dir not in base_dir.parents:
             # If the package is installed somewhere else (e.g on the site packages
             # of the real python interpreter), than that means this package is not
             # installed through us.
-            return self.fail("uninstall", target,
-                             "package is not installed through httpie plugins"
-                             " interface")
+            return self.fail('uninstall', target,
+                             'package is not installed through httpie plugins'
+                             ' interface')
 
         files = distribution.files
         if files is None:
-            return self.fail("uninstall", target, "couldn't locate the package")
+            return self.fail('uninstall', target, 'couldn\'t locate the package')
 
         # TODO: Consider handling failures here (e.g if it fails,
         # just rever the operation and leave the site-packages
@@ -120,7 +120,7 @@ class Plugins:
         for file in files:
             distribution.locate_file(file).unlink()
 
-        metadata_path = getattr(distribution, "_path", None)
+        metadata_path = getattr(distribution, '_path', None)
         if (
             metadata_path
             and metadata_path.exists()
@@ -128,7 +128,7 @@ class Plugins:
         ):
             metadata_path.rmdir()
 
-        self.env.stdout.write(f"Successfully uninstalled {target}\n")
+        self.env.stdout.write(f'Successfully uninstalled {target}\n')
 
     def uninstall(self, targets: List[str]) -> None:
         # Unfortunately uninstall doesn't work with custom pip schemes. See:
@@ -152,11 +152,11 @@ class Plugins:
 
             version = importlib_metadata.version(plugin)
             if version is not None:
-                self.env.stdout.write(f" ({version})")
-            self.env.stdout.write("\n")
+                self.env.stdout.write(f' ({version})')
+            self.env.stdout.write('\n')
 
             for group, entry_point in sorted(entry_points):
-                self.env.stdout.write(f"  {entry_point} ({group})\n")
+                self.env.stdout.write(f'  {entry_point} ({group})\n')
 
     def run(
         self,
@@ -166,14 +166,14 @@ class Plugins:
         from httpie.plugins.manager import enable_plugins
 
         if action is None:
-            parser.error("please specify one of these: 'install', 'uninstall', 'list'")
+            parser.error('please specify one of these: \'install\', \'uninstall\', \'list\'')
 
         with enable_plugins(self.dir):
-            if action == "install":
+            if action == 'install':
                 status = self.install(args.targets)
-            elif action == "uninstall":
+            elif action == 'uninstall':
                 status = self.uninstall(args.targets)
-            elif action == "list":
+            elif action == 'list':
                 status = self.list()
 
         return status or ExitStatus.SUCCESS
@@ -181,9 +181,9 @@ class Plugins:
 
 def manager(args: argparse.Namespace, env: Environment) -> ExitStatus:
     if args.action is None:
-        parser.error("please specify one of these: 'plugins'")
+        parser.error('please specify one of these: \'plugins\'')
 
-    if args.action == "plugins":
+    if args.action == 'plugins':
         plugins = Plugins(env, debug=args.debug)
         return plugins.run(args.plugins_action, args)
 

@@ -5,6 +5,13 @@ import pytest
 from pytest_httpbin import certs
 
 from .utils import HTTPBIN_WITH_CHUNKED_SUPPORT_DOMAIN, HTTPBIN_WITH_CHUNKED_SUPPORT
+from .utils.plugins_cli import ( # noqa
+    dummy_plugin,
+    dummy_plugins,
+    httpie_plugins,
+    httpie_plugins_success,
+    interface,
+)
 from .utils.plugins_cli import cli, dummy_plugin, dummy_plugins, interface # noqa
 from .utils.http_server import http_server # noqa
 
