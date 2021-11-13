@@ -52,7 +52,6 @@ class HTTPieHelpFormatter(RawDescriptionHelpFormatter):
 #       for raw args + parsed args and keep things immutable.
 class BaseHTTPieArgumentParser(argparse.ArgumentParser):
     def __init__(self, *args, formatter_class=HTTPieHelpFormatter, **kwargs):
-        kwargs['add_help'] = False
         super().__init__(*args, formatter_class=formatter_class, **kwargs)
         self.env = None
         self.args = None
@@ -86,6 +85,10 @@ class HTTPieArgumentParser(BaseHTTPieArgumentParser):
     and performs extra validation.
 
     """
+
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("add_help", False)
+        super().__init__(*args, **kwargs)
 
     # noinspection PyMethodOverriding
     def parse_args(

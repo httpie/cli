@@ -1,8 +1,12 @@
+from textwrap import dedent
 from httpie.cli.argparser import BaseHTTPieArgumentParser
 
 COMMANDS = {
     "plugins": {
+        "help": "Manage HTTPie plugins.",
         "install": [
+            "Install the given targets from PyPI "
+            "or from a local paths.",
             {
                 "dest": "targets",
                 "nargs": "+",
@@ -10,13 +14,16 @@ COMMANDS = {
             }
         ],
         "uninstall": [
+            "Uninstall the given HTTPie plugins.",
             {
                 "dest": "targets",
                 "nargs": "+",
                 "help": "targets to install"
             }
         ],
-        "list": []
+        "list": [
+            "List all installed HTTPie plugins."
+        ],
     },
 }
 
@@ -27,8 +34,10 @@ def generate_subparsers(parent_parser, definitions):
         dest=action_dest
     )
     for command, properties in definitions.items():
-        command_parser = actions.add_parser(command)
-        if isinstance(properties, dict):
+        is_subparser = isinstance(properties, dict)
+        descr = properties.pop("help", None) if is_subparser else properties.pop(0)
+        command_parser = actions.add_parser(command, description=descr)
+        if is_subparser:
             generate_subparsers(command_parser, properties)
             continue
 
@@ -37,8 +46,18 @@ def generate_subparsers(parent_parser, definitions):
 
 
 parser = BaseHTTPieArgumentParser(
-    prog="httpie"
+    prog="httpie",
+    description=dedent(
+        '''
+        Managing interface for the HTTPie itself. <https://httpie.io/docs#manager>
+
+        Be aware that you might be looking for http/https commands for sending
+        HTTP requests. This command is only available for managing the HTTTPie
+        plugins and the configuration around it.
+        '''
+    ),
 )
+
 parser.add_argument(
     '--debug',
     action='store_true',
@@ -49,6 +68,7 @@ parser.add_argument(
 
     '''
 )
+
 parser.add_argument(
     '--traceback',
     action='store_true',

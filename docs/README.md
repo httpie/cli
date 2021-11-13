@@ -1915,6 +1915,59 @@ And since there’s neither data nor `EOF`, it will get stuck. So unless you’r
 
 Also, it might be good to set a connection `--timeout` limit to prevent your program from hanging if the server never responds.
 
+## Manager
+
+HTTPie comes with an additional `httpie` command to manage it's own state, configuration
+and plugins.
+
+This command is currently experimental.
+
+### `httpie plugins`
+
+For cases where the HTTPie interpreter is bundled with it's own Python interpreter and the environment
+is different than what you can access through regular `pip` invocations, or when you want to install
+plugins in an isolated place outside of your standard environment which the HTTPie is installed; `httpie
+plugins` interface can be used to simply manage the state of plugins.
+
+By default the plugins (and their missing dependencies) will be stored under the configuration directory,
+but this can be modified through `plugins_dir` variable on the config.
+
+#### `httpie plugins install`
+
+For installing plugins from [PyPI](https://pypi.org/) or from local paths, `httpie plugins install`
+can be used with multiple targets.
+
+```bash
+$ httpie plugins install httpie-plugin
+Installing httpie-plugin...
+<logs>
+Successfully installed httpie-plugin-1.0.2
+```
+
+#### `httpie plugins list`
+
+List all installed plugins.
+
+```bash
+$ httpie plugins list
+httpie_plugin (1.0.2)
+  httpie_plugin (httpie.plugins.auth.v1)
+httpie_plugin_2 (1.0.6)
+  httpie_plugin_2 (httpie.plugins.auth.v1)
+httpie_converter (1.0.0)
+  httpie_iterm_converter (httpie.plugins.converter.v1)
+  httpie_konsole_konverter (httpie.plugins.converter.v1)
+```
+
+#### `httpie plugins uninstall`
+
+Uninstall plugins from the isolated plugins directory. If the plugin is not installed
+through `httpie plugins install`, it won't uninstall it.
+
+```bash
+$ httpie plugins uninstall httpie-plugin
+```
+
 ## Meta
 
 ### Interface design
