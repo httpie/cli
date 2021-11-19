@@ -39,7 +39,7 @@ class TestItemParsing:
             # files
             self.key_value_arg(fr'bar\@baz@{FILE_PATH_ARG}'),
         ])
-        # `RequestHeadersDict` => `dict`
+        # `HTTPHeadersDict` => `dict`
         headers = dict(items.headers)
 
         assert headers == {
@@ -88,7 +88,7 @@ class TestItemParsing:
         ])
 
         # Parsed headers
-        # `RequestHeadersDict` => `dict`
+        # `HTTPHeadersDict` => `dict`
         headers = dict(items.headers)
         assert headers == {
             'Header': 'value',

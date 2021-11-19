@@ -11,7 +11,7 @@ from .constants import (
 )
 from .dicts import (
     BaseMultiDict, MultipartRequestDataDict, RequestDataDict,
-    RequestFilesDict, RequestHeadersDict, RequestJSONDataDict,
+    RequestFilesDict, HTTPHeadersDict, RequestJSONDataDict,
     RequestQueryParamsDict,
 )
 from .exceptions import ParseError
@@ -21,7 +21,7 @@ from ..utils import get_content_type, load_json_preserve_order_and_dupe_keys
 class RequestItems:
 
     def __init__(self, as_form=False):
-        self.headers = RequestHeadersDict()
+        self.headers = HTTPHeadersDict()
         self.data = RequestDataDict() if as_form else RequestJSONDataDict()
         self.files = RequestFilesDict()
         self.params = RequestQueryParamsDict()

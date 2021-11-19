@@ -9,7 +9,7 @@ class BaseMultiDict(MultiDict):
     """
 
 
-class RequestHeadersDict(CIMultiDict, BaseMultiDict):
+class HTTPHeadersDict(CIMultiDict, BaseMultiDict):
     """
     Headers are case-insensitive and multiple values are supported
     through the `add()` API.

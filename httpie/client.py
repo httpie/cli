@@ -12,7 +12,7 @@ import requests
 import urllib3
 from . import __version__
 from .adapters import HTTPieHTTPAdapter
-from .cli.dicts import RequestHeadersDict
+from .cli.dicts import HTTPHeadersDict
 from .encoding import UTF8
 from .plugins.registry import plugin_manager
 from .sessions import get_httpie_session
@@ -182,8 +182,8 @@ def dump_request(kwargs: dict):
         f'\n>>> requests.request(**{repr_dict(kwargs)})\n\n')
 
 
-def finalize_headers(headers: RequestHeadersDict) -> RequestHeadersDict:
-    final_headers = RequestHeadersDict()
+def finalize_headers(headers: HTTPHeadersDict) -> HTTPHeadersDict:
+    final_headers = HTTPHeadersDict()
     for name, value in headers.items():
         if value is not None:
             # “leading or trailing LWS MAY be removed without
@@ -200,13 +200,13 @@ def finalize_headers(headers: RequestHeadersDict) -> RequestHeadersDict:
 
 def apply_missing_repeated_headers(
     prepared_request: requests.PreparedRequest,
-    original_headers: RequestHeadersDict
+    original_headers: HTTPHeadersDict
 ) -> None:
     """Update the given `prepared_request`'s headers with the original
     ones. This allows the requests to be prepared as usual, and then later
     merged with headers that are specified multiple times."""
 
-    new_headers = RequestHeadersDict(prepared_request.headers)
+    new_headers = HTTPHeadersDict(prepared_request.headers)
     for prepared_name, prepared_value in prepared_request.headers.items():
         if prepared_name not in original_headers:
             continue
@@ -228,8 +228,8 @@ def apply_missing_repeated_headers(
     prepared_request.headers = new_headers
 
 
-def make_default_headers(args: argparse.Namespace) -> RequestHeadersDict:
-    default_headers = RequestHeadersDict({
+def make_default_headers(args: argparse.Namespace) -> HTTPHeadersDict:
+    default_headers = HTTPHeadersDict({
         'User-Agent': DEFAULT_UA
     })
 
@@ -274,7 +274,7 @@ def make_send_kwargs_mergeable_from_env(args: argparse.Namespace) -> dict:
 
 def make_request_kwargs(
     args: argparse.Namespace,
-    base_headers: RequestHeadersDict = None,
+    base_headers: HTTPHeadersDict = None,
     request_body_read_callback=lambda chunk: chunk
 ) -> dict:
     """
