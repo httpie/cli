@@ -11,6 +11,7 @@ import requests
 # noinspection PyPackageRequirements
 import urllib3
 from . import __version__
+from .adapters import HTTPieHTTPAdapter
 from .cli.dicts import RequestHeadersDict
 from .encoding import UTF8
 from .plugins.registry import plugin_manager
@@ -153,6 +154,7 @@ def build_requests_session(
     requests_session = requests.Session()
 
     # Install our adapter.
+    http_adapter = HTTPieHTTPAdapter()
     https_adapter = HTTPieHTTPSAdapter(
         ciphers=ciphers,
         verify=verify,
@@ -161,6 +163,7 @@ def build_requests_session(
             if ssl_version else None
         ),
     )
+    requests_session.mount('http://', http_adapter)
     requests_session.mount('https://', https_adapter)
 
     # Install adapters from plugins.

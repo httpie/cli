@@ -1,6 +1,6 @@
 import ssl
 
-from requests.adapters import HTTPAdapter
+from httpie.adapters import HTTPAdapter
 # noinspection PyPackageRequirements
 from urllib3.util.ssl_ import (
     DEFAULT_CIPHERS, create_urllib3_context,
