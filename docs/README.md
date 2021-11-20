@@ -1994,7 +1994,7 @@ See [CHANGELOG](https://github.com/httpie/httpie/blob/master/CHANGELOG.md).
 
 ### Artwork
 
-- [README Animation](https://raw.githubusercontent.com/httpie/httpie/master/httpie.gif) by [Allen Smith](https://github.com/loranallensmith).
+- [README Animation](https://github.com/httpie/httpie/blob/master/docs/httpie-animation.gif) by [Allen Smith](https://github.com/loranallensmith).
 
 ### Licence
 
@@ -2002,4 +2002,4 @@ BSD-3-Clause: [LICENSE](https://github.com/httpie/httpie/blob/master/LICENSE).
 
 ### Authors
 
-[Jakub Roztocil](https://roztocil.co) ([@jakubroztocil](https://twitter.com/jakubroztocil)) created HTTPie and [these fine people](https://github.com/httpie/httpie/AUTHORS.md) have contributed.
+[Jakub Roztocil](https://roztocil.co) ([@jakubroztocil](https://twitter.com/jakubroztocil)) created HTTPie and [these fine people](https://github.com/httpie/httpie/blob/master/AUTHORS.md) have contributed.
