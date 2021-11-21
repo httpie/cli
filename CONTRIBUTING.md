@@ -168,19 +168,19 @@ the `http` command should point to your development copy:
 
 ```powershell
 # In PowerShell:
-(httpie) PS C:\Users\ovezovs\httpie> Get-Command http
+(httpie) PS C:\Users\<user>\httpie> Get-Command http
 CommandType     Name                                               Version    Source
 -----------     ----                                               -------    ------
-Application     http.exe                                           0.0.0.0    C:\Users\ovezovs\httpie\venv\Scripts\http.exe
+Application     http.exe                                           0.0.0.0    C:\Users\<user>\httpie\venv\Scripts\http.exe
 ```
 
 ```bash
 # In CMD:
-(httpie) C:\Users\ovezovs\httpie> where http
-C:\Users\ovezovs\httpie\venv\Scripts\http.exe
-C:\Users\ovezovs\AppData\Local\Programs\Python\Python38-32\Scripts\http.exe
+(httpie) C:\Users\<user>\httpie> where http
+C:\Users\<user>\httpie\venv\Scripts\http.exe
+C:\Users\<user>\AppData\Local\Programs\Python\Python38-32\Scripts\http.exe
 
-(httpie) C:\Users\ovezovs\httpie> http --version
+(httpie) C:\Users\<user>\httpie> http --version
 2.3.0-dev
 ```
 
