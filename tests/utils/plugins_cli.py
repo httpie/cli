@@ -4,7 +4,6 @@ import sys
 import textwrap
 
 import pytest
-import importlib_metadata
 
 from collections import defaultdict
 from dataclasses import dataclass, field, asdict
@@ -13,6 +12,7 @@ from typing import Any, List, Dict, Tuple
 from unittest.mock import patch
 
 from httpie.context import Environment
+from httpie.compat import importlib_metadata
 from httpie.status import ExitStatus
 from httpie.plugins.manager import (
     enable_plugins,

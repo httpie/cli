@@ -2,13 +2,13 @@ import argparse
 import subprocess
 import textwrap
 import sys
-import importlib_metadata
 
 from pathlib import Path
 from collections import defaultdict
 from typing import List, Optional
 
 from httpie.context import Environment
+from httpie.compat import importlib_metadata, get_dist_name
 from httpie.status import ExitStatus
 from httpie.cli.manager import parser
 
@@ -146,8 +146,11 @@ class Plugins:
         from httpie.plugins.registry import plugin_manager
 
         known_plugins = defaultdict(list)
+
         for entry_point in plugin_manager.iter_entry_points(self.dir):
-            known_plugins[entry_point.dist.name].append((entry_point.group, entry_point.name))
+            ep_info = (entry_point.group, entry_point.name)
+            ep_name = get_dist_name(entry_point) or entry_point.module
+            known_plugins[ep_name].append(ep_info)
 
         for plugin, entry_points in known_plugins.items():
             self.env.stdout.write(plugin)

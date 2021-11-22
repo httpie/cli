@@ -7,7 +7,7 @@ from typing import Dict, List, Type, TypeVar, Optional, ContextManager
 from pathlib import Path
 from contextlib import contextmanager
 
-from importlib_metadata import entry_points
+from ..compat import importlib_metadata, find_entry_points, get_dist_name
 
 from ..utils import repr_dict, as_site
 from . import AuthPlugin, ConverterPlugin, FormatterPlugin, TransportPlugin
@@ -62,15 +62,15 @@ class PluginManager(list):
 
     def iter_entry_points(self, directory: Optional[Path] = None):
         with enable_plugins(directory):
-            eps = entry_points()
+            eps = importlib_metadata.entry_points()
 
             for entry_point_name in ENTRY_POINT_NAMES:
-                yield from eps.select(group=entry_point_name)
+                yield from find_entry_points(eps, group=entry_point_name)
 
     def load_installed_plugins(self, directory: Optional[Path] = None):
         for entry_point in self.iter_entry_points(directory):
             plugin = entry_point.load()
-            plugin.package_name = entry_point.dist.name
+            plugin.package_name = get_dist_name(entry_point)
             self.register(entry_point.load())
 
     # Auth

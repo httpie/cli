@@ -7,9 +7,7 @@ def test_plugins_installation(httpie_plugins_success, interface, dummy_plugin):
     assert lines[0].startswith(
         f'Installing {dummy_plugin.path}'
     )
-    assert lines[-1].startswith(
-        f'Successfully installed {dummy_plugin.name}-{dummy_plugin.version}'
-    )
+    assert f'Successfully installed {dummy_plugin.name}-{dummy_plugin.version}' in lines
     assert interface.is_installed(dummy_plugin.name)
 
 
