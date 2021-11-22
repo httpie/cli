@@ -18,7 +18,7 @@ def test_plugins_listing(httpie_plugins_success, interface, dummy_plugin):
     data = parse_listing(httpie_plugins_success('list'))
 
     assert data == {
-        dummy_plugin.import_name: dummy_plugin.dump()
+        dummy_plugin.name: dummy_plugin.dump()
     }
 
 
@@ -28,7 +28,7 @@ def test_plugins_listing_multiple(interface, httpie_plugins_success, dummy_plugi
     data = parse_listing(httpie_plugins_success('list'))
 
     assert data == {
-        plugin.import_name: plugin.dump()
+        plugin.name: plugin.dump()
         for plugin in dummy_plugins
     }
 

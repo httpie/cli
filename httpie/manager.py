@@ -147,7 +147,7 @@ class Plugins:
 
         known_plugins = defaultdict(list)
         for entry_point in plugin_manager.iter_entry_points(self.dir):
-            known_plugins[entry_point.module].append((entry_point.group, entry_point.name))
+            known_plugins[entry_point.dist.name].append((entry_point.group, entry_point.name))
 
         for plugin, entry_points in known_plugins.items():
             self.env.stdout.write(plugin)
