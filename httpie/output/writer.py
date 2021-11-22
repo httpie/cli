@@ -3,8 +3,14 @@ import errno
 from typing import IO, TextIO, Tuple, Type, Union
 
 from ..context import Environment
-from ..models import HTTPRequest, HTTPResponse, HTTPMessage
-from ..utils import Message, MessageType, infer_message_type
+from ..models import (
+    HTTPRequest,
+    HTTPResponse,
+    HTTPMessage,
+    RequestsMessage,
+    RequestsMessageKind,
+    infer_requests_message_kind
+)
 from .processing import Conversion, Formatting
 from .streams import (
     BaseStream, BufferedPrettyStream, EncodedStream, PrettyStream, RawStream,
@@ -16,7 +22,7 @@ MESSAGE_SEPARATOR_BYTES = MESSAGE_SEPARATOR.encode()
 
 
 def write_message(
-    requests_message: Message,
+    requests_message: RequestsMessage,
     env: Environment,
     args: argparse.Namespace,
     with_headers=False,
@@ -92,14 +98,14 @@ def write_stream_with_colors_win(
 def build_output_stream_for_message(
     args: argparse.Namespace,
     env: Environment,
-    requests_message: Message,
+    requests_message: RequestsMessage,
     with_headers: bool,
     with_body: bool,
 ):
     message_type = {
-        MessageType.REQUEST: HTTPRequest,
-        MessageType.RESPONSE: HTTPResponse,
-    }[infer_message_type(requests_message)]
+        RequestsMessageKind.REQUEST: HTTPRequest,
+        RequestsMessageKind.RESPONSE: HTTPResponse,
+    }[infer_requests_message_kind(requests_message)]
     stream_class, stream_kwargs = get_stream_type_and_kwargs(
         env=env,
         args=args,

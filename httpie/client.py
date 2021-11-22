@@ -13,6 +13,7 @@ import urllib3
 from . import __version__
 from .cli.dicts import RequestHeadersDict
 from .encoding import UTF8
+from .models import RequestsMessage
 from .plugins.registry import plugin_manager
 from .sessions import get_httpie_session
 from .ssl import AVAILABLE_SSL_VERSION_ARG_MAPPING, HTTPieHTTPSAdapter
@@ -20,7 +21,7 @@ from .uploads import (
     compress_request, prepare_request_body,
     get_multipart_data_and_content_type,
 )
-from .utils import Message, get_expired_cookies, repr_dict
+from .utils import get_expired_cookies, repr_dict
 
 
 urllib3.disable_warnings()
@@ -35,7 +36,7 @@ def collect_messages(
     args: argparse.Namespace,
     config_dir: Path,
     request_body_read_callback: Callable[[bytes], None] = None,
-) -> Iterable[Message]:
+) -> Iterable[RequestsMessage]:
     httpie_session = None
     httpie_session_headers = None
     if args.session or args.session_read_only:
