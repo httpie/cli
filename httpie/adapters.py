@@ -9,5 +9,5 @@ class HTTPieHTTPAdapter(HTTPAdapter):
         to preserve multiple headers that have the same name"""
 
         response = super().build_response(req, resp)
-        response.headers = HTTPHeadersDict(getattr(resp, "headers", {}))
+        response.headers = HTTPHeadersDict(getattr(resp, 'headers', {}))
         return response
