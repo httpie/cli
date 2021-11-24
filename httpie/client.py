@@ -4,7 +4,7 @@ import json
 import sys
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Callable, Iterable, Union
+from typing import Callable, Iterable
 from urllib.parse import urlparse, urlunparse
 
 import requests
@@ -14,6 +14,7 @@ from . import __version__
 from .adapters import HTTPieHTTPAdapter
 from .cli.dicts import HTTPHeadersDict
 from .encoding import UTF8
+from .models import RequestsMessage
 from .plugins.registry import plugin_manager
 from .sessions import get_httpie_session
 from .ssl import AVAILABLE_SSL_VERSION_ARG_MAPPING, HTTPieHTTPSAdapter
@@ -36,7 +37,7 @@ def collect_messages(
     args: argparse.Namespace,
     config_dir: Path,
     request_body_read_callback: Callable[[bytes], None] = None,
-) -> Iterable[Union[requests.PreparedRequest, requests.Response]]:
+) -> Iterable[RequestsMessage]:
     httpie_session = None
     httpie_session_headers = None
     if args.session or args.session_read_only:

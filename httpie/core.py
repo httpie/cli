@@ -13,6 +13,11 @@ from .cli.constants import OUT_REQ_BODY, OUT_REQ_HEAD, OUT_RESP_BODY, OUT_RESP_H
 from .client import collect_messages
 from .context import Environment
 from .downloads import Downloader
+from .models import (
+    RequestsMessage,
+    RequestsMessageKind,
+    infer_requests_message_kind
+)
 from .output.writer import write_message, write_stream, MESSAGE_SEPARATOR_BYTES
 from .plugins.registry import plugin_manager
 from .status import ExitStatus, http_status_to_exit_status
@@ -111,18 +116,18 @@ def main(args: List[Union[str, bytes]] = sys.argv, env=Environment()) -> ExitSta
 
 def get_output_options(
     args: argparse.Namespace,
-    message: Union[requests.PreparedRequest, requests.Response]
+    message: RequestsMessage
 ) -> Tuple[bool, bool]:
     return {
-        requests.PreparedRequest: (
+        RequestsMessageKind.REQUEST: (
             OUT_REQ_HEAD in args.output_options,
             OUT_REQ_BODY in args.output_options,
         ),
-        requests.Response: (
+        RequestsMessageKind.RESPONSE: (
             OUT_RESP_HEAD in args.output_options,
             OUT_RESP_BODY in args.output_options,
         ),
-    }[type(message)]
+    }[infer_requests_message_kind(message)]
 
 
 def program(args: argparse.Namespace, env: Environment) -> ExitStatus:

@@ -1,4 +1,7 @@
-from typing import Iterable
+import requests
+
+from enum import Enum, auto
+from typing import Iterable, Union
 from urllib.parse import urlsplit
 
 from .utils import split_cookies, parse_content_type_header
@@ -118,3 +121,20 @@ class HTTPRequest(HTTPMessage):
             # Happens with JSON/form request data parsed from the command line.
             body = body.encode()
         return body or b''
+
+
+RequestsMessage = Union[requests.PreparedRequest, requests.Response]
+
+
+class RequestsMessageKind(Enum):
+    REQUEST = auto()
+    RESPONSE = auto()
+
+
+def infer_requests_message_kind(message: RequestsMessage) -> RequestsMessageKind:
+    if isinstance(message, requests.PreparedRequest):
+        return RequestsMessageKind.REQUEST
+    elif isinstance(message, requests.Response):
+        return RequestsMessageKind.RESPONSE
+    else:
+        raise TypeError(f"Unexpected message type: {type(message).__name__}")
