@@ -13,7 +13,7 @@ from urllib.parse import urlsplit
 from requests.auth import AuthBase
 from requests.cookies import RequestsCookieJar, create_cookie
 
-from .cli.dicts import RequestHeadersDict
+from .cli.dicts import HTTPHeadersDict
 from .config import BaseConfigDict, DEFAULT_CONFIG_DIR
 from .plugins.registry import plugin_manager
 
@@ -65,7 +65,7 @@ class Session(BaseConfigDict):
             'password': None
         }
 
-    def update_headers(self, request_headers: RequestHeadersDict):
+    def update_headers(self, request_headers: HTTPHeadersDict):
         """
         Update the session headers with the request ones while ignoring
         certain name prefixes.
@@ -98,8 +98,8 @@ class Session(BaseConfigDict):
         self['headers'] = dict(headers)
 
     @property
-    def headers(self) -> RequestHeadersDict:
-        return RequestHeadersDict(self['headers'])
+    def headers(self) -> HTTPHeadersDict:
+        return HTTPHeadersDict(self['headers'])
 
     @property
     def cookies(self) -> RequestsCookieJar:

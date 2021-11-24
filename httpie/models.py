@@ -72,7 +72,9 @@ class HTTPResponse(HTTPMessage):
         )
         headers.extend(
             f'Set-Cookie: {cookie}'
-            for cookie in split_cookies(original.headers.get('Set-Cookie'))
+            for header, value in original.headers.items()
+            for cookie in split_cookies(value)
+            if header == 'Set-Cookie'
         )
         return '\r\n'.join(headers)
 

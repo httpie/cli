@@ -5,6 +5,7 @@ import pytest
 from pytest_httpbin import certs
 
 from .utils import HTTPBIN_WITH_CHUNKED_SUPPORT_DOMAIN, HTTPBIN_WITH_CHUNKED_SUPPORT
+from .utils.http_server import http_server # noqa
 
 
 @pytest.fixture(scope='function', autouse=True)
