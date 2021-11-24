@@ -45,6 +45,6 @@ def http_server():
     server = HTTPServer(('localhost', 0), TestHandler)
     thread = threading.Thread(target=server.serve_forever)
     thread.start()
-    yield "{}:{}".format(*server.socket.getsockname())
+    yield '{}:{}'.format(*server.socket.getsockname())
     server.shutdown()
     thread.join(timeout=0.5)
