@@ -171,7 +171,7 @@ tools:
         - port upgrade httpie
 
   pypi:
-    title: PyPi
+    title: PyPI
     name: pip
     note: Please make sure you have Python 3.6 or newer (`python --version`).
     links:
