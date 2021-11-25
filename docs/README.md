@@ -710,6 +710,10 @@ Host: pie.dev
 }
 ```
 
+Be aware that when using this syntax with form data (`--form` is activated);
+only strings, numbers and floats are enabled. Rest of the JSON types are not
+available.
+
 ### Raw and complex JSON
 
 Please note that with the [request items](#request-items) data field syntax, commands can quickly become unwieldy when sending complex structures.
