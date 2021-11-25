@@ -1,4 +1,7 @@
+import pytest
+
 from httpie.status import ExitStatus
+from tests.utils import httpie
 from tests.utils.plugins_cli import parse_listing
 
 
@@ -88,3 +91,39 @@ def test_plugins_double_uninstall(httpie_plugins, httpie_plugins_success, dummy_
         result.stderr.splitlines()[-1].strip()
         == f"Can't uninstall '{dummy_plugin.name}': package is not installed"
     )
+
+
+def test_plugins_cli_error_message_without_args():
+    # No arguments
+    result = httpie(no_debug=True)
+    assert result.exit_status == ExitStatus.ERROR
+    assert 'Perhaps you are looking for http/https commands' in result.stderr
+
+
+@pytest.mark.parametrize(
+    'example', [
+        'pie.dev/get',
+        'DELETE localhost:8000/delete',
+        'POST pie.dev/post header:value a=b header_2:value x:=1'
+    ]
+)
+def test_plugins_cli_error_messages_with_example(example):
+    result = httpie(*example.split(), no_debug=True)
+    assert result.exit_status == ExitStatus.ERROR
+    assert 'You probably meant one of the following' in result.stderr
+    assert f'http {example}' in result.stderr
+    assert f'https {example}' in result.stderr
+
+
+@pytest.mark.parametrize(
+    'example', [
+        'plugins unknown',
+        'plugins unknown.com A:B c=d',
+        'unknown.com UNPARSABLE????SYNTAX',
+    ]
+)
+def test_plugins_cli_error_messages_invalid_example(example):
+    result = httpie(*example.split(), no_debug=True)
+    assert result.exit_status == ExitStatus.ERROR
+    assert 'You probably meant one of the following' not in result.stderr
+    assert example not in result.stderr

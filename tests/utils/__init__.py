@@ -194,9 +194,12 @@ def httpie(
     """
 
     env = kwargs.setdefault('env', MockEnvironment())
-    args = ['httpie', '--debug'] + normalize_args(args)
+    cli_args = ['httpie']
+    if not kwargs.pop('no_debug', False):
+        cli_args.append('--debug')
+    cli_args += normalize_args(args)
     exit_status = manager.main(
-        args=args,
+        args=cli_args,
         **kwargs
     )
 
@@ -206,7 +209,7 @@ def httpie(
         response = StrCLIResponse(env.stdout.read())
         response.stderr = env.stderr.read()
         response.exit_status = exit_status
-        response.args = args
+        response.args = cli_args
     finally:
         env.stdout.truncate(0)
         env.stderr.truncate(0)

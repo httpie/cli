@@ -66,7 +66,7 @@ class BaseHTTPieArgumentParser(argparse.ArgumentParser):
         namespace=None
     ) -> argparse.Namespace:
         self.env = env
-        self.args, no_options = super().parse_known_args(args, namespace)
+        self.args, no_options = self.parse_known_args(args, namespace)
         if self.args.debug:
             self.args.traceback = True
         self.has_stdin_data = (
@@ -76,6 +76,35 @@ class BaseHTTPieArgumentParser(argparse.ArgumentParser):
         )
         self.has_input_data = self.has_stdin_data or getattr(self.args, 'raw', None) is not None
         return self.args
+
+    # noinspection PyShadowingBuiltins
+    def _print_message(self, message, file=None):
+        # Sneak in our stderr/stdout.
+        if hasattr(self, 'root'):
+            env = self.root.env
+        else:
+            env = self.env
+
+        if env is not None:
+            file = {
+                sys.stdout: env.stdout,
+                sys.stderr: env.stderr,
+                None: env.stderr
+            }.get(file, file)
+
+        if not hasattr(file, 'buffer') and isinstance(message, str):
+            message = message.encode(env.stdout_encoding)
+        super()._print_message(message, file)
+
+
+class HTTPieManagerArgumentParser(BaseHTTPieArgumentParser):
+    def parse_known_args(self, args=None, namespace=None):
+        try:
+            return super().parse_known_args(args, namespace)
+        except SystemExit as exc:
+            if not hasattr(self, 'root') and exc.code == 2:  # Argument Parser Error
+                raise argparse.ArgumentError(None, None)
+            raise
 
 
 class HTTPieArgumentParser(BaseHTTPieArgumentParser):
@@ -164,18 +193,6 @@ class HTTPieArgumentParser(BaseHTTPieArgumentParser):
                 self.args.url += rest
             else:
                 self.args.url = scheme + self.args.url
-
-    # noinspection PyShadowingBuiltins
-    def _print_message(self, message, file=None):
-        # Sneak in our stderr/stdout.
-        file = {
-            sys.stdout: self.env.stdout,
-            sys.stderr: self.env.stderr,
-            None: self.env.stderr
-        }.get(file, file)
-        if not hasattr(file, 'buffer') and isinstance(message, str):
-            message = message.encode(self.env.stdout_encoding)
-        super()._print_message(message, file)
 
     def _setup_standard_streams(self):
         """

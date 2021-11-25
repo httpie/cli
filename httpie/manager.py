@@ -1,11 +1,13 @@
 import argparse
-import subprocess
+import os
 import textwrap
+import subprocess
 import sys
 
-from pathlib import Path
 from collections import defaultdict
-from typing import List, Optional
+from contextlib import suppress
+from pathlib import Path
+from typing import List, Union, Optional
 
 from httpie.context import Environment
 from httpie.compat import importlib_metadata, get_dist_name
@@ -42,7 +44,7 @@ class Plugins:
         command: str,
         target: Optional[str] = None,
         reason: Optional[str] = None
-    ) -> None:
+    ) -> ExitStatus:
         message = f'Can\'t {command}'
         if target:
             message += f' {target!r}'
@@ -52,7 +54,7 @@ class Plugins:
         self.env.stderr.write(message + '\n')
         return ExitStatus.ERROR
 
-    def pip(self, *args, **kwargs) -> None:
+    def pip(self, *args, **kwargs) -> subprocess.CompletedProcess:
         options = {
             'check': True,
             'shell': False,
@@ -67,7 +69,7 @@ class Plugins:
             **options
         )
 
-    def install(self, targets: str) -> None:
+    def install(self, targets: List[str]) -> Optional[ExitStatus]:
         self.env.stdout.write(f"Installing {', '.join(targets)}...\n")
         self.env.stdout.flush()
 
@@ -95,7 +97,7 @@ class Plugins:
 
             return self.fail('install', ', '.join(targets), reason)
 
-    def _uninstall(self, target: str) -> None:
+    def _uninstall(self, target: str) -> Optional[ExitStatus]:
         try:
             distribution = importlib_metadata.distribution(target)
         except importlib_metadata.PackageNotFoundError:
@@ -118,7 +120,8 @@ class Plugins:
         # just rever the operation and leave the site-packages
         # in a proper shape).
         for file in files:
-            distribution.locate_file(file).unlink()
+            with suppress(FileNotFoundError):
+                os.unlink(distribution.locate_file(file))
 
         metadata_path = getattr(distribution, '_path', None)
         if (
@@ -130,7 +133,7 @@ class Plugins:
 
         self.env.stdout.write(f'Successfully uninstalled {target}\n')
 
-    def uninstall(self, targets: List[str]) -> None:
+    def uninstall(self, targets: List[str]) -> ExitStatus:
         # Unfortunately uninstall doesn't work with custom pip schemes. See:
         # - https://github.com/pypa/pip/issues/5595
         # - https://github.com/pypa/pip/issues/4575
@@ -186,7 +189,12 @@ class Plugins:
 
 def manager(args: argparse.Namespace, env: Environment) -> ExitStatus:
     if args.action is None:
-        parser.error('please specify one of these: \'plugins\'')
+        parser.error(
+            'Please specify one of these: "plugins"\n\n'
+            'This command is for managing HTTPie plugins.\n'
+            'Perhaps you are looking for http/https commands, e.g:\n'
+            '    http POST pie.dev/post hello=world'
+        )
 
     if args.action == 'plugins':
         plugins = Plugins(env, debug=args.debug)
@@ -195,14 +203,50 @@ def manager(args: argparse.Namespace, env: Environment) -> ExitStatus:
     return ExitStatus.SUCCESS
 
 
-def main(**kwargs) -> ExitStatus:
+def is_http_command(args: List[Union[str, bytes]], env: Environment) -> ExitStatus:
+    '''Check whether http/https parser can parse the arguments.'''
+
+    from httpie.cli.definition import parser as http_parser
+    from httpie.cli.manager import COMMANDS
+
+    # If the user already selected a top-level sub-command, never
+    # show the http/https version. E.g httpie plugins pie.dev/post
+    if (
+        len(args) >= 1
+        and args[0] in COMMANDS
+    ):
+        return False
+
+    with env.as_silent():
+        try:
+            http_parser.parse_args(env=env, args=args)
+        except (Exception, SystemExit):
+            return False
+        else:
+            return True
+
+
+def main(args: List[Union[str, bytes]] = sys.argv, env: Environment = Environment()) -> ExitStatus:
     from httpie.core import raw_main
 
-    return raw_main(
-        parser=parser,
-        main_program=manager,
-        **kwargs
-    )
+    try:
+        return raw_main(
+            parser=parser,
+            main_program=manager,
+            args=args,
+            env=env
+        )
+    except argparse.ArgumentError:
+        program_args = args[1:]
+        if is_http_command(program_args, env):
+            env.stderr.write(
+                '\nThis command is for managing HTTPie plugins.\n'
+                'You probably meant one of the following: \n'
+                f'    http {" ".join(program_args)}\n'
+                f'    https {" ".join(program_args)}\n\n'
+            )
+
+        return ExitStatus.ERROR
 
 
 def program():

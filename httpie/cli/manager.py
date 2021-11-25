@@ -1,5 +1,5 @@
 from textwrap import dedent
-from httpie.cli.argparser import BaseHTTPieArgumentParser
+from httpie.cli.argparser import HTTPieManagerArgumentParser
 
 COMMANDS = {
     'plugins': {
@@ -28,7 +28,7 @@ COMMANDS = {
 }
 
 
-def generate_subparsers(parent_parser, definitions):
+def generate_subparsers(root, parent_parser, definitions):
     action_dest = '_'.join(parent_parser.prog.split()[1:] + ['action'])
     actions = parent_parser.add_subparsers(
         dest=action_dest
@@ -37,15 +37,16 @@ def generate_subparsers(parent_parser, definitions):
         is_subparser = isinstance(properties, dict)
         descr = properties.pop('help', None) if is_subparser else properties.pop(0)
         command_parser = actions.add_parser(command, description=descr)
+        command_parser.root = root
         if is_subparser:
-            generate_subparsers(command_parser, properties)
+            generate_subparsers(root, command_parser, properties)
             continue
 
         for argument in properties:
             command_parser.add_argument(**argument)
 
 
-parser = BaseHTTPieArgumentParser(
+parser = HTTPieManagerArgumentParser(
     prog='httpie',
     description=dedent(
         '''
@@ -79,4 +80,4 @@ parser.add_argument(
     '''
 )
 
-generate_subparsers(parser, COMMANDS)
+generate_subparsers(parser, parser, COMMANDS)
