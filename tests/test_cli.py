@@ -132,7 +132,7 @@ class TestItemParsing:
                 self.key_value_arg('text_field=a'),
                 self.key_value_arg('text_field=b')
             ],
-            as_form=True,
+            request_type=constants.RequestType.FORM,
         )
         assert items.data['text_field'] == ['a', 'b']
         assert list(items.data.items()) == [

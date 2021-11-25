@@ -4,6 +4,7 @@ import pytest
 import responses
 
 from httpie.cli.constants import PRETTY_MAP
+from httpie.cli.exceptions import ParseError
 from httpie.compat import is_windows
 from httpie.output.formatters.colors import ColorFormatter
 from httpie.utils import JsonDictPreservingDuplicateKeys
@@ -116,3 +117,38 @@ def test_duplicate_keys_support_from_input_file():
     # Check --unsorted
     r = http(*args, '--unsorted')
     assert JSON_WITH_DUPES_FORMATTED_UNSORTED in r
+
+
+@pytest.mark.parametrize("value", [
+    1,
+    1.1,
+    True,
+    'some_value'
+])
+def test_simple_json_arguments_with_non_json(httpbin, value):
+    r = http(
+        '--form',
+        httpbin + '/post',
+        f'option:={json.dumps(value)}',
+    )
+    assert r.json['form'] == {'option': str(value)}
+
+
+@pytest.mark.parametrize("request_type", [
+    "--form",
+    "--multipart",
+])
+@pytest.mark.parametrize("value", [
+    [1, 2, 3],
+    {'a': 'b'},
+    None
+])
+def test_complex_json_arguments_with_non_json(httpbin, request_type, value):
+    with pytest.raises(ParseError) as cm:
+        http(
+            request_type,
+            httpbin + '/post',
+            f'option:={json.dumps(value)}',
+        )
+
+    cm.match('Can\'t use complex JSON value types')
