@@ -1,4 +1,5 @@
 import os
+import functools
 from typing import Callable, Dict, IO, List, Optional, Tuple, Union
 
 from .argtypes import KeyValueArg
@@ -7,7 +8,7 @@ from .constants import (
     SEPARATOR_DATA_EMBED_RAW_JSON_FILE,
     SEPARATOR_DATA_RAW_JSON, SEPARATOR_DATA_STRING, SEPARATOR_FILE_UPLOAD,
     SEPARATOR_FILE_UPLOAD_TYPE, SEPARATOR_HEADER, SEPARATOR_HEADER_EMPTY,
-    SEPARATOR_QUERY_PARAM,
+    SEPARATOR_QUERY_PARAM, RequestType
 )
 from .dicts import (
     BaseMultiDict, MultipartRequestDataDict, RequestDataDict,
@@ -20,9 +21,11 @@ from ..utils import get_content_type, load_json_preserve_order_and_dupe_keys
 
 class RequestItems:
 
-    def __init__(self, as_form=False):
+    def __init__(self, request_type: Optional[RequestType] = None):
         self.headers = HTTPHeadersDict()
-        self.data = RequestDataDict() if as_form else RequestJSONDataDict()
+        self.request_type = request_type
+        self.is_json = request_type is None or request_type is RequestType.JSON
+        self.data = RequestJSONDataDict() if self.is_json else RequestDataDict()
         self.files = RequestFilesDict()
         self.params = RequestQueryParamsDict()
         # To preserve the order of fields in file upload multipart requests.
@@ -32,9 +35,9 @@ class RequestItems:
     def from_args(
         cls,
         request_item_args: List[KeyValueArg],
-        as_form=False,
+        request_type: Optional[RequestType] = None,
     ) -> 'RequestItems':
-        instance = cls(as_form=as_form)
+        instance = cls(request_type=request_type)
         rules: Dict[str, Tuple[Callable, dict]] = {
             SEPARATOR_HEADER: (
                 process_header_arg,
@@ -61,11 +64,11 @@ class RequestItems:
                 instance.data,
             ),
             SEPARATOR_DATA_RAW_JSON: (
-                process_data_raw_json_embed_arg,
+                json_only(instance, process_data_raw_json_embed_arg),
                 instance.data,
             ),
             SEPARATOR_DATA_EMBED_RAW_JSON_FILE: (
-                process_data_embed_raw_json_file_arg,
+                json_only(instance, process_data_embed_raw_json_file_arg),
                 instance.data,
             ),
         }
@@ -125,6 +128,29 @@ def process_data_item_arg(arg: KeyValueArg) -> str:
 
 def process_data_embed_file_contents_arg(arg: KeyValueArg) -> str:
     return load_text_file(arg)
+
+
+def json_only(items: RequestItems, func: Callable[[KeyValueArg], JSONType]) -> str:
+    if items.is_json:
+        return func
+
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs) -> str:
+        try:
+            ret = func(*args, **kwargs)
+        except ParseError:
+            ret = None
+
+        # If it is a basic type, then allow it
+        if isinstance(ret, (str, int, float)):
+            return str(ret)
+        else:
+            raise ParseError(
+                'Can\'t use complex JSON value types with '
+                '--form/--multipart.'
+            )
+
+    return wrapper
 
 
 def process_data_embed_raw_json_file_arg(arg: KeyValueArg) -> JSONType:

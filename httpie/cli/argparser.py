@@ -364,7 +364,7 @@ class HTTPieArgumentParser(argparse.ArgumentParser):
         try:
             request_items = RequestItems.from_args(
                 request_item_args=self.args.request_items,
-                as_form=self.args.form,
+                request_type=self.args.request_type,
             )
         except ParseError as e:
             if self.args.traceback:

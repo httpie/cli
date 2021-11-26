@@ -710,6 +710,10 @@ Host: pie.dev
 }
 ```
 
+The `:=`/`:=@` syntax is JSON-specific. You can switch your request to `--form` or `--multipart`,
+and string, float, and number values will continue to be serialized (as string form values).
+Other JSON types, however, are not allowed with `--form` or `--multipart`.
+
 ### Raw and complex JSON
 
 Please note that with the [request items](#request-items) data field syntax, commands can quickly become unwieldy when sending complex structures.
