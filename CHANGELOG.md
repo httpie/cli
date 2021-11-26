@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 ## [3.0.0.dev0](https://github.com/httpie/httpie/compare/2.6.0...master) (unreleased)
 
 - Improved startup time by 40%. ([#1211](https://github.com/httpie/httpie/pull/1211))
+- Added support for nested JSON syntax. ([#1169](https://github.com/httpie/httpie/issues/1169))
 - Added `httpie plugins` interface for plugin management. ([#566](https://github.com/httpie/httpie/issues/566))
 - Added support for Bearer authentication via `--auth-type=bearer` ([#1215](https://github.com/httpie/httpie/issues/1215)).
 - Added support for quick conversions of pasted URLs into HTTPie calls by adding a space after the protocol name (`$ https ://pie.dev` → `https://pie.dev`). ([#1195](https://github.com/httpie/httpie/issues/1195))
