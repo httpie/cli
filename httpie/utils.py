@@ -13,7 +13,6 @@ from typing import Any, List, Optional, Tuple
 
 import requests.auth
 
-
 RE_COOKIE_SPLIT = re.compile(r', (?=[^ ;]+=)')
 Item = Tuple[str, Any]
 Items = List[Item]

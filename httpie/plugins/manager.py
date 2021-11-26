@@ -3,7 +3,7 @@ import os
 
 from itertools import groupby
 from operator import attrgetter
-from typing import Dict, List, Type, TypeVar, Optional, ContextManager
+from typing import Dict, List, Type, Iterator, TypeVar, Optional, ContextManager
 from pathlib import Path
 from contextlib import contextmanager
 
@@ -24,7 +24,7 @@ ENTRY_POINT_NAMES = list(ENTRY_POINT_CLASSES.keys())
 
 
 @contextmanager
-def _load_directory(plugins_dir: Path) -> ContextManager[None]:
+def _load_directory(plugins_dir: Path) -> Iterator[None]:
     plugins_path = os.fspath(plugins_dir)
     sys.path.insert(0, plugins_path)
     try:
@@ -37,7 +37,7 @@ T = TypeVar("T")
 
 
 @contextmanager
-def nullcontext(obj: T = None) -> ContextManager[T]:
+def nullcontext(obj: Optional[T] = None) -> Iterator[Optional[T]]:
     # A naive replacement of the nullcontext() for 3.6
     yield obj
 
