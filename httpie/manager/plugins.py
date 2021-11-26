@@ -1,21 +1,22 @@
 import argparse
 import os
-import textwrap
 import subprocess
 import sys
-
+import textwrap
 from collections import defaultdict
 from contextlib import suppress
 from pathlib import Path
-from typing import List, Union, Optional
+from typing import Optional, List
 
+import importlib_metadata
+
+from httpie.manager.cli import parser
+from httpie.compat import get_dist_name
 from httpie.context import Environment
-from httpie.compat import importlib_metadata, get_dist_name
 from httpie.status import ExitStatus
-from httpie.cli.manager import parser
 
 
-class Plugins:
+class PluginInstaller:
 
     def __init__(self, env: Environment, debug: bool = False) -> None:
         self.env = env
@@ -185,79 +186,3 @@ class Plugins:
                 status = self.list()
 
         return status or ExitStatus.SUCCESS
-
-
-def manager(args: argparse.Namespace, env: Environment) -> ExitStatus:
-    if args.action is None:
-        parser.error(
-            'Please specify one of these: "plugins"\n\n'
-            'This command is for managing HTTPie plugins.\n'
-            'Perhaps you are looking for http/https commands, e.g:\n'
-            '    http POST pie.dev/post hello=world'
-        )
-
-    if args.action == 'plugins':
-        plugins = Plugins(env, debug=args.debug)
-        return plugins.run(args.plugins_action, args)
-
-    return ExitStatus.SUCCESS
-
-
-def is_http_command(args: List[Union[str, bytes]], env: Environment) -> ExitStatus:
-    '''Check whether http/https parser can parse the arguments.'''
-
-    from httpie.cli.definition import parser as http_parser
-    from httpie.cli.manager import COMMANDS
-
-    # If the user already selected a top-level sub-command, never
-    # show the http/https version. E.g httpie plugins pie.dev/post
-    if (
-        len(args) >= 1
-        and args[0] in COMMANDS
-    ):
-        return False
-
-    with env.as_silent():
-        try:
-            http_parser.parse_args(env=env, args=args)
-        except (Exception, SystemExit):
-            return False
-        else:
-            return True
-
-
-def main(args: List[Union[str, bytes]] = sys.argv, env: Environment = Environment()) -> ExitStatus:
-    from httpie.core import raw_main
-
-    try:
-        return raw_main(
-            parser=parser,
-            main_program=manager,
-            args=args,
-            env=env
-        )
-    except argparse.ArgumentError:
-        program_args = args[1:]
-        if is_http_command(program_args, env):
-            env.stderr.write(
-                '\nThis command is for managing HTTPie plugins.\n'
-                'You probably meant one of the following: \n'
-                f'    http {" ".join(program_args)}\n'
-                f'    https {" ".join(program_args)}\n\n'
-            )
-
-        return ExitStatus.ERROR
-
-
-def program():
-    try:
-        exit_status = main()
-    except KeyboardInterrupt:
-        from httpie.status import ExitStatus
-        exit_status = ExitStatus.ERROR_CTRL_C
-
-    return exit_status
-
-
-if __name__ == '__main__':  # pragma: nocover
-    sys.exit(program())

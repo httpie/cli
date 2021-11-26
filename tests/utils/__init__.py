@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any, Optional, Union, List, Iterable
 
 import httpie.core as core
-import httpie.manager as manager
+import httpie.manager.__main__ as manager
 
 from httpie.status import ExitStatus
 from httpie.config import Config
