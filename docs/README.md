@@ -710,9 +710,9 @@ Host: pie.dev
 }
 ```
 
-Be aware that when using this syntax with form data (`--form` is activated);
-only strings, numbers and floats are enabled. Rest of the JSON types are not
-available.
+The `:=`/`:=@` syntax is JSON-specific. You can switch your request to `--form` or `--multipart`,
+and string, float, and number values will continue to be serialized (as string form values).
+Other JSON types, however, are not allowed with `--form` or `--multipart`.
 
 ### Raw and complex JSON
 
