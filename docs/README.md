@@ -1003,10 +1003,10 @@ the [sessions](#sessions) feature.
 
 The currently supported authentication schemes are Basic and Digest (see [auth plugins](#auth-plugins) for more). There are two flags that control authentication:
 
-|              Flag | Arguments                                                                                                                                                                                                                                                                                                                                 |
-| ----------------: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-|      `--auth, -a` | Pass a `username:password` pair as the argument. Or, if you only specify a username (`-a username`), you’ll be prompted for the password before the request is sent. To send an empty password, pass `username:`. The `username:password@hostname` URL syntax is supported as well (but credentials passed via `-a` have higher priority) |
-| `--auth-type, -A` | Specify the auth mechanism. Possible values are `basic`, `digest`, or the name of any [auth plugins](#auth-plugins) you have installed. The default value is `basic` so it can often be omitted                                                                                                                                           |
+|              Flag | Arguments                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| ----------------: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|      `--auth, -a` | Pass either a `username:password` pair or a `token` as the argument. If the selected authenticated method requires username/password combination and if you only specify a username (`-a username`), you’ll be prompted for the password before the request is sent. To send an empty password, pass `username:`. The `username:password@hostname` URL syntax is supported as well (but credentials passed via `-a` have higher priority) |
+| `--auth-type, -A` | Specify the auth mechanism. Possible values are `basic`, `digest`, `bearer` or the name of any [auth plugins](#auth-plugins) you have installed. The default value is `basic` so it can often be omitted                                                                                                                                                                                                                                  |
 
 ### Basic auth
 
@@ -1018,6 +1018,12 @@ $ http -a username:password pie.dev/basic-auth/username/password
 
 ```bash
 $ http -A digest -a username:password pie.dev/digest-auth/httpie/username/password
+```
+
+### Bearer auth
+
+```bash
+https -A bearer -a token pie.dev/bearer
 ```
 
 ### Password prompt
