@@ -17,6 +17,9 @@ exclude_rule 'MD013'
 # MD014 Dollar signs used before commands without showing output
 exclude_rule 'MD014'
 
+# MD028 Blank line inside blockquote
+exclude_rule 'MD028'
+
 # Tell the linter to use ordered lists:
 #   1. Foo
 #   2. Bar

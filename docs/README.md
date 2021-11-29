@@ -1915,34 +1915,45 @@ And since there’s neither data nor `EOF`, it will get stuck. So unless you’r
 
 Also, it might be good to set a connection `--timeout` limit to prevent your program from hanging if the server never responds.
 
-## Manager
+## Plugins Manager
 
-HTTPie comes with an additional `httpie` command to manage it's own state, configuration
-and plugins.
+HTTPie offers extensibility through plugins, and there are over 50+ of them available to try!
+They add things like new authentication methods ([akamai/httpie-edgegrid](https://github.com/akamai/httpie-edgegrid)),
+transport mechanisms ([httpie/httpie-unixsocket](https://github.com/httpie/httpie-unixsocket)),
+message convertors ([banteg/httpie-image](https://github.com/banteg/httpie-image)), or simply
+change how a response is formatted.
+
+> Note: Plugins are usually made by our community members, and thus have no direct relationship with
+> the HTTPie project. We do not control / review them at the moment, so use them at your own discretion.
+
+For managing these plugins; starting with 3.0, we are offering a new plugin manager.
 
 This command is currently experimental.
 
 ### `httpie plugins`
 
-For cases where the HTTPie interpreter is bundled with it's own Python interpreter and the environment
-is different than what you can access through regular `pip` invocations, or when you want to install
-plugins in an isolated place outside of your standard environment which the HTTPie is installed; `httpie
-plugins` interface can be used to simply manage the state of plugins.
+`plugins` interface is a very simple plugin manager for installing, listing and uninstalling HTTPie plugins.
 
-By default the plugins (and their missing dependencies) will be stored under the configuration directory,
+> In the past `pip` was used to install/uninstall plugins, but on some environments (e.g brew installed
+packages) it wasn't working properly. The new interface is a very simple overlay on top of `pip` to allow
+plugin installations on every installation method.
+
+> By default the plugins (and their missing dependencies) will be stored under the configuration directory,
 but this can be modified through `plugins_dir` variable on the config.
 
 #### `httpie plugins install`
 
 For installing plugins from [PyPI](https://pypi.org/) or from local paths, `httpie plugins install`
-can be used with multiple targets.
+can be used.
 
 ```bash
 $ httpie plugins install httpie-plugin
 Installing httpie-plugin...
-<logs>
 Successfully installed httpie-plugin-1.0.2
 ```
+
+> Tip: Generally HTTPie plugins start with `httpie-` prefix. Try searching for it on [PyPI](https://pypi.org/)
+> to find out all plugins from the community.
 
 #### `httpie plugins list`
 

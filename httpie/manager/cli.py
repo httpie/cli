@@ -28,6 +28,16 @@ COMMANDS = {
 }
 
 
+def missing_subcommand(*args) -> str:
+    base = COMMANDS
+    for arg in args:
+        base = base[arg]
+
+    assert isinstance(base, dict)
+    subcommands = ', '.join(map(repr, base.keys()))
+    return f'Please specify one of these: {subcommands}'
+
+
 def generate_subparsers(root, parent_parser, definitions):
     action_dest = '_'.join(parent_parser.prog.split()[1:] + ['action'])
     actions = parent_parser.add_subparsers(

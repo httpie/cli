@@ -3,7 +3,7 @@ import argparse
 from httpie.context import Environment
 from httpie.manager.plugins import PluginInstaller
 from httpie.status import ExitStatus
-from httpie.manager.cli import COMMANDS, parser
+from httpie.manager.cli import missing_subcommand, parser
 
 MSG_COMMAND_CONFUSION = '''\
 This command is only for managing HTTPie plugins.
@@ -16,7 +16,7 @@ To send a request, please use the http/https commands:
 
 # noinspection PyStringFormat
 MSG_NAKED_INVOCATION = f'''\
-Please specify one of these: {', '.join(map(repr, COMMANDS))}
+{missing_subcommand()}
 
 {MSG_COMMAND_CONFUSION}
 '''.rstrip("\n").format(args='POST pie.dev/post hello=world')

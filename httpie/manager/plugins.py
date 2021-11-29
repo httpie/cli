@@ -10,7 +10,7 @@ from typing import Optional, List
 
 import importlib_metadata
 
-from httpie.manager.cli import parser
+from httpie.manager.cli import parser, missing_subcommand
 from httpie.compat import get_dist_name
 from httpie.context import Environment
 from httpie.status import ExitStatus
@@ -175,7 +175,7 @@ class PluginInstaller:
         from httpie.plugins.manager import enable_plugins
 
         if action is None:
-            parser.error('please specify one of these: \'install\', \'uninstall\', \'list\'')
+            parser.error(missing_subcommand('plugins'))
 
         with enable_plugins(self.dir):
             if action == 'install':
