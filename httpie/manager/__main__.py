@@ -4,39 +4,9 @@ import sys
 from typing import List, Union
 
 from httpie.context import Environment
-from httpie.manager.plugins import PluginInstaller
 from httpie.status import ExitStatus
 from httpie.manager.cli import parser
-
-
-MSG_COMMAND_CONFUSION = '''
-This command is only for managing HTTPie plugins.
-To send a request, please use the http/https commands:
-
-  $ http {args}
-
-  $ https {args}
-
-'''
-
-# noinspection PyStringFormat
-MSG_NAKED_INVOCATION = f'''\
-Please specify one of these: "plugins"
-
-{MSG_COMMAND_CONFUSION}
-
-'''.format(args='POST pie.dev/post hello=world')
-
-
-def manager(args: argparse.Namespace, env: Environment) -> ExitStatus:
-    if args.action is None:
-        parser.error(MSG_NAKED_INVOCATION)
-
-    if args.action == 'plugins':
-        plugins = PluginInstaller(env, debug=args.debug)
-        return plugins.run(args.plugins_action, args)
-
-    return ExitStatus.SUCCESS
+from httpie.manager.core import MSG_COMMAND_CONFUSION, program as main_program
 
 
 def is_http_command(args: List[Union[str, bytes]], env: Environment) -> bool:
@@ -68,14 +38,14 @@ def main(args: List[Union[str, bytes]] = sys.argv, env: Environment = Environmen
     try:
         return raw_main(
             parser=parser,
-            main_program=manager,
+            main_program=main_program,
             args=args,
             env=env
         )
     except argparse.ArgumentError:
         program_args = args[1:]
         if is_http_command(program_args, env):
-            env.stderr.write(MSG_COMMAND_CONFUSION.format(args=' '.join(program_args)))
+            env.stderr.write(MSG_COMMAND_CONFUSION.format(args=' '.join(program_args)) + "\n")
 
         return ExitStatus.ERROR
 

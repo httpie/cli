@@ -97,7 +97,9 @@ def test_plugins_cli_error_message_without_args():
     # No arguments
     result = httpie(no_debug=True)
     assert result.exit_status == ExitStatus.ERROR
-    assert 'Perhaps you are looking for http/https commands' in result.stderr
+    assert 'usage: ' in result.stderr
+    assert 'specify one of these' in result.stderr
+    assert 'please use the http/https commands:' in result.stderr
 
 
 @pytest.mark.parametrize(
@@ -110,7 +112,7 @@ def test_plugins_cli_error_message_without_args():
 def test_plugins_cli_error_messages_with_example(example):
     result = httpie(*example.split(), no_debug=True)
     assert result.exit_status == ExitStatus.ERROR
-    assert 'You probably meant one of the following' in result.stderr
+    assert 'usage: ' in result.stderr
     assert f'http {example}' in result.stderr
     assert f'https {example}' in result.stderr
 
@@ -125,5 +127,6 @@ def test_plugins_cli_error_messages_with_example(example):
 def test_plugins_cli_error_messages_invalid_example(example):
     result = httpie(*example.split(), no_debug=True)
     assert result.exit_status == ExitStatus.ERROR
-    assert 'You probably meant one of the following' not in result.stderr
-    assert example not in result.stderr
+    assert 'usage: ' in result.stderr
+    assert f'http {example}' not in result.stderr
+    assert f'https {example}' not in result.stderr
