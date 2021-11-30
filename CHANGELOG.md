@@ -9,6 +9,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - Added support for receving multiple HTTP headers with the same name, individually. ([#1207](https://github.com/httpie/httpie/issues/1207))
 - Added support for keeping `://` in the URL argument to allow quick conversions of pasted URLs into HTTPie calls just by adding a space after the protocol name (`$ https ://pie.dev` → `https://pie.dev`). ([#1195](https://github.com/httpie/httpie/issues/1195))
 - Added support for basic JSON types on `--form`/`--multipart` when using JSON only operators (`:=`/`:=@`). ([#1212](https://github.com/httpie/httpie/issues/1212))
+- Improved startup time with lazily loading pygments plugins, the speed-up ranges from %30 to %45. ([#1211](https://github.com/httpie/httpie/pull/1211))
 
 ## [2.6.0](https://github.com/httpie/httpie/compare/2.5.0...2.6.0) (2021-10-14)
 
