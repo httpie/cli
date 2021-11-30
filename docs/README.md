@@ -1876,6 +1876,11 @@ $ cat ~/.config/httpie/config.json
 Technically, it is possible to include any HTTPie options in there.
 However, it is not recommended to modify the default behavior in a way that would break your compatibility with the wider world as that may become confusing.
 
+#### `plugins_dir`
+
+The directory where the plugins will be installed. HTTPie needs to have read/write access on that directory, since
+`httpie plugins install` will download new plugins to there.
+
 ### Un-setting previously specified options
 
 Default options from the config file, or specified any other way, can be unset for a particular invocation via `--no-OPTION` arguments passed via the command line (e.g., `--no-style` or `--no-session`).
@@ -1928,7 +1933,7 @@ change how a response is formatted.
 
 For managing these plugins; starting with 3.0, we are offering a new plugin manager.
 
-This command is currently experimental.
+This command is currently in beta.
 
 ### `httpie plugins`
 
@@ -1952,7 +1957,7 @@ Installing httpie-plugin...
 Successfully installed httpie-plugin-1.0.2
 ```
 
-> Tip: Generally HTTPie plugins start with `httpie-` prefix. Try searching for it on [PyPI](https://pypi.org/)
+> Tip: Generally HTTPie plugins start with `httpie-` prefix. Try searching for it on [PyPI](https://pypi.org/search/?q=httpie-)
 > to find out all plugins from the community.
 
 #### `httpie plugins list`

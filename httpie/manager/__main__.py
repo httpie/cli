@@ -17,10 +17,7 @@ def is_http_command(args: List[Union[str, bytes]], env: Environment) -> bool:
 
     # If the user already selected a top-level sub-command, never
     # show the http/https version. E.g httpie plugins pie.dev/post
-    if (
-        len(args) >= 1
-        and args[0] in COMMANDS
-    ):
+    if len(args) >= 1 and args[0] in COMMANDS:
         return False
 
     with env.as_silent():
