@@ -18,9 +18,10 @@ class LazyChoices(argparse.Action, Generic[T]):
         self.help_formatter = help_formatter
         self.sort = sort
         self.cache = cache
-        self._help = kwargs.pop("help", None)
+        self._help: Optional[str] = None
         self._obj: Optional[Iterable[T]] = None
         super().__init__(*args, **kwargs)
+        self.choices = self
 
     def load(self) -> T:
         if self._obj is None or not self.cache:
@@ -31,7 +32,7 @@ class LazyChoices(argparse.Action, Generic[T]):
 
     @property
     def help(self) -> str:
-        if self._help is None:
+        if self._help is None and self.help_formatter is not None:
             self._help = self.help_formatter(self.load())
         return self._help
 
