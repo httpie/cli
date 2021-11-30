@@ -8,7 +8,7 @@ from .constants import (
     SEPARATOR_DATA_EMBED_RAW_JSON_FILE,
     SEPARATOR_DATA_RAW_JSON, SEPARATOR_DATA_STRING, SEPARATOR_FILE_UPLOAD,
     SEPARATOR_FILE_UPLOAD_TYPE, SEPARATOR_HEADER, SEPARATOR_HEADER_EMPTY,
-    SEPARATOR_QUERY_PARAM, RequestType
+    SEPARATOR_QUERY_PARAM, SEPARATOR_QUERY_EMBED_FILE, RequestType
 )
 from .dicts import (
     BaseMultiDict, MultipartRequestDataDict, RequestDataDict,
@@ -49,6 +49,10 @@ class RequestItems:
             ),
             SEPARATOR_QUERY_PARAM: (
                 process_query_param_arg,
+                instance.params,
+            ),
+            SEPARATOR_QUERY_EMBED_FILE: (
+                process_embed_query_param_arg,
                 instance.params,
             ),
             SEPARATOR_FILE_UPLOAD: (
@@ -105,6 +109,10 @@ def process_empty_header_arg(arg: KeyValueArg) -> str:
 
 def process_query_param_arg(arg: KeyValueArg) -> str:
     return arg.value
+
+
+def process_embed_query_param_arg(arg: KeyValueArg) -> str:
+    return load_text_file(arg).rstrip('\n')
 
 
 def process_file_upload_arg(arg: KeyValueArg) -> Tuple[str, IO, str]:
