@@ -19,8 +19,9 @@ from .constants import (
     SORTED_FORMAT_OPTIONS_STRING,
     UNSORTED_FORMAT_OPTIONS_STRING,
 )
+from .utils import LazyChoices
 from ..output.formatters.colors import (
-    AUTO_STYLE, AVAILABLE_STYLES, DEFAULT_STYLE,
+    AUTO_STYLE, DEFAULT_STYLE, get_available_styles
 )
 from ..plugins.builtin import BuiltinAuthPlugin
 from ..plugins.registry import plugin_manager
@@ -41,6 +42,7 @@ parser = HTTPieArgumentParser(
 
     '''),
 )
+parser.register('action', 'lazy_choices', LazyChoices)
 
 #######################################################################
 # Positional arguments.
@@ -247,32 +249,38 @@ output_processing.add_argument(
 
     '''
 )
+
+
+def format_style_help(available_styles):
+    return '''
+    Output coloring style (default is "{default}"). It can be one of:
+
+        {available_styles}
+
+    The "{auto_style}" style follows your terminal's ANSI color styles.
+    For non-{auto_style} styles to work properly, please make sure that the
+    $TERM environment variable is set to "xterm-256color" or similar
+    (e.g., via `export TERM=xterm-256color' in your ~/.bashrc).
+    '''.format(
+        default=DEFAULT_STYLE,
+        available_styles='\n'.join(
+            f'        {line.strip()}'
+            for line in wrap(', '.join(available_styles), 60)
+        ).strip(),
+        auto_style=AUTO_STYLE,
+    )
+
+
 output_processing.add_argument(
     '--style', '-s',
     dest='style',
     metavar='STYLE',
     default=DEFAULT_STYLE,
-    choices=sorted(AVAILABLE_STYLES),
-    help='''
-    Output coloring style (default is "{default}"). It can be One of:
-
-        {available_styles}
-
-    The "{auto_style}" style follows your terminal's ANSI color styles.
-
-    For non-{auto_style} styles to work properly, please make sure that the
-    $TERM environment variable is set to "xterm-256color" or similar
-    (e.g., via `export TERM=xterm-256color' in your ~/.bashrc).
-
-    '''.format(
-        default=DEFAULT_STYLE,
-        available_styles='\n'.join(
-            f'        {line.strip()}'
-            for line in wrap(', '.join(sorted(AVAILABLE_STYLES)), 60)
-        ).strip(),
-        auto_style=AUTO_STYLE,
-    )
+    action='lazy_choices',
+    getter=get_available_styles,
+    help_formatter=format_style_help
 )
+
 _sorted_kwargs = {
     'action': 'append_const',
     'const': SORTED_FORMAT_OPTIONS_STRING,
@@ -563,27 +571,14 @@ auth.add_argument(
 )
 
 
-class _AuthTypeLazyChoices:
-    # Needed for plugin testing
-
-    def __contains__(self, item):
-        return item in plugin_manager.get_auth_plugin_mapping()
-
-    def __iter__(self):
-        return iter(sorted(plugin_manager.get_auth_plugin_mapping().keys()))
-
-
-_auth_plugins = plugin_manager.get_auth_plugins()
-auth.add_argument(
-    '--auth-type', '-A',
-    choices=_AuthTypeLazyChoices(),
-    default=None,
-    help='''
+def format_auth_help(auth_plugins_mapping):
+    auth_plugins = list(auth_plugins_mapping.values())
+    return '''
     The authentication mechanism to be used. Defaults to "{default}".
 
     {types}
 
-    '''.format(default=_auth_plugins[0].auth_type, types='\n    '.join(
+    '''.format(default=auth_plugins[0].auth_type, types='\n    '.join(
         '"{type}": {name}{package}{description}'.format(
             type=plugin.auth_type,
             name=plugin.name,
@@ -596,8 +591,18 @@ auth.add_argument(
                 '\n      ' + ('\n      '.join(wrap(plugin.description)))
             )
         )
-        for plugin in _auth_plugins
-    )),
+        for plugin in auth_plugins
+    ))
+
+
+auth.add_argument(
+    '--auth-type', '-A',
+    action='lazy_choices',
+    default=None,
+    getter=plugin_manager.get_auth_plugin_mapping,
+    sort=True,
+    cache=False,
+    help_formatter=format_auth_help,
 )
 auth.add_argument(
     '--ignore-netrc',
