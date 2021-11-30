@@ -56,6 +56,7 @@ export PYTHONPATH=%{buildroot}%{python3_sitelib}
 mkdir -p %{buildroot}%{_mandir}/man1
 help2man %{buildroot}%{_bindir}/http > %{buildroot}%{_mandir}/man1/http.1
 help2man %{buildroot}%{_bindir}/https > %{buildroot}%{_mandir}/man1/https.1
+help2man %{buildroot}%{_bindir}/httpie > %{buildroot}%{_mandir}/man1/httpie.1
 
 
 %check
@@ -67,8 +68,10 @@ help2man %{buildroot}%{_bindir}/https > %{buildroot}%{_mandir}/man1/https.1
 %license LICENSE
 %{_bindir}/http
 %{_bindir}/https
+%{_bindir}/httpie
 %{_mandir}/man1/http.1*
 %{_mandir}/man1/https.1*
+%{_mandir}/man1/httpie.1*
 # we co-own the entire directory structures for bash/fish completion to avoid a dependency
 %{_datadir}/bash-completion/
 %{_datadir}/fish/

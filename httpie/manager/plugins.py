@@ -8,10 +8,8 @@ from contextlib import suppress
 from pathlib import Path
 from typing import Optional, List
 
-import importlib_metadata
-
 from httpie.manager.cli import parser, missing_subcommand
-from httpie.compat import get_dist_name
+from httpie.compat import importlib_metadata, get_dist_name
 from httpie.context import Environment
 from httpie.status import ExitStatus
 
