@@ -1,5 +1,6 @@
 from textwrap import dedent
 from httpie.cli.argparser import HTTPieManagerArgumentParser
+from httpie import __version__
 
 COMMANDS = {
     'plugins': {
@@ -86,6 +87,16 @@ parser.add_argument(
     default=False,
     help='''
     Prints the exception traceback should one occur.
+
+    '''
+)
+
+parser.add_argument(
+    '--version',
+    action='version',
+    version=__version__,
+    help='''
+    Show version and exit.
 
     '''
 )
