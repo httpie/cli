@@ -7,12 +7,14 @@ import json
 import tempfile
 from io import BytesIO
 from pathlib import Path
-from typing import Optional, Union, List
+from typing import Any, Optional, Union, List, Iterable
+
+import httpie.core as core
+import httpie.manager.__main__ as manager
 
 from httpie.status import ExitStatus
 from httpie.config import Config
 from httpie.context import Environment
-from httpie.core import main
 
 
 # pytest-httpbin currently does not support chunked requests:
@@ -58,10 +60,10 @@ class MockEnvironment(Environment):
     stdout_isatty = True
     is_windows = False
 
-    def __init__(self, create_temp_config_dir=True, **kwargs):
+    def __init__(self, create_temp_config_dir=True, *, stdout_mode='b', **kwargs):
         if 'stdout' not in kwargs:
             kwargs['stdout'] = tempfile.TemporaryFile(
-                mode='w+b',
+                mode=f'w+{stdout_mode}',
                 prefix='httpie_stdout'
             )
         if 'stderr' not in kwargs:
@@ -177,6 +179,46 @@ class ExitStatusError(Exception):
     pass
 
 
+def normalize_args(args: Iterable[Any]) -> List[str]:
+    return [str(arg) for arg in args]
+
+
+def httpie(
+    *args,
+    **kwargs
+) -> StrCLIResponse:
+    """
+    Run HTTPie manager command with the given
+    args/kwargs, and capture stderr/out and exit
+    status.
+    """
+
+    env = kwargs.setdefault('env', MockEnvironment())
+    cli_args = ['httpie']
+    if not kwargs.pop('no_debug', False):
+        cli_args.append('--debug')
+    cli_args += normalize_args(args)
+    exit_status = manager.main(
+        args=cli_args,
+        **kwargs
+    )
+
+    env.stdout.seek(0)
+    env.stderr.seek(0)
+    try:
+        response = StrCLIResponse(env.stdout.read())
+        response.stderr = env.stderr.read()
+        response.exit_status = exit_status
+        response.args = cli_args
+    finally:
+        env.stdout.truncate(0)
+        env.stderr.truncate(0)
+        env.stdout.seek(0)
+        env.stderr.seek(0)
+
+    return response
+
+
 def http(
     *args,
     program_name='http',
@@ -254,7 +296,7 @@ def http(
 
     try:
         try:
-            exit_status = main(args=complete_args, **kwargs)
+            exit_status = core.main(args=complete_args, **kwargs)
             if '--download' in args:
                 # Let the progress reporter thread finish.
                 time.sleep(.5)

@@ -1,7 +1,8 @@
 import sys
 import os
+from contextlib import contextmanager
 from pathlib import Path
-from typing import IO, Optional
+from typing import Iterator, IO, Optional
 
 
 try:
@@ -119,6 +120,19 @@ class Environment:
         if self._devnull is None:
             self._devnull = open(os.devnull, 'w+')
         return self._devnull
+
+    @contextmanager
+    def as_silent(self) -> Iterator[None]:
+        original_stdout = self.stdout
+        original_stderr = self.stderr
+
+        try:
+            self.stdout = self.devnull
+            self.stderr = self.devnull
+            yield
+        finally:
+            self.stdout = original_stdout
+            self.stderr = original_stderr
 
     def log_error(self, msg, level='error'):
         assert level in ['error', 'warning']

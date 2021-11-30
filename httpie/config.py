@@ -128,3 +128,7 @@ class Config(BaseConfigDict):
     @property
     def default_options(self) -> list:
         return self['default_options']
+
+    @property
+    def plugins_dir(self) -> Path:
+        return Path(self.get('plugins_dir', self.directory / 'plugins')).resolve()

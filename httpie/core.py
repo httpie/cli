@@ -2,7 +2,7 @@ import argparse
 import os
 import platform
 import sys
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Tuple, Union, Callable
 
 import requests
 from pygments import __version__ as pygments_version
@@ -24,22 +24,16 @@ from .status import ExitStatus, http_status_to_exit_status
 
 
 # noinspection PyDefaultArgument
-def main(args: List[Union[str, bytes]] = sys.argv, env=Environment()) -> ExitStatus:
-    """
-    The main function.
-
-    Pre-process args, handle some special types of invocations,
-    and run the main program with error handling.
-
-    Return exit status code.
-
-    """
+def raw_main(
+    parser: argparse.ArgumentParser,
+    main_program: Callable[[argparse.Namespace, Environment], ExitStatus],
+    args: List[Union[str, bytes]] = sys.argv,
+    env: Environment = Environment()
+) -> ExitStatus:
     program_name, *args = args
     env.program_name = os.path.basename(program_name)
     args = decode_raw_args(args, env.stdin_encoding)
-    plugin_manager.load_installed_plugins()
-
-    from .cli.definition import parser
+    plugin_manager.load_installed_plugins(env.config.plugins_dir)
 
     if env.config.default_options:
         args = env.config.default_options + args
@@ -72,7 +66,7 @@ def main(args: List[Union[str, bytes]] = sys.argv, env=Environment()) -> ExitSta
             exit_status = ExitStatus.ERROR
     else:
         try:
-            exit_status = program(
+            exit_status = main_program(
                 args=parsed_args,
                 env=env,
             )
@@ -112,6 +106,30 @@ def main(args: List[Union[str, bytes]] = sys.argv, env=Environment()) -> ExitSta
             exit_status = ExitStatus.ERROR
 
     return exit_status
+
+
+def main(
+    args: List[Union[str, bytes]] = sys.argv,
+    env: Environment = Environment()
+) -> ExitStatus:
+    """
+    The main function.
+
+    Pre-process args, handle some special types of invocations,
+    and run the main program with error handling.
+
+    Return exit status code.
+
+    """
+
+    from .cli.definition import parser
+
+    return raw_main(
+        parser=parser,
+        main_program=program,
+        args=args,
+        env=env
+    )
 
 
 def get_output_options(

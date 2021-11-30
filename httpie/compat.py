@@ -1,4 +1,5 @@
 import sys
+from typing import Any, Optional, Iterable
 
 
 is_windows = 'win32' in str(sys.platform).lower()
@@ -52,3 +53,38 @@ except ImportError:
                 return self
             res = instance.__dict__[self.name] = self.func(instance)
             return res
+
+
+# importlib_metadata was a provisional module, so the APIs changed quite a few times
+# between 3.8-3.10. It was also not included in the standard library until 3.8, so
+# we install the backport for <3.8.
+
+if sys.version_info >= (3, 8):
+    import importlib.metadata as importlib_metadata
+else:
+    import importlib_metadata
+
+
+def find_entry_points(entry_points: Any, group: str) -> Iterable[importlib_metadata.EntryPoint]:
+    if hasattr(entry_points, "select"):  # Python 3.10+ / importlib_metadata >= 3.9.0
+        return entry_points.select(group=group)
+    else:
+        return set(entry_points.get(group, ()))
+
+
+def get_dist_name(entry_point: importlib_metadata.EntryPoint) -> Optional[str]:
+    dist = getattr(entry_point, "dist", None)
+    if dist is not None:  # Python 3.10+
+        return dist.name
+
+    match = entry_point.pattern.match(entry_point.value)
+    if not (match and match.group('module')):
+        return None
+
+    package = match.group('module').split('.')[0]
+    try:
+        metadata = importlib_metadata.metadata(package)
+    except importlib_metadata.PackageNotFoundError:
+        return None
+    else:
+        return metadata.get('name')

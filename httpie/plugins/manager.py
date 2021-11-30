@@ -1,24 +1,55 @@
+import sys
+import os
+
 from itertools import groupby
 from operator import attrgetter
-from typing import Dict, List, Type
+from typing import Dict, List, Type, Iterator, TypeVar, Optional, ContextManager
+from pathlib import Path
+from contextlib import contextmanager
 
-from pkg_resources import iter_entry_points
+from ..compat import importlib_metadata, find_entry_points, get_dist_name
 
-from ..utils import repr_dict
-from . import AuthPlugin, ConverterPlugin, FormatterPlugin
-from .base import BasePlugin, TransportPlugin
+from ..utils import repr_dict, as_site
+from . import AuthPlugin, ConverterPlugin, FormatterPlugin, TransportPlugin
+from .base import BasePlugin
 
 
-ENTRY_POINT_NAMES = [
-    'httpie.plugins.auth.v1',
-    'httpie.plugins.formatter.v1',
-    'httpie.plugins.converter.v1',
-    'httpie.plugins.transport.v1',
-]
+ENTRY_POINT_CLASSES = {
+    'httpie.plugins.auth.v1': AuthPlugin,
+    'httpie.plugins.converter.v1': ConverterPlugin,
+    'httpie.plugins.formatter.v1': FormatterPlugin,
+    'httpie.plugins.transport.v1': TransportPlugin
+}
+ENTRY_POINT_NAMES = list(ENTRY_POINT_CLASSES.keys())
+
+
+@contextmanager
+def _load_directory(plugins_dir: Path) -> Iterator[None]:
+    plugins_path = os.fspath(plugins_dir)
+    sys.path.insert(0, plugins_path)
+    try:
+        yield
+    finally:
+        sys.path.remove(plugins_path)
+
+
+T = TypeVar("T")
+
+
+@contextmanager
+def nullcontext(obj: Optional[T] = None) -> Iterator[Optional[T]]:
+    # A naive replacement of the nullcontext() for 3.6
+    yield obj
+
+
+def enable_plugins(plugins_dir: Optional[Path]) -> ContextManager[None]:
+    if plugins_dir is None:
+        return nullcontext()
+    else:
+        return _load_directory(as_site(plugins_dir))
 
 
 class PluginManager(list):
-
     def register(self, *plugins: Type[BasePlugin]):
         for plugin in plugins:
             self.append(plugin)
@@ -29,12 +60,18 @@ class PluginManager(list):
     def filter(self, by_type=Type[BasePlugin]):
         return [plugin for plugin in self if issubclass(plugin, by_type)]
 
-    def load_installed_plugins(self):
-        for entry_point_name in ENTRY_POINT_NAMES:
-            for entry_point in iter_entry_points(entry_point_name):
-                plugin = entry_point.load()
-                plugin.package_name = entry_point.dist.key
-                self.register(entry_point.load())
+    def iter_entry_points(self, directory: Optional[Path] = None):
+        with enable_plugins(directory):
+            eps = importlib_metadata.entry_points()
+
+            for entry_point_name in ENTRY_POINT_NAMES:
+                yield from find_entry_points(eps, group=entry_point_name)
+
+    def load_installed_plugins(self, directory: Optional[Path] = None):
+        for entry_point in self.iter_entry_points(directory):
+            plugin = entry_point.load()
+            plugin.package_name = get_dist_name(entry_point)
+            self.register(entry_point.load())
 
     # Auth
     def get_auth_plugins(self) -> List[Type[AuthPlugin]]:

@@ -35,6 +35,7 @@ install_requires = [
     'requests-toolbelt>=0.9.1',
     'multidict>=4.7.0',
     'setuptools',
+    'importlib-metadata>=1.4.0',
 ]
 install_requires_win_only = [
     'colorama>=0.2.4',
@@ -80,6 +81,7 @@ setup(
         'console_scripts': [
             'http = httpie.__main__:main',
             'https = httpie.__main__:main',
+            'httpie = httpie.manager.__main__:main',
         ],
     },
     python_requires='>=3.6',

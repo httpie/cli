@@ -1880,6 +1880,11 @@ $ cat ~/.config/httpie/config.json
 Technically, it is possible to include any HTTPie options in there.
 However, it is not recommended to modify the default behavior in a way that would break your compatibility with the wider world as that may become confusing.
 
+#### `plugins_dir`
+
+The directory where the plugins will be installed. HTTPie needs to have read/write access on that directory, since
+`httpie plugins install` will download new plugins to there.
+
 ### Un-setting previously specified options
 
 Default options from the config file, or specified any other way, can be unset for a particular invocation via `--no-OPTION` arguments passed via the command line (e.g., `--no-style` or `--no-session`).
@@ -1918,6 +1923,70 @@ Therefore, the rules for [redirected input](#redirected-input) apply, i.e. HTTPi
 And since there’s neither data nor `EOF`, it will get stuck. So unless you’re piping some data to HTTPie, the `--ignore-stdin` flag should be used in scripts.
 
 Also, it might be good to set a connection `--timeout` limit to prevent your program from hanging if the server never responds.
+
+## Plugins Manager
+
+HTTPie offers extensibility through plugins, and there are over 50+ of them available to try!
+They add things like new authentication methods ([akamai/httpie-edgegrid](https://github.com/akamai/httpie-edgegrid)),
+transport mechanisms ([httpie/httpie-unixsocket](https://github.com/httpie/httpie-unixsocket)),
+message convertors ([banteg/httpie-image](https://github.com/banteg/httpie-image)), or simply
+change how a response is formatted.
+
+> Note: Plugins are usually made by our community members, and thus have no direct relationship with
+> the HTTPie project. We do not control / review them at the moment, so use them at your own discretion.
+
+For managing these plugins; starting with 3.0, we are offering a new plugin manager.
+
+This command is currently in beta.
+
+### `httpie plugins`
+
+`plugins` interface is a very simple plugin manager for installing, listing and uninstalling HTTPie plugins.
+
+> In the past `pip` was used to install/uninstall plugins, but on some environments (e.g brew installed
+packages) it wasn't working properly. The new interface is a very simple overlay on top of `pip` to allow
+plugin installations on every installation method.
+
+> By default the plugins (and their missing dependencies) will be stored under the configuration directory,
+but this can be modified through `plugins_dir` variable on the config.
+
+#### `httpie plugins install`
+
+For installing plugins from [PyPI](https://pypi.org/) or from local paths, `httpie plugins install`
+can be used.
+
+```bash
+$ httpie plugins install httpie-plugin
+Installing httpie-plugin...
+Successfully installed httpie-plugin-1.0.2
+```
+
+> Tip: Generally HTTPie plugins start with `httpie-` prefix. Try searching for it on [PyPI](https://pypi.org/search/?q=httpie-)
+> to find out all plugins from the community.
+
+#### `httpie plugins list`
+
+List all installed plugins.
+
+```bash
+$ httpie plugins list
+httpie_plugin (1.0.2)
+  httpie_plugin (httpie.plugins.auth.v1)
+httpie_plugin_2 (1.0.6)
+  httpie_plugin_2 (httpie.plugins.auth.v1)
+httpie_converter (1.0.0)
+  httpie_iterm_converter (httpie.plugins.converter.v1)
+  httpie_konsole_konverter (httpie.plugins.converter.v1)
+```
+
+#### `httpie plugins uninstall`
+
+Uninstall plugins from the isolated plugins directory. If the plugin is not installed
+through `httpie plugins install`, it won't uninstall it.
+
+```bash
+$ httpie plugins uninstall httpie-plugin
+```
 
 ## Meta
 
