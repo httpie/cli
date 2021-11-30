@@ -1,9 +1,10 @@
-"""
+'''
 Routines for JSON form syntax, used to support nested JSON request items.
 
 Highly inspired from the great jarg project <https://github.com/jdp/jarg/blob/master/jarg/jsonform.py>.
-"""
+'''
 import re
+import operator
 from typing import Optional
 
 
@@ -34,13 +35,13 @@ def find_closing_bracket(
 
 
 def parse_path(path):
-    """
+    '''
     Parse a string as a JSON path.
 
-    An implementation of "steps to parse a JSON encoding path".
+    An implementation of 'steps to parse a JSON encoding path'.
     <https://www.w3.org/TR/html-json-forms/#dfn-steps-to-parse-a-json-encoding-path>
 
-    """
+    '''
     original = path
     is_escaped = r'\[' in original
 
@@ -82,12 +83,12 @@ def parse_path(path):
 
 
 def set_value(context, step, current_value, entry_value):
-    """Apply a JSON value to a context object.
+    '''Apply a JSON value to a context object.
 
-    An implementation of "steps to set a JSON encoding value".
+    An implementation of 'steps to set a JSON encoding value'.
     <https://www.w3.org/TR/html-json-forms/#dfn-steps-to-set-a-json-encoding-value>
 
-    """
+    '''
     key, flags = step
     if flags.get('last', False):
         if current_value is None:
@@ -111,11 +112,9 @@ def set_value(context, step, current_value, entry_value):
                 context.extend([None] * (key - len(context) + 1))
             context[key] = {}
         return context[key]
-
-    if isinstance(current_value, dict):
+    elif isinstance(current_value, dict):
         return context[key]
-
-    if isinstance(current_value, list):
+    elif isinstance(current_value, list):
         if flags.get('type') == 'array':
             return current_value
 
@@ -126,29 +125,26 @@ def set_value(context, step, current_value, entry_value):
         else:
             context[key] = obj
         return obj
-
-    obj = {'': current_value}
-    context[key] = obj
-    return obj
+    else:
+        obj = {'': current_value}
+        context[key] = obj
+        return obj
 
 
 def interpret_json_form(pairs):
-    """The application/json form encoding algorithm.
+    '''The application/json form encoding algorithm.
 
     <https://www.w3.org/TR/html-json-forms/#dfn-application-json-encoding-algorithm>
 
-    """
+    '''
     result = {}
     for key, value in pairs:
         steps = parse_path(key)
         context = result
         for step in steps:
             try:
-                current_value = context.get(step[0], None)
-            except AttributeError:
-                try:
-                    current_value = context[step[0]]
-                except IndexError:
-                    current_value = None
+                current_value = operator.getitem(context, step[0])
+            except LookupError:
+                current_value = None
             context = set_value(context, step, current_value, value)
     return result
