@@ -12,7 +12,6 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - Improved startup time by 40% with lazily loading pygments plugins. ([#1211](https://github.com/httpie/httpie/pull/1211))
 - Added support for `bearer` authentication method ([#1215](https://github.com/httpie/httpie/issues/1215)).
 
-
 ## [2.6.0](https://github.com/httpie/httpie/compare/2.5.0...2.6.0) (2021-10-14)
 
 [What’s new in HTTPie 2.6.0 →](https://httpie.io/blog/httpie-2.6.0)
