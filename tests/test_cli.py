@@ -84,6 +84,7 @@ class TestItemParsing:
             self.key_value_arg('file@' + FILE_PATH_ARG),
             self.key_value_arg('query==value'),
             self.key_value_arg('string-embed=@' + FILE_PATH_ARG),
+            self.key_value_arg('param-embed==@' + FILE_PATH_ARG),
             self.key_value_arg('raw-json-embed:=@' + JSON_FILE_PATH_ARG),
         ])
 
@@ -106,12 +107,13 @@ class TestItemParsing:
             'bool': True,
             'list': ['a', 1, {}, False],
             'obj': load_json_preserve_order_and_dupe_keys('{"a": "b"}'),
-            'string-embed': FILE_CONTENT,
+            'string-embed': FILE_CONTENT
         }
 
         # Parsed query string parameters
         assert items.params == {
-            'query': 'value'
+            'query': 'value',
+            'param-embed': FILE_CONTENT.rstrip('\n')
         }
 
         # Parsed file fields
