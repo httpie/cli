@@ -28,9 +28,14 @@ if is_windows:
     # great and fruity seems to give the best result there.
     DEFAULT_STYLE = 'fruity'
 
-AVAILABLE_STYLES = set(pygments.styles.get_all_styles())
-AVAILABLE_STYLES.add(SOLARIZED_STYLE)
-AVAILABLE_STYLES.add(AUTO_STYLE)
+BUNDLED_STYLES = {
+    SOLARIZED_STYLE,
+    AUTO_STYLE
+}
+
+
+def get_available_styles():
+    return BUNDLED_STYLES | set(pygments.styles.get_all_styles())
 
 
 class ColorFormatter(FormatterPlugin):
