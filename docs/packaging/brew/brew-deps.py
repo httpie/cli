@@ -31,6 +31,7 @@ PACKAGES = [
     'requests',
     'requests-toolbelt',
     'urllib3',
+    'multidict',
 ]
 
 
