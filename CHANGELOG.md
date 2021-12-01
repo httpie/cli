@@ -3,15 +3,15 @@
 This document records all notable changes to [HTTPie](https://httpie.io).
 This project adheres to [Semantic Versioning](https://semver.org/).
 
-## [2.7.0.dev0](https://github.com/httpie/httpie/compare/2.6.0...master) (unreleased)
+## [3.0.0.dev0](https://github.com/httpie/httpie/compare/2.6.0...master) (unreleased)
 
-- Add `httpie plugins` interface for plugin management. ([#566](https://github.com/httpie/httpie/issues/566))
+- Added `httpie plugins` interface for plugin management. ([#566](https://github.com/httpie/httpie/issues/566))
 - Added support for sending multiple HTTP headers with the same name. ([#130](https://github.com/httpie/httpie/issues/130))
 - Added support for receving multiple HTTP headers with the same name, individually. ([#1207](https://github.com/httpie/httpie/issues/1207))
 - Added support for keeping `://` in the URL argument to allow quick conversions of pasted URLs into HTTPie calls just by adding a space after the protocol name (`$ https ://pie.dev` → `https://pie.dev`). ([#1195](https://github.com/httpie/httpie/issues/1195))
 - Added support for basic JSON types on `--form`/`--multipart` when using JSON only operators (`:=`/`:=@`). ([#1212](https://github.com/httpie/httpie/issues/1212))
-- Improved startup time by 40% with lazily loading pygments plugins. ([#1211](https://github.com/httpie/httpie/pull/1211))
 - Added support for `bearer` authentication method ([#1215](https://github.com/httpie/httpie/issues/1215)).
+- Improved startup time by 40%. ([#1211](https://github.com/httpie/httpie/pull/1211))
 
 ## [2.6.0](https://github.com/httpie/httpie/compare/2.5.0...2.6.0) (2021-10-14)
 
