@@ -562,10 +562,11 @@ auth = parser.add_argument_group(title='Authentication')
 auth.add_argument(
     '--auth', '-a',
     default=None,
-    metavar='USER[:PASS]',
+    metavar='USER[:PASS] | TOKEN',
     help='''
-    If only the username is provided (-a username), HTTPie will prompt
-    for the password.
+    For username/password based authentication mechanisms (e.g
+    basic auth or digest auth) if only the username is provided
+    (-a username), HTTPie will prompt for the password.
 
     ''',
 )

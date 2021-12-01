@@ -34,6 +34,16 @@ class HTTPBasicAuth(requests.auth.HTTPBasicAuth):
         return f'Basic {token}'
 
 
+class HTTPBearerAuth(requests.auth.AuthBase):
+
+    def __init__(self, token: str) -> None:
+        self.token = token
+
+    def __call__(self, request: requests.PreparedRequest) -> requests.PreparedRequest:
+        request.headers['Authorization'] = f'Bearer {self.token}'
+        return request
+
+
 class BasicAuthPlugin(BuiltinAuthPlugin):
     name = 'Basic HTTP auth'
     auth_type = 'basic'
@@ -56,3 +66,14 @@ class DigestAuthPlugin(BuiltinAuthPlugin):
         password: str
     ) -> requests.auth.HTTPDigestAuth:
         return requests.auth.HTTPDigestAuth(username, password)
+
+
+class BearerAuthPlugin(BuiltinAuthPlugin):
+    name = 'Bearer HTTP Auth'
+    auth_type = 'bearer'
+    netrc_parse = False
+    auth_parse = False
+
+    # noinspection PyMethodOverriding
+    def get_auth(self, **kwargs) -> requests.auth.HTTPDigestAuth:
+        return HTTPBearerAuth(self.raw_auth)
