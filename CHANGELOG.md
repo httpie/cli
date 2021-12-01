@@ -8,7 +8,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - Improved startup time by 40%. ([#1211](https://github.com/httpie/httpie/pull/1211))
 - Added `httpie plugins` interface for plugin management. ([#566](https://github.com/httpie/httpie/issues/566))
 - Added support for Bearer authentication via `--auth-type=bearer` ([#1215](https://github.com/httpie/httpie/issues/1215)).
-- Added support for keeping `://` in the URL argument for quick conversions of pasted URLs into HTTPie calls by adding a space after the protocol name (`$ https ://pie.dev` → `https://pie.dev`). ([#1195](https://github.com/httpie/httpie/issues/1195))
+- Added support for quick conversions of pasted URLs into HTTPie calls by adding a space after the protocol name (`$ https ://pie.dev` → `https://pie.dev`). ([#1195](https://github.com/httpie/httpie/issues/1195))
 - Added support for _sending_ multiple HTTP header lines with the same name. ([#130](https://github.com/httpie/httpie/issues/130))
 - Added support for _receiving_ multiple HTTP headers lines with the same name. ([#1207](https://github.com/httpie/httpie/issues/1207))
 - Added support for basic JSON types on `--form`/`--multipart` when using JSON only operators (`:=`/`:=@`). ([#1212](https://github.com/httpie/httpie/issues/1212))
