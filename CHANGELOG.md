@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [2.7.0.dev0](https://github.com/httpie/httpie/compare/2.6.0...master) (unreleased)
 
+- Implement `httpie plugins` interface for plugin management. ([#566](https://github.com/httpie/httpie/issues/566))
 - Added support for sending multiple HTTP headers with the same name. ([#130](https://github.com/httpie/httpie/issues/130))
 - Added support for receving multiple HTTP headers with the same name, individually. ([#1207](https://github.com/httpie/httpie/issues/1207))
 - Added support for keeping `://` in the URL argument to allow quick conversions of pasted URLs into HTTPie calls just by adding a space after the protocol name (`$ https ://pie.dev` → `https://pie.dev`). ([#1195](https://github.com/httpie/httpie/issues/1195))
