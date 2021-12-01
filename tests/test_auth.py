@@ -25,6 +25,19 @@ def test_digest_auth(httpbin_both, argument_name):
     assert r.json == {'authenticated': True, 'user': 'user'}
 
 
+@pytest.mark.parametrize('token', [
+    'token_1',
+    'long_token' * 5,
+    'user:style',
+])
+def test_bearer_auth(httpbin_both, token):
+    r = http('--auth-type', 'bearer', '--auth', token,
+             httpbin_both + '/bearer')
+
+    assert HTTP_OK in r
+    assert r.json == {'authenticated': True, 'token': token}
+
+
 @mock.patch('httpie.cli.argtypes.AuthCredentials._getpass',
             new=lambda self, prompt: 'password')
 def test_password_prompt(httpbin):
