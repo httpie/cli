@@ -194,7 +194,7 @@ def test_complex_json_arguments_with_non_json(httpbin, request_type, value):
     ),
     (
         ['[]:=1', '[]=foo'],
-        {'': [1, 'foo']},
+        [1, 'foo'],
     ),
     (
         [']:=1', '[]1:=1', '[1]]:=1'],

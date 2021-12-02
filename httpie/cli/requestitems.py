@@ -17,7 +17,7 @@ from .dicts import (
 )
 from .exceptions import ParseError
 from .json_form import interpret_json_form
-from ..utils import get_content_type, load_json_preserve_order_and_dupe_keys
+from ..utils import get_content_type, load_json_preserve_order_and_dupe_keys, split
 
 
 class RequestItems:
@@ -82,21 +82,15 @@ class RequestItems:
             ),
         }
 
-        # Nested JSON items must be treated as a whole.
-        nested_json_items = []
-        if not as_form:
-            nested_json_items.extend(
-                arg for arg in request_item_args
-                if arg.sep in SEPARATOR_GROUP_NESTED_JSON_ITEMS
+        if instance.is_json:
+            json_item_args, request_item_args = split(
+                request_item_args,
+                lambda arg: arg.sep in SEPARATOR_GROUP_NESTED_JSON_ITEMS
             )
-            if nested_json_items:
-                request_item_args = [
-                    arg for arg in request_item_args
-                    if arg not in nested_json_items
-                ]
+            if json_item_args:
                 pairs = [
                     (arg.key, rules[arg.sep][0](arg))
-                    for arg in nested_json_items
+                    for arg in json_item_args
                 ]
                 processor_func, target_dict = rules[SEPARATOR_GROUP_NESTED_JSON_ITEMS]
                 value = processor_func(pairs)
