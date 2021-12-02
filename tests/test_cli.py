@@ -83,6 +83,7 @@ class TestItemParsing:
             self.key_value_arg('bool:=true'),
             self.key_value_arg('file@' + FILE_PATH_ARG),
             self.key_value_arg('query==value'),
+            self.key_value_arg('Embedded-Header:@' + FILE_PATH_ARG),
             self.key_value_arg('string-embed=@' + FILE_PATH_ARG),
             self.key_value_arg('param-embed==@' + FILE_PATH_ARG),
             self.key_value_arg('raw-json-embed:=@' + JSON_FILE_PATH_ARG),
@@ -94,7 +95,8 @@ class TestItemParsing:
         assert headers == {
             'Header': 'value',
             'Unset-Header': None,
-            'Empty-Header': ''
+            'Empty-Header': '',
+            'Embedded-Header': FILE_CONTENT.rstrip('\n')
         }
 
         # Parsed data

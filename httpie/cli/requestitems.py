@@ -8,7 +8,8 @@ from .constants import (
     SEPARATOR_DATA_EMBED_RAW_JSON_FILE,
     SEPARATOR_DATA_RAW_JSON, SEPARATOR_DATA_STRING, SEPARATOR_FILE_UPLOAD,
     SEPARATOR_FILE_UPLOAD_TYPE, SEPARATOR_HEADER, SEPARATOR_HEADER_EMPTY,
-    SEPARATOR_QUERY_PARAM, SEPARATOR_QUERY_EMBED_FILE, RequestType
+    SEPARATOR_HEADER_EMBED, SEPARATOR_QUERY_PARAM,
+    SEPARATOR_QUERY_EMBED_FILE, RequestType
 )
 from .dicts import (
     BaseMultiDict, MultipartRequestDataDict, RequestDataDict,
@@ -45,6 +46,10 @@ class RequestItems:
             ),
             SEPARATOR_HEADER_EMPTY: (
                 process_empty_header_arg,
+                instance.headers,
+            ),
+            SEPARATOR_HEADER_EMBED: (
+                process_embed_header_arg,
                 instance.headers,
             ),
             SEPARATOR_QUERY_PARAM: (
@@ -97,6 +102,10 @@ JSONType = Union[str, bool, int, list, dict]
 
 def process_header_arg(arg: KeyValueArg) -> Optional[str]:
     return arg.value or None
+
+
+def process_embed_header_arg(arg: KeyValueArg) -> str:
+    return load_text_file(arg).rstrip('\n')
 
 
 def process_empty_header_arg(arg: KeyValueArg) -> str:
