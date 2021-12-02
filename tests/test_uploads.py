@@ -9,7 +9,7 @@ from .utils import (
     MockEnvironment, StdinBytesIO, http,
     HTTP_OK,
 )
-from .fixtures import FILE_PATH_ARG, FILE_PATH, FILE_CONTENT
+from .fixtures import FILE_PATH_ARG, FILE_PATH, FILE_CONTENT, RAW_FILE_CONTENT
 
 
 def test_chunked_json(httpbin_with_chunked_support):
@@ -49,7 +49,8 @@ def test_chunked_stdin(httpbin_with_chunked_support):
     )
     assert HTTP_OK in r
     assert 'Transfer-Encoding: chunked' in r
-    assert r.count(FILE_CONTENT) == 2
+    # One original (request) + one encoded (httpbin's response, ascii)
+    assert r.count(FILE_CONTENT) + r.count(RAW_FILE_CONTENT) == 2
 
 
 def test_chunked_stdin_multiple_chunks(httpbin_with_chunked_support):
@@ -67,7 +68,7 @@ def test_chunked_stdin_multiple_chunks(httpbin_with_chunked_support):
     )
     assert HTTP_OK in r
     assert 'Transfer-Encoding: chunked' in r
-    assert r.count(FILE_CONTENT) == 4
+    assert r.count(FILE_CONTENT) + r.count(RAW_FILE_CONTENT) == 4
 
 
 class TestMultipartFormDataFileUpload:
@@ -241,7 +242,7 @@ class TestRequestBodyFromFilePath:
         assert HTTP_OK in r
         assert 'Transfer-Encoding: chunked' in r
         assert '"Content-Type": "text/plain"' in r
-        assert r.count(FILE_CONTENT) == 2
+        assert r.count(FILE_CONTENT) + r.count(RAW_FILE_CONTENT) == 2
 
     def test_request_body_from_file_by_path_with_explicit_content_type(
             self, httpbin):

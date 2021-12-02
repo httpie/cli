@@ -36,6 +36,20 @@ def get_headers(handler):
     handler.end_headers()
 
 
+@TestHandler.handler('GET', '/drip')
+def chunked_drip(handler):
+    handler.send_response(200)
+    if handler.headers.get('regular') != 'true':
+        handler.send_header('Transfer-Encoding', 'chunked')
+    handler.end_headers()
+
+    for _ in range(3):
+        body = 'test\n'
+        handler.wfile.write(f'{len(body):X}\r\n{body}\r\n'.encode('utf-8'))
+
+    handler.wfile.write('0\r\n\r\n'.encode('utf-8'))
+
+
 @pytest.fixture(scope="function")
 def http_server():
     """A custom HTTP server implementation for our tests, that is
