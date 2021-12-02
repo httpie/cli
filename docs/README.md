@@ -724,9 +724,12 @@ field (`:=`) operators.
 #### Path Declaration
 
 A simple path can be a shallow key;
+
+```bash
+$ http --offline --print=B pie.dev/post \
+  type=success
 ```
-type=success
-```
+
 ```json
 {
     "type": "success"
@@ -734,18 +737,25 @@ type=success
 ```
 
 As well as a nested one,
+
+```bash
+$ http --offline --print=B pie.dev/post \
+  result[type]=success
 ```
-result[type]=success
-```
+
 ```json
 {
     "result": {"type": "success"}
 }
 ```
+
 Or even multiple levels of nesting.
+
+```bash
+$ http --offline --print=B pie.dev/post \
+  result[status][type]=ok
 ```
-result[status][type]=ok
-```
+
 ```json
 {
     "result": {
@@ -758,9 +768,12 @@ result[status][type]=ok
 
 The declaration also supports creating arrays; which can be either done by simply
 assigning the same path multiple times
+
+```bash
+$ http --offline --print=B pie.dev/post \
+  ids:=1 ids:=2
 ```
-ids:=1 ids:=2
-```
+
 ```json
 {
     "ids": [
@@ -773,9 +786,11 @@ ids:=1 ids:=2
 Or using the append suffix `[]`, which would create an array and append the items to the
 end of it.
 
+```bash
+$ http --offline --print=B pie.dev/post \
+  ids[]:=1
 ```
-ids[]:=1
-```
+
 ```json
 {
     "ids": [
@@ -786,9 +801,12 @@ ids[]:=1
 ```
 
 You can also use indexes to set items on an array,
+
+```bash
+$ http --offline --print=B pie.dev/post \
+  items[0]=terminal items[1]=desktop
 ```
-items[0]=terminal items[1]=desktop
-```
+
 ```json
 {
     "items": [
@@ -800,9 +818,11 @@ items[0]=terminal items[1]=desktop
 
 If you don't set value for the indexes between, then those will be nullified.
 
+```bash
+$ http --offline --print=B pie.dev/post \
+  items[1]=terminal items[3]=desktop
 ```
-items[1]=terminal items[3]=desktop
-```
+
 ```json
 {
     "items": [
@@ -817,9 +837,11 @@ items[1]=terminal items[3]=desktop
 It is permitted to mix index-access with append actions (`[]`), but be aware that appends will not fill
 the voids but instead they will append after the last item.
 
+```bash
+$ http --offline --print=B pie.dev/post \
+  items[1]=terminal items[3]=desktop items[]=web
 ```
-items[1]=terminal items[3]=desktop items[]=web
-```
+
 ```json
 {
     "items": [
@@ -835,9 +857,11 @@ items[1]=terminal items[3]=desktop items[]=web
 If you need to send a top-level list (without any object that is encapsulating it), use the append operator (`[]`) without
 any keys.
 
+```bash
+$ http --offline --print=B pie.dev/post \
+  []:=1 []:=2 []:=3
 ```
-[]:=1 []:=2 []:=3
-```
+
 ```json
 [
     1,
@@ -847,6 +871,7 @@ any keys.
 ```
 
 Here is a slightly unified example
+
 ```bash
 $ http --offline --print=B pie.dev/post name=python version:=3 \
   date[year]:=2021 date[month]=December \
