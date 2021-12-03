@@ -130,9 +130,5 @@ def test_auto_streaming(http_server, extras, expected):
     assert len([
         call_arg
         for call_arg in env.stdout.write.call_args_list
-        if b'test' in (
-            call_arg.args[0]
-            if isinstance(call_arg.args[0], bytes)
-            else call_arg.args[0].encode()
-        )
+        if b'test' in call_arg[0][0]
     ]) == expected
