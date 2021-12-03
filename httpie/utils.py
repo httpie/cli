@@ -9,13 +9,14 @@ from collections import OrderedDict
 from http.cookiejar import parse_ns_headers
 from pathlib import Path
 from pprint import pformat
-from typing import Any, List, Optional, Tuple
+from typing import Any, List, Optional, Tuple, Callable, Iterable, TypeVar
 
 import requests.auth
 
 RE_COOKIE_SPLIT = re.compile(r', (?=[^ ;]+=)')
 Item = Tuple[str, Any]
 Items = List[Item]
+T = TypeVar("T")
 
 
 class JsonDictPreservingDuplicateKeys(OrderedDict):
@@ -218,3 +219,13 @@ def as_site(path: Path) -> Path:
         vars={'base': str(path)}
     )
     return Path(site_packages_path)
+
+
+def split(iterable: Iterable[T], key: Callable[[T], bool]) -> Tuple[List[T], List[T]]:
+    left, right = [], []
+    for item in iterable:
+        if key(item):
+            left.append(item)
+        else:
+            right.append(item)
+    return left, right

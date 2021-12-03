@@ -287,6 +287,13 @@ def make_request_kwargs(
     data = args.data
     auto_json = data and not args.form
     if (args.json or auto_json) and isinstance(data, dict):
+        # Propagate the top-level list if there is only one
+        # item in the object, with an en empty key.
+        if len(data) == 1:
+            [(key, value)] = data.items()
+            if key == '' and isinstance(value, list):
+                data = value
+
         if data:
             data = json.dumps(data)
         else:

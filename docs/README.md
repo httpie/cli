@@ -714,6 +714,246 @@ The `:=`/`:=@` syntax is JSON-specific. You can switch your request to `--form` 
 and string, float, and number values will continue to be serialized (as string form values).
 Other JSON types, however, are not allowed with `--form` or `--multipart`.
 
+### Nested JSON fields
+
+For creating nested JSON structures, you can simply declare the path for the object's new destination
+and HTTPie will interpret it according to the [JSON form](https://www.w3.org/TR/html-json-forms/)
+notation and create your object. It works directly with the existing data field (`=`) and raw JSON
+field (`:=`) operators.
+
+#### Path Declaration
+
+A simple path can be a shallow key;
+
+```bash
+$ http --offline --print=B pie.dev/post \
+  type=success
+```
+
+```json
+{
+    "type": "success"
+}
+```
+
+As well as a nested one,
+
+```bash
+$ http --offline --print=B pie.dev/post \
+  result[type]=success
+```
+
+```json
+{
+    "result": {"type": "success"}
+}
+```
+
+Or even multiple levels of nesting.
+
+```bash
+$ http --offline --print=B pie.dev/post \
+  result[status][type]=ok
+```
+
+```json
+{
+    "result": {
+        "status": {
+            "type": "ok"
+        }
+    }
+}
+```
+
+The declaration also supports creating arrays; which can be either done by simply
+assigning the same path multiple times
+
+```bash
+$ http --offline --print=B pie.dev/post \
+  ids:=1 ids:=2
+```
+
+```json
+{
+    "ids": [
+        1,
+        2
+    ]
+}
+```
+
+Or using the append suffix `[]`, which would create an array and append the items to the
+end of it.
+
+```bash
+$ http --offline --print=B pie.dev/post \
+  ids[]:=1
+```
+
+```json
+{
+    "ids": [
+        1,
+        2
+    ]
+}
+```
+
+You can also use indexes to set items on an array,
+
+```bash
+$ http --offline --print=B pie.dev/post \
+  items[0]=terminal items[1]=desktop
+```
+
+```json
+{
+    "items": [
+        "terminal",
+        "desktop"
+    ]
+}
+```
+
+If you don't set value for the indexes between, then those will be nullified.
+
+```bash
+$ http --offline --print=B pie.dev/post \
+  items[1]=terminal items[3]=desktop
+```
+
+```json
+{
+    "items": [
+        null,
+        "terminal",
+        null,
+        "desktop"
+    ]
+}
+```
+
+It is permitted to mix index-access with append actions (`[]`), but be aware that appends will not fill
+the voids but instead they will append after the last item.
+
+```bash
+$ http --offline --print=B pie.dev/post \
+  items[1]=terminal items[3]=desktop items[]=web
+```
+
+```json
+{
+    "items": [
+        null,
+        "terminal",
+        null,
+        "desktop",
+        "web"
+    ]
+}
+```
+
+If you need to send a top-level list (without any object that is encapsulating it), use the append operator (`[]`) without
+any keys.
+
+```bash
+$ http --offline --print=B pie.dev/post \
+  []:=1 []:=2 []:=3
+```
+
+```json
+[
+    1,
+    2,
+    3
+]
+```
+
+Here is a slightly unified example
+
+```bash
+$ http --offline --print=B pie.dev/post name=python version:=3 \
+  date[year]:=2021 date[month]=December \
+  systems=Linux systems=Mac systems=Windows \
+  people[known_ids][1]=1000 people[known_ids][5]=5000
+```
+
+```json
+{
+    "date": {
+        "month": "December",
+        "year": 2021
+    },
+    "name": "python",
+    "people": {
+        "known_ids": [
+            null,
+            "1000",
+            null,
+            null,
+            null,
+            "5000"
+        ]
+    },
+    "systems": [
+        "Linux",
+        "Mac",
+        "Windows"
+    ],
+    "version": 3
+}
+```
+
+And here is an even more comprehensive example to show all the features.
+
+```bash
+$ http PUT pie.dev/put \
+    'object=scalar' \                           # Object — blank key
+    'object[0]=array 1' \                       # Object — "0" key
+    'object[key]=key key' \                     # Object — "key" key
+    'array:=1' \                                # Array — first item
+    'array:=2' \                                # Array — second item
+    'array[]:=3' \                              # Array — append (third item)
+    'wow[such][deep][3][much][power][!]=Amaze'  # Nested object
+```
+
+```http
+PUT /person/1 HTTP/1.1
+Accept: application/json, */*;q=0.5
+Content-Type: application/json
+Host: pie.dev
+
+{
+    "array": [
+        1,
+        2,
+        3
+    ],
+    "object": {
+        "": "scalar",
+        "0": "array 1",
+        "key": "key key"
+    },
+    "wow": {
+        "such": {
+            "deep": [
+                null,
+                null,
+                null,
+                {
+                    "much": {
+                        "power": {
+                            "!": "Amaze"
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}
+```
+
 ### Raw and complex JSON
 
 Please note that with the [request items](#request-items) data field syntax, commands can quickly become unwieldy when sending complex structures.
@@ -730,9 +970,6 @@ $ http --raw '{"hello": "world"}' POST pie.dev/post
 ```bash
 $ http POST pie.dev/post < files/data.json
 ```
-
-Furthermore, the structure syntax only allows you to send an object as the JSON document, but not an array, etc.
-Here, again, the solution is to use [redirected input](#redirected-input).
 
 ## Forms
 
