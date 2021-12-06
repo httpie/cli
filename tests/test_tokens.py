@@ -95,7 +95,7 @@ def test_verbose_chunked(httpbin_with_chunked_support):
     r = http('--verbose', '--chunked', httpbin_with_chunked_support + '/post', 'hello=world')
     assert HTTP_OK in r
     assert 'Transfer-Encoding: chunked' in r
-    assert_output_matches(r, ExpectSequence.TERMINAL_EXCHANGE_STREAMED)
+    assert_output_matches(r, ExpectSequence.TERMINAL_EXCHANGE)
 
 
 def test_request_headers_response_body(httpbin):

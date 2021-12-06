@@ -39,8 +39,10 @@ def get_headers(handler):
 @TestHandler.handler('GET', '/drip')
 def chunked_drip(handler):
     handler.send_response(200)
-    if handler.headers.get('regular') != 'true':
-        handler.send_header('Transfer-Encoding', 'chunked')
+    accept = handler.headers.get('Accept')
+    if accept is not None:
+        handler.send_header('Content-Type', accept)
+    handler.send_header('Transfer-Encoding', 'chunked')
     handler.end_headers()
 
     for _ in range(3):

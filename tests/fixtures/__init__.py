@@ -31,7 +31,6 @@ JSON_FILE_PATH_ARG = patharg(JSON_FILE_PATH)
 # easily count occurrences also when embedded in JSON (where the new
 # line would be escaped).
 FILE_CONTENT = FILE_PATH.read_text(encoding=UTF8).strip()
-RAW_FILE_CONTENT = FILE_CONTENT.encode('unicode_escape').decode('ascii')
 
 
 JSON_FILE_CONTENT = JSON_FILE_PATH.read_text(encoding=UTF8)

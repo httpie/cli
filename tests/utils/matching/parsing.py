@@ -7,7 +7,6 @@ from ...utils import CRLF
 
 
 SEPARATOR_RE = re.compile(f'^{MESSAGE_SEPARATOR}')
-END_RE = re.compile('^\n')
 
 
 def make_headers_re(message_type: Expect):
@@ -45,7 +44,6 @@ TOKEN_REGEX_MAP = {
     Expect.REQUEST_HEADERS: make_headers_re(Expect.REQUEST_HEADERS),
     Expect.RESPONSE_HEADERS: make_headers_re(Expect.RESPONSE_HEADERS),
     Expect.SEPARATOR: SEPARATOR_RE,
-    Expect.STREAM_END: END_RE
 }
 
 

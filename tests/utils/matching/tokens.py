@@ -10,7 +10,6 @@ class Expect(Enum):
     RESPONSE_HEADERS = auto()
     BODY = auto()
     SEPARATOR = auto()
-    STREAM_END = auto()
 
 
 class ExpectSequence:
@@ -45,10 +44,6 @@ class ExpectSequence:
     TERMINAL_EXCHANGE = [
         *TERMINAL_REQUEST,
         *TERMINAL_RESPONSE,
-    ]
-    TERMINAL_EXCHANGE_STREAMED = [
-        *TERMINAL_EXCHANGE,
-        Expect.STREAM_END
     ]
     TERMINAL_BODY = [
         RAW_BODY,

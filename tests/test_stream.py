@@ -110,16 +110,17 @@ def test_redirected_stream(httpbin):
     assert BIN_FILE_CONTENT in r
 
 
-# /drip produces 3 individual lines, when regular header
-# is not specified, it will set the transfer type to chunked.
-# This test ensures that it each line gets printed separately.
+# /drip endpoint produces 3 individual lines,
+# if we set text/event-stream HTTPie should stream
+# it by default. Otherwise, it will buffer and then
+# print.
 @pytest.mark.parametrize('extras, expected', [
     (
-        [],
+        ['Accept:text/event-stream'],
         3
     ),
     (
-        ['regular:true'],
+        ['Accept:text/plain'],
         1
     )
 ])
