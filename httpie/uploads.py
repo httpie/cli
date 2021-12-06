@@ -1,10 +1,12 @@
 import zlib
-from typing import Callable, IO, Iterable, Tuple, Union
+from typing import Callable, IO, Iterable, Tuple, Union, TYPE_CHECKING
 from urllib.parse import urlencode
 
 import requests
 from requests.utils import super_len
-from requests_toolbelt import MultipartEncoder
+
+if TYPE_CHECKING:
+    from requests_toolbelt import MultipartEncoder
 
 from .cli.dicts import MultipartRequestDataDict, RequestDataDict
 
@@ -23,7 +25,7 @@ class ChunkedUploadStream:
 class ChunkedMultipartUploadStream:
     chunk_size = 100 * 1024
 
-    def __init__(self, encoder: MultipartEncoder):
+    def __init__(self, encoder: 'MultipartEncoder'):
         self.encoder = encoder
 
     def __iter__(self) -> Iterable[Union[str, bytes]]:
@@ -35,12 +37,12 @@ class ChunkedMultipartUploadStream:
 
 
 def prepare_request_body(
-    body: Union[str, bytes, IO, MultipartEncoder, RequestDataDict],
+    body: Union[str, bytes, IO, 'MultipartEncoder', RequestDataDict],
     body_read_callback: Callable[[bytes], bytes],
     content_length_header_value: int = None,
     chunked=False,
     offline=False,
-) -> Union[str, bytes, IO, MultipartEncoder, ChunkedUploadStream]:
+) -> Union[str, bytes, IO, 'MultipartEncoder', ChunkedUploadStream]:
 
     is_file_like = hasattr(body, 'read')
 
@@ -85,6 +87,7 @@ def prepare_request_body(
             body.read = new_read
 
         if chunked:
+            from requests_toolbelt import MultipartEncoder
             if isinstance(body, MultipartEncoder):
                 body = ChunkedMultipartUploadStream(
                     encoder=body,
@@ -102,7 +105,9 @@ def get_multipart_data_and_content_type(
     data: MultipartRequestDataDict,
     boundary: str = None,
     content_type: str = None,
-) -> Tuple[MultipartEncoder, str]:
+) -> Tuple['MultipartEncoder', str]:
+    from requests_toolbelt import MultipartEncoder
+
     encoder = MultipartEncoder(
         fields=data.items(),
         boundary=boundary,
