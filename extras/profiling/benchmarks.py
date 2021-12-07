@@ -129,7 +129,7 @@ CommandRunner('startup', 'offline request', ['--offline', 'pie.dev/get'])
 def main() -> None:
     # PyPerf will bring it's own argument parser, so configure the script.
     sys.argv.extend(
-        ['--worker', '--loops=1', '--warmup=4', '--values=6', '--processes=2']
+        ['--worker', '--loops=1', '--warmup=3', '--values=5', '--processes=2']
     )
 
     with Context() as context:
