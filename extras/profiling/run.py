@@ -1,11 +1,11 @@
 import subprocess
+import sys
 import tempfile
 import venv
-import sys
 from argparse import ArgumentParser, FileType
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Dict, Generator, Iterable, List, NamedTuple, Optional, IO
+from typing import IO, Dict, Generator, Iterable, List, NamedTuple, Optional
 
 BENCHMARK_SCRIPT = Path(__file__).parent / 'benchmarks.py'
 CURRENT_REPO = Path(__file__).parent.parent.parent
@@ -133,7 +133,7 @@ def main() -> None:
         '--file',
         type=FileType('w'),
         default=sys.stdout,
-        help='File to print the actual results'
+        help='File to print the actual results',
     )
     options = parser.parse_args()
 
