@@ -18,7 +18,16 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: "3.9"
-      - name: Run Benchmarks
+
+      - id: benchmarks
+        name: Run Benchmarks
         run: |
           python -m pip install pyperf
-          python extras/profiling/run.py --fresh --complex
+          python extras/profiling/run.py --fresh --complex --file data.txt
+          body=$(cat data.txt)
+          echo ::set-output name=body::$body
+
+      - name: Create commit comment
+        uses: peter-evans/commit-comment@v1.3.2
+        with:
+          body: ${{ steps.benchmarks.outputs.body }}

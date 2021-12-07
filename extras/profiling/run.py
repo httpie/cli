@@ -1,10 +1,11 @@
 import subprocess
 import tempfile
 import venv
-from argparse import ArgumentParser
+import sys
+from argparse import ArgumentParser, FileType
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Dict, Generator, Iterable, List, NamedTuple, Optional
+from typing import Dict, Generator, Iterable, List, NamedTuple, Optional, IO
 
 BENCHMARK_SCRIPT = Path(__file__).parent / 'benchmarks.py'
 CURRENT_REPO = Path(__file__).parent.parent.parent
@@ -74,7 +75,7 @@ def on_repo(env: Environment) -> Generator[Path, None, None]:
         yield python
 
 
-def run(configs: List[Dict[str, Environment]]) -> None:
+def run(configs: List[Dict[str, Environment]], file: IO[str]) -> None:
     result_directory = Path(tempfile.mkdtemp())
     result_outputs = {}
 
@@ -104,8 +105,8 @@ def run(configs: List[Dict[str, Environment]]) -> None:
     print()
 
     for env_names, result in result_outputs.items():
-        print(' -> '.join(env_names))
-        print(result)
+        print(' -> '.join(env_names), file=file)
+        print(result, file=file)
 
     print('Results are available at:', result_directory)
 
@@ -128,6 +129,12 @@ def main() -> None:
         action='store_true',
         help='Add a second run, with a complex python environment.',
     )
+    parser.add_argument(
+        '--file',
+        type=FileType('w'),
+        default=sys.stdout,
+        help='File to print the actual results'
+    )
     options = parser.parse_args()
 
     configs = []
@@ -145,7 +152,7 @@ def main() -> None:
         }
         configs.append(complex_config)
 
-    run(configs)
+    run(configs, file=options.file)
 
 
 if __name__ == '__main__':
