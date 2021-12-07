@@ -95,7 +95,7 @@ class LocalCommandEnvironment(Environment):
         yield sys.executable, {'HTTPIE_COMMAND': self.local_command}
 
 
-def run(configs: List[Dict[str, Environment]], file: IO[str]) -> None:
+def run(configs: List[Dict[str, Environment]], file: IO[str], debug: bool = False) -> None:
     result_directory = Path(tempfile.mkdtemp())
     result_outputs = {}
 
@@ -114,8 +114,11 @@ def run(configs: List[Dict[str, Environment]], file: IO[str]) -> None:
             iterate(env_name, 'setting up')
             with env.on_repo() as (python, env_vars):
                 iterate(env_name, 'running benchmarks')
+                args = [python, BENCHMARK_SCRIPT, '-o', env_name]
+                if debug:
+                    args.append('--debug-single-value')
                 call(
-                    [python, BENCHMARK_SCRIPT, '-o', env_name],
+                    args,
                     cwd=result_directory,
                     env=env_vars,
                 )
@@ -165,6 +168,10 @@ def main() -> None:
         default=sys.stdout,
         help='File to print the actual results',
     )
+    parser.add_argument(
+        '--debug',
+        action='store_true',
+    )
     options = parser.parse_args()
 
     configs = []
@@ -190,7 +197,7 @@ def main() -> None:
     if options.local_bin:
         base_config['binary'] = LocalCommandEnvironment(options.local_bin)
 
-    run(configs, file=options.file)
+    run(configs, file=options.file, debug=options.debug)
 
 
 if __name__ == '__main__':

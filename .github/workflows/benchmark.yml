@@ -1,17 +1,16 @@
+name: Benchmark
+
 on:
-  push:
-    branches:
-      - master
-    paths:
-      - .github/workflows/benchmark.yml
-      - httpie/**/*.py
   pull_request:
-    paths:
-      - .github/workflows/benchmark.yml
-      - httpie/**/*.py
+    types: [ labeled ]
+
+permissions:
+  issues: write
+  pull-requests: write
 
 jobs:
   test:
+    if: github.event.label.name == 'benchmark'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -23,4 +22,33 @@ jobs:
         name: Run Benchmarks
         run: |
           python -m pip install pyperf
-          python extras/profiling/run.py --fresh --complex
+          python extras/profiling/run.py --fresh --complex --file output.txt
+          body=$(cat output.txt)
+          body="${body//'%'/'%25'}"
+          body="${body//$'\n'/'%0A'}"
+          body="${body//$'\r'/'%0D'}"
+          echo "::set-output name=body::$body"
+
+      - name: Find Comment
+        uses: peter-evans/find-comment@v1
+        id: fc
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: Benchmark output
+
+      - name: Create or update comment
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            Benchmark output:
+            ```
+            ${{ steps.benchmarks.outputs.body }}
+            ```
+          edit-mode: replace
+
+      - uses: actions-ecosystem/action-remove-labels@v1
+        with:
+          labels: benchmark
