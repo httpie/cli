@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import atexit
 import os
+import shlex
 import subprocess
 import sys
 import tempfile
@@ -64,6 +65,9 @@ class Context:
 
     @property
     def cmd(self) -> List[str]:
+        if cmd := os.getenv('HTTPIE_COMMAND'):
+            return shlex.split(cmd)
+
         http = os.path.join(os.path.dirname(sys.executable), 'http')
         assert os.path.exists(http)
         return [sys.executable, http]

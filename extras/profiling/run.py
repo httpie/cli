@@ -1,9 +1,12 @@
+import dataclasses
+import shlex
 import subprocess
 import sys
 import tempfile
 import venv
 from argparse import ArgumentParser, FileType
 from contextlib import contextmanager
+from dataclasses import dataclass
 from pathlib import Path
 from typing import IO, Dict, Generator, Iterable, List, NamedTuple, Optional
 
@@ -13,9 +16,7 @@ CURRENT_REPO = Path(__file__).parent.parent.parent
 GITHUB_URL = 'https://github.com/httpie/httpie.git'
 TARGET_BRANCH = 'master'
 
-ADDITIONAL_DEPS = [
-    'pyOpenSSL',
-]
+ADDITIONAL_DEPS = ('pyOpenSSL',)
 
 
 def call(*args, **kwargs):
@@ -23,56 +24,75 @@ def call(*args, **kwargs):
     return subprocess.check_call(*args, **kwargs)
 
 
-class Environment(NamedTuple):
+class Environment:
+    @contextmanager
+    def on_repo(self) -> Generator[Path, None, None]:
+        raise NotImplementedError
+
+
+@dataclass
+class HTTPieEnvironment(Environment):
     repo_url: str
     branch: Optional[str] = None
     dependencies: Iterable[str] = ()
 
+    @contextmanager
+    def on_repo(self) -> Generator[Path, None, None]:
+        with tempfile.TemporaryDirectory() as directory_path:
+            directory = Path(directory_path)
 
-@contextmanager
-def on_repo(env: Environment) -> Generator[Path, None, None]:
-    with tempfile.TemporaryDirectory() as directory_path:
-        directory = Path(directory_path)
-
-        # Clone the repo
-        repo_path = directory / 'httpie'
-        call(
-            ['git', 'clone', env.repo_url, repo_path],
-            stderr=subprocess.DEVNULL,
-        )
-
-        if env.branch is not None:
+            # Clone the repo
+            repo_path = directory / 'httpie'
             call(
-                ['git', 'checkout', env.branch],
-                cwd=repo_path,
+                ['git', 'clone', self.repo_url, repo_path],
                 stderr=subprocess.DEVNULL,
             )
 
-        # Prepare the environment
-        venv_path = directory / '.venv'
-        venv.create(venv_path, with_pip=True)
+            if self.branch is not None:
+                call(
+                    ['git', 'checkout', self.branch],
+                    cwd=repo_path,
+                    stderr=subprocess.DEVNULL,
+                )
 
-        python = venv_path / 'bin' / 'python'
-        call(
-            [
-                python,
-                '-m',
-                'pip',
-                'install',
-                'wheel',
-                'pyperf',
-                *env.dependencies,
-            ]
-        )
-        call([python, 'setup.py', 'bdist_wheel'], cwd=repo_path)
+            # Prepare the environment
+            venv_path = directory / '.venv'
+            venv.create(venv_path, with_pip=True)
 
-        distribution_path = next((repo_path / 'dist').iterdir())
-        call(
-            [python, '-m', 'pip', 'install', distribution_path], cwd=repo_path
-        )
+            python = venv_path / 'bin' / 'python'
+            call(
+                [
+                    python,
+                    '-m',
+                    'pip',
+                    'install',
+                    'wheel',
+                    'pyperf',
+                    *self.dependencies,
+                ]
+            )
+            call([python, 'setup.py', 'bdist_wheel'], cwd=repo_path)
 
-        http = venv_path / 'bin' / 'http'
-        yield python
+            distribution_path = next((repo_path / 'dist').iterdir())
+            call(
+                [python, '-m', 'pip', 'install', distribution_path],
+                cwd=repo_path,
+            )
+
+            http = venv_path / 'bin' / 'http'
+            yield python, {
+                'HTTPIE_COMMAND': shlex.join([str(python), str(http)])
+            }
+
+
+@dataclass
+class LocalCommandEnvironment(Environment):
+
+    local_command: str
+
+    @contextmanager
+    def on_repo(self) -> Generator[Path, None, None]:
+        yield sys.executable, {'HTTPIE_COMMAND': self.local_command}
 
 
 def run(configs: List[Dict[str, Environment]], file: IO[str]) -> None:
@@ -80,19 +100,24 @@ def run(configs: List[Dict[str, Environment]], file: IO[str]) -> None:
     result_outputs = {}
 
     current = 1
-    total = len(configs) * 2
+    total = sum(1 for config in configs for _ in config.items())
+
+    def iterate(env_name, status):
+        print(
+            f'Iteration: {env_name} ({current}/{total}) ({status})' + ' ' * 10,
+            end='\r',
+            flush=True,
+        )
 
     for config in configs:
         for env_name, env in config.items():
-            print(
-                f'Iteration: {env_name} ({current}/{total})' + ' ' * 10,
-                end='\r',
-                flush=True,
-            )
-            with on_repo(env) as python:
+            iterate(env_name, 'setting up')
+            with env.on_repo() as (python, env_vars):
+                iterate(env_name, 'running benchmarks')
                 call(
                     [python, BENCHMARK_SCRIPT, '-o', env_name],
                     cwd=result_directory,
+                    env=env_vars,
                 )
             current += 1
 
@@ -130,6 +155,11 @@ def main() -> None:
         help='Add a second run, with a complex python environment.',
     )
     parser.add_argument(
+        '--local-bin',
+        help='Run the suite with the given local binary in addition to'
+        ' existing runners. (E.g --local-bin $(command -v xh))',
+    )
+    parser.add_argument(
         '--file',
         type=FileType('w'),
         default=sys.stdout,
@@ -140,17 +170,25 @@ def main() -> None:
     configs = []
 
     base_config = {
-        'remote': Environment(options.target_repo, options.target_branch),
-        'local': Environment(options.local_repo, options.local_branch),
+        'remote': HTTPieEnvironment(
+            options.target_repo, options.target_branch
+        ),
+        'local': HTTPieEnvironment(options.local_repo, options.local_branch),
     }
     configs.append(base_config)
 
     if options.complex:
         complex_config = {
-            env_name + '-complex': env._replace(dependencies=ADDITIONAL_DEPS)
+            env_name
+            + '-complex': dataclasses.replace(
+                env, dependencies=ADDITIONAL_DEPS
+            )
             for env_name, env in base_config.items()
         }
         configs.append(complex_config)
+
+    if options.local_bin:
+        base_config['binary'] = LocalCommandEnvironment(options.local_bin)
 
     run(configs, file=options.file)
 
