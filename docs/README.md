@@ -1721,6 +1721,8 @@ There are dozens of styles available, here are just a few notable ones:
 | --------: | ----------------------------------------------------------------------------------------------------------------------------------- |
 |    `auto` | Follows your terminal ANSI color styles. This is the default style used by HTTPie                                                   |
 | `default` | Default styles of the underlying Pygments library. Not actually used by default by HTTPie. You can enable it with `--style=default` |
+|     `pie` | HTTPie's original brand style. Also used in the HTTPie for Web and Desktop.                                                         |
+|`pie-light`| Like `pie`, but for terminals with light background colors.                                                                         |
 | `monokai` | A popular color scheme. Enable with `--style=monokai`                                                                               |
 |  `fruity` | A bold, colorful scheme. Enable with `--style=fruity`                                                                               |
 |         … | See `$ http --help` for all the possible `--style` values                                                                           |
