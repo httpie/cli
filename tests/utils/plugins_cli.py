@@ -179,6 +179,14 @@ def dummy_plugin(interface):
 
 
 @pytest.fixture(scope='function')
+def broken_plugin(interface):
+    base_plugin = interface.make_dummy_plugin()
+    with open(base_plugin.path / (base_plugin.import_name + '.py'), 'a') as stream:
+        stream.write('raise ValueError("broken plugin")\n')
+    return base_plugin
+
+
+@pytest.fixture(scope='function')
 def dummy_plugins(interface):
     # Multiple plugins with different configurations
     return [

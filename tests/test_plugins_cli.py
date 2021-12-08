@@ -93,6 +93,28 @@ def test_plugins_double_uninstall(httpie_plugins, httpie_plugins_success, dummy_
     )
 
 
+def test_broken_plugins(httpie_plugins, httpie_plugins_success, dummy_plugin, broken_plugin):
+    httpie_plugins_success("install", dummy_plugin.path, broken_plugin.path)
+
+    with pytest.warns(
+        UserWarning,
+        match=(
+            f'While loading "{broken_plugin.name}", an error'
+            ' ocurred: broken plugin'
+        )
+    ):
+        data = parse_listing(httpie_plugins_success('list'))
+        assert len(data) == 2
+
+    # We load before the uninstallation, so it will warn again.
+    with pytest.warns(UserWarning):
+        httpie_plugins_success("uninstall", broken_plugin.name)
+
+    # No warning now, since it is uninstalled.
+    data = parse_listing(httpie_plugins_success('list'))
+    assert len(data) == 1
+
+
 def test_plugins_cli_error_message_without_args():
     # No arguments
     result = httpie(no_debug=True)

@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 ## [3.0.0.dev0](https://github.com/httpie/httpie/compare/2.6.0...master) (unreleased)
 
 - Improved startup time by 40%. ([#1211](https://github.com/httpie/httpie/pull/1211))
+- Added support for nested JSON syntax. ([#1169](https://github.com/httpie/httpie/issues/1169))
 - Added `httpie plugins` interface for plugin management. ([#566](https://github.com/httpie/httpie/issues/566))
 - Added support for Bearer authentication via `--auth-type=bearer` ([#1215](https://github.com/httpie/httpie/issues/1215)).
 - Added support for quick conversions of pasted URLs into HTTPie calls by adding a space after the protocol name (`$ https ://pie.dev` → `https://pie.dev`). ([#1195](https://github.com/httpie/httpie/issues/1195))
@@ -13,6 +14,8 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - Added support for _receiving_ multiple HTTP headers lines with the same name. ([#1207](https://github.com/httpie/httpie/issues/1207))
 - Added support for basic JSON types on `--form`/`--multipart` when using JSON only operators (`:=`/`:=@`). ([#1212](https://github.com/httpie/httpie/issues/1212))
 - Added support for automatically enabling `--stream` when `Content-Type` is `text/event-stream`. ([#376](https://github.com/httpie/httpie/issues/376))
+- Broken plugins will no longer crash the whole application. ([#1204](https://github.com/httpie/httpie/issues/1204))
+
 
 ## [2.6.0](https://github.com/httpie/httpie/compare/2.5.0...2.6.0) (2021-10-14)
 

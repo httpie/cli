@@ -6,6 +6,7 @@ from pytest_httpbin import certs
 
 from .utils import HTTPBIN_WITH_CHUNKED_SUPPORT_DOMAIN, HTTPBIN_WITH_CHUNKED_SUPPORT
 from .utils.plugins_cli import ( # noqa
+    broken_plugin,
     dummy_plugin,
     dummy_plugins,
     httpie_plugins,
