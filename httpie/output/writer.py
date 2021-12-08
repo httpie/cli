@@ -2,6 +2,7 @@ import argparse
 import errno
 from typing import IO, TextIO, Tuple, Type, Union
 
+from ..cli.dicts import HTTPHeadersDict
 from ..context import Environment
 from ..models import (
     HTTPRequest,
@@ -110,6 +111,7 @@ def build_output_stream_for_message(
         env=env,
         args=args,
         message_type=message_type,
+        headers=requests_message.headers
     )
     yield from stream_class(
         msg=message_type(requests_message),
@@ -128,16 +130,23 @@ def get_stream_type_and_kwargs(
     env: Environment,
     args: argparse.Namespace,
     message_type: Type[HTTPMessage],
+    headers: HTTPHeadersDict,
 ) -> Tuple[Type['BaseStream'], dict]:
     """Pick the right stream type and kwargs for it based on `env` and `args`.
 
     """
+    is_stream = args.stream
+    if not is_stream and message_type is HTTPResponse:
+        # If this is a response, then check the headers for determining
+        # auto-streaming.
+        is_stream = headers.get('Content-Type') == 'text/event-stream'
+
     if not env.stdout_isatty and not args.prettify:
         stream_class = RawStream
         stream_kwargs = {
             'chunk_size': (
                 RawStream.CHUNK_SIZE_BY_LINE
-                if args.stream
+                if is_stream
                 else RawStream.CHUNK_SIZE
             )
         }
@@ -152,7 +161,7 @@ def get_stream_type_and_kwargs(
                 'encoding_overwrite': args.response_charset,
             })
         if args.prettify:
-            stream_class = PrettyStream if args.stream else BufferedPrettyStream
+            stream_class = PrettyStream if is_stream else BufferedPrettyStream
             stream_kwargs.update({
                 'conversion': Conversion(),
                 'formatting': Formatting(

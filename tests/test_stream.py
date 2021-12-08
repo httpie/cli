@@ -2,6 +2,7 @@ import json
 
 import pytest
 import responses
+from unittest.mock import Mock
 
 from httpie.compat import is_windows
 from httpie.cli.constants import PRETTY_MAP
@@ -107,3 +108,28 @@ def test_redirected_stream(httpbin):
     r = http('--pretty=none', '--stream', '--verbose', 'GET',
              httpbin.url + '/get', env=env)
     assert BIN_FILE_CONTENT in r
+
+
+# /drip endpoint produces 3 individual lines,
+# if we set text/event-stream HTTPie should stream
+# it by default. Otherwise, it will buffer and then
+# print.
+@pytest.mark.parametrize('extras, expected', [
+    (
+        ['Accept:text/event-stream'],
+        3
+    ),
+    (
+        ['Accept:text/plain'],
+        1
+    )
+])
+def test_auto_streaming(http_server, extras, expected):
+    env = MockEnvironment()
+    env.stdout.write = Mock()
+    http(http_server + '/drip', *extras, env=env)
+    assert len([
+        call_arg
+        for call_arg in env.stdout.write.call_args_list
+        if b'test' in call_arg[0][0]
+    ]) == expected

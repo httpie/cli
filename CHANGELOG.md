@@ -13,7 +13,9 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - Added support for _sending_ multiple HTTP header lines with the same name. ([#130](https://github.com/httpie/httpie/issues/130))
 - Added support for _receiving_ multiple HTTP headers lines with the same name. ([#1207](https://github.com/httpie/httpie/issues/1207))
 - Added support for basic JSON types on `--form`/`--multipart` when using JSON only operators (`:=`/`:=@`). ([#1212](https://github.com/httpie/httpie/issues/1212))
+- Added support for automatically enabling `--stream` when `Content-Type` is `text/event-stream`. ([#376](https://github.com/httpie/httpie/issues/376))
 - Broken plugins will no longer crash the whole application. ([#1204](https://github.com/httpie/httpie/issues/1204))
+
 
 ## [2.6.0](https://github.com/httpie/httpie/compare/2.5.0...2.6.0) (2021-10-14)
 
