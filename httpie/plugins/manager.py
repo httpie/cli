@@ -1,5 +1,6 @@
 import sys
 import os
+import warnings
 
 from itertools import groupby
 from operator import attrgetter
@@ -69,9 +70,19 @@ class PluginManager(list):
 
     def load_installed_plugins(self, directory: Optional[Path] = None):
         for entry_point in self.iter_entry_points(directory):
-            plugin = entry_point.load()
-            plugin.package_name = get_dist_name(entry_point)
-            self.register(entry_point.load())
+            plugin_name = get_dist_name(entry_point)
+            try:
+                plugin = entry_point.load()
+            except BaseException as exc:
+                warnings.warn(
+                    f'While loading "{plugin_name}", an error ocurred: {exc}\n'
+                    f'For uninstallations, please use either "httpie plugins uninstall {plugin_name}" '
+                    f'or "pip uninstall {plugin_name}" (depending on how you installed it in the first '
+                    'place).'
+                )
+                continue
+            plugin.package_name = plugin_name
+            self.register(plugin)
 
     # Auth
     def get_auth_plugins(self) -> List[Type[AuthPlugin]]:
