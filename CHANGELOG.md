@@ -16,7 +16,6 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - Added support for automatically enabling `--stream` when `Content-Type` is `text/event-stream`. ([#376](https://github.com/httpie/httpie/issues/376))
 - Broken plugins will no longer crash the whole application. ([#1204](https://github.com/httpie/httpie/issues/1204))
 
-
 ## [2.6.0](https://github.com/httpie/httpie/compare/2.5.0...2.6.0) (2021-10-14)
 
 [What’s new in HTTPie 2.6.0 →](https://httpie.io/blog/httpie-2.6.0)
