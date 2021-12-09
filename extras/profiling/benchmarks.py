@@ -134,7 +134,7 @@ class BaseRunner:
 
     @property
     def name(self) -> str:
-        return f'{self.category}-{self.title}'
+        return f'{self.title} ({self.category})'
 
 
 @dataclass
@@ -170,9 +170,9 @@ class DownloadRunner(BaseRunner):
         )
 
 
-DownloadRunner('download', '3G file', '3G')
-CommandRunner('startup', 'version', ['--version'])
-CommandRunner('startup', 'offline request', ['--offline', 'pie.dev/get'])
+CommandRunner('startup', '`http --version`', ['--version'])
+CommandRunner('startup', '`http --offline pie.dev/get`', ['--offline', 'pie.dev/get'])
+DownloadRunner('download', '`http --download :/big_file.txt` (3GB)', '3G')
 
 
 def main() -> None:

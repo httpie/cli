@@ -145,6 +145,37 @@ class LocalCommandEnvironment(Environment):
         yield sys.executable, {'HTTPIE_COMMAND': self.local_command}
 
 
+def dump_results(
+    results: List[str],
+    file: IO[str],
+    min_speed: Optional[str] = None
+) -> None:
+    for result in results:
+        lines = result.strip().splitlines()
+        if min_speed is not None and "hidden" in lines[-1]:
+            lines[-1] = (
+                'Some benchmarks were hidden from this list '
+                'because their timings did not change in a '
+                'significant way (change was within the error '
+                'margin ±{margin}%).'
+            ).format(margin=min_speed)
+            result = '\n'.join(lines)
+
+        print(result, file=file)
+        print("\n---\n", file=file)
+
+
+def compare(*args, directory: Path, min_speed: Optional[str] = None):
+    compare_args = ['pyperf', 'compare_to', '--table', '--table-format=md', *args]
+    if min_speed:
+        compare_args.extend(['--min-speed', min_speed])
+    return subprocess.check_output(
+        compare_args,
+        cwd=directory,
+        text=True,
+    )
+
+
 def run(
     configs: List[Dict[str, Environment]],
     file: IO[str],
@@ -152,7 +183,7 @@ def run(
     min_speed: Optional[str] = None,
 ) -> None:
     result_directory = Path(tempfile.mkdtemp())
-    result_outputs = {}
+    results = []
 
     current = 1
     total = sum(1 for config in configs for _ in config.items())
@@ -179,21 +210,13 @@ def run(
                 )
             current += 1
 
-        env_names = tuple(config.keys())
-        compare_args = ['pyperf', 'compare_to', '--table', '--table-format=md', *env_names]
-        if min_speed:
-            compare_args.extend(['--min-speed', min_speed])
-        result_outputs[env_names] = subprocess.check_output(
-            compare_args,
-            cwd=result_directory,
-            text=True,
-        )
-    print()
+        results.append(compare(
+            *config.keys(),
+            directory=result_directory,
+            min_speed=min_speed
+        ))
 
-    for env_names, result in result_outputs.items():
-        print('#' + ' vs '.join(f'`{env_name}`' for env_name in env_names), file=file)
-        print(result, file=file)
-
+    dump_results(results, file=file, min_speed=min_speed)
     print('Results are available at:', result_directory)
 
 

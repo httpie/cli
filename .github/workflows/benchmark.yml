@@ -35,7 +35,7 @@ jobs:
         with:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: 'github-actions[bot]'
-          body-includes: Benchmark output
+          body-includes: '# Benchmarks'
 
       - name: Create or update comment
         uses: peter-evans/create-or-update-comment@v1
@@ -43,7 +43,7 @@ jobs:
           comment-id: ${{ steps.fc.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
           body: |
-            Benchmark output:
+            # Benchmarks
             ${{ steps.benchmarks.outputs.body }}
           edit-mode: replace
 
