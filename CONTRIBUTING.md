@@ -144,7 +144,6 @@ $ python -m pytest tests/test_uploads.py::TestMultipartFormDataFileUpload::test_
 
 See [Makefile](https://github.com/httpie/httpie/blob/master/Makefile) for additional development utilities.
 
-
 #### Running benchmarks
 
 If you are trying to work on speeding up HTTPie and want to verify your results, you

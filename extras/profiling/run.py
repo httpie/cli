@@ -117,7 +117,7 @@ class HTTPieEnvironment(Environment):
                     'pip',
                     'install',
                     'wheel',
-                    'pyperf',
+                    'pyperf==2.3.0',
                     *self.dependencies,
                 ]
             )
@@ -146,7 +146,10 @@ class LocalCommandEnvironment(Environment):
 
 
 def run(
-    configs: List[Dict[str, Environment]], file: IO[str], debug: bool = False
+    configs: List[Dict[str, Environment]],
+    file: IO[str],
+    debug: bool = False,
+    min_speed: Optional[str] = None,
 ) -> None:
     result_directory = Path(tempfile.mkdtemp())
     result_outputs = {}
@@ -177,15 +180,18 @@ def run(
             current += 1
 
         env_names = tuple(config.keys())
+        compare_args = ['pyperf', 'compare_to', '--table', '--table-format=md', *env_names]
+        if min_speed:
+            compare_args.extend(['--min-speed', min_speed])
         result_outputs[env_names] = subprocess.check_output(
-            ['pyperf', 'compare_to', *env_names],
+            compare_args,
             cwd=result_directory,
             text=True,
         )
     print()
 
     for env_names, result in result_outputs.items():
-        print(' -> '.join(env_names), file=file)
+        print('#' + ' vs '.join(f'`{env_name}`' for env_name in env_names), file=file)
         print(result, file=file)
 
     print('Results are available at:', result_directory)
@@ -221,16 +227,22 @@ def main() -> None:
         help='File to print the actual results',
     )
     parser.add_argument(
+        '--min-speed',
+        help='Minimum of speed in percent to consider that a '
+             'benchmark is significant'
+    )
+    parser.add_argument(
         '--debug',
         action='store_true',
     )
+
     options = parser.parse_args()
 
     configs = []
 
     base_config = {
-        'remote': HTTPieEnvironment(options.target_repo, options.target_branch),
-        'local': HTTPieEnvironment(options.local_repo, options.local_branch),
+        options.target_branch: HTTPieEnvironment(options.target_repo, options.target_branch),
+        'this_branch': HTTPieEnvironment(options.local_repo, options.local_branch),
     }
     configs.append(base_config)
 
@@ -245,7 +257,7 @@ def main() -> None:
     if options.local_bin:
         base_config['binary'] = LocalCommandEnvironment(options.local_bin)
 
-    run(configs, file=options.file, debug=options.debug)
+    run(configs, file=options.file, debug=options.debug, min_speed=options.min_speed)
 
 
 if __name__ == '__main__':
