@@ -144,6 +144,21 @@ $ python -m pytest tests/test_uploads.py::TestMultipartFormDataFileUpload::test_
 
 See [Makefile](https://github.com/httpie/httpie/blob/master/Makefile) for additional development utilities.
 
+
+#### Running benchmarks
+
+If you are trying to work on speeding up HTTPie and want to verify your results, you
+can run the benchmark suite. The suite will compare the last commit of your branch
+with the master branch of your repository (or a fresh checkout of HTTPie master, through
+`--fresh`) and report the results back.
+
+```bash
+$ python extras/benchmarks/run.py
+```
+
+The benchmarks can also be run on the CI. Since it is a long process, it requires manual
+oversight. Ping one of the maintainers to get a `benchmark` label on your branch.
+
 #### Windows
 
 If you are on a Windows machine and not able to run `make`,

@@ -1,3 +1,39 @@
+"""
+Run the HTTPie benchmark suite with multiple environments.
+
+This script is configured in a way that, it will create
+two (or more) isolated environments and compare the *last
+commit* of this repository with it's master.
+
+> If you didn't commit yet, it won't be showing results.
+
+You can also pass --fresh, which would test the *last
+commit* of this repository with a fresh copy of HTTPie
+itself. This way even if you don't have an up-to-date
+master branch, you can still compare it with the upstream's
+master.
+
+You can also pass --complex to add 2 additional environments,
+which would include additional dependencies like pyOpenSSL.
+
+Examples:
+
+    # Run everything as usual, and compare last commit with master
+    $ python extras/benchmarks/run.py
+
+    # Include complex environments
+    $ python extras/benchmarks/run.py --complex
+
+    # Compare against a fresh copy
+    $ python extras/benchmarks/run.py --fresh
+
+    # Compare against a custom branch of a custom repo
+    $ python extras/benchmarks/run.py --target-repo my_repo --target-branch my_branch
+
+    # Debug changes made on this script (only run benchmarks once)
+    $ python extras/benchmarks/run.py --debug
+"""
+
 import dataclasses
 import shlex
 import subprocess
@@ -8,7 +44,8 @@ from argparse import ArgumentParser, FileType
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
-from typing import IO, Dict, Generator, Iterable, List, NamedTuple, Optional
+from typing import (IO, Dict, Generator, Iterable, List, Optional,
+                    Tuple)
 
 BENCHMARK_SCRIPT = Path(__file__).parent / 'benchmarks.py'
 CURRENT_REPO = Path(__file__).parent.parent.parent
@@ -16,6 +53,7 @@ CURRENT_REPO = Path(__file__).parent.parent.parent
 GITHUB_URL = 'https://github.com/httpie/httpie.git'
 TARGET_BRANCH = 'master'
 
+# Additional dependencies for --complex
 ADDITIONAL_DEPS = ('pyOpenSSL',)
 
 
@@ -25,8 +63,19 @@ def call(*args, **kwargs):
 
 
 class Environment:
+    """
+    Each environment defines how to create an isolated instance
+    where we could install HTTPie and run benchmarks without any
+    environmental factors.
+    """
+
     @contextmanager
-    def on_repo(self) -> Generator[Path, None, None]:
+    def on_repo(self) -> Generator[Tuple[Path, Dict[str, str]], None, None]:
+        """
+        Return the path to the python interpreter and the
+        environment variables (e.g HTTPIE_COMMAND) to be
+        used on the benchmarks.
+        """
         raise NotImplementedError
 
 
@@ -59,6 +108,7 @@ class HTTPieEnvironment(Environment):
             venv_path = directory / '.venv'
             venv.create(venv_path, with_pip=True)
 
+            # Install basic dependencies
             python = venv_path / 'bin' / 'python'
             call(
                 [
@@ -71,8 +121,11 @@ class HTTPieEnvironment(Environment):
                     *self.dependencies,
                 ]
             )
+
+            # Create a wheel distribution of HTTPie
             call([python, 'setup.py', 'bdist_wheel'], cwd=repo_path)
 
+            # Install httpie
             distribution_path = next((repo_path / 'dist').iterdir())
             call(
                 [python, '-m', 'pip', 'install', distribution_path],
@@ -80,14 +133,11 @@ class HTTPieEnvironment(Environment):
             )
 
             http = venv_path / 'bin' / 'http'
-            yield python, {
-                'HTTPIE_COMMAND': shlex.join([str(python), str(http)])
-            }
+            yield python, {'HTTPIE_COMMAND': shlex.join([str(python), str(http)])}
 
 
 @dataclass
 class LocalCommandEnvironment(Environment):
-
     local_command: str
 
     @contextmanager
@@ -95,7 +145,9 @@ class LocalCommandEnvironment(Environment):
         yield sys.executable, {'HTTPIE_COMMAND': self.local_command}
 
 
-def run(configs: List[Dict[str, Environment]], file: IO[str], debug: bool = False) -> None:
+def run(
+    configs: List[Dict[str, Environment]], file: IO[str], debug: bool = False
+) -> None:
     result_directory = Path(tempfile.mkdtemp())
     result_outputs = {}
 
@@ -177,9 +229,7 @@ def main() -> None:
     configs = []
 
     base_config = {
-        'remote': HTTPieEnvironment(
-            options.target_repo, options.target_branch
-        ),
+        'remote': HTTPieEnvironment(options.target_repo, options.target_branch),
         'local': HTTPieEnvironment(options.local_repo, options.local_branch),
     }
     configs.append(base_config)
@@ -187,9 +237,7 @@ def main() -> None:
     if options.complex:
         complex_config = {
             env_name
-            + '-complex': dataclasses.replace(
-                env, dependencies=ADDITIONAL_DEPS
-            )
+            + '-complex': dataclasses.replace(env, dependencies=ADDITIONAL_DEPS)
             for env_name, env in base_config.items()
         }
         configs.append(complex_config)
