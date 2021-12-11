@@ -15,6 +15,7 @@ from httpie.sessions import Session
 from httpie.utils import get_expired_cookies
 from .test_auth_plugins import basic_auth
 from .utils import HTTP_OK, MockEnvironment, http, mk_config_dir
+from base64 import b64encode
 
 
 class SessionTestBase:
@@ -308,7 +309,9 @@ class TestSession(SessionTestBase):
             auth_type = 'test-prompted'
 
             def get_auth(self, username=None, password=None):
-                return basic_auth()
+                self.raw_auth = username + ":" + password
+                basic_auth_header = "Basic " + b64encode(self.raw_auth.encode()).strip().decode('latin1')
+                return basic_auth(basic_auth_header)
 
         plugin_manager.register(Plugin)
 
@@ -326,6 +329,13 @@ class TestSession(SessionTestBase):
         )
         assert HTTP_OK in r1
         assert HTTP_OK in r2
+
+        # additional test for issue: https://github.com/httpie/httpie/issues/1098
+        with open(session_path) as session_file:
+            session_file_lines = ''.join(session_file.readlines())
+            assert "\"type\": \"test-prompted\"" in session_file_lines
+            assert "\"raw_auth\": \"user:password\"" in session_file_lines
+
         plugin_manager.unregister(Plugin)
 
     def test_auth_type_stored_in_session_file(self, httpbin):
