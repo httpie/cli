@@ -309,7 +309,6 @@ class TestSession(SessionTestBase):
             auth_type = 'test-prompted'
 
             def get_auth(self, username=None, password=None):
-                self.raw_auth = username + ":" + password
                 basic_auth_header = "Basic " + b64encode(self.raw_auth.encode()).strip().decode('latin1')
                 return basic_auth(basic_auth_header)
 

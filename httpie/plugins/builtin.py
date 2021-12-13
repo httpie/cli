@@ -51,7 +51,6 @@ class BasicAuthPlugin(BuiltinAuthPlugin):
 
     # noinspection PyMethodOverriding
     def get_auth(self, username: str, password: str) -> HTTPBasicAuth:
-        self.raw_auth = username + ":" + password
         return HTTPBasicAuth(username, password)
 
 

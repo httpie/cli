@@ -296,6 +296,10 @@ class HTTPieArgumentParser(BaseHTTPieArgumentParser):
                             ' --ignore-stdin is set.'
                         )
                     credentials.prompt_password(url.netloc)
+
+                if (credentials.key and credentials.value):
+                    plugin.raw_auth = credentials.key + ":" + credentials.value
+
                 self.args.auth = plugin.get_auth(
                     username=credentials.key,
                     password=credentials.value,
