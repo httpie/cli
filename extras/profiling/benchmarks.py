@@ -172,6 +172,17 @@ class DownloadRunner(BaseRunner):
 
 CommandRunner('startup', '`http --version`', ['--version'])
 CommandRunner('startup', '`http --offline pie.dev/get`', ['--offline', 'pie.dev/get'])
+for pretty in ['all', 'none']:
+    CommandRunner(
+        'startup',
+        f'`http --pretty={pretty} pie.dev/stream/1000`',
+        [
+            '--print=HBhb',
+            '--stream',
+            f'--pretty={pretty}',
+            'httpbin.org/stream/100'
+        ]
+    )
 DownloadRunner('download', '`http --download :/big_file.txt` (3GB)', '3G')
 
 
