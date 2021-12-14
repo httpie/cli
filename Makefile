@@ -130,7 +130,7 @@ pycodestyle: codestyle
 codestyle:
 	@echo $(H1)Running flake8$(H1END)
 	@[ -f $(VENV_BIN)/flake8 ] || $(VENV_PIP) install --upgrade --editable '.[dev]'
-	$(VENV_BIN)/flake8 httpie/ tests/ docs/packaging/brew/ *.py
+	$(VENV_BIN)/flake8 httpie/ tests/ extras/profiling/ docs/packaging/brew/ *.py
 	@echo
 
 
