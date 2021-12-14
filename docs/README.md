@@ -1747,7 +1747,9 @@ Formatting has the following effects:
   to the characters they represent.
 - XML and XHTML data is indented.
 
-You can further control the applied formatting via the more granular [format options](#format-options).
+Please note that sometimes there might be changes made by formatters on the actual response body (e.g
+collapsing empty tags on XML) but the end result will always be semantically indistinguishable. Some of
+these formatting changes can be configured more granularly through [format options](#format-options).
 
 ### Format options
 

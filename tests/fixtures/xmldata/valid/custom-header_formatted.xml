@@ -1,8 +1,9 @@
-<?pi data?>
+<?xml                version="1.0" encoding="utf-8"?>
 <!-- comment -->
-<root xmlns="namespace">
+<root>
   <element key="value">text</element>
   <element>text</element>
   tail
   <empty-element/>
 </root>
+
