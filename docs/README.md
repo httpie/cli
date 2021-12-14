@@ -2222,6 +2222,14 @@ httpie_converter (1.0.0)
   httpie_konsole_konverter (httpie.plugins.converter.v1)
 ```
 
+#### `httpie plugins upgrade`
+
+For upgrading already installed plugins, use `httpie plugins upgrade`.
+
+```bash
+$ httpie plugins upgrade httpie-plugin
+```
+
 #### `httpie plugins uninstall`
 
 Uninstall plugins from the isolated plugins directory. If the plugin is not installed

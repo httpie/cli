@@ -68,15 +68,20 @@ class PluginInstaller:
             **options
         )
 
-    def install(self, targets: List[str]) -> Optional[ExitStatus]:
+    def install(self, targets: List[str], mode: str = 'install') -> Optional[ExitStatus]:
         self.env.stdout.write(f"Installing {', '.join(targets)}...\n")
         self.env.stdout.flush()
 
+        pip_args = [
+            'install',
+            f'--prefix={self.dir}',
+            '--no-warn-script-location',
+        ]
+        if mode == 'upgrade':
+            pip_args.append('--upgrade')
         try:
             self.pip(
-                'install',
-                f'--prefix={self.dir}',
-                '--no-warn-script-location',
+                *pip_args,
                 *targets,
             )
         except subprocess.CalledProcessError as error:
@@ -94,7 +99,7 @@ class PluginInstaller:
                 if severity == 'ERROR':
                     reason = message
 
-            return self.fail('install', ', '.join(targets), reason)
+            return self.fail(mode, ', '.join(targets), reason)
 
     def _uninstall(self, target: str) -> Optional[ExitStatus]:
         try:
@@ -178,6 +183,8 @@ class PluginInstaller:
         with enable_plugins(self.dir):
             if action == 'install':
                 status = self.install(args.targets)
+            elif action == 'upgrade':
+                status = self.install(args.targets, mode='upgrade')
             elif action == 'uninstall':
                 status = self.uninstall(args.targets)
             elif action == 'list':

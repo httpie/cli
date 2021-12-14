@@ -93,6 +93,18 @@ def test_plugins_double_uninstall(httpie_plugins, httpie_plugins_success, dummy_
     )
 
 
+def test_plugins_upgrade(httpie_plugins, httpie_plugins_success, dummy_plugin):
+    httpie_plugins_success("install", dummy_plugin.path)
+
+    # Make a new version of the plugin
+    dummy_plugin.version = '2.0.0'
+    dummy_plugin.build()
+
+    httpie_plugins_success("upgrade", dummy_plugin.path)
+    data = parse_listing(httpie_plugins_success('list'))
+    assert data[dummy_plugin.name]['version'] == '2.0.0'
+
+
 def test_broken_plugins(httpie_plugins, httpie_plugins_success, dummy_plugin, broken_plugin):
     httpie_plugins_success("install", dummy_plugin.path, broken_plugin.path)
 
