@@ -125,7 +125,7 @@ class EncodedStream(BaseStream):
         for line, lf in self.msg.iter_lines(self.CHUNK_SIZE):
             if b'\0' in line:
                 raise BinarySuppressedError()
-            line = smart_decode(line, self.encoding)
+            line, self.encoding = smart_decode(line, self.encoding)
             yield smart_encode(line, self.output_encoding) + lf
 
 
@@ -178,7 +178,7 @@ class PrettyStream(EncodedStream):
         if not isinstance(chunk, str):
             # Text when a converter has been used,
             # otherwise it will always be bytes.
-            chunk = smart_decode(chunk, self.encoding)
+            chunk, self.encoding = smart_decode(chunk, self.encoding)
         chunk = self.formatting.format_body(content=chunk, mime=self.mime)
         return smart_encode(chunk, self.output_encoding)
 
