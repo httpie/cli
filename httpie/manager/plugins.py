@@ -3,15 +3,20 @@ import os
 import subprocess
 import sys
 import textwrap
+import re
+import shutil
 from collections import defaultdict
 from contextlib import suppress
 from pathlib import Path
-from typing import Optional, List
+from typing import Tuple, Optional, List
 
 from httpie.manager.cli import parser, missing_subcommand
 from httpie.compat import importlib_metadata, get_dist_name
 from httpie.context import Environment
 from httpie.status import ExitStatus
+from httpie.utils import as_site
+
+PEP_503 = re.compile(r"[-_.]+")
 
 
 class PluginInstaller:
@@ -68,10 +73,9 @@ class PluginInstaller:
             **options
         )
 
-    def install(self, targets: List[str], mode: str = 'install') -> Optional[ExitStatus]:
-        self.env.stdout.write(f"Installing {', '.join(targets)}...\n")
-        self.env.stdout.flush()
-
+    def _install(self, targets: List[str], mode='install', **process_options) -> Tuple[
+        subprocess.CompletedProcess, ExitStatus
+    ]:
         pip_args = [
             'install',
             f'--prefix={self.dir}',
@@ -79,12 +83,15 @@ class PluginInstaller:
         ]
         if mode == 'upgrade':
             pip_args.append('--upgrade')
+
         try:
-            self.pip(
+            process = self.pip(
                 *pip_args,
                 *targets,
+                **process_options,
             )
         except subprocess.CalledProcessError as error:
+            process = None
             reason = None
             if error.stderr:
                 stderr = error.stderr.decode()
@@ -99,7 +106,56 @@ class PluginInstaller:
                 if severity == 'ERROR':
                     reason = message
 
-            return self.fail(mode, ', '.join(targets), reason)
+            exit_status = self.fail(mode, ', '.join(targets), reason)
+        else:
+            exit_status = ExitStatus.SUCCESS
+
+        return process, exit_status
+
+    def install(self, targets: List[str]) -> ExitStatus:
+        self.env.stdout.write(f"Installing {', '.join(targets)}...\n")
+        self.env.stdout.flush()
+        _, exit_status = self._install(targets)
+        return exit_status
+
+    def _clear_metadata(self, targets: List[str]) -> None:
+        # Due to an outstanding pip problem[0], we have to get rid of
+        # existing metadata for old versions manually.
+        # [0]: https://github.com/pypa/pip/issues/10727
+        result_deps = defaultdict(list)
+        for child in as_site(self.dir).iterdir():
+            if child.suffix in {'.dist-info', '.egg-info'}:
+                name, _, version = child.stem.rpartition('-')
+                result_deps[name].append((version, child))
+
+        for target in targets:
+            name, _, version = target.rpartition('-')
+            name = PEP_503.sub("-", name).lower().replace('-', '_')
+            if name not in result_deps:
+                continue
+
+            for result_version, meta_path in result_deps[name]:
+                if version != result_version:
+                    shutil.rmtree(meta_path)
+
+    def upgrade(self, targets: List[str]) -> ExitStatus:
+        self.env.stdout.write(f"Upgrading {', '.join(targets)}...\n")
+        self.env.stdout.flush()
+
+        process, exit_status = self._install(
+            targets,
+            mode='upgrade',
+            stdout=subprocess.PIPE
+        )
+        stdout = process.stdout.decode()
+        self.env.stdout.write(stdout)
+
+        if exit_status is not ExitStatus.SUCCESS:
+            return exit_status
+
+        installation_line = stdout.splitlines()[-1]
+        if installation_line.startswith('Successfully installed'):
+            self._clear_metadata(installation_line.split()[2:])
 
     def _uninstall(self, target: str) -> Optional[ExitStatus]:
         try:
@@ -184,7 +240,7 @@ class PluginInstaller:
             if action == 'install':
                 status = self.install(args.targets)
             elif action == 'upgrade':
-                status = self.install(args.targets, mode='upgrade')
+                status = self.upgrade(args.targets)
             elif action == 'uninstall':
                 status = self.uninstall(args.targets)
             elif action == 'list':
