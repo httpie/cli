@@ -1,0 +1,28 @@
+name: Mark stale pull requests
+
+on:
+  schedule:
+  - cron: "0 0 * * *"
+
+permissions:
+  pull-requests: write
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/stale@v4
+      with:
+        stale-pr-message: 'This PR is stale because it has been open for 30 days with no activity.'
+        close-pr-message: 'Thanks for the pull reuqest, but since it was stale for more than a month we are closing it. If you want to work back on it, feel free to open it back or create a new one.'
+        stale-pr-label: 'stale'
+
+        days-before-stale: -1
+        days-before-issue-stale: -1
+        days-before-pr-stale: 30
+
+        days-before-close: -1
+        days-before-issue-close: -1
+        days-before-pr-close: 7
+        debug-only: true
