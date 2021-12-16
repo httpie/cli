@@ -23,4 +23,3 @@ jobs:
         days-before-close: -1
         days-before-issue-close: -1
         days-before-pr-close: 0
-        debug-only: true
