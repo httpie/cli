@@ -272,32 +272,31 @@ class Solarized256Style(pygments.style.Style):
 LIGHT_COLORS = {
     'accent': '#52AB66',
     'backdrop': '#000000',
-    'borders': '#1C1818',
+    'borders': '#D3D3D3',
     'canvas': '#E3E3E3',
     'code-aqua': '#698799',
     'code-blue': '#3B5EBA',
     'code-gray': '#7D7D7D',
     'code-green': '#52AB66',
     'code-orange': '#E3822B',
-    'code-pink': '#C26EC2',
-    'code-primary': '#4F4D4D',
+    'code-pink': '#8745BA',
+    'code-primary': '#8745BA',
     'code-purple': '#8745BA',
     'code-red': '#C7382E',
     'code-yellow': '#BABA29',
     'focus': '#698FEB',
     'form-bg': '#EDEDEB',
     'hover': '#307842',
-    'primary': '#1C1818',
-    'secondary': '#1C1818',
-    'selection': '#77DB8F',
-    'tertiary': '#1C1818',
+    'secondary': '#6C6969',
+    'selection': '#C3E1CA',
+    'tertiary': '#BBBABA',
 }
 
 
 DARK_COLORS = {
     'accent': '#73DC8C',
     'backdrop': '#7F7F7F',
-    'borders': '#F5F5F0',
+    'borders': '#2D2A29',
     'canvas': '#1C1818',
     'code-aqua': '#8CB4CD',
     'code-blue': '#4B78E6',
@@ -312,10 +311,9 @@ DARK_COLORS = {
     'focus': '#3B5EBA',
     'form-bg': '#231F1F',
     'hover': '#A1E8B0',
-    'primary': '#F5F5F0',
-    'secondary': '#F5F5F0',
-    'selection': '#77DB8F',
-    'tertiary': '#F5F5F0',
+    'secondary': '#9E9D9A',
+    'selection': '#37523C',
+    'tertiary': '#474344',
 }
 
 
@@ -351,14 +349,14 @@ PieLightHeaderStyle, PieDarkHeaderStyle = make_styles(
     'Pie{mode}HeaderStyle',
     {
         # HTTP line / Headers / Etc.
-        pygments.token.Name.Namespace: 'bold primary',
+        pygments.token.Name.Namespace: 'bold code-primary',
         pygments.token.Keyword.Reserved: 'bold code-gray',
         pygments.token.Operator: 'bold code-gray',
         pygments.token.Number: 'bold code-gray',
         pygments.token.Name.Function.Magic: 'bold code-green',
         pygments.token.Name.Exception: 'bold code-green',
         pygments.token.Name.Attribute: 'code-blue',
-        pygments.token.String: 'primary',
+        pygments.token.String: 'code-primary',
 
         # HTTP Methods
         pygments.token.Name.Function: 'bold code-gray',
@@ -395,8 +393,8 @@ PieLightBodyStyle, PieDarkBodyStyle = make_styles(
         pygments.token.Keyword: 'code-orange',
 
         # Other stuff
-        pygments.token.Text: 'primary',
-        pygments.token.Name.Attribute: 'primary',
+        pygments.token.Text: 'code-primary',
+        pygments.token.Name.Attribute: 'code-primary',
         pygments.token.Name.Builtin: 'code-blue',
         pygments.token.Name.Builtin.Pseudo: 'code-blue',
         pygments.token.Name.Class: 'code-blue',
@@ -414,7 +412,7 @@ PieLightBodyStyle, PieDarkBodyStyle = make_styles(
         pygments.token.String.Heredoc: 'code-aqua',
         pygments.token.String.Regex: 'code-red',
         pygments.token.Number: 'code-aqua',
-        pygments.token.Operator: 'primary',
+        pygments.token.Operator: 'code-primary',
         pygments.token.Operator.Word: 'code-green',
         pygments.token.Comment: 'secondary',
         pygments.token.Comment.Preproc: 'code-green',
@@ -426,7 +424,7 @@ PieLightBodyStyle, PieDarkBodyStyle = make_styles(
         pygments.token.Generic.Inserted: 'code-green',
         pygments.token.Generic.Strong: 'bold',
         pygments.token.Generic.Subheading: 'code-orange',
-        pygments.token.Token: 'primary',
+        pygments.token.Token: 'code-primary',
         pygments.token.Token.Other: 'code-orange',
     }
 )
