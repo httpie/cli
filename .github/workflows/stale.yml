@@ -2,7 +2,8 @@ name: Mark stale pull requests
 
 on:
   schedule:
-  - cron: "0 0 * * *"
+    - cron: "0 0 * * *"
+  workflow_dispatch
 
 permissions:
   pull-requests: write
