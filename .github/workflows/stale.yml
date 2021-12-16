@@ -1,9 +1,6 @@
 name: Mark stale pull requests
 
-on:
-  schedule:
-    - cron: "0 0 * * *"
-  workflow_dispatch
+on: workflow_dispatch
 
 permissions:
   pull-requests: write
@@ -21,9 +18,9 @@ jobs:
 
         days-before-stale: -1
         days-before-issue-stale: -1
-        days-before-pr-stale: 30
+        days-before-pr-stale: 21
 
         days-before-close: -1
         days-before-issue-close: -1
-        days-before-pr-close: 7
+        days-before-pr-close: 0
         debug-only: true
