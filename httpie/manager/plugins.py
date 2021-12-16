@@ -74,7 +74,7 @@ class PluginInstaller:
         )
 
     def _install(self, targets: List[str], mode='install', **process_options) -> Tuple[
-        subprocess.CompletedProcess, ExitStatus
+        Optional[bytes], ExitStatus
     ]:
         pip_args = [
             'install',
@@ -91,7 +91,6 @@ class PluginInstaller:
                 **process_options,
             )
         except subprocess.CalledProcessError as error:
-            process = None
             reason = None
             if error.stderr:
                 stderr = error.stderr.decode()
@@ -106,11 +105,13 @@ class PluginInstaller:
                 if severity == 'ERROR':
                     reason = message
 
+            stdout = error.stdout
             exit_status = self.fail(mode, ', '.join(targets), reason)
         else:
+            stdout = process.stdout
             exit_status = ExitStatus.SUCCESS
 
-        return process, exit_status
+        return stdout, exit_status
 
     def install(self, targets: List[str]) -> ExitStatus:
         self.env.stdout.write(f"Installing {', '.join(targets)}...\n")
@@ -142,16 +143,16 @@ class PluginInstaller:
         self.env.stdout.write(f"Upgrading {', '.join(targets)}...\n")
         self.env.stdout.flush()
 
-        process, exit_status = self._install(
+        raw_stdout, exit_status = self._install(
             targets,
             mode='upgrade',
             stdout=subprocess.PIPE
         )
-        stdout = process.stdout.decode()
-        self.env.stdout.write(stdout)
-
-        if exit_status is not ExitStatus.SUCCESS:
+        if not raw_stdout:
             return exit_status
+
+        stdout = raw_stdout.decode()
+        self.env.stdout.write(stdout)
 
         installation_line = stdout.splitlines()[-1]
         if installation_line.startswith('Successfully installed'):
