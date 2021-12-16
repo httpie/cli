@@ -518,7 +518,7 @@ $ http https://api.github.com/search/repositories q==httpie per_page==1
 GET /search/repositories?q=httpie&per_page=1 HTTP/1.1
 ```
 
-You can even retrieve the `value` from a file by using the `param==@file` syntax.
+You can even retrieve the `value` from a file by using the `param==@file` syntax. This would also effectively strip the newlines from the end.
 
 ```bash
 $ http pie.dev/get text==@files/text.txt
@@ -616,12 +616,7 @@ $ http PUT pie.dev/put \
     X-Date:today \                     # Header
     token==secret \                    # Query parameter
     name=John \                        # String (default)
-    age:=29 \                          # Raw JSON — Number
-    married:=false \                   # Raw JSON — Boolean
-    hobbies:='["http", "pies"]' \      # Raw JSON — Array
-    favorite:='{"tool": "HTTPie"}' \   # Raw JSON — Object
-    bookmarks:=@files/data.json \      # Embed JSON file
-    description=@files/text.txt        # Embed text file
+    age:=29                            # Raw JSON
 ```
 
 |                                                    Item Type | Description                                                                                                                                                                                                            |
@@ -632,10 +627,22 @@ $ http PUT pie.dev/put \
 |                                Raw JSON fields `field:=json` | Useful when sending JSON and one or more fields need to be a `Boolean`, `Number`, nested `Object`, or an `Array`, e.g., `meals:='["ham","spam"]'` or `pies:=[1,2,3]` (note the quotes)                                 |
 | File upload fields `field@/dir/file`, `field@file;type=mime` | Only available with `--form`, `-f` and `--multipart`. For example `screenshot@~/Pictures/img.png`, or `'cv@cv.txt;type=text/markdown'`. With `--form`, the presence of a file field results in a `--multipart` request |
 
-Each separator (except for the file upload one) has a variant that ends with `@` suffix which would translate to reading that file and using it as the value for the given field. You can read a single header from a file with `:@` (`Header:@file.txt`), a JSON object through `:=@` (`data:=@data.json`), and so forth. Please note that `:@` and `==@` will effectively strip the trailing newlines from the file body.
-
 Note that the structured data fields aren’t the only way to specify request data:
 [raw request body](#raw-request-body) is a mechanism for passing arbitrary request data.
+
+### File based separators
+
+Using file contents as values for specific fields is a very common use case, which can be achieved through adding the `@` suffix to
+the operators above. For example instead of using a static string as the value for some header, you can use `:@` operator
+to pass the desired value from a file.
+
+```bash
+$ http POST pie.dev/post \
+    X-Data:@files/text.txt             # Read a header from a file
+    token==@files/text.txt             # Read a query parameter from a file
+    name=@files/text.txt               # Read a string from a file
+    bookmarks:=@files/data.json        # Embed a JSON object from a file
+```
 
 ### Escaping rules
 
@@ -899,7 +906,7 @@ Any of these can be overwritten and some of them unset (see below).
 
 ### Reading headers from a file
 
-You can read headers from a file by using the `:@` operator.
+You can read headers from a file by using the `:@` operator. This would also effectively strip the newlines from the end.
 
 ```bash
 $ http pie.dev/headers :@files/text.txt
