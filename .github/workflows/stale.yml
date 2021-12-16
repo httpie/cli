@@ -18,7 +18,7 @@ jobs:
 
         days-before-stale: -1
         days-before-issue-stale: -1
-        days-before-pr-stale: 21
+        days-before-pr-stale: 30
 
         days-before-close: -1
         days-before-issue-close: -1
