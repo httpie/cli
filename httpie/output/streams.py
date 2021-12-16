@@ -6,6 +6,7 @@ from .processing import Conversion, Formatting
 from ..context import Environment
 from ..encoding import smart_decode, smart_encode, UTF8
 from ..models import HTTPMessage
+from ..utils import parse_content_type_header
 
 
 BINARY_SUPPRESSED_NOTICE = (
@@ -106,7 +107,10 @@ class EncodedStream(BaseStream):
         **kwargs
     ):
         super().__init__(**kwargs)
-        self.mime = mime_overwrite or self.msg.content_type
+        if mime_overwrite:
+            self.mime = mime_overwrite
+        else:
+            self.mime, _ = parse_content_type_header(self.msg.content_type)
         self.encoding = encoding_overwrite or self.msg.encoding
         if env.stdout_isatty:
             # Use the encoding supported by the terminal.

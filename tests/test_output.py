@@ -215,6 +215,18 @@ class TestColors:
         assert get_lexer('xxx/yyy') is None
 
 
+@pytest.mark.parametrize("endpoint", [
+    "/encoding/utf8",
+    "/html",
+    "/json",
+    "/xml",
+])
+def test_ensure_contents_colored(httpbin, endpoint):
+    env = MockEnvironment(colors=256)
+    r = http('--body', 'GET', httpbin + endpoint, env=env)
+    assert COLOR in r
+
+
 class TestPrettyOptions:
     """Test the --pretty handling."""
 
