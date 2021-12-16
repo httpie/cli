@@ -223,7 +223,7 @@ class TestColors:
 ])
 def test_ensure_contents_colored(httpbin, endpoint):
     env = MockEnvironment(colors=256)
-    r = http('GET', httpbin + endpoint, env=env)
+    r = http('--body', 'GET', httpbin + endpoint, env=env)
     assert COLOR in r
 
 

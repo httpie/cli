@@ -16,6 +16,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - Added support for automatically enabling `--stream` when `Content-Type` is `text/event-stream`. ([#376](https://github.com/httpie/httpie/issues/376))
 - Broken plugins will no longer crash the whole application. ([#1204](https://github.com/httpie/httpie/issues/1204))
 - Fixed auto addition of XML declaration to every formatted XML response. ([#1156](https://github.com/httpie/httpie/issues/1156))
+- Fixed highlighting when `Content-Type` specifies an additional charset. ([#1242](https://github.com/httpie/httpie/issues/1242))
 
 ## [2.6.0](https://github.com/httpie/httpie/compare/2.5.0...2.6.0) (2021-10-14)
 
