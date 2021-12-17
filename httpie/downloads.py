@@ -271,7 +271,6 @@ class Downloader:
             with_headers=False,
             with_body=True,
             on_body_chunk_downloaded=self.chunk_downloaded,
-            chunk_size=1024 * 8
         )
 
         self._progress_reporter.output.write(
@@ -324,7 +323,7 @@ class Downloader:
                 content_type=final_response.headers.get('Content-Type'),
             )
         unique_filename = get_unique_filename(filename)
-        return open(unique_filename, mode='a+b')
+        return open(unique_filename, buffering=0, mode='a+b')
 
 
 class DownloadStatus:
