@@ -14,6 +14,14 @@ COMMANDS = {
                 'help': 'targets to install'
             }
         ],
+        'upgrade': [
+            'Upgrade the given plugins',
+            {
+                'dest': 'targets',
+                'nargs': '+',
+                'help': 'targets to upgrade'
+            }
+        ],
         'uninstall': [
             'Uninstall the given HTTPie plugins.',
             {
