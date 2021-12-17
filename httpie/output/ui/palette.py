@@ -1,4 +1,5 @@
 # Copy the brand palette
+from typing import Optional
 
 COLOR_PALETTE = {
     'transparent': 'transparent',
@@ -136,3 +137,24 @@ COLOR_PALETTE['primary'] = {
 }
 
 COLOR_PALETTE['secondary'] = {'700': '#37523C', '600': '#6c6969', '500': '#6c6969'}
+
+SHADE_NAMES = {
+    '500': 'pie-dark',
+    '600': 'pie',
+    '700': 'pie-light'
+}
+
+SHADES = [
+    '50',
+    *map(str, range(100, 1000, 100))
+]
+
+def get_color(color: str, shade: str) -> Optional[str]:
+    if color not in COLOR_PALETTE:
+        return None
+
+    color_code = COLOR_PALETTE[color]
+    if isinstance(color_code, dict) and shade in color_code:
+        return color_code[shade]
+    else:
+        return color_code
