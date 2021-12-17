@@ -16,7 +16,7 @@ from pygments.lexers.text import HttpLexer as PygmentsHttpLexer
 from pygments.util import ClassNotFound
 
 from ..lexers.json import EnhancedJsonLexer
-from ..ui.palette import COLOR_PALETTE, SHADE_NAMES, get_color
+from ..ui.palette import SHADE_NAMES, get_color
 from ...compat import is_windows
 from ...context import Environment
 from ...plugins import FormatterPlugin
@@ -24,14 +24,7 @@ from ...plugins import FormatterPlugin
 
 AUTO_STYLE = 'auto'  # Follows terminal ANSI color styles
 DEFAULT_STYLE = AUTO_STYLE
-
-# Bundled here
-SOLARIZED_STYLE = 'solarized'
-PIE_STYLES = {
-    'pie',
-    'pie-light',
-    'pie-dark'
-}
+SOLARIZED_STYLE = 'solarized'  # Bundled here
 
 if is_windows:
     # Colors on Windows via colorama don't look that
@@ -40,7 +33,7 @@ if is_windows:
 
 BUNDLED_STYLES = {
     SOLARIZED_STYLE,
-    AUTO_STYLE,
+    AUTO_STYLE
 }
 
 

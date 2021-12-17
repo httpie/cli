@@ -149,6 +149,7 @@ SHADES = [
     *map(str, range(100, 1000, 100))
 ]
 
+
 def get_color(color: str, shade: str) -> Optional[str]:
     if color not in COLOR_PALETTE:
         return None
