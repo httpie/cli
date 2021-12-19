@@ -1,6 +1,7 @@
 import json
-from typing import Optional, Type
+from typing import Optional, Type, Tuple
 
+import pygments.formatters
 import pygments.lexer
 import pygments.lexers
 import pygments.style
@@ -15,6 +16,7 @@ from pygments.lexers.text import HttpLexer as PygmentsHttpLexer
 from pygments.util import ClassNotFound
 
 from ..lexers.json import EnhancedJsonLexer
+from ..ui.palette import SHADE_NAMES, get_color
 from ...compat import is_windows
 from ...context import Environment
 from ...plugins import FormatterPlugin
@@ -23,6 +25,7 @@ from ...plugins import FormatterPlugin
 AUTO_STYLE = 'auto'  # Follows terminal ANSI color styles
 DEFAULT_STYLE = AUTO_STYLE
 SOLARIZED_STYLE = 'solarized'  # Bundled here
+
 if is_windows:
     # Colors on Windows via colorama don't look that
     # great and fruity seems to give the best result there.
@@ -66,22 +69,23 @@ class ColorFormatter(FormatterPlugin):
         if use_auto_style or not has_256_colors:
             http_lexer = PygmentsHttpLexer()
             formatter = TerminalFormatter()
+            body_formatter = formatter
+            header_formatter = formatter
         else:
             from ..lexers.http import SimplifiedHTTPLexer
-            http_lexer = SimplifiedHTTPLexer()
-            formatter = Terminal256Formatter(
-                style=self.get_style_class(color_scheme)
-            )
+            header_formatter, body_formatter, precise = self.get_formatters(color_scheme)
+            http_lexer = SimplifiedHTTPLexer(precise=precise)
 
         self.explicit_json = explicit_json  # --json
-        self.formatter = formatter
+        self.header_formatter = header_formatter
+        self.body_formatter = body_formatter
         self.http_lexer = http_lexer
 
     def format_headers(self, headers: str) -> str:
         return pygments.highlight(
             code=headers,
             lexer=self.http_lexer,
-            formatter=self.formatter,
+            formatter=self.header_formatter,
         ).strip()
 
     def format_body(self, body: str, mime: str) -> str:
@@ -90,7 +94,7 @@ class ColorFormatter(FormatterPlugin):
             body = pygments.highlight(
                 code=body,
                 lexer=lexer,
-                formatter=self.formatter,
+                formatter=self.body_formatter,
             )
         return body
 
@@ -102,6 +106,25 @@ class ColorFormatter(FormatterPlugin):
             mime=mime,
             explicit_json=self.explicit_json,
             body=body,
+        )
+
+    def get_formatters(self, color_scheme: str) -> Tuple[
+        pygments.formatter.Formatter,
+        pygments.formatter.Formatter,
+        bool
+    ]:
+        if color_scheme in PIE_STYLES:
+            header_style, body_style = PIE_STYLES[color_scheme]
+            precise = True
+        else:
+            header_style = self.get_style_class(color_scheme)
+            body_style = header_style
+            precise = False
+
+        return (
+            Terminal256Formatter(style=header_style),
+            Terminal256Formatter(style=body_style),
+            precise
         )
 
     @staticmethod
@@ -237,3 +260,117 @@ class Solarized256Style(pygments.style.Style):
         pygments.token.Token: BASE1,
         pygments.token.Token.Other: ORANGE,
     }
+
+
+PIE_HEADER_STYLE = {
+    # HTTP line / Headers / Etc.
+    pygments.token.Name.Namespace: 'bold primary',
+    pygments.token.Keyword.Reserved: 'bold grey',
+    pygments.token.Operator: 'bold grey',
+    pygments.token.Number: 'bold grey',
+    pygments.token.Name.Function.Magic: 'bold green',
+    pygments.token.Name.Exception: 'bold green',
+    pygments.token.Name.Attribute: 'blue',
+    pygments.token.String: 'primary',
+
+    # HTTP Methods
+    pygments.token.Name.Function: 'bold grey',
+    pygments.token.Name.Function.HTTP.GET: 'bold green',
+    pygments.token.Name.Function.HTTP.HEAD: 'bold green',
+    pygments.token.Name.Function.HTTP.POST: 'bold yellow',
+    pygments.token.Name.Function.HTTP.PUT: 'bold orange',
+    pygments.token.Name.Function.HTTP.PATCH: 'bold orange',
+    pygments.token.Name.Function.HTTP.DELETE: 'bold red',
+
+    # HTTP status codes
+    pygments.token.Number.HTTP.INFO: 'bold aqua',
+    pygments.token.Number.HTTP.OK: 'bold green',
+    pygments.token.Number.HTTP.REDIRECT: 'bold yellow',
+    pygments.token.Number.HTTP.CLIENT_ERR: 'bold orange',
+    pygments.token.Number.HTTP.SERVER_ERR: 'bold red',
+}
+
+PIE_BODY_STYLE = {
+    # {}[]:
+    pygments.token.Punctuation: 'grey',
+
+    # Keys
+    pygments.token.Name.Tag: 'pink',
+
+    # Values
+    pygments.token.Literal.String: 'green',
+    pygments.token.Literal.String.Double: 'green',
+    pygments.token.Literal.Number: 'aqua',
+    pygments.token.Keyword: 'orange',
+
+    # Other stuff
+    pygments.token.Text: 'primary',
+    pygments.token.Name.Attribute: 'primary',
+    pygments.token.Name.Builtin: 'blue',
+    pygments.token.Name.Builtin.Pseudo: 'blue',
+    pygments.token.Name.Class: 'blue',
+    pygments.token.Name.Constant: 'orange',
+    pygments.token.Name.Decorator: 'blue',
+    pygments.token.Name.Entity: 'orange',
+    pygments.token.Name.Exception: 'yellow',
+    pygments.token.Name.Function: 'blue',
+    pygments.token.Name.Variable: 'blue',
+    pygments.token.String: 'aqua',
+    pygments.token.String.Backtick: 'secondary',
+    pygments.token.String.Char: 'aqua',
+    pygments.token.String.Doc: 'aqua',
+    pygments.token.String.Escape: 'red',
+    pygments.token.String.Heredoc: 'aqua',
+    pygments.token.String.Regex: 'red',
+    pygments.token.Number: 'aqua',
+    pygments.token.Operator: 'primary',
+    pygments.token.Operator.Word: 'green',
+    pygments.token.Comment: 'secondary',
+    pygments.token.Comment.Preproc: 'green',
+    pygments.token.Comment.Special: 'green',
+    pygments.token.Generic.Deleted: 'aqua',
+    pygments.token.Generic.Emph: 'italic',
+    pygments.token.Generic.Error: 'red',
+    pygments.token.Generic.Heading: 'orange',
+    pygments.token.Generic.Inserted: 'green',
+    pygments.token.Generic.Strong: 'bold',
+    pygments.token.Generic.Subheading: 'orange',
+    pygments.token.Token: 'primary',
+    pygments.token.Token.Other: 'orange',
+}
+
+
+def make_style(name, raw_styles, shade):
+    def format_value(value):
+        return ' '.join(
+            get_color(part, shade) or part
+            for part in value.split()
+        )
+
+    bases = (pygments.style.Style,)
+    data = {
+        'styles': {
+            key: format_value(value)
+            for key, value in raw_styles.items()
+        }
+    }
+    return type(name, bases, data)
+
+
+def make_styles():
+    styles = {}
+
+    for shade, name in SHADE_NAMES.items():
+        styles[name] = [
+            make_style(name, style_map, shade)
+            for style_name, style_map in [
+                (f'Pie{name}HeaderStyle', PIE_HEADER_STYLE),
+                (f'Pie{name}BodyStyle', PIE_BODY_STYLE),
+            ]
+        ]
+
+    return styles
+
+
+PIE_STYLES = make_styles()
+BUNDLED_STYLES |= PIE_STYLES.keys()
