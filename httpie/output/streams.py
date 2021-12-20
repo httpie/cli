@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from itertools import chain
-from typing import Callable, Iterable, Union
+from typing import Callable, Iterable, Optional, Union
 
 from .processing import Conversion, Formatting
 from ..context import Environment
@@ -89,6 +89,9 @@ class RawStream(BaseStream):
         return self.msg.iter_body(self.chunk_size)
 
 
+ENCODING_GUESS_THRESHOLD = 3
+
+
 class EncodedStream(BaseStream):
     """Encoded HTTP message stream.
 
@@ -111,7 +114,8 @@ class EncodedStream(BaseStream):
             self.mime = mime_overwrite
         else:
             self.mime, _ = parse_content_type_header(self.msg.content_type)
-        self.encoding = encoding_overwrite or self.msg.encoding
+        self._encoding = encoding_overwrite or self.msg.encoding
+        self._encoding_guesses = []
         if env.stdout_isatty:
             # Use the encoding supported by the terminal.
             output_encoding = env.stdout_encoding
@@ -125,8 +129,32 @@ class EncodedStream(BaseStream):
         for line, lf in self.msg.iter_lines(self.CHUNK_SIZE):
             if b'\0' in line:
                 raise BinarySuppressedError()
-            line, self.encoding = smart_decode(line, self.encoding)
+            line = self.decode_chunk(line)
             yield smart_encode(line, self.output_encoding) + lf
+
+    def decode_chunk(self, raw_chunk: str) -> str:
+        chunk, guessed_encoding = smart_decode(raw_chunk, self.encoding)
+        self._encoding_guesses.append(guessed_encoding)
+        return chunk
+
+    @property
+    def encoding(self) -> Optional[str]:
+        if self._encoding:
+            return self._encoding
+
+        # If we find a reliable (used consecutively) encoding, than
+        # use it for the next iterations.
+        if len(self._encoding_guesses) < ENCODING_GUESS_THRESHOLD:
+            return None
+
+        guess_1, guess_2 = self._encoding_guesses[-2:]
+        if guess_1 == guess_2:
+            self._encoding = guess_1
+            return guess_1
+
+    @encoding.setter
+    def encoding(self, value) -> None:
+        self._encoding = value
 
 
 class PrettyStream(EncodedStream):
@@ -178,7 +206,7 @@ class PrettyStream(EncodedStream):
         if not isinstance(chunk, str):
             # Text when a converter has been used,
             # otherwise it will always be bytes.
-            chunk, self.encoding = smart_decode(chunk, self.encoding)
+            chunk = self.decode_chunk(chunk)
         chunk = self.formatting.format_body(content=chunk, mime=self.mime)
         return smart_encode(chunk, self.output_encoding)
 
