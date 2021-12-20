@@ -518,7 +518,7 @@ $ http https://api.github.com/search/repositories q==httpie per_page==1
 GET /search/repositories?q=httpie&per_page=1 HTTP/1.1
 ```
 
-You can even retrieve the `value` from a file by using the `param==@file` syntax. This would also effectively strip the newlines from the end.
+You can even retrieve the `value` from a file by using the `param==@file` syntax. This would also effectively strip the newlines from the end. See [#file-based-separators] for more examples.
 
 ```bash
 $ http pie.dev/get text==@files/text.txt
@@ -615,7 +615,7 @@ characters: `:` (headers), `=` (data field, e.g JSON, Form), `:=` (raw data fiel
 $ http PUT pie.dev/put \
     X-Date:today \                     # Header
     token==secret \                    # Query parameter
-    name=John \                        # String (default)
+    name=John \                        # Data field
     age:=29                            # Raw JSON
 ```
 
@@ -640,7 +640,7 @@ to pass the desired value from a file.
 $ http POST pie.dev/post \
     X-Data:@files/text.txt             # Read a header from a file
     token==@files/text.txt             # Read a query parameter from a file
-    name=@files/text.txt               # Read a string from a file
+    name=@files/text.txt               # Read a data field's value from a file
     bookmarks:=@files/data.json        # Embed a JSON object from a file
 ```
 
@@ -906,10 +906,10 @@ Any of these can be overwritten and some of them unset (see below).
 
 ### Reading headers from a file
 
-You can read headers from a file by using the `:@` operator. This would also effectively strip the newlines from the end.
+You can read headers from a file by using the `:@` operator. This would also effectively strip the newlines from the end. See [#file-based-separators] for more examples.
 
 ```bash
-$ http pie.dev/headers :@files/text.txt
+$ http pie.dev/headers X-Data:@files/text.txt
 ```
 
 ### Empty headers and header un-setting
