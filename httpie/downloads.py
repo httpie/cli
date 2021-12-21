@@ -14,7 +14,7 @@ from urllib.parse import urlsplit
 
 import requests
 
-from .models import HTTPResponse
+from .models import HTTPResponse, OutputOptions
 from .output.streams import RawStream
 from .utils import humanize_bytes
 
@@ -266,10 +266,10 @@ class Downloader:
             total_size=total_size
         )
 
+        output_options = OutputOptions.from_message(final_response, headers=False, body=True)
         stream = RawStream(
             msg=HTTPResponse(final_response),
-            with_headers=False,
-            with_body=True,
+            output_options=output_options,
             on_body_chunk_downloaded=self.chunk_downloaded,
         )
 

@@ -2,21 +2,20 @@ import argparse
 import os
 import platform
 import sys
-from typing import List, Optional, Tuple, Union, Callable
+from typing import List, Optional, Union, Callable
 
 import requests
 from pygments import __version__ as pygments_version
 from requests import __version__ as requests_version
 
 from . import __version__ as httpie_version
-from .cli.constants import OUT_REQ_BODY, OUT_REQ_HEAD, OUT_RESP_BODY, OUT_RESP_HEAD
+from .cli.constants import OUT_REQ_BODY
 from .client import collect_messages
 from .context import Environment
 from .downloads import Downloader
 from .models import (
-    RequestsMessage,
     RequestsMessageKind,
-    infer_requests_message_kind
+    OutputOptions,
 )
 from .output.writer import write_message, write_stream, MESSAGE_SEPARATOR_BYTES
 from .plugins.registry import plugin_manager
@@ -132,22 +131,6 @@ def main(
     )
 
 
-def get_output_options(
-    args: argparse.Namespace,
-    message: RequestsMessage
-) -> Tuple[bool, bool]:
-    return {
-        RequestsMessageKind.REQUEST: (
-            OUT_REQ_HEAD in args.output_options,
-            OUT_REQ_BODY in args.output_options,
-        ),
-        RequestsMessageKind.RESPONSE: (
-            OUT_RESP_HEAD in args.output_options,
-            OUT_RESP_BODY in args.output_options,
-        ),
-    }[infer_requests_message_kind(message)]
-
-
 def program(args: argparse.Namespace, env: Environment) -> ExitStatus:
     """
     The main program without error handling.
@@ -176,7 +159,8 @@ def program(args: argparse.Namespace, env: Environment) -> ExitStatus:
             msg.is_body_upload_chunk = True
             msg.body = chunk
             msg.headers = initial_request.headers
-            write_message(requests_message=msg, env=env, args=args, with_body=True, with_headers=False)
+            msg_output_options = OutputOptions.from_message(msg, body=True, headers=False)
+            write_message(requests_message=msg, env=env, args=args, output_options=msg_output_options)
 
     try:
         if args.download:
@@ -190,17 +174,17 @@ def program(args: argparse.Namespace, env: Environment) -> ExitStatus:
 
         # Process messages as they’re generated
         for message in messages:
-            is_request = isinstance(message, requests.PreparedRequest)
-            with_headers, with_body = get_output_options(args=args, message=message)
-            do_write_body = with_body
-            if prev_with_body and (with_headers or with_body) and (force_separator or not env.stdout_isatty):
+            output_options = OutputOptions.from_message(message, args.output_options)
+
+            do_write_body = output_options.body
+            if prev_with_body and output_options.any() and (force_separator or not env.stdout_isatty):
                 # Separate after a previous message with body, if needed. See test_tokens.py.
                 separate()
             force_separator = False
-            if is_request:
+            if output_options.kind is RequestsMessageKind.REQUEST:
                 if not initial_request:
                     initial_request = message
-                if with_body:
+                if output_options.body:
                     is_streamed_upload = not isinstance(message.body, (str, bytes))
                     do_write_body = not is_streamed_upload
                     force_separator = is_streamed_upload and env.stdout_isatty
@@ -210,9 +194,10 @@ def program(args: argparse.Namespace, env: Environment) -> ExitStatus:
                     exit_status = http_status_to_exit_status(http_status=message.status_code, follow=args.follow)
                     if exit_status != ExitStatus.SUCCESS and (not env.stdout_isatty or args.quiet == 1):
                         env.log_error(f'HTTP {message.raw.status} {message.raw.reason}', level='warning')
-            write_message(requests_message=message, env=env, args=args, with_headers=with_headers,
-                          with_body=do_write_body)
-            prev_with_body = with_body
+            write_message(requests_message=message, env=env, args=args, output_options=output_options._replace(
+                body=do_write_body
+            ))
+            prev_with_body = output_options.body
 
         # Cleanup
         if force_separator:

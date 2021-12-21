@@ -1,11 +1,18 @@
 import requests
 
 from enum import Enum, auto
-from typing import Iterable, Union
+from typing import Iterable, Union, NamedTuple
 from urllib.parse import urlsplit
 
-from .utils import split_cookies, parse_content_type_header
+from .cli.constants import (
+    OUT_REQ_BODY,
+    OUT_REQ_HEAD,
+    OUT_RESP_BODY,
+    OUT_RESP_HEAD,
+    OUT_RESP_META
+)
 from .compat import cached_property
+from .utils import split_cookies, parse_content_type_header
 
 
 class HTTPMessage:
@@ -25,6 +32,11 @@ class HTTPMessage:
     @property
     def headers(self) -> str:
         """Return a `str` with the message's headers."""
+        raise NotImplementedError
+
+    @property
+    def metadata(self) -> str:
+        """Return metadata about the current message."""
         raise NotImplementedError
 
     @cached_property
@@ -80,6 +92,12 @@ class HTTPResponse(HTTPMessage):
             if header == 'Set-Cookie'
         )
         return '\r\n'.join(headers)
+
+    @property
+    def metadata(self):
+        lines = []
+        lines.append(f'Elapsed time: {self._orig.elapsed.total_seconds()}s')
+        return '\n'.join(lines)
 
 
 class HTTPRequest(HTTPMessage):
@@ -138,3 +156,50 @@ def infer_requests_message_kind(message: RequestsMessage) -> RequestsMessageKind
         return RequestsMessageKind.RESPONSE
     else:
         raise TypeError(f"Unexpected message type: {type(message).__name__}")
+
+
+OPTION_TO_PARAM = {
+    RequestsMessageKind.REQUEST: {
+        "headers": OUT_REQ_HEAD,
+        "body": OUT_REQ_BODY,
+    },
+    RequestsMessageKind.RESPONSE: {
+        "headers": OUT_RESP_HEAD,
+        "body": OUT_RESP_BODY,
+        "meta": OUT_RESP_META
+    }
+}
+
+
+class OutputOptions(NamedTuple):
+    kind: RequestsMessageKind
+    headers: bool
+    body: bool
+    meta: bool = False
+
+    def any(self):
+        return (
+            self.headers
+            or self.body
+            or self.meta
+        )
+
+    @classmethod
+    def from_message(
+        cls,
+        message: RequestsMessage,
+        raw_args: str = "",
+        **kwargs
+    ):
+        kind = infer_requests_message_kind(message)
+
+        options = {
+            option: param in raw_args
+            for option, param in OPTION_TO_PARAM[kind].items()
+        }
+        options.update(kwargs)
+
+        return cls(
+            kind=kind,
+            **options
+        )
