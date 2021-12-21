@@ -75,6 +75,8 @@ class Httpie < Formula
   test do
     # shell_output() already checks the status code
     shell_output("#{bin}/httpie -v")
+    shell_output("#{bin}/https -v")
+    shell_output("#{bin}/http -v")
 
     raw_url = "https://raw.githubusercontent.com/Homebrew/homebrew-core/HEAD/Formula/httpie.rb"
     assert_match "PYTHONPATH", shell_output("#{bin}/http --ignore-stdin #{raw_url}")
