@@ -94,10 +94,17 @@ class HTTPResponse(HTTPMessage):
         return '\r\n'.join(headers)
 
     @property
-    def metadata(self):
-        lines = []
-        lines.append(f'Elapsed time: {self._orig.elapsed.total_seconds()}s')
-        return '\n'.join(lines)
+    def metadata(self) -> str:
+        data = {}
+        data['Elapsed time'] = str(self._orig.elapsed.total_seconds()) + 's'
+        items = sorted(data.items(), key=lambda items: len(items[0]))
+
+        assert len(items) >= 1
+        padding = len(items[-1])
+        return '\n'.join(
+            f'{key:>{padding}} => {value}'
+            for key, value in items
+        )
 
 
 class HTTPRequest(HTTPMessage):

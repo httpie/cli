@@ -16,6 +16,7 @@ from pygments.lexers.text import HttpLexer as PygmentsHttpLexer
 from pygments.util import ClassNotFound
 
 from ..lexers.json import EnhancedJsonLexer
+from ..lexers.metadata import MetadataLexer
 from ..ui.palette import SHADE_NAMES, get_color
 from ...compat import is_windows
 from ...context import Environment
@@ -50,6 +51,7 @@ class ColorFormatter(FormatterPlugin):
 
     """
     group_name = 'colors'
+    metadata_lexer = MetadataLexer()
 
     def __init__(
         self,
@@ -68,9 +70,8 @@ class ColorFormatter(FormatterPlugin):
         has_256_colors = env.colors == 256
         if use_auto_style or not has_256_colors:
             http_lexer = PygmentsHttpLexer()
-            formatter = TerminalFormatter()
-            body_formatter = formatter
-            header_formatter = formatter
+            body_formatter = header_formatter = TerminalFormatter()
+            precise = False
         else:
             from ..lexers.http import SimplifiedHTTPLexer
             header_formatter, body_formatter, precise = self.get_formatters(color_scheme)
@@ -80,6 +81,7 @@ class ColorFormatter(FormatterPlugin):
         self.header_formatter = header_formatter
         self.body_formatter = body_formatter
         self.http_lexer = http_lexer
+        self.metadata_lexer = MetadataLexer(precise=precise)
 
     def format_headers(self, headers: str) -> str:
         return pygments.highlight(
@@ -97,6 +99,13 @@ class ColorFormatter(FormatterPlugin):
                 formatter=self.body_formatter,
             )
         return body
+
+    def format_metadata(self, metadata: str) -> str:
+        return pygments.highlight(
+            code=metadata,
+            lexer=self.metadata_lexer,
+            formatter=self.header_formatter,
+        ).strip()
 
     def get_lexer_for_body(
         self, mime: str,
@@ -288,6 +297,13 @@ PIE_HEADER_STYLE = {
     pygments.token.Number.HTTP.REDIRECT: 'bold yellow',
     pygments.token.Number.HTTP.CLIENT_ERR: 'bold orange',
     pygments.token.Number.HTTP.SERVER_ERR: 'bold red',
+
+    # Metadata
+    pygments.token.Name.Decorator: 'grey',
+    pygments.token.Number.SPEED.FAST: 'bold green',
+    pygments.token.Number.SPEED.AVG: 'bold yellow',
+    pygments.token.Number.SPEED.SLOW: 'bold orange',
+    pygments.token.Number.SPEED.VERY_SLOW: 'bold red',
 }
 
 PIE_BODY_STYLE = {

@@ -76,10 +76,14 @@ class BaseStream(metaclass=ABCMeta):
                 yield e.message
 
         if self.output_options.meta:
-            if self.output_options.headers or self.output_options.body:
+            mixed = self.output_options.headers or self.output_options.body
+
+            if mixed:
                 yield b'\n'
 
             yield self.get_metadata()
+            if not mixed:
+                yield b'\n'
 
 
 class RawStream(BaseStream):
@@ -159,6 +163,10 @@ class PrettyStream(EncodedStream):
     def get_headers(self) -> bytes:
         return self.formatting.format_headers(
             self.msg.headers).encode(self.output_encoding)
+
+    def get_metadata(self) -> bytes:
+        return self.formatting.format_metadata(
+            self.msg.metadata).encode(self.output_encoding)
 
     def iter_body(self) -> Iterable[bytes]:
         first_chunk = True
