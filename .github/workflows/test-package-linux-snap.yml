@@ -3,6 +3,7 @@ on:
     paths:
       - .github/workflows/test-package-linux-snap.yml
       - snapcraft.yaml
+  workflow_dispatch:
 
 jobs:
   snap:
