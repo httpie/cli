@@ -2,7 +2,8 @@ import argparse
 import os
 import platform
 import sys
-from typing import List, Optional, Union, Callable
+import socket
+from typing import List, Optional, Tuple, Union, Callable
 
 import requests
 from pygments import __version__ as pygments_version
@@ -20,6 +21,7 @@ from .models import (
 from .output.writer import write_message, write_stream, MESSAGE_SEPARATOR_BYTES
 from .plugins.registry import plugin_manager
 from .status import ExitStatus, http_status_to_exit_status
+from .utils import unwrap_context
 
 
 # noinspection PyDefaultArgument
@@ -39,6 +41,21 @@ def raw_main(
 
     include_debug_info = '--debug' in args
     include_traceback = include_debug_info or '--traceback' in args
+
+    def handle_generic_error(e, annotation=None):
+        msg = str(e)
+        if hasattr(e, 'request'):
+            request = e.request
+            if hasattr(request, 'url'):
+                msg = (
+                    f'{msg} while doing a {request.method}'
+                    f' request to URL: {request.url}'
+                )
+        if annotation:
+            msg += annotation
+        env.log_error(f'{type(e).__name__}: {msg}')
+        if include_traceback:
+            raise
 
     if include_debug_info:
         print_debug_info(env)
@@ -89,19 +106,23 @@ def raw_main(
                 f'Too many redirects'
                 f' (--max-redirects={parsed_args.max_redirects}).'
             )
+        except requests.exceptions.ConnectionError as exc:
+            annotation = None
+            original_exc = unwrap_context(exc)
+            if isinstance(original_exc, socket.gaierror):
+                if original_exc.errno == socket.EAI_AGAIN:
+                    annotation = '\nCouldn\'t connect to a DNS server. Perhaps check your connection and try again.'
+                elif original_exc.errno == socket.EAI_NONAME:
+                    annotation = '\nCouldn\'t resolve the given hostname. Perhaps check it and try again.'
+                propagated_exc = original_exc
+            else:
+                propagated_exc = exc
+
+            handle_generic_error(propagated_exc, annotation=annotation)
+            exit_status = ExitStatus.ERROR
         except Exception as e:
             # TODO: Further distinction between expected and unexpected errors.
-            msg = str(e)
-            if hasattr(e, 'request'):
-                request = e.request
-                if hasattr(request, 'url'):
-                    msg = (
-                        f'{msg} while doing a {request.method}'
-                        f' request to URL: {request.url}'
-                    )
-            env.log_error(f'{type(e).__name__}: {msg}')
-            if include_traceback:
-                raise
+            handle_generic_error(e)
             exit_status = ExitStatus.ERROR
 
     return exit_status

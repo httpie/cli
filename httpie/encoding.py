@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Tuple
 
 from charset_normalizer import from_bytes
 from charset_normalizer.constant import TOO_SMALL_SEQUENCE
@@ -29,7 +29,7 @@ def detect_encoding(content: ContentBytes) -> str:
     return encoding
 
 
-def smart_decode(content: ContentBytes, encoding: str) -> str:
+def smart_decode(content: ContentBytes, encoding: str) -> Tuple[str, str]:
     """Decode `content` using the given `encoding`.
     If no `encoding` is provided, the best effort is to guess it from `content`.
 
@@ -38,7 +38,7 @@ def smart_decode(content: ContentBytes, encoding: str) -> str:
     """
     if not encoding:
         encoding = detect_encoding(content)
-    return content.decode(encoding, 'replace')
+    return content.decode(encoding, 'replace'), encoding
 
 
 def smart_encode(content: str, encoding: str) -> bytes:

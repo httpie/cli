@@ -3,6 +3,7 @@ on:
     paths:
       - .github/workflows/test-package-mac-brew.yml
       - docs/packaging/brew/httpie.rb
+  workflow_dispatch:
 
 jobs:
   brew:

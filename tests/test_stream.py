@@ -11,7 +11,12 @@ from httpie.plugins import ConverterPlugin
 from httpie.plugins.registry import plugin_manager
 
 from .utils import StdinBytesIO, http, MockEnvironment, DUMMY_URL
-from .fixtures import BIN_FILE_CONTENT, BIN_FILE_PATH
+from .fixtures import (
+    ASCII_FILE_CONTENT,
+    BIN_FILE_CONTENT,
+    BIN_FILE_PATH,
+    FILE_CONTENT as UNICODE_FILE_CONTENT
+)
 
 PRETTY_OPTIONS = list(PRETTY_MAP.keys())
 
@@ -133,3 +138,9 @@ def test_auto_streaming(http_server, extras, expected):
         for call_arg in env.stdout.write.call_args_list
         if b'test' in call_arg[0][0]
     ]) == expected
+
+
+def test_streaming_encoding_detection(http_server):
+    r = http('--stream', http_server + '/stream/encoding/random')
+    assert ASCII_FILE_CONTENT in r
+    assert UNICODE_FILE_CONTENT in r
