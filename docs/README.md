@@ -518,6 +518,12 @@ $ http https://api.github.com/search/repositories q==httpie per_page==1
 GET /search/repositories?q=httpie&per_page=1 HTTP/1.1
 ```
 
+You can even retrieve the `value` from a file by using the `param==@file` syntax. This would also effectively strip the newlines from the end. See [#file-based-separators] for more examples.
+
+```bash
+$ http pie.dev/get text==@files/text.txt
+```
+
 ### URL shortcuts for `localhost`
 
 Additionally, curl-like shorthand for localhost is supported.
@@ -596,20 +602,47 @@ GET /../../etc/password HTTP/1.1
 
 ## Request items
 
-There are a few different *request item* types that provide a convenient mechanism for specifying HTTP headers, simple JSON and form data, files, and URL parameters.
+There are a few different *request item* types that provide a convenient
+mechanism for specifying HTTP headers, JSON and form data, files,
+and URL parameters. This is a very practical way of constructing
+HTTP requests from scratch on the CLI.
 
-They are key/value pairs specified after the URL. All have in common that they become part of the actual request that is sent and that their type is distinguished only by the separator used: `:`, `=`, `:=`, `==`, `@`, `=@`, `:=@` and `==@`. The ones with an `@` expect a file path as value.
+Each *request item* is simply a key/value pair separated with the following
+characters: `:` (headers), `=` (data field, e.g JSON, Form), `:=` (raw data field)
+`==` (query parameters), `@` (file upload).
+
+```bash
+$ http PUT pie.dev/put \
+    X-Date:today \                     # Header
+    token==secret \                    # Query parameter
+    name=John \                        # Data field
+    age:=29                            # Raw JSON
+```
 
 |                                                    Item Type | Description                                                                                                                                                                                                            |
 | -----------------------------------------------------------: | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 |                                    HTTP Headers `Name:Value` | Arbitrary HTTP header, e.g. `X-API-Token:123`                                                                                                                                                                          |
-|                                 URL parameters `name==value` | Appends the given name/value pair as a querystring parameter to the URL. The `==` separator is used. For reading the value from a file, use `==@`.                                                                                                                  |
-|                 Data Fields `field=value`, `field=@file.txt` | Request data fields to be serialized as a JSON object (default), to be form-encoded (with `--form, -f`), or to be serialized as `multipart/form-data` (with `--multipart`)                                             |
+|                                 URL parameters `name==value` | Appends the given name/value pair as a querystring parameter to the URL. The `==` separator is used.                                                                                                                  |
+|                                    Data Fields `field=value` | Request data fields to be serialized as a JSON object (default), to be form-encoded (with `--form, -f`), or to be serialized as `multipart/form-data` (with `--multipart`)                                             |
 |                                Raw JSON fields `field:=json` | Useful when sending JSON and one or more fields need to be a `Boolean`, `Number`, nested `Object`, or an `Array`, e.g., `meals:='["ham","spam"]'` or `pies:=[1,2,3]` (note the quotes)                                 |
 | File upload fields `field@/dir/file`, `field@file;type=mime` | Only available with `--form`, `-f` and `--multipart`. For example `screenshot@~/Pictures/img.png`, or `'cv@cv.txt;type=text/markdown'`. With `--form`, the presence of a file field results in a `--multipart` request |
 
 Note that the structured data fields aren’t the only way to specify request data:
 [raw request body](#raw-request-body) is a mechanism for passing arbitrary request data.
+
+### File based separators
+
+Using file contents as values for specific fields is a very common use case, which can be achieved through adding the `@` suffix to
+the operators above. For example instead of using a static string as the value for some header, you can use `:@` operator
+to pass the desired value from a file.
+
+```bash
+$ http POST pie.dev/post \
+    X-Data:@files/text.txt             # Read a header from a file
+    token==@files/text.txt             # Read a query parameter from a file
+    name=@files/text.txt               # Read a data field's value from a file
+    bookmarks:=@files/data.json        # Embed a JSON object from a file
+```
 
 ### Escaping rules
 
@@ -1107,6 +1140,14 @@ Host: <taken-from-URL>
 ```
 
 Any of these can be overwritten and some of them unset (see below).
+
+### Reading headers from a file
+
+You can read headers from a file by using the `:@` operator. This would also effectively strip the newlines from the end. See [#file-based-separators] for more examples.
+
+```bash
+$ http pie.dev/headers X-Data:@files/text.txt
+```
 
 ### Empty headers and header un-setting
 
