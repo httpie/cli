@@ -229,3 +229,11 @@ def split(iterable: Iterable[T], key: Callable[[T], bool]) -> Tuple[List[T], Lis
         else:
             right.append(item)
     return left, right
+
+
+def unwrap_context(exc: Exception) -> Optional[Exception]:
+    context = exc.__context__
+    if isinstance(context, Exception):
+        return unwrap_context(context)
+    else:
+        return exc
