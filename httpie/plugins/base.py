@@ -155,3 +155,11 @@ class FormatterPlugin(BasePlugin):
 
         """
         return content
+
+    def format_metadata(self, metadata: str) -> str:
+        """Return processed `metadata`.
+
+        :param metadata: The metadata as text.
+
+        """
+        return metadata

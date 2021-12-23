@@ -101,3 +101,18 @@ def test_verbose_chunked(httpbin_with_chunked_support):
 def test_request_headers_response_body(httpbin):
     r = http('--print=Hb', httpbin + '/get')
     assert_output_matches(r, ExpectSequence.TERMINAL_REQUEST)
+
+
+def test_request_single_verbose(httpbin):
+    r = http('-v', httpbin + '/post', 'hello=world')
+    assert_output_matches(r, ExpectSequence.TERMINAL_EXCHANGE)
+
+
+def test_request_double_verbose(httpbin):
+    r = http('-vv', httpbin + '/post', 'hello=world')
+    assert_output_matches(r, ExpectSequence.TERMINAL_EXCHANGE_META)
+
+
+def test_request_meta(httpbin):
+    r = http('--meta', httpbin + '/get')
+    assert_output_matches(r, [Expect.RESPONSE_META])

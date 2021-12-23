@@ -7,6 +7,7 @@ from ...utils import CRLF
 
 
 SEPARATOR_RE = re.compile(f'^{MESSAGE_SEPARATOR}')
+KEY_VALUE_RE = re.compile(r'[\n]*((.*?):(.+)[\n]?)+[\n]*')
 
 
 def make_headers_re(message_type: Expect):
@@ -43,6 +44,7 @@ BODY_ENDINGS = [
 TOKEN_REGEX_MAP = {
     Expect.REQUEST_HEADERS: make_headers_re(Expect.REQUEST_HEADERS),
     Expect.RESPONSE_HEADERS: make_headers_re(Expect.RESPONSE_HEADERS),
+    Expect.RESPONSE_META: KEY_VALUE_RE,
     Expect.SEPARATOR: SEPARATOR_RE,
 }
 

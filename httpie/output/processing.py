@@ -51,3 +51,8 @@ class Formatting:
             for p in self.enabled_plugins:
                 content = p.format_body(content, mime)
         return content
+
+    def format_metadata(self, metadata: str) -> str:
+        for p in self.enabled_plugins:
+            metadata = p.format_metadata(metadata)
+        return metadata

@@ -5,7 +5,7 @@ from typing import Callable, Iterable, Optional, Union
 from .processing import Conversion, Formatting
 from ..context import Environment
 from ..encoding import smart_decode, smart_encode, UTF8
-from ..models import HTTPMessage
+from ..models import HTTPMessage, OutputOptions
 from ..utils import parse_content_type_header
 
 
@@ -33,25 +33,26 @@ class BaseStream(metaclass=ABCMeta):
     def __init__(
         self,
         msg: HTTPMessage,
-        with_headers=True,
-        with_body=True,
+        output_options: OutputOptions,
         on_body_chunk_downloaded: Callable[[bytes], None] = None
     ):
         """
         :param msg: a :class:`models.HTTPMessage` subclass
-        :param with_headers: if `True`, headers will be included
-        :param with_body: if `True`, body will be included
-
+        :param output_options: a :class:`OutputOptions` instance to represent
+                               which parts of the message is printed.
         """
-        assert with_headers or with_body
+        assert output_options.any()
         self.msg = msg
-        self.with_headers = with_headers
-        self.with_body = with_body
+        self.output_options = output_options
         self.on_body_chunk_downloaded = on_body_chunk_downloaded
 
     def get_headers(self) -> bytes:
         """Return the headers' bytes."""
         return self.msg.headers.encode()
+
+    def get_metadata(self) -> bytes:
+        """Return the message metadata."""
+        return self.msg.metadata.encode()
 
     @abstractmethod
     def iter_body(self) -> Iterable[bytes]:
@@ -59,20 +60,30 @@ class BaseStream(metaclass=ABCMeta):
 
     def __iter__(self) -> Iterable[bytes]:
         """Return an iterator over `self.msg`."""
-        if self.with_headers:
+        if self.output_options.headers:
             yield self.get_headers()
             yield b'\r\n\r\n'
 
-        if self.with_body:
+        if self.output_options.body:
             try:
                 for chunk in self.iter_body():
                     yield chunk
                     if self.on_body_chunk_downloaded:
                         self.on_body_chunk_downloaded(chunk)
             except DataSuppressedError as e:
-                if self.with_headers:
+                if self.output_options.headers:
                     yield b'\n'
                 yield e.message
+
+        if self.output_options.meta:
+            mixed = self.output_options.headers or self.output_options.body
+
+            if mixed:
+                yield b'\n\n'
+
+            yield self.get_metadata()
+            if not mixed:
+                yield b'\n'
 
 
 class RawStream(BaseStream):
@@ -180,6 +191,10 @@ class PrettyStream(EncodedStream):
     def get_headers(self) -> bytes:
         return self.formatting.format_headers(
             self.msg.headers).encode(self.output_encoding)
+
+    def get_metadata(self) -> bytes:
+        return self.formatting.format_metadata(
+            self.msg.metadata).encode(self.output_encoding)
 
     def iter_body(self) -> Iterable[bytes]:
         first_chunk = True

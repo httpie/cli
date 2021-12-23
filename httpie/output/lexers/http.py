@@ -1,6 +1,6 @@
 import re
 import pygments
-
+from httpie.output.lexers.common import precise
 
 RE_STATUS_LINE = re.compile(r'(\d{3})( +)(.+)')
 
@@ -20,20 +20,6 @@ RESPONSE_TYPES = {
     'PATCH': pygments.token.Name.Function.HTTP.PATCH,
     'DELETE': pygments.token.Name.Function.HTTP.DELETE,
 }
-
-
-def precise(lexer, precise_token, parent_token):
-    # Due to a pygments bug*, custom tokens will look bad
-    # on outside styles. Until it is fixed on upstream, we'll
-    # convey whether the client is using pie style or not
-    # through precise option and return more precise tokens
-    # depending on it's value.
-    #
-    # [0]: https://github.com/pygments/pygments/issues/1986
-    if precise_token is None or not lexer.options.get("precise"):
-        return parent_token
-    else:
-        return precise_token
 
 
 def http_response_type(lexer, match, ctx):

@@ -15,7 +15,7 @@ from .argtypes import (
     parse_format_options,
 )
 from .constants import (
-    HTTP_GET, HTTP_POST, OUTPUT_OPTIONS, OUTPUT_OPTIONS_DEFAULT,
+    HTTP_GET, HTTP_POST, BASE_OUTPUT_OPTIONS, OUTPUT_OPTIONS, OUTPUT_OPTIONS_DEFAULT,
     OUTPUT_OPTIONS_DEFAULT_OFFLINE, OUTPUT_OPTIONS_DEFAULT_STDOUT_REDIRECTED,
     OUT_RESP_BODY, PRETTY_MAP, PRETTY_STDOUT_TTY_ONLY, RequestType,
     SEPARATOR_CREDENTIALS,
@@ -456,8 +456,10 @@ class HTTPieArgumentParser(BaseHTTPieArgumentParser):
             self.args.all = True
 
         if self.args.output_options is None:
-            if self.args.verbose:
+            if self.args.verbose >= 2:
                 self.args.output_options = ''.join(OUTPUT_OPTIONS)
+            elif self.args.verbose == 1:
+                self.args.output_options = ''.join(BASE_OUTPUT_OPTIONS)
             elif self.args.offline:
                 self.args.output_options = OUTPUT_OPTIONS_DEFAULT_OFFLINE
             elif not self.env.stdout_isatty:

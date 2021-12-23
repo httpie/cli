@@ -14,7 +14,7 @@ from .argtypes import (
 from .constants import (
     DEFAULT_FORMAT_OPTIONS, OUTPUT_OPTIONS,
     OUTPUT_OPTIONS_DEFAULT, OUT_REQ_BODY, OUT_REQ_HEAD,
-    OUT_RESP_BODY, OUT_RESP_HEAD, PRETTY_MAP, PRETTY_STDOUT_TTY_ONLY,
+    OUT_RESP_BODY, OUT_RESP_HEAD, OUT_RESP_META, PRETTY_MAP, PRETTY_STDOUT_TTY_ONLY,
     RequestType, SEPARATOR_GROUP_ALL_ITEMS, SEPARATOR_PROXY,
     SORTED_FORMAT_OPTIONS_STRING,
     UNSORTED_FORMAT_OPTIONS_STRING,
@@ -402,6 +402,16 @@ output_options.add_argument(
     '''
 )
 output_options.add_argument(
+    '--meta', '-m',
+    dest='output_options',
+    action='store_const',
+    const=OUT_RESP_META,
+    help=f'''
+    Print only the response metadata. Shortcut for --print={OUT_RESP_META}.
+
+    '''
+)
+output_options.add_argument(
     '--body', '-b',
     dest='output_options',
     action='store_const',
@@ -415,7 +425,8 @@ output_options.add_argument(
 output_options.add_argument(
     '--verbose', '-v',
     dest='verbose',
-    action='store_true',
+    action='count',
+    default=0,
     help=f'''
     Verbose output. Print the whole request as well as the response. Also print
     any intermediary requests/responses (such as redirects).

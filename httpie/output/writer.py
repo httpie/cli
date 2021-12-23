@@ -10,7 +10,7 @@ from ..models import (
     HTTPMessage,
     RequestsMessage,
     RequestsMessageKind,
-    infer_requests_message_kind
+    OutputOptions
 )
 from .processing import Conversion, Formatting
 from .streams import (
@@ -26,18 +26,16 @@ def write_message(
     requests_message: RequestsMessage,
     env: Environment,
     args: argparse.Namespace,
-    with_headers=False,
-    with_body=False,
+    output_options: OutputOptions,
 ):
-    if not (with_body or with_headers):
+    if not output_options.any():
         return
     write_stream_kwargs = {
         'stream': build_output_stream_for_message(
             args=args,
             env=env,
             requests_message=requests_message,
-            with_body=with_body,
-            with_headers=with_headers,
+            output_options=output_options,
         ),
         # NOTE: `env.stdout` will in fact be `stderr` with `--download`
         'outfile': env.stdout,
@@ -100,13 +98,12 @@ def build_output_stream_for_message(
     args: argparse.Namespace,
     env: Environment,
     requests_message: RequestsMessage,
-    with_headers: bool,
-    with_body: bool,
+    output_options: OutputOptions,
 ):
     message_type = {
         RequestsMessageKind.REQUEST: HTTPRequest,
         RequestsMessageKind.RESPONSE: HTTPResponse,
-    }[infer_requests_message_kind(requests_message)]
+    }[output_options.kind]
     stream_class, stream_kwargs = get_stream_type_and_kwargs(
         env=env,
         args=args,
@@ -115,11 +112,10 @@ def build_output_stream_for_message(
     )
     yield from stream_class(
         msg=message_type(requests_message),
-        with_headers=with_headers,
-        with_body=with_body,
+        output_options=output_options,
         **stream_kwargs,
     )
-    if (env.stdout_isatty and with_body
+    if (env.stdout_isatty and output_options.body
             and not getattr(requests_message, 'is_body_upload_chunk', False)):
         # Ensure a blank line after the response body.
         # For terminal output only.
