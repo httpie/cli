@@ -1,6 +1,7 @@
 import os
 import tempfile
 import time
+import requests
 from unittest import mock
 from urllib.request import urlopen
 
@@ -14,7 +15,7 @@ from httpie.downloads import (
 from .utils import http, MockEnvironment
 
 
-class Response:
+class Response(requests.Response):
     # noinspection PyDefaultArgument
     def __init__(self, url, headers={}, status_code=200):
         self.url = url

@@ -107,6 +107,29 @@ def test_assert_output_matches_headers_with_body_and_separator():
     )
 
 
+def test_assert_output_matches_response_meta():
+    assert_output_matches(
+        (
+            'Key: Value\n'
+            'Elapsed Time: 3.3s'
+        ),
+        [Expect.RESPONSE_META]
+    )
+
+
+def test_assert_output_matches_whole_response():
+    assert_output_matches(
+        (
+            f'HTTP/1.1{CRLF}'
+            f'AAA:BBB{CRLF}'
+            f'{CRLF}'
+            f'CCC{MESSAGE_SEPARATOR}'
+            'Elapsed Time: 3.3s'
+        ),
+        [Expect.RESPONSE_HEADERS, Expect.BODY, Expect.RESPONSE_META]
+    )
+
+
 def test_assert_output_matches_multiple_messages():
     assert_output_matches(
         (

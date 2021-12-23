@@ -163,13 +163,13 @@ def infer_requests_message_kind(message: RequestsMessage) -> RequestsMessageKind
 
 OPTION_TO_PARAM = {
     RequestsMessageKind.REQUEST: {
-        "headers": OUT_REQ_HEAD,
-        "body": OUT_REQ_BODY,
+        'headers': OUT_REQ_HEAD,
+        'body': OUT_REQ_BODY,
     },
     RequestsMessageKind.RESPONSE: {
-        "headers": OUT_RESP_HEAD,
-        "body": OUT_RESP_BODY,
-        "meta": OUT_RESP_META
+        'headers': OUT_RESP_HEAD,
+        'body': OUT_RESP_BODY,
+        'meta': OUT_RESP_META
     }
 }
 
@@ -191,7 +191,7 @@ class OutputOptions(NamedTuple):
     def from_message(
         cls,
         message: RequestsMessage,
-        raw_args: str = "",
+        raw_args: str = '',
         **kwargs
     ):
         kind = infer_requests_message_kind(message)

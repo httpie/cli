@@ -1456,13 +1456,15 @@ By default, HTTPie only outputs the final response and the whole response
 message is printed (headers as well as the body). You can control what should
 be printed via several options:
 
-|          Option | What is printed                                                                                    |
-| --------------: | -------------------------------------------------------------------------------------------------- |
-| `--headers, -h` | Only the response headers are printed                                                              |
-|    `--body, -b` | Only the response body is printed                                                                  |
-| `--verbose, -v` | Print the whole HTTP exchange (request and response). This option also enables `--all` (see below) |
-|   `--print, -p` | Selects parts of the HTTP exchange                                                                 |
-|   `--quiet, -q` | Don't print anything to `stdout` and `stderr`                                                      |
+|          Option            | What is printed                                                                                    |
+| -------------------------: | -------------------------------------------------------------------------------------------------- |
+| `--headers, -h`            | Only the response headers are printed                                                              |
+|    `--body, -b`            | Only the response body is printed                                                                  |
+|    `--meta, -m`            | Only the response metadata is printed (various metrics like total elapsed time)                    |
+| `--verbose, -v`            | Print the whole HTTP exchange (request and response). This option also enables `--all` (see below) |
+| `--verbose --verbose, -vv` | Just like `-v`, but also include the response metadata.                                            |
+|   `--print, -p`            | Selects parts of the HTTP exchange                                                                 |
+|   `--quiet, -q`            | Don't print anything to `stdout` and `stderr`                                                      |
 
 ### What parts of the HTTP exchange should be printed
 
@@ -1475,6 +1477,7 @@ It accepts a string of characters each of which represents a specific part of th
 |       `B` | request body     |
 |       `h` | response headers |
 |       `b` | response body    |
+|       `m` | response meta    |
 
 Print request and response headers:
 
@@ -1509,6 +1512,15 @@ Server: gunicorn/0.13.4
 {
     […]
 }
+```
+
+#### Verbosity Level: 2
+
+If you run HTTPie with `-vv` or `--verbose --verbose`, then it would also display the response metadata.
+
+```bash
+# Just like the above, but with additional columns like the total elapsed time
+$ http -vv pie.dev/get
 ```
 
 ### Quiet output

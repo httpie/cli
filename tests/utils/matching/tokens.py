@@ -8,6 +8,7 @@ class Expect(Enum):
     """
     REQUEST_HEADERS = auto()
     RESPONSE_HEADERS = auto()
+    RESPONSE_META = auto()
     BODY = auto()
     SEPARATOR = auto()
 
@@ -44,6 +45,10 @@ class ExpectSequence:
     TERMINAL_EXCHANGE = [
         *TERMINAL_REQUEST,
         *TERMINAL_RESPONSE,
+    ]
+    TERMINAL_EXCHANGE_META = [
+        *TERMINAL_EXCHANGE,
+        Expect.RESPONSE_META
     ]
     TERMINAL_BODY = [
         RAW_BODY,

@@ -79,7 +79,7 @@ class BaseStream(metaclass=ABCMeta):
             mixed = self.output_options.headers or self.output_options.body
 
             if mixed:
-                yield b'\n'
+                yield b'\n\n'
 
             yield self.get_metadata()
             if not mixed:
