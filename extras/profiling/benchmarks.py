@@ -178,9 +178,8 @@ for pretty in ['all', 'none']:
         f'`http --pretty={pretty} pie.dev/stream/1000`',
         [
             '--print=HBhb',
-            '--stream',
             f'--pretty={pretty}',
-            'httpbin.org/stream/100'
+            'httpbin.org/stream/1000'
         ]
     )
 DownloadRunner('download', '`http --download :/big_file.txt` (3GB)', '3G')

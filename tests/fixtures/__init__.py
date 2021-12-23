@@ -32,6 +32,8 @@ JSON_FILE_PATH_ARG = patharg(JSON_FILE_PATH)
 # line would be escaped).
 FILE_CONTENT = FILE_PATH.read_text(encoding=UTF8).strip()
 
+ASCII_FILE_CONTENT = "random text" * 10
+
 
 JSON_FILE_CONTENT = JSON_FILE_PATH.read_text(encoding=UTF8)
 BIN_FILE_CONTENT = BIN_FILE_PATH.read_bytes()
