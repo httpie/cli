@@ -3,7 +3,7 @@ import os
 import platform
 import sys
 import socket
-from typing import List, Optional, Tuple, Union, Callable
+from typing import List, Optional, Union, Callable
 
 import requests
 from pygments import __version__ as pygments_version
