@@ -34,7 +34,7 @@ class MetadataLexer(pygments.lexer.RegexLexer):
     tokens = {
         'root': [
             (
-                r'(Elapsed time)( *)(\=\>)( *)(\d+\.\d+)(s)', pygments.lexer.bygroups(
+                r'(Elapsed time)( *)(:)( *)(\d+\.\d+)(s)', pygments.lexer.bygroups(
                     pygments.token.Name.Decorator,  # Name
                     pygments.token.Text,
                     pygments.token.Operator,  # Colon
@@ -45,7 +45,7 @@ class MetadataLexer(pygments.lexer.RegexLexer):
             ),
             # Generic item
             (
-                r'(.*?)( *)(\=\>)( *)(.+)', pygments.lexer.bygroups(
+                r'(.*?)( *)(:)( *)(.+)', pygments.lexer.bygroups(
                     pygments.token.Name.Decorator,  # Name
                     pygments.token.Text,
                     pygments.token.Operator,  # Colon
