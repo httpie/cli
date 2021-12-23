@@ -111,9 +111,9 @@ def raw_main(
             original_exc = unwrap_context(exc)
             if isinstance(original_exc, socket.gaierror):
                 if original_exc.errno == socket.EAI_AGAIN:
-                    annotation = '\nCouldn\'t connect to a DNS server. Perhaps check your connection and try again.'
+                    annotation = '\nCouldn’t connect to a DNS server. Please check your connection and try again.'
                 elif original_exc.errno == socket.EAI_NONAME:
-                    annotation = '\nCouldn\'t resolve the given hostname. Perhaps check it and try again.'
+                    annotation = '\nCouldn’t resolve the given hostname. Please check the URL and try again.'
                 propagated_exc = original_exc
             else:
                 propagated_exc = exc
