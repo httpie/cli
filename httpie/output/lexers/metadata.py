@@ -1,5 +1,4 @@
 import pygments
-from httpie.output.lexers.common import precise
 
 SPEED_TOKENS = {
     0.45: pygments.token.Number.SPEED.FAST,
@@ -20,12 +19,7 @@ def speed_based_token(lexer, match, ctx):
     else:
         token = pygments.token.Number.SPEED.VERY_SLOW
 
-    response_type = precise(
-        lexer,
-        token,
-        pygments.token.Number
-    )
-    yield match.start(), response_type, match.group()
+    yield match.start(), token, match.group()
 
 
 class MetadataLexer(pygments.lexer.RegexLexer):

@@ -7,7 +7,7 @@ import pygments.lexers
 import pygments.style
 import pygments.styles
 import pygments.token
-from pygments.formatters.terminal import TerminalFormatter
+from pygments.formatters.terminal import TERMINAL_COLORS, TerminalFormatter
 from pygments.formatters.terminal256 import Terminal256Formatter
 from pygments.lexer import Lexer
 from pygments.lexers.data import JsonLexer
@@ -17,7 +17,7 @@ from pygments.util import ClassNotFound
 
 from ..lexers.json import EnhancedJsonLexer
 from ..lexers.metadata import MetadataLexer
-from ..ui.palette import SHADE_NAMES, get_color
+from ..ui.palette import SHADE_NAMES, get_color, color_as_ansi
 from ...compat import is_windows
 from ...context import Environment
 from ...plugins import FormatterPlugin
@@ -69,6 +69,7 @@ class ColorFormatter(FormatterPlugin):
         use_auto_style = color_scheme == AUTO_STYLE
         has_256_colors = env.colors == 256
         if use_auto_style or not has_256_colors:
+            patch_new_tokens(TERMINAL_COLORS, terminal=True)
             http_lexer = PygmentsHttpLexer()
             body_formatter = header_formatter = TerminalFormatter()
             precise = False
@@ -127,6 +128,7 @@ class ColorFormatter(FormatterPlugin):
             precise = True
         else:
             header_style = self.get_style_class(color_scheme)
+            patch_new_tokens(getattr(header_style, '_styles', {}))
             body_style = header_style
             precise = False
 
@@ -271,6 +273,15 @@ class Solarized256Style(pygments.style.Style):
     }
 
 
+CUSTOM_TOKENS = {
+    # Metadata
+    pygments.token.Number.SPEED.FAST: 'bold green',
+    pygments.token.Number.SPEED.AVG: 'bold yellow',
+    pygments.token.Number.SPEED.SLOW: 'bold orange',
+    pygments.token.Number.SPEED.VERY_SLOW: 'bold red',
+}
+
+
 PIE_HEADER_STYLE = {
     # HTTP line / Headers / Etc.
     pygments.token.Name.Namespace: 'bold primary',
@@ -298,12 +309,9 @@ PIE_HEADER_STYLE = {
     pygments.token.Number.HTTP.CLIENT_ERR: 'bold orange',
     pygments.token.Number.HTTP.SERVER_ERR: 'bold red',
 
-    # Metadata
+    # Other stuff
     pygments.token.Name.Decorator: 'grey',
-    pygments.token.Number.SPEED.FAST: 'bold green',
-    pygments.token.Number.SPEED.AVG: 'bold yellow',
-    pygments.token.Number.SPEED.SLOW: 'bold orange',
-    pygments.token.Number.SPEED.VERY_SLOW: 'bold red',
+    **CUSTOM_TOKENS
 }
 
 PIE_BODY_STYLE = {
@@ -390,3 +398,13 @@ def make_styles():
 
 PIE_STYLES = make_styles()
 BUNDLED_STYLES |= PIE_STYLES.keys()
+
+
+def patch_new_tokens(style, terminal=False):
+    for token, declaration in CUSTOM_TOKENS.items():
+        color = declaration.split()[-1]
+        if terminal:
+            ansi_color = color_as_ansi(color, dark=False), color_as_ansi(color, dark=True)
+        else:
+            ansi_color = ['ansi' + color_as_ansi(color)] + [0] * 8
+        style[token] = ansi_color

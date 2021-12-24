@@ -159,3 +159,16 @@ def get_color(color: str, shade: str) -> Optional[str]:
         return color_code[shade]
     else:
         return color_code
+
+
+COLOR_MAP = {
+    'green': ('green', 'brightgreen'),
+    'yellow': ('yellow', 'brightyellow'),
+    'orange': ('brightred', 'yellow'),
+    'red': ('red', 'brightred'),
+}
+
+
+def color_as_ansi(color: str, dark: bool = True) -> str:
+    assert color in COLOR_MAP
+    return COLOR_MAP[color][int(dark)]

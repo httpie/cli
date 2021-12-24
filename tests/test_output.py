@@ -17,7 +17,7 @@ from httpie.cli.argtypes import (
 )
 from httpie.cli.definition import parser
 from httpie.encoding import UTF8
-from httpie.output.formatters.colors import PIE_STYLES, get_lexer
+from httpie.output.formatters.colors import BUNDLED_STYLES, get_lexer
 from httpie.status import ExitStatus
 from .fixtures import XML_DATA_RAW, XML_DATA_FORMATTED
 from .utils import COLOR, CRLF, HTTP_OK, MockEnvironment, http, DUMMY_URL
@@ -227,7 +227,7 @@ def test_ensure_contents_colored(httpbin, endpoint):
     assert COLOR in r
 
 
-@pytest.mark.parametrize('style', PIE_STYLES.keys())
+@pytest.mark.parametrize('style', BUNDLED_STYLES)
 def test_ensure_meta_is_colored(httpbin, style):
     env = MockEnvironment(colors=256)
     r = http('--meta', '--style', style, 'GET', httpbin + '/get', env=env)
