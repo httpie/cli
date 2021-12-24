@@ -429,10 +429,10 @@ output_options.add_argument(
     action='count',
     default=0,
     help=f'''
-    Verbose output. Print the whole request as well as the response. Also print
-    any intermediary requests/responses (such as redirects).
-    It's a shortcut for: --all --print={''.join(BASE_OUTPUT_OPTIONS)}
-
+    Verbose output. For the level one (with single `-v`/`--verbose`), print
+    the whole request as well as the response. Also print any intermediary
+    requests/responses (such as redirects). For the second level and higher,
+    print these as well as the response metadata.
     '''
 )
 output_options.add_argument(
