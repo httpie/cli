@@ -383,6 +383,7 @@ output_options.add_argument(
         '{OUT_REQ_BODY}' request body
         '{OUT_RESP_HEAD}' response headers
         '{OUT_RESP_BODY}' response body
+        '{OUT_RESP_META}' response metadata
 
     The default behaviour is '{OUTPUT_OPTIONS_DEFAULT}' (i.e., the response
     headers and body is printed), if standard output is not redirected.
