@@ -433,6 +433,9 @@ output_options.add_argument(
     the whole request as well as the response. Also print any intermediary
     requests/responses (such as redirects). For the second level and higher,
     print these as well as the response metadata.
+
+    Level one is a shortcut for: --all --print={''.join(BASE_OUTPUT_OPTIONS)}
+    Level two is a shortcut for: --all --print={''.join(OUTPUT_OPTIONS)}
     '''
 )
 output_options.add_argument(
