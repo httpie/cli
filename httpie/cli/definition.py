@@ -12,7 +12,7 @@ from .argtypes import (
     readable_file_arg, response_charset_type, response_mime_type,
 )
 from .constants import (
-    DEFAULT_FORMAT_OPTIONS, OUTPUT_OPTIONS,
+    DEFAULT_FORMAT_OPTIONS, BASE_OUTPUT_OPTIONS, OUTPUT_OPTIONS,
     OUTPUT_OPTIONS_DEFAULT, OUT_REQ_BODY, OUT_REQ_HEAD,
     OUT_RESP_BODY, OUT_RESP_HEAD, OUT_RESP_META, PRETTY_MAP, PRETTY_STDOUT_TTY_ONLY,
     RequestType, SEPARATOR_GROUP_ALL_ITEMS, SEPARATOR_PROXY,
@@ -431,7 +431,7 @@ output_options.add_argument(
     help=f'''
     Verbose output. Print the whole request as well as the response. Also print
     any intermediary requests/responses (such as redirects).
-    It's a shortcut for: --all --print={''.join(OUTPUT_OPTIONS)}
+    It's a shortcut for: --all --print={''.join(BASE_OUTPUT_OPTIONS)}
 
     '''
 )
