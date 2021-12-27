@@ -1,4 +1,5 @@
 import os
+import json
 
 import pytest
 
@@ -68,6 +69,18 @@ def test_chunked_stdin_multiple_chunks(httpbin_with_chunked_support):
     assert HTTP_OK in r
     assert 'Transfer-Encoding: chunked' in r
     assert r.count(FILE_CONTENT) == 4
+
+
+def test_chunked_raw(httpbin_with_chunked_support):
+    r = http(
+        '--verbose',
+        '--chunked',
+        httpbin_with_chunked_support + '/post',
+        '--raw',
+        json.dumps({'a': 1, 'b': '2fafds', 'c': '🥰'}),
+    )
+    assert HTTP_OK in r
+    assert 'Transfer-Encoding: chunked' in r
 
 
 class TestMultipartFormDataFileUpload:

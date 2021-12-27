@@ -273,6 +273,26 @@ def make_send_kwargs_mergeable_from_env(args: argparse.Namespace) -> dict:
     }
 
 
+def as_json(data) -> str:
+    """Convert the given JSON dict into the actual request body."""
+
+    # Propagate the top-level list if there is only one
+    # item in the object, with an en empty key.
+    if len(data) == 1:
+        [(key, value)] = data.items()
+        if key == '' and isinstance(value, list):
+            data = value
+
+    if data:
+        data = json.dumps(data)
+    else:
+        # We need to set data to an empty string to prevent requests
+        # from assigning an empty list to `response.request.data`.
+        data = ''
+
+    return data
+
+
 def make_request_kwargs(
     args: argparse.Namespace,
     base_headers: HTTPHeadersDict = None,
@@ -287,19 +307,7 @@ def make_request_kwargs(
     data = args.data
     auto_json = data and not args.form
     if (args.json or auto_json) and isinstance(data, dict):
-        # Propagate the top-level list if there is only one
-        # item in the object, with an en empty key.
-        if len(data) == 1:
-            [(key, value)] = data.items()
-            if key == '' and isinstance(value, list):
-                data = value
-
-        if data:
-            data = json.dumps(data)
-        else:
-            # We need to set data to an empty string to prevent requests
-            # from assigning an empty list to `response.request.data`.
-            data = ''
+        data = as_json(data)
 
     # Finalize headers.
     headers = make_default_headers(args)
@@ -324,7 +332,7 @@ def make_request_kwargs(
         'url': args.url,
         'headers': headers,
         'data': prepare_request_body(
-            body=data,
+            data,
             body_read_callback=request_body_read_callback,
             chunked=args.chunked,
             offline=args.offline,
