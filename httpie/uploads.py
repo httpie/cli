@@ -52,7 +52,7 @@ def as_bytes(data: Union[str, bytes]) -> bytes:
 CallbackT = Callable[[bytes], bytes]
 
 
-def _wrap_with_callback(
+def _wrap_function_with_callback(
     func: Callable[..., Any],
     callback: CallbackT
 ) -> Callable[..., Any]:
@@ -64,13 +64,13 @@ def _wrap_with_callback(
     return wrapped
 
 
-def _process_file(
-    body: Union[IO, 'MultipartEncoder'],
+def _prepare_file_for_upload(
+    file: Union[IO, 'MultipartEncoder'],
     callback: CallbackT,
     chunked: bool = False,
     content_length_header_value: Optional[int] = None,
 ) -> Union[bytes, IO, ChunkedStream]:
-    if not super_len(body):
+    if not super_len(file):
         # Zero-length -> assume stdin.
         if content_length_header_value is None and not chunked:
             # Read the whole stdin to determine `Content-Length`.
@@ -80,26 +80,26 @@ def _process_file(
             #   something like --no-chunked.
             #   This would be backwards-incompatible so wait until v3.0.0.
             #
-            body = as_bytes(body.read())
+            file = as_bytes(file.read())
     else:
-        body.read = _wrap_with_callback(
-            body.read,
+        file.read = _wrap_function_with_callback(
+            file.read,
             callback
         )
 
     if chunked:
         from requests_toolbelt import MultipartEncoder
-        if isinstance(body, MultipartEncoder):
+        if isinstance(file, MultipartEncoder):
             return ChunkedMultipartUploadStream(
-                encoder=body,
+                encoder=file,
             )
         else:
             return ChunkedUploadStream(
-                stream=body,
+                stream=file,
                 callback=callback,
             )
     else:
-        return body
+        return file
 
 
 def prepare_request_body(
@@ -124,7 +124,7 @@ def prepare_request_body(
             return body
 
     if is_file_like:
-        return _process_file(
+        return _prepare_file_for_upload(
             body,
             chunked=chunked,
             callback=body_read_callback,

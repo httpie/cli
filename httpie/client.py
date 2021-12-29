@@ -4,7 +4,7 @@ import json
 import sys
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Callable, Iterable
+from typing import Any, Dict, Callable, Iterable
 from urllib.parse import urlparse, urlunparse
 
 import requests
@@ -273,9 +273,7 @@ def make_send_kwargs_mergeable_from_env(args: argparse.Namespace) -> dict:
     }
 
 
-def as_json(data) -> str:
-    """Convert the given JSON dict into the actual request body."""
-
+def json_dict_to_request_body(data: Dict[str, Any]) -> str:
     # Propagate the top-level list if there is only one
     # item in the object, with an en empty key.
     if len(data) == 1:
@@ -307,7 +305,7 @@ def make_request_kwargs(
     data = args.data
     auto_json = data and not args.form
     if (args.json or auto_json) and isinstance(data, dict):
-        data = as_json(data)
+        data = json_dict_to_request_body(data)
 
     # Finalize headers.
     headers = make_default_headers(args)
