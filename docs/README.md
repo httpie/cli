@@ -2014,7 +2014,7 @@ $ cat session.json
 $ http --session=./session.json pie.dev/headers
 ```
 
-All session data, including credentials, cookie data, and custom headers are stored in plain text.
+All session data, including credentials, prompted passwords, cookie data, and custom headers are stored in plain text.
 That means session files can also be created and edited manually in a text editor—they are regular JSON.
 It also means that they can be read by anyone who has access to the session file.
 
