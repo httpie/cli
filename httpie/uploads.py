@@ -108,7 +108,7 @@ def prepare_request_body(
     offline: bool = False,
     chunked: bool = False,
     content_length_header_value: Optional[int] = None,
-) -> Union[bytes, IO, ChunkedStream]:
+) -> Union[bytes, IO, 'MultipartEncoder', ChunkedStream]:
     is_file_like = hasattr(raw_body, 'read')
     if isinstance(raw_body, (bytes, str)):
         body = as_bytes(raw_body)
