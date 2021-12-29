@@ -299,8 +299,6 @@ class TestSession(SessionTestBase):
         assert f'Authorization: {header}' in r2
         plugin_manager.unregister(Plugin)
 
-    @mock.patch('httpie.cli.argtypes.AuthCredentials._getpass',
-                new=lambda self, prompt: 'password')
     def test_auth_plugin_prompt_password_in_session(self, httpbin):
         self.start_session(httpbin)
         session_path = self.config_dir / 'test-session.json'
@@ -314,13 +312,17 @@ class TestSession(SessionTestBase):
 
         plugin_manager.register(Plugin)
 
-        r1 = http(
-            '--session', str(session_path),
-            httpbin + '/basic-auth/user/password',
-            '--auth-type',
-            Plugin.auth_type,
-            '--auth', 'user:',
-        )
+        with mock.patch(
+            'httpie.cli.argtypes.AuthCredentials._getpass',
+            new=lambda self, prompt: 'password'
+        ):
+            r1 = http(
+                '--session', str(session_path),
+                httpbin + '/basic-auth/user/password',
+                '--auth-type',
+                Plugin.auth_type,
+                '--auth', 'user',
+            )
 
         r2 = http(
             '--session', str(session_path),

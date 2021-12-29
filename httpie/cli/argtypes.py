@@ -134,7 +134,7 @@ class AuthCredentials(KeyValueArg):
     """Represents parsed credentials."""
 
     def has_password(self) -> bool:
-        return bool(self.value)
+        return self.value is not None
 
     def prompt_password(self, host: str):
         prompt_text = f'http: password for {self.key}@{host}: '

@@ -69,8 +69,6 @@ def test_credentials_in_url_auth_flag_has_priority(httpbin_both):
     'username@example.org',
     'username:@example.org',
 ])
-@mock.patch('httpie.cli.argtypes.AuthCredentials._getpass',
-            new=lambda self, prompt: '')
 def test_only_username_in_url(url):
     """
     https://github.com/httpie/httpie/issues/242
