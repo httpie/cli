@@ -1,5 +1,10 @@
 import os
 import json
+import sys
+import subprocess
+import time
+import contextlib
+import httpie.__main__ as main
 
 import pytest
 
@@ -81,6 +86,65 @@ def test_chunked_raw(httpbin_with_chunked_support):
     )
     assert HTTP_OK in r
     assert 'Transfer-Encoding: chunked' in r
+
+
+@contextlib.contextmanager
+def stdin_processes(httpbin):
+    process_1 = subprocess.Popen(
+        [
+            "cat"
+        ],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE
+    )
+    process_2 = subprocess.Popen(
+        [
+            sys.executable,
+            main.__file__,
+            "POST",
+            httpbin + "/post"
+        ],
+        stdin=process_1.stdout,
+        stderr=subprocess.PIPE,
+        env={
+            "HTTPIE_STDIN_READ_THRESHOLD": "0.1"
+        }
+    )
+    try:
+        yield process_1, process_2
+    finally:
+        process_1.terminate()
+        process_2.terminate()
+
+@pytest.mark.parametrize("wait", (True, False))
+def test_reading_from_stdin(httpbin, wait):
+    with stdin_processes(httpbin) as (process_1, process_2):
+        process_1.communicate(timeout=0.1, input=b"bleh")
+        # Since there is data, it doesn't matter if there
+        # you wait or not.
+        if wait:
+            time.sleep(0.6)
+
+        try:
+            _, errs = process_2.communicate(timeout=0.25)
+        except subprocess.TimeoutExpired:
+            errs = b''
+
+        assert b'> no stdin data read in 0.1s' not in errs
+
+
+def test_stdin_read_warning(httpbin):
+    with stdin_processes(httpbin) as (process_1, process_2):
+        # Wait before sending any data
+        time.sleep(0.6)
+        process_1.communicate(timeout=0.1, input=b"bleh\n")
+
+        try:
+            _, errs = process_2.communicate(timeout=0.25)
+        except subprocess.TimeoutExpired:
+            errs = b''
+
+        assert b'> no stdin data read in 0.1s' in errs
 
 
 class TestMultipartFormDataFileUpload:

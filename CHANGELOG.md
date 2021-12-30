@@ -18,6 +18,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - Added new `pie-dark`/`pie-light` (and `pie`) styles that match with [HTTPie for Web and Desktop](https://httpie.io/product). ([#1237](https://github.com/httpie/httpie/issues/1237))
 - Added support for better error handling on DNS failures. ([#1248](https://github.com/httpie/httpie/issues/1248))
 - Added support for storing prompted passwords in the local sessions. ([#1098](https://github.com/httpie/httpie/issues/1098))
+- Added warnings about the `--ignore-stdin`, when there is no incoming data from stdin. ([#1255](https://github.com/httpie/httpie/issues/1255))
 - Broken plugins will no longer crash the whole application. ([#1204](https://github.com/httpie/httpie/issues/1204))
 - Fixed auto addition of XML declaration to every formatted XML response. ([#1156](https://github.com/httpie/httpie/issues/1156))
 - Fixed highlighting when `Content-Type` specifies `charset`. ([#1242](https://github.com/httpie/httpie/issues/1242))
