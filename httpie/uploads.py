@@ -80,6 +80,12 @@ READ_THRESHOLD = float(os.getenv("HTTPIE_STDIN_READ_THRESHOLD", 10.0))
 
 
 def trigger_stdin_warning_thread(env: Environment, file: IO) -> None:
+    # Windows unfortunately does not support select() operation
+    # on regular files, like stdin in our use case.
+    # https://docs.python.org/3/library/select.html#select.select
+    if os.name == 'nt':
+        return None
+
     import select
     import threading
 

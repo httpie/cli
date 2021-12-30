@@ -107,6 +107,7 @@ def stdin_processes(httpbin):
         stdin=process_1.stdout,
         stderr=subprocess.PIPE,
         env={
+            **os.environ,
             "HTTPIE_STDIN_READ_THRESHOLD": "0.1"
         }
     )
@@ -116,14 +117,16 @@ def stdin_processes(httpbin):
         process_1.terminate()
         process_2.terminate()
 
+
 @pytest.mark.parametrize("wait", (True, False))
+@pytest.mark.skipif(os.name == 'nt', reason="Windows doesn't support select() calls into files")
 def test_reading_from_stdin(httpbin, wait):
     with stdin_processes(httpbin) as (process_1, process_2):
         process_1.communicate(timeout=0.1, input=b"bleh")
         # Since there is data, it doesn't matter if there
         # you wait or not.
         if wait:
-            time.sleep(0.6)
+            time.sleep(0.75)
 
         try:
             _, errs = process_2.communicate(timeout=0.25)
@@ -133,10 +136,11 @@ def test_reading_from_stdin(httpbin, wait):
         assert b'> no stdin data read in 0.1s' not in errs
 
 
+@pytest.mark.skipif(os.name == 'nt', reason="Windows doesn't support select() calls into files")
 def test_stdin_read_warning(httpbin):
     with stdin_processes(httpbin) as (process_1, process_2):
         # Wait before sending any data
-        time.sleep(0.6)
+        time.sleep(0.75)
         process_1.communicate(timeout=0.1, input=b"bleh\n")
 
         try:
