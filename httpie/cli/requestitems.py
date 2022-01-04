@@ -17,7 +17,7 @@ from .dicts import (
     RequestQueryParamsDict,
 )
 from .exceptions import ParseError
-from .json_form import interpret_json_form
+from .nested_json import interpret_nested_json
 from ..utils import get_content_type, load_json_preserve_order_and_dupe_keys, split
 
 
@@ -202,7 +202,7 @@ def process_data_raw_json_embed_arg(arg: KeyValueArg) -> JSONType:
 
 
 def process_data_nested_json_embed_args(pairs) -> Dict[str, JSONType]:
-    return interpret_json_form(pairs)
+    return interpret_nested_json(pairs)
 
 
 def load_text_file(item: KeyValueArg) -> str:
