@@ -3,7 +3,6 @@ import http.client
 import json
 import sys
 from contextlib import contextmanager
-from pathlib import Path
 from typing import Any, Dict, Callable, Iterable
 from urllib.parse import urlparse, urlunparse
 
@@ -37,14 +36,13 @@ DEFAULT_UA = f'HTTPie/{__version__}'
 def collect_messages(
     env: Environment,
     args: argparse.Namespace,
-    config_dir: Path,
     request_body_read_callback: Callable[[bytes], None] = None,
 ) -> Iterable[RequestsMessage]:
     httpie_session = None
     httpie_session_headers = None
     if args.session or args.session_read_only:
         httpie_session = get_httpie_session(
-            config_dir=config_dir,
+            config_dir=env.config.directory,
             session_name=args.session or args.session_read_only,
             host=args.headers.get('Host'),
             url=args.url,

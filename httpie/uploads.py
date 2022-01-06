@@ -13,6 +13,7 @@ if TYPE_CHECKING:
 
 from .context import Environment
 from .cli.dicts import MultipartRequestDataDict, RequestDataDict
+from .compat import is_windows
 
 
 class ChunkedStream:
@@ -76,14 +77,19 @@ def is_stdin(file: IO) -> bool:
         return file_no == sys.stdin.fileno()
 
 
-READ_THRESHOLD = float(os.getenv("HTTPIE_STDIN_READ_THRESHOLD", 10.0))
+READ_THRESHOLD = float(os.getenv("HTTPIE_STDIN_READ_WARN_THRESHOLD", 10.0))
 
 
-def trigger_stdin_warning_thread(env: Environment, file: IO) -> None:
+def observe_stdin_for_data_thread(env: Environment, file: IO) -> None:
     # Windows unfortunately does not support select() operation
     # on regular files, like stdin in our use case.
     # https://docs.python.org/3/library/select.html#select.select
-    if os.name == 'nt':
+    if is_windows:
+        return None
+
+    # If the user configures READ_THRESHOLD to be 0, then
+    # disable this warning.
+    if READ_THRESHOLD == 0:
         return None
 
     import select
@@ -93,10 +99,10 @@ def trigger_stdin_warning_thread(env: Environment, file: IO) -> None:
         can_read, _, _ = select.select([file], [], [], READ_THRESHOLD)
         if not can_read:
             env.stderr.write(
-                f"> no stdin data read in {READ_THRESHOLD}s "
-                f"(perhaps you want to --ignore-stdin)\n"
+                f'> warning: no stdin data read in {READ_THRESHOLD}s '
+                f'(perhaps you want to --ignore-stdin)\n'
+                f'> See: https://httpie.io/docs/cli/best-practices\n'
             )
-            env.stderr.write("> https://httpie.io/docs/cli/best-practices\n")
 
     thread = threading.Thread(
         target=worker
@@ -113,7 +119,7 @@ def _prepare_file_for_upload(
 ) -> Union[bytes, IO, ChunkedStream]:
     if not super_len(file):
         if is_stdin(file):
-            trigger_stdin_warning_thread(env, file)
+            observe_stdin_for_data_thread(env, file)
         # Zero-length -> assume stdin.
         if content_length_header_value is None and not chunked:
             # Read the whole stdin to determine `Content-Length`.

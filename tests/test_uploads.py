@@ -10,6 +10,7 @@ import pytest
 
 from httpie.cli.exceptions import ParseError
 from httpie.client import FORM_CONTENT_TYPE
+from httpie.compat import is_windows
 from httpie.status import ExitStatus
 from .utils import (
     MockEnvironment, StdinBytesIO, http,
@@ -89,7 +90,7 @@ def test_chunked_raw(httpbin_with_chunked_support):
 
 
 @contextlib.contextmanager
-def stdin_processes(httpbin):
+def stdin_processes(httpbin, *args):
     process_1 = subprocess.Popen(
         [
             "cat"
@@ -102,13 +103,14 @@ def stdin_processes(httpbin):
             sys.executable,
             main.__file__,
             "POST",
-            httpbin + "/post"
+            httpbin + "/post",
+            *args
         ],
         stdin=process_1.stdout,
         stderr=subprocess.PIPE,
         env={
             **os.environ,
-            "HTTPIE_STDIN_READ_THRESHOLD": "0.1"
+            "HTTPIE_STDIN_READ_WARN_THRESHOLD": "0.1"
         }
     )
     try:
@@ -119,7 +121,7 @@ def stdin_processes(httpbin):
 
 
 @pytest.mark.parametrize("wait", (True, False))
-@pytest.mark.skipif(os.name == 'nt', reason="Windows doesn't support select() calls into files")
+@pytest.mark.skipif(is_windows, reason="Windows doesn't support select() calls into files")
 def test_reading_from_stdin(httpbin, wait):
     with stdin_processes(httpbin) as (process_1, process_2):
         process_1.communicate(timeout=0.1, input=b"bleh")
@@ -133,10 +135,10 @@ def test_reading_from_stdin(httpbin, wait):
         except subprocess.TimeoutExpired:
             errs = b''
 
-        assert b'> no stdin data read in 0.1s' not in errs
+        assert b'> warning: no stdin data read in 0.1s' not in errs
 
 
-@pytest.mark.skipif(os.name == 'nt', reason="Windows doesn't support select() calls into files")
+@pytest.mark.skipif(is_windows, reason="Windows doesn't support select() calls into files")
 def test_stdin_read_warning(httpbin):
     with stdin_processes(httpbin) as (process_1, process_2):
         # Wait before sending any data
@@ -148,7 +150,22 @@ def test_stdin_read_warning(httpbin):
         except subprocess.TimeoutExpired:
             errs = b''
 
-        assert b'> no stdin data read in 0.1s' in errs
+        assert b'> warning: no stdin data read in 0.1s' in errs
+
+
+@pytest.mark.skipif(is_windows, reason="Windows doesn't support select() calls into files")
+def test_stdin_read_warning_with_quiet(httpbin):
+    with stdin_processes(httpbin, "-qq") as (process_1, process_2):
+        # Wait before sending any data
+        time.sleep(0.75)
+        process_1.communicate(timeout=0.1, input=b"bleh\n")
+
+        try:
+            _, errs = process_2.communicate(timeout=0.25)
+        except subprocess.TimeoutExpired:
+            errs = b''
+
+        assert b'> warning: no stdin data read in 0.1s' not in errs
 
 
 class TestMultipartFormDataFileUpload:
