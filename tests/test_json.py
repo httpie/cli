@@ -376,6 +376,28 @@ def test_complex_json_arguments_with_non_json(httpbin, request_type, value):
                 'people': {'known_ids': [None, 1000, None, None, None, 5000]},
             },
         ),
+        (
+            [
+                r'foo[\1][type]=migration',
+                r'foo[\2][type]=migration',
+                r'foo[\dates]:=[2012, 2013]',
+                r'foo[\dates][0]:=2014',
+                r'foo[\2012 bleh]:=2013',
+                r'foo[bleh \2012]:=2014',
+                r'\2012[x]:=2',
+                r'\2012[\[3\]]:=4',
+            ],
+            {
+                'foo': {
+                    '1': {'type': 'migration'},
+                    '2': {'type': 'migration'},
+                    '\\dates': [2014, 2013],
+                    '\\2012 bleh': 2013,
+                    'bleh \\2012': 2014,
+                },
+                '2012': {'x': 2, '[3]': 4},
+            },
+        ),
     ],
 )
 def test_nested_json_syntax(input_json, expected_json, httpbin):
@@ -464,6 +486,14 @@ def test_nested_json_syntax(input_json, expected_json, httpbin):
         (
             ['foo[-10]:=[1,2]'],
             'HTTPie Value Error: Negative indexes are not supported.\nfoo[-10]\n    ^^^',
+        ),
+        (
+            ['foo[0]:=1', 'foo[]:=2', 'foo[\\2]:=3'],
+            "HTTPie Type Error: Can't perform 'key' based access on 'foo' which has a type of 'array' but this operation requires a type of 'object'.\nfoo[\\2]\n   ^^^^",
+        ),
+        (
+            ['foo[\\1]:=2', 'foo[5]:=3'],
+            "HTTPie Type Error: Can't perform 'index' based access on 'foo' which has a type of 'object' but this operation requires a type of 'array'.\nfoo[5]\n   ^^^",
         ),
     ],
 )

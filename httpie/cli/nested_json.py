@@ -61,7 +61,19 @@ class Token(NamedTuple):
 
 
 def assert_cant_happen() -> NoReturn:
-    raise ValueError("Unexpected value")
+    raise ValueError('Unexpected value')
+
+
+def check_escaped_int(value: str) -> str:
+    if not value.startswith('\\'):
+        raise ValueError('Not an escaped int')
+
+    try:
+        int(value[1:])
+    except ValueError as exc:
+        raise ValueError('Not an escaped int') from exc
+    else:
+        return value[1:]
 
 
 def tokenize(source: str) -> Iterator[Token]:
@@ -75,12 +87,18 @@ def tokenize(source: str) -> Iterator[Token]:
             return None
 
         value = ''.join(buffer)
-        try:
-            value = int(value)
-        except ValueError:
-            kind = TokenKind.TEXT
+        for variation, kind in [
+            (int, TokenKind.NUMBER),
+            (check_escaped_int, TokenKind.TEXT),
+        ]:
+            try:
+                value = variation(value)
+            except ValueError:
+                continue
+            else:
+                break
         else:
-            kind = TokenKind.NUMBER
+            kind = TokenKind.TEXT
 
         yield Token(
             kind, value, start=cursor - (len(buffer) + backslashes), end=cursor
