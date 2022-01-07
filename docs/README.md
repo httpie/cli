@@ -782,10 +782,9 @@ $ http --offline --print=B pie.dev/post \
 }
 ```
 
-Starting with 3.0, we have embedded a mini language inside HTTPie's own syntax to
-build complex JSON with ease. This syntax was inspired by the [JSON form](https://www.w3.org/TR/html-json-forms/)
-proposal for HTML, though we have changed a lot of parts to offer the best experience
-and reduce the number of typing-caused failures.
+Starting with 3.0, we have created a mini language in HTTPie's own syntax to
+build complex JSON objects with ease. This syntax was inspired by the [JSON form](https://www.w3.org/TR/html-json-forms/)
+proposal for HTML, though we have changed a lot of parts to offer the best experience.
 
 #### Introduction
 

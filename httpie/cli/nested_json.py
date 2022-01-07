@@ -146,7 +146,7 @@ class Path:
     def reconstruct(self) -> str:
         if self.kind == 'key':
             if self.is_root:
-                return self.accessor
+                return str(self.accessor)
             return '[' + self.accessor + ']'
         elif self.kind == 'index':
             return '[' + str(self.accessor) + ']'
@@ -186,10 +186,12 @@ def parse(source: str) -> Iterator[Path]:
             cursor += 1
             if token.kind in kinds:
                 return token
-        else:
+        elif tokens:
             token = tokens[-1]._replace(
                 start=tokens[-1].end + 0, end=tokens[-1].end + 1
             )
+        else:
+            token = None
 
         if len(kinds) == 1:
             suffix = kinds[0].to_name()
@@ -272,7 +274,7 @@ def interpret(context: Any, key: str, value: Any) -> Any:
                 key, pseudo_token, message, message_kind='Type'
             )
 
-    def object_for(kind: str) -> str:
+    def object_for(kind: str) -> Any:
         if kind == 'key':
             return {}
         elif kind in {'index', 'append'}:
