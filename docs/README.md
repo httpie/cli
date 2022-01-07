@@ -749,14 +749,9 @@ Other JSON types, however, are not allowed with `--form` or `--multipart`.
 
 ### Nested JSON fields
 
-For creating nested JSON structures, you can simply declare the path for the object's new destination
-and HTTPie will interpret it according to the [JSON form](https://www.w3.org/TR/html-json-forms/)
-notation and create your object. It works directly with the existing data field (`=`) and raw JSON
-field (`:=`) operators.
-
-#### Path Declaration
-
-A simple path can be a shallow key;
+In the past (pre-3.0), HTTPie's data operators (`=`/`:=`) allowed you to
+directly create basic JSON objects right from your terminal. Though this
+functionality was limited to only top-level keys.
 
 ```bash
 $ http --offline --print=B pie.dev/post \
@@ -769,228 +764,275 @@ $ http --offline --print=B pie.dev/post \
 }
 ```
 
-As well as a nested one,
+For embedding more complex JSON objects, you needed to use the `:=` operator.
 
 ```bash
 $ http --offline --print=B pie.dev/post \
-  result[type]=success
+  type=success \
+  'product:={"name":"something", "price":10}'
 ```
 
 ```json
 {
-    "result": {"type": "success"}
+    "product": {
+        "name": "something",
+        "price": 10
+    },
+    "type": "success"
 }
 ```
 
-Or even multiple levels of nesting.
+Starting with 3.0, we have embedded a mini language inside HTTPie's own syntax to
+build complex JSON with ease. This syntax was inspired by the [JSON form](https://www.w3.org/TR/html-json-forms/)
+proposal for HTML, though we have changed a lot of parts to offer the best experience
+and reduce the number of typing-caused failures.
+
+#### Introduction
+
+Let's start with a simple introduction, and build the JSON object we have seen in the example
+above:
 
 ```bash
 $ http --offline --print=B pie.dev/post \
-  result[status][type]=ok
+  type=success \
+  product[name]=something \
+  product[price]:=10
+```
+
+With the new syntax, you can designate the path for the value. For example `product[name]` means
+create a new object under the `product` key, and set the `name` field of that object to the given
+value.
+
+```json
+{
+    "product": {
+        "name": "something",
+        "price": 10
+    },
+    "type": "success"
+}
+```
+
+You can also build arrays, through `[]` suffix. Which means create a list, and append the value
+to that list:
+
+```bash
+$ http --offline --print=B pie.dev/post \
+  search[keywords][]=soda \
+  search[keywords][]=fries
 ```
 
 ```json
 {
-    "result": {
-        "status": {
-            "type": "ok"
-        }
+    "search": {
+        "keywords": [
+            "soda",
+            "fries"
+        ]
     }
 }
 ```
 
-The declaration also supports creating arrays; which can be either done by simply
-assigning the same path multiple times
+If you want to specify the direct index, that is also supported:
 
 ```bash
 $ http --offline --print=B pie.dev/post \
-  ids:=1 ids:=2
+  search[keywords][0]=soda \
+  search[keywords][1]=fries
 ```
 
 ```json
 {
-    "ids": [
-        1,
-        2
-    ]
-}
-```
-
-Or using the append suffix `[]`, which would create an array and append the items to the
-end of it.
-
-```bash
-$ http --offline --print=B pie.dev/post \
-  ids[]:=1
-```
-
-```json
-{
-    "ids": [
-        1,
-        2
-    ]
-}
-```
-
-You can also use indexes to set items on an array,
-
-```bash
-$ http --offline --print=B pie.dev/post \
-  items[0]=terminal items[1]=desktop
-```
-
-```json
-{
-    "items": [
-        "terminal",
-        "desktop"
-    ]
-}
-```
-
-If you don't set value for the indexes between, then those will be nullified.
-
-```bash
-$ http --offline --print=B pie.dev/post \
-  items[1]=terminal items[3]=desktop
-```
-
-```json
-{
-    "items": [
-        null,
-        "terminal",
-        null,
-        "desktop"
-    ]
-}
-```
-
-It is permitted to mix index-access with append actions (`[]`), but be aware that appends will not fill
-the voids but instead they will append after the last item.
-
-```bash
-$ http --offline --print=B pie.dev/post \
-  items[1]=terminal items[3]=desktop items[]=web
-```
-
-```json
-{
-    "items": [
-        null,
-        "terminal",
-        null,
-        "desktop",
-        "web"
-    ]
-}
-```
-
-If you need to send a top-level list (without any object that is encapsulating it), use the append operator (`[]`) without
-any keys.
-
-```bash
-$ http --offline --print=B pie.dev/post \
-  []:=1 []:=2 []:=3
-```
-
-```json
-[
-    1,
-    2,
-    3
-]
-```
-
-Here is a slightly unified example
-
-```bash
-$ http --offline --print=B pie.dev/post name=python version:=3 \
-  date[year]:=2021 date[month]=December \
-  systems=Linux systems=Mac systems=Windows \
-  people[known_ids][1]=1000 people[known_ids][5]=5000
-```
-
-```json
-{
-    "date": {
-        "month": "December",
-        "year": 2021
-    },
-    "name": "python",
-    "people": {
-        "known_ids": [
-            null,
-            "1000",
-            null,
-            null,
-            null,
-            "5000"
+    "search": {
+        "keywords": [
+            "soda",
+            "fries"
         ]
-    },
-    "systems": [
-        "Linux",
-        "Mac",
-        "Windows"
-    ],
-    "version": 3
+    }
 }
 ```
 
-And here is an even more comprehensive example to show all the features.
+You can also create 'sparse arrays' (arrays where you set 2 non-consecutive indexes), which
+the missing values gets nullified:
+
+```bash
+$ http --offline --print=B pie.dev/post \
+  search[keywords][2]=soda \
+  search[keywords][5]=fries \
+  search[keywords][]=fish
+```
+
+```json
+{
+    "search": {
+        "keywords": [
+            null,
+            null,
+            "soda",
+            null,
+            null,
+            "fries",
+            "fish"
+        ]
+    }
+}
+```
+
+It is also possible to embed raw JSON to a nested structure, for example:
+
+```bash
+$ http --offline --print=B pie.dev/post \
+  invitation[type]=meetup \
+  'invitation[dates]:=[2021, 2022, 2023, 2024]' \
+  invitation[dates][]:=2025
+```
+
+```json
+{
+    "invitation": {
+        "dates": [
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+        ],
+        "type": "meetup"
+    }
+}
+```
+
+And for the last, let's create a very deeply nested JSON object:
 
 ```bash
 $ http PUT pie.dev/put \
-    'object=scalar' \                           # Object — blank key
-    'object[0]=array 1' \                       # Object — "0" key
-    'object[key]=key key' \                     # Object — "key" key
-    'array:=1' \                                # Array — first item
-    'array:=2' \                                # Array — second item
-    'array[]:=3' \                              # Array — append (third item)
-    'wow[such][deep][3][much][power][!]=Amaze'  # Nested object
+    shallow=value \                                # Shallow key-value pair
+    object[key]=value \                            # Nested key-value pair
+    array[]:=1 \                                   # Array — first item
+    array[1]:=2 \                                  # Array — second item
+    array[2]:=3 \                                  # Array — append (third item)
+    very[nested][json][3][httpie][power][]=Amaze   # Nested object
 ```
 
-```http
-PUT /person/1 HTTP/1.1
-Accept: application/json, */*;q=0.5
-Content-Type: application/json
-Host: pie.dev
+#### Advanced Usage
 
+##### Escaping Behavior
+
+Nested JSON syntax uses the same escaping rules [escaping rules](escaping-rules) as
+the terminal. There are 3 special characters, and 1 special token that you can escape.
+
+If you want to send a bracket as is, escape it with a backslash (`\`):
+
+```bash
+$ http --offline --print=B pie.dev/post \
+  'foo\[bar\]:=1' \
+  'baz[\[]:=2' \
+  'baz[\]]:=3'
+```
+
+```json
 {
-    "array": [
-        1,
-        2,
-        3
-    ],
-    "object": {
-        "": "scalar",
-        "0": "array 1",
-        "key": "key key"
+    "baz": {
+        "[": 2,
+        "]": 3
     },
-    "wow": {
-        "such": {
-            "deep": [
-                null,
-                null,
-                null,
-                {
-                    "much": {
-                        "power": {
-                            "!": "Amaze"
-                        }
-                    }
-                }
-            ]
-        }
+    "foo[bar]": 1
+}
+```
+
+If you want the send the literal backslash character (`\`), escape it with another backslash:
+
+```bash
+$ http --offline --print=B pie.dev/post \
+  'backslash[\\]:=1'
+```
+
+```json
+{
+    "backslash": {
+        "\\": 1
     }
 }
 ```
 
-### Raw and complex JSON
+A regular integer in a path (e.g `[10]`) means an array index; but if you want it to be treated as
+a string, you can escape the whole number by using a backslash (`\`) prefix.
 
-Please note that with the [request items](#request-items) data field syntax, commands can quickly become unwieldy when sending complex structures.
-In such cases, it’s better to pass the full raw JSON data via [raw request body](#raw-request-body), for example:
+```bash
+$ http --offline --print=B pie.dev/post \
+  'object[\1]=stringified' \
+  'object[\100]=same' \
+  'array[1]=indexified'
+```
+
+```json
+{
+    "array": [
+        null,
+        "indexified"
+    ],
+    "object": {
+        "1": "stringified",
+        "100": "same"
+    }
+}
+```
+
+##### Guiding Syntax Errors
+
+If you make a typo or forget to close a bracket, the errors will guide you to fix it. For example:
+
+```bash
+$ http --offline --print=B pie.dev/post \
+  'foo[bar]=OK' \
+  'foo[baz][quux=FAIL'
+```
+
+```console
+HTTPie Syntax Error: Expecting ']'
+foo[baz][quux
+             ^
+```
+
+You can follow to given instruction (adding a `]`) and repair your expression.
+
+##### Type Safety
+
+Each container path (e.g `x[y][z]` in `x[y][z][1]`) has a certain type, which gets defined with
+the first usage and can't be changed after that. If you try to do a key-based access to an array or
+an index-based access to an object, HTTPie will error out:
+
+```bash
+$ http --offline --print=B pie.dev/post \
+  'array[]:=1' \
+  'array[]:=2' \
+  'array[key]:=3'
+HTTPie Type Error: Can't perform 'key' based access on 'array' which has a type of 'array' but this operation requires a type of 'object'.
+array[key]
+     ^^^^^
+```
+
+Type Safety does not apply to value overrides, for example:
+
+```bash
+$ http --offline --print=B pie.dev/post \
+  user[name]:=411     # Defined as an integer
+  user[name]=string   # Overridden with a string
+```
+
+```json
+{
+    "user": {
+        "name": "string"
+    }
+}
+```
+
+### Raw JSON
+
+Please note that on some very complex JSON structures, manually building the JSON object right from the terminal
+might be more complicated compared to typing it on a file and directly sending it through HTTPie. Depending on your
+use case, some of the following examples can help:
 
 ```bash
 $ echo -n '{"hello": "world"}' | http POST pie.dev/post
