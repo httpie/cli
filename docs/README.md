@@ -441,7 +441,7 @@ There are no restrictions regarding which request methods can include a body. Yo
 $ http POST pie.dev/post
 ```
 
-You can also make `GET` requests contaning a body:
+You can also make `GET` requests containing a body:
 
 ```bash
 $ http GET pie.dev/get hello=world
@@ -1193,7 +1193,7 @@ GET / HTTP/1.1
 Numbers: one,two
 ```
 
-Also be aware that if the current session contains any headers they will get overwriten
+Also be aware that if the current session contains any headers they will get overwritten
 by individual commands when sending a request instead of being joined together.
 
 ### Limiting response headers
