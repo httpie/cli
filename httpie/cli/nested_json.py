@@ -130,10 +130,22 @@ def tokenize(source: str) -> Iterator[Token]:
     yield from send_buffer()
 
 
+class PathAction(Enum):
+    KEY = auto()
+    INDEX = auto()
+    APPEND = auto()
+
+    # Pseudo action, used by the interpreter
+    SET = auto()
+
+    def to_string(self) -> str:
+        return self.name.lower()
+
+
 class Path:
     def __init__(
         self,
-        kind: str,
+        kind: PathAction,
         accessor: Optional[Union[str, int]] = None,
         tokens: Optional[List[Token]] = None,
         is_root: bool = False,
@@ -144,13 +156,13 @@ class Path:
         self.is_root = is_root
 
     def reconstruct(self) -> str:
-        if self.kind == 'key':
+        if self.kind is PathAction.KEY:
             if self.is_root:
                 return str(self.accessor)
             return '[' + self.accessor + ']'
-        elif self.kind == 'index':
+        elif self.kind is PathAction.INDEX:
             return '[' + str(self.accessor) + ']'
-        elif self.kind == 'append':
+        elif self.kind is PathAction.APPEND:
             return '[]'
         else:
             assert_cant_happen()
@@ -202,7 +214,7 @@ def parse(source: str) -> Iterator[Path]:
         message = f'Expecting {suffix}'
         raise HTTPieSyntaxError(source, token, message)
 
-    root = Path('key', '', is_root=True)
+    root = Path(PathAction.KEY, '', is_root=True)
     if can_advance():
         token = tokens[cursor]
         if token.kind in {TokenKind.TEXT, TokenKind.NUMBER}:
@@ -221,12 +233,12 @@ def parse(source: str) -> Iterator[Path]:
         )
         path_tokens.append(token)
         if token.kind is TokenKind.RIGHT_BRACKET:
-            path = Path('append', tokens=path_tokens)
+            path = Path(PathAction.APPEND, tokens=path_tokens)
         elif token.kind is TokenKind.TEXT:
-            path = Path('key', token.value, tokens=path_tokens)
+            path = Path(PathAction.KEY, token.value, tokens=path_tokens)
             path_tokens.append(expect(TokenKind.RIGHT_BRACKET))
         elif token.kind is TokenKind.NUMBER:
-            path = Path('index', token.value, tokens=path_tokens)
+            path = Path(PathAction.INDEX, token.value, tokens=path_tokens)
             path_tokens.append(expect(TokenKind.RIGHT_BRACKET))
         else:
             assert_cant_happen()
@@ -246,7 +258,7 @@ def interpret(context: Any, key: str, value: Any) -> Any:
     cursor = context
 
     paths = list(parse(key))
-    paths.append(Path('set', value))
+    paths.append(Path(PathAction.SET, value))
 
     def type_check(index: int, path: Path, expected_type: Type[Any]) -> None:
         if not isinstance(cursor, expected_type):
@@ -262,7 +274,7 @@ def interpret(context: Any, key: str, value: Any) -> Any:
             )
             required_type = JSON_TYPE_MAPPING[expected_type]
 
-            message = f"Can't perform {path.kind!r} based access on "
+            message = f"Can't perform {path.kind.to_string()!r} based access on "
             message += repr(
                 ''.join(path.reconstruct() for path in paths[:index])
             )
@@ -275,24 +287,24 @@ def interpret(context: Any, key: str, value: Any) -> Any:
             )
 
     def object_for(kind: str) -> Any:
-        if kind == 'key':
+        if kind is PathAction.KEY:
             return {}
-        elif kind in {'index', 'append'}:
+        elif kind in {PathAction.INDEX, PathAction.APPEND}:
             return []
         else:
             assert_cant_happen()
 
     for index, (path, next_path) in enumerate(zip(paths, paths[1:])):
-        if path.kind == 'key':
+        if path.kind is PathAction.KEY:
             type_check(index, path, dict)
-            if next_path.kind == 'set':
+            if next_path.kind is PathAction.SET:
                 cursor[path.accessor] = next_path.accessor
                 break
 
             cursor = cursor.setdefault(
                 path.accessor, object_for(next_path.kind)
             )
-        elif path.kind == 'index':
+        elif path.kind is PathAction.INDEX:
             type_check(index, path, list)
             if path.accessor < 0:
                 raise HTTPieSyntaxError(
@@ -302,7 +314,7 @@ def interpret(context: Any, key: str, value: Any) -> Any:
                     message_kind='Value',
                 )
             cursor.extend([None] * (path.accessor - len(cursor) + 1))
-            if next_path.kind == 'set':
+            if next_path.kind is PathAction.SET:
                 cursor[path.accessor] = next_path.accessor
                 break
 
@@ -310,9 +322,9 @@ def interpret(context: Any, key: str, value: Any) -> Any:
                 cursor[path.accessor] = object_for(next_path.kind)
 
             cursor = cursor[path.accessor]
-        elif path.kind == 'append':
+        elif path.kind is PathAction.APPEND:
             type_check(index, path, list)
-            if next_path.kind == 'set':
+            if next_path.kind is PathAction.SET:
                 cursor.append(next_path.accessor)
                 break
 
