@@ -3,7 +3,6 @@ import http.client
 import json
 import sys
 from contextlib import contextmanager
-from pathlib import Path
 from typing import Any, Dict, Callable, Iterable
 from urllib.parse import urlparse, urlunparse
 
@@ -12,6 +11,7 @@ import requests
 import urllib3
 from . import __version__
 from .adapters import HTTPieHTTPAdapter
+from .context import Environment
 from .cli.dicts import HTTPHeadersDict
 from .encoding import UTF8
 from .models import RequestsMessage
@@ -34,15 +34,15 @@ DEFAULT_UA = f'HTTPie/{__version__}'
 
 
 def collect_messages(
+    env: Environment,
     args: argparse.Namespace,
-    config_dir: Path,
     request_body_read_callback: Callable[[bytes], None] = None,
 ) -> Iterable[RequestsMessage]:
     httpie_session = None
     httpie_session_headers = None
     if args.session or args.session_read_only:
         httpie_session = get_httpie_session(
-            config_dir=config_dir,
+            config_dir=env.config.directory,
             session_name=args.session or args.session_read_only,
             host=args.headers.get('Host'),
             url=args.url,
@@ -50,6 +50,7 @@ def collect_messages(
         httpie_session_headers = httpie_session.headers
 
     request_kwargs = make_request_kwargs(
+        env,
         args=args,
         base_headers=httpie_session_headers,
         request_body_read_callback=request_body_read_callback
@@ -292,6 +293,7 @@ def json_dict_to_request_body(data: Dict[str, Any]) -> str:
 
 
 def make_request_kwargs(
+    env: Environment,
     args: argparse.Namespace,
     base_headers: HTTPHeadersDict = None,
     request_body_read_callback=lambda chunk: chunk
@@ -330,6 +332,7 @@ def make_request_kwargs(
         'url': args.url,
         'headers': headers,
         'data': prepare_request_body(
+            env,
             data,
             body_read_callback=request_body_read_callback,
             chunked=args.chunked,

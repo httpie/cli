@@ -1,3 +1,5 @@
+import sys
+import os
 import zlib
 import functools
 from typing import Any, Callable, IO, Iterable, Optional, Tuple, Union, TYPE_CHECKING
@@ -9,7 +11,9 @@ from requests.utils import super_len
 if TYPE_CHECKING:
     from requests_toolbelt import MultipartEncoder
 
+from .context import Environment
 from .cli.dicts import MultipartRequestDataDict, RequestDataDict
+from .compat import is_windows
 
 
 class ChunkedStream:
@@ -64,13 +68,58 @@ def _wrap_function_with_callback(
     return wrapped
 
 
+def is_stdin(file: IO) -> bool:
+    try:
+        file_no = file.fileno()
+    except Exception:
+        return False
+    else:
+        return file_no == sys.stdin.fileno()
+
+
+READ_THRESHOLD = float(os.getenv("HTTPIE_STDIN_READ_WARN_THRESHOLD", 10.0))
+
+
+def observe_stdin_for_data_thread(env: Environment, file: IO) -> None:
+    # Windows unfortunately does not support select() operation
+    # on regular files, like stdin in our use case.
+    # https://docs.python.org/3/library/select.html#select.select
+    if is_windows:
+        return None
+
+    # If the user configures READ_THRESHOLD to be 0, then
+    # disable this warning.
+    if READ_THRESHOLD == 0:
+        return None
+
+    import select
+    import threading
+
+    def worker():
+        can_read, _, _ = select.select([file], [], [], READ_THRESHOLD)
+        if not can_read:
+            env.stderr.write(
+                f'> warning: no stdin data read in {READ_THRESHOLD}s '
+                f'(perhaps you want to --ignore-stdin)\n'
+                f'> See: https://httpie.io/docs/cli/best-practices\n'
+            )
+
+    thread = threading.Thread(
+        target=worker
+    )
+    thread.start()
+
+
 def _prepare_file_for_upload(
+    env: Environment,
     file: Union[IO, 'MultipartEncoder'],
     callback: CallbackT,
     chunked: bool = False,
     content_length_header_value: Optional[int] = None,
 ) -> Union[bytes, IO, ChunkedStream]:
     if not super_len(file):
+        if is_stdin(file):
+            observe_stdin_for_data_thread(env, file)
         # Zero-length -> assume stdin.
         if content_length_header_value is None and not chunked:
             # Read the whole stdin to determine `Content-Length`.
@@ -103,6 +152,7 @@ def _prepare_file_for_upload(
 
 
 def prepare_request_body(
+    env: Environment,
     raw_body: Union[str, bytes, IO, 'MultipartEncoder', RequestDataDict],
     body_read_callback: CallbackT,
     offline: bool = False,
@@ -125,6 +175,7 @@ def prepare_request_body(
 
     if is_file_like:
         return _prepare_file_for_upload(
+            env,
             body,
             chunked=chunked,
             callback=body_read_callback,
