@@ -14,7 +14,6 @@ docs-structure:
   macOS:
     - brew-mac
     - port
-    - spack-mac
   Windows:
     - chocolatey
   Linux:
@@ -23,29 +22,11 @@ docs-structure:
     - apt
     - dnf
     - yum
-    - apk
-    - emerge
     - pacman
-    - xbps-install
-    - spack-linux
   FreeBSD:
     - pkg
 
 tools:
-  apk:
-    title: Alpine Linux
-    name: apk
-    links:
-      homepage: https://wiki.alpinelinux.org/wiki/Alpine_Linux_package_management
-      package: https://pkgs.alpinelinux.org/package/edge/community/x86/httpie
-    commands:
-      install:
-        - apk update
-        - apk add httpie
-      upgrade:
-        - apk update
-        - apk add --upgrade httpie
-
   apt:
     title: Debian and Ubuntu
     note: Also works for other Debian-derived distributions like MX Linux, Linux Mint, deepin, Pop!_OS, KDE neon, Zorin OS, elementary OS, Kubuntu, Devuan, Linux Lite, Peppermint OS, Lubuntu, antiX, Xubuntu, etc.
@@ -116,20 +97,6 @@ tools:
       upgrade:
         - dnf upgrade httpie
 
-  emerge:
-    title: Gentoo
-    name: Portage
-    links:
-      homepage: https://wiki.gentoo.org/wiki/Portage
-      package: https://packages.gentoo.org/packages/net-misc/httpie
-    commands:
-      install:
-        - emerge --sync
-        - emerge httpie
-      upgrade:
-        - emerge --sync
-        - emerge --update httpie
-
   pacman:
     title: Arch Linux
     name: pacman
@@ -198,43 +165,6 @@ tools:
         - snap install httpie
       upgrade:
         - snap refresh httpie
-
-  spack-linux:
-    title: Spack (Linux)
-    name: Spack
-    links:
-      homepage: https://spack.readthedocs.io/en/latest/index.html
-      setup: https://spack.readthedocs.io/en/latest/getting_started.html#installation
-    commands:
-      install:
-        - spack install httpie
-      upgrade:
-        - spack install httpie
-
-  spack-mac:
-    title: Spack (macOS)
-    name: Spack
-    links:
-      homepage: https://spack.readthedocs.io/en/latest/index.html
-      setup: https://spack.readthedocs.io/en/latest/getting_started.html#installation
-    commands:
-      install:
-        - spack install httpie
-      upgrade:
-        - spack install httpie
-
-  xbps-install:
-    title: Void Linux
-    name: XBPS
-    links:
-      homepage: https://docs.voidlinux.org/xbps/index.html
-    commands:
-      install:
-        - xbps-install -Su
-        - xbps-install -S httpie
-      upgrade:
-        - xbps-install -Su
-        - xbps-install -Su httpie
 
   yum:
     title: CentOS and RHEL
