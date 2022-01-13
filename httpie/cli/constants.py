@@ -125,3 +125,9 @@ class RequestType(enum.Enum):
     FORM = enum.auto()
     MULTIPART = enum.auto()
     JSON = enum.auto()
+
+
+OPEN_BRACKET = '['
+CLOSE_BRACKET = ']'
+BACKSLASH = '\\'
+HIGHLIGHTER = '^'

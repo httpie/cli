@@ -9,6 +9,7 @@ from typing import (
     Type,
     Union,
 )
+from httpie.cli.constants import OPEN_BRACKET, CLOSE_BRACKET, BACKSLASH, HIGHLIGHTER
 
 
 class HTTPieSyntaxError(ValueError):
@@ -30,7 +31,7 @@ class HTTPieSyntaxError(ValueError):
             lines.append(self.source)
             lines.append(
                 ' ' * (self.token.start)
-                + '^' * (self.token.end - self.token.start)
+                + HIGHLIGHTER * (self.token.end - self.token.start)
             )
         return '\n'.join(lines)
 
@@ -49,8 +50,8 @@ class TokenKind(Enum):
             return 'a ' + self.name.lower()
 
 
-OPERATORS = {'[': TokenKind.LEFT_BRACKET, ']': TokenKind.RIGHT_BRACKET}
-SPECIAL_CHARS = OPERATORS.keys() | {'\\'}
+OPERATORS = {OPEN_BRACKET: TokenKind.LEFT_BRACKET, CLOSE_BRACKET: TokenKind.RIGHT_BRACKET}
+SPECIAL_CHARS = OPERATORS.keys() | {BACKSLASH}
 
 
 class Token(NamedTuple):
@@ -65,7 +66,7 @@ def assert_cant_happen() -> NoReturn:
 
 
 def check_escaped_int(value: str) -> str:
-    if not value.startswith('\\'):
+    if not value.startswith(BACKSLASH):
         raise ValueError('Not an escaped int')
 
     try:
@@ -114,7 +115,7 @@ def tokenize(source: str) -> Iterator[Token]:
         if index in OPERATORS:
             yield from send_buffer()
             yield Token(OPERATORS[index], index, cursor, cursor + 1)
-        elif index == '\\' and can_advance():
+        elif index == BACKSLASH and can_advance():
             if source[cursor + 1] in SPECIAL_CHARS:
                 backslashes += 1
             else:
@@ -159,11 +160,11 @@ class Path:
         if self.kind is PathAction.KEY:
             if self.is_root:
                 return str(self.accessor)
-            return '[' + self.accessor + ']'
+            return OPEN_BRACKET + self.accessor + CLOSE_BRACKET
         elif self.kind is PathAction.INDEX:
-            return '[' + str(self.accessor) + ']'
+            return OPEN_BRACKET + str(self.accessor) + CLOSE_BRACKET
         elif self.kind is PathAction.APPEND:
-            return '[]'
+            return OPEN_BRACKET + CLOSE_BRACKET
         else:
             assert_cant_happen()
 
