@@ -108,20 +108,6 @@ $ port selfupdate
 $ port upgrade httpie
 ```
 
-#### Spack (macOS)
-
-To install [Spack](https://spack.readthedocs.io/en/latest/index.html), see [its installation](https://spack.readthedocs.io/en/latest/getting_started.html#installation).
-
-```bash
-# Install httpie
-$ spack install httpie
-```
-
-```bash
-# Upgrade httpie
-$ spack install httpie
-```
-
 ### Windows
 
 #### Chocolatey
@@ -213,34 +199,6 @@ $ yum install httpie
 $ yum upgrade httpie
 ```
 
-#### Alpine Linux
-
-```bash
-# Install httpie
-$ apk update
-$ apk add httpie
-```
-
-```bash
-# Upgrade httpie
-$ apk update
-$ apk add --upgrade httpie
-```
-
-#### Gentoo
-
-```bash
-# Install httpie
-$ emerge --sync
-$ emerge httpie
-```
-
-```bash
-# Upgrade httpie
-$ emerge --sync
-$ emerge --update httpie
-```
-
 #### Arch Linux
 
 Also works for other Arch-derived distributions like ArcoLinux, EndeavourOS, Artix Linux, etc.
@@ -253,34 +211,6 @@ $ pacman -Sy httpie
 ```bash
 # Upgrade httpie
 $ pacman -Syu httpie
-```
-
-#### Void Linux
-
-```bash
-# Install httpie
-$ xbps-install -Su
-$ xbps-install -S httpie
-```
-
-```bash
-# Upgrade httpie
-$ xbps-install -Su
-$ xbps-install -Su httpie
-```
-
-#### Spack (Linux)
-
-To install [Spack](https://spack.readthedocs.io/en/latest/index.html), see [its installation](https://spack.readthedocs.io/en/latest/getting_started.html#installation).
-
-```bash
-# Install httpie
-$ spack install httpie
-```
-
-```bash
-# Upgrade httpie
-$ spack install httpie
 ```
 
 ### FreeBSD
