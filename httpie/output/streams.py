@@ -76,14 +76,11 @@ class BaseStream(metaclass=ABCMeta):
                 yield e.message
 
         if self.output_options.meta:
-            mixed = self.output_options.headers or self.output_options.body
-
-            if mixed:
+            if self.output_options.body:
                 yield b'\n\n'
 
             yield self.get_metadata()
-            if not mixed:
-                yield b'\n'
+            yield b'\n\n'
 
 
 class RawStream(BaseStream):
