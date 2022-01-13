@@ -128,7 +128,7 @@ def test_reading_from_stdin(httpbin, wait):
         # Since there is data, it doesn't matter if there
         # you wait or not.
         if wait:
-            time.sleep(0.75)
+            time.sleep(1)
 
         try:
             _, errs = process_2.communicate(timeout=0.25)
@@ -142,7 +142,7 @@ def test_reading_from_stdin(httpbin, wait):
 def test_stdin_read_warning(httpbin):
     with stdin_processes(httpbin) as (process_1, process_2):
         # Wait before sending any data
-        time.sleep(0.75)
+        time.sleep(1)
         process_1.communicate(timeout=0.1, input=b"bleh\n")
 
         try:
@@ -157,7 +157,7 @@ def test_stdin_read_warning(httpbin):
 def test_stdin_read_warning_with_quiet(httpbin):
     with stdin_processes(httpbin, "-qq") as (process_1, process_2):
         # Wait before sending any data
-        time.sleep(0.75)
+        time.sleep(1)
         process_1.communicate(timeout=0.1, input=b"bleh\n")
 
         try:
