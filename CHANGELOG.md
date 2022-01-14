@@ -23,6 +23,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - Fixed auto addition of XML declaration to every formatted XML response. ([#1156](https://github.com/httpie/httpie/issues/1156))
 - Fixed highlighting when `Content-Type` specifies `charset`. ([#1242](https://github.com/httpie/httpie/issues/1242))
 - Fixed an unexpected crash when `--raw` is used with `--chunked`. ([#1253](https://github.com/httpie/httpie/issues/1253))
+- Changed the default Windows theme from `fruity` to `auto`. ([#1266](https://github.com/httpie/httpie/issues/1266))
 
 ## [2.6.0](https://github.com/httpie/httpie/compare/2.5.0...2.6.0) (2021-10-14)
 
