@@ -598,7 +598,7 @@ Content-Type: application/json
 
 ## JSON
 
-JSON is the *lingua franca* of modern web services and it is also the **implicit content type** HTTPie uses by default.
+JSON is the *lingua franca* of modern web services, and it is also the **implicit content type** HTTPie uses by default.
 
 Simple example:
 
@@ -624,7 +624,7 @@ Host: pie.dev
 If your command includes some data [request items](#request-items), they are serialized as a JSON object by default. HTTPie also automatically sets the following headers, both of which can be overwritten:
 
 |         Header | Value                         |
-| -------------: | ----------------------------- |
+|---------------:|-------------------------------|
 | `Content-Type` | `application/json`            |
 |       `Accept` | `application/json, */*;q=0.5` |
 
@@ -677,15 +677,14 @@ The `:=`/`:=@` syntax is JSON-specific. You can switch your request to `--form` 
 and string, float, and number values will continue to be serialized (as string form values).
 Other JSON types, however, are not allowed with `--form` or `--multipart`.
 
-### Nested JSON fields
+### Nested JSON
 
 In the past (pre-3.0), HTTPie's data operators (`=`/`:=`) allowed you to
 directly create basic JSON objects right from your terminal. Though this
 functionality was limited to only top-level keys.
 
 ```bash
-$ http --offline --print=B pie.dev/post \
-  type=success
+$ http --offline --print=B pie.dev/post type=success
 ```
 
 ```json
@@ -843,11 +842,11 @@ $ http PUT pie.dev/put \
     very[nested][json][3][httpie][power][]=Amaze   # Nested object
 ```
 
-#### Advanced Usage
+#### Advanced usage
 
-##### Escaping Behavior
+##### Escaping behavior
 
-Nested JSON syntax uses the same escaping rules [escaping rules](escaping-rules) as
+Nested JSON syntax uses the same [escaping rules](#escaping-rules) as
 the terminal. There are 3 special characters, and 1 special token that you can escape.
 
 If you want to send a bracket as is, escape it with a backslash (`\`):
@@ -907,7 +906,7 @@ $ http --offline --print=B pie.dev/post \
 }
 ```
 
-##### Guiding Syntax Errors
+##### Guiding syntax errors
 
 If you make a typo or forget to close a bracket, the errors will guide you to fix it. For example:
 
@@ -925,7 +924,7 @@ foo[baz][quux
 
 You can follow to given instruction (adding a `]`) and repair your expression.
 
-##### Type Safety
+##### Type safety
 
 Each container path (e.g `x[y][z]` in `x[y][z][1]`) has a certain type, which gets defined with
 the first usage and can't be changed after that. If you try to do a key-based access to an array or
@@ -959,16 +958,10 @@ $ http --offline --print=B pie.dev/post \
 
 ### Raw JSON
 
-Please note that on some very complex JSON structures, manually building the JSON object right from the terminal
-might be more complicated compared to typing it on a file and directly sending it through HTTPie. Depending on your
-use case, some of the following examples can help:
+For very complex JSON structures, it may be more convenient to [pass it as raw request body](#raw-request-body), for example:
 
 ```bash
 $ echo -n '{"hello": "world"}' | http POST pie.dev/post
-```
-
-```bash
-$ http --raw '{"hello": "world"}' POST pie.dev/post
 ```
 
 ```bash
@@ -1253,7 +1246,7 @@ the [sessions](#sessions) feature.
 The currently supported authentication schemes are Basic and Digest (see [auth plugins](#auth-plugins) for more). There are two flags that control authentication:
 
 |              Flag | Arguments                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| ----------------: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|------------------:|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 |      `--auth, -a` | Pass either a `username:password` pair or a `token` as the argument. If the selected authenticated method requires username/password combination and if you only specify a username (`-a username`), you’ll be prompted for the password before the request is sent. To send an empty password, pass `username:`. The `username:password@hostname` URL syntax is supported as well (but credentials passed via `-a` have higher priority) |
 | `--auth-type, -A` | Specify the auth mechanism. Possible values are `basic`, `digest`, `bearer` or the name of any [auth plugins](#auth-plugins) you have installed. The default value is `basic` so it can often be omitted                                                                                                                                                                                                                                  |
 
@@ -1592,7 +1585,7 @@ The response headers are downloaded always, even if they are not part of the out
 In addition to crafting structured [JSON](#json) and [forms](#forms) requests with the [request items](#request-items) syntax, you can provide a raw request body that will be sent without further processing.
 These two approaches for specifying request data (i.e., structured and raw) cannot be combined.
 
-There’re three methods for passing raw request data: piping via `stdin`,
+There are three methods for passing raw request data: piping via `stdin`,
 `--raw='data'`, and `@/file/path`.
 
 ### Redirected Input
