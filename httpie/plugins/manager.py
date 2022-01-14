@@ -4,9 +4,9 @@ import warnings
 
 from itertools import groupby
 from operator import attrgetter
-from typing import Dict, List, Type, Iterator, TypeVar, Optional, ContextManager
+from typing import Dict, List, Type, Iterator, Optional, ContextManager
 from pathlib import Path
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 
 from ..compat import importlib_metadata, find_entry_points, get_dist_name
 
@@ -32,15 +32,6 @@ def _load_directory(plugins_dir: Path) -> Iterator[None]:
         yield
     finally:
         sys.path.remove(plugins_path)
-
-
-T = TypeVar("T")
-
-
-@contextmanager
-def nullcontext(obj: Optional[T] = None) -> Iterator[Optional[T]]:
-    # A naive replacement of the nullcontext() for 3.6
-    yield obj
 
 
 def enable_plugins(plugins_dir: Optional[Path]) -> ContextManager[None]:

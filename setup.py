@@ -84,7 +84,7 @@ setup(
             'httpie = httpie.manager.__main__:main',
         ],
     },
-    python_requires='>=3.6',
+    python_requires='>=3.7',
     extras_require=extras_require,
     install_requires=install_requires,
     classifiers=[

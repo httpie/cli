@@ -60,7 +60,7 @@ Do not edit here, but in docs/installation/.
 
 #### PyPI
 
-Please make sure you have Python 3.6 or newer (`python --version`).
+Please make sure you have Python 3.7 or newer (`python --version`).
 
 ```bash
 # Install httpie

@@ -140,7 +140,7 @@ tools:
   pypi:
     title: PyPI
     name: pip
-    note: Please make sure you have Python 3.6 or newer (`python --version`).
+    note: Please make sure you have Python 3.7 or newer (`python --version`).
     links:
       homepage: https://pypi.org/
       # setup: https://pip.pypa.io/en/stable/installation/
