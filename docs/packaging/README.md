@@ -12,11 +12,11 @@ You are looking at the HTTPie packaging documentation, where you will find valua
 
 The overall release process starts simple:
 
-1. Do the [PyPi](https://pypi.org/project/httpie/) publication.
+1. Do the [PyPI](https://pypi.org/project/httpie/) publication.
 2. Then, handle company-related tasks.
 3. Finally, follow OS-specific steps, described in documents below, to send patches downstream.
 
-## First, PyPi
+## First, PyPI
 
 Let's do the release on [PyPi](https://pypi.org/project/httpie/).
 That is done quite easily by manually triggering the [release workflow](https://github.com/httpie/httpie/actions/workflows/release.yml).
