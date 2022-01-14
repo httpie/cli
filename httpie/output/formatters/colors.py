@@ -18,7 +18,6 @@ from pygments.util import ClassNotFound
 from ..lexers.json import EnhancedJsonLexer
 from ..lexers.metadata import MetadataLexer
 from ..ui.palette import SHADE_NAMES, get_color
-from ...compat import is_windows
 from ...context import Environment
 from ...plugins import FormatterPlugin
 
@@ -26,11 +25,6 @@ from ...plugins import FormatterPlugin
 AUTO_STYLE = 'auto'  # Follows terminal ANSI color styles
 DEFAULT_STYLE = AUTO_STYLE
 SOLARIZED_STYLE = 'solarized'  # Bundled here
-
-if is_windows:
-    # Colors on Windows via colorama don't look that
-    # great and fruity seems to give the best result there.
-    DEFAULT_STYLE = 'fruity'
 
 BUNDLED_STYLES = {
     SOLARIZED_STYLE,

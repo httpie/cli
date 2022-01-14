@@ -6,7 +6,6 @@ import responses
 from httpie.cli.constants import PRETTY_MAP
 from httpie.cli.exceptions import ParseError
 from httpie.cli.nested_json import HTTPieSyntaxError
-from httpie.compat import is_windows
 from httpie.output.formatters.colors import ColorFormatter
 from httpie.utils import JsonDictPreservingDuplicateKeys
 
@@ -39,7 +38,7 @@ TEST_JSON_VALUES = [
     False,
     None,
 ]
-TEST_PREFIX_TOKEN_COLOR = '\x1b[38;5;15m' if is_windows else '\x1b[04m\x1b[91m'
+TEST_PREFIX_TOKEN_COLOR = '\x1b[04m\x1b[91m'
 
 JSON_WITH_DUPES_RAW = '{"key": 15, "key": 15, "key": 3, "key": 7}'
 JSON_WITH_DUPES_FORMATTED_SORTED = """{
