@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [3.0.0.dev0](https://github.com/httpie/httpie/compare/2.6.0...master) (unreleased)
 
+- Drop support for Python 3.6. ([#1177](https://github.com/httpie/httpie/issues/1177))
 - Improved startup time by 40%. ([#1211](https://github.com/httpie/httpie/pull/1211))
 - Added support for nested JSON syntax. ([#1169](https://github.com/httpie/httpie/issues/1169))
 - Added `httpie plugins` interface for plugin management. ([#566](https://github.com/httpie/httpie/issues/566))

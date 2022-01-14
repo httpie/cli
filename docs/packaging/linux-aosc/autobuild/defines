@@ -1,8 +1,0 @@
-PKGNAME=httpie
-PKGSEC=utils
-PKGDEP="charset-normalizer defusedxml requests toolbelt pygments pysocks"
-PKGDES="Modern, user-friendly command-line HTTP client for the API era"
-
-ABHOST=noarch
-ABTYPE=python
-NOPYTHON2=1

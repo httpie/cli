@@ -1,5 +1,0 @@
-VER=2.5.0
-SRCS="tbl::https://github.com/httpie/httpie/archive/$VER.tar.gz"
-CHKSUMS="sha256::66af56e0efc1ca6237323f1186ba34bca1be24e67a4319fd5df7228ab986faea"
-REL=1
-CHKUPDATE="anitya::id=1337"
