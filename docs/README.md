@@ -679,129 +679,104 @@ Other JSON types, however, are not allowed with `--form` or `--multipart`.
 
 ### Nested JSON
 
-In the past (pre-3.0), HTTPie's data operators (`=`/`:=`) allowed you to
-directly create basic JSON objects right from your terminal. Though this
-functionality was limited to only top-level keys.
-
-```bash
-$ http --offline --print=B pie.dev/post type=success
-```
-
-```json
-{
-    "type": "success"
-}
-```
-
-For embedding more complex JSON objects, you needed to use the `:=` operator.
-
-```bash
-$ http --offline --print=B pie.dev/post \
-  type=success \
-  'product:={"name":"something", "price":10}'
-```
-
-```json
-{
-    "product": {
-        "name": "something",
-        "price": 10
-    },
-    "type": "success"
-}
-```
-
-Starting with 3.0, we have created a mini language in HTTPie's own syntax to
-build complex JSON objects with ease. This syntax was inspired by the [JSON form](https://www.w3.org/TR/html-json-forms/)
-proposal for HTML, though we have changed a lot of parts to offer the best experience.
+If your use case involves sending complex JSON objects as part of the request body,
+HTTPie can help you build them right from your terminal. You still use the existing
+data field operators (`=`/`:=`) but instead of specifying a top-level field name (like `key=value`), you specify a path declaration. This tells HTTPie where and how to put the given value inside of an object.
 
 #### Introduction
 
-Let's start with a simple introduction, and build the JSON object we have seen in the example
-above:
+Let's start with a simple example, and build a simple search query:
 
 ```bash
 $ http --offline --print=B pie.dev/post \
-  type=success \
-  product[name]=something \
-  product[price]:=10
+  category=tools \
+  search[type]=id \
+  search[id]:=1
 ```
 
-With the new syntax, you can designate the path for the value. For example `product[name]` means
-create a new object under the `product` key, and set the `name` field of that object to the given
-value.
+In the example above, the `search[type]` is an instruction for creating an object called `search`, and setting the `type` field of it to the given value (`"id"`).
+
+Also note that, just as the regular syntax, you can use the `:=` operator to directly pass raw JSON values (e.g numbers in the case above).
 
 ```json
 {
-    "product": {
-        "name": "something",
-        "price": 10
-    },
-    "type": "success"
-}
-```
-
-You can also build arrays, through `[]` suffix. Which means create a list, and append the value
-to that list:
-
-```bash
-$ http --offline --print=B pie.dev/post \
-  search[keywords][]=soda \
-  search[keywords][]=fries
-```
-
-```json
-{
+    "category": "tools",
     "search": {
-        "keywords": [
-            "soda",
-            "fries"
-        ]
+        "id": 1,
+        "type": "id"
     }
 }
 ```
 
-If you want to specify the direct index, that is also supported:
+Building arrays is also possible, through `[]` suffix (an append operation). This tells HTTPie to create an array in the given path (if there is not one already), and append the given value to that array.
 
 ```bash
 $ http --offline --print=B pie.dev/post \
-  search[keywords][0]=soda \
-  search[keywords][1]=fries
+  category=tools \
+  search[type]=keyword \
+  search[keywords][]=APIs \
+  search[keywords][]=CLI
 ```
 
 ```json
 {
+    "category": "tools",
     "search": {
         "keywords": [
-            "soda",
-            "fries"
-        ]
+            "APIs",
+            "CLI"
+        ],
+        "type": "keyword"
     }
 }
 ```
 
-You can also create 'sparse arrays' (arrays where you set 2 non-consecutive indexes), which
-the missing values gets nullified:
+If you want to explicitly specify the position of elements inside an array,
+you can simply pass the desired index as the path:
 
 ```bash
 $ http --offline --print=B pie.dev/post \
-  search[keywords][2]=soda \
-  search[keywords][5]=fries \
-  search[keywords][]=fish
+  category=tools \
+  search[type]=keyword \
+  search[keywords][1]=APIs \
+  search[keywords][2]=CLI
 ```
 
 ```json
 {
+    "category": "tools",
     "search": {
         "keywords": [
+            "CLIs",
+            "API"
+        ],
+        "type": "keyword"
+    }
+}
+```
+
+If there are any missing indexes, HTTPie will nullify them in order to create a concrete object that can be sent:
+
+```bash
+$ http --offline --print=B pie.dev/post \
+  category=tools \
+  search[type]=platforms \
+  search[platforms][]=Terminal \
+  search[platforms][1]=Desktop \
+  search[platforms][3]=Mobile
+```
+
+```json
+{
+    "category": "tools",
+    "search": {
+        "platforms": [
+            "Terminal",
+            "Desktop",
             null,
-            null,
-            "soda",
-            null,
-            null,
-            "fries",
-            "fish"
-        ]
+            "Mobile"
+        ],
+        "type": "platforms"
     }
 }
 ```
@@ -810,27 +785,29 @@ It is also possible to embed raw JSON to a nested structure, for example:
 
 ```bash
 $ http --offline --print=B pie.dev/post \
-  invitation[type]=meetup \
-  'invitation[dates]:=[2021, 2022, 2023, 2024]' \
-  invitation[dates][]:=2025
+  category=tools \
+  search[type]=platforms \
+  'search[platforms]:=["Terminal", "Desktop"]' \
+  search[platforms][]=Web \
+  search[platforms][]=Mobile
 ```
 
 ```json
 {
-    "invitation": {
-        "dates": [
-            2021,
-            2022,
-            2023,
-            2024,
-            2025
+    "category": "tools",
+    "search": {
+        "platforms": [
+            "Terminal",
+            "Desktop",
+            "Web",
+            "Mobile"
         ],
-        "type": "meetup"
+        "type": "platforms"
     }
 }
 ```
 
-And for the last, let's create a very deeply nested JSON object:
+And just to demonstrate all of these features together, let's create a very deeply nested JSON object:
 
 ```bash
 $ http PUT pie.dev/put \
