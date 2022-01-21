@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [3.0.0.dev0](https://github.com/httpie/httpie/compare/2.6.0...master) (unreleased)
 
-- Drop support for Python 3.6. ([#1177](https://github.com/httpie/httpie/issues/1177))
+- Dropped support for Python 3.6. ([#1177](https://github.com/httpie/httpie/issues/1177))
 - Improved startup time by 40%. ([#1211](https://github.com/httpie/httpie/pull/1211))
 - Added support for nested JSON syntax. ([#1169](https://github.com/httpie/httpie/issues/1169))
 - Added `httpie plugins` interface for plugin management. ([#566](https://github.com/httpie/httpie/issues/566))
@@ -15,12 +15,12 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - Added support for _receiving_ multiple HTTP headers lines with the same name. ([#1207](https://github.com/httpie/httpie/issues/1207))
 - Added support for basic JSON types on `--form`/`--multipart` when using JSON only operators (`:=`/`:=@`). ([#1212](https://github.com/httpie/httpie/issues/1212))
 - Added support for automatically enabling `--stream` when `Content-Type` is `text/event-stream`. ([#376](https://github.com/httpie/httpie/issues/376))
-- Added support for displaying the total elapsed time throguh `--meta`/`-vv` or `--print=m`. ([#243](https://github.com/httpie/httpie/issues/243))
+- Added support for displaying the total elapsed time through `--meta`/`-vv` or `--print=m`. ([#243](https://github.com/httpie/httpie/issues/243))
 - Added new `pie-dark`/`pie-light` (and `pie`) styles that match with [HTTPie for Web and Desktop](https://httpie.io/product). ([#1237](https://github.com/httpie/httpie/issues/1237))
 - Added support for better error handling on DNS failures. ([#1248](https://github.com/httpie/httpie/issues/1248))
 - Added support for storing prompted passwords in the local sessions. ([#1098](https://github.com/httpie/httpie/issues/1098))
 - Added warnings about the `--ignore-stdin`, when there is no incoming data from stdin. ([#1255](https://github.com/httpie/httpie/issues/1255))
-- Broken plugins will no longer crash the whole application. ([#1204](https://github.com/httpie/httpie/issues/1204))
+- Fixed crashing due to broken plugins. ([#1204](https://github.com/httpie/httpie/issues/1204))
 - Fixed auto addition of XML declaration to every formatted XML response. ([#1156](https://github.com/httpie/httpie/issues/1156))
 - Fixed highlighting when `Content-Type` specifies `charset`. ([#1242](https://github.com/httpie/httpie/issues/1242))
 - Fixed an unexpected crash when `--raw` is used with `--chunked`. ([#1253](https://github.com/httpie/httpie/issues/1253))

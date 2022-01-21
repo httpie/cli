@@ -598,7 +598,7 @@ Content-Type: application/json
 
 ## JSON
 
-JSON is the *lingua franca* of modern web services and it is also the **implicit content type** HTTPie uses by default.
+JSON is the *lingua franca* of modern web services, and it is also the **implicit content type** HTTPie uses by default.
 
 Simple example:
 
@@ -624,7 +624,7 @@ Host: pie.dev
 If your command includes some data [request items](#request-items), they are serialized as a JSON object by default. HTTPie also automatically sets the following headers, both of which can be overwritten:
 
 |         Header | Value                         |
-| -------------: | ----------------------------- |
+|---------------:|-------------------------------|
 | `Content-Type` | `application/json`            |
 |       `Accept` | `application/json, */*;q=0.5` |
 
@@ -677,132 +677,106 @@ The `:=`/`:=@` syntax is JSON-specific. You can switch your request to `--form` 
 and string, float, and number values will continue to be serialized (as string form values).
 Other JSON types, however, are not allowed with `--form` or `--multipart`.
 
-### Nested JSON fields
+### Nested JSON
 
-In the past (pre-3.0), HTTPie's data operators (`=`/`:=`) allowed you to
-directly create basic JSON objects right from your terminal. Though this
-functionality was limited to only top-level keys.
-
-```bash
-$ http --offline --print=B pie.dev/post \
-  type=success
-```
-
-```json
-{
-    "type": "success"
-}
-```
-
-For embedding more complex JSON objects, you needed to use the `:=` operator.
-
-```bash
-$ http --offline --print=B pie.dev/post \
-  type=success \
-  'product:={"name":"something", "price":10}'
-```
-
-```json
-{
-    "product": {
-        "name": "something",
-        "price": 10
-    },
-    "type": "success"
-}
-```
-
-Starting with 3.0, we have created a mini language in HTTPie's own syntax to
-build complex JSON objects with ease. This syntax was inspired by the [JSON form](https://www.w3.org/TR/html-json-forms/)
-proposal for HTML, though we have changed a lot of parts to offer the best experience.
+If your use case involves sending complex JSON objects as part of the request body,
+HTTPie can help you build them right from your terminal. You still use the existing
+data field operators (`=`/`:=`) but instead of specifying a top-level field name (like `key=value`), you specify a path declaration. This tells HTTPie where and how to put the given value inside of an object.
 
 #### Introduction
 
-Let's start with a simple introduction, and build the JSON object we have seen in the example
-above:
+Let's start with a simple example, and build a simple search query:
 
 ```bash
 $ http --offline --print=B pie.dev/post \
-  type=success \
-  product[name]=something \
-  product[price]:=10
+  category=tools \
+  search[type]=id \
+  search[id]:=1
 ```
 
-With the new syntax, you can designate the path for the value. For example `product[name]` means
-create a new object under the `product` key, and set the `name` field of that object to the given
-value.
+In the example above, the `search[type]` is an instruction for creating an object called `search`, and setting the `type` field of it to the given value (`"id"`).
+
+Also note that, just as the regular syntax, you can use the `:=` operator to directly pass raw JSON values (e.g numbers in the case above).
 
 ```json
 {
-    "product": {
-        "name": "something",
-        "price": 10
-    },
-    "type": "success"
-}
-```
-
-You can also build arrays, through `[]` suffix. Which means create a list, and append the value
-to that list:
-
-```bash
-$ http --offline --print=B pie.dev/post \
-  search[keywords][]=soda \
-  search[keywords][]=fries
-```
-
-```json
-{
+    "category": "tools",
     "search": {
-        "keywords": [
-            "soda",
-            "fries"
-        ]
+        "id": 1,
+        "type": "id"
     }
 }
 ```
 
-If you want to specify the direct index, that is also supported:
+Building arrays is also possible, through `[]` suffix (an append operation). This tells HTTPie to create an array in the given path (if there is not one already), and append the given value to that array.
 
 ```bash
 $ http --offline --print=B pie.dev/post \
-  search[keywords][0]=soda \
-  search[keywords][1]=fries
+  category=tools \
+  search[type]=keyword \
+  search[keywords][]=APIs \
+  search[keywords][]=CLI
 ```
 
 ```json
 {
+    "category": "tools",
     "search": {
         "keywords": [
-            "soda",
-            "fries"
-        ]
+            "APIs",
+            "CLI"
+        ],
+        "type": "keyword"
     }
 }
 ```
 
-You can also create 'sparse arrays' (arrays where you set 2 non-consecutive indexes), which
-the missing values gets nullified:
+If you want to explicitly specify the position of elements inside an array,
+you can simply pass the desired index as the path:
 
 ```bash
 $ http --offline --print=B pie.dev/post \
-  search[keywords][2]=soda \
-  search[keywords][5]=fries \
-  search[keywords][]=fish
+  category=tools \
+  search[type]=keyword \
+  search[keywords][1]=APIs \
+  search[keywords][2]=CLI
 ```
 
 ```json
 {
+    "category": "tools",
     "search": {
         "keywords": [
+            "CLIs",
+            "API"
+        ],
+        "type": "keyword"
+    }
+}
+```
+
+If there are any missing indexes, HTTPie will nullify them in order to create a concrete object that can be sent:
+
+```bash
+$ http --offline --print=B pie.dev/post \
+  category=tools \
+  search[type]=platforms \
+  search[platforms][]=Terminal \
+  search[platforms][1]=Desktop \
+  search[platforms][3]=Mobile
+```
+
+```json
+{
+    "category": "tools",
+    "search": {
+        "platforms": [
+            "Terminal",
+            "Desktop",
             null,
-            null,
-            "soda",
-            null,
-            null,
-            "fries",
-            "fish"
-        ]
+            "Mobile"
+        ],
+        "type": "platforms"
     }
 }
 ```
@@ -811,27 +785,29 @@ It is also possible to embed raw JSON to a nested structure, for example:
 
 ```bash
 $ http --offline --print=B pie.dev/post \
-  invitation[type]=meetup \
-  'invitation[dates]:=[2021, 2022, 2023, 2024]' \
-  invitation[dates][]:=2025
+  category=tools \
+  search[type]=platforms \
+  'search[platforms]:=["Terminal", "Desktop"]' \
+  search[platforms][]=Web \
+  search[platforms][]=Mobile
 ```
 
 ```json
 {
-    "invitation": {
-        "dates": [
-            2021,
-            2022,
-            2023,
-            2024,
-            2025
+    "category": "tools",
+    "search": {
+        "platforms": [
+            "Terminal",
+            "Desktop",
+            "Web",
+            "Mobile"
         ],
-        "type": "meetup"
+        "type": "platforms"
     }
 }
 ```
 
-And for the last, let's create a very deeply nested JSON object:
+And just to demonstrate all of these features together, let's create a very deeply nested JSON object:
 
 ```bash
 $ http PUT pie.dev/put \
@@ -843,11 +819,11 @@ $ http PUT pie.dev/put \
     very[nested][json][3][httpie][power][]=Amaze   # Nested object
 ```
 
-#### Advanced Usage
+#### Advanced usage
 
-##### Escaping Behavior
+##### Escaping behavior
 
-Nested JSON syntax uses the same escaping rules [escaping rules](escaping-rules) as
+Nested JSON syntax uses the same [escaping rules](#escaping-rules) as
 the terminal. There are 3 special characters, and 1 special token that you can escape.
 
 If you want to send a bracket as is, escape it with a backslash (`\`):
@@ -907,7 +883,7 @@ $ http --offline --print=B pie.dev/post \
 }
 ```
 
-##### Guiding Syntax Errors
+##### Guiding syntax errors
 
 If you make a typo or forget to close a bracket, the errors will guide you to fix it. For example:
 
@@ -925,7 +901,7 @@ foo[baz][quux
 
 You can follow to given instruction (adding a `]`) and repair your expression.
 
-##### Type Safety
+##### Type safety
 
 Each container path (e.g `x[y][z]` in `x[y][z][1]`) has a certain type, which gets defined with
 the first usage and can't be changed after that. If you try to do a key-based access to an array or
@@ -959,16 +935,10 @@ $ http --offline --print=B pie.dev/post \
 
 ### Raw JSON
 
-Please note that on some very complex JSON structures, manually building the JSON object right from the terminal
-might be more complicated compared to typing it on a file and directly sending it through HTTPie. Depending on your
-use case, some of the following examples can help:
+For very complex JSON structures, it may be more convenient to [pass it as raw request body](#raw-request-body), for example:
 
 ```bash
 $ echo -n '{"hello": "world"}' | http POST pie.dev/post
-```
-
-```bash
-$ http --raw '{"hello": "world"}' POST pie.dev/post
 ```
 
 ```bash
@@ -1253,7 +1223,7 @@ the [sessions](#sessions) feature.
 The currently supported authentication schemes are Basic and Digest (see [auth plugins](#auth-plugins) for more). There are two flags that control authentication:
 
 |              Flag | Arguments                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| ----------------: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|------------------:|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 |      `--auth, -a` | Pass either a `username:password` pair or a `token` as the argument. If the selected authenticated method requires username/password combination and if you only specify a username (`-a username`), you’ll be prompted for the password before the request is sent. To send an empty password, pass `username:`. The `username:password@hostname` URL syntax is supported as well (but credentials passed via `-a` have higher priority) |
 | `--auth-type, -A` | Specify the auth mechanism. Possible values are `basic`, `digest`, `bearer` or the name of any [auth plugins](#auth-plugins) you have installed. The default value is `basic` so it can often be omitted                                                                                                                                                                                                                                  |
 
@@ -1592,7 +1562,7 @@ The response headers are downloaded always, even if they are not part of the out
 In addition to crafting structured [JSON](#json) and [forms](#forms) requests with the [request items](#request-items) syntax, you can provide a raw request body that will be sent without further processing.
 These two approaches for specifying request data (i.e., structured and raw) cannot be combined.
 
-There’re three methods for passing raw request data: piping via `stdin`,
+There are three methods for passing raw request data: piping via `stdin`,
 `--raw='data'`, and `@/file/path`.
 
 ### Redirected Input
