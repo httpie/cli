@@ -206,7 +206,8 @@ brew-test:
 	- brew install --build-from-source ./docs/packaging/brew/httpie.rb
 
 	@echo $(H1)Verifying…$(H1END)
-	brew test httpie
+	http --version
+	https --version
 
 	@echo $(H1)Auditing…$(H1END)
 	brew audit --strict httpie
