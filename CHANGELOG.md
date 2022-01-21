@@ -3,7 +3,7 @@
 This document records all notable changes to [HTTPie](https://httpie.io).
 This project adheres to [Semantic Versioning](https://semver.org/).
 
-## [3.0.0.dev0](https://github.com/httpie/httpie/compare/2.6.0...master) (unreleased)
+## [3.0.0](https://github.com/httpie/httpie/compare/2.6.0...3.0.0) (2022-01-21)
 
 - Dropped support for Python 3.6. ([#1177](https://github.com/httpie/httpie/issues/1177))
 - Improved startup time by 40%. ([#1211](https://github.com/httpie/httpie/pull/1211))

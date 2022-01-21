@@ -260,7 +260,7 @@ Verify that now you have the [current development version identifier](https://gi
 
 ```bash
 $ http --version
-# 2.7.0.dev0
+# 3.0.0
 ```
 
 ## Usage
