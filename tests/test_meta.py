@@ -12,6 +12,6 @@ def test_meta_elapsed_time(httpbin):
 
 @pytest.mark.parametrize('style', ['auto', 'fruity', *PIE_STYLE_NAMES])
 def test_meta_elapsed_time_colors(httpbin, style):
-    r = http('--style', style, '-vv', httpbin + '/get', env=MockEnvironment(colors=256))
+    r = http('--style', style, '--meta', httpbin + '/get', env=MockEnvironment(colors=256))
     assert COLOR in r
     assert ELAPSED_TIME_LABEL in r
