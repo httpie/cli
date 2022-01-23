@@ -100,7 +100,7 @@ class HTTPResponse(HTTPMessage):
         data = {}
         time_to_parse_headers = self._orig.elapsed.total_seconds()
         # noinspection PyProtectedMember
-        time_since_headers_parsed = monotonic() - self._orig._headers_parsed_at
+        time_since_headers_parsed = monotonic() - self._orig._httpie_headers_parsed_at
         time_elapsed = time_to_parse_headers + time_since_headers_parsed
         # data['Headers time'] = str(round(time_to_parse_headers, 5)) + 's'
         # data['Body time'] = str(round(time_since_headers_parsed, 5)) + 's'

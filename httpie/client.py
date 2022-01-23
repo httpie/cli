@@ -109,7 +109,7 @@ def collect_messages(
                     **send_kwargs_merged,
                     **send_kwargs,
                 )
-            response._headers_parsed_at = monotonic()
+            response._httpie_headers_parsed_at = monotonic()
             expired_cookies += get_expired_cookies(
                 response.headers.get('Set-Cookie', '')
             )
