@@ -1247,11 +1247,17 @@ https -A bearer -a token pie.dev/bearer
 
 ### Password prompt
 
+If you omit the password part of `--auth, -a`, HTTPie securely prompts you for it:
+
 ```bash
 $ http -a username pie.dev/basic-auth/username/password
 ```
 
+Please note that when you use [`--session`](#sessions), prompted passwords are persisted in sessions files .
+
 ### Empty password
+
+To send an empty password without being prompted for it, include a trailing colon in the credentials:
 
 ```bash
 $ http -a username: pie.dev/headers
