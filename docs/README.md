@@ -1300,6 +1300,8 @@ Here are a few picks:
 - [httpie-oauth](https://github.com/httpie/httpie-oauth): OAuth
 - [requests-hawk](https://github.com/mozilla-services/requests-hawk): Hawk
 
+See [plugin manager](#plugin-manager) for more details.
+
 ## HTTP redirects
 
 By default, HTTP redirects are not followed and only the first
@@ -2159,7 +2161,7 @@ However, it is not recommended modifying the default behavior in a way that woul
 #### `plugins_dir`
 
 The directory where the plugins will be installed. HTTPie needs to have read/write access on that directory, since
-`httpie plugins install` will download new plugins to there.
+`httpie plugins install` will download new plugins to there. See [plugin manager](#plugin-manager) for more information.
 
 ### Un-setting previously specified options
 
@@ -2200,9 +2202,10 @@ And since there’s neither data nor `EOF`, it will get stuck. So unless you’r
 
 Also, it might be good to set a connection `--timeout` limit to prevent your program from hanging if the server never responds.
 
-## Plugins Manager
+## Plugin manager
 
-HTTPie offers extensibility through plugins, and there are over 50+ of them available to try!
+HTTPie offers extensibility through a [plugin API](https://github.com/httpie/httpie/blob/master/httpie/plugins/base.py),
+and there are dozens of plugins available to try!
 They add things like new authentication methods ([akamai/httpie-edgegrid](https://github.com/akamai/httpie-edgegrid)),
 transport mechanisms ([httpie/httpie-unixsocket](https://github.com/httpie/httpie-unixsocket)),
 message convertors ([banteg/httpie-image](https://github.com/banteg/httpie-image)), or simply
