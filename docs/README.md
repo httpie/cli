@@ -538,7 +538,7 @@ and URL parameters. This is a very practical way of constructing
 HTTP requests from scratch on the CLI.
 
 Each *request item* is simply a key/value pair separated with the following
-characters: `:` (headers), `=` (data field, e.g JSON, Form), `:=` (raw data field)
+characters: `:` (headers), `=` (data field, e.g., JSON, form), `:=` (raw data field)
 `==` (query parameters), `@` (file upload).
 
 ```bash
@@ -550,9 +550,9 @@ $ http PUT pie.dev/put \
 ```
 
 |                                                    Item Type | Description                                                                                                                                                                                                            |
-| -----------------------------------------------------------: | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|-------------------------------------------------------------:|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 |                                    HTTP Headers `Name:Value` | Arbitrary HTTP header, e.g. `X-API-Token:123`                                                                                                                                                                          |
-|                                 URL parameters `name==value` | Appends the given name/value pair as a querystring parameter to the URL. The `==` separator is used.                                                                                                                  |
+|                                 URL parameters `name==value` | Appends the given name/value pair as a querystring parameter to the URL. The `==` separator is used.                                                                                                                   |
 |                                    Data Fields `field=value` | Request data fields to be serialized as a JSON object (default), to be form-encoded (with `--form, -f`), or to be serialized as `multipart/form-data` (with `--multipart`)                                             |
 |                                Raw JSON fields `field:=json` | Useful when sending JSON and one or more fields need to be a `Boolean`, `Number`, nested `Object`, or an `Array`, e.g., `meals:='["ham","spam"]'` or `pies:=[1,2,3]` (note the quotes)                                 |
 | File upload fields `field@/dir/file`, `field@file;type=mime` | Only available with `--form`, `-f` and `--multipart`. For example `screenshot@~/Pictures/img.png`, or `'cv@cv.txt;type=text/markdown'`. With `--form`, the presence of a file field results in a `--multipart` request |
@@ -570,7 +570,7 @@ to pass the desired value from a file.
 $ http POST pie.dev/post \
     X-Data:@files/text.txt             # Read a header from a file
     token==@files/text.txt             # Read a query parameter from a file
-    name=@files/text.txt               # Read a data field's value from a file
+    name=@files/text.txt               # Read a data field’s value from a file
     bookmarks:=@files/data.json        # Embed a JSON object from a file
 ```
 
@@ -681,11 +681,11 @@ Other JSON types, however, are not allowed with `--form` or `--multipart`.
 
 If your use case involves sending complex JSON objects as part of the request body,
 HTTPie can help you build them right from your terminal. You still use the existing
-data field operators (`=`/`:=`) but instead of specifying a top-level field name (like `key=value`), you specify a path declaration. This tells HTTPie where and how to put the given value inside of an object.
+data field operators (`=`/`:=`) but instead of specifying a top-level field name (like `key=value`), you specify a path declaration. This tells HTTPie where and how to put the given value inside an object.
 
 #### Introduction
 
-Let's start with a simple example, and build a simple search query:
+Let’s start with a simple example, and build a simple search query:
 
 ```bash
 $ http --offline --print=B pie.dev/post \
@@ -696,7 +696,7 @@ $ http --offline --print=B pie.dev/post \
 
 In the example above, the `search[type]` is an instruction for creating an object called `search`, and setting the `type` field of it to the given value (`"id"`).
 
-Also note that, just as the regular syntax, you can use the `:=` operator to directly pass raw JSON values (e.g numbers in the case above).
+Also note that, just as the regular syntax, you can use the `:=` operator to directly pass raw JSON values (e.g, numbers in the case above).
 
 ```json
 {
@@ -807,7 +807,7 @@ $ http --offline --print=B pie.dev/post \
 }
 ```
 
-And just to demonstrate all of these features together, let's create a very deeply nested JSON object:
+And just to demonstrate all of these features together, let’s create a very deeply nested JSON object:
 
 ```bash
 $ http PUT pie.dev/put \
@@ -845,7 +845,7 @@ $ http --offline --print=B pie.dev/post \
 }
 ```
 
-If you want the send the literal backslash character (`\`), escape it with another backslash:
+If you want to send the literal backslash character (`\`), escape it with another backslash:
 
 ```bash
 $ http --offline --print=B pie.dev/post \
@@ -903,8 +903,8 @@ You can follow to given instruction (adding a `]`) and repair your expression.
 
 ##### Type safety
 
-Each container path (e.g `x[y][z]` in `x[y][z][1]`) has a certain type, which gets defined with
-the first usage and can't be changed after that. If you try to do a key-based access to an array or
+Each container path (e.g., `x[y][z]` in `x[y][z][1]`) has a certain type, which gets defined with
+the first usage and can’t be changed after that. If you try to do a key-based access to an array or
 an index-based access to an object, HTTPie will error out:
 
 ```bash
@@ -1010,7 +1010,7 @@ world
 
 File uploads are always streamed to avoid memory issues with large files.
 
-By default, HTTPie uses a random unique string as the multipart boundary but you can use `--boundary` to specify a custom string instead:
+By default, HTTPie uses a random unique string as the multipart boundary, but you can use `--boundary` to specify a custom string instead:
 
 ```bash
 $ http --form --multipart --boundary=xoxo --offline example.org hello=world
@@ -1104,7 +1104,7 @@ To send a header with an empty value, use `Header;`, with a semicolon:
 $ http pie.dev/headers 'Header;'
 ```
 
-Please note that some internal headers, such as `Content-Length`, can't be unset if
+Please note that some internal headers, such as `Content-Length`, can’t be unset if
 they are automatically added by the client itself.
 
 ### Multiple header values with the same name
@@ -1174,7 +1174,7 @@ $ nc pie.dev 80 < request.http
 
 You can also use the `--offline` mode for debugging and exploring HTTP and HTTPie, and for “dry runs”.
 
-`--offline` has the side-effect of automatically activating `--print=HB`, i.e., both the request headers and the body
+`--offline` has the side effect of automatically activating `--print=HB`, i.e., both the request headers and the body
 are printed. You can customize the output with the usual [output options](#output-options), with the exception where there
 is no response to be printed. You can use `--offline` in combination with all the other options (e.g. `--session`).
 
@@ -1438,15 +1438,15 @@ By default, HTTPie only outputs the final response and the whole response
 message is printed (headers as well as the body). You can control what should
 be printed via several options:
 
-|          Option            | What is printed                                                                                    |
-| -------------------------: | -------------------------------------------------------------------------------------------------- |
-| `--headers, -h`            | Only the response headers are printed                                                              |
-|    `--body, -b`            | Only the response body is printed                                                                  |
-|    `--meta, -m`            | Only the response metadata is printed (various metrics like total elapsed time)                    |
-| `--verbose, -v`            | Print the whole HTTP exchange (request and response). This option also enables `--all` (see below) |
+|                     Option | What is printed                                                                                    |
+|---------------------------:|----------------------------------------------------------------------------------------------------|
+|            `--headers, -h` | Only the response headers are printed                                                              |
+|               `--body, -b` | Only the response body is printed                                                                  |
+|               `--meta, -m` | Only the response metadata is printed (various metrics like total elapsed time)                    |
+|            `--verbose, -v` | Print the whole HTTP exchange (request and response). This option also enables `--all` (see below) |
 | `--verbose --verbose, -vv` | Just like `-v`, but also include the response metadata.                                            |
-|   `--print, -p`            | Selects parts of the HTTP exchange                                                                 |
-|   `--quiet, -q`            | Don't print anything to `stdout` and `stderr`                                                      |
+|              `--print, -p` | Selects parts of the HTTP exchange                                                                 |
+|              `--quiet, -q` | Don’t print anything to `stdout` and `stderr`                                                      |
 
 ### What parts of the HTTP exchange should be printed
 
@@ -1454,7 +1454,7 @@ All the other [output options](#output-options) are under the hood just shortcut
 It accepts a string of characters each of which represents a specific part of the HTTP exchange:
 
 | Character | Stands for       |
-| --------: | ---------------- |
+|----------:|------------------|
 |       `H` | request headers  |
 |       `B` | request body     |
 |       `h` | response headers |
@@ -1466,6 +1466,15 @@ Print request and response headers:
 ```bash
 $ http --print=Hh PUT pie.dev/put hello=world
 ```
+
+#### Response meta
+
+The response metadata section currently includes the total time elapsed. It’s the number of seconds between opening the network connection and downloading the last byte of response the body.
+
+Please note that it also includes time spent on formatting the output, which adds a small penalty. Also, if the body is not part of the output, we don’t spend time downloading it — please see [conditional body download](#conditional-body-download).
+
+If you [use `--style` with one of the Pie themes](#colors-and-formatting), you’ll see the time information color-coded (green/orange/red) based on how long the exchange took.
+
 
 ### Verbose output
 
@@ -1628,7 +1637,7 @@ On macOS, you can send the contents of the clipboard with `pbpaste`:
 $ pbpaste | http PUT pie.dev/put
 ```
 
-Passing data through `stdin` **can't** be combined with data fields specified on the command line:
+Passing data through `stdin` **can’t** be combined with data fields specified on the command line:
 
 ```bash
 $ echo -n 'data' | http POST example.org more=data  # This is invalid
@@ -1711,21 +1720,21 @@ Syntax highlighting is applied to HTTP headers and bodies (where it makes sense)
 You can choose your preferred color scheme via the `--style` option if you don’t like the default one.
 There are dozens of styles available, here are just a few notable ones:
 
-|     Style  | Description                                                                                                                          |
-| ---------: | ------------------------------------------------------------------------------------------------------------------------------------ |
-|     `auto` | Follows your terminal ANSI color styles. This is the default style used by HTTPie                                                    |
-|  `default` | Default styles of the underlying Pygments library. Not actually used by default by HTTPie. You can enable it with `--style=default`  |
-| `pie-dark` | HTTPie’s original brand style. Also used in [HTTPie for Web and Desktop](https://httpie.io/product).                                                          |
-|`pie-light` | Like `pie-dark`, but for terminals with light background colors.                                                                     |
-|      `pie` | A generic version of `pie-dark` and `pie-light` themes that can work with any terminal background. Its universality requires compromises in terms of legibility, but it’s useful if you frequently switch your terminal between dark and light backgrounds.                                    |
-|  `monokai` | A popular color scheme. Enable with `--style=monokai`                                                                                |
-|   `fruity` | A bold, colorful scheme. Enable with `--style=fruity`                                                                                |
-|         …  | See `$ http --help` for all the possible `--style` values                                                                            |
+|       Style | Description                                                                                                                                                                                                                                                 |
+|------------:|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|      `auto` | Follows your terminal ANSI color styles. This is the default style used by HTTPie                                                                                                                                                                           |
+|   `default` | Default styles of the underlying Pygments library. Not actually used by default by HTTPie. You can enable it with `--style=default`                                                                                                                         |
+|  `pie-dark` | HTTPie’s original brand style. Also used in [HTTPie for Web and Desktop](https://httpie.io/product).                                                                                                                                                        |
+| `pie-light` | Like `pie-dark`, but for terminals with light background colors.                                                                                                                                                                                            |
+|       `pie` | A generic version of `pie-dark` and `pie-light` themes that can work with any terminal background. Its universality requires compromises in terms of legibility, but it’s useful if you frequently switch your terminal between dark and light backgrounds. |
+|   `monokai` | A popular color scheme. Enable with `--style=monokai`                                                                                                                                                                                                       |
+|    `fruity` | A bold, colorful scheme. Enable with `--style=fruity`                                                                                                                                                                                                       |
+|           … | See `$ http --help` for all the possible `--style` values                                                                                                                                                                                                   |
 
 Use one of these options to control output processing:
 
 |            Option | Description                                                   |
-| ----------------: | ------------------------------------------------------------- |
+|------------------:|---------------------------------------------------------------|
 |    `--pretty=all` | Apply both colors and formatting. Default for terminal output |
 | `--pretty=colors` | Apply colors                                                  |
 | `--pretty=format` | Apply formatting                                              |
@@ -1744,7 +1753,7 @@ Formatting has the following effects:
   to the characters they represent.
 - XML and XHTML data is indented.
 
-Please note that sometimes there might be changes made by formatters on the actual response body (e.g
+Please note that sometimes there might be changes made by formatters on the actual response body (e.g.,
 collapsing empty tags on XML) but the end result will always be semantically indistinguishable. Some of
 these formatting changes can be configured more granularly through [format options](#format-options).
 
@@ -1754,7 +1763,7 @@ The `--format-options=opt1:value,opt2:value` option allows you to control how th
 when formatting is applied. The following options are available:
 
 |           Option | Default value | Shortcuts                |
-| ---------------: | :-----------: | ------------------------ |
+|-----------------:|:-------------:|--------------------------|
 |   `headers.sort` |    `true`     | `--sorted`, `--unsorted` |
 |    `json.format` |    `true`     | N/A                      |
 |    `json.indent` |      `4`      | N/A                      |
@@ -1903,7 +1912,7 @@ $ http -dco file.zip example.org/file
 - `--download` always implies `--follow` (redirects are followed).
 - `--download` also implies `--check-status` (error HTTP status will result in a non-zero exist static code).
 - HTTPie exits with status code `1` (error) if the body hasn’t been fully downloaded.
-- `Accept-Encoding` can't be set with `--download`.
+- `Accept-Encoding` can’t be set with `--download`.
 
 ## Streamed responses
 
@@ -1982,7 +1991,7 @@ $ http --session=user2 -a user2:password pie.dev/get X-Bar:Foo
 
 Named sessions’ data is stored in JSON files inside the `sessions` subdirectory of the [config](#config) directory, typically `~/.config/httpie/sessions/<host>/<name>.json` (`%APPDATA%\httpie\sessions\<host>\<name>.json` on Windows).
 
-If you have executed the above commands on a Unix machine, you should be able list the generated sessions files using:
+If you have executed the above commands on a Unix machine, you should be able to list the generated sessions files using:
 
 ```bash
 $ ls -l ~/.config/httpie/sessions/pie.dev
@@ -2078,7 +2087,7 @@ If the server expires an existing cookie, it will also be removed from the sessi
 ## Config
 
 HTTPie uses a simple `config.json` file.
-The file doesn’t exist by default but you can create it manually.
+The file doesn’t exist by default, but you can create it manually.
 
 ### Config file directory
 
@@ -2120,7 +2129,7 @@ $ cat ~/.config/httpie/config.json
 ```
 
 Technically, it is possible to include any HTTPie options in there.
-However, it is not recommended to modify the default behavior in a way that would break your compatibility with the wider world as that may become confusing.
+However, it is not recommended modifying the default behavior in a way that would break your compatibility with the wider world as that may become confusing.
 
 #### `plugins_dir`
 
@@ -2185,11 +2194,11 @@ This command is currently in beta.
 
 `plugins` interface is a very simple plugin manager for installing, listing and uninstalling HTTPie plugins.
 
-> In the past `pip` was used to install/uninstall plugins, but on some environments (e.g brew installed
-packages) it wasn't working properly. The new interface is a very simple overlay on top of `pip` to allow
+In the past `pip` was used to install/uninstall plugins, but on some environments (e.g., brew installed
+packages) it wasn’t working properly. The new interface is a very simple overlay on top of `pip` to allow
 plugin installations on every installation method.
 
-> By default the plugins (and their missing dependencies) will be stored under the configuration directory,
+By default, the plugins (and their missing dependencies) will be stored under the configuration directory,
 but this can be modified through `plugins_dir` variable on the config.
 
 #### `httpie plugins install`
@@ -2232,7 +2241,7 @@ $ httpie plugins upgrade httpie-plugin
 #### `httpie plugins uninstall`
 
 Uninstall plugins from the isolated plugins directory. If the plugin is not installed
-through `httpie plugins install`, it won't uninstall it.
+through `httpie plugins install`, it won’t uninstall it.
 
 ```bash
 $ httpie plugins uninstall httpie-plugin

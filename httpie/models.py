@@ -1,3 +1,5 @@
+from time import monotonic
+
 import requests
 
 from enum import Enum, auto
@@ -13,6 +15,9 @@ from .cli.constants import (
 )
 from .compat import cached_property
 from .utils import split_cookies, parse_content_type_header
+
+
+ELAPSED_TIME_LABEL = 'Elapsed time'
 
 
 class HTTPMessage:
@@ -96,7 +101,13 @@ class HTTPResponse(HTTPMessage):
     @property
     def metadata(self) -> str:
         data = {}
-        data['Elapsed time'] = str(self._orig.elapsed.total_seconds()) + 's'
+        time_to_parse_headers = self._orig.elapsed.total_seconds()
+        # noinspection PyProtectedMember
+        time_since_headers_parsed = monotonic() - self._orig._httpie_headers_parsed_at
+        time_elapsed = time_to_parse_headers + time_since_headers_parsed
+        # data['Headers time'] = str(round(time_to_parse_headers, 5)) + 's'
+        # data['Body time'] = str(round(time_since_headers_parsed, 5)) + 's'
+        data[ELAPSED_TIME_LABEL] = str(round(time_elapsed, 10)) + 's'
         return '\n'.join(
             f'{key}: {value}'
             for key, value in data.items()

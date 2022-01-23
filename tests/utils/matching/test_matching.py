@@ -2,6 +2,7 @@
 Here we test our output parsing and matching implementation, not HTTPie itself.
 
 """
+from httpie.models import ELAPSED_TIME_LABEL
 from httpie.output.writer import MESSAGE_SEPARATOR
 from ...utils import CRLF
 from . import assert_output_does_not_match, assert_output_matches, Expect
@@ -111,7 +112,7 @@ def test_assert_output_matches_response_meta():
     assert_output_matches(
         (
             'Key: Value\n'
-            'Elapsed Time: 3.3s'
+            f'{ELAPSED_TIME_LABEL}: 3.3s'
         ),
         [Expect.RESPONSE_META]
     )
@@ -124,7 +125,7 @@ def test_assert_output_matches_whole_response():
             f'AAA:BBB{CRLF}'
             f'{CRLF}'
             f'CCC{MESSAGE_SEPARATOR}'
-            'Elapsed Time: 3.3s'
+            f'{ELAPSED_TIME_LABEL}: 3.3s'
         ),
         [Expect.RESPONSE_HEADERS, Expect.BODY, Expect.RESPONSE_META]
     )

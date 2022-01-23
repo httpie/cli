@@ -1,7 +1,12 @@
-# Copy the brand palette
 from typing import Optional
 
+STYLE_PIE = 'pie'
+STYLE_PIE_DARK = 'pie-dark'
+STYLE_PIE_LIGHT = 'pie-light'
+
+
 COLOR_PALETTE = {
+    # Copy the brand palette
     'transparent': 'transparent',
     'current': 'currentColor',
     'white': '#F5F5F0',
@@ -138,10 +143,11 @@ COLOR_PALETTE['primary'] = {
 
 COLOR_PALETTE['secondary'] = {'700': '#37523C', '600': '#6c6969', '500': '#6c6969'}
 
+
 SHADE_NAMES = {
-    '500': 'pie-dark',
-    '600': 'pie',
-    '700': 'pie-light'
+    '500': STYLE_PIE_DARK,
+    '600': STYLE_PIE,
+    '700': STYLE_PIE_LIGHT
 }
 
 SHADES = [

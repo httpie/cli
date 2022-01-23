@@ -1,4 +1,6 @@
 import pygments
+
+from httpie.models import ELAPSED_TIME_LABEL
 from httpie.output.lexers.common import precise
 
 SPEED_TOKENS = {
@@ -34,7 +36,7 @@ class MetadataLexer(pygments.lexer.RegexLexer):
     tokens = {
         'root': [
             (
-                r'(Elapsed time)( *)(:)( *)(\d+\.\d+)(s)', pygments.lexer.bygroups(
+                fr'({ELAPSED_TIME_LABEL})( *)(:)( *)(\d+\.\d+)(s)', pygments.lexer.bygroups(
                     pygments.token.Name.Decorator,  # Name
                     pygments.token.Text,
                     pygments.token.Operator,  # Colon
