@@ -1,5 +1,8 @@
+import pytest
+
 from httpie.models import ELAPSED_TIME_LABEL
-from .utils import http, MockEnvironment
+from httpie.output.formatters.colors import PIE_STYLE_NAMES
+from .utils import http, MockEnvironment, COLOR
 
 
 def test_meta_elapsed_time(httpbin):
@@ -7,11 +10,8 @@ def test_meta_elapsed_time(httpbin):
     assert f'{ELAPSED_TIME_LABEL}: 1.' in r
 
 
-def test_meta_elapsed_time_colors_pie_style(httpbin):
-    r = http('--style=pie-dark', '--meta', httpbin + '/get', env=MockEnvironment(colors=256))
-    assert ELAPSED_TIME_LABEL in r
-
-
-def test_meta_elapsed_time_colors_non_pie_style(httpbin):
-    r = http('--style=fruity', '--meta', httpbin + '/get', env=MockEnvironment(colors=256))
+@pytest.mark.parametrize('style', ['auto', 'fruity', *PIE_STYLE_NAMES])
+def test_meta_elapsed_time_colors(httpbin, style):
+    r = http('--style', style, '-vv', httpbin + '/get', env=MockEnvironment(colors=256))
+    assert COLOR in r
     assert ELAPSED_TIME_LABEL in r

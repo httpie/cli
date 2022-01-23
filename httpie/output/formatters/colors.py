@@ -383,4 +383,5 @@ def make_styles():
 
 
 PIE_STYLES = make_styles()
+PIE_STYLE_NAMES = list(PIE_STYLES.keys())
 BUNDLED_STYLES |= PIE_STYLES.keys()
