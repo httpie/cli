@@ -681,7 +681,40 @@ Other JSON types, however, are not allowed with `--form` or `--multipart`.
 
 If your use case involves sending complex JSON objects as part of the request body,
 HTTPie can help you build them right from your terminal. You still use the existing
-data field operators (`=`/`:=`) but instead of specifying a top-level field name (like `key=value`), you specify a path declaration. This tells HTTPie where and how to put the given value inside an object.
+data field operators (`=`/`:=`) but instead of specifying a top-level field name (like `key=value`),
+you specify a path declaration. This tells HTTPie where and how to put the given value inside an object:
+
+```bash
+http pie.dev/post \
+  platform[name]=HTTPie \
+  platform[about][mission]='Make APIs simple and intuitive' \
+  platform[about][homepage]=httpie.io \
+  platform[about][homepage]=httpie.io \
+  platform[about][stars]:=54000 \
+  platform[apps][]=Terminal \
+  platform[apps][]=Desktop \
+  platform[apps][]=Web \
+  platform[apps][]=Mobile
+```
+
+```json
+{
+    "platform": {
+        "name": "HTTPie",
+        "about": {
+            "mission": "Make APIs simple and intuitive",
+            "homepage": "httpie.io",
+            "stars": 54000
+        },
+        "apps": [
+            "Terminal",
+            "Desktop",
+            "Web",
+            "Mobile"
+        ]
+    }
+}
+```
 
 #### Introduction
 
