@@ -3,6 +3,10 @@
 This document records all notable changes to [HTTPie](https://httpie.io).
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## [3.0.1](https://github.com/httpie/httpie/compare/3.0.0...3.0.1) (2022-01-23)
+
+- Changed the value shown as time elapsed from time-to-read-headers to total exchange time ([#1277](https://github.com/httpie/httpie/issues/1277))
+
 ## [3.0.0](https://github.com/httpie/httpie/compare/2.6.0...3.0.0) (2022-01-21)
 
 - Dropped support for Python 3.6. ([#1177](https://github.com/httpie/httpie/issues/1177))
