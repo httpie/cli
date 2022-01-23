@@ -1,19 +1,45 @@
 {
+    "Aaron Miller": {
+        "committed": [],
+        "github": "aaronhmiller",
+        "reported": [
+            "3.0.0"
+        ],
+        "twitter": "aaronmiller8"
+    },
+    "Alexander Bogdanov": {
+        "committed": [],
+        "github": "ab-kily",
+        "reported": [
+            "3.0.0"
+        ],
+        "twitter": null
+    },
     "Almad": {
         "committed": [
             "2.5.0"
         ],
         "github": "Almad",
         "reported": [
-            "2.6.0"
+            "2.6.0",
+            "3.0.0"
         ],
         "twitter": "almadcz"
+    },
+    "Andr\u00e1s Czig\u00e1ny": {
+        "committed": [],
+        "github": "andrascz",
+        "reported": [
+            "3.0.0"
+        ],
+        "twitter": null
     },
     "Annette Wilson": {
         "committed": [],
         "github": "annettejanewilson",
         "reported": [
-            "2.6.0"
+            "2.6.0",
+            "3.0.0"
         ],
         "twitter": null
     },
@@ -23,6 +49,32 @@
         ],
         "github": "king-menin",
         "reported": [],
+        "twitter": null
+    },
+    "Batuhan Taskaya": {
+        "committed": [
+            "3.0.0"
+        ],
+        "github": "isidentical",
+        "reported": [
+            "3.0.0"
+        ],
+        "twitter": "isidentical"
+    },
+    "Brad Crittenden": {
+        "committed": [],
+        "github": "bac",
+        "reported": [
+            "3.0.0"
+        ],
+        "twitter": null
+    },
+    "Chad": {
+        "committed": [],
+        "github": "cythrawll",
+        "reported": [
+            "3.0.0"
+        ],
         "twitter": null
     },
     "D8ger": {
@@ -35,7 +87,8 @@
     },
     "Dave": {
         "committed": [
-            "2.6.0"
+            "2.6.0",
+            "3.0.0"
         ],
         "github": "davecheney",
         "reported": [],
@@ -49,6 +102,14 @@
         ],
         "twitter": "DawidFerenczy"
     },
+    "Ed Rooth": {
+        "committed": [],
+        "github": "sym3tri",
+        "reported": [
+            "3.0.0"
+        ],
+        "twitter": null
+    },
     "Elena Lape": {
         "committed": [
             "2.5.0"
@@ -61,7 +122,8 @@
         "committed": [],
         "github": "peruzzof",
         "reported": [
-            "2.6.0"
+            "2.6.0",
+            "3.0.0"
         ],
         "twitter": null
     },
@@ -73,12 +135,36 @@
         ],
         "twitter": null
     },
+    "Gabriel Cruz": {
+        "committed": [],
+        "github": "gmelodie",
+        "reported": [
+            "3.0.0"
+        ],
+        "twitter": "gmelodiecruz"
+    },
+    "Gaurav": {
+        "committed": [
+            "3.0.0"
+        ],
+        "github": "gkcs",
+        "reported": [],
+        "twitter": null
+    },
     "Giampaolo Rodola": {
         "committed": [],
         "github": "giampaolo",
         "reported": [
             "2.5.0"
         ],
+        "twitter": null
+    },
+    "Greg Myers": {
+        "committed": [
+            "3.0.0"
+        ],
+        "github": "myersg86",
+        "reported": [],
         "twitter": null
     },
     "Hugh Williams": {
@@ -102,21 +188,33 @@
     "Jakub Roztocil": {
         "committed": [
             "2.5.0",
-            "2.6.0"
+            "2.6.0",
+            "3.0.0"
         ],
         "github": "jakubroztocil",
         "reported": [
             "2.5.0",
-            "2.6.0"
+            "2.6.0",
+            "3.0.0"
         ],
         "twitter": "jakubroztocil"
+    },
+    "Jan Bra\u0161na": {
+        "committed": [
+            "3.0.0"
+        ],
+        "github": "janbrasna",
+        "reported": [],
+        "twitter": "janbrasna"
     },
     "Jan Verbeek": {
         "committed": [
             "2.5.0"
         ],
         "github": "blyxxyz",
-        "reported": [],
+        "reported": [
+            "3.0.0"
+        ],
         "twitter": null
     },
     "Jannik Vieten": {
@@ -127,6 +225,22 @@
         "reported": [],
         "twitter": null
     },
+    "Jesper Holmberg": {
+        "committed": [],
+        "github": "strindberg",
+        "reported": [
+            "3.0.0"
+        ],
+        "twitter": null
+    },
+    "Kirill Krasnov": {
+        "committed": [],
+        "github": "Kirill",
+        "reported": [
+            "3.0.0"
+        ],
+        "twitter": null
+    },
     "Marcel St\u00f6r": {
         "committed": [
             "2.5.0"
@@ -134,6 +248,14 @@
         "github": "marcelstoer",
         "reported": [],
         "twitter": "frightanic"
+    },
+    "Marco Seguri": {
+        "committed": [],
+        "github": "seguri",
+        "reported": [
+            "3.0.0"
+        ],
+        "twitter": null
     },
     "Mariano Ruiz": {
         "committed": [],
@@ -143,22 +265,41 @@
         ],
         "twitter": "mrsarm82"
     },
+    "Mark Rosenbaum": {
+        "committed": [],
+        "github": "markrosenbaum",
+        "reported": [
+            "3.0.0"
+        ],
+        "twitter": null
+    },
     "Micka\u00ebl Schoentgen": {
         "committed": [
             "2.5.0",
-            "2.6.0"
+            "2.6.0",
+            "3.0.0"
         ],
         "github": "BoboTiG",
         "reported": [
             "2.5.0",
-            "2.6.0"
+            "2.6.0",
+            "3.0.0"
         ],
         "twitter": "__tiger222__"
+    },
+    "Mike DePalatis": {
+        "committed": [],
+        "github": "mivade",
+        "reported": [
+            "3.0.0"
+        ],
+        "twitter": null
     },
     "Miro Hron\u010dok": {
         "committed": [
             "2.5.0",
-            "2.6.0"
+            "2.6.0",
+            "3.0.0"
         ],
         "github": "hroncok",
         "reported": [],
@@ -172,21 +313,55 @@
         ],
         "twitter": null
     },
+    "Nanashi.": {
+        "committed": [],
+        "github": "sevenc-nanashi",
+        "reported": [
+            "3.0.0"
+        ],
+        "twitter": "sevenc_nanashi"
+    },
     "Omer Akram": {
         "committed": [
-            "2.6.0"
+            "2.6.0",
+            "3.0.0"
         ],
         "github": "om26er",
         "reported": [
-            "2.6.0"
+            "2.6.0",
+            "3.0.0"
         ],
         "twitter": "om26er"
+    },
+    "Patrick Taylor": {
+        "committed": [],
+        "github": "pmeister",
+        "reported": [
+            "3.0.0"
+        ],
+        "twitter": null
+    },
+    "Paul Laffitte": {
+        "committed": [],
+        "github": "paullaffitte",
+        "reported": [
+            "3.0.0"
+        ],
+        "twitter": "plaffitt"
     },
     "Pavel Alexeev aka Pahan-Hubbitus": {
         "committed": [],
         "github": "Hubbitus",
         "reported": [
             "2.5.0"
+        ],
+        "twitter": null
+    },
+    "Russell Shurts": {
+        "committed": [],
+        "github": "rshurts",
+        "reported": [
+            "3.0.0"
         ],
         "twitter": null
     },
@@ -197,6 +372,14 @@
             "2.5.0"
         ],
         "twitter": null
+    },
+    "Sebastian Czech": {
+        "committed": [
+            "3.0.0"
+        ],
+        "github": "sebastianczech",
+        "reported": [],
+        "twitter": "sebaczech"
     },
     "Sullivan SENECHAL": {
         "committed": [],
@@ -218,7 +401,32 @@
         "committed": [],
         "github": "vovtz",
         "reported": [
-            "2.6.0"
+            "2.6.0",
+            "3.0.0"
+        ],
+        "twitter": null
+    },
+    "Vivaan Verma": {
+        "committed": [
+            "3.0.0"
+        ],
+        "github": "doublevcodes",
+        "reported": [],
+        "twitter": "doublevcodes"
+    },
+    "Vladimir Berkutov": {
+        "committed": [
+            "3.0.0"
+        ],
+        "github": "dair-targ",
+        "reported": [],
+        "twitter": null
+    },
+    "Will Rogers": {
+        "committed": [],
+        "github": "wjrogers",
+        "reported": [
+            "3.0.0"
         ],
         "twitter": null
     },
@@ -238,6 +446,14 @@
         "reported": [],
         "twitter": null
     },
+    "arloan": {
+        "committed": [],
+        "github": "arloan",
+        "reported": [
+            "3.0.0"
+        ],
+        "twitter": null
+    },
     "bl-ue": {
         "committed": [
             "2.5.0"
@@ -246,19 +462,45 @@
         "reported": [],
         "twitter": null
     },
+    "blueray453": {
+        "committed": [],
+        "github": "blueray453",
+        "reported": [
+            "3.0.0"
+        ],
+        "twitter": null
+    },
     "claudiatd": {
         "committed": [
-            "2.6.0"
+            "2.6.0",
+            "3.0.0"
         ],
         "github": "claudiatd",
         "reported": [],
         "twitter": null
     },
+    "coldcoff": {
+        "committed": [],
+        "github": "coldcoff",
+        "reported": [
+            "3.0.0"
+        ],
+        "twitter": null
+    },
     "dkreeft": {
         "committed": [
-            "2.6.0"
+            "2.6.0",
+            "3.0.0"
         ],
         "github": "dkreeft",
+        "reported": [],
+        "twitter": null
+    },
+    "greg": {
+        "committed": [
+            "3.0.0"
+        ],
+        "github": "gregkh",
         "reported": [],
         "twitter": null
     },
@@ -270,12 +512,29 @@
         "reported": [],
         "twitter": null
     },
+    "hosseingt": {
+        "committed": [
+            "3.0.0"
+        ],
+        "github": "hosseingt",
+        "reported": [],
+        "twitter": null
+    },
     "jakubroztocil": {
         "committed": [
-            "2.6.0"
+            "2.6.0",
+            "3.0.0"
         ],
         "github": "jkbr",
         "reported": [],
+        "twitter": null
+    },
+    "josephworks": {
+        "committed": [],
+        "github": "josephworks",
+        "reported": [
+            "3.0.0"
+        ],
         "twitter": null
     },
     "jungle-boogie": {
@@ -283,6 +542,14 @@
         "github": "jungle-boogie",
         "reported": [
             "2.5.0"
+        ],
+        "twitter": null
+    },
+    "luisuimi": {
+        "committed": [],
+        "github": "luisuimi",
+        "reported": [
+            "3.0.0"
         ],
         "twitter": null
     },
@@ -294,11 +561,43 @@
         "reported": [],
         "twitter": "linuxbyte3"
     },
+    "peterpt": {
+        "committed": [],
+        "github": "peterpt",
+        "reported": [
+            "3.0.0"
+        ],
+        "twitter": null
+    },
     "qiulang": {
         "committed": [],
         "github": "qiulang",
         "reported": [
             "2.5.0"
+        ],
+        "twitter": null
+    },
+    "stonebig": {
+        "committed": [],
+        "github": "stonebig",
+        "reported": [
+            "3.0.0"
+        ],
+        "twitter": null
+    },
+    "whodidthis": {
+        "committed": [],
+        "github": "whodidthis",
+        "reported": [
+            "3.0.0"
+        ],
+        "twitter": null
+    },
+    "zoulja": {
+        "committed": [],
+        "github": "zoulja",
+        "reported": [
+            "3.0.0"
         ],
         "twitter": null
     },
@@ -314,7 +613,8 @@
         "committed": [],
         "github": "rogerdehe",
         "reported": [
-            "2.6.0"
+            "2.6.0",
+            "3.0.0"
         ],
         "twitter": null
     },
@@ -322,7 +622,8 @@
         "committed": [],
         "github": "hh-in-zhuzhou",
         "reported": [
-            "2.6.0"
+            "2.6.0",
+            "3.0.0"
         ],
         "twitter": null
     }
