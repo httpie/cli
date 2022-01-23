@@ -1498,7 +1498,7 @@ Elapsed time: 0.077538375s
 
 Please note that it also includes time spent on formatting the output, which adds a small penalty. Also, if the body is not part of the output, [we don’t spend time downloading it](#conditional-body-download).
 
-If you [use `--style` with one of the Pie themes](#colors-and-formatting), you’ll see the time information color-coded (green/orange/red) based on how long the exchange took.
+If you [use `--style` with one of the Pie themes](#colors-and-formatting), you’ll see the time information color-coded (green/yellow/orange/red) based on how long the exchange took.
 
 
 ### Verbose output
