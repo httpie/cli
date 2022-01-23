@@ -1954,6 +1954,8 @@ You can use the `--stream, -S` flag to make two things happen:
 1. The output is flushed in much smaller chunks without any buffering, which makes HTTPie behave kind of like `tail -f` for URLs.
 2. Streaming becomes enabled even when the output is prettified: It will be applied to each line of the response and flushed immediately. This makes it possible to have a nice output for long-lived requests, such as one to the [Twitter streaming API](https://developer.twitter.com/en/docs/tutorials/consuming-streaming-data).
 
+The `--stream` option is automatically enabled when the response headers include `Content-Type: text/event-stream`.
+
 ### Example use cases
 
 Prettified streamed response:
