@@ -1442,7 +1442,7 @@ be printed via several options:
 |---------------------------:|----------------------------------------------------------------------------------------------------|
 |            `--headers, -h` | Only the response headers are printed                                                              |
 |               `--body, -b` | Only the response body is printed                                                                  |
-|               `--meta, -m` | Only the response metadata is printed (various metrics like total elapsed time)                    |
+|               `--meta, -m` | Only the [response metadata](#response-meta) is printed                                            |
 |            `--verbose, -v` | Print the whole HTTP exchange (request and response). This option also enables `--all` (see below) |
 | `--verbose --verbose, -vv` | Just like `-v`, but also include the response metadata.                                            |
 |              `--print, -p` | Selects parts of the HTTP exchange                                                                 |
@@ -1453,13 +1453,13 @@ be printed via several options:
 All the other [output options](#output-options) are under the hood just shortcuts for the more powerful `--print, -p`.
 It accepts a string of characters each of which represents a specific part of the HTTP exchange:
 
-| Character | Stands for       |
-|----------:|------------------|
-|       `H` | request headers  |
-|       `B` | request body     |
-|       `h` | response headers |
-|       `b` | response body    |
-|       `m` | response meta    |
+| Character | Stands for                      |
+|----------:|---------------------------------|
+|       `H` | request headers                 |
+|       `B` | request body                    |
+|       `h` | response headers                |
+|       `b` | response body                   |
+|       `m` | [response meta](#response-meta) |
 
 Print request and response headers:
 
@@ -1471,7 +1471,32 @@ $ http --print=Hh PUT pie.dev/put hello=world
 
 The response metadata section currently includes the total time elapsed. It’s the number of seconds between opening the network connection and downloading the last byte of response the body.
 
-Please note that it also includes time spent on formatting the output, which adds a small penalty. Also, if the body is not part of the output, we don’t spend time downloading it — please see [conditional body download](#conditional-body-download).
+
+To _only_ show the response metadata, use `--meta, -m` (analogically to `--headers, -h` and `--body, -b`):
+
+```bash
+$ http --meta pie.dev/delay/1
+```
+
+```console
+Elapsed time: 1.099171542s
+```
+
+The [extra verbose `-vv` output](#extra-verbose-output) includes the meta section by default. You can also show it in combination with other parts of the exchange via [`--print=m`](#what-parts-of-the-http-exchange-should-be-printed). For example, here we print it together with the response headers:
+
+```bash
+$ http --print=hm pie.dev/get
+```
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+Elapsed time: 0.077538375s
+```
+
+
+Please note that it also includes time spent on formatting the output, which adds a small penalty. Also, if the body is not part of the output, [we don’t spend time downloading it](#conditional-body-download).
 
 If you [use `--style` with one of the Pie themes](#colors-and-formatting), you’ll see the time information color-coded (green/orange/red) based on how long the exchange took.
 
@@ -1505,9 +1530,9 @@ Server: gunicorn/0.13.4
 }
 ```
 
-#### Verbosity Level: 2
+#### Extra verbose output
 
-If you run HTTPie with `-vv` or `--verbose --verbose`, then it would also display the response metadata.
+If you run HTTPie with `-vv` or `--verbose --verbose`, then it would also display the [response metadata](#response-meta).
 
 ```bash
 # Just like the above, but with additional columns like the total elapsed time
