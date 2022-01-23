@@ -570,7 +570,7 @@ to pass the desired value from a file.
 $ http POST pie.dev/post \
     X-Data:@files/text.txt             # Read a header from a file
     token==@files/text.txt             # Read a query parameter from a file
-    name=@files/text.txt               # Read a data field's value from a file
+    name=@files/text.txt               # Read a data field’s value from a file
     bookmarks:=@files/data.json        # Embed a JSON object from a file
 ```
 
@@ -685,7 +685,7 @@ data field operators (`=`/`:=`) but instead of specifying a top-level field name
 
 #### Introduction
 
-Let's start with a simple example, and build a simple search query:
+Let’s start with a simple example, and build a simple search query:
 
 ```bash
 $ http --offline --print=B pie.dev/post \
@@ -807,7 +807,7 @@ $ http --offline --print=B pie.dev/post \
 }
 ```
 
-And just to demonstrate all of these features together, let's create a very deeply nested JSON object:
+And just to demonstrate all of these features together, let’s create a very deeply nested JSON object:
 
 ```bash
 $ http PUT pie.dev/put \
@@ -904,7 +904,7 @@ You can follow to given instruction (adding a `]`) and repair your expression.
 ##### Type safety
 
 Each container path (e.g `x[y][z]` in `x[y][z][1]`) has a certain type, which gets defined with
-the first usage and can't be changed after that. If you try to do a key-based access to an array or
+the first usage and can’t be changed after that. If you try to do a key-based access to an array or
 an index-based access to an object, HTTPie will error out:
 
 ```bash
@@ -1104,7 +1104,7 @@ To send a header with an empty value, use `Header;`, with a semicolon:
 $ http pie.dev/headers 'Header;'
 ```
 
-Please note that some internal headers, such as `Content-Length`, can't be unset if
+Please note that some internal headers, such as `Content-Length`, can’t be unset if
 they are automatically added by the client itself.
 
 ### Multiple header values with the same name
@@ -1438,15 +1438,15 @@ By default, HTTPie only outputs the final response and the whole response
 message is printed (headers as well as the body). You can control what should
 be printed via several options:
 
-|          Option            | What is printed                                                                                    |
-| -------------------------: | -------------------------------------------------------------------------------------------------- |
-| `--headers, -h`            | Only the response headers are printed                                                              |
-|    `--body, -b`            | Only the response body is printed                                                                  |
-|    `--meta, -m`            | Only the response metadata is printed (various metrics like total elapsed time)                    |
-| `--verbose, -v`            | Print the whole HTTP exchange (request and response). This option also enables `--all` (see below) |
+|                     Option | What is printed                                                                                    |
+|---------------------------:|----------------------------------------------------------------------------------------------------|
+|            `--headers, -h` | Only the response headers are printed                                                              |
+|               `--body, -b` | Only the response body is printed                                                                  |
+|               `--meta, -m` | Only the response metadata is printed (various metrics like total elapsed time)                    |
+|            `--verbose, -v` | Print the whole HTTP exchange (request and response). This option also enables `--all` (see below) |
 | `--verbose --verbose, -vv` | Just like `-v`, but also include the response metadata.                                            |
-|   `--print, -p`            | Selects parts of the HTTP exchange                                                                 |
-|   `--quiet, -q`            | Don't print anything to `stdout` and `stderr`                                                      |
+|              `--print, -p` | Selects parts of the HTTP exchange                                                                 |
+|              `--quiet, -q` | Don’t print anything to `stdout` and `stderr`                                                      |
 
 ### What parts of the HTTP exchange should be printed
 
@@ -1466,6 +1466,10 @@ Print request and response headers:
 ```bash
 $ http --print=Hh PUT pie.dev/put hello=world
 ```
+
+#### Response meta
+
+The response metadata section currently includes the total time elapsed. It’s the number of seconds elapsed between opening the network connection and downloading the last byte of response the body. Please note that it also includes time spent on formatting the output, which adds a small penalty. Also, if the body is not part of the output, we don’t spend time downloading it — please see [conditional body download](#conditional-body-download).
 
 ### Verbose output
 
@@ -1628,7 +1632,7 @@ On macOS, you can send the contents of the clipboard with `pbpaste`:
 $ pbpaste | http PUT pie.dev/put
 ```
 
-Passing data through `stdin` **can't** be combined with data fields specified on the command line:
+Passing data through `stdin` **can’t** be combined with data fields specified on the command line:
 
 ```bash
 $ echo -n 'data' | http POST example.org more=data  # This is invalid
@@ -1903,7 +1907,7 @@ $ http -dco file.zip example.org/file
 - `--download` always implies `--follow` (redirects are followed).
 - `--download` also implies `--check-status` (error HTTP status will result in a non-zero exist static code).
 - HTTPie exits with status code `1` (error) if the body hasn’t been fully downloaded.
-- `Accept-Encoding` can't be set with `--download`.
+- `Accept-Encoding` can’t be set with `--download`.
 
 ## Streamed responses
 
@@ -2185,11 +2189,11 @@ This command is currently in beta.
 
 `plugins` interface is a very simple plugin manager for installing, listing and uninstalling HTTPie plugins.
 
-> In the past `pip` was used to install/uninstall plugins, but on some environments (e.g brew installed
-packages) it wasn't working properly. The new interface is a very simple overlay on top of `pip` to allow
+In the past `pip` was used to install/uninstall plugins, but on some environments (e.g., brew installed
+packages) it wasn’t working properly. The new interface is a very simple overlay on top of `pip` to allow
 plugin installations on every installation method.
 
-> By default the plugins (and their missing dependencies) will be stored under the configuration directory,
+By default, the plugins (and their missing dependencies) will be stored under the configuration directory,
 but this can be modified through `plugins_dir` variable on the config.
 
 #### `httpie plugins install`
@@ -2232,7 +2236,7 @@ $ httpie plugins upgrade httpie-plugin
 #### `httpie plugins uninstall`
 
 Uninstall plugins from the isolated plugins directory. If the plugin is not installed
-through `httpie plugins install`, it won't uninstall it.
+through `httpie plugins install`, it won’t uninstall it.
 
 ```bash
 $ httpie plugins uninstall httpie-plugin

@@ -3,6 +3,7 @@ import http.client
 import json
 import sys
 from contextlib import contextmanager
+from time import monotonic
 from typing import Any, Dict, Callable, Iterable
 from urllib.parse import urlparse, urlunparse
 
@@ -108,7 +109,7 @@ def collect_messages(
                     **send_kwargs_merged,
                     **send_kwargs,
                 )
-
+            response._headers_parsed_at = monotonic()
             expired_cookies += get_expired_cookies(
                 response.headers.get('Set-Cookie', '')
             )
