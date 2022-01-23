@@ -5,13 +5,13 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [3.0.1](https://github.com/httpie/httpie/compare/3.0.0...3.0.1) (2022-01-23)
 
-[What’s new in HTTPie 3.0 →](https://httpie.io/blog/httpie-3.0.0)
+[What’s new in HTTPie for Terminal 3.0 →](https://httpie.io/blog/httpie-3.0.0)
 
 - Changed the value shown as time elapsed from time-to-read-headers to total exchange time ([#1277](https://github.com/httpie/httpie/issues/1277))
 
 ## [3.0.0](https://github.com/httpie/httpie/compare/2.6.0...3.0.0) (2022-01-21)
 
-[What’s new in HTTPie 3.0 →](https://httpie.io/blog/httpie-3.0.0)
+[What’s new in HTTPie for Terminal 3.0 →](https://httpie.io/blog/httpie-3.0.0)
 
 - Dropped support for Python 3.6. ([#1177](https://github.com/httpie/httpie/issues/1177))
 - Improved startup time by 40%. ([#1211](https://github.com/httpie/httpie/pull/1211))
@@ -36,7 +36,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [2.6.0](https://github.com/httpie/httpie/compare/2.5.0...2.6.0) (2021-10-14)
 
-[What’s new in HTTPie 2.6.0 →](https://httpie.io/blog/httpie-2.6.0)
+[What’s new in HTTPie for Terminal 2.6.0 →](https://httpie.io/blog/httpie-2.6.0)
 
 - Added support for formatting & coloring of JSON bodies preceded by non-JSON data (e.g., an XXSI prefix). ([#1130](https://github.com/httpie/httpie/issues/1130))
 - Added charset auto-detection when `Content-Type` doesn’t include it. ([#1110](https://github.com/httpie/httpie/issues/1110), [#1168](https://github.com/httpie/httpie/issues/1168))
@@ -48,7 +48,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [2.5.0](https://github.com/httpie/httpie/compare/2.4.0...2.5.0) (2021-09-06)
 
-[What’s new in HTTPie 2.5.0 →](https://httpie.io/blog/httpie-2.5.0)
+[What’s new in HTTPie for Terminal 2.5.0 →](https://httpie.io/blog/httpie-2.5.0)
 
 - Added `--raw` to allow specifying the raw request body without extra processing as
   an alternative to `stdin`. ([#534](https://github.com/httpie/httpie/issues/534))
