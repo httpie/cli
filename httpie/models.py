@@ -17,6 +17,9 @@ from .compat import cached_property
 from .utils import split_cookies, parse_content_type_header
 
 
+ELAPSED_TIME_LABEL = 'Elapsed time'
+
+
 class HTTPMessage:
     """Abstract class for HTTP messages."""
 
@@ -104,7 +107,7 @@ class HTTPResponse(HTTPMessage):
         time_elapsed = time_to_parse_headers + time_since_headers_parsed
         # data['Headers time'] = str(round(time_to_parse_headers, 5)) + 's'
         # data['Body time'] = str(round(time_since_headers_parsed, 5)) + 's'
-        data['Elapsed time'] = str(round(time_elapsed, 10)) + 's'
+        data[ELAPSED_TIME_LABEL] = str(round(time_elapsed, 10)) + 's'
         return '\n'.join(
             f'{key}: {value}'
             for key, value in data.items()
