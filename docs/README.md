@@ -1469,7 +1469,12 @@ $ http --print=Hh PUT pie.dev/put hello=world
 
 #### Response meta
 
-The response metadata section currently includes the total time elapsed. It’s the number of seconds elapsed between opening the network connection and downloading the last byte of response the body. Please note that it also includes time spent on formatting the output, which adds a small penalty. Also, if the body is not part of the output, we don’t spend time downloading it — please see [conditional body download](#conditional-body-download).
+The response metadata section currently includes the total time elapsed. It’s the number of seconds between opening the network connection and downloading the last byte of response the body.
+
+Please note that it also includes time spent on formatting the output, which adds a small penalty. Also, if the body is not part of the output, we don’t spend time downloading it — please see [conditional body download](#conditional-body-download).
+
+If you [use `--style` with one of the Pie themes](#colors-and-formatting), we color-code the time information (green/orange/red) based on how long the exchange took.
+
 
 ### Verbose output
 
