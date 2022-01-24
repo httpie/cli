@@ -11,7 +11,7 @@ Ensure the following requirements are satisfied:
 
 Then, run the `extras/benchmarks/run.py`:
 
-```
+```console
 $ python extras/profiling/run.py
 ```
 
