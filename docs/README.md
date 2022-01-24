@@ -772,7 +772,7 @@ $ http --offline --print=B pie.dev/post \
   category=tools \
   search[type]=keyword \
   search[keywords][1]=APIs \
-  search[keywords][2]=CLI
+  search[keywords][0]=CLI
 ```
 
 ```json
