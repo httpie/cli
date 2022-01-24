@@ -15,6 +15,19 @@ def test_plugins_installation(httpie_plugins_success, interface, dummy_plugin):
 
 
 @pytest.mark.requires_installation
+def test_plugin_installation_with_custom_config(httpie_plugins_success, interface, dummy_plugin):
+    interface.environment.config['default_options'] = ['--session-read-only', 'some-path.json', 'other', 'args']
+    interface.environment.config.save()
+
+    lines = httpie_plugins_success('install', dummy_plugin.path)
+    assert lines[0].startswith(
+        f'Installing {dummy_plugin.path}'
+    )
+    assert f'Successfully installed {dummy_plugin.name}-{dummy_plugin.version}' in lines
+    assert interface.is_installed(dummy_plugin.name)
+
+
+@pytest.mark.requires_installation
 def test_plugins_listing(httpie_plugins_success, interface, dummy_plugin):
     httpie_plugins_success('install', dummy_plugin.path)
     data = parse_listing(httpie_plugins_success('list'))

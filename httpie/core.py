@@ -30,14 +30,15 @@ def raw_main(
     parser: argparse.ArgumentParser,
     main_program: Callable[[argparse.Namespace, Environment], ExitStatus],
     args: List[Union[str, bytes]] = sys.argv,
-    env: Environment = Environment()
+    env: Environment = Environment(),
+    use_default_options: bool = True,
 ) -> ExitStatus:
     program_name, *args = args
     env.program_name = os.path.basename(program_name)
     args = decode_raw_args(args, env.stdin_encoding)
     plugin_manager.load_installed_plugins(env.config.plugins_dir)
 
-    if env.config.default_options:
+    if use_default_options and env.config.default_options:
         args = env.config.default_options + args
 
     include_debug_info = '--debug' in args
