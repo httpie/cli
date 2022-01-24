@@ -4,6 +4,7 @@ from httpie.status import ExitStatus
 from tests.utils import httpie
 from tests.utils.plugins_cli import parse_listing
 
+
 @pytest.mark.requires_installation
 def test_plugins_installation(httpie_plugins_success, interface, dummy_plugin):
     lines = httpie_plugins_success('install', dummy_plugin.path)
@@ -148,6 +149,7 @@ def test_broken_plugins(httpie_plugins, httpie_plugins_success, dummy_plugin, br
     # No warning now, since it is uninstalled.
     data = parse_listing(httpie_plugins_success('list'))
     assert len(data) == 1
+
 
 @pytest.mark.requires_installation
 def test_plugins_cli_error_message_without_args():
