@@ -28,3 +28,7 @@ and print it as a markdown table:
 | `http --offline pie.dev/get` (startup) | 200 ms | 174 ms: 1.15x faster |
 | Geometric mean                         | (ref)  | 1.10x faster         |
 
+If your `master` branch is not up-to-date, you can get
+a fresh clone by passing `--fresh` option. This way,
+the benchmark runner will clone the `httpie/httpie` repo
+from `GitHub` and use it as the baseline.
