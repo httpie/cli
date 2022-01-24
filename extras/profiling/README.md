@@ -1,1 +1,1 @@
-# HTTPie Benchmarks
+# HTTPie Benchmarking Infrastructure
