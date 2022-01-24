@@ -37,7 +37,8 @@ def main(args: List[Union[str, bytes]] = sys.argv, env: Environment = Environmen
             parser=parser,
             main_program=main_program,
             args=args,
-            env=env
+            env=env,
+            use_default_options=False,
         )
     except argparse.ArgumentError:
         program_args = args[1:]

@@ -5,6 +5,7 @@ from tests.utils import httpie
 from tests.utils.plugins_cli import parse_listing
 
 
+@pytest.mark.requires_installation
 def test_plugins_installation(httpie_plugins_success, interface, dummy_plugin):
     lines = httpie_plugins_success('install', dummy_plugin.path)
     assert lines[0].startswith(
@@ -14,6 +15,20 @@ def test_plugins_installation(httpie_plugins_success, interface, dummy_plugin):
     assert interface.is_installed(dummy_plugin.name)
 
 
+@pytest.mark.requires_installation
+def test_plugin_installation_with_custom_config(httpie_plugins_success, interface, dummy_plugin):
+    interface.environment.config['default_options'] = ['--session-read-only', 'some-path.json', 'other', 'args']
+    interface.environment.config.save()
+
+    lines = httpie_plugins_success('install', dummy_plugin.path)
+    assert lines[0].startswith(
+        f'Installing {dummy_plugin.path}'
+    )
+    assert f'Successfully installed {dummy_plugin.name}-{dummy_plugin.version}' in lines
+    assert interface.is_installed(dummy_plugin.name)
+
+
+@pytest.mark.requires_installation
 def test_plugins_listing(httpie_plugins_success, interface, dummy_plugin):
     httpie_plugins_success('install', dummy_plugin.path)
     data = parse_listing(httpie_plugins_success('list'))
@@ -23,6 +38,7 @@ def test_plugins_listing(httpie_plugins_success, interface, dummy_plugin):
     }
 
 
+@pytest.mark.requires_installation
 def test_plugins_listing_multiple(interface, httpie_plugins_success, dummy_plugins):
     paths = [plugin.path for plugin in dummy_plugins]
     httpie_plugins_success('install', *paths)
@@ -34,12 +50,14 @@ def test_plugins_listing_multiple(interface, httpie_plugins_success, dummy_plugi
     }
 
 
+@pytest.mark.requires_installation
 def test_plugins_uninstall(interface, httpie_plugins_success, dummy_plugin):
     httpie_plugins_success('install', dummy_plugin.path)
     httpie_plugins_success('uninstall', dummy_plugin.name)
     assert not interface.is_installed(dummy_plugin.name)
 
 
+@pytest.mark.requires_installation
 def test_plugins_listing_after_uninstall(interface, httpie_plugins_success, dummy_plugin):
     httpie_plugins_success('install', dummy_plugin.path)
     httpie_plugins_success('uninstall', dummy_plugin.name)
@@ -48,6 +66,7 @@ def test_plugins_listing_after_uninstall(interface, httpie_plugins_success, dumm
     assert len(data) == 0
 
 
+@pytest.mark.requires_installation
 def test_plugins_uninstall_specific(interface, httpie_plugins_success):
     new_plugin_1 = interface.make_dummy_plugin()
     new_plugin_2 = interface.make_dummy_plugin()
@@ -61,6 +80,7 @@ def test_plugins_uninstall_specific(interface, httpie_plugins_success):
     assert not interface.is_installed(target_plugin.name)
 
 
+@pytest.mark.requires_installation
 def test_plugins_installation_failed(httpie_plugins, interface):
     plugin = interface.make_dummy_plugin(build=False)
     result = httpie_plugins('install', plugin.path)
@@ -69,6 +89,7 @@ def test_plugins_installation_failed(httpie_plugins, interface):
     assert result.stderr.splitlines()[-1].strip().startswith("Can't install")
 
 
+@pytest.mark.requires_installation
 def test_plugins_uninstall_non_existent(httpie_plugins, interface):
     plugin = interface.make_dummy_plugin(build=False)
     result = httpie_plugins('uninstall', plugin.name)
@@ -80,6 +101,7 @@ def test_plugins_uninstall_non_existent(httpie_plugins, interface):
     )
 
 
+@pytest.mark.requires_installation
 def test_plugins_double_uninstall(httpie_plugins, httpie_plugins_success, dummy_plugin):
     httpie_plugins_success("install", dummy_plugin.path)
     httpie_plugins_success("uninstall", dummy_plugin.name)
@@ -93,6 +115,7 @@ def test_plugins_double_uninstall(httpie_plugins, httpie_plugins_success, dummy_
     )
 
 
+@pytest.mark.requires_installation
 def test_plugins_upgrade(httpie_plugins, httpie_plugins_success, dummy_plugin):
     httpie_plugins_success("install", dummy_plugin.path)
 
@@ -105,6 +128,7 @@ def test_plugins_upgrade(httpie_plugins, httpie_plugins_success, dummy_plugin):
     assert data[dummy_plugin.name]['version'] == '2.0.0'
 
 
+@pytest.mark.requires_installation
 def test_broken_plugins(httpie_plugins, httpie_plugins_success, dummy_plugin, broken_plugin):
     httpie_plugins_success("install", dummy_plugin.path, broken_plugin.path)
 
@@ -127,6 +151,7 @@ def test_broken_plugins(httpie_plugins, httpie_plugins_success, dummy_plugin, br
     assert len(data) == 1
 
 
+@pytest.mark.requires_installation
 def test_plugins_cli_error_message_without_args():
     # No arguments
     result = httpie(no_debug=True)
@@ -143,6 +168,7 @@ def test_plugins_cli_error_message_without_args():
         'POST pie.dev/post header:value a=b header_2:value x:=1'
     ]
 )
+@pytest.mark.requires_installation
 def test_plugins_cli_error_messages_with_example(example):
     result = httpie(*example.split(), no_debug=True)
     assert result.exit_status == ExitStatus.ERROR
@@ -158,6 +184,7 @@ def test_plugins_cli_error_messages_with_example(example):
         'unknown.com UNPARSABLE????SYNTAX',
     ]
 )
+@pytest.mark.requires_installation
 def test_plugins_cli_error_messages_invalid_example(example):
     result = httpie(*example.split(), no_debug=True)
     assert result.exit_status == ExitStatus.ERROR
