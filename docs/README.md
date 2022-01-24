@@ -1286,7 +1286,7 @@ If you omit the password part of `--auth, -a`, HTTPie securely prompts you for i
 $ http -a username pie.dev/basic-auth/username/password
 ```
 
-Please note that when you use [`--session`](#sessions), prompted passwords are persisted in sessions files .
+Please note that when you use [`--session`](#sessions), prompted passwords are persisted in session files.
 
 ### Empty password
 
