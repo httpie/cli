@@ -3,7 +3,7 @@
 This document records all notable changes to [HTTPie](https://httpie.io).
 This project adheres to [Semantic Versioning](https://semver.org/).
 
-## [3.0.2](https://github.com/httpie/httpie/compare/3.0.1...3.0.2) (2022-01-23)
+## [3.0.2](https://github.com/httpie/httpie/compare/3.0.1...3.0.2) (2022-01-24)
 
 [What’s new in HTTPie for Terminal 3.0 →](https://httpie.io/blog/httpie-3.0.0)
 
