@@ -7,13 +7,13 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 [What’s new in HTTPie for Terminal 3.0 →](https://httpie.io/blog/httpie-3.0.0)
 
-- Fixed usage of `httpie` when there is a presence of a config with `default_options` ([#1280](https://github.com/httpie/httpie/pull/1280)).
+- Fixed usage of `httpie` when there is a presence of a config with `default_options`. ([#1280](https://github.com/httpie/httpie/pull/1280))
 
 ## [3.0.1](https://github.com/httpie/httpie/compare/3.0.0...3.0.1) (2022-01-23)
 
 [What’s new in HTTPie for Terminal 3.0 →](https://httpie.io/blog/httpie-3.0.0)
 
-- Changed the value shown as time elapsed from time-to-read-headers to total exchange time ([#1277](https://github.com/httpie/httpie/issues/1277))
+- Changed the value shown as time elapsed from time-to-read-headers to total exchange time. ([#1277](https://github.com/httpie/httpie/issues/1277))
 
 ## [3.0.0](https://github.com/httpie/httpie/compare/2.6.0...3.0.0) (2022-01-21)
 
