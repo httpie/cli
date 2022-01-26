@@ -1,3 +1,5 @@
+name: Release snap
+
 on:
   workflow_dispatch:
     inputs:

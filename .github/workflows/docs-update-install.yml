@@ -1,3 +1,5 @@
+name: Update & Install Docs
+
 on:
   push:
     branches:
