@@ -5,6 +5,10 @@ on:
         description: "The branch, tag or SHA to release from"
         required: true
         default: "master"
+      level:
+        description: "Release level: stable, candidate, beta, edge"
+        required: true
+        default: "edge"
 
 jobs:
   snap:
@@ -19,4 +23,4 @@ jobs:
         with:
           store_login: ${{ secrets.SNAP_STORE_LOGIN }}
           snap: ${{ steps.build.outputs.snap }}
-          release: edge
+          release: ${{ github.event.inputs.level }}
