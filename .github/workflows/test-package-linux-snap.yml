@@ -1,3 +1,6 @@
+name: Test Snap Package (Linux)
+
+
 on:
   pull_request:
     paths:

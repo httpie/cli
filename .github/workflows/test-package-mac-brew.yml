@@ -1,3 +1,5 @@
+name: Test Brew Package (MacOS)
+
 on:
   pull_request:
     paths:

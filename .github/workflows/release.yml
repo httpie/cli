@@ -1,3 +1,5 @@
+name: Release on PyPI
+
 on:
   # Add a "Trigger" button to manually start the workflow.
   workflow_dispatch:
@@ -19,7 +21,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: ${{ github.event.inputs.branch }}
-      - name: PyPi configuration
+      - name: PyPI configuration
         run: |
           echo "[distutils]\nindex-servers=\n    httpie\n\n[httpie]\nrepository = https://upload.pypi.org/legacy/\n" > $HOME/.pypirc
       - uses: actions/setup-python@v2
