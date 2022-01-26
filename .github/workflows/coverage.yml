@@ -1,3 +1,5 @@
+name: Coverage
+
 on:
   pull_request:
     paths:

@@ -1,3 +1,5 @@
+name: Code Style Check
+
 on:
   pull_request:
     paths:
