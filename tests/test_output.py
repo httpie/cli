@@ -5,6 +5,7 @@ from unittest import mock
 import json
 import os
 import io
+import warnings
 from urllib.request import urlopen
 
 import pytest
@@ -84,6 +85,31 @@ class TestQuietFlag:
             env=MockEnvironment(stdout_isatty=False)
         )
         assert 'http: warning: HTTP 500' in r.stderr
+
+    @mock.patch('httpie.core.program')
+    @pytest.mark.parametrize('flags, expected_warnings', [
+        ([], 1),
+        (['-q'], 1),
+        (['-qq'], 0),
+    ])
+    def test_quiet_on_python_warnings(self, test_patch, httpbin, flags, expected_warnings):
+        def warn_and_run(*args, **kwargs):
+            warnings.warn('warning!!')
+            return ExitStatus.SUCCESS
+
+        test_patch.side_effect = warn_and_run
+        with pytest.warns(None) as record:
+            http(*flags, httpbin + '/get')
+
+        assert len(record) == expected_warnings
+
+    def test_double_quiet_on_error(self, httpbin):
+        r = http(
+            '-qq', '--check-status', '$$$this.does.not.exist$$$',
+            tolerate_error_exit_status=True,
+        )
+        assert not r
+        assert 'Couldn’t resolve the given hostname' in r.stderr
 
     @pytest.mark.parametrize('quiet_flags', QUIET_SCENARIOS)
     @mock.patch('httpie.cli.argtypes.AuthCredentials._getpass',

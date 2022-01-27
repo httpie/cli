@@ -5,6 +5,7 @@ import sys
 import time
 import json
 import tempfile
+import warnings
 from io import BytesIO
 from pathlib import Path
 from typing import Any, Optional, Union, List, Iterable
@@ -90,6 +91,7 @@ class MockEnvironment(Environment):
     def cleanup(self):
         self.stdout.close()
         self.stderr.close()
+        warnings.resetwarnings()
         if self._delete_config_dir:
             assert self._temp_dir in self.config_dir.parents
             from shutil import rmtree

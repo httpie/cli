@@ -230,9 +230,11 @@ class HTTPieArgumentParser(BaseHTTPieArgumentParser):
             self.env.stdout_isatty = False
 
         if self.args.quiet:
+            self.env.quiet = self.args.quiet
             self.env.stderr = self.env.devnull
             if not (self.args.output_file_specified and not self.args.download):
                 self.env.stdout = self.env.devnull
+            self.env.apply_warnings_filter()
 
     def _process_auth(self):
         # TODO: refactor & simplify this method.
