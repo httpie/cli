@@ -138,6 +138,7 @@ def test_reading_from_stdin(httpbin, wait):
         assert b'> warning: no stdin data read in 0.1s' not in errs
 
 
+@pytest.mark.requires_installation
 @pytest.mark.skipif(is_windows, reason="Windows doesn't support select() calls into files")
 def test_stdin_read_warning(httpbin):
     with stdin_processes(httpbin) as (process_1, process_2):
