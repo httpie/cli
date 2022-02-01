@@ -121,6 +121,7 @@ def stdin_processes(httpbin, *args):
 
 
 @pytest.mark.parametrize("wait", (True, False))
+@pytest.mark.requires_external_processes
 @pytest.mark.skipif(is_windows, reason="Windows doesn't support select() calls into files")
 def test_reading_from_stdin(httpbin, wait):
     with stdin_processes(httpbin) as (process_1, process_2):
@@ -138,7 +139,7 @@ def test_reading_from_stdin(httpbin, wait):
         assert b'> warning: no stdin data read in 0.1s' not in errs
 
 
-@pytest.mark.requires_installation
+@pytest.mark.requires_external_processes
 @pytest.mark.skipif(is_windows, reason="Windows doesn't support select() calls into files")
 def test_stdin_read_warning(httpbin):
     with stdin_processes(httpbin) as (process_1, process_2):
@@ -154,6 +155,7 @@ def test_stdin_read_warning(httpbin):
         assert b'> warning: no stdin data read in 0.1s' in errs
 
 
+@pytest.mark.requires_external_processes
 @pytest.mark.skipif(is_windows, reason="Windows doesn't support select() calls into files")
 def test_stdin_read_warning_with_quiet(httpbin):
     with stdin_processes(httpbin, "-qq") as (process_1, process_2):
