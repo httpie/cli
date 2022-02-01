@@ -397,6 +397,28 @@ def test_complex_json_arguments_with_non_json(httpbin, request_type, value):
                 '2012': {'x': 2, '[3]': 4},
             },
         ),
+        (
+            [
+                r'a[\0]:=0',
+                r'a[\\1]:=1',
+                r'a[\\\2]:=2',
+                r'a[\\\\\3]:=3',
+                r'a[-1\\]:=-1',
+                r'a[-2\\\\]:=-2',
+                r'a[\\-3\\\\]:=-3',
+            ],
+            {
+                "a": {
+                    "0": 0,
+                    r"\1": 1,
+                    r"\\2": 2,
+                    r"\\\3": 3,
+                    "-1\\": -1,
+                    "-2\\\\": -2,
+                    "\\-3\\\\": -3,
+                }
+            }
+        ),
     ],
 )
 def test_nested_json_syntax(input_json, expected_json, httpbin):

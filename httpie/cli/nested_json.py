@@ -88,18 +88,18 @@ def tokenize(source: str) -> Iterator[Token]:
             return None
 
         value = ''.join(buffer)
-        for variation, kind in [
-            (int, TokenKind.NUMBER),
-            (check_escaped_int, TokenKind.TEXT),
-        ]:
-            try:
-                value = variation(value)
-            except ValueError:
-                continue
-            else:
-                break
-        else:
-            kind = TokenKind.TEXT
+        kind = TokenKind.TEXT
+        if not backslashes:
+            for variation, kind in [
+                (int, TokenKind.NUMBER),
+                (check_escaped_int, TokenKind.TEXT),
+            ]:
+                try:
+                    value = variation(value)
+                except ValueError:
+                    continue
+                else:
+                    break
 
         yield Token(
             kind, value, start=cursor - (len(buffer) + backslashes), end=cursor
