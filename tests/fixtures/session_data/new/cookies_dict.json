@@ -1,0 +1,31 @@
+{
+    "__meta__": {
+        "about": "HTTPie session file",
+        "help": "https://httpie.io/docs#sessions",
+        "httpie": "__version__"
+    },
+    "auth": {
+        "password": null,
+        "type": null,
+        "username": null
+    },
+    "cookies": [
+        {
+            "domain": __host__,
+            "expires": null,
+            "name": "baz",
+            "path": "/",
+            "secure": false,
+            "value": "quux"
+        },
+        {
+            "domain": __host__,
+            "expires": null,
+            "name": "foo",
+            "path": "/",
+            "secure": false,
+            "value": "bar"
+        }
+    ],
+    "headers": {}
+}

@@ -2157,6 +2157,85 @@ $ http --session-read-only=./ro-session.json pie.dev/headers Custom-Header:orig-
 $ http --session-read-only=./ro-session.json pie.dev/headers Custom-Header:new-value
 ```
 
+### Host-based Cookie Policy
+
+Cookies in stored HTTPie sessions have a `domain` field which is binding them to the
+specified hostname. For example, in the following session:
+
+```json
+{
+    "cookies": [
+        {
+            "domain": "pie.dev",
+            "name": "secret_cookie",
+            "value": "value_1"
+        },
+        {
+            "domain": "httpbin.org",
+            "name": "secret_cookie",
+            "value": "value_2"
+        }
+    ]
+}
+```
+
+we will send `Cookie:secret_cookie=value_1` only when you are making a request against `pie.dev` (it
+also includes the domains, like `api.pie.dev`), and `Cookie:secret_cookie=value_2` when you use `httpbin.org`.
+
+```bash
+$ http --session=./session.json pie.dev/cookies
+```
+
+```json
+{
+    "cookies": {
+        "secret_cookie": "value_1"
+    }
+}
+```
+
+```bash
+$ http --session=./session.json httpbin.org/cookies
+```
+
+```json
+{
+    "cookies": {
+        "secret_cookie": "value_2"
+    }
+}
+```
+
+If you want to make a cookie domain unbound, you can simply set the `domain`
+field to `null` by editing the session file directly:
+
+```json
+{
+    "cookies": [
+        {
+            "domain": null,
+            "expires": null,
+            "name": "generic_cookie",
+            "path": "/",
+            "secure": false,
+            "value": "generic_value"
+        }
+    ]
+}
+```
+
+```bash
+$ http --session=./session.json pie.dev/cookies
+```
+
+```json
+{
+    "cookies": {
+        "generic_cookie": "generic_value"
+    }
+}
+```
+
 ### Cookie Storage Behavior
 
 **TL;DR:** Cookie storage priority: Server response > Command line request > Session file
@@ -2207,6 +2286,50 @@ If the server returns a `Set-Cookie` header with a cookie of the same name, the 
 Expired cookies are never stored.
 If a cookie in a session file expires, it will be removed before sending a new request.
 If the server expires an existing cookie, it will also be removed from the session file.
+
+### Upgrading Sessions
+
+In rare circumstances, HTTPie makes changes in it's session layout. For allowing a smoother transition of existing files
+from the old layout to the new layout we offer 2 interfaces:
+
+- `httpie cli sessions upgrade`
+- `httpie cli sessions upgrade-all`
+
+
+With `httpie cli sessions upgrade`, you can upgrade a single session with it's name (or it's path, if it is an
+[anonymous session](#anonymous-sessions)) and the hostname it belongs to. For example:
+
+([named session](#named-sessions))
+
+```bash
+$ httpie cli sessions upgrade pie.dev api_auth
+Refactored 'api_auth' (for 'pie.dev') to the version 3.1.0.
+```
+
+([anonymous session](#anonymous-sessions))
+
+```bash
+$ httpie cli sessions upgrade pie.dev ./session.json
+Refactored 'session' (for 'pie.dev') to the version 3.1.0.
+```
+
+If you want to upgrade every existing [named session](#named-sessions), you can use `httpie cli sessions upgrade-all` (be aware
+that this won't upgrade [anonymous sessions](#anonymous-sessions)):
+
+```bash
+$ httpie cli sessions upgrade-all
+Refactored 'api_auth' (for 'pie.dev') to the version 3.1.0.
+Refactored 'login_cookies' (for 'httpie.io') to the version 3.1.0.
+```
+
+#### Additional Customizations
+
+| Flag             | Description                                                                                                                                                                                                                  |
+|------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `--bind-cookies` | Bind all the unbound cookies to the hostname that session belongs. By default, if the cookie is unbound (the `domain` attribute does not exist / set to an empty string) then it will still continue to be a generic cookie. |
+
+These flags can be used to customize the defaults during an `upgrade` operation. They can
+be used in both `sessions upgrade` and `sessions upgrade-all`.
 
 ## Config
 
@@ -2298,6 +2421,23 @@ Therefore, the rules for [redirected input](#redirected-input) apply, i.e. HTTPi
 And since there’s neither data nor `EOF`, it will get stuck. So unless you’re piping some data to HTTPie, the `--ignore-stdin` flag should be used in scripts.
 
 Also, it might be good to set a connection `--timeout` limit to prevent your program from hanging if the server never responds.
+
+### Security
+
+#### Exposure of Cookies To The 3rd Party Hosts On Redirects
+
+*Vulnerability Type*: [CWE-200](https://cwe.mitre.org/data/definitions/200.html)
+*Severity Level*: LOW
+*Affected Versions*: `<3.1.0`
+
+The handling of [cookies](#cookies) was not compatible with the [RFC 6265](https://datatracker.ietf.org/doc/html/rfc6265)
+on the point of handling the `Domain` attribute when they were saved into [session](#sessions) files. All cookies were shared
+across all hosts during the runtime, including redirects to the 3rd party hosts.
+
+This vulnerability has been fixed in [3.1.0](https://github.com/httpie/httpie/releases/tag/3.1.0) and the
+[`httpie cli sessions upgrade`](#upgrading-sessions)/[`httpie cli sessions upgrade-all`]((#upgrading-sessions) commands
+have been put in place in order to allow a smooth transition to the new session layout from the existing [session](#sessions)
+files.
 
 ## Plugin manager
 

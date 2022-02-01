@@ -1,7 +1,7 @@
 import json
 import os
 from pathlib import Path
-from typing import Union
+from typing import Any, Dict, Union
 
 from . import __version__
 from .compat import is_windows
@@ -62,6 +62,21 @@ class ConfigFileError(Exception):
     pass
 
 
+def read_raw_config(config_type: str, path: Path) -> Dict[str, Any]:
+    try:
+        with path.open(encoding=UTF8) as f:
+            try:
+                return json.load(f)
+            except ValueError as e:
+                raise ConfigFileError(
+                    f'invalid {config_type} file: {e} [{path}]'
+                )
+    except FileNotFoundError:
+        pass
+    except OSError as e:
+        raise ConfigFileError(f'cannot read {config_type} file: {e}')
+
+
 class BaseConfigDict(dict):
     name = None
     helpurl = None
@@ -77,26 +92,25 @@ class BaseConfigDict(dict):
     def is_new(self) -> bool:
         return not self.path.exists()
 
+    def pre_process_data(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        """Hook for processing the incoming config data."""
+        return data
+
+    def post_process_data(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        """Hook for processing the outgoing config data."""
+        return data
+
     def load(self):
         config_type = type(self).__name__.lower()
-        try:
-            with self.path.open(encoding=UTF8) as f:
-                try:
-                    data = json.load(f)
-                except ValueError as e:
-                    raise ConfigFileError(
-                        f'invalid {config_type} file: {e} [{self.path}]'
-                    )
-                self.update(data)
-        except FileNotFoundError:
-            pass
-        except OSError as e:
-            raise ConfigFileError(f'cannot read {config_type} file: {e}')
+        data = read_raw_config(config_type, self.path)
+        if data is not None:
+            data = self.pre_process_data(data)
+            self.update(data)
 
-    def save(self):
-        self['__meta__'] = {
-            'httpie': __version__
-        }
+    def save(self, *, bump_version: bool = False):
+        self.setdefault('__meta__', {})
+        if bump_version or 'httpie' not in self['__meta__']:
+            self['__meta__']['httpie'] = __version__
         if self.helpurl:
             self['__meta__']['help'] = self.helpurl
 
@@ -106,12 +120,18 @@ class BaseConfigDict(dict):
         self.ensure_directory()
 
         json_string = json.dumps(
-            obj=self,
+            obj=self.post_process_data(self),
             indent=4,
             sort_keys=True,
             ensure_ascii=True,
         )
         self.path.write_text(json_string + '\n', encoding=UTF8)
+
+    @property
+    def version(self):
+        return self.get(
+            '__meta__', {}
+        ).get('httpie', __version__)
 
 
 class Config(BaseConfigDict):
