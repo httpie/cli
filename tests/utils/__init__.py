@@ -6,6 +6,8 @@ import time
 import json
 import tempfile
 import warnings
+import pytest
+from contextlib import suppress
 from io import BytesIO
 from pathlib import Path
 from typing import Any, Optional, Union, List, Iterable
@@ -16,6 +18,7 @@ import httpie.manager.__main__ as manager
 from httpie.status import ExitStatus
 from httpie.config import Config
 from httpie.context import Environment
+from httpie.utils import url_as_host
 
 
 # pytest-httpbin currently does not support chunked requests:
@@ -39,6 +42,7 @@ HTTP_OK_COLOR = (
 )
 
 DUMMY_URL = 'http://this-should.never-resolve'  # Note: URL never fetched
+DUMMY_HOST = url_as_host(DUMMY_URL)
 
 
 def strip_colors(colorized_msg: str) -> str:
@@ -187,6 +191,13 @@ class ExitStatusError(Exception):
     pass
 
 
+@pytest.fixture
+def mock_env() -> MockEnvironment:
+    env = MockEnvironment(stdout_mode='')
+    yield env
+    env.cleanup()
+
+
 def normalize_args(args: Iterable[Any]) -> List[str]:
     return [str(arg) for arg in args]
 
@@ -201,7 +212,7 @@ def httpie(
     status.
     """
 
-    env = kwargs.setdefault('env', MockEnvironment())
+    env = kwargs.setdefault('env', MockEnvironment(stdout_mode=''))
     cli_args = ['httpie']
     if not kwargs.pop('no_debug', False):
         cli_args.append('--debug')
@@ -214,7 +225,16 @@ def httpie(
     env.stdout.seek(0)
     env.stderr.seek(0)
     try:
-        response = StrCLIResponse(env.stdout.read())
+        output = env.stdout.read()
+        if isinstance(output, bytes):
+            with suppress(UnicodeDecodeError):
+                output = output.decode()
+
+        if isinstance(output, bytes):
+            response = BytesCLIResponse(output)
+        else:
+            response = StrCLIResponse(output)
+
         response.stderr = env.stderr.read()
         response.exit_status = exit_status
         response.args = cli_args

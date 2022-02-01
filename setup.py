@@ -11,6 +11,7 @@ import httpie
 tests_require = [
     'pytest',
     'pytest-httpbin>=0.0.6',
+    'pytest-lazy-fixture>=0.0.6',
     'responses',
 ]
 dev_require = [

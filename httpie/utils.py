@@ -9,6 +9,7 @@ from collections import OrderedDict
 from http.cookiejar import parse_ns_headers
 from pathlib import Path
 from pprint import pformat
+from urllib.parse import urlsplit
 from typing import Any, List, Optional, Tuple, Callable, Iterable, TypeVar
 
 import requests.auth
@@ -237,3 +238,7 @@ def unwrap_context(exc: Exception) -> Optional[Exception]:
         return unwrap_context(context)
     else:
         return exc
+
+
+def url_as_host(url: str) -> str:
+    return urlsplit(url).netloc.split('@')[-1]

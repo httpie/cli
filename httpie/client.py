@@ -44,6 +44,7 @@ def collect_messages(
     httpie_session_headers = None
     if args.session or args.session_read_only:
         httpie_session = get_httpie_session(
+            env=env,
             config_dir=env.config.directory,
             session_name=args.session or args.session_read_only,
             host=args.headers.get('Host'),
@@ -130,10 +131,7 @@ def collect_messages(
     if httpie_session:
         if httpie_session.is_new() or not args.session_read_only:
             httpie_session.cookies = requests_session.cookies
-            httpie_session.remove_cookies(
-                # TODO: take path & domain into account?
-                cookie['name'] for cookie in expired_cookies
-            )
+            httpie_session.remove_cookies(expired_cookies)
             httpie_session.save()
 
 
