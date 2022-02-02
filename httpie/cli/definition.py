@@ -540,7 +540,7 @@ session_name_validator = SessionNameValidator(
     'Session name contains invalid characters.'
 )
 
-sessions = options.new_group('Sessions', mutually_exclusive=True)
+sessions = options.new_group('Sessions', is_mutually_exclusive=True)
 
 sessions.add_argument(
     '--session',

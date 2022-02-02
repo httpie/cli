@@ -90,13 +90,19 @@ OUTPUT_OPTIONS = frozenset({
 })
 
 # Pretty
+
+
+class PrettyOptions(enum.Enum):
+    STDOUT_TTY_ONLY = enum.auto()
+
+
 PRETTY_MAP = {
     'all': ['format', 'colors'],
     'colors': ['colors'],
     'format': ['format'],
     'none': []
 }
-PRETTY_STDOUT_TTY_ONLY = object()
+PRETTY_STDOUT_TTY_ONLY = PrettyOptions.STDOUT_TTY_ONLY
 
 
 DEFAULT_FORMAT_OPTIONS = [

@@ -17,6 +17,9 @@ class Qualifiers(Enum):
     SUPPRESS = auto()
 
 
+PARSER_SPEC_VERSION = '1.0.0'
+
+
 @dataclass
 class ParserSpec:
     program: str
@@ -36,12 +39,20 @@ class ParserSpec:
         self.groups.append(group)
         return group
 
+    def serialize(self) -> Dict[str, Any]:
+        return {
+            'program': self.program,
+            'description': self.description,
+            'epilog': self.epilog,
+            'groups': [group.serialize() for group in self.groups],
+        }
+
 
 @dataclass
 class Group:
     name: str
     description: str = ''
-    mutually_exclusive: bool = False
+    is_mutually_exclusive: bool = False
     arguments: List[Argument] = field(default_factory=list)
 
     def finalize(self) -> Group:
@@ -52,14 +63,64 @@ class Group:
         self.arguments.append(argument)
         return argument
 
+    def serialize(self) -> Dict[str, Any]:
+        return {
+            'name': self.name,
+            'description': self.description,
+            'is_mutually_exclusive': self.is_mutually_exclusive,
+            'arguments': [argument.serialize() for argument in self.arguments],
+        }
+
+
+NON_SERIALIZABLE_KEYS = frozenset(
+    ['action', 'const', 'dest', 'help_formatter', 'getter', 'sort', 'cache']
+)
+
 
 class Argument(typing.NamedTuple):
     aliases: List[str]
     configuration: Dict[str]
 
+    def serialize(self) -> Dict[str, Any]:
+        result = {'aliases': self.aliases.copy()}
+        configuration = self.configuration.copy()
+
+        # Unpack the dynamically computed choices, since we
+        # will need to store the actual values somewhere.
+        action = configuration.pop('action', None)
+        if action == 'lazy_choices':
+            choices = LazyChoices(self.aliases, **{'dest': None, **configuration})
+            configuration['choices'] = list(choices.load())
+            configuration['help'] = choices.help
+
+        for key, value in configuration.items():
+            if key in NON_SERIALIZABLE_KEYS:
+                continue
+
+            # 'type' setting might be useful to some tools, so
+            # we'll use the the type name. There are some objects
+            # (e.g KeyValueType) where the 'type' setting points to
+            # a regular callable instead of a real python type, in
+            # that case we'll simply cast it to type().
+            if key == 'type':
+                value = (
+                    value.__name__ if isinstance(value, type) else type(value).__name__
+                )
+
+            # The enums hold critical information for some tools
+            # (e.g the nargs status for auto-complete tools); and
+            # so in order to represent them in JSON, we'll stringify
+            # them.
+            if isinstance(value, Enum):
+                value = str(value)
+
+            result[key] = value
+
+        return result
+
     def __getattr__(self, attribute_name):
-        if attribute in self.configuration:
-            return self.configuration[attribute]
+        if attribute_name in self.configuration:
+            return self.configuration[attribute_name]
         else:
             raise AttributeError(attribute_name)
 
@@ -97,7 +158,7 @@ def to_argparse(
         concrete_group = concrete_parser.add_argument_group(
             title=abstract_group.name, description=abstract_group.description
         )
-        if abstract_group.mutually_exclusive:
+        if abstract_group.is_mutually_exclusive:
             concrete_group = concrete_group.add_mutually_exclusive_group(required=False)
 
         for abstract_argument in abstract_group.arguments:
@@ -109,3 +170,7 @@ def to_argparse(
             )
 
     return concrete_parser
+
+
+def to_json(abstract_options: ParserSpec) -> Dict[str, Any]:
+    return {'version': PARSER_SPEC_VERSION, 'spec': abstract_options.serialize()}
