@@ -854,6 +854,46 @@ $ http PUT pie.dev/put \
 
 #### Advanced usage
 
+##### Top level arrays
+
+If you want to send an array instead of a regular object, you can simply
+do that by omitting the starting key:
+
+```bash
+$ http --offline --print=B pie.dev/post \
+    []:=1 \
+    []:=2 \
+    []:=3
+```
+
+```json
+[
+    1,
+    2,
+    3
+]
+```
+
+You can also apply the nesting to the items by referencing their index:
+```bash
+http --offline --print=B pie.dev/post \
+    [0][type]=platform [0][name]=terminal \
+    [1][type]=platform [1][name]=desktop
+```
+
+```json
+[
+    {
+        "type": "platform",
+        "name": "terminal"
+    },
+    {
+        "type": "platform",
+        "name": "desktop"
+    }
+]
+```
+
 ##### Escaping behavior
 
 Nested JSON syntax uses the same [escaping rules](#escaping-rules) as

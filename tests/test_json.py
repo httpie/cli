@@ -321,7 +321,7 @@ def test_complex_json_arguments_with_non_json(httpbin, request_type, value):
                 'foo[][key]=value',
                 'foo[2][key 2]=value 2',
                 r'foo[2][key \[]=value 3',
-                r'[nesting][under][!][empty][?][\\key]:=4',
+                r'bar[nesting][under][!][empty][?][\\key]:=4',
             ],
             {
                 'foo': [
@@ -329,7 +329,7 @@ def test_complex_json_arguments_with_non_json(httpbin, request_type, value):
                     2,
                     {'key': 'value', 'key 2': 'value 2', 'key [': 'value 3'},
                 ],
-                '': {
+                'bar': {
                     'nesting': {'under': {'!': {'empty': {'?': {'\\key': 4}}}}}
                 },
             },
@@ -408,17 +408,45 @@ def test_complex_json_arguments_with_non_json(httpbin, request_type, value):
                 r'a[\\-3\\\\]:=-3',
             ],
             {
-                "a": {
-                    "0": 0,
-                    r"\1": 1,
-                    r"\\2": 2,
-                    r"\\\3": 3,
-                    "-1\\": -1,
-                    "-2\\\\": -2,
-                    "\\-3\\\\": -3,
+                'a': {
+                    '0': 0,
+                    r'\1': 1,
+                    r'\\2': 2,
+                    r'\\\3': 3,
+                    '-1\\': -1,
+                    '-2\\\\': -2,
+                    '\\-3\\\\': -3,
                 }
-            }
+            },
         ),
+        (
+            ['[]:=0', '[]:=1', '[5]:=5', '[]:=6', '[9]:=9'],
+            [0, 1, None, None, None, 5, 6, None, None, 9],
+        ),
+        (
+            ['=empty', 'foo=bar', 'bar[baz][quux]=tuut'],
+            {'': 'empty', 'foo': 'bar', 'bar': {'baz': {'quux': 'tuut'}}},
+        ),
+        (
+            [
+                r'\1=top level int',
+                r'\\1=escaped top level int',
+                r'\2[\3][\4]:=5',
+            ],
+            {
+                '1': 'top level int',
+                '\\1': 'escaped top level int',
+                '2': {'3': {'4': 5}},
+            },
+        ),
+        (
+            [':={"foo": {"bar": "baz"}}', 'top=val'],
+            {'': {'foo': {'bar': 'baz'}}, 'top': 'val'},
+        ),
+        (
+            ['[][a][b][]:=1', '[0][a][b][]:=2', '[][]:=2'],
+            [{'a': {'b': [1, 2]}}, [2]]
+        )
     ],
 )
 def test_nested_json_syntax(input_json, expected_json, httpbin):
@@ -516,13 +544,28 @@ def test_nested_json_syntax(input_json, expected_json, httpbin):
             ['foo[\\1]:=2', 'foo[5]:=3'],
             "HTTPie Type Error: Can't perform 'index' based access on 'foo' which has a type of 'object' but this operation requires a type of 'array'.\nfoo[5]\n   ^^^",
         ),
+        (
+            ['x=y', '[]:=2'],
+            "HTTPie Type Error: Can't perform 'append' based access on '' which has a type of 'object' but this operation requires a type of 'array'.",
+        ),
+        (
+            ['[]:=2', 'x=y'],
+            "HTTPie Type Error: Can't perform 'key' based access on '' which has a type of 'array' but this operation requires a type of 'object'.",
+        ),
     ],
 )
 def test_nested_json_errors(input_json, expected_error, httpbin):
     with pytest.raises(HTTPieSyntaxError) as exc:
         http(httpbin + '/post', *input_json)
 
-    assert str(exc.value) == expected_error
+    exc_lines = str(exc.value).splitlines()
+    expected_lines = expected_error.splitlines()
+    if len(expected_lines) == 1:
+        # When the error offsets are not important, we'll just compare the actual
+        # error message.
+        exc_lines = exc_lines[:1]
+
+    assert expected_lines == exc_lines
 
 
 def test_nested_json_sparse_array(httpbin_both):

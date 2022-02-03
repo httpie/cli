@@ -9,7 +9,7 @@ from typing import (
     Type,
     Union,
 )
-from httpie.cli.constants import OPEN_BRACKET, CLOSE_BRACKET, BACKSLASH, HIGHLIGHTER
+from httpie.cli.constants import EMPTY_STRING, OPEN_BRACKET, CLOSE_BRACKET, BACKSLASH, HIGHLIGHTER
 
 
 class HTTPieSyntaxError(ValueError):
@@ -52,6 +52,7 @@ class TokenKind(Enum):
 
 OPERATORS = {OPEN_BRACKET: TokenKind.LEFT_BRACKET, CLOSE_BRACKET: TokenKind.RIGHT_BRACKET}
 SPECIAL_CHARS = OPERATORS.keys() | {BACKSLASH}
+LITERAL_TOKENS = [TokenKind.TEXT, TokenKind.NUMBER]
 
 
 class Token(NamedTuple):
@@ -171,8 +172,8 @@ class Path:
 
 def parse(source: str) -> Iterator[Path]:
     """
-    start: literal? path*
-
+    start: root_path path*
+    root_path: (literal | index_path | append_path)
     literal: TEXT | NUMBER
 
     path:
@@ -215,16 +216,47 @@ def parse(source: str) -> Iterator[Path]:
         message = f'Expecting {suffix}'
         raise HTTPieSyntaxError(source, token, message)
 
-    root = Path(PathAction.KEY, '', is_root=True)
-    if can_advance():
-        token = tokens[cursor]
-        if token.kind in {TokenKind.TEXT, TokenKind.NUMBER}:
-            token = expect(TokenKind.TEXT, TokenKind.NUMBER)
-            root.accessor = str(token.value)
-            root.tokens.append(token)
+    def parse_root():
+        tokens = []
+        if not can_advance():
+            return Path(
+                PathAction.KEY,
+                EMPTY_STRING,
+                is_root=True
+            )
 
-    yield root
+        # (literal | index_path | append_path)?
+        token = expect(*LITERAL_TOKENS, TokenKind.LEFT_BRACKET)
+        tokens.append(token)
 
+        if token.kind in LITERAL_TOKENS:
+            action = PathAction.KEY
+            value = str(token.value)
+        elif token.kind is TokenKind.LEFT_BRACKET:
+            token = expect(TokenKind.NUMBER, TokenKind.RIGHT_BRACKET)
+            tokens.append(token)
+            if token.kind is TokenKind.NUMBER:
+                action = PathAction.INDEX
+                value = token.value
+                tokens.append(expect(TokenKind.RIGHT_BRACKET))
+            elif token.kind is TokenKind.RIGHT_BRACKET:
+                action = PathAction.APPEND
+                value = None
+            else:
+                assert_cant_happen()
+        else:
+            assert_cant_happen()
+
+        return Path(
+            action,
+            value,
+            tokens=tokens,
+            is_root=True
+        )
+
+    yield parse_root()
+
+    # path*
     while can_advance():
         path_tokens = []
         path_tokens.append(expect(TokenKind.LEFT_BRACKET))
@@ -296,6 +328,10 @@ def interpret(context: Any, key: str, value: Any) -> Any:
             assert_cant_happen()
 
     for index, (path, next_path) in enumerate(zip(paths, paths[1:])):
+        # If there is no context yet, set it.
+        if cursor is None:
+            context = cursor = object_for(path.kind)
+
         if path.kind is PathAction.KEY:
             type_check(index, path, dict)
             if next_path.kind is PathAction.SET:
@@ -337,8 +373,19 @@ def interpret(context: Any, key: str, value: Any) -> Any:
     return context
 
 
+def wrap_with_dict(context):
+    if context is None:
+        return {}
+    elif isinstance(context, list):
+        return {EMPTY_STRING: context}
+    else:
+        assert isinstance(context, dict)
+        return context
+
+
 def interpret_nested_json(pairs):
-    context = {}
+    context = None
     for key, value in pairs:
-        interpret(context, key, value)
-    return context
+        context = interpret(context, key, value)
+
+    return wrap_with_dict(context)
