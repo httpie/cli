@@ -3,7 +3,7 @@
 This document records all notable changes to [HTTPie](https://httpie.io).
 This project adheres to [Semantic Versioning](https://semver.org/).
 
-## Unreleased
+## [3.0.3.dev0](https://github.com/httpie/httpie/compare/3.0.2...HEAD) (Unreleased)
 
 - Fixed escaping of integer indexes with multiple backslashes in the nested JSON builder. ([#1285](https://github.com/httpie/httpie/issues/1285))
 
