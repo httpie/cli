@@ -875,6 +875,7 @@ $ http --offline --print=B pie.dev/post \
 ```
 
 You can also apply the nesting to the items by referencing their index:
+
 ```bash
 http --offline --print=B pie.dev/post \
     [0][type]=platform [0][name]=terminal \

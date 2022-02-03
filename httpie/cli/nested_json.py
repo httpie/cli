@@ -9,6 +9,7 @@ from typing import (
     Type,
     Union,
 )
+from httpie.cli.dicts import NestedJSONArray
 from httpie.cli.constants import EMPTY_STRING, OPEN_BRACKET, CLOSE_BRACKET, BACKSLASH, HIGHLIGHTER
 
 
@@ -377,7 +378,7 @@ def wrap_with_dict(context):
     if context is None:
         return {}
     elif isinstance(context, list):
-        return {EMPTY_STRING: context}
+        return {EMPTY_STRING: NestedJSONArray(context)}
     else:
         assert isinstance(context, dict)
         return context

@@ -445,8 +445,10 @@ def test_complex_json_arguments_with_non_json(httpbin, request_type, value):
         ),
         (
             ['[][a][b][]:=1', '[0][a][b][]:=2', '[][]:=2'],
-            [{'a': {'b': [1, 2]}}, [2]]
-        )
+            [{'a': {'b': [1, 2]}}, [2]],
+        ),
+        ([':=[1,2,3]'], {'': [1, 2, 3]}),
+        ([':=[1,2,3]', 'foo=bar'], {'': [1, 2, 3], 'foo': 'bar'}),
     ],
 )
 def test_nested_json_syntax(input_json, expected_json, httpbin):
@@ -550,6 +552,14 @@ def test_nested_json_syntax(input_json, expected_json, httpbin):
         ),
         (
             ['[]:=2', 'x=y'],
+            "HTTPie Type Error: Can't perform 'key' based access on '' which has a type of 'array' but this operation requires a type of 'object'.",
+        ),
+        (
+            [':=[1,2,3]', '[]:=4'],
+            "HTTPie Type Error: Can't perform 'append' based access on '' which has a type of 'object' but this operation requires a type of 'array'.",
+        ),
+        (
+            ['[]:=4', ':=[1,2,3]'],
             "HTTPie Type Error: Can't perform 'key' based access on '' which has a type of 'array' but this operation requires a type of 'object'.",
         ),
     ],
