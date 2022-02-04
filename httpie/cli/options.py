@@ -17,6 +17,15 @@ class Qualifiers(Enum):
     SUPPRESS = auto()
 
 
+def map_qualifiers(
+    configuration: Dict[str, Any], qualifier_map: Dict[Qualifiers, Any]
+) -> Dict[str, Any]:
+    return {
+        key: qualifier_map[value] if isinstance(value, Qualifiers) else value
+        for key, value in configuration.items()
+    }
+
+
 PARSER_SPEC_VERSION = '1.0.0'
 
 
@@ -41,9 +50,8 @@ class ParserSpec:
 
     def serialize(self) -> Dict[str, Any]:
         return {
-            'program': self.program,
+            'name': self.program,
             'description': self.description,
-            'epilog': self.epilog,
             'groups': [group.serialize() for group in self.groups],
         }
 
@@ -68,13 +76,8 @@ class Group:
             'name': self.name,
             'description': self.description,
             'is_mutually_exclusive': self.is_mutually_exclusive,
-            'arguments': [argument.serialize() for argument in self.arguments],
+            'args': [argument.serialize() for argument in self.arguments],
         }
-
-
-NON_SERIALIZABLE_KEYS = frozenset(
-    ['action', 'const', 'dest', 'help_formatter', 'getter', 'sort', 'cache']
-)
 
 
 class Argument(typing.NamedTuple):
@@ -82,7 +85,6 @@ class Argument(typing.NamedTuple):
     configuration: Dict[str]
 
     def serialize(self) -> Dict[str, Any]:
-        result = {'aliases': self.aliases.copy()}
         configuration = self.configuration.copy()
 
         # Unpack the dynamically computed choices, since we
@@ -93,28 +95,34 @@ class Argument(typing.NamedTuple):
             configuration['choices'] = list(choices.load())
             configuration['help'] = choices.help
 
-        for key, value in configuration.items():
-            if key in NON_SERIALIZABLE_KEYS:
-                continue
+        result = {}
+        if self.aliases:
+            result['options'] = self.aliases.copy()
+        else:
+            result['options'] = configuration["metavar"]
+            result['is_positional'] = True
 
-            # 'type' setting might be useful to some tools, so
-            # we'll use the the type name. There are some objects
-            # (e.g KeyValueType) where the 'type' setting points to
-            # a regular callable instead of a real python type, in
-            # that case we'll simply cast it to type().
-            if key == 'type':
-                value = (
-                    value.__name__ if isinstance(value, type) else type(value).__name__
-                )
+        qualifiers = JSON_QUALIFIER_TO_OPTIONS[configuration.get('nargs', Qualifiers.SUPPRESS)]
+        result.update(qualifiers)
 
-            # The enums hold critical information for some tools
-            # (e.g the nargs status for auto-complete tools); and
-            # so in order to represent them in JSON, we'll stringify
-            # them.
-            if isinstance(value, Enum):
-                value = str(value)
+        help_msg = configuration.get('help')
+        if help_msg and help_msg is not Qualifiers.SUPPRESS:
+            result['description'] = help_msg.strip().splitlines()[0]
 
-            result[key] = value
+        python_type = configuration.get('type')
+        if python_type is not None:
+            if hasattr(python_type, '__name__'):
+                type_name = python_type.__name__
+            else:
+                type_name = type(python_type).__name__
+
+            result['python_type_name'] = type_name
+
+        result.update({
+            key: value
+            for key, value in configuration.items()
+            if key in JSON_DIRECT_MIRROR_OPTIONS
+        })
 
         return result
 
@@ -132,15 +140,6 @@ ARGPARSE_QUALIFIER_MAP = {
     Qualifiers.SUPPRESS: argparse.SUPPRESS,
     Qualifiers.ZERO_OR_MORE: argparse.ZERO_OR_MORE,
 }
-
-
-def map_qualifiers(
-    configuration: Dict[str, Any], qualifier_map: Dict[Qualifiers, Any]
-) -> Dict[str, Any]:
-    return {
-        key: qualifier_map[value] if isinstance(value, Qualifiers) else value
-        for key, value in configuration.items()
-    }
 
 
 def to_argparse(
@@ -170,6 +169,19 @@ def to_argparse(
             )
 
     return concrete_parser
+
+
+JSON_DIRECT_MIRROR_OPTIONS = (
+    'choices',
+    'metavar'
+)
+
+
+JSON_QUALIFIER_TO_OPTIONS = {
+    Qualifiers.OPTIONAL: {"is_optional": True},
+    Qualifiers.ZERO_OR_MORE: {"is_optional": True, "is_variadic": True},
+    Qualifiers.SUPPRESS: {}
+}
 
 
 def to_json(abstract_options: ParserSpec) -> Dict[str, Any]:
