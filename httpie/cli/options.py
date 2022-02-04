@@ -26,7 +26,7 @@ def map_qualifiers(
     }
 
 
-PARSER_SPEC_VERSION = '1.0.0'
+PARSER_SPEC_VERSION = '0.0.1a0'
 
 
 @dataclass
@@ -74,7 +74,7 @@ class Group:
     def serialize(self) -> Dict[str, Any]:
         return {
             'name': self.name,
-            'description': self.description,
+            'description': self.description or None,
             'is_mutually_exclusive': self.is_mutually_exclusive,
             'args': [argument.serialize() for argument in self.arguments],
         }

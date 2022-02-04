@@ -34,6 +34,17 @@ COMMANDS = {
             'List all installed HTTPie plugins.'
         ],
     },
+    'cli': {
+        'help': 'Manage HTTPie for Terminal',
+        'export': [
+            'Export available options for the CLI',
+            {
+                'variadic': ['-f', '--format'],
+                'choices': ['json'],
+                'default': 'json'
+            }
+        ]
+    }
 }
 
 
@@ -62,7 +73,7 @@ def generate_subparsers(root, parent_parser, definitions):
             continue
 
         for argument in properties:
-            command_parser.add_argument(**argument)
+            command_parser.add_argument(*argument.pop('variadic', []), **argument)
 
 
 parser = HTTPieManagerArgumentParser(
