@@ -5,6 +5,7 @@ import sys
 import time
 import json
 import tempfile
+from contextlib import suppress
 from io import BytesIO
 from pathlib import Path
 from typing import Any, Optional, Union, List, Iterable
@@ -206,12 +207,16 @@ def httpie(
     env.stdout.seek(0)
     env.stderr.seek(0)
     try:
-        try:
-            output = env.stdout.read().decode()
-        except UnicodeDecodeError:
+        output = env.stdout.read()
+        if isinstance(output, bytes):
+            with suppress(UnicodeDecodeError):
+                output = output.decode()
+
+        if isinstance(output, bytes):
             response = BytesCLIResponse(output)
         else:
             response = StrCLIResponse(output)
+
         response.stderr = env.stderr.read()
         response.exit_status = exit_status
         response.args = cli_args

@@ -26,10 +26,10 @@ FORMAT_TO_CONTENT_TYPE = {
 @task("export")
 def cli_export(env: Environment, args: argparse.Namespace) -> ExitStatus:
     from httpie.cli.definition import options
-    from httpie.cli.options import to_json
+    from httpie.cli.options import to_data
 
     if args.format == 'json':
-        data = json.dumps(to_json(options))
+        data = json.dumps(to_data(options))
     else:
         raise NotImplementedError(f"Unexpected format value: {args.format}")
 

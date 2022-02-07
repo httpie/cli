@@ -4,6 +4,7 @@ from httpie.status import ExitStatus
 from httpie.cli.options import PARSER_SPEC_VERSION
 from tests.utils import httpie
 
+
 @pytest.mark.requires_installation
 def test_plugins_cli_error_message_without_args():
     # No arguments

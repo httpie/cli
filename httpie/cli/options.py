@@ -1,11 +1,9 @@
-from __future__ import annotations
-
 import argparse
 import textwrap
 import typing
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any, Dict, List, Type, TypeVar
+from typing import Any, Optional, Dict, List, Type, TypeVar
 
 from httpie.cli.argparser import HTTPieArgumentParser
 from httpie.cli.utils import LazyChoices
@@ -32,18 +30,20 @@ PARSER_SPEC_VERSION = '0.0.1a0'
 @dataclass
 class ParserSpec:
     program: str
-    description: str
-    epilog: str
-    groups: List[Group] = field(default_factory=list)
+    description: Optional[str] = None
+    epilog: Optional[str] = None
+    groups: List['Group'] = field(default_factory=list)
 
-    def finalize(self):
-        self.description = textwrap.dedent(self.description)
-        self.epilog = textwrap.dedent(self.epilog)
+    def finalize(self) -> 'ParserSpec':
+        if self.description:
+            self.description = textwrap.dedent(self.description)
+        if self.epilog:
+            self.epilog = textwrap.dedent(self.epilog)
         for group in self.groups:
             group.finalize()
         return self
 
-    def new_group(self, name: str, **kwargs) -> Group:
+    def new_group(self, name: str, **kwargs) -> 'Group':
         group = Group(name, **kwargs)
         self.groups.append(group)
         return group
@@ -61,10 +61,11 @@ class Group:
     name: str
     description: str = ''
     is_mutually_exclusive: bool = False
-    arguments: List[Argument] = field(default_factory=list)
+    arguments: List['Argument'] = field(default_factory=list)
 
-    def finalize(self) -> Group:
-        self.description = textwrap.dedent(self.description)
+    def finalize(self) -> None:
+        if self.description:
+            self.description = textwrap.dedent(self.description)
 
     def add_argument(self, *args, **kwargs):
         argument = Argument(list(args), kwargs.copy())
@@ -82,7 +83,7 @@ class Group:
 
 class Argument(typing.NamedTuple):
     aliases: List[str]
-    configuration: Dict[str]
+    configuration: Dict[str, Any]
 
     def serialize(self) -> Dict[str, Any]:
         configuration = self.configuration.copy()
@@ -107,7 +108,7 @@ class Argument(typing.NamedTuple):
 
         help_msg = configuration.get('help')
         if help_msg and help_msg is not Qualifiers.SUPPRESS:
-            result['description'] = help_msg.strip().splitlines()[0]
+            result['description'] = help_msg.strip().splitlines()
 
         python_type = configuration.get('type')
         if python_type is not None:
@@ -184,5 +185,5 @@ JSON_QUALIFIER_TO_OPTIONS = {
 }
 
 
-def to_json(abstract_options: ParserSpec) -> Dict[str, Any]:
+def to_data(abstract_options: ParserSpec) -> Dict[str, Any]:
     return {'version': PARSER_SPEC_VERSION, 'spec': abstract_options.serialize()}
