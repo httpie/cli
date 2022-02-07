@@ -38,3 +38,4 @@ def cli_export(env: Environment, args: argparse.Namespace) -> ExitStatus:
         data,
         stream_kwargs={'mime_overwrite': FORMAT_TO_CONTENT_TYPE[args.format]},
     )
+    return ExitStatus.SUCCESS

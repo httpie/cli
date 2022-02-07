@@ -25,7 +25,7 @@ MSG_NAKED_INVOCATION = f'''\
 
 
 def dispatch_cli_task(env: Environment, action: Optional[str], args: argparse.Namespace) -> ExitStatus:
-    if args is None:
+    if action is None:
         parser.error(missing_subcommand('cli'))
 
     return CLI_TASKS[action](env, args)

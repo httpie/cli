@@ -206,7 +206,12 @@ def httpie(
     env.stdout.seek(0)
     env.stderr.seek(0)
     try:
-        response = StrCLIResponse(env.stdout.read())
+        try:
+            output = env.stdout.read().decode()
+        except UnicodeDecodeError:
+            response = BytesCLIResponse(output)
+        else:
+            response = StrCLIResponse(output)
         response.stderr = env.stderr.read()
         response.exit_status = exit_status
         response.args = cli_args
