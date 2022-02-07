@@ -1,6 +1,6 @@
-import argparse
 import errno
-from typing import IO, TextIO, Tuple, Type, Union
+import requests
+from typing import Any, Dict, IO, Optional, TextIO, Tuple, Type, Union
 
 from ..cli.dicts import HTTPHeadersDict
 from ..context import Environment
@@ -10,8 +10,9 @@ from ..models import (
     HTTPMessage,
     RequestsMessage,
     RequestsMessageKind,
-    OutputOptions
+    OutputOptions,
 )
+from .models import ProcessingOptions
 from .processing import Conversion, Formatting
 from .streams import (
     BaseStream, BufferedPrettyStream, EncodedStream, PrettyStream, RawStream,
@@ -25,30 +26,31 @@ MESSAGE_SEPARATOR_BYTES = MESSAGE_SEPARATOR.encode()
 def write_message(
     requests_message: RequestsMessage,
     env: Environment,
-    args: argparse.Namespace,
     output_options: OutputOptions,
+    processing_options: ProcessingOptions,
+    extra_stream_kwargs: Optional[Dict[str, Any]] = None
 ):
     if not output_options.any():
         return
     write_stream_kwargs = {
         'stream': build_output_stream_for_message(
-            args=args,
             env=env,
             requests_message=requests_message,
             output_options=output_options,
+            processing_options=processing_options,
+            extra_stream_kwargs=extra_stream_kwargs
         ),
         # NOTE: `env.stdout` will in fact be `stderr` with `--download`
         'outfile': env.stdout,
-        'flush': env.stdout_isatty or args.stream
+        'flush': env.stdout_isatty or processing_options.stream
     }
     try:
-        if env.is_windows and 'colors' in args.prettify:
+        if env.is_windows and 'colors' in processing_options.get_prettify(env):
             write_stream_with_colors_win(**write_stream_kwargs)
         else:
             write_stream(**write_stream_kwargs)
     except OSError as e:
-        show_traceback = args.debug or args.traceback
-        if not show_traceback and e.errno == errno.EPIPE:
+        if processing_options.show_traceback and e.errno == errno.EPIPE:
             # Ignore broken pipes unless --traceback.
             env.stderr.write('\n')
         else:
@@ -94,11 +96,34 @@ def write_stream_with_colors_win(
             outfile.flush()
 
 
+def write_raw_data(
+    env: Environment,
+    data: Any,
+    *,
+    processing_options: Optional[ProcessingOptions] = None,
+    headers: Optional[HTTPHeadersDict] = None,
+    stream_kwargs: Optional[Dict[str, Any]] = None
+):
+    msg = requests.PreparedRequest()
+    msg.is_body_upload_chunk = True
+    msg.body = data
+    msg.headers = headers or HTTPHeadersDict()
+    msg_output_options = OutputOptions.from_message(msg, body=True, headers=False)
+    return write_message(
+        requests_message=msg,
+        env=env,
+        output_options=msg_output_options,
+        processing_options=processing_options or ProcessingOptions(),
+        extra_stream_kwargs=stream_kwargs
+    )
+
+
 def build_output_stream_for_message(
-    args: argparse.Namespace,
     env: Environment,
     requests_message: RequestsMessage,
     output_options: OutputOptions,
+    processing_options: ProcessingOptions,
+    extra_stream_kwargs: Optional[Dict[str, Any]] = None
 ):
     message_type = {
         RequestsMessageKind.REQUEST: HTTPRequest,
@@ -106,10 +131,12 @@ def build_output_stream_for_message(
     }[output_options.kind]
     stream_class, stream_kwargs = get_stream_type_and_kwargs(
         env=env,
-        args=args,
+        processing_options=processing_options,
         message_type=message_type,
         headers=requests_message.headers
     )
+    if extra_stream_kwargs:
+        stream_kwargs.update(extra_stream_kwargs)
     yield from stream_class(
         msg=message_type(requests_message),
         output_options=output_options,
@@ -124,20 +151,21 @@ def build_output_stream_for_message(
 
 def get_stream_type_and_kwargs(
     env: Environment,
-    args: argparse.Namespace,
+    processing_options: ProcessingOptions,
     message_type: Type[HTTPMessage],
     headers: HTTPHeadersDict,
 ) -> Tuple[Type['BaseStream'], dict]:
     """Pick the right stream type and kwargs for it based on `env` and `args`.
 
     """
-    is_stream = args.stream
+    is_stream = processing_options.stream
+    prettify_groups = processing_options.get_prettify(env)
     if not is_stream and message_type is HTTPResponse:
         # If this is a response, then check the headers for determining
         # auto-streaming.
         is_stream = headers.get('Content-Type') == 'text/event-stream'
 
-    if not env.stdout_isatty and not args.prettify:
+    if not env.stdout_isatty and not prettify_groups:
         stream_class = RawStream
         stream_kwargs = {
             'chunk_size': (
@@ -153,19 +181,19 @@ def get_stream_type_and_kwargs(
         }
         if message_type is HTTPResponse:
             stream_kwargs.update({
-                'mime_overwrite': args.response_mime,
-                'encoding_overwrite': args.response_charset,
+                'mime_overwrite': processing_options.response_mime,
+                'encoding_overwrite': processing_options.response_charset,
             })
-        if args.prettify:
+        if prettify_groups:
             stream_class = PrettyStream if is_stream else BufferedPrettyStream
             stream_kwargs.update({
                 'conversion': Conversion(),
                 'formatting': Formatting(
                     env=env,
-                    groups=args.prettify,
-                    color_scheme=args.style,
-                    explicit_json=args.json,
-                    format_options=args.format_options,
+                    groups=prettify_groups,
+                    color_scheme=processing_options.style,
+                    explicit_json=processing_options.json,
+                    format_options=processing_options.format_options,
                 )
             })
 

@@ -4,7 +4,7 @@ from typing import TypeVar, Callable
 
 from httpie.status import ExitStatus
 from httpie.context import Environment
-
+from httpie.output.writer import write_raw_data
 
 T = TypeVar("T")
 
@@ -18,11 +18,23 @@ def task(name: str) -> Callable[[T], T]:
     return wrapper
 
 
+FORMAT_TO_CONTENT_TYPE = {
+    'json': 'application/json'
+}
+
+
 @task("export")
 def cli_export(env: Environment, args: argparse.Namespace) -> ExitStatus:
     from httpie.cli.definition import options
     from httpie.cli.options import to_json
 
     if args.format == 'json':
-        env.stdout.write(json.dumps(to_json(options), indent=4))
-        env.stdout.write("\n")
+        data = json.dumps(to_json(options))
+    else:
+        raise NotImplementedError(f"Unexpected format value: {args.format}")
+
+    write_raw_data(
+        env,
+        data,
+        stream_kwargs={'mime_overwrite': FORMAT_TO_CONTENT_TYPE[args.format]},
+    )
