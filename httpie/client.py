@@ -13,7 +13,8 @@ import urllib3
 from . import __version__
 from .adapters import HTTPieHTTPAdapter
 from .context import Environment
-from .cli.dicts import HTTPHeadersDict
+from .cli.constants import EMPTY_STRING
+from .cli.dicts import HTTPHeadersDict, NestedJSONArray
 from .encoding import UTF8
 from .models import RequestsMessage
 from .plugins.registry import plugin_manager
@@ -280,7 +281,8 @@ def json_dict_to_request_body(data: Dict[str, Any]) -> str:
     # item in the object, with an en empty key.
     if len(data) == 1:
         [(key, value)] = data.items()
-        if key == '' and isinstance(value, list):
+        if isinstance(value, NestedJSONArray):
+            assert key == EMPTY_STRING
             data = value
 
     if data:
