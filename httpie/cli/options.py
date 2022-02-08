@@ -100,7 +100,7 @@ class Argument(typing.NamedTuple):
         if self.aliases:
             result['options'] = self.aliases.copy()
         else:
-            result['options'] = configuration["metavar"]
+            result['options'] = configuration['metavar']
             result['is_positional'] = True
 
         qualifiers = JSON_QUALIFIER_TO_OPTIONS[configuration.get('nargs', Qualifiers.SUPPRESS)]
@@ -179,8 +179,8 @@ JSON_DIRECT_MIRROR_OPTIONS = (
 
 
 JSON_QUALIFIER_TO_OPTIONS = {
-    Qualifiers.OPTIONAL: {"is_optional": True},
-    Qualifiers.ZERO_OR_MORE: {"is_optional": True, "is_variadic": True},
+    Qualifiers.OPTIONAL: {'is_optional': True},
+    Qualifiers.ZERO_OR_MORE: {'is_optional': True, 'is_variadic': True},
     Qualifiers.SUPPRESS: {}
 }
 
