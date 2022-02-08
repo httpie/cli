@@ -47,12 +47,39 @@ class HTTPieHelpFormatter(RawDescriptionHelpFormatter):
         text = dedent(text).strip() + '\n\n'
         return text.splitlines()
 
+    def add_usage(self, usage, actions, groups, prefix=None):
+        # Only display the positional arguments
+        displayed_actions = [
+            action
+            for action in actions
+            if not action.option_strings
+        ]
+
+        _, exception, _ = sys.exc_info()
+        if (
+            isinstance(exception, argparse.ArgumentError)
+            and len(exception.args) >= 1
+            and isinstance(exception.args[0], argparse.Action)
+        ):
+            # add_usage path is also taken when you pass an invalid option,
+            # e.g --style=invalid. If something like that happens, we want
+            # to include to action that caused to the invalid usage into
+            # the list of actions we are displaying.
+            displayed_actions.insert(0, exception.args[0])
+
+        super().add_usage(
+            usage,
+            displayed_actions,
+            groups,
+            prefix="usage:\n    "
+        )
+
 
 # TODO: refactor and design type-annotated data structures
 #       for raw args + parsed args and keep things immutable.
 class BaseHTTPieArgumentParser(argparse.ArgumentParser):
-    def __init__(self, *args, formatter_class=HTTPieHelpFormatter, **kwargs):
-        super().__init__(*args, formatter_class=formatter_class, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.env = None
         self.args = None
         self.has_stdin_data = False
@@ -115,9 +142,9 @@ class HTTPieArgumentParser(BaseHTTPieArgumentParser):
 
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, formatter_class=HTTPieHelpFormatter, **kwargs):
         kwargs.setdefault('add_help', False)
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, formatter_class=formatter_class, **kwargs)
 
     # noinspection PyMethodOverriding
     def parse_args(
@@ -514,3 +541,21 @@ class HTTPieArgumentParser(BaseHTTPieArgumentParser):
         for options_group in format_options:
             parsed_options = parse_format_options(options_group, defaults=parsed_options)
         self.args.format_options = parsed_options
+
+    def error(self, message):
+        """Prints a usage message incorporating the message to stderr and
+        exits."""
+        self.print_usage(sys.stderr)
+        self.exit(
+            2,
+            dedent(
+                f'''
+                error:
+                    {message}
+
+                For more information:
+                    - Try running {self.prog} --help
+                    - Or visiting https://httpie.io/docs/cli
+                '''
+            )
+        )
