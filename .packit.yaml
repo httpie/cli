@@ -12,8 +12,6 @@ jobs:
   metadata:
     targets:
     - fedora-all
-    additional_repos:
-    - "https://kojipkgs.fedoraproject.org/repos/f$releasever-build/latest/$basearch/"
 - job: propose_downstream
   trigger: release
   metadata:
