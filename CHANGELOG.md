@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 ## [3.0.3.dev0](https://github.com/httpie/httpie/compare/3.0.2...HEAD) (Unreleased)
 
 - Fixed escaping of integer indexes with multiple backslashes in the nested JSON builder. ([#1285](https://github.com/httpie/httpie/issues/1285))
+- Fixed displaying of status code without a status message on non-`auto` themes. ([#1300](https://github.com/httpie/httpie/issues/1300))
 
 ## [3.0.2](https://github.com/httpie/httpie/compare/3.0.1...3.0.2) (2022-01-24)
 
