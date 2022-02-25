@@ -113,7 +113,7 @@ class Session(BaseConfigDict):
     @cookies.setter
     def cookies(self, jar: RequestsCookieJar):
         # <https://docs.python.org/3/library/cookielib.html#cookie-objects>
-        stored_attrs = ['value', 'path', 'secure', 'expires']
+        stored_attrs = ['value', 'domain', 'path', 'secure', 'expires']
         self['cookies'] = {}
         for cookie in jar:
             self['cookies'][cookie.name] = {
