@@ -205,12 +205,12 @@ Also works for other Arch-derived distributions like ArcoLinux, EndeavourOS, Art
 
 ```bash
 # Install httpie
-$ pacman -Sy httpie
+$ pacman -Syu httpie
 ```
 
 ```bash
 # Upgrade httpie
-$ pacman -Syu httpie
+$ pacman -Syu
 ```
 
 ### FreeBSD
