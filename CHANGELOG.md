@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [3.0.3.dev0](https://github.com/httpie/httpie/compare/3.0.2...HEAD) (Unreleased)
 
+- Added support for specifying certificate private key passphrases through `--cert-key-pass` and prompts. ([#946](https://github.com/httpie/httpie/issues/946))
 - Fixed escaping of integer indexes with multiple backslashes in the nested JSON builder. ([#1285](https://github.com/httpie/httpie/issues/1285))
 - Fixed displaying of status code without a status message on non-`auto` themes. ([#1300](https://github.com/httpie/httpie/issues/1300))
 - Fixed redundant issuance of stdin detection warnings on some rare cases due to underlying implementation. ([#1303](https://github.com/httpie/httpie/pull/1303))
