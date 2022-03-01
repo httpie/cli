@@ -8,7 +8,7 @@ from textwrap import dedent, wrap
 from .. import __doc__, __version__
 from .argparser import HTTPieArgumentParser
 from .argtypes import (
-    KeyValueArgType, SessionNameValidator,
+    KeyValueArgType, SessionNameValidator, SSLCredentials,
     readable_file_arg, response_charset_type, response_mime_type,
 )
 from .constants import (
@@ -799,6 +799,17 @@ ssl.add_argument(
     help='''
     The private key to use with SSL. Only needed if --cert is given and the
     certificate file does not contain the private key.
+
+    '''
+)
+
+ssl.add_argument(
+    '--cert-key-pass',
+    default=None,
+    type=SSLCredentials,
+    help='''
+    The passphrase to be used to with the given private key. Only needed if --cert-key
+    is given and the key file requires a passphrase.
 
     '''
 )

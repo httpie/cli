@@ -10,7 +10,8 @@ from urllib.parse import urlsplit
 from requests.utils import get_netrc_auth
 
 from .argtypes import (
-    AuthCredentials, KeyValueArgType, PARSED_DEFAULT_FORMAT_OPTIONS,
+    AuthCredentials, SSLCredentials, KeyValueArgType,
+    PARSED_DEFAULT_FORMAT_OPTIONS,
     parse_auth,
     parse_format_options,
 )
@@ -148,6 +149,7 @@ class HTTPieArgumentParser(BaseHTTPieArgumentParser):
         self._parse_items()
         self._process_url()
         self._process_auth()
+        self._process_ssl_cert()
 
         if self.args.raw is not None:
             self._body_from_input(self.args.raw)
@@ -235,6 +237,19 @@ class HTTPieArgumentParser(BaseHTTPieArgumentParser):
             if not (self.args.output_file_specified and not self.args.download):
                 self.env.stdout = self.env.devnull
             self.env.apply_warnings_filter()
+
+    def _process_ssl_cert(self):
+        from httpie.ssl_ import _is_key_file_encrypted
+
+        if self.args.cert_key_pass is None:
+            self.args.cert_key_pass = SSLCredentials(None)
+
+        if (
+            self.args.cert_key is not None
+            and self.args.cert_key_pass.value is None
+            and _is_key_file_encrypted(self.args.cert_key)
+        ):
+            self.args.cert_key_pass.prompt_password(self.args.cert_key)
 
     def _process_auth(self):
         # TODO: refactor & simplify this method.

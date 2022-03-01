@@ -6,6 +6,8 @@ import pytest_httpbin.certs
 import requests.exceptions
 import urllib3
 
+from unittest import mock
+
 from httpie.ssl_ import AVAILABLE_SSL_VERSION_ARG_MAPPING, DEFAULT_SSL_CIPHERS
 from httpie.status import ExitStatus
 
@@ -32,6 +34,15 @@ CLIENT_CERT = str(CERTS_ROOT / 'client.crt')
 CLIENT_KEY = str(CERTS_ROOT / 'client.key')
 CLIENT_PEM = str(CERTS_ROOT / 'client.pem')
 
+# In case of a regeneration, use the following commands
+# in the PWD_TESTS_ROOT:
+#   $ openssl genrsa -aes128 -passout pass:password 3072 > client.pem
+#   $ openssl req -new -x509 -nodes -days 10000 -key client.pem > client.pem
+PWD_TESTS_ROOT = CERTS_ROOT / 'password_protected'
+PWD_CLIENT_PEM = str(PWD_TESTS_ROOT / 'client.pem')
+PWD_CLIENT_KEY = str(PWD_TESTS_ROOT / 'client.key')
+PWD_CLIENT_PASS = 'password'
+PWD_CLIENT_INVALID_PASS = PWD_CLIENT_PASS + 'invalid'
 
 # We test against a local httpbin instance which uses a self-signed cert.
 # Requests without --verify=<CA_BUNDLE> will fail with a verification error.
@@ -165,3 +176,37 @@ def test_pyopenssl_presence():
     else:
         assert urllib3.util.ssl_.IS_PYOPENSSL
         assert urllib3.util.IS_PYOPENSSL
+
+
+@mock.patch('httpie.cli.argtypes.SSLCredentials._prompt_password',
+            new=lambda self, prompt: PWD_CLIENT_PASS)
+def test_password_protected_cert_prompt(httpbin_secure):
+    r = http(httpbin_secure + '/get',
+             '--cert', PWD_CLIENT_PEM,
+             '--cert-key', PWD_CLIENT_KEY)
+    assert HTTP_OK in r
+
+
+@mock.patch('httpie.cli.argtypes.SSLCredentials._prompt_password',
+            new=lambda self, prompt: PWD_CLIENT_INVALID_PASS)
+def test_password_protected_cert_prompt_invalid(httpbin_secure):
+    with pytest.raises(ssl_errors):
+        http(httpbin_secure + '/get',
+             '--cert', PWD_CLIENT_PEM,
+             '--cert-key', PWD_CLIENT_KEY)
+
+
+def test_password_protected_cert_cli_arg(httpbin_secure):
+    r = http(httpbin_secure + '/get',
+             '--cert', PWD_CLIENT_PEM,
+             '--cert-key', PWD_CLIENT_KEY,
+             '--cert-key-pass', PWD_CLIENT_PASS)
+    assert HTTP_OK in r
+
+
+def test_password_protected_cert_cli_arg_invalid(httpbin_secure):
+    with pytest.raises(ssl_errors):
+        http(httpbin_secure + '/get',
+             '--cert', PWD_CLIENT_PEM,
+             '--cert-key', PWD_CLIENT_KEY,
+             '--cert-key-pass', PWD_CLIENT_INVALID_PASS)

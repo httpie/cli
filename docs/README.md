@@ -1489,6 +1489,21 @@ path of the key file with `--cert-key`:
 $ http --cert=client.crt --cert-key=client.key https://example.org
 ```
 
+If the given private key requires a passphrase, HTTPie will automatically detect it
+and ask it through a prompt:
+
+```bash
+$ http --cert=client.pem --cert-key=client.key https://example.org
+http: passphrase for client.key: ****
+```
+
+If you don't want to see a prompt, you can supply the passphrase with the `--cert-key-pass`
+argument:
+
+```bash
+$ http --cert=client.pem --cert-key=client.key --cert-key-pass=my_password https://example.org
+```
+
 ### SSL version
 
 Use the `--ssl=<PROTOCOL>` option to specify the desired protocol version to use.
