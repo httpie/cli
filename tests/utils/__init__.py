@@ -27,6 +27,8 @@ HTTPBIN_WITH_CHUNKED_SUPPORT = 'http://' + HTTPBIN_WITH_CHUNKED_SUPPORT_DOMAIN
 TESTS_ROOT = Path(__file__).parent.parent
 CRLF = '\r\n'
 COLOR = '\x1b['
+COLOR_RE = re.compile(r'\x1b\[\d+(;\d+)*?m', re.MULTILINE)
+
 HTTP_OK = '200 OK'
 # noinspection GrazieInspection
 HTTP_OK_COLOR = (
@@ -36,6 +38,10 @@ HTTP_OK_COLOR = (
 )
 
 DUMMY_URL = 'http://this-should.never-resolve'  # Note: URL never fetched
+
+
+def strip_colors(colorized_msg: str) -> str:
+    return COLOR_RE.sub('', colorized_msg)
 
 
 def mk_config_dir() -> Path:

@@ -18,13 +18,16 @@ class TestHandler(BaseHTTPRequestHandler):
             return func
         return inner
 
-    def do_GET(self):
+    def do_generic(self):
         parse_result = urlparse(self.path)
-        func = self.handlers['GET'].get(parse_result.path)
+        func = self.handlers[self.command].get(parse_result.path)
         if func is None:
             return self.send_error(HTTPStatus.NOT_FOUND)
 
         return func(self)
+
+    do_GET = do_generic
+    do_POST = do_generic
 
 
 @TestHandler.handler('GET', '/headers')
@@ -71,6 +74,15 @@ def random_encoding(handler):
         handler.wfile.write(f'{len(body.encode()):X}\r\n{body}\r\n'.encode())
 
     handler.wfile.write('0\r\n\r\n'.encode('utf-8'))
+
+
+@TestHandler.handler('POST', '/status/msg')
+def status_custom_msg(handler):
+    content_len = int(handler.headers.get('content-length', 0))
+    post_body = handler.rfile.read(content_len).decode()
+
+    handler.send_response(200, post_body)
+    handler.end_headers()
 
 
 @pytest.fixture(scope="function")
