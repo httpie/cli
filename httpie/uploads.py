@@ -94,7 +94,7 @@ def is_stdin(file: IO) -> bool:
         return file_no == sys.stdin.fileno()
 
 
-READ_THRESHOLD = float(os.getenv("HTTPIE_STDIN_READ_WARN_THRESHOLD", 10.0))
+READ_THRESHOLD = float(os.getenv('HTTPIE_STDIN_READ_WARN_THRESHOLD', 10.0))
 
 
 def observe_stdin_for_data_thread(env: Environment, file: IO, read_event: threading.Event) -> None:
