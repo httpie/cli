@@ -11,7 +11,7 @@ jobs:
   brew:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup brew
         run: |
           brew developer on
