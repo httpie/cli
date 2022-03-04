@@ -1,9 +1,10 @@
 import argparse
 from typing import TypeVar, Callable, Tuple
 
-from httpie.sessions import SESSIONS_DIR_NAME, Session, get_httpie_session
+from httpie.sessions import SESSIONS_DIR_NAME, get_httpie_session
 from httpie.status import ExitStatus
 from httpie.context import Environment
+from httpie.legacy import cookie_format as legacy_cookies
 from httpie.manager.cli import missing_subcommand, parser
 
 T = TypeVar('T')
@@ -51,27 +52,8 @@ def is_version_greater(version_1: str, version_2: str) -> bool:
     return split_version(version_1) > split_version(version_2)
 
 
-def fix_cookie_layout(session: Session, hostname: str, args: argparse.Namespace) -> None:
-    if not isinstance(session['cookies'], dict):
-        return None
-
-    session['cookies'] = [
-        {
-            'name': key,
-            **value
-        }
-        for key, value in session['cookies'].items()
-    ]
-    for cookie in session.cookies:
-        if cookie.domain == '':
-            if args.bind_cookies:
-                cookie.domain = hostname
-            else:
-                cookie._rest['is_explicit_none'] = True
-
-
 FIXERS_TO_VERSIONS = {
-    '3.1.0': fix_cookie_layout
+    '3.1.0': legacy_cookies.fix_layout
 }
 
 

@@ -8,7 +8,7 @@ import re
 from http.cookies import SimpleCookie
 from http.cookiejar import Cookie
 from pathlib import Path
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 from requests.auth import AuthBase
 from requests.cookies import RequestsCookieJar, remove_cookie_by_name
@@ -18,6 +18,7 @@ from .cli.dicts import HTTPHeadersDict
 from .config import BaseConfigDict, DEFAULT_CONFIG_DIR
 from .utils import url_as_host
 from .plugins.registry import plugin_manager
+from .legacy import cookie_format as legacy_cookies
 
 
 SESSIONS_DIR_NAME = 'sessions'
@@ -32,35 +33,23 @@ SESSION_IGNORED_HEADER_PREFIXES = ['Content-', 'If-']
 KEPT_COOKIE_OPTIONS = ['name', 'expires', 'path', 'value', 'domain', 'secure']
 DEFAULT_COOKIE_PATH = '/'
 
-INSECURE_COOKIE_JAR_WARNING = '''\
-Outdated layout detected for the current session. Please consider updating it,
-in order to not get affected by potential security problems.
-
-For fixing the current session:
-
-    With binding all cookies to the current host (secure):
-        $ httpie cli sessions upgrade --bind-cookies {hostname} {session_id}
-
-    Without binding cookies (leaving them as is) (insecure):
-        $ httpie cli sessions upgrade {hostname} {session_id}
-'''
-
-INSECURE_COOKIE_JAR_WARNING_FOR_NAMED_SESSIONS = '''\
-
-For fixing all named sessions:
-
-    With binding all cookies to the current host (secure):
-        $ httpie cli sessions upgrade-all --bind-cookies
-
-    Without binding cookies (leaving them as is) (insecure):
-        $ httpie cli sessions upgrade-all
-
-See https://pie.co/docs/security for more information.
-'''
-
 
 def is_anonymous_session(session_name: str) -> bool:
     return os.path.sep in session_name
+
+
+def session_hostname_to_dirname(hostname: str, session_name: str) -> str:
+    # host:port => host_port
+    hostname = hostname.replace(':', '_')
+    return os.path.join(
+        SESSIONS_DIR_NAME,
+        hostname,
+        f'{session_name}.json'
+    )
+
+
+def strip_port(hostname: str) -> str:
+    return hostname.split(':')[0]
 
 
 def materialize_cookie(cookie: Cookie) -> Dict[str, Any]:
@@ -92,22 +81,18 @@ def get_httpie_session(
         # HACK/FIXME: httpie-unixsocket's URLs have no hostname.
         bound_hostname = 'localhost'
 
-    # host:port => host_port
-    hostname = bound_hostname.replace(':', '_')
     if is_anonymous_session(session_name):
         path = os.path.expanduser(session_name)
         session_id = path
     else:
-        path = (
-            config_dir / SESSIONS_DIR_NAME / hostname / f'{session_name}.json'
-        )
+        path = config_dir / session_hostname_to_dirname(bound_hostname, session_name)
         session_id = session_name
 
     session = Session(
         path,
         env=env,
         session_id=session_id,
-        bound_host=bound_hostname.split(':')[0],
+        bound_host=strip_port(bound_hostname),
         refactor_mode=refactor_mode
     )
     session.load()
@@ -142,60 +127,35 @@ class Session(BaseConfigDict):
 
     def pre_process_data(self, data: Dict[str, Any]) -> Dict[str, Any]:
         cookies = data.get('cookies')
-        if isinstance(cookies, dict):
-            normalized_cookies = [
-                {
-                    'name': key,
-                    **value
-                }
-                for key, value in cookies.items()
-            ]
-        elif isinstance(cookies, list):
-            normalized_cookies = cookies
+        if cookies:
+            normalized_cookies = legacy_cookies.pre_process(self, cookies)
         else:
             normalized_cookies = []
 
-        should_issue_warning = False
         for cookie in normalized_cookies:
             domain = cookie.get('domain', '')
-            if domain == '' and isinstance(cookies, dict):
-                should_issue_warning = True
-            elif domain is None:
+            if domain is None:
                 # domain = None means explicitly lack of cookie, though
-                # requests requires domain to be string so we'll cast it
+                # requests requires domain to be a string so we'll cast it
                 # manually.
                 cookie['domain'] = ''
                 cookie['rest'] = {'is_explicit_none': True}
 
             self.cookie_jar.set(**cookie)
 
-        if should_issue_warning and not self.refactor_mode:
-            warning = INSECURE_COOKIE_JAR_WARNING.format(hostname=self.bound_host, session_id=self.session_id)
-            if not is_anonymous_session(self.session_id):
-                warning += INSECURE_COOKIE_JAR_WARNING_FOR_NAMED_SESSIONS
-
-            self.env.log_error(
-                warning,
-                level='warning'
-            )
-
         return data
 
     def post_process_data(self, data: Dict[str, Any]) -> Dict[str, Any]:
         cookies = data.get('cookies')
-        # Save in the old-style fashion
 
         normalized_cookies = [
             materialize_cookie(cookie)
             for cookie in self.cookie_jar
         ]
-        if isinstance(cookies, dict):
-            data['cookies'] = {
-                cookie.pop('name'): cookie
-                for cookie in normalized_cookies
-            }
-        else:
-            data['cookies'] = normalized_cookies
+        data['cookies'] = legacy_cookies.post_process(
+            normalized_cookies,
+            original_type=type(cookies)
+        )
 
         return data
 
@@ -251,7 +211,7 @@ class Session(BaseConfigDict):
     def cookies(self, jar: RequestsCookieJar):
         self.cookie_jar = jar
 
-    def remove_cookies(self, cookies: Dict[str, str]):
+    def remove_cookies(self, cookies: List[Dict[str, str]]):
         for cookie in cookies:
             remove_cookie_by_name(
                 self.cookie_jar,
@@ -293,3 +253,7 @@ class Session(BaseConfigDict):
     def auth(self, auth: dict):
         assert {'type', 'raw_auth'} == auth.keys()
         self['auth'] = auth
+
+    @property
+    def is_anonymous(self):
+        return is_anonymous_session(self.session_id)

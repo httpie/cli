@@ -4,7 +4,7 @@ from httpie import __version__
 
 CLI_SESSION_UPGRADE_FLAGS = [
     {
-        'variadic': ['--bind-cookies'],
+        'flags': ['--bind-cookies'],
         'action': 'store_true',
         'default': False,
         'help': 'Bind domainless cookies to the host that session belongs.'
@@ -102,8 +102,8 @@ def generate_subparsers(root, parent_parser, definitions):
 
         for argument in properties:
             argument = argument.copy()
-            variadic = argument.pop('variadic', [])
-            command_parser.add_argument(*variadic, **argument)
+            flags = argument.pop('flags', [])
+            command_parser.add_argument(*flags, **argument)
 
 
 parser = HTTPieManagerArgumentParser(

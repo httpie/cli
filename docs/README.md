@@ -2422,23 +2422,6 @@ And since there’s neither data nor `EOF`, it will get stuck. So unless you’r
 
 Also, it might be good to set a connection `--timeout` limit to prevent your program from hanging if the server never responds.
 
-### Security
-
-#### Exposure of Cookies To The 3rd Party Hosts On Redirects
-
-*Vulnerability Type*: [CWE-200](https://cwe.mitre.org/data/definitions/200.html)
-*Severity Level*: LOW
-*Affected Versions*: `<3.1.0`
-
-The handling of [cookies](#cookies) was not compatible with the [RFC 6265](https://datatracker.ietf.org/doc/html/rfc6265)
-on the point of handling the `Domain` attribute when they were saved into [session](#sessions) files. All cookies were shared
-across all hosts during the runtime, including redirects to the 3rd party hosts.
-
-This vulnerability has been fixed in [3.1.0](https://github.com/httpie/httpie/releases/tag/3.1.0) and the
-[`httpie cli sessions upgrade`](#upgrading-sessions)/[`httpie cli sessions upgrade-all`]((#upgrading-sessions) commands
-have been put in place in order to allow a smooth transition to the new session layout from the existing [session](#sessions)
-files.
-
 ## Plugin manager
 
 HTTPie offers extensibility through a [plugin API](https://github.com/httpie/httpie/blob/master/httpie/plugins/base.py),
