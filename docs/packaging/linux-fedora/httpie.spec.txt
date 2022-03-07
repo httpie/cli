@@ -1,5 +1,5 @@
 Name:           httpie
-Version:        2.6.0
+Version:        3.0.2
 Release:        1%{?dist}
 Summary:        A Curl-like tool for humans
 
@@ -78,6 +78,21 @@ help2man %{buildroot}%{_bindir}/httpie > %{buildroot}%{_mandir}/man1/httpie.1
 
 
 %changelog
+* Mon Jan 24 2022 Miro Hrončok <mhroncok@redhat.com> - 3.0.2-1
+- Update to 3.0.2
+- Fixes: rhbz#2044572
+
+* Mon Jan 24 2022 Miro Hrončok <mhroncok@redhat.com> - 3.0.1-1
+- Update to 3.0.1
+- Fixes: rhbz#2044058
+
+* Fri Jan 21 2022 Miro Hrončok <mhroncok@redhat.com> - 3.0.0-1
+- Update to 3.0.0
+- Fixes: rhbz#2043680
+
+* Thu Jan 20 2022 Fedora Release Engineering <releng@fedoraproject.org> - 2.6.0-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_36_Mass_Rebuild
+
 * Fri Oct 15 2021 Miro Hrončok <mhroncok@redhat.com> - 2.6.0-1
 - Update to 2.6.0
 - Fixes: rhbz#2014022

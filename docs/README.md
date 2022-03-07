@@ -205,12 +205,12 @@ Also works for other Arch-derived distributions like ArcoLinux, EndeavourOS, Art
 
 ```bash
 # Install httpie
-$ pacman -Sy httpie
+$ pacman -Syu httpie
 ```
 
 ```bash
 # Upgrade httpie
-$ pacman -Syu httpie
+$ pacman -Syu
 ```
 
 ### FreeBSD
@@ -260,7 +260,7 @@ Verify that now you have the [current development version identifier](https://gi
 
 ```bash
 $ http --version
-# 3.0.0
+# 3.0.3.dev0
 ```
 
 ## Usage
@@ -854,6 +854,47 @@ $ http PUT pie.dev/put \
 
 #### Advanced usage
 
+##### Top level arrays
+
+If you want to send an array instead of a regular object, you can simply
+do that by omitting the starting key:
+
+```bash
+$ http --offline --print=B pie.dev/post \
+    []:=1 \
+    []:=2 \
+    []:=3
+```
+
+```json
+[
+    1,
+    2,
+    3
+]
+```
+
+You can also apply the nesting to the items by referencing their index:
+
+```bash
+http --offline --print=B pie.dev/post \
+    [0][type]=platform [0][name]=terminal \
+    [1][type]=platform [1][name]=desktop
+```
+
+```json
+[
+    {
+        "type": "platform",
+        "name": "terminal"
+    },
+    {
+        "type": "platform",
+        "name": "desktop"
+    }
+]
+```
+
 ##### Escaping behavior
 
 Nested JSON syntax uses the same [escaping rules](#escaping-rules) as
@@ -1336,7 +1377,7 @@ Here are a few picks:
 - [httpie-jwt-auth](https://github.com/teracyhq/httpie-jwt-auth): JWTAuth (JSON Web Tokens)
 - [httpie-negotiate](https://github.com/ndzou/httpie-negotiate): SPNEGO (GSS Negotiate)
 - [httpie-ntlm](https://github.com/httpie/httpie-ntlm): NTLM (NT LAN Manager)
-- [httpie-oauth](https://github.com/httpie/httpie-oauth): OAuth
+- [httpie-oauth1](https://github.com/qcif/httpie-oauth1): OAuth 1.0a
 - [requests-hawk](https://github.com/mozilla-services/requests-hawk): Hawk
 
 See [plugin manager](#plugin-manager) for more details.

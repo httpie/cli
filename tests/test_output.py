@@ -18,10 +18,15 @@ from httpie.cli.argtypes import (
 )
 from httpie.cli.definition import parser
 from httpie.encoding import UTF8
-from httpie.output.formatters.colors import get_lexer, PIE_STYLE_NAMES
+from httpie.output.formatters.colors import get_lexer, PIE_STYLE_NAMES, BUNDLED_STYLES
 from httpie.status import ExitStatus
 from .fixtures import XML_DATA_RAW, XML_DATA_FORMATTED
-from .utils import COLOR, CRLF, HTTP_OK, MockEnvironment, http, DUMMY_URL
+from .utils import COLOR, CRLF, HTTP_OK, MockEnvironment, http, DUMMY_URL, strip_colors
+
+
+# For ensuring test reproducibility, avoid using the unsorted
+# BUNDLED_STYLES set.
+SORTED_BUNDLED_STYLES = sorted(BUNDLED_STYLES)
 
 
 @pytest.mark.parametrize('stdout_isatty', [True, False])
@@ -258,6 +263,24 @@ def test_ensure_meta_is_colored(httpbin, style):
     env = MockEnvironment(colors=256)
     r = http('--meta', '--style', style, 'GET', httpbin + '/get', env=env)
     assert COLOR in r
+
+
+@pytest.mark.parametrize('style', SORTED_BUNDLED_STYLES)
+@pytest.mark.parametrize('msg', [
+    '',
+    ' ',
+    ' OK',
+    ' OK ',
+    ' CUSTOM ',
+])
+def test_ensure_status_code_is_shown_on_all_themes(http_server, style, msg):
+    env = MockEnvironment(colors=256)
+    r = http('--style', style,
+             http_server + '/status/msg',
+             '--raw', msg, env=env)
+
+    # Trailing space is stripped away.
+    assert 'HTTP/1.0 200' + msg.rstrip() in strip_colors(r)
 
 
 class TestPrettyOptions:
