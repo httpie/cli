@@ -2157,30 +2157,28 @@ $ http --session-read-only=./ro-session.json pie.dev/headers Custom-Header:orig-
 $ http --session-read-only=./ro-session.json pie.dev/headers Custom-Header:new-value
 ```
 
-### Host-based Cookie Policy
+### Host-based cookie policy
 
-Cookies in stored HTTPie sessions have a `domain` field which is binding them to the
-specified hostname. For example, in the following session:
+Cookies persisted in sessions files have a `domain` field. This _binds_ them to a specified hostname. For example:
 
 ```json
 {
     "cookies": [
         {
             "domain": "pie.dev",
-            "name": "secret_cookie",
-            "value": "value_1"
+            "name": "pie",
+            "value": "apple"
         },
         {
             "domain": "httpbin.org",
-            "name": "secret_cookie",
-            "value": "value_2"
+            "name": "bin",
+            "value": "http"
         }
     ]
 }
 ```
 
-we will send `Cookie:secret_cookie=value_1` only when you are making a request against `pie.dev` (it
-also includes the domains, like `api.pie.dev`), and `Cookie:secret_cookie=value_2` when you use `httpbin.org`.
+Using this session file, we include `Cookie: pie=apple` only in requests against `pie.dev` and subdomains (e.g., `foo.pie.dev` or `foo.bar.pie.dev`):
 
 ```bash
 $ http --session=./session.json pie.dev/cookies
@@ -2189,36 +2187,20 @@ $ http --session=./session.json pie.dev/cookies
 ```json
 {
     "cookies": {
-        "secret_cookie": "value_1"
+        "pie": "apple"
     }
 }
 ```
 
-```bash
-$ http --session=./session.json httpbin.org/cookies
-```
-
-```json
-{
-    "cookies": {
-        "secret_cookie": "value_2"
-    }
-}
-```
-
-If you want to make a cookie domain unbound, you can simply set the `domain`
-field to `null` by editing the session file directly:
+To make a cookie domain _unbound_ (i.e., to make it available to all hosts, including throughout a cross-domain redirect chain), you can set the `domain` field to `null` in the session file:
 
 ```json
 {
     "cookies": [
         {
             "domain": null,
-            "expires": null,
-            "name": "generic_cookie",
-            "path": "/",
-            "secure": false,
-            "value": "generic_value"
+            "name": "unbound-cookie",
+            "value": "send-me-to-any-host"
         }
     ]
 }
@@ -2231,105 +2213,87 @@ $ http --session=./session.json pie.dev/cookies
 ```json
 {
     "cookies": {
-        "generic_cookie": "generic_value"
+        "unbound-cookie": "send-me-to-any-host"
     }
 }
 ```
 
-### Cookie Storage Behavior
 
-**TL;DR:** Cookie storage priority: Server response > Command line request > Session file
+### Cookie storage behavior
 
-To set a cookie within a Session there are three options:
+There are three possible sources of persisted cookies within a session. They have the following storage priority: 1—response; 2—command line; 3—session file.
 
-1. Get a `Set-Cookie` header in a response from a server
+1. Receive a response with a `Set-Cookie` header:
 
-   ```bash
-   $ http --session=./session.json pie.dev/cookie/set?foo=bar
-   ```
+```bash
+$ http --session=./session.json pie.dev/cookie/set?foo=bar
+```
 
-2. Set the cookie name and value through the command line as seen in [cookies](#cookies)
+2. Send a cookie specified on the command line as seen in [cookies](#cookies):
 
-   ```bash
-   $ http --session=./session.json pie.dev/headers Cookie:foo=bar
-   ```
+```bash
+$ http --session=./session.json pie.dev/headers Cookie:foo=bar
+```
 
-3. Manually set cookie parameters in the JSON file of the session
+3. Manually set cookie parameters in the session file:
 
-   ```json
-   {
-       "__meta__": {
-       "about": "HTTPie session file",
-       "help": "https://httpie.org/doc#sessions",
-       "httpie": "2.2.0-dev"
-       },
-       "auth": {
-           "password": null,
-           "type": null,
-           "username": null
-       },
-       "cookies": {
-           "foo": {
-               "expires": null,
-               "path": "/",
-               "secure": false,
-               "value": "bar"
-               }
-       }
+```json
+{
+   "cookies": {
+       "foo": {
+           "expires": null,
+           "path": "/",
+           "secure": false,
+           "value": "bar"
+           }
    }
-   ```
-
-Cookies will be set in the session file with the priority specified above.
-For example, a cookie set through the command line will overwrite a cookie of the same name stored in the session file.
-If the server returns a `Set-Cookie` header with a cookie of the same name, the returned cookie will overwrite the preexisting cookie.
-
-Expired cookies are never stored.
-If a cookie in a session file expires, it will be removed before sending a new request.
-If the server expires an existing cookie, it will also be removed from the session file.
-
-### Upgrading Sessions
-
-In rare circumstances, HTTPie makes changes in it's session layout. For allowing a smoother transition of existing files
-from the old layout to the new layout we offer 2 interfaces:
-
-- `httpie cli sessions upgrade`
-- `httpie cli sessions upgrade-all`
-
-
-With `httpie cli sessions upgrade`, you can upgrade a single session with it's name (or it's path, if it is an
-[anonymous session](#anonymous-sessions)) and the hostname it belongs to. For example:
-
-([named session](#named-sessions))
-
-```bash
-$ httpie cli sessions upgrade pie.dev api_auth
-Refactored 'api_auth' (for 'pie.dev') to the version 3.1.0.
+}
 ```
 
-([anonymous session](#anonymous-sessions))
+In summary:
 
-```bash
-$ httpie cli sessions upgrade pie.dev ./session.json
-Refactored 'session' (for 'pie.dev') to the version 3.1.0.
-```
+- Cookies set via the CLI overwrite cookies of the same name inside session files. 
+- Server-sent `Set-Cookie` header cookies overwrite any pre-existing ones with the same name.
 
-If you want to upgrade every existing [named session](#named-sessions), you can use `httpie cli sessions upgrade-all` (be aware
-that this won't upgrade [anonymous sessions](#anonymous-sessions)):
+Cookie expiration handling:
+
+- When the server expires an existing cookie, HTTPie removes it from the session file.
+- When a cookie in a session file expires, HTTPie removes it before sending a new request.
+
+### Upgrading sessions
+
+HTTPie may introduce changes in the session file format.  When HTTPie detects an obsolete format, it shows a warning. You can upgrade your session files using the following commands:
+
+Upgrade all existing [named sessions](#named-sessions) inside the `sessions` subfolder of your [config directory](https://httpie.io/docs/cli/config-file-directory):
 
 ```bash
 $ httpie cli sessions upgrade-all
-Refactored 'api_auth' (for 'pie.dev') to the version 3.1.0.
-Refactored 'login_cookies' (for 'httpie.io') to the version 3.1.0.
+Upgraded 'api_auth' @ 'pie.dev' to v3.1.0
+Upgraded 'login_cookies' @ 'httpie.io' to v3.1.0
 ```
 
-#### Additional Customizations
+Upgrading individual sessions requires you to specify the session's hostname. That allows HTTPie to find the correct file in the case of name sessions. Additionally, it allows it to correctly bind cookies when upgrading with [`--bind-cookies`](#session-upgrade-options).
 
-| Flag             | Description                                                                                                                                                                                                                  |
-|------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `--bind-cookies` | Bind all the unbound cookies to the hostname that session belongs. By default, if the cookie is unbound (the `domain` attribute does not exist / set to an empty string) then it will still continue to be a generic cookie. |
+Upgrade a single [named session](#named-sessions):
 
-These flags can be used to customize the defaults during an `upgrade` operation. They can
-be used in both `sessions upgrade` and `sessions upgrade-all`.
+```bash
+$ httpie cli sessions upgrade pie.dev api_auth
+Upgraded 'api_auth' @ 'pie.dev' to v3.1.0
+```
+
+Upgrade a single [anonymous session](#anonymous-sessions) using a file path:
+
+```bash
+$ httpie cli sessions upgrade pie.dev ./session.json
+Upgraded 'session.json' @ 'pie.dev' to v3.1.0
+```
+
+#### Session upgrade options
+
+These flags are available for both `sessions upgrade` and `sessions upgrade-all`:
+
+------------------|------------------------------------------
+`--bind-cookies`  | Bind all previously [unbound cookies](#host-based-cookie-policy) to the session’s host. 
 
 ## Config
 
@@ -2342,7 +2306,7 @@ To see the exact location for your installation, run `http --debug` and look for
 
 The default location of the configuration file on most platforms is `$XDG_CONFIG_HOME/httpie/config.json` (defaulting to `~/.config/httpie/config.json`).
 
-For backwards compatibility, if the directory `~/.httpie` exists, the configuration file there will be used instead.
+For backward compatibility, if the directory `~/.httpie` exists, the configuration file there will be used instead.
 
 On Windows, the config file is located at `%APPDATA%\httpie\config.json`.
 
