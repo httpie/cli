@@ -69,7 +69,7 @@ def upgrade_session(env: Environment, args: argparse.Namespace, hostname: str, s
 
     session_name = session.path.stem
     if session.is_new():
-        env.log_error(f'{session_name!r} (for {hostname!r}) does not exist.')
+        env.log_error(f'{session_name!r} @ {hostname!r} does not exist.')
         return ExitStatus.ERROR
 
     fixers = [
@@ -79,14 +79,14 @@ def upgrade_session(env: Environment, args: argparse.Namespace, hostname: str, s
     ]
 
     if len(fixers) == 0:
-        env.stdout.write(f'{session_name!r} (for {hostname!r}) is already up-to-date.\n')
+        env.stdout.write(f'{session_name!r} @ {hostname!r} is already up to date.\n')
         return ExitStatus.SUCCESS
 
     for fixer in fixers:
         fixer(session, hostname, args)
 
     session.save(bump_version=True)
-    env.stdout.write(f'Refactored {session_name!r} (for {hostname!r}) to the version {session.version}.\n')
+    env.stdout.write(f'Upgraded {session_name!r} @ {hostname!r} to v{session.version}\n')
     return ExitStatus.SUCCESS
 
 
