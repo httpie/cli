@@ -568,9 +568,8 @@ class HTTPieArgumentParser(BaseHTTPieArgumentParser):
                 error:
                     {message}
 
-                For more information:
-                    - Try running {self.prog} --help
-                    - Or visiting https://httpie.io/docs/cli
+                for more information:
+                    run '{self.prog} --help' or visit https://httpie.io/docs/cli
                 '''
             )
         )
