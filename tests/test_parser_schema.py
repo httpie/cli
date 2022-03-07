@@ -4,7 +4,7 @@ from httpie.cli.options import ParserSpec, Qualifiers
 def test_parser_serialization():
     small_parser = ParserSpec("test_parser")
 
-    group_1 = small_parser.new_group("group_1")
+    group_1 = small_parser.add_group("group_1")
     group_1.add_argument("regular_arg", help="regular arg")
     group_1.add_argument(
         "variadic_arg",
@@ -20,7 +20,7 @@ def test_parser_serialization():
         help_formatter=lambda state: ", ".join(state),
     )
 
-    group_2 = small_parser.new_group("group_2")
+    group_2 = small_parser.add_group("group_2")
     group_2.add_argument("--typed", action="store_true", type=int)
 
     definition = small_parser.finalize()
@@ -35,7 +35,7 @@ def test_parser_serialization():
                 "args": [
                     {
                         "options": ["regular_arg"],
-                        "description": ["regular arg"],
+                        "description": "regular arg",
                     },
                     {
                         "options": ["variadic_arg"],
@@ -45,7 +45,7 @@ def test_parser_serialization():
                     },
                     {
                         "options": ["-O", "--opt-arg"],
-                        "description": ["opt_1, opt_2"],
+                        "description": "opt_1, opt_2",
                         "choices": ["opt_1", "opt_2"],
                     },
                 ],

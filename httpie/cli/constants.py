@@ -133,6 +133,7 @@ class RequestType(enum.Enum):
     JSON = enum.auto()
 
 
+EMPTY_STRING = ''
 OPEN_BRACKET = '['
 CLOSE_BRACKET = ']'
 BACKSLASH = '\\'

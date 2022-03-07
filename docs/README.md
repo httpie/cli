@@ -205,12 +205,12 @@ Also works for other Arch-derived distributions like ArcoLinux, EndeavourOS, Art
 
 ```bash
 # Install httpie
-$ pacman -Sy httpie
+$ pacman -Syu httpie
 ```
 
 ```bash
 # Upgrade httpie
-$ pacman -Syu httpie
+$ pacman -Syu
 ```
 
 ### FreeBSD
@@ -260,7 +260,7 @@ Verify that now you have the [current development version identifier](https://gi
 
 ```bash
 $ http --version
-# 3.0.0
+# 3.0.3.dev0
 ```
 
 ## Usage
@@ -854,6 +854,47 @@ $ http PUT pie.dev/put \
 
 #### Advanced usage
 
+##### Top level arrays
+
+If you want to send an array instead of a regular object, you can simply
+do that by omitting the starting key:
+
+```bash
+$ http --offline --print=B pie.dev/post \
+    []:=1 \
+    []:=2 \
+    []:=3
+```
+
+```json
+[
+    1,
+    2,
+    3
+]
+```
+
+You can also apply the nesting to the items by referencing their index:
+
+```bash
+http --offline --print=B pie.dev/post \
+    [0][type]=platform [0][name]=terminal \
+    [1][type]=platform [1][name]=desktop
+```
+
+```json
+[
+    {
+        "type": "platform",
+        "name": "terminal"
+    },
+    {
+        "type": "platform",
+        "name": "desktop"
+    }
+]
+```
+
 ##### Escaping behavior
 
 Nested JSON syntax uses the same [escaping rules](#escaping-rules) as
@@ -1336,7 +1377,7 @@ Here are a few picks:
 - [httpie-jwt-auth](https://github.com/teracyhq/httpie-jwt-auth): JWTAuth (JSON Web Tokens)
 - [httpie-negotiate](https://github.com/ndzou/httpie-negotiate): SPNEGO (GSS Negotiate)
 - [httpie-ntlm](https://github.com/httpie/httpie-ntlm): NTLM (NT LAN Manager)
-- [httpie-oauth](https://github.com/httpie/httpie-oauth): OAuth
+- [httpie-oauth1](https://github.com/qcif/httpie-oauth1): OAuth 1.0a
 - [requests-hawk](https://github.com/mozilla-services/requests-hawk): Hawk
 
 See [plugin manager](#plugin-manager) for more details.
@@ -1446,6 +1487,21 @@ path of the key file with `--cert-key`:
 
 ```bash
 $ http --cert=client.crt --cert-key=client.key https://example.org
+```
+
+If the given private key requires a passphrase, HTTPie will automatically detect it
+and ask it through a prompt:
+
+```bash
+$ http --cert=client.pem --cert-key=client.key https://example.org
+http: passphrase for client.key: ****
+```
+
+If you don't want to see a prompt, you can supply the passphrase with the `--cert-key-pass`
+argument:
+
+```bash
+$ http --cert=client.pem --cert-key=client.key --cert-key-pass=my_password https://example.org
 ```
 
 ### SSL version
@@ -2101,38 +2157,88 @@ $ http --session-read-only=./ro-session.json pie.dev/headers Custom-Header:orig-
 $ http --session-read-only=./ro-session.json pie.dev/headers Custom-Header:new-value
 ```
 
-### Cookie Storage Behavior
+### Host-based cookie policy
 
-**TL;DR:** Cookie storage priority: Server response > Command line request > Session file
+Cookies persisted in sessions files have a `domain` field. This _binds_ them to a specified hostname. For example:
 
-To set a cookie within a Session there are three options:
+```json
+{
+    "cookies": [
+        {
+            "domain": "pie.dev",
+            "name": "pie",
+            "value": "apple"
+        },
+        {
+            "domain": "httpbin.org",
+            "name": "bin",
+            "value": "http"
+        }
+    ]
+}
+```
 
-1. Get a `Set-Cookie` header in a response from a server
+Using this session file, we include `Cookie: pie=apple` only in requests against `pie.dev` and subdomains (e.g., `foo.pie.dev` or `foo.bar.pie.dev`):
 
-   ```bash
-   $ http --session=./session.json pie.dev/cookie/set?foo=bar
-   ```
+```bash
+$ http --session=./session.json pie.dev/cookies
+```
 
-2. Set the cookie name and value through the command line as seen in [cookies](#cookies)
+```json
+{
+    "cookies": {
+        "pie": "apple"
+    }
+}
+```
 
-   ```bash
-   $ http --session=./session.json pie.dev/headers Cookie:foo=bar
-   ```
+To make a cookie domain _unbound_ (i.e., to make it available to all hosts, including throughout a cross-domain redirect chain), you can set the `domain` field to `null` in the session file:
 
-3. Manually set cookie parameters in the JSON file of the session
+```json
+{
+    "cookies": [
+        {
+            "domain": null,
+            "name": "unbound-cookie",
+            "value": "send-me-to-any-host"
+        }
+    ]
+}
+```
 
-   ```json
-   {
-       "__meta__": {
-       "about": "HTTPie session file",
-       "help": "https://httpie.org/doc#sessions",
-       "httpie": "2.2.0-dev"
-       },
-       "auth": {
-           "password": null,
-           "type": null,
-           "username": null
-       },
+```bash
+$ http --session=./session.json pie.dev/cookies
+```
+
+```json
+{
+    "cookies": {
+        "unbound-cookie": "send-me-to-any-host"
+    }
+}
+```
+
+
+### Cookie storage behavior
+
+There are three possible sources of persisted cookies within a session. They have the following storage priority: 1—response; 2—command line; 3—session file.
+
+1. Receive a response with a `Set-Cookie` header:
+
+    ```bash
+    $ http --session=./session.json pie.dev/cookie/set?foo=bar
+    ```
+
+2. Send a cookie specified on the command line as seen in [cookies](#cookies):
+
+    ```bash
+    $ http --session=./session.json pie.dev/headers Cookie:foo=bar
+    ```
+
+3. Manually set cookie parameters in the session file:
+
+    ```json
+    {
        "cookies": {
            "foo": {
                "expires": null,
@@ -2141,16 +2247,53 @@ To set a cookie within a Session there are three options:
                "value": "bar"
                }
        }
-   }
-   ```
+    }
+    ```
 
-Cookies will be set in the session file with the priority specified above.
-For example, a cookie set through the command line will overwrite a cookie of the same name stored in the session file.
-If the server returns a `Set-Cookie` header with a cookie of the same name, the returned cookie will overwrite the preexisting cookie.
+In summary:
 
-Expired cookies are never stored.
-If a cookie in a session file expires, it will be removed before sending a new request.
-If the server expires an existing cookie, it will also be removed from the session file.
+- Cookies set via the CLI overwrite cookies of the same name inside session files.
+- Server-sent `Set-Cookie` header cookies overwrite any pre-existing ones with the same name.
+
+Cookie expiration handling:
+
+- When the server expires an existing cookie, HTTPie removes it from the session file.
+- When a cookie in a session file expires, HTTPie removes it before sending a new request.
+
+### Upgrading sessions
+
+HTTPie may introduce changes in the session file format.  When HTTPie detects an obsolete format, it shows a warning. You can upgrade your session files using the following commands:
+
+Upgrade all existing [named sessions](#named-sessions) inside the `sessions` subfolder of your [config directory](https://httpie.io/docs/cli/config-file-directory):
+
+```bash
+$ httpie cli sessions upgrade-all
+Upgraded 'api_auth' @ 'pie.dev' to v3.1.0
+Upgraded 'login_cookies' @ 'httpie.io' to v3.1.0
+```
+
+Upgrading individual sessions requires you to specify the session's hostname. That allows HTTPie to find the correct file in the case of name sessions. Additionally, it allows it to correctly bind cookies when upgrading with [`--bind-cookies`](#session-upgrade-options).
+
+Upgrade a single [named session](#named-sessions):
+
+```bash
+$ httpie cli sessions upgrade pie.dev api_auth
+Upgraded 'api_auth' @ 'pie.dev' to v3.1.0
+```
+
+Upgrade a single [anonymous session](#anonymous-sessions) using a file path:
+
+```bash
+$ httpie cli sessions upgrade pie.dev ./session.json
+Upgraded 'session.json' @ 'pie.dev' to v3.1.0
+```
+
+#### Session upgrade options
+
+These flags are available for both `sessions upgrade` and `sessions upgrade-all`:
+
+------------------|------------------------------------------
+`--bind-cookies`  | Bind all previously [unbound cookies](#host-based-cookie-policy) to the session’s host.
 
 ## Config
 
@@ -2163,7 +2306,7 @@ To see the exact location for your installation, run `http --debug` and look for
 
 The default location of the configuration file on most platforms is `$XDG_CONFIG_HOME/httpie/config.json` (defaulting to `~/.config/httpie/config.json`).
 
-For backwards compatibility, if the directory `~/.httpie` exists, the configuration file there will be used instead.
+For backward compatibility, if the directory `~/.httpie` exists, the configuration file there will be used instead.
 
 On Windows, the config file is located at `%APPDATA%\httpie\config.json`.
 
@@ -2260,9 +2403,10 @@ For managing these plugins; starting with 3.0, we are offering a new plugin mana
 This command is currently in beta.
 
 ### `httpie cli`
-#### `httpie cli export`
 
-`httpie cli export` command was designed to expose parser spec of the `http/`https` commands
+#### `httpie cli export-args`
+
+`httpie cli export-args` command can expose the parser specification of `http`/`https` commands
 (like an API definition) to outside tools so that they can use this to build better interactions
 over them (e.g offer auto-complete).
 
@@ -2275,7 +2419,7 @@ Available formats to export in include:
 You can use any of these formats with `--format` parameter, but the default one is `json`.
 
 ```bash
-$ httpie cli export | jq '"Program: " + .spec.name + ", Version: " +  .version'
+$ httpie cli export-args | jq '"Program: " + .spec.name + ", Version: " +  .version'
 "Program: http, Version: 0.0.1a0"
 ```
 
@@ -2408,6 +2552,10 @@ Helpers to convert from other client tools:
 ### Contributing
 
 See [CONTRIBUTING](https://github.com/httpie/httpie/blob/master/CONTRIBUTING.md).
+
+### Security policy
+
+See [github.com/httpie/httpie/security/policy](https://github.com/httpie/httpie/security/policy).
 
 ### Change log
 

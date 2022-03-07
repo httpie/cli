@@ -3,16 +3,15 @@
 specfile_path: httpie.spec
 actions:
   # get the current Fedora Rawhide specfile:
-  # post-upstream-clone: "wget https://src.fedoraproject.org/rpms/httpie/raw/rawhide/f/httpie.spec -O httpie.spec"
-  post-upstream-clone: "cp docs/packaging/linux-fedora/httpie.spec.txt httpie.spec"
+  post-upstream-clone: "wget https://src.fedoraproject.org/rpms/httpie/raw/rawhide/f/httpie.spec -O httpie.spec"
+  # Use this when the latest spec is not up-to-date.
+  # post-upstream-clone: "cp docs/packaging/linux-fedora/httpie.spec.txt httpie.spec"
 jobs:
 - job: copr_build
   trigger: pull_request
   metadata:
     targets:
     - fedora-all
-    additional_repos:
-    - "https://kojipkgs.fedoraproject.org/repos/f$releasever-build/latest/$basearch/"
 - job: propose_downstream
   trigger: release
   metadata:

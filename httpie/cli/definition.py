@@ -5,8 +5,8 @@ from argparse import FileType
 
 from httpie import __doc__, __version__
 from httpie.cli.argtypes import (KeyValueArgType, SessionNameValidator,
-                                 readable_file_arg, response_charset_type,
-                                 response_mime_type)
+                                 SSLCredentials, readable_file_arg,
+                                 response_charset_type, response_mime_type)
 from httpie.cli.constants import (BASE_OUTPUT_OPTIONS, DEFAULT_FORMAT_OPTIONS,
                                   OUT_REQ_BODY, OUT_REQ_HEAD, OUT_RESP_BODY,
                                   OUT_RESP_HEAD, OUT_RESP_META, OUTPUT_OPTIONS,
@@ -29,19 +29,17 @@ options = ParserSpec(
     epilog="""
     For every --OPTION there is also a --no-OPTION that reverts OPTION
     to its default value.
-
     Suggestions and bug reports are greatly appreciated:
-
         https://github.com/httpie/httpie/issues
-
     """,
 )
+
 
 #######################################################################
 # Positional arguments.
 #######################################################################
 
-positional_arguments = options.new_group(
+positional_arguments = options.add_group(
     'Positional Arguments',
     description="""
     These arguments come after any flags and in the order they are listed here.
@@ -130,7 +128,7 @@ positional_arguments.add_argument(
 # Content type.
 #######################################################################
 
-content_types = options.new_group('Predefined Content Types')
+content_types = options.add_group('Predefined Content Types')
 
 content_types.add_argument(
     '--json',
@@ -203,7 +201,7 @@ content_types.add_argument(
 # Content processing.
 #######################################################################
 
-processing_options = options.new_group('Content Processing Options')
+processing_options = options.add_group('Content Processing Options')
 
 processing_options.add_argument(
     '--compress',
@@ -256,7 +254,7 @@ _unsorted_kwargs = {
     'dest': 'format_options',
 }
 
-output_processing = options.new_group('Output Processing')
+output_processing = options.add_group('Output Processing')
 
 output_processing.add_argument(
     '--pretty',
@@ -363,7 +361,7 @@ output_processing.add_argument(
 # Output options
 #######################################################################
 
-output_options = options.new_group('Output Options')
+output_options = options.add_group('Output Options')
 
 output_options.add_argument(
     '--print',
@@ -540,7 +538,7 @@ session_name_validator = SessionNameValidator(
     'Session name contains invalid characters.'
 )
 
-sessions = options.new_group('Sessions', is_mutually_exclusive=True)
+sessions = options.add_group('Sessions', is_mutually_exclusive=True)
 
 sessions.add_argument(
     '--session',
@@ -603,7 +601,7 @@ def format_auth_help(auth_plugins_mapping):
     )
 
 
-authentication = options.new_group('Authentication')
+authentication = options.add_group('Authentication')
 
 authentication.add_argument(
     '--auth',
@@ -641,7 +639,7 @@ authentication.add_argument(
 # Network
 #######################################################################
 
-network = options.new_group('Network')
+network = options.add_group('Network')
 
 network.add_argument(
     '--offline',
@@ -751,7 +749,7 @@ network.add_argument(
 # SSL
 #######################################################################
 
-ssl = options.new_group('SSL')
+ssl = options.add_group('SSL')
 
 ssl.add_argument(
     '--verify',
@@ -809,11 +807,22 @@ ssl.add_argument(
     """,
 )
 
+ssl.add_argument(
+    '--cert-key-pass',
+    default=None,
+    type=SSLCredentials,
+    help='''
+    The passphrase to be used to with the given private key. Only needed if --cert-key
+    is given and the key file requires a passphrase.
+    If not provided, you’ll be prompted interactively.
+    '''
+)
+
 #######################################################################
 # Troubleshooting
 #######################################################################
 
-troubleshooting = options.new_group('Troubleshooting')
+troubleshooting = options.add_group('Troubleshooting')
 troubleshooting.add_argument(
     '--ignore-stdin',
     '-I',

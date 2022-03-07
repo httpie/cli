@@ -13,12 +13,13 @@ import urllib3
 from . import __version__
 from .adapters import HTTPieHTTPAdapter
 from .context import Environment
-from .cli.dicts import HTTPHeadersDict
+from .cli.constants import EMPTY_STRING
+from .cli.dicts import HTTPHeadersDict, NestedJSONArray
 from .encoding import UTF8
 from .models import RequestsMessage
 from .plugins.registry import plugin_manager
 from .sessions import get_httpie_session
-from .ssl_ import AVAILABLE_SSL_VERSION_ARG_MAPPING, HTTPieHTTPSAdapter
+from .ssl_ import AVAILABLE_SSL_VERSION_ARG_MAPPING, HTTPieCertificate, HTTPieHTTPSAdapter
 from .uploads import (
     compress_request, prepare_request_body,
     get_multipart_data_and_content_type,
@@ -43,6 +44,7 @@ def collect_messages(
     httpie_session_headers = None
     if args.session or args.session_read_only:
         httpie_session = get_httpie_session(
+            env=env,
             config_dir=env.config.directory,
             session_name=args.session or args.session_read_only,
             host=args.headers.get('Host'),
@@ -129,10 +131,7 @@ def collect_messages(
     if httpie_session:
         if httpie_session.is_new() or not args.session_read_only:
             httpie_session.cookies = requests_session.cookies
-            httpie_session.remove_cookies(
-                # TODO: take path & domain into account?
-                cookie['name'] for cookie in expired_cookies
-            )
+            httpie_session.remove_cookies(expired_cookies)
             httpie_session.save()
 
 
@@ -261,7 +260,14 @@ def make_send_kwargs_mergeable_from_env(args: argparse.Namespace) -> dict:
     if args.cert:
         cert = args.cert
         if args.cert_key:
-            cert = cert, args.cert_key
+            # Having a client certificate key passphrase is not supported
+            # by requests. So we are using our own transportation structure
+            # which is compatible with their format (a tuple of minimum two
+            # items).
+            #
+            # See: https://github.com/psf/requests/issues/2519
+            cert = HTTPieCertificate(cert, args.cert_key, args.cert_key_pass.value)
+
     return {
         'proxies': {p.key: p.value for p in args.proxy},
         'stream': True,
@@ -280,7 +286,8 @@ def json_dict_to_request_body(data: Dict[str, Any]) -> str:
     # item in the object, with an en empty key.
     if len(data) == 1:
         [(key, value)] = data.items()
-        if key == '' and isinstance(value, list):
+        if isinstance(value, NestedJSONArray):
+            assert key == EMPTY_STRING
             data = value
 
     if data:

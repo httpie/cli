@@ -2,7 +2,7 @@ import re
 import pygments
 from httpie.output.lexers.common import precise
 
-RE_STATUS_LINE = re.compile(r'(\d{3})( +)(.+)')
+RE_STATUS_LINE = re.compile(r'(\d{3})( +)?(.+)?')
 
 STATUS_TYPES = {
     '1': pygments.token.Number.HTTP.INFO,

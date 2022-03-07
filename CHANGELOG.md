@@ -3,6 +3,16 @@
 This document records all notable changes to [HTTPie](https://httpie.io).
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## [3.0.3.dev0](https://github.com/httpie/httpie/compare/3.0.2...HEAD) (Unreleased)
+
+- Added support for specifying certificate private key passphrases through `--cert-key-pass` and prompts. ([#946](https://github.com/httpie/httpie/issues/946))
+- Fixed escaping of integer indexes with multiple backslashes in the nested JSON builder. ([#1285](https://github.com/httpie/httpie/issues/1285))
+- Fixed displaying of status code without a status message on non-`auto` themes. ([#1300](https://github.com/httpie/httpie/issues/1300))
+- Fixed redundant issuance of stdin detection warnings on some rare cases due to underlying implementation. ([#1303](https://github.com/httpie/httpie/pull/1303))
+- Improved regulation of top-level arrays. ([#1292](https://github.com/httpie/httpie/commit/225dccb2186f14f871695b6c4e0bfbcdb2e3aa28))
+- Improved UI layout for standalone invocations. ([#1296](https://github.com/httpie/httpie/pull/1296))
+- Double `--quiet` flags will now suppress all python level warnings. ([#1271](https://github.com/httpie/httpie/issues/1271))
+
 ## [3.0.2](https://github.com/httpie/httpie/compare/3.0.1...3.0.2) (2022-01-24)
 
 [What’s new in HTTPie for Terminal 3.0 →](https://httpie.io/blog/httpie-3.0.0)

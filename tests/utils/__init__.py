@@ -5,6 +5,8 @@ import sys
 import time
 import json
 import tempfile
+import warnings
+import pytest
 from contextlib import suppress
 from io import BytesIO
 from pathlib import Path
@@ -16,6 +18,7 @@ import httpie.manager.__main__ as manager
 from httpie.status import ExitStatus
 from httpie.config import Config
 from httpie.context import Environment
+from httpie.utils import url_as_host
 
 
 # pytest-httpbin currently does not support chunked requests:
@@ -28,6 +31,8 @@ HTTPBIN_WITH_CHUNKED_SUPPORT = 'http://' + HTTPBIN_WITH_CHUNKED_SUPPORT_DOMAIN
 TESTS_ROOT = Path(__file__).parent.parent
 CRLF = '\r\n'
 COLOR = '\x1b['
+COLOR_RE = re.compile(r'\x1b\[\d+(;\d+)*?m', re.MULTILINE)
+
 HTTP_OK = '200 OK'
 # noinspection GrazieInspection
 HTTP_OK_COLOR = (
@@ -37,6 +42,11 @@ HTTP_OK_COLOR = (
 )
 
 DUMMY_URL = 'http://this-should.never-resolve'  # Note: URL never fetched
+DUMMY_HOST = url_as_host(DUMMY_URL)
+
+
+def strip_colors(colorized_msg: str) -> str:
+    return COLOR_RE.sub('', colorized_msg)
 
 
 def mk_config_dir() -> Path:
@@ -91,6 +101,7 @@ class MockEnvironment(Environment):
     def cleanup(self):
         self.stdout.close()
         self.stderr.close()
+        warnings.resetwarnings()
         if self._delete_config_dir:
             assert self._temp_dir in self.config_dir.parents
             from shutil import rmtree
@@ -180,6 +191,13 @@ class ExitStatusError(Exception):
     pass
 
 
+@pytest.fixture
+def mock_env() -> MockEnvironment:
+    env = MockEnvironment(stdout_mode='')
+    yield env
+    env.cleanup()
+
+
 def normalize_args(args: Iterable[Any]) -> List[str]:
     return [str(arg) for arg in args]
 
@@ -194,7 +212,7 @@ def httpie(
     status.
     """
 
-    env = kwargs.setdefault('env', MockEnvironment())
+    env = kwargs.setdefault('env', MockEnvironment(stdout_mode=''))
     cli_args = ['httpie']
     if not kwargs.pop('no_debug', False):
         cli_args.append('--debug')

@@ -2,6 +2,15 @@ from textwrap import dedent
 from httpie.cli.argparser import HTTPieManagerArgumentParser
 from httpie import __version__
 
+CLI_SESSION_UPGRADE_FLAGS = [
+    {
+        'flags': ['--bind-cookies'],
+        'action': 'store_true',
+        'default': False,
+        'help': 'Bind domainless cookies to the host that session belongs.'
+    }
+]
+
 COMMANDS = {
     'plugins': {
         'help': 'Manage HTTPie plugins.',
@@ -36,14 +45,39 @@ COMMANDS = {
     },
     'cli': {
         'help': 'Manage HTTPie for Terminal',
-        'export': [
+        'export-args': [
             'Export available options for the CLI',
             {
-                'variadic': ['-f', '--format'],
+                'flags': ['-f', '--format'],
                 'choices': ['json'],
                 'default': 'json'
             }
-        ]
+        ],
+        'sessions': {
+            'help': 'Manage HTTPie sessions',
+            'upgrade': [
+                'Upgrade the given HTTPie session with the latest '
+                'layout. A list of changes between different session versions '
+                'can be found in the official documentation.',
+                {
+                    'dest': 'hostname',
+                    'metavar': 'HOSTNAME',
+                    'help': 'The host this session belongs.'
+                },
+                {
+                    'dest': 'session',
+                    'metavar': 'SESSION_NAME_OR_PATH',
+                    'help': 'The name or the path for the session that will be upgraded.'
+                },
+                *CLI_SESSION_UPGRADE_FLAGS
+            ],
+            'upgrade-all': [
+                'Upgrade all named sessions with the latest layout. A list of '
+                'changes between different session versions can be found in the official '
+                'documentation.',
+                *CLI_SESSION_UPGRADE_FLAGS
+            ],
+        }
     }
 }
 
@@ -65,6 +99,8 @@ def generate_subparsers(root, parent_parser, definitions):
     )
     for command, properties in definitions.items():
         is_subparser = isinstance(properties, dict)
+        properties = properties.copy()
+
         descr = properties.pop('help', None) if is_subparser else properties.pop(0)
         command_parser = actions.add_parser(command, description=descr)
         command_parser.root = root
@@ -73,7 +109,9 @@ def generate_subparsers(root, parent_parser, definitions):
             continue
 
         for argument in properties:
-            command_parser.add_argument(*argument.pop('variadic', []), **argument)
+            argument = argument.copy()
+            flags = argument.pop('flags', [])
+            command_parser.add_argument(*flags, **argument)
 
 
 parser = HTTPieManagerArgumentParser(

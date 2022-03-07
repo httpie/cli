@@ -18,13 +18,13 @@ jobs:
   new-release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           ref: ${{ github.event.inputs.branch }}
       - name: PyPI configuration
         run: |
           echo "[distutils]\nindex-servers=\n    httpie\n\n[httpie]\nrepository = https://upload.pypi.org/legacy/\n" > $HOME/.pypirc
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v3
         with:
           python-version: 3.9
       - run: make publish

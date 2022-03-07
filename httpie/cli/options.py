@@ -43,7 +43,7 @@ class ParserSpec:
             group.finalize()
         return self
 
-    def new_group(self, name: str, **kwargs) -> 'Group':
+    def add_group(self, name: str, **kwargs) -> 'Group':
         group = Group(name, **kwargs)
         self.groups.append(group)
         return group
@@ -100,7 +100,7 @@ class Argument(typing.NamedTuple):
         if self.aliases:
             result['options'] = self.aliases.copy()
         else:
-            result['options'] = configuration['metavar']
+            result['options'] = [configuration['metavar']]
             result['is_positional'] = True
 
         qualifiers = JSON_QUALIFIER_TO_OPTIONS[configuration.get('nargs', Qualifiers.SUPPRESS)]
@@ -108,7 +108,7 @@ class Argument(typing.NamedTuple):
 
         help_msg = configuration.get('help')
         if help_msg and help_msg is not Qualifiers.SUPPRESS:
-            result['description'] = help_msg.strip().splitlines()
+            result['description'] = help_msg.strip()
 
         python_type = configuration.get('type')
         if python_type is not None:

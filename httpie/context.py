@@ -1,8 +1,10 @@
 import sys
 import os
+import warnings
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Iterator, IO, Optional
+from enum import Enum
 
 
 try:
@@ -15,6 +17,17 @@ from .config import DEFAULT_CONFIG_DIR, Config, ConfigFileError
 from .encoding import UTF8
 
 from .utils import repr_dict
+
+
+class Levels(str, Enum):
+    WARNING = 'warning'
+    ERROR = 'error'
+
+
+DISPLAY_THRESHOLDS = {
+    Levels.WARNING: 2,
+    Levels.ERROR: float('inf'),  # Never hide errors.
+}
 
 
 class Environment:
@@ -87,6 +100,8 @@ class Environment:
             self.stdout_encoding = getattr(
                 actual_stdout, 'encoding', None) or UTF8
 
+        self.quiet = kwargs.pop('quiet', 0)
+
     def __str__(self):
         defaults = dict(type(self).__dict__)
         actual = dict(defaults)
@@ -134,6 +149,14 @@ class Environment:
             self.stdout = original_stdout
             self.stderr = original_stderr
 
-    def log_error(self, msg, level='error'):
-        assert level in ['error', 'warning']
-        self._orig_stderr.write(f'\n{self.program_name}: {level}: {msg}\n\n')
+    def log_error(self, msg: str, level: Levels = Levels.ERROR) -> None:
+        if self.stdout_isatty and self.quiet >= DISPLAY_THRESHOLDS[level]:
+            stderr = self.stderr  # Not directly /dev/null, since stderr might be mocked
+        else:
+            stderr = self._orig_stderr
+
+        stderr.write(f'\n{self.program_name}: {level}: {msg}\n\n')
+
+    def apply_warnings_filter(self) -> None:
+        if self.quiet >= DISPLAY_THRESHOLDS[Levels.WARNING]:
+            warnings.simplefilter("ignore")

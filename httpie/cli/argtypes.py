@@ -130,16 +130,11 @@ class KeyValueArgType:
         return tokens
 
 
-class AuthCredentials(KeyValueArg):
-    """Represents parsed credentials."""
-
-    def has_password(self) -> bool:
-        return self.value is not None
-
-    def prompt_password(self, host: str):
-        prompt_text = f'http: password for {self.key}@{host}: '
+class PromptMixin:
+    def _prompt_password(self, prompt: str) -> str:
+        prompt_text = f'http: {prompt}: '
         try:
-            self.value = self._getpass(prompt_text)
+            return self._getpass(prompt_text)
         except (EOFError, KeyboardInterrupt):
             sys.stderr.write('\n')
             sys.exit(0)
@@ -148,6 +143,26 @@ class AuthCredentials(KeyValueArg):
     def _getpass(prompt):
         # To allow easy mocking.
         return getpass.getpass(str(prompt))
+
+
+class SSLCredentials(PromptMixin):
+    """Represents the passphrase for the certificate's key."""
+
+    def __init__(self, value: Optional[str]) -> None:
+        self.value = value
+
+    def prompt_password(self, key_file: str) -> None:
+        self.value = self._prompt_password(f'passphrase for {key_file}')
+
+
+class AuthCredentials(KeyValueArg, PromptMixin):
+    """Represents parsed credentials."""
+
+    def has_password(self) -> bool:
+        return self.value is not None
+
+    def prompt_password(self, host: str) -> None:
+        self.value = self._prompt_password(f'password for {self.key}@{host}:')
 
 
 class AuthCredentialsArgType(KeyValueArgType):

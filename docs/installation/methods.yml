@@ -106,9 +106,9 @@ tools:
       package: https://archlinux.org/packages/community/any/httpie/
     commands:
       install:
-        - pacman -Sy httpie
-      upgrade:
         - pacman -Syu httpie
+      upgrade:
+        - pacman -Syu
 
   pkg:
     title: FreshPorts
