@@ -2252,7 +2252,7 @@ $ http --session=./session.json pie.dev/headers Cookie:foo=bar
 
 In summary:
 
-- Cookies set via the CLI overwrite cookies of the same name inside session files. 
+- Cookies set via the CLI overwrite cookies of the same name inside session files.
 - Server-sent `Set-Cookie` header cookies overwrite any pre-existing ones with the same name.
 
 Cookie expiration handling:
@@ -2293,7 +2293,7 @@ Upgraded 'session.json' @ 'pie.dev' to v3.1.0
 These flags are available for both `sessions upgrade` and `sessions upgrade-all`:
 
 ------------------|------------------------------------------
-`--bind-cookies`  | Bind all previously [unbound cookies](#host-based-cookie-policy) to the session’s host. 
+`--bind-cookies`  | Bind all previously [unbound cookies](#host-based-cookie-policy) to the session’s host.
 
 ## Config
 
@@ -2531,6 +2531,10 @@ Helpers to convert from other client tools:
 ### Contributing
 
 See [CONTRIBUTING](https://github.com/httpie/httpie/blob/master/CONTRIBUTING.md).
+
+### Security policy
+
+See [github.com/httpie/httpie/security/policy](https://github.com/httpie/httpie/security/policy).
 
 ### Change log
 
