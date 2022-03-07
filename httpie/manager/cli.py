@@ -45,6 +45,14 @@ COMMANDS = {
     },
     'cli': {
         'help': 'Manage HTTPie for Terminal',
+        'export-args': [
+            'Export available options for the CLI',
+            {
+                'flags': ['-f', '--format'],
+                'choices': ['json'],
+                'default': 'json'
+            }
+        ],
         'sessions': {
             'help': 'Manage HTTPie sessions',
             'upgrade': [

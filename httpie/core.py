@@ -17,9 +17,10 @@ from .context import Environment, Levels
 from .downloads import Downloader
 from .models import (
     RequestsMessageKind,
-    OutputOptions,
+    OutputOptions
 )
-from .output.writer import write_message, write_stream, MESSAGE_SEPARATOR_BYTES
+from .output.models import ProcessingOptions
+from .output.writer import write_message, write_stream, write_raw_data, MESSAGE_SEPARATOR_BYTES
 from .plugins.registry import plugin_manager
 from .status import ExitStatus, http_status_to_exit_status
 from .utils import unwrap_context
@@ -169,6 +170,7 @@ def program(args: argparse.Namespace, env: Environment) -> ExitStatus:
     downloader = None
     initial_request: Optional[requests.PreparedRequest] = None
     final_response: Optional[requests.Response] = None
+    processing_options = ProcessingOptions.from_raw_args(args)
 
     def separate():
         getattr(env.stdout, 'buffer', env.stdout).write(MESSAGE_SEPARATOR_BYTES)
@@ -183,12 +185,12 @@ def program(args: argparse.Namespace, env: Environment) -> ExitStatus:
             and chunk
         )
         if should_pipe_to_stdout:
-            msg = requests.PreparedRequest()
-            msg.is_body_upload_chunk = True
-            msg.body = chunk
-            msg.headers = initial_request.headers
-            msg_output_options = OutputOptions.from_message(msg, body=True, headers=False)
-            write_message(requests_message=msg, env=env, args=args, output_options=msg_output_options)
+            return write_raw_data(
+                env,
+                chunk,
+                processing_options=processing_options,
+                headers=initial_request.headers
+            )
 
     try:
         if args.download:
@@ -222,9 +224,14 @@ def program(args: argparse.Namespace, env: Environment) -> ExitStatus:
                     exit_status = http_status_to_exit_status(http_status=message.status_code, follow=args.follow)
                     if exit_status != ExitStatus.SUCCESS and (not env.stdout_isatty or args.quiet == 1):
                         env.log_error(f'HTTP {message.raw.status} {message.raw.reason}', level=Levels.WARNING)
-            write_message(requests_message=message, env=env, args=args, output_options=output_options._replace(
-                body=do_write_body
-            ))
+            write_message(
+                requests_message=message,
+                env=env,
+                output_options=output_options._replace(
+                    body=do_write_body
+                ),
+                processing_options=processing_options
+            )
             prev_with_body = output_options.body
 
         # Cleanup

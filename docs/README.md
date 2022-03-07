@@ -2402,6 +2402,27 @@ For managing these plugins; starting with 3.0, we are offering a new plugin mana
 
 This command is currently in beta.
 
+### `httpie cli`
+
+#### `httpie cli export-args`
+
+`httpie cli export-args` command can expose the parser specification of `http`/`https` commands
+(like an API definition) to outside tools so that they can use this to build better interactions
+over them (e.g offer auto-complete).
+
+
+Available formats to export in include:
+| format | Description                                                                                                                                       |
+|--------|---------------------------------------------------------------------------------------------------------------------------------------------------|
+| `json` | Export the parser spec in JSON. The schema includes a top-level `version` parameter which should be interpreted in [semver](https://semver.org/). |
+
+You can use any of these formats with `--format` parameter, but the default one is `json`.
+
+```bash
+$ httpie cli export-args | jq '"Program: " + .spec.name + ", Version: " +  .version'
+"Program: http, Version: 0.0.1a0"
+```
+
 ### `httpie plugins`
 
 `plugins` interface is a very simple plugin manager for installing, listing and uninstalling HTTPie plugins.

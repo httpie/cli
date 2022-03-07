@@ -3,6 +3,7 @@ import shutil
 import json
 from httpie.sessions import SESSIONS_DIR_NAME
 from httpie.status import ExitStatus
+from httpie.cli.options import PARSER_SPEC_VERSION
 from tests.utils import DUMMY_HOST, httpie
 from tests.fixtures import SESSION_FILES_PATH, SESSION_FILES_NEW, SESSION_FILES_OLD, read_session_file
 
@@ -123,3 +124,15 @@ def test_httpie_sessions_upgrade_all(tmp_path, mock_env, extra_args, extra_varia
         assert read_session_file(refactored_session_file) == read_session_file(
             expected_session_file, extra_variables=extra_variables
         )
+
+
+@pytest.mark.parametrize(
+    'load_func, extra_options', [
+        (json.loads, []),
+        (json.loads, ['--format=json'])
+    ]
+)
+def test_cli_export(load_func, extra_options):
+    response = httpie('cli', 'export-args', *extra_options)
+    assert response.exit_status == ExitStatus.SUCCESS
+    assert load_func(response)['version'] == PARSER_SPEC_VERSION

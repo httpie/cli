@@ -34,7 +34,8 @@ class BaseStream(metaclass=ABCMeta):
         self,
         msg: HTTPMessage,
         output_options: OutputOptions,
-        on_body_chunk_downloaded: Callable[[bytes], None] = None
+        on_body_chunk_downloaded: Callable[[bytes], None] = None,
+        **kwargs
     ):
         """
         :param msg: a :class:`models.HTTPMessage` subclass
@@ -45,6 +46,7 @@ class BaseStream(metaclass=ABCMeta):
         self.msg = msg
         self.output_options = output_options
         self.on_body_chunk_downloaded = on_body_chunk_downloaded
+        self.extra_options = kwargs
 
     def get_headers(self) -> bytes:
         """Return the headers' bytes."""

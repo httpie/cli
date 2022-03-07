@@ -114,3 +114,28 @@ def cli_upgrade_all_sessions(env: Environment, args: argparse.Namespace) -> Exit
                 session_name=session_name
             )
     return status
+
+
+FORMAT_TO_CONTENT_TYPE = {
+    'json': 'application/json'
+}
+
+
+@task('export-args')
+def cli_export(env: Environment, args: argparse.Namespace) -> ExitStatus:
+    import json
+    from httpie.cli.definition import options
+    from httpie.cli.options import to_data
+    from httpie.output.writer import write_raw_data
+
+    if args.format == 'json':
+        data = json.dumps(to_data(options))
+    else:
+        raise NotImplementedError(f'Unexpected format value: {args.format}')
+
+    write_raw_data(
+        env,
+        data,
+        stream_kwargs={'mime_overwrite': FORMAT_TO_CONTENT_TYPE[args.format]},
+    )
+    return ExitStatus.SUCCESS
