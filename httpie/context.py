@@ -26,7 +26,7 @@ class Levels(str, Enum):
 
 DISPLAY_THRESHOLDS = {
     Levels.WARNING: 2,
-    Levels.ERROR: float('inf'), # Never hide errors.
+    Levels.ERROR: float('inf'),  # Never hide errors.
 }
 
 
