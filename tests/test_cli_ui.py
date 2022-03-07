@@ -18,9 +18,8 @@ usage:
 error:
     the following arguments are required: URL
 
-For more information:
-    - Try running http --help
-    - Or visiting https://httpie.io/docs/cli
+for more information:
+    run 'http --help' or visit https://httpie.io/docs/cli
 
 """
 
@@ -31,9 +30,8 @@ usage:
 error:
     argument --pretty: expected one argument
 
-For more information:
-    - Try running http --help
-    - Or visiting https://httpie.io/docs/cli
+for more information:
+    run 'http --help' or visit https://httpie.io/docs/cli
 
 """
 
@@ -44,9 +42,8 @@ usage:
 error:
     argument --pretty: invalid choice: '$invalid' (choose from 'all', 'colors', 'format', 'none')
 
-For more information:
-    - Try running http --help
-    - Or visiting https://httpie.io/docs/cli
+for more information:
+    run 'http --help' or visit https://httpie.io/docs/cli
 
 """
 
