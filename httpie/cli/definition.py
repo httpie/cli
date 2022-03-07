@@ -810,7 +810,7 @@ ssl.add_argument(
     help='''
     The passphrase to be used to with the given private key. Only needed if --cert-key
     is given and the key file requires a passphrase.
-
+    If not provided, you’ll be prompted interactively.
     '''
 )
 
