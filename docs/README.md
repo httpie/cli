@@ -2225,30 +2225,30 @@ There are three possible sources of persisted cookies within a session. They hav
 
 1. Receive a response with a `Set-Cookie` header:
 
-```bash
-$ http --session=./session.json pie.dev/cookie/set?foo=bar
-```
+    ```bash
+    $ http --session=./session.json pie.dev/cookie/set?foo=bar
+    ```
 
 2. Send a cookie specified on the command line as seen in [cookies](#cookies):
 
-```bash
-$ http --session=./session.json pie.dev/headers Cookie:foo=bar
-```
+    ```bash
+    $ http --session=./session.json pie.dev/headers Cookie:foo=bar
+    ```
 
 3. Manually set cookie parameters in the session file:
 
-```json
-{
-   "cookies": {
-       "foo": {
-           "expires": null,
-           "path": "/",
-           "secure": false,
-           "value": "bar"
-           }
-   }
-}
-```
+    ```json
+    {
+       "cookies": {
+           "foo": {
+               "expires": null,
+               "path": "/",
+               "secure": false,
+               "value": "bar"
+               }
+       }
+    }
+    ```
 
 In summary:
 
