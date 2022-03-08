@@ -1,0 +1,48 @@
+name: Release on Chocolatey
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "The branch, tag or SHA to release from"
+        required: true
+        default: "master"
+
+jobs:
+  brew-release:
+    name: Release the Chocolatey
+    runs-on: windows-2019
+    env:
+        package-dir: ./httpie/docs/packaging/windows-chocolatey
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
+      # Chocolatey comes already installed on the Windows GHA image
+      - name: Build the Choco package
+        shell: cmd
+        run: choco pack -v
+        working-directory: ${{ env.package-dir }}
+
+      - name: Check the Choco package
+        run: choco info httpie -s .
+        working-directory: ${{ env.package-dir }}
+
+      - name: Check the Installation
+        run: |
+          choco install httpie -y -dv -s "'.;https://community.chocolatey.org/api/v2/'"
+          http --version
+          https --version
+          httpie --version
+          choco uninstall -y httpie
+        working-directory: ${{ env.package-dir }}
+
+      - name: Publish on Chocolatey
+        shell: bash
+        env:
+          CHOCO_API_KEY: ${{ secrets.CHOCO_API_KEY }}
+        run: |
+          choco apikey --key $CHOCO_API_KEY --source https://push.chocolatey.org/
+          choco push httpie*.nupkg --source https://push.chocolatey.org/
