@@ -2292,8 +2292,9 @@ Upgraded 'session.json' @ 'pie.dev' to v3.1.0
 
 These flags are available for both `sessions upgrade` and `sessions upgrade-all`:
 
-------------------|------------------------------------------
-`--bind-cookies`  | Bind all previously [unbound cookies](#host-based-cookie-policy) to the session’s host.
+|------------------|-----------------------------------------------------------------------------------------|
+| `--bind-cookies` | Bind all previously [unbound cookies](#host-based-cookie-policy) to the session’s host. |
+
 
 ## Config
 
