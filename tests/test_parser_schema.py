@@ -36,6 +36,7 @@ def test_parser_serialization():
                     {
                         "options": ["regular_arg"],
                         "description": "regular arg",
+                        "short_description": "regular arg",
                     },
                     {
                         "options": ["variadic_arg"],
@@ -46,6 +47,7 @@ def test_parser_serialization():
                     {
                         "options": ["-O", "--opt-arg"],
                         "description": "opt_1, opt_2",
+                        "short_description": "opt_1, opt_2",
                         "choices": ["opt_1", "opt_2"],
                     },
                 ],

@@ -155,6 +155,7 @@ class HTTPieArgumentParser(BaseHTTPieArgumentParser):
         namespace=None
     ) -> argparse.Namespace:
         self.env = env
+        self.env.args = namespace = namespace or argparse.Namespace()
         self.args, no_options = super().parse_known_args(args, namespace)
         if self.args.debug:
             self.args.traceback = True
@@ -557,19 +558,47 @@ class HTTPieArgumentParser(BaseHTTPieArgumentParser):
             parsed_options = parse_format_options(options_group, defaults=parsed_options)
         self.args.format_options = parsed_options
 
+    def print_manual(self):
+        return super().print_help()
+
+    def print_help(self):
+        from httpie.output.ui import rich_help
+
+        for renderable in rich_help.to_help_message(self.spec):
+            self.env.rich_console.print(renderable)
+
+    def print_usage(self, file):
+        from httpie.output.ui import rich_help
+
+        whitelist = set()
+        _, exception, _ = sys.exc_info()
+        if (
+            isinstance(exception, argparse.ArgumentError)
+            and len(exception.args) >= 1
+            and isinstance(exception.args[0], argparse.Action)
+            and exception.args[0].option_strings
+        ):
+            # add_usage path is also taken when you pass an invalid option,
+            # e.g --style=invalid. If something like that happens, we want
+            # to include to action that caused to the invalid usage into
+            # the list of actions we are displaying.
+            whitelist.add(exception.args[0].option_strings[0])
+
+        self.env.rich_error_console.print(rich_help.to_usage(self.spec, whitelist=whitelist))
+
     def error(self, message):
         """Prints a usage message incorporating the message to stderr and
         exits."""
         self.print_usage(sys.stderr)
-        self.exit(
-            2,
+        self.env.rich_error_console.print(
             dedent(
                 f'''
-                error:
+                [bold]error[/bold]:
                     {message}
 
-                for more information:
+                [bold]for more information[/bold]:
                     run '{self.prog} --help' or visit https://httpie.io/docs/cli
-                '''
+                '''.rstrip()
             )
         )
+        self.exit(2)
