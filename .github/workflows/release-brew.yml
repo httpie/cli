@@ -1,0 +1,26 @@
+name: Release on Homebrew
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "The branch, tag or SHA to release from"
+        required: true
+        default: "master"
+
+jobs:
+  brew-release:
+    name: Release the Homebrew Package
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
+      - uses: mislav/bump-homebrew-formula-action@v1
+        with:
+          formula-name: httpie
+          tag-name: ${{ github.events.inputs.branch }}
+        env:
+          COMMITTER_TOKEN: ${{ secrets.BREW_UPDATE_TOKEN }}
