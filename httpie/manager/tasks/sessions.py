@@ -1,26 +1,13 @@
 import argparse
-from typing import TypeVar, Callable, Tuple
+from typing import Tuple
 
 from httpie.sessions import SESSIONS_DIR_NAME, get_httpie_session
 from httpie.status import ExitStatus
 from httpie.context import Environment
 from httpie.legacy import cookie_format as legacy_cookies
 from httpie.manager.cli import missing_subcommand, parser
-from httpie.manager.plugins import PluginInstaller
-
-T = TypeVar('T')
-
-CLI_TASKS = {}
 
 
-def task(name: str) -> Callable[[T], T]:
-    def wrapper(func: T) -> T:
-        CLI_TASKS[name] = func
-        return func
-    return wrapper
-
-
-@task('sessions')
 def cli_sessions(env: Environment, args: argparse.Namespace) -> ExitStatus:
     action = args.cli_sessions_action
     if action is None:
@@ -115,40 +102,3 @@ def cli_upgrade_all_sessions(env: Environment, args: argparse.Namespace) -> Exit
                 session_name=session_name
             )
     return status
-
-
-FORMAT_TO_CONTENT_TYPE = {
-    'json': 'application/json'
-}
-
-
-@task('export-args')
-def cli_export(env: Environment, args: argparse.Namespace) -> ExitStatus:
-    import json
-    from httpie.cli.definition import options
-    from httpie.cli.options import to_data
-    from httpie.output.writer import write_raw_data
-
-    if args.format == 'json':
-        data = json.dumps(to_data(options))
-    else:
-        raise NotImplementedError(f'Unexpected format value: {args.format}')
-
-    write_raw_data(
-        env,
-        data,
-        stream_kwargs={'mime_overwrite': FORMAT_TO_CONTENT_TYPE[args.format]},
-    )
-    return ExitStatus.SUCCESS
-
-
-@task('plugins')
-def cli_plugins(env: Environment, args: argparse.Namespace) -> ExitStatus:
-    plugins = PluginInstaller(env, debug=args.debug)
-
-    try:
-        action = args.cli_plugins_action
-    except AttributeError:
-        action = args.plugins_action
-
-    return plugins.run(action, args)
