@@ -6,6 +6,7 @@ from httpie.status import ExitStatus
 from httpie.context import Environment
 from httpie.legacy import cookie_format as legacy_cookies
 from httpie.manager.cli import missing_subcommand, parser
+from httpie.manager.plugins import PluginInstaller
 
 T = TypeVar('T')
 
@@ -139,3 +140,15 @@ def cli_export(env: Environment, args: argparse.Namespace) -> ExitStatus:
         stream_kwargs={'mime_overwrite': FORMAT_TO_CONTENT_TYPE[args.format]},
     )
     return ExitStatus.SUCCESS
+
+
+@task('plugins')
+def cli_plugins(env: Environment, args: argparse.Namespace) -> ExitStatus:
+    plugins = PluginInstaller(env, debug=args.debug)
+
+    try:
+        action = args.cli_plugins_action
+    except AttributeError:
+        action = args.plugins_action
+
+    return plugins.run(action, args)

@@ -3,6 +3,10 @@
 This document records all notable changes to [HTTPie](https://httpie.io).
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## [3.1.1.dev0](https://github.com/httpie/httpie/compare/3.1.0...HEAD) (Unreleased)
+
+- Added `httpie cli plugins` interface in favor of the new `httpie cli` namespace. The `httpie plugins` will still work as an alias, but the `httpie cli plugins` method should be preferred. ([#1320](https://github.com/httpie/httpie/issues/1320))
+
 ## [3.1.0](https://github.com/httpie/httpie/compare/3.0.2...3.1.0) (2022-03-08)
 
 - **SECURITY** Fixed the [vulnerability](https://github.com/httpie/httpie/security/advisories/GHSA-9w4w-cpc8-h2fq) that caused exposure of cookies on redirects to third party hosts. ([#1312](https://github.com/httpie/httpie/pull/1312))

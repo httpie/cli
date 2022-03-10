@@ -208,12 +208,17 @@ def httpie_plugins(interface):
     from tests.utils import httpie
     from httpie.plugins.registry import plugin_manager
 
-    def runner(*args):
+    def runner(*args, cli_mode: bool = True):
+        args = list(args)
+        if cli_mode:
+            args.insert(0, 'cli')
+        args.insert(cli_mode, 'plugins')
+
         # Prevent installed plugins from showing up.
         original_plugins = plugin_manager.copy()
         clean_sys_path = set(sys.path).difference(site.getsitepackages())
         with patch('sys.path', list(clean_sys_path)):
-            response = httpie('plugins', *args, env=interface.environment)
+            response = httpie(*args, env=interface.environment)
         plugin_manager.clear()
         plugin_manager.extend(original_plugins)
         return response
@@ -223,8 +228,8 @@ def httpie_plugins(interface):
 
 @pytest.fixture
 def httpie_plugins_success(httpie_plugins):
-    def runner(*args):
-        response = httpie_plugins(*args)
+    def runner(*args, cli_mode: bool = True):
+        response = httpie_plugins(*args, cli_mode=True)
         assert response.exit_status == ExitStatus.SUCCESS
         return response.splitlines()
     return runner

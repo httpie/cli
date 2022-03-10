@@ -12,37 +12,6 @@ CLI_SESSION_UPGRADE_FLAGS = [
 ]
 
 COMMANDS = {
-    'plugins': {
-        'help': 'Manage HTTPie plugins.',
-        'install': [
-            'Install the given targets from PyPI '
-            'or from a local paths.',
-            {
-                'dest': 'targets',
-                'nargs': '+',
-                'help': 'targets to install'
-            }
-        ],
-        'upgrade': [
-            'Upgrade the given plugins',
-            {
-                'dest': 'targets',
-                'nargs': '+',
-                'help': 'targets to upgrade'
-            }
-        ],
-        'uninstall': [
-            'Uninstall the given HTTPie plugins.',
-            {
-                'dest': 'targets',
-                'nargs': '+',
-                'help': 'targets to install'
-            }
-        ],
-        'list': [
-            'List all installed HTTPie plugins.'
-        ],
-    },
     'cli': {
         'help': 'Manage HTTPie for Terminal',
         'export-args': [
@@ -79,6 +48,39 @@ COMMANDS = {
             ],
         }
     }
+}
+
+
+COMMANDS['plugins'] = COMMANDS['cli']['plugins'] = {
+    'help': 'Manage HTTPie plugins.',
+    'install': [
+        'Install the given targets from PyPI '
+        'or from a local paths.',
+        {
+            'dest': 'targets',
+            'nargs': '+',
+            'help': 'targets to install'
+        }
+    ],
+    'upgrade': [
+        'Upgrade the given plugins',
+        {
+            'dest': 'targets',
+            'nargs': '+',
+            'help': 'targets to upgrade'
+        }
+    ],
+    'uninstall': [
+        'Uninstall the given HTTPie plugins.',
+        {
+            'dest': 'targets',
+            'nargs': '+',
+            'help': 'targets to install'
+        }
+    ],
+    'list': [
+        'List all installed HTTPie plugins.'
+    ],
 }
 
 
