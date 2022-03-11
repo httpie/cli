@@ -136,7 +136,7 @@ def test_auto_streaming(http_server, extras, expected):
     assert len([
         call_arg
         for call_arg in env.stdout.write.call_args_list
-        if b'test' in call_arg[0][0]
+        if 'test' in call_arg[0][0]
     ]) == expected
 
 
