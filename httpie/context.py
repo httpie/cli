@@ -1,9 +1,10 @@
+import argparse
 import sys
 import os
 import warnings
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Iterator, IO, Optional
+from typing import Iterator, IO, Optional, TYPE_CHECKING
 from enum import Enum
 
 
@@ -12,11 +13,15 @@ try:
 except ImportError:
     curses = None  # Compiled w/o curses
 
-from .compat import is_windows
+from .compat import is_windows, cached_property
 from .config import DEFAULT_CONFIG_DIR, Config, ConfigFileError
 from .encoding import UTF8
 
 from .utils import repr_dict
+from httpie.output.ui import palette
+
+if TYPE_CHECKING:
+    from rich.console import Console
 
 
 class Levels(str, Enum):
@@ -40,6 +45,7 @@ class Environment:
     is used by the test suite to simulate various scenarios.
 
     """
+    args = argparse.Namespace()
     is_windows: bool = is_windows
     config_dir: Path = DEFAULT_CONFIG_DIR
     stdin: Optional[IO] = sys.stdin  # `None` when closed fd (#791)
@@ -160,3 +166,42 @@ class Environment:
     def apply_warnings_filter(self) -> None:
         if self.quiet >= DISPLAY_THRESHOLDS[Levels.WARNING]:
             warnings.simplefilter("ignore")
+
+    def _make_rich_console(
+        self,
+        file: IO[str],
+        force_terminal: bool
+    ) -> 'Console':
+        from rich.console import Console
+        from rich.theme import Theme
+        from rich.style import Style
+
+        style = getattr(self.args, 'style', palette.AUTO_STYLE)
+        theme = {}
+        if style in palette.STYLE_SHADES:
+            shade = palette.STYLE_SHADES[style]
+            theme.update({
+                color: Style(color=palette.get_color(color, shade), bold=True)
+                for color in palette.COLOR_PALETTE
+            })
+
+        # Rich infers the rest of the knowledge (e.g encoding)
+        # dynamically by looking at the file/stderr.
+        return Console(
+            file=file,
+            force_terminal=force_terminal,
+            no_color=(self.colors == 0),
+            theme=Theme(theme)
+        )
+
+    # Rich recommends separting the actual console (stdout) from
+    # the error (stderr) console for better isolation between parts.
+    # https://rich.readthedocs.io/en/stable/console.html#error-console
+
+    @cached_property
+    def rich_console(self):
+        return self._make_rich_console(self.stdout, self.stdout_isatty)
+
+    @cached_property
+    def rich_error_console(self):
+        return self._make_rich_console(self.stderr, self.stderr_isatty)

@@ -17,12 +17,11 @@ from pygments.util import ClassNotFound
 
 from ..lexers.json import EnhancedJsonLexer
 from ..lexers.metadata import MetadataLexer
-from ..ui.palette import SHADE_NAMES, get_color
+from ..ui.palette import AUTO_STYLE, SHADE_NAMES, get_color
 from ...context import Environment
 from ...plugins import FormatterPlugin
 
 
-AUTO_STYLE = 'auto'  # Follows terminal ANSI color styles
 DEFAULT_STYLE = AUTO_STYLE
 SOLARIZED_STYLE = 'solarized'  # Bundled here
 

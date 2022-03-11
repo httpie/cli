@@ -3,10 +3,10 @@ import textwrap
 import typing
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any, Optional, Dict, List, Type, TypeVar
+from typing import Any, Optional, Dict, List, Tuple, Type, TypeVar
 
 from httpie.cli.argparser import HTTPieArgumentParser
-from httpie.cli.utils import LazyChoices
+from httpie.cli.utils import Manual, LazyChoices
 
 
 class Qualifiers(Enum):
@@ -22,6 +22,27 @@ def map_qualifiers(
         key: qualifier_map[value] if isinstance(value, Qualifiers) else value
         for key, value in configuration.items()
     }
+
+
+def drop_keys(
+    configuration: Dict[str, Any], key_blacklist: Tuple[str, ...]
+):
+    return {
+        key: value
+        for key, value in configuration.items()
+        if key not in key_blacklist
+    }
+
+
+def _get_first_line(source: str) -> str:
+    parts = []
+    for line in source.strip().splitlines():
+        line = line.strip()
+        parts.append(line)
+        if line.endswith("."):
+            break
+
+    return " ".join(parts)
 
 
 PARSER_SPEC_VERSION = '0.0.1a0'
@@ -91,6 +112,9 @@ class Argument(typing.NamedTuple):
         # Unpack the dynamically computed choices, since we
         # will need to store the actual values somewhere.
         action = configuration.pop('action', None)
+        short_help = configuration.pop('short_help', None)
+        nested_options = configuration.pop('nested_options', None)
+
         if action == 'lazy_choices':
             choices = LazyChoices(self.aliases, **{'dest': None, **configuration})
             configuration['choices'] = list(choices.load())
@@ -109,6 +133,10 @@ class Argument(typing.NamedTuple):
         help_msg = configuration.get('help')
         if help_msg and help_msg is not Qualifiers.SUPPRESS:
             result['description'] = help_msg.strip()
+            result['short_description'] = short_help or _get_first_line(help_msg)
+
+        if nested_options:
+            result['nested_options'] = nested_options
 
         python_type = configuration.get('type')
         if python_type is not None:
@@ -141,6 +169,7 @@ ARGPARSE_QUALIFIER_MAP = {
     Qualifiers.SUPPRESS: argparse.SUPPRESS,
     Qualifiers.ZERO_OR_MORE: argparse.ZERO_OR_MORE,
 }
+ARGPARSE_IGNORE_KEYS = ('short_help', 'nested_options')
 
 
 def to_argparse(
@@ -152,7 +181,9 @@ def to_argparse(
         description=abstract_options.description,
         epilog=abstract_options.epilog,
     )
+    concrete_parser.spec = abstract_options
     concrete_parser.register('action', 'lazy_choices', LazyChoices)
+    concrete_parser.register('action', 'manual', Manual)
 
     for abstract_group in abstract_options.groups:
         concrete_group = concrete_parser.add_argument_group(
@@ -164,9 +195,9 @@ def to_argparse(
         for abstract_argument in abstract_group.arguments:
             concrete_group.add_argument(
                 *abstract_argument.aliases,
-                **map_qualifiers(
+                **drop_keys(map_qualifiers(
                     abstract_argument.configuration, ARGPARSE_QUALIFIER_MAP
-                )
+                ), ARGPARSE_IGNORE_KEYS)
             )
 
     return concrete_parser
