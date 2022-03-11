@@ -568,6 +568,7 @@ class HTTPieArgumentParser(BaseHTTPieArgumentParser):
             self.env.rich_console.print(renderable)
 
     def print_usage(self, file):
+        from rich.text import Text
         from httpie.output.ui import rich_help
 
         whitelist = set()
@@ -584,7 +585,10 @@ class HTTPieArgumentParser(BaseHTTPieArgumentParser):
             # the list of actions we are displaying.
             whitelist.add(exception.args[0].option_strings[0])
 
-        self.env.rich_error_console.print(rich_help.to_usage(self.spec, whitelist=whitelist))
+        usage_text = Text('usage', style='bold')
+        usage_text.append(':\n    ')
+        usage_text.append(rich_help.to_usage(self.spec, whitelist=whitelist))
+        self.env.rich_error_console.print(usage_text)
 
     def error(self, message):
         """Prints a usage message incorporating the message to stderr and

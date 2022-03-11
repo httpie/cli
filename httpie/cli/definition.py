@@ -20,7 +20,6 @@ from httpie.output.formatters.colors import (AUTO_STYLE, DEFAULT_STYLE,
                                              get_available_styles)
 from httpie.plugins.builtin import BuiltinAuthPlugin
 from httpie.plugins.registry import plugin_manager
-from httpie.sessions import DEFAULT_SESSIONS_DIR
 from httpie.ssl_ import AVAILABLE_SSL_VERSION_ARG_MAPPING, DEFAULT_SSL_CIPHERS
 
 options = ParserSpec(
@@ -580,15 +579,18 @@ sessions.add_argument(
     metavar='SESSION_NAME_OR_PATH',
     type=session_name_validator,
     short_help='Create, or reuse and update a session.',
-    help=f"""
+    help="""
     Create, or reuse and update a session. Within a session, custom headers,
     auth credential, as well as any cookies sent by the server persist between
     requests.
 
     Session files are stored in:
 
-        {DEFAULT_SESSIONS_DIR}/<HOST>/<SESSION_NAME>.json.
+        [HTTPIE_CONFIG_DIR]/<HOST>/<SESSION_NAME>.json.
 
+    See the following page to find out your default HTTPIE_CONFIG_DIR:
+
+        https://httpie.io/docs/cli/config-file-directory
     """,
 )
 sessions.add_argument(
