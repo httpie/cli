@@ -587,8 +587,11 @@ sessions.add_argument(
 
     Session files are stored in:
 
-        {DEFAULT_SESSIONS_DIR}/<HOST>/<SESSION_NAME>.json.
+        [HTTPIE_CONFIG_DIR]/<HOST>/<SESSION_NAME>.json.
 
+    See the following page to find out your default HTTPIE_CONFIG_DIR:
+
+        https://httpie.io/docs/cli/config-file-directory
     """,
 )
 sessions.add_argument(

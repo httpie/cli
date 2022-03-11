@@ -155,6 +155,10 @@ class Argument(typing.NamedTuple):
 
         return result
 
+    @property
+    def is_positional(self):
+        return len(self.aliases) == 0
+
     def __getattr__(self, attribute_name):
         if attribute_name in self.configuration:
             return self.configuration[attribute_name]
