@@ -1,5 +1,6 @@
 from typing import Optional
 
+AUTO_STYLE = 'auto'  # Follows terminal ANSI color styles
 STYLE_PIE = 'pie'
 STYLE_PIE_DARK = 'pie-dark'
 STYLE_PIE_LIGHT = 'pie-light'
@@ -7,8 +8,6 @@ STYLE_PIE_LIGHT = 'pie-light'
 
 COLOR_PALETTE = {
     # Copy the brand palette
-    'transparent': 'transparent',
-    'current': 'currentColor',
     'white': '#F5F5F0',
     'black': '#1C1818',
     'grey': {
@@ -148,6 +147,11 @@ SHADE_NAMES = {
     '500': STYLE_PIE_DARK,
     '600': STYLE_PIE,
     '700': STYLE_PIE_LIGHT
+}
+
+STYLE_SHADES = {
+    style: shade
+    for shade, style in SHADE_NAMES.items()
 }
 
 SHADES = [
