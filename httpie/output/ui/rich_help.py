@@ -1,6 +1,6 @@
 import re
 import textwrap
-from typing import Tuple, Iterable, AbstractSet
+from typing import Optional, Tuple, Iterable, AbstractSet
 
 from rich.align import Align
 from rich.console import RenderableType
@@ -51,7 +51,12 @@ def unpack_argument(argument: Argument) -> Tuple[Text, Text]:
     return Text(opt1), Text(opt2)
 
 
-def to_usage(spec: ParserSpec, *, whitelist: AbstractSet[str] = frozenset()) -> RenderableType:
+def to_usage(
+    spec: ParserSpec,
+    *,
+    program_name: Optional[str] = None,
+    whitelist: AbstractSet[str] = frozenset()
+) -> RenderableType:
     shown_arguments = [
         argument
         for group in spec.groups
@@ -66,8 +71,7 @@ def to_usage(spec: ParserSpec, *, whitelist: AbstractSet[str] = frozenset()) -> 
     # shown first
     shown_arguments.sort(key=lambda argument: argument.aliases, reverse=True)
 
-    text = Text('usage:\n    ', style='bold')
-    text.append(spec.program)
+    text = Text(program_name or spec.program)
     for argument in shown_arguments:
         text.append(' ')
 
@@ -100,7 +104,9 @@ def to_usage(spec: ParserSpec, *, whitelist: AbstractSet[str] = frozenset()) -> 
 # This part is loosely based on the rich-click's help message
 # generation.
 def to_help_message(spec: ParserSpec) -> Iterable[RenderableType]:
-    yield Padding(to_usage(spec), 1)
+    usage_text = Text('usage:\n    ', style='bold')
+    usage_text.append(to_usage(spec))
+    yield Padding(usage_text, 1)
 
     yield Padding(
         Align(spec.description, pad=False),
