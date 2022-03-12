@@ -448,7 +448,7 @@ $ http https://api.github.com/search/repositories q==httpie per_page==1
 GET /search/repositories?q=httpie&per_page=1 HTTP/1.1
 ```
 
-You can even retrieve the `value` from a file by using the `param==@file` syntax. This would also effectively strip the newlines from the end. See [#file-based-separators] for more examples.
+You can even retrieve the `value` from a file by using the `param==@file` syntax. This would also effectively strip the newlines from the end. See [file based separators](#file-based-separators) for more examples.
 
 ```bash
 $ http pie.dev/get text==@files/text.txt
