@@ -83,4 +83,4 @@ def test_lazy_choices_help():
     # If we use --help, then we call it with styles
     with pytest.raises(SystemExit):
         parser.parse_args(['--help'])
-    help_formatter.assert_called_once_with(['a', 'b', 'c'])
+    help_formatter.assert_called_once_with(['a', 'b', 'c'], isolation_mode=False)
