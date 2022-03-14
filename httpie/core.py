@@ -195,7 +195,7 @@ def program(args: argparse.Namespace, env: Environment) -> ExitStatus:
     try:
         if args.download:
             args.follow = True  # --download implies --follow.
-            downloader = Downloader(output_file=args.output_file, progress_file=env.stderr, resume=args.download_resume)
+            downloader = Downloader(env, output_file=args.output_file, resume=args.download_resume)
             downloader.pre_request(args.headers)
         messages = collect_messages(env, args=args,
                                     request_body_read_callback=request_body_read_callback)
