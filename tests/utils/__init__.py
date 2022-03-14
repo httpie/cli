@@ -124,6 +124,7 @@ class MockEnvironment(Environment):
     stdin_isatty = True
     stdout_isatty = True
     is_windows = False
+    show_displays = False
 
     def __init__(self, create_temp_config_dir=True, **kwargs):
         self._encoder = Encoder()

@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Dict, Optional
 
 AUTO_STYLE = 'auto'  # Follows terminal ANSI color styles
 STYLE_PIE = 'pie'
@@ -160,11 +160,16 @@ SHADES = [
 ]
 
 
-def get_color(color: str, shade: str) -> Optional[str]:
-    if color not in COLOR_PALETTE:
+def get_color(
+    color: str,
+    shade: str,
+    *,
+    palette: Dict[str, Dict[str, str]] = COLOR_PALETTE
+) -> Optional[str]:
+    if color not in palette:
         return None
 
-    color_code = COLOR_PALETTE[color]
+    color_code = palette[color]
     if isinstance(color_code, dict) and shade in color_code:
         return color_code[shade]
     else:
