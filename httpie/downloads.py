@@ -5,10 +5,8 @@ Download mode implementation.
 import mimetypes
 import os
 import re
-import sys
-import threading
 from mailbox import Message
-from time import sleep, monotonic
+from time import monotonic
 from typing import IO, Optional, Tuple
 from urllib.parse import urlsplit
 
@@ -16,21 +14,10 @@ import requests
 
 from .models import HTTPResponse, OutputOptions
 from .output.streams import RawStream
-from .utils import humanize_bytes
+from .context import Environment
 
 
 PARTIAL_CONTENT = 206
-
-CLEAR_LINE = '\r\033[K'
-PROGRESS = (
-    '{percentage: 6.2f} %'
-    ' {downloaded: >10}'
-    ' {speed: >10}/s'
-    ' {eta: >8} ETA'
-)
-PROGRESS_NO_CONTENT_LENGTH = '{downloaded: >10} {speed: >10}/s'
-SUMMARY = 'Done. {downloaded} in {time:0.5f}s ({speed}/s)\n'
-SPINNER = '|/-\\'
 
 
 class ContentRangeError(ValueError):
@@ -176,9 +163,9 @@ class Downloader:
 
     def __init__(
         self,
+        env: Environment,
         output_file: IO = None,
-        resume: bool = False,
-        progress_file: IO = sys.stderr
+        resume: bool = False
     ):
         """
         :param resume: Should the download resume if partial download
@@ -191,14 +178,10 @@ class Downloader:
 
         """
         self.finished = False
-        self.status = DownloadStatus()
+        self.status = DownloadStatus(env=env)
         self._output_file = output_file
         self._resume = resume
         self._resumed_from = 0
-        self._progress_reporter = ProgressReporterThread(
-            status=self.status,
-            output=progress_file
-        )
 
     def pre_request(self, request_headers: dict):
         """Called just before the HTTP request is sent.
@@ -261,11 +244,6 @@ class Downloader:
                 except OSError:
                     pass  # stdout
 
-        self.status.started(
-            resumed_from=self._resumed_from,
-            total_size=total_size
-        )
-
         output_options = OutputOptions.from_message(final_response, headers=False, body=True)
         stream = RawStream(
             msg=HTTPResponse(final_response),
@@ -273,11 +251,11 @@ class Downloader:
             on_body_chunk_downloaded=self.chunk_downloaded,
         )
 
-        self._progress_reporter.output.write(
-            f'Downloading {humanize_bytes(total_size) + " " if total_size is not None else ""}'
-            f'to "{self._output_file.name}"\n'
+        self.status.started(
+            output_file=self._output_file,
+            resumed_from=self._resumed_from,
+            total_size=total_size
         )
-        self._progress_reporter.start()
 
         return stream, self._output_file
 
@@ -287,7 +265,7 @@ class Downloader:
         self.status.finished()
 
     def failed(self):
-        self._progress_reporter.stop()
+        self.status.terminate()
 
     @property
     def interrupted(self) -> bool:
@@ -329,22 +307,49 @@ class Downloader:
 class DownloadStatus:
     """Holds details about the download status."""
 
-    def __init__(self):
+    def __init__(self, env):
+        self.env = env
         self.downloaded = 0
         self.total_size = None
         self.resumed_from = 0
         self.time_started = None
         self.time_finished = None
 
-    def started(self, resumed_from=0, total_size=None):
+    def started(self, output_file, resumed_from=0, total_size=None):
         assert self.time_started is None
         self.total_size = total_size
         self.downloaded = self.resumed_from = resumed_from
         self.time_started = monotonic()
+        self.start_display(output_file=output_file)
+
+    def start_display(self, output_file):
+        from httpie.output.ui.rich_progress import (
+            DummyDisplay,
+            StatusDisplay,
+            ProgressDisplay
+        )
+
+        message = f'Downloading {output_file.name}'
+        if self.env.show_displays:
+            if self.total_size is None:
+                # Rich does not support progress bars without a total
+                # size given. Instead we use status objects.
+                self.display = StatusDisplay(self.env)
+            else:
+                self.display = ProgressDisplay(self.env)
+        else:
+            self.display = DummyDisplay(self.env)
+
+        self.display.start(
+            total=self.total_size,
+            at=self.downloaded,
+            description=message
+        )
 
     def chunk_downloaded(self, size):
         assert self.time_finished is None
         self.downloaded += size
+        self.display.update(size)
 
     @property
     def has_finished(self):
@@ -354,102 +359,7 @@ class DownloadStatus:
         assert self.time_started is not None
         assert self.time_finished is None
         self.time_finished = monotonic()
+        self.display.stop()
 
-
-class ProgressReporterThread(threading.Thread):
-    """
-    Reports download progress based on its status.
-
-    Uses threading to periodically update the status (speed, ETA, etc.).
-
-    """
-
-    def __init__(
-        self,
-        status: DownloadStatus,
-        output: IO,
-        tick=.1,
-        update_interval=1
-    ):
-        super().__init__()
-        self.status = status
-        self.output = output
-        self._tick = tick
-        self._update_interval = update_interval
-        self._spinner_pos = 0
-        self._status_line = ''
-        self._prev_bytes = 0
-        self._prev_time = monotonic()
-        self._should_stop = threading.Event()
-
-    def stop(self):
-        """Stop reporting on next tick."""
-        self._should_stop.set()
-
-    def run(self):
-        while not self._should_stop.is_set():
-            if self.status.has_finished:
-                self.sum_up()
-                break
-
-            self.report_speed()
-            sleep(self._tick)
-
-    def report_speed(self):
-        now = monotonic()
-        if now - self._prev_time >= self._update_interval:
-            downloaded = self.status.downloaded
-            speed = ((downloaded - self._prev_bytes)
-                     / (now - self._prev_time))
-
-            if not self.status.total_size:
-                self._status_line = PROGRESS_NO_CONTENT_LENGTH.format(
-                    downloaded=humanize_bytes(downloaded),
-                    speed=humanize_bytes(speed),
-                )
-            else:
-                percentage = (downloaded / self.status.total_size * 100
-                              if self.status.total_size
-                              else 0)
-
-                if not speed:
-                    eta = '-:--:--'
-                else:
-                    s = int((self.status.total_size - downloaded) / speed)
-                    h, s = divmod(s, 60 * 60)
-                    m, s = divmod(s, 60)
-                    eta = f'{h}:{m:0>2}:{s:0>2}'
-
-                self._status_line = PROGRESS.format(
-                    percentage=percentage,
-                    downloaded=humanize_bytes(downloaded),
-                    speed=humanize_bytes(speed),
-                    eta=eta,
-                )
-
-            self._prev_time = now
-            self._prev_bytes = downloaded
-
-        self.output.write(
-            f'{CLEAR_LINE} {SPINNER[self._spinner_pos]} {self._status_line}'
-        )
-        self.output.flush()
-
-        self._spinner_pos = (self._spinner_pos + 1) % len(SPINNER)
-
-    def sum_up(self):
-        actually_downloaded = (
-            self.status.downloaded - self.status.resumed_from)
-        time_taken = self.status.time_finished - self.status.time_started
-        speed = actually_downloaded / time_taken if time_taken else actually_downloaded
-
-        self.output.write(CLEAR_LINE)
-
-        self.output.write(SUMMARY.format(
-            downloaded=humanize_bytes(actually_downloaded),
-            total=(self.status.total_size
-                   and humanize_bytes(self.status.total_size)),
-            speed=humanize_bytes(speed),
-            time=time_taken,
-        ))
-        self.output.flush()
+    def terminate(self):
+        self.display.stop()

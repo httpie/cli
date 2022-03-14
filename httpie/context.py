@@ -18,7 +18,7 @@ from .config import DEFAULT_CONFIG_DIR, Config, ConfigFileError
 from .encoding import UTF8
 
 from .utils import repr_dict
-from httpie.output.ui import palette
+from httpie.output.ui import rich_palette as palette
 
 if TYPE_CHECKING:
     from rich.console import Console
@@ -58,6 +58,10 @@ class Environment:
     stderr_isatty: bool = stderr.isatty()
     colors = 256
     program_name: str = 'http'
+
+    # Whether to show progress bars / status spinners etc.
+    show_displays: bool = True
+
     if not is_windows:
         if curses:
             try:
@@ -181,8 +185,15 @@ class Environment:
         if style in palette.STYLE_SHADES:
             shade = palette.STYLE_SHADES[style]
             theme.update({
-                color: Style(color=palette.get_color(color, shade), bold=True)
-                for color in palette.COLOR_PALETTE
+                color: Style(
+                    color=palette.get_color(
+                        color,
+                        shade,
+                        palette=palette.RICH_THEME_PALETTE
+                    ),
+                    bold=True
+                )
+                for color in palette.RICH_THEME_PALETTE
             })
 
         # Rich infers the rest of the knowledge (e.g encoding)
