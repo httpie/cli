@@ -458,8 +458,8 @@ output_options.add_argument(
     requests/responses (such as redirects). For the second level and higher,
     print these as well as the response metadata.
 
-    Level one is a shortcut for: --all --print={''.join(BASE_OUTPUT_OPTIONS)}
-    Level two is a shortcut for: --all --print={''.join(OUTPUT_OPTIONS)}
+    Level one is a shortcut for: --all --print={''.join(sorted(BASE_OUTPUT_OPTIONS))}
+    Level two is a shortcut for: --all --print={''.join(sorted(OUTPUT_OPTIONS))}
     """,
 )
 output_options.add_argument(

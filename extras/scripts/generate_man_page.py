@@ -13,17 +13,19 @@ from httpie.utils import split
 
 LAST_EDIT_DATE = str(datetime.date.today())
 
+# Escape certain characters so they are rendered properly on
+# all terminals.
 ESCAPE_MAP = {
     "'": "\\'",
     '~': '\\~',
     '’': "\\'",
     '\\': '\\\\',
 }
-
 ESCAPE_MAP = {ord(key): value for key, value in ESCAPE_MAP.items()}
 
-EXTRAS_DIR = Path(__file__).parent
+EXTRAS_DIR = Path(__file__).parent.parent
 MAN_PAGE_PATH = EXTRAS_DIR / 'man'
+
 
 class ManPageBuilder:
     def __init__(self):

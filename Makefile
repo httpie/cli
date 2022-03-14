@@ -211,3 +211,13 @@ brew-test:
 
 	@echo $(H1)Auditing…$(H1END)
 	brew audit --strict httpie
+
+###############################################################################
+# Regeneration
+###############################################################################
+
+regen-all: regen-man-pages
+
+regen-man-pages:
+	@echo $(H1)Updating installation instructions in the docs$(H1END)
+	$(VENV_PYTHON) docs/installation/generate.py
