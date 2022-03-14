@@ -106,7 +106,7 @@ class Argument(typing.NamedTuple):
     aliases: List[str]
     configuration: Dict[str, Any]
 
-    def serialize(self) -> Dict[str, Any]:
+    def serialize(self, *, isolation_mode: bool = False) -> Dict[str, Any]:
         configuration = self.configuration.copy()
 
         # Unpack the dynamically computed choices, since we
@@ -116,7 +116,11 @@ class Argument(typing.NamedTuple):
         nested_options = configuration.pop('nested_options', None)
 
         if action == 'lazy_choices':
-            choices = LazyChoices(self.aliases, **{'dest': None, **configuration})
+            choices = LazyChoices(
+                self.aliases,
+                **{'dest': None, **configuration},
+                isolation_mode=isolation_mode
+            )
             configuration['choices'] = list(choices.load())
             configuration['help'] = choices.help
 

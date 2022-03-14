@@ -218,6 +218,6 @@ brew-test:
 
 regen-all: regen-man-pages
 
-regen-man-pages:
-	@echo $(H1)Updating installation instructions in the docs$(H1END)
-	$(VENV_PYTHON) docs/installation/generate.py
+regen-man-pages: install
+	@echo $(H1)Regenerate man pages$(H1END)
+	$(VENV_PYTHON) extras/scripts/generate_man_pages.py

@@ -109,7 +109,7 @@ def to_man_page(program_name: str, spec: ParserSpec) -> str:
                 builder.write(group.description)
 
             for argument in group.arguments:
-                raw_arg = argument.serialize()
+                raw_arg = argument.serialize(isolation_mode=True)
                 builder.add_options(raw_arg['options'])
                 builder.write('\n' + _escape_and_dedent(raw_arg.get('description', '')) + '\n')
 

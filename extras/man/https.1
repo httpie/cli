@@ -136,15 +136,12 @@ and formatting (default for terminal output), "colors", or "format".
 
 Output coloring style (default is "auto"). It can be one of:
 
-    abap, algol, algol_nu, arduino, auto, autumn, borland, bw,
-    colorful, default, dracula, emacs, friendly,
-    friendly_grayscale, fruity, gruvbox-dark, gruvbox-light,
-    igor, inkpot, lilypond, lovelace, manni, material, monokai,
-    murphy, native, one-dark, paraiso-dark, paraiso-light,
-    pastie, perldoc, pie, pie-dark, pie-light, rainbow_dash,
-    rrt, sas, solarized, solarized-dark, solarized-light, stata,
-    stata-dark, stata-light, tango, trac, vim, vs, xcode,
-    zenburn
+    auto, pie, pie-dark, pie-light, solarized
+
+
+For finding out all available styles in your system, try:
+
+$ http --style
 
 The "auto" style follows your terminal\'s ANSI color styles.
 For non-auto styles to work properly, please make sure that the
@@ -330,8 +327,14 @@ basic auth or digest auth) if only the username is provided
 The authentication mechanism to be used. Defaults to "basic".
 
 "basic": Basic HTTP auth
+
 "digest": Digest HTTP auth
+
 "bearer": Bearer HTTP Auth
+
+For finding out all available authentication types in your system, try:
+
+$ http --auth-type
 
 .IP "--ignore-netrc"
 
