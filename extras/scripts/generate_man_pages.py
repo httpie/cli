@@ -11,7 +11,6 @@ from httpie.output.ui.rich_help import to_usage
 from httpie.output.ui.rich_utils import render_as_string
 from httpie.utils import split
 
-LAST_EDIT_DATE = str(datetime.date.today())
 
 # Escape certain characters so they are rendered properly on
 # all terminals.
@@ -88,7 +87,7 @@ def to_man_page(program_name: str, spec: ParserSpec) -> str:
         full_name='HTTPie',
         program_name=program_name,
         program_version=httpie.__version__,
-        last_edit_date=LAST_EDIT_DATE,
+        last_edit_date=httpie.__date__,
     )
     builder.set_name(program_name)
 
