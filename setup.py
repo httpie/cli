@@ -111,4 +111,8 @@ setup(
         'Documentation': 'https://httpie.io/docs',
         'Online Demo': 'https://httpie.io/run',
     },
+    data_files=[
+        ('share/man/man1', ['extras/man/http.1']),
+        ('share/man/man1', ['extras/man/https.1']),
+    ]
 )
