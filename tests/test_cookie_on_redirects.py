@@ -2,11 +2,6 @@ import pytest
 from .utils import http
 
 
-@pytest.fixture
-def remote_httpbin(httpbin_with_chunked_support):
-    return httpbin_with_chunked_support
-
-
 def _stringify(fixture):
     return fixture + ''
 

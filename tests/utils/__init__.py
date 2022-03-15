@@ -21,6 +21,8 @@ from httpie.context import Environment
 from httpie.utils import url_as_host
 
 
+REMOTE_HTTPBIN_DOMAIN = 'pie.dev'
+
 # pytest-httpbin currently does not support chunked requests:
 # <https://github.com/kevin1024/pytest-httpbin/issues/33>
 # <https://github.com/kevin1024/pytest-httpbin/issues/28>
@@ -313,7 +315,7 @@ def http(
                 and '--traceback' not in args_with_config_defaults):
             add_to_args.append('--traceback')
         if not any('--timeout' in arg for arg in args_with_config_defaults):
-            add_to_args.append('--timeout=3')
+            add_to_args.append('--timeout=300')
 
     complete_args = [program_name, *add_to_args, *args]
     # print(' '.join(complete_args))
