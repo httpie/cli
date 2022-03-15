@@ -30,15 +30,17 @@ class LazyChoices(argparse.Action, Generic[T]):
         self,
         *args,
         getter: Callable[[], Iterable[T]],
-        help_formatter: Optional[Callable[[T], str]] = None,
+        help_formatter: Optional[Callable[[T, bool], str]] = None,
         sort: bool = False,
         cache: bool = True,
+        isolation_mode: bool = False,
         **kwargs
     ) -> None:
         self.getter = getter
         self.help_formatter = help_formatter
         self.sort = sort
         self.cache = cache
+        self.isolation_mode = isolation_mode
         self._help: Optional[str] = None
         self._obj: Optional[Iterable[T]] = None
         super().__init__(*args, **kwargs)
@@ -54,7 +56,10 @@ class LazyChoices(argparse.Action, Generic[T]):
     @property
     def help(self) -> str:
         if self._help is None and self.help_formatter is not None:
-            self._help = self.help_formatter(self.load())
+            self._help = self.help_formatter(
+                self.load(),
+                isolation_mode=self.isolation_mode
+            )
         return self._help
 
     @help.setter

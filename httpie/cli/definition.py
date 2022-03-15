@@ -16,7 +16,7 @@ from httpie.cli.constants import (BASE_OUTPUT_OPTIONS, DEFAULT_FORMAT_OPTIONS,
                                   SORTED_FORMAT_OPTIONS_STRING,
                                   UNSORTED_FORMAT_OPTIONS_STRING, RequestType)
 from httpie.cli.options import ParserSpec, Qualifiers, to_argparse
-from httpie.output.formatters.colors import (AUTO_STYLE, DEFAULT_STYLE,
+from httpie.output.formatters.colors import (AUTO_STYLE, DEFAULT_STYLE, BUNDLED_STYLES,
                                              get_available_styles)
 from httpie.plugins.builtin import BuiltinAuthPlugin
 from httpie.plugins.registry import plugin_manager
@@ -239,22 +239,33 @@ processing_options.add_argument(
 #######################################################################
 
 
-def format_style_help(available_styles):
-    return """
+def format_style_help(available_styles, *, isolation_mode: bool = False):
+    text = """
     Output coloring style (default is "{default}"). It can be one of:
 
         {available_styles}
+    """
+    if isolation_mode:
+        text += '\n\n'
+        text += 'For finding out all available styles in your system, try:\n\n'
+        text += '    $ http --style\n'
+    text += textwrap.dedent("""
+        The "{auto_style}" style follows your terminal's ANSI color styles.
+        For non-{auto_style} styles to work properly, please make sure that the
+        $TERM environment variable is set to "xterm-256color" or similar
+        (e.g., via `export TERM=xterm-256color' in your ~/.bashrc).
+    """)
 
-    The "{auto_style}" style follows your terminal's ANSI color styles.
-    For non-{auto_style} styles to work properly, please make sure that the
-    $TERM environment variable is set to "xterm-256color" or similar
-    (e.g., via `export TERM=xterm-256color' in your ~/.bashrc).
-    """.format(
+    if isolation_mode:
+        available_styles = sorted(BUNDLED_STYLES)
+
+    available_styles_text = '\n'.join(
+        f'    {line.strip()}'
+        for line in textwrap.wrap(', '.join(available_styles), 60)
+    ).strip()
+    return text.format(
         default=DEFAULT_STYLE,
-        available_styles='\n'.join(
-            f'        {line.strip()}'
-            for line in textwrap.wrap(', '.join(available_styles), 60)
-        ).strip(),
+        available_styles=available_styles_text,
         auto_style=AUTO_STYLE,
     )
 
@@ -458,8 +469,8 @@ output_options.add_argument(
     requests/responses (such as redirects). For the second level and higher,
     print these as well as the response metadata.
 
-    Level one is a shortcut for: --all --print={''.join(BASE_OUTPUT_OPTIONS)}
-    Level two is a shortcut for: --all --print={''.join(OUTPUT_OPTIONS)}
+    Level one is a shortcut for: --all --print={''.join(sorted(BASE_OUTPUT_OPTIONS))}
+    Level two is a shortcut for: --all --print={''.join(sorted(OUTPUT_OPTIONS))}
     """,
 )
 output_options.add_argument(
@@ -610,33 +621,46 @@ sessions.add_argument(
 #######################################################################
 
 
-def format_auth_help(auth_plugins_mapping):
-    auth_plugins = list(auth_plugins_mapping.values())
-    return """
+def format_auth_help(auth_plugins_mapping, *, isolation_mode: bool = False):
+    text = """
     The authentication mechanism to be used. Defaults to "{default}".
 
-    {types}
+    {auth_types}
+    """
 
-    """.format(
+    auth_plugins = list(auth_plugins_mapping.values())
+    if isolation_mode:
+        auth_plugins = [
+            auth_plugin
+            for auth_plugin in auth_plugins
+            if issubclass(auth_plugin, BuiltinAuthPlugin)
+        ]
+        text += '\n'
+        text += 'For finding out all available authentication types in your system, try:\n\n'
+        text += '    $ http --auth-type'
+
+    auth_types = '\n\n    '.join(
+        '"{type}": {name}{package}{description}'.format(
+            type=plugin.auth_type,
+            name=plugin.name,
+            package=(
+                ''
+                if issubclass(plugin, BuiltinAuthPlugin)
+                else f' (provided by {plugin.package_name})'
+            ),
+            description=(
+                ''
+                if not plugin.description
+                else '\n      '
+                + ('\n      '.join(textwrap.wrap(plugin.description)))
+            ),
+        )
+        for plugin in auth_plugins
+    )
+
+    return text.format(
         default=auth_plugins[0].auth_type,
-        types='\n    '.join(
-            '"{type}": {name}{package}{description}'.format(
-                type=plugin.auth_type,
-                name=plugin.name,
-                package=(
-                    ''
-                    if issubclass(plugin, BuiltinAuthPlugin)
-                    else f' (provided by {plugin.package_name})'
-                ),
-                description=(
-                    ''
-                    if not plugin.description
-                    else '\n      '
-                    + ('\n      '.join(textwrap.wrap(plugin.description)))
-                ),
-            )
-            for plugin in auth_plugins
-        ),
+        auth_types=auth_types,
     )
 
 

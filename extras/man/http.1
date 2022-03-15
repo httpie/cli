@@ -1,4 +1,4 @@
-.TH http 1 "2022-03-11" "HTTPie 3.1.0" "HTTPie Manual"
+.TH http 1 "2022-03-14" "HTTPie 3.1.0" "HTTPie Manual"
 .SH NAME
 http
 .SH SYNOPSIS
@@ -136,14 +136,12 @@ and formatting (default for terminal output), "colors", or "format".
 
 Output coloring style (default is "auto"). It can be one of:
 
-    gruvbox-dark, friendly_grayscale, friendly, gruvbox-light,
-    vim, auto, borland, vs, one-dark, paraiso-light, algol,
-    solarized, material, algol_nu, sas, stata-dark, default,
-    pie, bw, perldoc, murphy, dracula, zenburn, abap, emacs,
-    monokai, rainbow_dash, paraiso-dark, xcode, tango, pie-
-    light, arduino, pastie, lilypond, stata-light, fruity,
-    solarized-light, colorful, solarized-dark, trac, stata,
-    autumn, lovelace, native, pie-dark, inkpot, rrt, manni, igor
+    auto, pie, pie-dark, pie-light, solarized
+
+
+For finding out all available styles in your system, try:
+
+$ http --style
 
 The "auto" style follows your terminal\'s ANSI color styles.
 For non-auto styles to work properly, please make sure that the
@@ -241,8 +239,8 @@ the whole request as well as the response. Also print any intermediary
 requests/responses (such as redirects). For the second level and higher,
 print these as well as the response metadata.
 
-Level one is a shortcut for: --all --print=bHhB
-Level two is a shortcut for: --all --print=bmBHh
+Level one is a shortcut for: --all --print=BHbh
+Level two is a shortcut for: --all --print=BHbhm
 
 .IP "--all"
 
@@ -329,8 +327,14 @@ basic auth or digest auth) if only the username is provided
 The authentication mechanism to be used. Defaults to "basic".
 
 "basic": Basic HTTP auth
+
 "digest": Digest HTTP auth
+
 "bearer": Bearer HTTP Auth
+
+For finding out all available authentication types in your system, try:
+
+$ http --auth-type
 
 .IP "--ignore-netrc"
 

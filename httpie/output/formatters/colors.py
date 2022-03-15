@@ -32,7 +32,7 @@ BUNDLED_STYLES = {
 
 
 def get_available_styles():
-    return BUNDLED_STYLES | set(pygments.styles.get_all_styles())
+    return sorted(BUNDLED_STYLES | set(pygments.styles.get_all_styles()))
 
 
 class ColorFormatter(FormatterPlugin):

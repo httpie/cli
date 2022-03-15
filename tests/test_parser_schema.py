@@ -17,7 +17,7 @@ def test_parser_serialization():
         "--opt-arg",
         action="lazy_choices",
         getter=lambda: ["opt_1", "opt_2"],
-        help_formatter=lambda state: ", ".join(state),
+        help_formatter=lambda state, *, isolation_mode: ", ".join(state),
     )
 
     group_2 = small_parser.add_group("group_2")

@@ -13,17 +13,19 @@ from httpie.utils import split
 
 LAST_EDIT_DATE = str(datetime.date.today())
 
+# Escape certain characters so they are rendered properly on
+# all terminals.
 ESCAPE_MAP = {
     "'": "\\'",
     '~': '\\~',
     '’': "\\'",
     '\\': '\\\\',
 }
-
 ESCAPE_MAP = {ord(key): value for key, value in ESCAPE_MAP.items()}
 
-EXTRAS_DIR = Path(__file__).parent
+EXTRAS_DIR = Path(__file__).parent.parent
 MAN_PAGE_PATH = EXTRAS_DIR / 'man'
+
 
 class ManPageBuilder:
     def __init__(self):
@@ -107,7 +109,7 @@ def to_man_page(program_name: str, spec: ParserSpec) -> str:
                 builder.write(group.description)
 
             for argument in group.arguments:
-                raw_arg = argument.serialize()
+                raw_arg = argument.serialize(isolation_mode=True)
                 builder.add_options(raw_arg['options'])
                 builder.write('\n' + _escape_and_dedent(raw_arg.get('description', '')) + '\n')
 
