@@ -163,6 +163,10 @@ class Argument(typing.NamedTuple):
     def is_positional(self):
         return len(self.aliases) == 0
 
+    @property
+    def is_hidden(self):
+        return self.configuration.get('help') is Qualifiers.SUPPRESS
+
     def __getattr__(self, attribute_name):
         if attribute_name in self.configuration:
             return self.configuration[attribute_name]
