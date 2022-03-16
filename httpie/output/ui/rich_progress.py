@@ -42,7 +42,7 @@ class StatusDisplay(BaseDisplay):
         self.observed = at
         self.description = f'[white]{description}[/white]'
 
-        self.status = self.console.status(self.description, spinner='aesthetic')
+        self.status = self.console.status(self.description, spinner='line')
         self.status.start()
 
     def update(self, steps: float) -> None:
