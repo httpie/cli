@@ -119,6 +119,9 @@ def to_help_message(spec: ParserSpec) -> Iterable[RenderableType]:
         options_rows = []
 
         for argument in group.arguments:
+            if argument.is_hidden:
+                continue
+
             opt1, opt2 = unpack_argument(argument)
             if opt2:
                 opt1.append('/')
