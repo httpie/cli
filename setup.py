@@ -30,6 +30,7 @@ dev_require = [
     'Jinja2'
 ]
 install_requires = [
+    'pip',
     'charset_normalizer>=2.0.0',
     'defusedxml>=0.6.0',
     'requests[socks]>=2.22.0',

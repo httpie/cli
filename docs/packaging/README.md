@@ -12,16 +12,18 @@ You are looking at the HTTPie packaging documentation, where you will find valua
 
 The overall release process starts simple:
 
-1. Do the [PyPI](https://pypi.org/project/httpie/) publication.
-2. Then, handle company-related tasks.
-3. Finally, follow OS-specific steps, described in documents below, to send patches downstream.
+1. Bump the version identifiers in the following places:
+    - `httpie/__init__.py`
+    - `docs/packaging/windows-chocolatey/httpie.nuspec`
+    - `CHANGELOG.md`
+2. Commit your changes and make a PR against the `master`.
+3. Merge the PR, and tag the last commit with your version identifier.
+4. Make a GitHub release (by copying the text in `CHANGELOG.md`)
+5. Push that release to PyPI (dispatch the `Release PyPI` GitHub action).
+6. Once PyPI is ready, push the release to the Snap, Homebrew and Chocolatey with their respective actions.
+7. Go to the [`httpie/debian.httpie.io`](https://github.com/httpie/debian.httpie.io) repo and trigger the package index workflow.
 
-## First, PyPI
-
-Let's do the release on [PyPi](https://pypi.org/project/httpie/).
-That is done quite easily by manually triggering the [release workflow](https://github.com/httpie/httpie/actions/workflows/release.yml).
-
-## Then, company-specific tasks
+## Company-specific tasks
 
 - Blank the `master_and_released_docs_differ_after` value in [config.json](https://github.com/httpie/httpie/blob/master/docs/config.json).
 - Update the [contributors list](../contributors).
@@ -36,10 +38,9 @@ A more complete state of deployment can be found on [repology](https://repology.
 | -------------------------------------------: | -------------- |
 |       [Arch Linux, and derived](linux-arch/) | trusted person |
 |   [CentOS, RHEL, and derived](linux-centos/) | trusted person |
-| [Debian, Ubuntu, and derived](linux-debian/) | trusted person |
 |                      [Fedora](linux-fedora/) | trusted person |
-|  :construction: [Homebrew, Linuxbrew](brew/) | **HTTPie**     |
-|        :construction: [MacPorts](mac-ports/) | **HTTPie**     |
+| [Debian, Ubuntu, and derived](linux-debian/) | **HTTPie**     |
+|                 [Homebrew, Linuxbrew](brew/) | **HTTPie**     |
 |                      [Snapcraft](snapcraft/) | **HTTPie**     |
 |  [Windows — Chocolatey](windows-chocolatey/) | **HTTPie**     |
 

@@ -1,0 +1,57 @@
+name: Release as Standalone Linux Package
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "The branch, tag or SHA to release from"
+        required: true
+        default: "master"
+
+  release:
+    types: [released, prereleased]
+
+
+jobs:
+  binary-build-and-release:
+    name: Build and Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
+      - uses: actions/setup-python@v3
+        with:
+          python-version: 3.9
+
+      - name: Build Artifacts
+        run: |
+          cd extras/packaging/linux
+          ./get_release_artifacts.sh
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: http
+          path: extras/packaging/linux/artifacts/dist/http
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: httpie.deb
+          path: extras/packaging/linux/artifacts/dist/*.deb
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: httpie.rpm
+          path: extras/packaging/linux/artifacts/dist/*.rpm
+
+      - name: Publish
+        if: github.event_name == 'release'
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: extras/packaging/linux/artifacts/dist/httpie-${{ github.event.release.tag_name }}.deb
+          asset_name: httpie-${{ github.event.release.tag_name }}.deb
+          asset_content_type: binary/octet-stream

@@ -13,21 +13,19 @@ We will discuss setting up the environment, installing development tools, instal
 
 ## Overall process
 
-:construction: Work in progress.
+The brew deployment is completely automated, and only requires a trigger to [`Release on Homebrew`](https://github.com/httpie/httpie/actions/workflows/release-brew.yml) action
+from the release manager.
 
-First, update the current Formula:
+If it is needed to be done manually, the following command can be used:
 
-```bash
-make brew-deps
-# Copy-paste content into downstream/mac/brew/httpie.rb
-git add downstream/mac/brew/httpie.rb
-git commit -s -m 'Update brew formula to XXX'
+```console
+$ brew bump-formula-pr httpie --version={TARGET_VERSION}
 ```
 
-That [GitHub workflow](https://github.com/httpie/httpie/actions/workflows/test-package-mac-brew.yml) will test the formula when `downstream/mac/brew/httpie.rb` is changed in a pull request.
-
-Then, open a pull request with those changes to the [downstream file](https://github.com/Homebrew/homebrew-core/blob/master/Formula/httpie.rb).
+which will bump the formala, and create a PR against the package index.
 
 ## Hacking
 
-:construction: Work in progress.
+Make your changes, test the formula through the [`Test Brew Package`](https://github.com/httpie/httpie/actions/workflows/test-package-mac-brew.yml) action
+and then finally submit your patch to [`homebrew-core`](https://github.com/Homebrew/homebrew-core`)
+
