@@ -2,34 +2,32 @@
     "__meta__": {
         "about": "HTTPie session file",
         "help": "https://httpie.io/docs#sessions",
-        "httpie": "3.0.2"
+        "httpie": "3.1.0"
     },
     "auth": {
         "raw_auth": "foo:bar",
         "type": "basic"
     },
-    "cookies": {
-        "baz": {
+    "cookies": [
+        {
+            "domain": null,
+            "name": "baz",
             "expires": null,
             "path": "/",
             "secure": false,
             "value": "quux"
         },
-        "foo": {
+        {
+            "domain": null,
+            "name": "foo",
             "expires": null,
             "path": "/",
             "secure": false,
             "value": "bar"
         }
-    },
-    "headers": [
-        {
-            "name": "X-Data",
-            "value": "value"
-        },
-        {
-            "name": "X-Foo",
-            "value": "bar"
-        }
-    ]
+    ],
+    "headers": {
+        "X-Data": "value",
+        "X-Foo": "bar"
+    }
 }

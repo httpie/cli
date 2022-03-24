@@ -35,7 +35,6 @@ class HTTPHeadersDict(CIMultiDict, BaseMultiDict):
 
         super().add(key, value)
 
-
     def remove_item(self, key, value):
         """
         Remove a (key, value) pair from the dict.

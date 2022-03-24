@@ -18,7 +18,11 @@ from .cli.dicts import HTTPHeadersDict
 from .config import BaseConfigDict, DEFAULT_CONFIG_DIR
 from .utils import url_as_host
 from .plugins.registry import plugin_manager
-from .legacy import cookie_format as legacy_cookies
+
+from .legacy import (
+    cookie_format as legacy_cookies,
+    header_format as legacy_headers
+)
 
 
 SESSIONS_DIR_NAME = 'sessions'
@@ -67,6 +71,23 @@ def materialize_cookie(cookie: Cookie) -> Dict[str, Any]:
     return materialized_cookie
 
 
+def materialize_cookies(jar: RequestsCookieJar) -> List[Dict[str, Any]]:
+    return [
+        materialize_cookie(cookie)
+        for cookie in jar
+    ]
+
+
+def materialize_headers(headers: Dict[str, str]) -> List[Dict[str, Any]]:
+    return [
+        {
+            'name': name,
+            'value': value
+        }
+        for name, value in headers.copy().items()
+    ]
+
+
 def get_httpie_session(
     env: Environment,
     config_dir: Path,
@@ -112,27 +133,26 @@ class Session(BaseConfigDict):
         refactor_mode: bool = False,
     ):
         super().__init__(path=Path(path))
-        self['headers'] = {}
+
+        # Default values for the session files
+        self['headers'] = []
         self['cookies'] = []
         self['auth'] = {
             'type': None,
             'username': None,
             'password': None
         }
+
+        # Runtime state of the Session objects.
         self.env = env
+        self._headers = HTTPHeadersDict()
         self.cookie_jar = RequestsCookieJar()
         self.session_id = session_id
         self.bound_host = bound_host
         self.refactor_mode = refactor_mode
 
-    def pre_process_data(self, data: Dict[str, Any]) -> Dict[str, Any]:
-        cookies = data.get('cookies')
-        if cookies:
-            normalized_cookies = legacy_cookies.pre_process(self, cookies)
-        else:
-            normalized_cookies = []
-
-        for cookie in normalized_cookies:
+    def _add_cookies(self, cookies: List[Dict[str, Any]]) -> None:
+        for cookie in cookies:
             domain = cookie.get('domain', '')
             if domain is None:
                 # domain = None means explicitly lack of cookie, though
@@ -143,29 +163,38 @@ class Session(BaseConfigDict):
 
             self.cookie_jar.set(**cookie)
 
+    def pre_process_data(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        for key, deserializer, importer in [
+            ('cookies', legacy_cookies.pre_process, self._add_cookies),
+            ('headers', legacy_headers.pre_process, self._headers.update),
+        ]:
+            values = data.get(key)
+            if values:
+                normalized_values = deserializer(self, values)
+            else:
+                normalized_values = []
+
+            importer(normalized_values)
+
         return data
 
     def post_process_data(self, data: Dict[str, Any]) -> Dict[str, Any]:
-        cookies = data.get('cookies')
+        for key, store, serializer, exporter in [
+            ('cookies', self.cookie_jar, materialize_cookies, legacy_cookies.post_process),
+            ('headers', self._headers, materialize_headers, legacy_headers.post_process),
+        ]:
+            original_type = type(data.get(key))
+            values = serializer(store)
 
-        normalized_cookies = [
-            materialize_cookie(cookie)
-            for cookie in self.cookie_jar
-        ]
-        data['cookies'] = legacy_cookies.post_process(
-            normalized_cookies,
-            original_type=type(cookies)
-        )
+            data[key] = exporter(
+                values,
+                original_type=original_type
+            )
 
         return data
 
-    def update_headers(self, request_headers: HTTPHeadersDict):
-        """
-        Update the session headers with the request ones while ignoring
-        certain name prefixes.
-
-        """
-        headers = self.headers
+    def _compute_new_headers(self, request_headers: HTTPHeadersDict) -> HTTPHeadersDict:
+        new_headers = HTTPHeadersDict()
         for name, value in request_headers.copy().items():
             if value is None:
                 continue  # Ignore explicitly unset headers
@@ -190,13 +219,33 @@ class Session(BaseConfigDict):
                 if name.lower().startswith(prefix.lower()):
                     break
             else:
-                headers[name] = value
+                new_headers.add(name, value)
 
-        self['headers'] = dict(headers)
+        return new_headers
+
+    def update_headers(self, request_headers: HTTPHeadersDict):
+        """
+        Update the session headers with the request ones while ignoring
+        certain name prefixes.
+
+        """
+
+        new_headers = self._compute_new_headers(request_headers)
+        new_keys = new_headers.copy().keys()
+
+        # New headers will take priority over the existing ones, and override
+        # them directly instead of extending them.
+        for key, value in self._headers.copy().items():
+            if key in new_keys:
+                continue
+
+            new_headers.add(key, value)
+
+        self._headers = new_headers
 
     @property
     def headers(self) -> HTTPHeadersDict:
-        return HTTPHeadersDict(self['headers'])
+        return self._headers.copy()
 
     @property
     def cookies(self) -> RequestsCookieJar:

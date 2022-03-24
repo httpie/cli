@@ -26,8 +26,14 @@
             "value": "bar"
         }
     ],
-    "headers": {
-        "X-Data": "value",
-        "X-Foo": "bar"
-    }
+    "headers": [
+        {
+            "name": "X-Data",
+            "value": "value"
+        },
+        {
+            "name": "X-Foo",
+            "value": "bar"
+        }
+    ]
 }

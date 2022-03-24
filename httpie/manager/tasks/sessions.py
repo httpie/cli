@@ -4,7 +4,10 @@ from typing import Tuple
 from httpie.sessions import SESSIONS_DIR_NAME, get_httpie_session
 from httpie.status import ExitStatus
 from httpie.context import Environment
-from httpie.legacy import cookie_format as legacy_cookies
+from httpie.legacy import (
+    cookie_format as legacy_cookies,
+    header_format as legacy_headers
+)
 from httpie.manager.cli import missing_subcommand, parser
 
 
@@ -41,7 +44,8 @@ def is_version_greater(version_1: str, version_2: str) -> bool:
 
 
 FIXERS_TO_VERSIONS = {
-    '3.1.0': legacy_cookies.fix_layout
+    '3.1.0': legacy_cookies.fix_layout,
+    '3.2.0': legacy_headers.fix_layout,
 }
 
 
