@@ -183,11 +183,7 @@ class Session(BaseConfigDict):
                         morsel['path'] = DEFAULT_COOKIE_PATH
                     self.cookie_jar.set(cookie_name, morsel)
 
-                all_cookie_headers = request_headers.getall(name)
-                if len(all_cookie_headers) > 1:
-                    all_cookie_headers.remove(original_value)
-                else:
-                    request_headers.popall(name)
+                request_headers.remove_item(name, original_value)
                 continue
 
             for prefix in SESSION_IGNORED_HEADER_PREFIXES:
