@@ -53,16 +53,12 @@ def pre_process(session: 'Session', cookies: Any) -> List[Dict[str, Any]]:
         for cookie in normalized_cookies
     )
 
-    if should_issue_warning and not session.refactor_mode:
+    if should_issue_warning:
         warning = INSECURE_COOKIE_JAR_WARNING.format(hostname=session.bound_host, session_id=session.session_id)
         if not session.is_anonymous:
             warning += INSECURE_COOKIE_JAR_WARNING_FOR_NAMED_SESSIONS
         warning += INSECURE_COOKIE_SECURITY_LINK
-
-        session.env.log_error(
-            warning,
-            level='warning'
-        )
+        session.warn_legacy_usage(warning)
 
     return normalized_cookies
 

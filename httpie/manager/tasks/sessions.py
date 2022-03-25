@@ -56,7 +56,7 @@ def upgrade_session(env: Environment, args: argparse.Namespace, hostname: str, s
         session_name=session_name,
         host=hostname,
         url=hostname,
-        refactor_mode=True
+        suppress_legacy_warnings=True
     )
 
     session_name = session.path.stem

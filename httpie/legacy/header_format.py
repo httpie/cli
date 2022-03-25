@@ -36,16 +36,12 @@ def pre_process(session: 'Session', headers: Any) -> List[Dict[str, Any]]:
             for item in headers
         ]
 
-    if is_old_style and not session.refactor_mode:
+    if is_old_style:
         warning = OLD_HEADER_STORE_WARNING.format(hostname=session.bound_host, session_id=session.session_id)
         if not session.is_anonymous:
             warning += OLD_HEADER_STORE_WARNING_FOR_NAMED_SESSIONS
         warning += OLD_HEADER_STORE_LINK
-
-        session.env.log_error(
-            warning,
-            level='warning'
-        )
+        session.warn_legacy_usage(warning)
 
     return normalized_headers
 

@@ -13,7 +13,7 @@ from typing import Any, Dict, List, Optional, Union
 from requests.auth import AuthBase
 from requests.cookies import RequestsCookieJar, remove_cookie_by_name
 
-from .context import Environment
+from .context import Environment, Levels
 from .cli.dicts import HTTPHeadersDict
 from .config import BaseConfigDict, DEFAULT_CONFIG_DIR
 from .utils import url_as_host
@@ -95,7 +95,7 @@ def get_httpie_session(
     host: Optional[str],
     url: str,
     *,
-    refactor_mode: bool = False
+    suppress_legacy_warnings: bool = False
 ) -> 'Session':
     bound_hostname = host or url_as_host(url)
     if not bound_hostname:
@@ -114,7 +114,7 @@ def get_httpie_session(
         env=env,
         session_id=session_id,
         bound_host=strip_port(bound_hostname),
-        refactor_mode=refactor_mode
+        suppress_legacy_warnings=suppress_legacy_warnings
     )
     session.load()
     return session
@@ -130,7 +130,7 @@ class Session(BaseConfigDict):
         env: Environment,
         bound_host: str,
         session_id: str,
-        refactor_mode: bool = False,
+        suppress_legacy_warnings: bool = False,
     ):
         super().__init__(path=Path(path))
 
@@ -149,7 +149,7 @@ class Session(BaseConfigDict):
         self.cookie_jar = RequestsCookieJar()
         self.session_id = session_id
         self.bound_host = bound_host
-        self.refactor_mode = refactor_mode
+        self.suppress_legacy_warnings = suppress_legacy_warnings
 
     def _add_cookies(self, cookies: List[Dict[str, Any]]) -> None:
         for cookie in cookies:
@@ -302,3 +302,17 @@ class Session(BaseConfigDict):
     @property
     def is_anonymous(self):
         return is_anonymous_session(self.session_id)
+
+    def warn_legacy_usage(self, warning: str) -> None:
+        if self.suppress_legacy_warnings:
+            return None
+
+        self.env.log_error(
+            warning,
+            level=Levels.WARNING
+        )
+
+        # We don't want to spam multiple warnings on each usage,
+        # so if there is already a warning for the legacy usage
+        # we'll skip the next ones.
+        self.suppress_legacy_warnings = True
