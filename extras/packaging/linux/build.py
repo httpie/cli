@@ -92,8 +92,9 @@ def main():
     build_packages(binaries['http_cli'], binaries['httpie_cli'])
 
     # Rename http_cli/httpie_cli to http/httpie
-    binaries['http_cli'].rename('http')
-    binaries['httpie_cli'].rename('httpie')
+    binaries['http_cli'].rename(DIST_DIR / 'http')
+    binaries['httpie_cli'].rename(DIST_DIR / 'httpie')
+
 
 
 if __name__ == '__main__':

@@ -18,7 +18,7 @@ from .utils import (
 )
 from .fixtures import FILE_PATH_ARG, FILE_PATH, FILE_CONTENT
 
-MAX_RESPONSE_WAIT_TIME = 2
+MAX_RESPONSE_WAIT_TIME = 5
 
 
 def test_chunked_json(httpbin_with_chunked_support):

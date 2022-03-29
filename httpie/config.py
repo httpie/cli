@@ -149,6 +149,24 @@ class Config(BaseConfigDict):
     def default_options(self) -> list:
         return self['default_options']
 
+    def _configured_path(self, config_option: str, default: str) -> None:
+        return Path(
+            self.get(config_option, self.directory / default)
+        ).expanduser().resolve()
+
     @property
     def plugins_dir(self) -> Path:
-        return Path(self.get('plugins_dir', self.directory / 'plugins')).resolve()
+        return self._configured_path('plugins_dir', 'plugins')
+
+    @property
+    def version_info_file(self) -> Path:
+        return self._configured_path('version_info_file', 'version_info.json')
+
+    @property
+    def developer_mode(self) -> bool:
+        """This is a special setting for the development environment. It is
+        different from the --debug mode in the terms that it might change
+        the behavior for certain parameters (e.g updater system) that
+        we usually ignore."""
+
+        return self.get('developer_mode')

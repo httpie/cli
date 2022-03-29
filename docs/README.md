@@ -1653,6 +1653,10 @@ If you’d like to silence warnings as well, use `-q` or `--quiet` twice:
 $ http -qq --check-status pie.dev/post enjoy='the silence without warnings'
 ```
 
+### Update warnings
+
+When there is a new release available for your platform (for example; if you installed HTTPie through `pip`, it will check the latest version on `PyPI`), HTTPie will regularly warn you about the new update (once a week). If you want to disable this behavior, you can set `disable_update_warnings` to `true` in your [config](#config) file.
+
 ### Viewing intermediary requests/responses
 
 To see all the HTTP communication, i.e. the final request/response as well as any possible intermediary requests/responses, use the `--all` option.
