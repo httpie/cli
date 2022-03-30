@@ -14,7 +14,7 @@ from requests.auth import AuthBase
 from requests.cookies import RequestsCookieJar, remove_cookie_by_name
 
 from .context import Environment, Levels
-from .compat import HTTPieCookiePolicy
+from .cookies import HTTPieCookiePolicy
 from .cli.dicts import HTTPHeadersDict
 from .config import BaseConfigDict, DEFAULT_CONFIG_DIR
 from .utils import url_as_host
@@ -147,7 +147,10 @@ class Session(BaseConfigDict):
         # Runtime state of the Session objects.
         self.env = env
         self._headers = HTTPHeadersDict()
-        self.cookie_jar = RequestsCookieJar(policy=HTTPieCookiePolicy())
+        self.cookie_jar = RequestsCookieJar(
+            # See also a temporary workaround for a Requests bug in `compat.py`.
+            policy=HTTPieCookiePolicy(),
+        )
         self.session_id = session_id
         self.bound_host = bound_host
         self.suppress_legacy_warnings = suppress_legacy_warnings
