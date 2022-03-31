@@ -29,17 +29,19 @@ LEFT_PADDING_2 = (0, 0, 0, 2)
 LEFT_PADDING_4 = (0, 0, 0, 4)
 
 
-class RequestItemHighlighter(RegexHighlighter):
+class OptionsHighlighter(RegexHighlighter):
     highlights = [
-        rf'(?P<key>\w+)(?P<sep>({SEPARATORS}))(?P<value>.+)',
+        r"(^|\W)(?P<option>\-{1,2}[\w|-]+)(?![a-zA-Z0-9])"
     ]
 
 
-request_item_highlighter = RequestItemHighlighter()
+options_highlighter = OptionsHighlighter()
 
 
 def unpack_argument(argument: Argument) -> Tuple[Text, Text]:
     opt1 = opt2 = ''
+
+    style = None
     if argument.aliases:
         if len(argument.aliases) >= 2:
             opt2, opt1 = argument.aliases
@@ -47,8 +49,9 @@ def unpack_argument(argument: Argument) -> Tuple[Text, Text]:
             (opt1,) = argument.aliases
     else:
         opt1 = argument.metavar
+        style = STYLE_USAGE_REGULAR
 
-    return Text(opt1), Text(opt2)
+    return Text(opt1, style=style), Text(opt2)
 
 
 def to_usage(
@@ -142,16 +145,16 @@ def to_help_message(spec: ParserSpec) -> Iterable[RenderableType]:
                 desc += ')'
 
             rows = [
-                Padding(opt1, LEFT_PADDING_2),
+                Padding(options_highlighter(opt1), LEFT_PADDING_2),
                 metavar,
-                desc,
+                options_highlighter(desc),
             ]
 
             options_rows.append(rows)
             if argument.configuration.get('nested_options'):
                 options_rows.extend(
                     [
-                        (Padding(key, LEFT_PADDING_4), value, dec)
+                        (Padding(Text(key, style=STYLE_USAGE_OPTIONAL), LEFT_PADDING_4), value, dec)
                         for key, value, dec in argument.nested_options
                     ]
                 )
