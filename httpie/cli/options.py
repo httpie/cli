@@ -223,8 +223,7 @@ def to_argparse(
 JSON_DIRECT_MIRROR_OPTIONS = (
     'choices',
     'metavar',
-    'help',
-    'short_help'
+    'help'
 )
 
 
