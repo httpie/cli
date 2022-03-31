@@ -5,12 +5,12 @@ def test_parser_serialization():
     small_parser = ParserSpec("test_parser")
 
     group_1 = small_parser.add_group("group_1")
-    group_1.add_argument("regular_arg", help="regular arg")
+    group_1.add_argument("regular_arg", help="regular arg", short_help="short")
     group_1.add_argument(
         "variadic_arg",
         metavar="META",
         help=Qualifiers.SUPPRESS,
-        nargs=Qualifiers.ZERO_OR_MORE,
+        nargs=Qualifiers.ZERO_OR_MORE
     )
     group_1.add_argument(
         "-O",
@@ -18,6 +18,7 @@ def test_parser_serialization():
         action="lazy_choices",
         getter=lambda: ["opt_1", "opt_2"],
         help_formatter=lambda state, *, isolation_mode: ", ".join(state),
+        short_help="short_help",
     )
 
     group_2 = small_parser.add_group("group_2")
@@ -36,7 +37,7 @@ def test_parser_serialization():
                     {
                         "options": ["regular_arg"],
                         "description": "regular arg",
-                        "short_description": "regular arg",
+                        "short_description": "short",
                     },
                     {
                         "options": ["variadic_arg"],
@@ -47,7 +48,7 @@ def test_parser_serialization():
                     {
                         "options": ["-O", "--opt-arg"],
                         "description": "opt_1, opt_2",
-                        "short_description": "opt_1, opt_2",
+                        "short_description": "short_help",
                         "choices": ["opt_1", "opt_2"],
                     },
                 ],

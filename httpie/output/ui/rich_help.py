@@ -138,7 +138,7 @@ def to_help_message(spec: ParserSpec) -> Iterable[RenderableType]:
                 metavar = Text('')
 
             raw_form = argument.serialize()
-            desc = raw_form.get('short_help', '')
+            desc = raw_form.get('short_description', '')
             if raw_form.get('choices'):
                 desc += ' (choices: '
                 desc += textwrap.shorten(', '.join(raw_form.get('choices')), MAX_CHOICE_CHARS)

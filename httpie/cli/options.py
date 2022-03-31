@@ -111,7 +111,11 @@ class Argument(typing.NamedTuple):
         """Run a bunch of post-init hooks."""
         # If there is a short help, then create the longer version from it.
         short_help = self.configuration.get('short_help')
-        if short_help and 'help' not in self.configuration:
+        if (
+            short_help
+            and 'help' not in self.configuration
+            and self.configuration.get('action') != 'lazy_choices'
+        ):
             self.configuration['help'] = f'\n{short_help}\n\n'
 
     def serialize(self, *, isolation_mode: bool = False) -> Dict[str, Any]:
@@ -142,7 +146,11 @@ class Argument(typing.NamedTuple):
         qualifiers = JSON_QUALIFIER_TO_OPTIONS[configuration.get('nargs', Qualifiers.SUPPRESS)]
         result.update(qualifiers)
 
-        result['short_help'] = short_help
+        description = configuration.get('help')
+        if description and description is not Qualifiers.SUPPRESS:
+            result['short_description'] = short_help
+            result['description'] = description
+
         if nested_options:
             result['nested_options'] = nested_options
 
@@ -222,8 +230,7 @@ def to_argparse(
 
 JSON_DIRECT_MIRROR_OPTIONS = (
     'choices',
-    'metavar',
-    'help'
+    'metavar'
 )
 
 
