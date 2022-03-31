@@ -563,8 +563,14 @@ class HTTPieArgumentParser(BaseHTTPieArgumentParser):
 
         if man_pages.is_available(self.env.program_name):
             man_pages.display_for(self.env, self.env.program_name)
-        else:
-            super().print_help()
+            return None
+
+        text = self.format_help()
+        with self.env.rich_console.pager():
+            self.env.rich_console.print(
+                text,
+                highlight=False
+            )
 
     def print_help(self):
         from httpie.output.ui import rich_help
