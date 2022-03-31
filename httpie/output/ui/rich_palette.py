@@ -11,6 +11,7 @@ CUSTOM_STYLES = {
     'bar.complete': 'purple',
     'bar.finished': 'green',
     'bar.pulse': 'purple',
+    'option': 'pink'
 }
 
 RICH_THEME_PALETTE = COLOR_PALETTE.copy() # noqa
