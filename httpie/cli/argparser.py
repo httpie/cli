@@ -559,7 +559,18 @@ class HTTPieArgumentParser(BaseHTTPieArgumentParser):
         self.args.format_options = parsed_options
 
     def print_manual(self):
-        return super().print_help()
+        from httpie.output.ui import man_pages
+
+        if man_pages.is_available(self.env.program_name):
+            man_pages.display_for(self.env, self.env.program_name)
+            return None
+
+        text = self.format_help()
+        with self.env.rich_console.pager():
+            self.env.rich_console.print(
+                text,
+                highlight=False
+            )
 
     def print_help(self):
         from httpie.output.ui import rich_help
