@@ -177,19 +177,17 @@ content_types.add_argument(
     action='store_const',
     const=RequestType.MULTIPART,
     dest='request_type',
-    help="""
-    Similar to --form, but always sends a multipart/form-data
-    request (i.e., even without files).
-
-    """,
+    short_help=(
+        'Similar to --form, but always sends a multipart/form-data '
+        'request (i.e., even without files).'
+    )
 )
 content_types.add_argument(
     '--boundary',
-    help="""
-    Specify a custom boundary string for multipart/form-data requests.
-    Only has effect only together with --form.
-
-    """,
+    short_help=(
+        'Specify a custom boundary string for multipart/form-data requests. '
+        'Only has effect only together with --form.'
+    )
 )
 content_types.add_argument(
     '--raw',
@@ -505,6 +503,7 @@ output_options.add_argument(
     '-S',
     action='store_true',
     default=False,
+    short_help='Always stream the response body by line, i.e., behave like `tail -f`.',
     help="""
     Always stream the response body by line, i.e., behave like `tail -f'.
 
@@ -694,10 +693,7 @@ authentication.add_argument(
     '--ignore-netrc',
     default=False,
     action='store_true',
-    help="""
-    Ignore credentials from .netrc.
-
-    """,
+    short_help='Ignore credentials from .netrc.'
 )
 
 #######################################################################
@@ -710,9 +706,7 @@ network.add_argument(
     '--offline',
     default=False,
     action='store_true',
-    help="""
-    Build the request and print it but don’t actually send it.
-    """,
+    short_help='Build the request and print it but don’t actually send it.'
 )
 network.add_argument(
     '--proxy',
@@ -734,10 +728,7 @@ network.add_argument(
     '-F',
     default=False,
     action='store_true',
-    help="""
-    Follow 30x Location redirects.
-
-    """,
+    short_help='Follow 30x Location redirects.'
 )
 
 network.add_argument(
@@ -754,11 +745,10 @@ network.add_argument(
     '--max-headers',
     type=int,
     default=0,
-    help="""
-    The maximum number of response headers to be read before giving up
-    (default 0, i.e., no limit).
-
-    """,
+    short_help=(
+        'The maximum number of response headers to be read before '
+        'giving up (default 0, i.e., no limit).'
+    )
 )
 
 network.add_argument(
@@ -766,6 +756,7 @@ network.add_argument(
     type=float,
     default=0,
     metavar='SECONDS',
+    short_help='The connection timeout of the request in seconds.',
     help="""
     The connection timeout of the request in seconds.
     The default value is 0, i.e., there is no timeout limit.
@@ -797,20 +788,16 @@ network.add_argument(
     '--path-as-is',
     default=False,
     action='store_true',
-    help="""
-    Bypass dot segment (/../ or /./) URL squashing.
-
-    """,
+    short_help='Bypass dot segment (/../ or /./) URL squashing.'
 )
 network.add_argument(
     '--chunked',
     default=False,
     action='store_true',
-    help="""
-    Enable streaming via chunked transfer encoding.
-    The Transfer-Encoding header is set to chunked.
-
-    """,
+    short_help=(
+        'Enable streaming via chunked transfer encoding. '
+        'The Transfer-Encoding header is set to chunked.'
+    )
 )
 
 #######################################################################
@@ -884,11 +871,12 @@ ssl.add_argument(
     '--cert-key-pass',
     default=None,
     type=SSLCredentials,
-    help='''
+    short_help='The passphrase to be used to with the given private key.',
+    help="""
     The passphrase to be used to with the given private key. Only needed if --cert-key
     is given and the key file requires a passphrase.
     If not provided, you’ll be prompted interactively.
-    '''
+    """
 )
 
 #######################################################################
@@ -901,54 +889,36 @@ troubleshooting.add_argument(
     '-I',
     action='store_true',
     default=False,
-    help="""
-    Do not attempt to read stdin.
-
-    """,
+    short_help='Do not attempt to read stdin'
 )
 troubleshooting.add_argument(
     '--help',
     action='help',
     default=Qualifiers.SUPPRESS,
-    help="""
-    Show this help message and exit.
-
-    """,
+    short_help='Show this help message and exit.',
 )
 troubleshooting.add_argument(
     '--manual',
     action='manual',
     default=Qualifiers.SUPPRESS,
-    help="""
-    Show the full manual.
-
-    """,
+    short_help='Show the full manual.',
 )
 troubleshooting.add_argument(
     '--version',
     action='version',
     version=__version__,
-    help="""
-    Show version and exit.
-
-    """,
+    short_help='Show version and exit.',
 )
 troubleshooting.add_argument(
     '--traceback',
     action='store_true',
     default=False,
-    help="""
-    Prints the exception traceback should one occur.
-
-    """,
+    short_help='Prints the exception traceback should one occur.',
 )
 troubleshooting.add_argument(
     '--default-scheme',
     default='http',
-    help="""
-    The default scheme to use if not specified in the URL.
-
-    """,
+    short_help='The default scheme to use if not specified in the URL.'
 )
 troubleshooting.add_argument(
     '--debug',

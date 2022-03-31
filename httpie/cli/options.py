@@ -90,6 +90,7 @@ class Group:
 
     def add_argument(self, *args, **kwargs):
         argument = Argument(list(args), kwargs.copy())
+        argument.post_init()
         self.arguments.append(argument)
         return argument
 
@@ -105,6 +106,13 @@ class Group:
 class Argument(typing.NamedTuple):
     aliases: List[str]
     configuration: Dict[str, Any]
+
+    def post_init(self):
+        """Run a bunch of post-init hooks."""
+        # If there is a short help, then create the longer version from it.
+        short_help = self.configuration.get('short_help')
+        if short_help and 'help' not in self.configuration:
+            self.configuration['help'] = f'\n{short_help}\n\n'
 
     def serialize(self, *, isolation_mode: bool = False) -> Dict[str, Any]:
         configuration = self.configuration.copy()
@@ -134,11 +142,7 @@ class Argument(typing.NamedTuple):
         qualifiers = JSON_QUALIFIER_TO_OPTIONS[configuration.get('nargs', Qualifiers.SUPPRESS)]
         result.update(qualifiers)
 
-        help_msg = configuration.get('help')
-        if help_msg and help_msg is not Qualifiers.SUPPRESS:
-            result['description'] = help_msg.strip()
-            result['short_description'] = short_help or _get_first_line(help_msg)
-
+        result['short_help'] = short_help
         if nested_options:
             result['nested_options'] = nested_options
 
@@ -155,6 +159,7 @@ class Argument(typing.NamedTuple):
             key: value
             for key, value in configuration.items()
             if key in JSON_DIRECT_MIRROR_OPTIONS
+            if value is not Qualifiers.SUPPRESS
         })
 
         return result
@@ -217,7 +222,9 @@ def to_argparse(
 
 JSON_DIRECT_MIRROR_OPTIONS = (
     'choices',
-    'metavar'
+    'metavar',
+    'help',
+    'short_help'
 )
 
 
