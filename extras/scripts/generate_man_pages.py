@@ -3,7 +3,7 @@ import datetime
 import re
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Iterator, Iterable
+from typing import Optional, Iterator, Iterable
 
 import httpie
 from httpie.cli.definition import options
@@ -58,8 +58,11 @@ class ManPageBuilder:
     def separate(self) -> None:
         self.source.append('.PP')
 
-    def add_options(self, options: Iterable[str]) -> None:
-        self.write(f'.IP "{", ".join(map(self.boldify, options))}"')
+    def add_options(self, options: Iterable[str], *, metavar: Optional[str] = None) -> None:
+        text = ", ".join(map(self.boldify, options))
+        if metavar:
+            text += f' {self.underline(metavar)}'
+        self.write(f'.IP "{text}"')
 
     def build(self) -> str:
         return '\n'.join(self.source)
@@ -71,12 +74,11 @@ class ManPageBuilder:
         yield
         self.in_section = False
 
+    def underline(self, text: str) -> str:
+        return r'\fI\,{}\/\fR'.format(text)
+
     def boldify(self, text: str) -> str:
-        if not text.strip().startswith(r'\fB'):
-            text = r' \fB{}'.format(text)
-        if not text.strip().endswith(r'\fR'):
-            text = r'{}\fR'.format(text)
-        return text
+        return r'\fB\,{}\/\fR'.format(text)
 
 
 def _escape_and_dedent(text: str) -> str:
@@ -118,7 +120,13 @@ def to_man_page(program_name: str, spec: ParserSpec) -> str:
                     continue
 
                 raw_arg = argument.serialize(isolation_mode=True)
-                builder.add_options(raw_arg['options'])
+
+                metavar = raw_arg.get('metavar')
+                if raw_arg.get('is_positional'):
+                    # In case of positional arguments, metavar is always equal
+                    # to the list of options (e.g `METHOD`).
+                   metavar = None
+                builder.add_options(raw_arg['options'], metavar=metavar)
 
                 description = _escape_and_dedent(raw_arg.get('description', ''))
                 description = OPTION_HIGHLIGHT_RE.sub(
