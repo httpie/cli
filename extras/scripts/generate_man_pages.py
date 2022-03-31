@@ -1,5 +1,6 @@
 import textwrap
 import datetime
+import re
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Iterator, Iterable
@@ -7,7 +8,7 @@ from typing import Iterator, Iterable
 import httpie
 from httpie.cli.definition import options
 from httpie.cli.options import Argument, ParserSpec, Qualifiers
-from httpie.output.ui.rich_help import to_usage
+from httpie.output.ui.rich_help import OptionsHighlighter, to_usage
 from httpie.output.ui.rich_utils import render_as_string
 from httpie.utils import split
 
@@ -25,6 +26,9 @@ ESCAPE_MAP = {ord(key): value for key, value in ESCAPE_MAP.items()}
 EXTRAS_DIR = Path(__file__).parent.parent
 MAN_PAGE_PATH = EXTRAS_DIR / 'man'
 
+OPTION_HIGHLIGHT_RE = re.compile(
+    OptionsHighlighter.highlights[0]
+)
 
 class ManPageBuilder:
     def __init__(self):
@@ -55,7 +59,7 @@ class ManPageBuilder:
         self.source.append('.PP')
 
     def add_options(self, options: Iterable[str]) -> None:
-        self.write(f'.IP "{", ".join(options)}"')
+        self.write(f'.IP "{", ".join(map(self.boldify, options))}"')
 
     def build(self) -> str:
         return '\n'.join(self.source)
@@ -66,6 +70,13 @@ class ManPageBuilder:
         self.in_section = True
         yield
         self.in_section = False
+
+    def boldify(self, text: str) -> str:
+        if not text.strip().startswith(r'\fB'):
+            text = r' \fB{}'.format(text)
+        if not text.strip().endswith(r'\fR'):
+            text = r'{}\fR'.format(text)
+        return text
 
 
 def _escape_and_dedent(text: str) -> str:
@@ -97,13 +108,8 @@ def to_man_page(program_name: str, spec: ParserSpec) -> str:
     with builder.section('DESCRIPTION'):
         builder.write(spec.description)
 
-    with builder.section('OPTIONS'):
-        builder.separate()
-        builder.separate()
-
-        for index, group in enumerate(spec.groups, 1):
-            builder.write(f'({index}) {group.name}', bold=True)
-
+    for index, group in enumerate(spec.groups, 1):
+        with builder.section(group.name):
             if group.description:
                 builder.write(group.description)
 
@@ -113,10 +119,18 @@ def to_man_page(program_name: str, spec: ParserSpec) -> str:
 
                 raw_arg = argument.serialize(isolation_mode=True)
                 builder.add_options(raw_arg['options'])
-                builder.write('\n' + _escape_and_dedent(raw_arg.get('description', '')) + '\n')
+
+                description = _escape_and_dedent(raw_arg.get('description', ''))
+                description = OPTION_HIGHLIGHT_RE.sub(
+                    lambda match: builder.boldify(match['option']),
+                    description
+                )
+                builder.write('\n' + description + '\n')
 
             builder.separate()
 
+
+        
     return builder.build()
 
 
