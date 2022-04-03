@@ -448,7 +448,7 @@ $ http https://api.github.com/search/repositories q==httpie per_page==1
 GET /search/repositories?q=httpie&per_page=1 HTTP/1.1
 ```
 
-You can even retrieve the `value` from a file by using the `param==@file` syntax. This would also effectively strip the newlines from the end. See [#file-based-separators] for more examples.
+You can even retrieve the `value` from a file by using the `param==@file` syntax. This would also effectively strip the newlines from the end. See [file based separators](#file-based-separators) for more examples.
 
 ```bash
 $ http pie.dev/get text==@files/text.txt
@@ -2292,8 +2292,9 @@ Upgraded 'session.json' @ 'pie.dev' to v3.1.0
 
 These flags are available for both `sessions upgrade` and `sessions upgrade-all`:
 
-|------------------|-----------------------------------------------------------------------------------------|
-| `--bind-cookies` | Bind all previously [unbound cookies](#host-based-cookie-policy) to the session’s host. |
+| Option           | Description                                                                                                                                                                   |
+|------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `--bind-cookies` | Bind all previously [unbound cookies](#host-based-cookie-policy) to the session’s host ([context](https://github.com/httpie/httpie/security/advisories/GHSA-9w4w-cpc8-h2fq)). |
 
 
 ## Config
@@ -2409,11 +2410,11 @@ This command is currently in beta.
 
 `httpie cli export-args` command can expose the parser specification of `http`/`https` commands
 (like an API definition) to outside tools so that they can use this to build better interactions
-over them (e.g offer auto-complete).
-
+over them (e.g., offer auto-complete).
 
 Available formats to export in include:
-| format | Description                                                                                                                                       |
+
+| Format | Description                                                                                                                                       |
 |--------|---------------------------------------------------------------------------------------------------------------------------------------------------|
 | `json` | Export the parser spec in JSON. The schema includes a top-level `version` parameter which should be interpreted in [semver](https://semver.org/). |
 
