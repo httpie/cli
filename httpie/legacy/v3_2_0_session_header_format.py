@@ -1,8 +1,8 @@
-import argparse
 from typing import Any, Type, List, Dict, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from httpie.sessions import Session
+
 
 OLD_HEADER_STORE_WARNING = '''\
 Outdated layout detected for the current session. Please consider updating it,

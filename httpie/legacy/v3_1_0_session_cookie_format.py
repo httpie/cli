@@ -4,6 +4,7 @@ from typing import Any, Type, List, Dict, TYPE_CHECKING
 if TYPE_CHECKING:
     from httpie.sessions import Session
 
+
 INSECURE_COOKIE_JAR_WARNING = '''\
 Outdated layout detected for the current session. Please consider updating it,
 in order to not get affected by potential security problems.

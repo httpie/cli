@@ -20,8 +20,8 @@ from .utils import url_as_host
 from .plugins.registry import plugin_manager
 
 from .legacy import (
-    cookie_format as legacy_cookies,
-    header_format as legacy_headers
+    v3_1_0_session_cookie_format as legacy_cookies,
+    v3_2_0_session_header_format as legacy_headers
 )
 
 
