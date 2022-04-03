@@ -664,7 +664,7 @@ def test_old_session_cookie_layout_loading(basic_session, httpbin, mock_env):
 @pytest.mark.parametrize('layout_type', [
     dict, list
 ])
-def test_session_cookie_layout_preservance(basic_session, mock_env, layout_type):
+def test_session_cookie_layout_preservation(basic_session, mock_env, layout_type):
     with open_session(basic_session, mock_env) as session:
         session['cookies'] = layout_type()
         session.cookies.set('foo', 'bar')
@@ -677,7 +677,7 @@ def test_session_cookie_layout_preservance(basic_session, mock_env, layout_type)
 @pytest.mark.parametrize('layout_type', [
     dict, list
 ])
-def test_session_cookie_layout_preservance_on_new_cookies(basic_session, httpbin, mock_env, layout_type):
+def test_session_cookie_layout_preservation_on_new_cookies(basic_session, httpbin, mock_env, layout_type):
     with open_session(basic_session, mock_env) as session:
         session['cookies'] = layout_type()
         session.cookies.set('foo', 'bar')
@@ -759,7 +759,7 @@ def test_old_session_header_layout_loading(basic_session, httpbin, mock_env):
 @pytest.mark.parametrize('layout_type', [
     dict, list
 ])
-def test_session_header_layout_preservance(basic_session, mock_env, layout_type):
+def test_session_header_layout_preservation(basic_session, mock_env, layout_type):
     with open_session(basic_session, mock_env) as session:
         session['headers'] = layout_type()
         session._headers.add('Foo', 'Bar')
@@ -771,7 +771,7 @@ def test_session_header_layout_preservance(basic_session, mock_env, layout_type)
 @pytest.mark.parametrize('layout_type', [
     dict, list
 ])
-def test_session_header_layout_preservance_on_new_headers(basic_session, httpbin, mock_env, layout_type):
+def test_session_header_layout_preservation_on_new_headers(basic_session, httpbin, mock_env, layout_type):
     with open_session(basic_session, mock_env) as session:
         session['headers'] = layout_type()
         session._headers.add('Foo', 'Bar')
@@ -803,20 +803,3 @@ def test_session_multiple_headers_with_same_name(basic_session, httpbin):
     assert r.count('Foo: bar') == 2
     assert 'Foo: baz' in r
 
-
-def test_session_multiple_headers_with_same_name(basic_session, httpbin):
-    http(
-        '--session', str(basic_session),
-        httpbin + '/get',
-        'Foo:bar',
-        'Foo:baz',
-        'Foo:bar'
-    )
-
-    r = http(
-        '--offline',
-        '--session', str(basic_session),
-        httpbin + '/get',
-    )
-    assert r.count('Foo: bar') == 2
-    assert 'Foo: baz' in r
