@@ -1,18 +1,18 @@
 import argparse
 import os
+import re
+import shutil
 import subprocess
 import sys
 import textwrap
-import re
-import shutil
 from collections import defaultdict
 from contextlib import suppress
 from pathlib import Path
-from typing import Tuple, Optional, List
+from typing import List, Optional, Tuple
 
-from httpie.manager.cli import parser, missing_subcommand
-from httpie.compat import importlib_metadata, get_dist_name
+from httpie.compat import get_dist_name, importlib_metadata
 from httpie.context import Environment
+from httpie.manager.cli import missing_subcommand, parser
 from httpie.status import ExitStatus
 from httpie.utils import as_site
 
@@ -248,3 +248,14 @@ class PluginInstaller:
                 status = self.list()
 
         return status or ExitStatus.SUCCESS
+
+
+def cli_plugins(env: Environment, args: argparse.Namespace) -> ExitStatus:
+    plugins = PluginInstaller(env, debug=args.debug)
+
+    try:
+        action = args.cli_plugins_action
+    except AttributeError:
+        action = args.plugins_action
+
+    return plugins.run(action, args)

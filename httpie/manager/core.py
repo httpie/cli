@@ -2,7 +2,6 @@ import argparse
 from typing import Optional
 
 from httpie.context import Environment
-from httpie.manager.plugins import PluginInstaller
 from httpie.status import ExitStatus
 from httpie.manager.cli import missing_subcommand, parser
 from httpie.manager.tasks import CLI_TASKS
@@ -36,8 +35,7 @@ def program(args: argparse.Namespace, env: Environment) -> ExitStatus:
         parser.error(MSG_NAKED_INVOCATION)
 
     if args.action == 'plugins':
-        plugins = PluginInstaller(env, debug=args.debug)
-        return plugins.run(args.plugins_action, args)
+        return dispatch_cli_task(env, args.action, args)
     elif args.action == 'cli':
         return dispatch_cli_task(env, args.cli_action, args)
 

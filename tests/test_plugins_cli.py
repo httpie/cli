@@ -5,8 +5,9 @@ from tests.utils.plugins_cli import parse_listing
 
 
 @pytest.mark.requires_installation
-def test_plugins_installation(httpie_plugins_success, interface, dummy_plugin):
-    lines = httpie_plugins_success('install', dummy_plugin.path)
+@pytest.mark.parametrize('cli_mode', [True, False])
+def test_plugins_installation(httpie_plugins_success, interface, dummy_plugin, cli_mode):
+    lines = httpie_plugins_success('install', dummy_plugin.path, cli_mode=cli_mode)
     assert lines[0].startswith(
         f'Installing {dummy_plugin.path}'
     )
@@ -28,8 +29,9 @@ def test_plugin_installation_with_custom_config(httpie_plugins_success, interfac
 
 
 @pytest.mark.requires_installation
-def test_plugins_listing(httpie_plugins_success, interface, dummy_plugin):
-    httpie_plugins_success('install', dummy_plugin.path)
+@pytest.mark.parametrize('cli_mode', [True, False])
+def test_plugins_listing(httpie_plugins_success, interface, dummy_plugin, cli_mode):
+    httpie_plugins_success('install', dummy_plugin.path, cli_mode=cli_mode)
     data = parse_listing(httpie_plugins_success('list'))
 
     assert data == {
@@ -50,9 +52,10 @@ def test_plugins_listing_multiple(interface, httpie_plugins_success, dummy_plugi
 
 
 @pytest.mark.requires_installation
-def test_plugins_uninstall(interface, httpie_plugins_success, dummy_plugin):
-    httpie_plugins_success('install', dummy_plugin.path)
-    httpie_plugins_success('uninstall', dummy_plugin.name)
+@pytest.mark.parametrize('cli_mode', [True, False])
+def test_plugins_uninstall(interface, httpie_plugins_success, dummy_plugin, cli_mode):
+    httpie_plugins_success('install', dummy_plugin.path, cli_mode=cli_mode)
+    httpie_plugins_success('uninstall', dummy_plugin.name, cli_mode=cli_mode)
     assert not interface.is_installed(dummy_plugin.name)
 
 
