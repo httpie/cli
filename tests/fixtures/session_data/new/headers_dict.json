@@ -10,5 +10,14 @@
         "username": null
     },
     "cookies": [],
-    "headers": []
+    "headers": [
+        {
+            "name": "foo",
+            "value": "bar"
+        },
+        {
+            "name": "baz",
+            "value": "quux"
+        }
+    ]
 }

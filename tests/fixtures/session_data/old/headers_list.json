@@ -2,7 +2,7 @@
     "__meta__": {
         "about": "HTTPie session file",
         "help": "https://httpie.io/docs#sessions",
-        "httpie": "__version__"
+        "httpie": "3.2.0"
     },
     "auth": {
         "password": null,
@@ -10,5 +10,14 @@
         "username": null
     },
     "cookies": [],
-    "headers": []
+    "headers": [
+        {
+            "name": "X-Data",
+            "value": "value"
+        },
+        {
+            "name": "X-Foo",
+            "value": "bar"
+        }
+    ]
 }

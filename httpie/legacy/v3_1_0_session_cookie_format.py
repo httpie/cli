@@ -4,6 +4,7 @@ from typing import Any, Type, List, Dict, TYPE_CHECKING
 if TYPE_CHECKING:
     from httpie.sessions import Session
 
+
 INSECURE_COOKIE_JAR_WARNING = '''\
 Outdated layout detected for the current session. Please consider updating it,
 in order to not get affected by potential security problems.
@@ -53,16 +54,12 @@ def pre_process(session: 'Session', cookies: Any) -> List[Dict[str, Any]]:
         for cookie in normalized_cookies
     )
 
-    if should_issue_warning and not session.refactor_mode:
+    if should_issue_warning:
         warning = INSECURE_COOKIE_JAR_WARNING.format(hostname=session.bound_host, session_id=session.session_id)
         if not session.is_anonymous:
             warning += INSECURE_COOKIE_JAR_WARNING_FOR_NAMED_SESSIONS
         warning += INSECURE_COOKIE_SECURITY_LINK
-
-        session.env.log_error(
-            warning,
-            level='warning'
-        )
+        session.warn_legacy_usage(warning)
 
     return normalized_cookies
 

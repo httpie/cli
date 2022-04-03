@@ -5,8 +5,9 @@
         "httpie": "3.0.2"
     },
     "auth": {
-        "raw_auth": "foo:bar",
-        "type": "basic"
+        "password": null,
+        "type": null,
+        "username": null
     },
     "cookies": {
         "baz": {
@@ -22,14 +23,8 @@
             "value": "bar"
         }
     },
-    "headers": [
-        {
-            "name": "X-Data",
-            "value": "value"
-        },
-        {
-            "name": "X-Foo",
-            "value": "bar"
-        }
-    ]
+    "headers": {
+        "X-Data": "value",
+        "X-Foo": "bar"
+    }
 }

@@ -4,8 +4,14 @@ from typing import Tuple
 from httpie.sessions import SESSIONS_DIR_NAME, get_httpie_session
 from httpie.status import ExitStatus
 from httpie.context import Environment
-from httpie.legacy import cookie_format as legacy_cookies
+from httpie.legacy import v3_1_0_session_cookie_format, v3_2_0_session_header_format
 from httpie.manager.cli import missing_subcommand, parser
+
+
+FIXERS_TO_VERSIONS = {
+    '3.1.0': v3_1_0_session_cookie_format.fix_layout,
+    '3.2.0': v3_2_0_session_header_format.fix_layout,
+}
 
 
 def cli_sessions(env: Environment, args: argparse.Namespace) -> ExitStatus:
@@ -22,7 +28,7 @@ def cli_sessions(env: Environment, args: argparse.Namespace) -> ExitStatus:
 
 
 def is_version_greater(version_1: str, version_2: str) -> bool:
-    # In an ideal scenerio, we would depend on `packaging` in order
+    # In an ideal scenario, we would depend on `packaging` in order
     # to offer PEP 440 compatible parsing. But since it might not be
     # commonly available for outside packages, and since we are only
     # going to parse HTTPie's own version it should be fine to compare
@@ -40,11 +46,6 @@ def is_version_greater(version_1: str, version_2: str) -> bool:
     return split_version(version_1) > split_version(version_2)
 
 
-FIXERS_TO_VERSIONS = {
-    '3.1.0': legacy_cookies.fix_layout
-}
-
-
 def upgrade_session(env: Environment, args: argparse.Namespace, hostname: str, session_name: str):
     session = get_httpie_session(
         env=env,
@@ -52,7 +53,7 @@ def upgrade_session(env: Environment, args: argparse.Namespace, hostname: str, s
         session_name=session_name,
         host=hostname,
         url=hostname,
-        refactor_mode=True
+        suppress_legacy_warnings=True
     )
 
     session_name = session.path.stem

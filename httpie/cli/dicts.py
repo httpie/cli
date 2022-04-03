@@ -35,6 +35,16 @@ class HTTPHeadersDict(CIMultiDict, BaseMultiDict):
 
         super().add(key, value)
 
+    def remove_item(self, key, value):
+        """
+        Remove a (key, value) pair from the dict.
+        """
+        existing_values = self.popall(key)
+        existing_values.remove(value)
+
+        for value in existing_values:
+            self.add(key, value)
+
 
 class RequestJSONDataDict(OrderedDict):
     pass
