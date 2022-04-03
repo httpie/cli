@@ -3,6 +3,10 @@
 This document records all notable changes to [HTTPie](https://httpie.io).
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## [3.1.1.dev0](https://github.com/httpie/httpie/compare/3.1.0...HEAD) (Unreleased)
+
+- Fixed redundant creation of `Content-Length` header on `OPTIONS` requests. ([#1310](https://github.com/httpie/httpie/issues/1310))
+
 ## [3.1.0](https://github.com/httpie/httpie/compare/3.0.2...3.1.0) (2022-03-08)
 
 - **SECURITY** Fixed the [vulnerability](https://github.com/httpie/httpie/security/advisories/GHSA-9w4w-cpc8-h2fq) that caused exposure of cookies on redirects to third party hosts. ([#1312](https://github.com/httpie/httpie/pull/1312))
