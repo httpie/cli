@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [3.1.1.dev0](https://github.com/httpie/httpie/compare/3.1.0...HEAD) (Unreleased)
 
+- Added support for session persistence of repeated headers with the same name. ([#1335](https://github.com/httpie/httpie/pull/1335))
 - Changed `httpie plugins` to the new `httpie cli` namespace as `httpie cli plugins` (`httpie plugins` continues to work as a hidden alias). ([#1320](https://github.com/httpie/httpie/issues/1320))
 - Fixed redundant creation of `Content-Length` header on `OPTIONS` requests. ([#1310](https://github.com/httpie/httpie/issues/1310))
 
