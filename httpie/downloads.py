@@ -329,7 +329,7 @@ class DownloadStatus:
             ProgressDisplay
         )
 
-        message = f'Downloading {output_file.name}'
+        message = f'Downloading to {output_file.name}'
         if self.env.show_displays:
             if self.total_size is None:
                 # Rich does not support progress bars without a total
@@ -355,11 +355,20 @@ class DownloadStatus:
     def has_finished(self):
         return self.time_finished is not None
 
+    @property
+    def time_spent(self):
+        time_mark = monotonic()
+        start_time = self.time_started or time_mark
+        finish_time = self.time_finished or time_mark
+        return finish_time - start_time
+
     def finished(self):
         assert self.time_started is not None
         assert self.time_finished is None
         self.time_finished = monotonic()
-        self.display.stop()
+        if hasattr(self, 'display'):
+            self.display.stop(self.time_spent)
 
     def terminate(self):
-        self.display.stop()
+        if hasattr(self, 'display'):
+            self.display.stop(self.time_spent)
