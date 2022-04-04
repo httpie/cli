@@ -2,10 +2,8 @@ import re
 import textwrap
 from typing import AbstractSet, Iterable, Optional, Tuple
 
-from rich.align import Align
 from rich.console import RenderableType
 from rich.highlighter import RegexHighlighter
-from rich.layout import Layout
 from rich.padding import Padding
 from rich.table import Table
 from rich.text import Text
@@ -122,15 +120,15 @@ def to_help_message(
     spec: ParserSpec,
 ) -> Iterable[RenderableType]:
     yield Padding(
-        Align(options_highlighter(spec.description), pad=False),
+        options_highlighter(spec.description),
         LEFT_INDENT_2,
     )
 
     yield Padding(
-        Align(Text('Usage', style=STYLE_SWITCH)),
+        Text('Usage', style=STYLE_SWITCH),
         LEFT_INDENT_2,
     )
-    yield Padding(Align(to_usage(spec)), LEFT_INDENT_3)
+    yield Padding(to_usage(spec), LEFT_INDENT_3)
 
     group_rows = {}
     for group in spec.groups:
@@ -205,15 +203,15 @@ def to_help_message(
             options_table.add_row(*row)
 
     yield Padding(
-        Align(Text('Options', style=STYLE_SWITCH)),
+        Text('Options', style=STYLE_SWITCH),
         LEFT_INDENT_2,
     )
     yield Padding(options_table, LEFT_PADDING_2)
     yield Padding(
-        Align(Text('More Information', style=STYLE_SWITCH)),
+        Text('More Information', style=STYLE_SWITCH),
         LEFT_INDENT_2,
     )
     yield Padding(
-        Align(spec.epilog.rstrip('\n'), pad=False),
+        spec.epilog.rstrip('\n'),
         LEFT_INDENT_BOTTOM_3,
     )

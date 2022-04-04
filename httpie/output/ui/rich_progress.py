@@ -75,8 +75,8 @@ class StatusDisplay(BaseDisplay):
 
         self.observed += steps
 
-        observed_units = filesize.decimal(self.observed, separator='/? ')
-        self.status.update(status=f'{self.description} [progress.download]{observed_units}[/progress.download]')
+        observed_amount, observed_unit = filesize.decimal(self.observed).split()
+        self.status.update(status=f'{self.description} [progress.download]{observed_amount}/? {observed_unit}[/progress.download]')
 
     def stop(self, time_spent: float) -> None:
         self.status.stop()
