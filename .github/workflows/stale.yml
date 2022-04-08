@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/stale@v4
+    - uses: actions/stale@v5
       with:
         close-pr-message: 'Thanks for the pull request, but since it was stale for more than a 30 days we are closing it. If you want to work back on it, feel free to re-open it or create a new one.'
         stale-pr-label: 'stale'
