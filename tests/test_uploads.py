@@ -18,6 +18,8 @@ from .utils import (
 )
 from .fixtures import FILE_PATH_ARG, FILE_PATH, FILE_CONTENT
 
+MAX_RESPONSE_WAIT_TIME = 2
+
 
 def test_chunked_json(httpbin_with_chunked_support):
     r = http(
@@ -90,7 +92,7 @@ def test_chunked_raw(httpbin_with_chunked_support):
 
 
 @contextlib.contextmanager
-def stdin_processes(httpbin, *args):
+def stdin_processes(httpbin, *args, warn_threshold=0.1):
     process_1 = subprocess.Popen(
         [
             "cat"
@@ -110,7 +112,7 @@ def stdin_processes(httpbin, *args):
         stderr=subprocess.PIPE,
         env={
             **os.environ,
-            "HTTPIE_STDIN_READ_WARN_THRESHOLD": "0.1"
+            "HTTPIE_STDIN_READ_WARN_THRESHOLD": str(warn_threshold)
         }
     )
     try:
@@ -132,7 +134,7 @@ def test_reading_from_stdin(httpbin, wait):
             time.sleep(1)
 
         try:
-            _, errs = process_2.communicate(timeout=0.25)
+            _, errs = process_2.communicate(timeout=MAX_RESPONSE_WAIT_TIME)
         except subprocess.TimeoutExpired:
             errs = b''
 
@@ -148,7 +150,7 @@ def test_stdin_read_warning(httpbin):
         process_1.communicate(timeout=0.1, input=b"bleh\n")
 
         try:
-            _, errs = process_2.communicate(timeout=0.25)
+            _, errs = process_2.communicate(timeout=MAX_RESPONSE_WAIT_TIME)
         except subprocess.TimeoutExpired:
             errs = b''
 
@@ -164,11 +166,25 @@ def test_stdin_read_warning_with_quiet(httpbin):
         process_1.communicate(timeout=0.1, input=b"bleh\n")
 
         try:
-            _, errs = process_2.communicate(timeout=0.25)
+            _, errs = process_2.communicate(timeout=MAX_RESPONSE_WAIT_TIME)
         except subprocess.TimeoutExpired:
             errs = b''
 
         assert b'> warning: no stdin data read in 0.1s' not in errs
+
+
+@pytest.mark.requires_external_processes
+@pytest.mark.skipif(is_windows, reason="Windows doesn't support select() calls into files")
+def test_stdin_read_warning_blocking_exit(httpbin):
+    # Use a very large number.
+    with stdin_processes(httpbin, warn_threshold=999) as (process_1, process_2):
+        # Wait before sending any data
+        time.sleep(1)
+        process_1.communicate(timeout=0.1, input=b"some input\n")
+
+        # If anything goes wrong, and the thread starts the block this
+        # will timeout and let us know.
+        process_2.communicate(timeout=MAX_RESPONSE_WAIT_TIME)
 
 
 class TestMultipartFormDataFileUpload:
