@@ -5,12 +5,13 @@ import os
 from httpie.context import Environment
 
 MAN_COMMAND = 'man'
+NO_MAN_PAGES = os.getenv('HTTPIE_NO_MAN_PAGES', False)
 
 
 def is_available(program: str) -> bool:
     """Check whether HTTPie's man pages are available in this system."""
 
-    if os.system == 'nt':
+    if NO_MAN_PAGES or os.system == 'nt':
         return False
 
     process = subprocess.run(
