@@ -45,7 +45,7 @@ jobs:
           name: httpie.rpm
           path: extras/packaging/linux/artifacts/dist/*.rpm
 
-      - name: Publish
+      - name: Publish Debian Package
         if: github.event_name == 'release'
         uses: actions/upload-release-asset@v1.0.2
         env:
@@ -54,4 +54,15 @@ jobs:
           upload_url: ${{ github.event.release.upload_url }}
           asset_path: extras/packaging/linux/artifacts/dist/httpie-${{ github.event.release.tag_name }}.deb
           asset_name: httpie-${{ github.event.release.tag_name }}.deb
+          asset_content_type: binary/octet-stream
+
+      - name: Publish Single Executable
+        if: github.event_name == 'release'
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: extras/packaging/linux/artifacts/dist/http
+          asset_name: http
           asset_content_type: binary/octet-stream
