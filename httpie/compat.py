@@ -97,5 +97,3 @@ def get_dist_name(entry_point: importlib_metadata.EntryPoint) -> Optional[str]:
         return None
     else:
         return metadata.get('name')
-
-

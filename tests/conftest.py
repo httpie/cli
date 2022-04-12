@@ -18,7 +18,7 @@ from .utils.plugins_cli import ( # noqa
     httpie_plugins_success,
     interface,
 )
-from .utils.http_server import http_server # noqa
+from .utils.http_server import http_server, localhost_http_server # noqa
 
 
 @pytest.fixture(scope='function', autouse=True)
@@ -71,7 +71,7 @@ def _remote_httpbin_available():
 @pytest.fixture
 def remote_httpbin(_remote_httpbin_available):
     if _remote_httpbin_available:
-        return REMOTE_HTTPBIN_DOMAIN
+        return 'http://' + REMOTE_HTTPBIN_DOMAIN
     pytest.skip(f'{REMOTE_HTTPBIN_DOMAIN} not resolvable')
 
 

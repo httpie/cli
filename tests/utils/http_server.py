@@ -2,6 +2,7 @@ import threading
 import json
 
 from collections import defaultdict
+from contextlib import contextmanager
 from http import HTTPStatus
 from http.cookies import SimpleCookie
 from http.server import HTTPServer, BaseHTTPRequestHandler
@@ -128,15 +129,30 @@ def set_cookie_and_redirect(handler):
     handler.end_headers()
 
 
+@contextmanager
+def _http_server():
+    server = HTTPServer(('localhost', 0), TestHandler)
+    thread = threading.Thread(target=server.serve_forever)
+    thread.start()
+    yield server
+    server.shutdown()
+    thread.join()
+
+
 @pytest.fixture(scope="function")
 def http_server():
     """A custom HTTP server implementation for our tests, that is
     built on top of the http.server module. Handy when we need to
     deal with details which httpbin can not capture."""
 
-    server = HTTPServer(('localhost', 0), TestHandler)
-    thread = threading.Thread(target=server.serve_forever)
-    thread.start()
-    yield 'localhost:{1}'.format(*server.socket.getsockname())
-    server.shutdown()
-    thread.join(timeout=0.5)
+    with _http_server() as server:
+        yield '{0}:{1}'.format(*server.socket.getsockname())
+
+
+@pytest.fixture(scope="function")
+def localhost_http_server():
+    """Just like the http_server, but uses the static
+    `localhost` name for the host."""
+
+    with _http_server() as server:
+        yield 'localhost:{1}'.format(*server.socket.getsockname())

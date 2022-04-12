@@ -806,7 +806,7 @@ def test_session_multiple_headers_with_same_name(basic_session, httpbin):
     'server, expected_cookies',
     [
         (
-            pytest.lazy_fixture('http_server'),
+            pytest.lazy_fixture('localhost_http_server'),
             {'secure_cookie': 'foo', 'insecure_cookie': 'bar'}
         ),
         (
