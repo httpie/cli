@@ -1,5 +1,6 @@
-from typing import Optional
+from typing import Dict, Optional
 
+AUTO_STYLE = 'auto'  # Follows terminal ANSI color styles
 STYLE_PIE = 'pie'
 STYLE_PIE_DARK = 'pie-dark'
 STYLE_PIE_LIGHT = 'pie-light'
@@ -7,8 +8,6 @@ STYLE_PIE_LIGHT = 'pie-light'
 
 COLOR_PALETTE = {
     # Copy the brand palette
-    'transparent': 'transparent',
-    'current': 'currentColor',
     'white': '#F5F5F0',
     'black': '#1C1818',
     'grey': {
@@ -150,17 +149,27 @@ SHADE_NAMES = {
     '700': STYLE_PIE_LIGHT
 }
 
+STYLE_SHADES = {
+    style: shade
+    for shade, style in SHADE_NAMES.items()
+}
+
 SHADES = [
     '50',
     *map(str, range(100, 1000, 100))
 ]
 
 
-def get_color(color: str, shade: str) -> Optional[str]:
-    if color not in COLOR_PALETTE:
+def get_color(
+    color: str,
+    shade: str,
+    *,
+    palette: Dict[str, Dict[str, str]] = COLOR_PALETTE
+) -> Optional[str]:
+    if color not in palette:
         return None
 
-    color_code = COLOR_PALETTE[color]
+    color_code = palette[color]
     if isinstance(color_code, dict) and shade in color_code:
         return color_code[shade]
     else:

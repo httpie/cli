@@ -1,0 +1,91 @@
+.TH httpie 1 "2022-03-08" "HTTPie 3.1.1.dev0" "HTTPie Manual"
+.SH NAME
+httpie
+.SH SYNOPSIS
+httpie HOSTNAME SESSION_NAME_OR_PATH TARGET TARGET TARGET TARGET TARGET TARGET
+
+.SH DESCRIPTION
+
+Managing interface for the HTTPie itself. <https://httpie.io/docs#manager>
+
+Be aware that you might be looking for http/https commands for sending
+HTTP requests. This command is only available for managing the HTTTPie
+plugins and the configuration around it.
+
+.SH httpie cli export-args
+Export available options for the CLI
+.IP "\fB\,-f\/\fR, \fB\,--format\/\fR"
+
+
+
+.PP
+.SH httpie cli sessions upgrade
+Upgrade the given HTTPie session with the latest layout. A list of changes between different session versions can be found in the official documentation.
+.IP "\fB\,HOSTNAME\/\fR"
+
+The host this session belongs.
+
+.IP "\fB\,SESSION_NAME_OR_PATH\/\fR"
+
+The name or the path for the session that will be upgraded.
+
+.IP "\fB\,--bind-cookies\/\fR"
+
+Bind domainless cookies to the host that session belongs.
+
+.PP
+.SH httpie cli sessions upgrade-all
+Upgrade all named sessions with the latest layout. A list of changes between different session versions can be found in the official documentation.
+.IP "\fB\,--bind-cookies\/\fR"
+
+Bind domainless cookies to the host that session belongs.
+
+.PP
+.SH httpie cli plugins install
+Install the given targets from PyPI or from a local paths.
+.IP "\fB\,TARGET\/\fR"
+
+targets to install
+
+.PP
+.SH httpie cli plugins upgrade
+Upgrade the given plugins
+.IP "\fB\,TARGET\/\fR"
+
+targets to upgrade
+
+.PP
+.SH httpie cli plugins uninstall
+Uninstall the given HTTPie plugins.
+.IP "\fB\,TARGET\/\fR"
+
+targets to install
+
+.PP
+.SH httpie cli plugins list
+List all installed HTTPie plugins.
+.PP
+.SH httpie plugins install
+Install the given targets from PyPI or from a local paths.
+.IP "\fB\,TARGET\/\fR"
+
+targets to install
+
+.PP
+.SH httpie plugins upgrade
+Upgrade the given plugins
+.IP "\fB\,TARGET\/\fR"
+
+targets to upgrade
+
+.PP
+.SH httpie plugins uninstall
+Uninstall the given HTTPie plugins.
+.IP "\fB\,TARGET\/\fR"
+
+targets to install
+
+.PP
+.SH httpie plugins list
+List all installed HTTPie plugins.
+.PP

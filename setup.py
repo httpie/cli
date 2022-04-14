@@ -38,6 +38,7 @@ install_requires = [
     'multidict>=4.7.0',
     'setuptools',
     'importlib-metadata>=1.4.0; python_version < "3.8"',
+    'rich>=9.10.0'
 ]
 install_requires_win_only = [
     'colorama>=0.2.4',
@@ -111,4 +112,8 @@ setup(
         'Documentation': 'https://httpie.io/docs',
         'Online Demo': 'https://httpie.io/run',
     },
+    data_files=[
+        ('share/man/man1', ['extras/man/http.1']),
+        ('share/man/man1', ['extras/man/https.1']),
+    ]
 )

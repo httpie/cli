@@ -169,7 +169,7 @@ def interface(tmp_path):
 
     return Interface(
         path=tmp_path / 'interface',
-        environment=MockEnvironment(stdout_mode='t')
+        environment=MockEnvironment()
     )
 
 

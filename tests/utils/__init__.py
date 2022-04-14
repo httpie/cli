@@ -17,6 +17,7 @@ import httpie.manager.__main__ as manager
 
 from httpie.status import ExitStatus
 from httpie.config import Config
+from httpie.encoding import UTF8
 from httpie.context import Environment
 from httpie.utils import url_as_host
 
@@ -61,6 +62,59 @@ def add_auth(url, auth):
     return f'{proto}://{auth}@{rest}'
 
 
+class Encoder:
+    """
+    Encode binary fragments into a text stream. This is used
+    to embed raw binary data (which can't be decoded) into the
+    fake standard output we use on MockEnvironment.
+
+    Each data fragment is embedded by it's hash:
+        "Some data hash(XXX) more data."
+
+    Which then later converted back to a bytes object:
+        b"Some data <real data> more data."
+    """
+
+    TEMPLATE = 'hash({})'
+
+    STR_PATTERN = re.compile(r'hash\((.*)\)')
+    BYTES_PATTERN = re.compile(rb'hash\((.*)\)')
+
+    def __init__(self):
+        self.substitutions = {}
+
+    def subsitute(self, data: bytes) -> str:
+        idx = hash(data)
+        self.substitutions[idx] = data
+        return self.TEMPLATE.format(idx)
+
+    def decode(self, data: str) -> Union[str, bytes]:
+        if self.STR_PATTERN.search(data) is None:
+            return data
+
+        raw_data = data.encode()
+        return self.BYTES_PATTERN.sub(
+            lambda match: self.substitutions[int(match.group(1))],
+            raw_data
+        )
+
+
+class FakeBytesIOBuffer(BytesIO):
+
+    def __init__(self, original, encoder, *args, **kwargs):
+        self.original_buffer = original
+        self.encoder = encoder
+        super().__init__(*args, **kwargs)
+
+    def write(self, data):
+        try:
+            self.original_buffer.write(data.decode(UTF8))
+        except UnicodeDecodeError:
+            self.original_buffer.write(self.encoder.subsitute(data))
+        finally:
+            self.original_buffer.flush()
+
+
 class StdinBytesIO(BytesIO):
     """To be used for `MockEnvironment.stdin`"""
     len = 0  # See `prepare_request_body()`
@@ -72,17 +126,23 @@ class MockEnvironment(Environment):
     stdin_isatty = True
     stdout_isatty = True
     is_windows = False
+    show_displays = False
 
-    def __init__(self, create_temp_config_dir=True, *, stdout_mode='b', **kwargs):
+    def __init__(self, create_temp_config_dir=True, **kwargs):
+        self._encoder = Encoder()
         if 'stdout' not in kwargs:
-            kwargs['stdout'] = tempfile.TemporaryFile(
-                mode=f'w+{stdout_mode}',
-                prefix='httpie_stdout'
+            kwargs['stdout'] = tempfile.NamedTemporaryFile(
+                mode='w+t',
+                prefix='httpie_stderr',
+                newline='',
+                encoding=UTF8,
             )
+            kwargs['stdout'].buffer = FakeBytesIOBuffer(kwargs['stdout'], self._encoder)
         if 'stderr' not in kwargs:
             kwargs['stderr'] = tempfile.TemporaryFile(
                 mode='w+t',
-                prefix='httpie_stderr'
+                prefix='httpie_stderr',
+                encoding=UTF8,
             )
         super().__init__(**kwargs)
         self._create_temp_config_dir = create_temp_config_dir
@@ -143,6 +203,17 @@ class BaseCLIResponse:
         # pytest-httpbin to real httpbin.
         return re.sub(r'127\.0\.0\.1:\d+', 'httpbin.org', cmd)
 
+    @classmethod
+    def from_raw_data(self, data: Union[str, bytes]) -> 'BaseCLIResponse':
+        if isinstance(data, bytes):
+            with suppress(UnicodeDecodeError):
+                data = data.decode()
+
+        if isinstance(data, bytes):
+            return BytesCLIResponse(data)
+        else:
+            return StrCLIResponse(data)
+
 
 class BytesCLIResponse(bytes, BaseCLIResponse):
     """
@@ -195,7 +266,7 @@ class ExitStatusError(Exception):
 
 @pytest.fixture
 def mock_env() -> MockEnvironment:
-    env = MockEnvironment(stdout_mode='')
+    env = MockEnvironment()
     yield env
     env.cleanup()
 
@@ -214,7 +285,7 @@ def httpie(
     status.
     """
 
-    env = kwargs.setdefault('env', MockEnvironment(stdout_mode=''))
+    env = kwargs.setdefault('env', MockEnvironment())
     cli_args = ['httpie']
     if not kwargs.pop('no_debug', False):
         cli_args.append('--debug')
@@ -227,16 +298,7 @@ def httpie(
     env.stdout.seek(0)
     env.stderr.seek(0)
     try:
-        output = env.stdout.read()
-        if isinstance(output, bytes):
-            with suppress(UnicodeDecodeError):
-                output = output.decode()
-
-        if isinstance(output, bytes):
-            response = BytesCLIResponse(output)
-        else:
-            response = StrCLIResponse(output)
-
+        response = BaseCLIResponse.from_raw_data(env.stdout.read())
         response.stderr = env.stderr.read()
         response.exit_status = exit_status
         response.args = cli_args
@@ -354,12 +416,11 @@ def http(
         devnull.seek(0)
         output = stdout.read()
         devnull_output = devnull.read()
-        try:
-            output = output.decode()
-        except UnicodeDecodeError:
-            r = BytesCLIResponse(output)
-        else:
-            r = StrCLIResponse(output)
+
+        if hasattr(env, '_encoder'):
+            output = env._encoder.decode(output)
+
+        r = BaseCLIResponse.from_raw_data(output)
 
         try:
             devnull_output = devnull_output.decode()

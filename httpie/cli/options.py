@@ -3,15 +3,16 @@ import textwrap
 import typing
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any, Optional, Dict, List, Type, TypeVar
+from typing import Any, Optional, Dict, List, Tuple, Type, TypeVar
 
 from httpie.cli.argparser import HTTPieArgumentParser
-from httpie.cli.utils import LazyChoices
+from httpie.cli.utils import Manual, LazyChoices
 
 
 class Qualifiers(Enum):
     OPTIONAL = auto()
     ZERO_OR_MORE = auto()
+    ONE_OR_MORE = auto()
     SUPPRESS = auto()
 
 
@@ -22,6 +23,27 @@ def map_qualifiers(
         key: qualifier_map[value] if isinstance(value, Qualifiers) else value
         for key, value in configuration.items()
     }
+
+
+def drop_keys(
+    configuration: Dict[str, Any], key_blacklist: Tuple[str, ...]
+):
+    return {
+        key: value
+        for key, value in configuration.items()
+        if key not in key_blacklist
+    }
+
+
+def _get_first_line(source: str) -> str:
+    parts = []
+    for line in source.strip().splitlines():
+        line = line.strip()
+        parts.append(line)
+        if line.endswith("."):
+            break
+
+    return " ".join(parts)
 
 
 PARSER_SPEC_VERSION = '0.0.1a0'
@@ -69,6 +91,7 @@ class Group:
 
     def add_argument(self, *args, **kwargs):
         argument = Argument(list(args), kwargs.copy())
+        argument.post_init()
         self.arguments.append(argument)
         return argument
 
@@ -85,14 +108,32 @@ class Argument(typing.NamedTuple):
     aliases: List[str]
     configuration: Dict[str, Any]
 
-    def serialize(self) -> Dict[str, Any]:
+    def post_init(self):
+        """Run a bunch of post-init hooks."""
+        # If there is a short help, then create the longer version from it.
+        short_help = self.configuration.get('short_help')
+        if (
+            short_help
+            and 'help' not in self.configuration
+            and self.configuration.get('action') != 'lazy_choices'
+        ):
+            self.configuration['help'] = f'\n{short_help}\n\n'
+
+    def serialize(self, *, isolation_mode: bool = False) -> Dict[str, Any]:
         configuration = self.configuration.copy()
 
         # Unpack the dynamically computed choices, since we
         # will need to store the actual values somewhere.
         action = configuration.pop('action', None)
+        short_help = configuration.pop('short_help', None)
+        nested_options = configuration.pop('nested_options', None)
+
         if action == 'lazy_choices':
-            choices = LazyChoices(self.aliases, **{'dest': None, **configuration})
+            choices = LazyChoices(
+                self.aliases,
+                **{'dest': None, **configuration},
+                isolation_mode=isolation_mode
+            )
             configuration['choices'] = list(choices.load())
             configuration['help'] = choices.help
 
@@ -106,9 +147,13 @@ class Argument(typing.NamedTuple):
         qualifiers = JSON_QUALIFIER_TO_OPTIONS[configuration.get('nargs', Qualifiers.SUPPRESS)]
         result.update(qualifiers)
 
-        help_msg = configuration.get('help')
-        if help_msg and help_msg is not Qualifiers.SUPPRESS:
-            result['description'] = help_msg.strip()
+        description = configuration.get('help')
+        if description and description is not Qualifiers.SUPPRESS:
+            result['short_description'] = short_help
+            result['description'] = description
+
+        if nested_options:
+            result['nested_options'] = nested_options
 
         python_type = configuration.get('type')
         if python_type is not None:
@@ -123,9 +168,18 @@ class Argument(typing.NamedTuple):
             key: value
             for key, value in configuration.items()
             if key in JSON_DIRECT_MIRROR_OPTIONS
+            if value is not Qualifiers.SUPPRESS
         })
 
         return result
+
+    @property
+    def is_positional(self):
+        return len(self.aliases) == 0
+
+    @property
+    def is_hidden(self):
+        return self.configuration.get('help') is Qualifiers.SUPPRESS
 
     def __getattr__(self, attribute_name):
         if attribute_name in self.configuration:
@@ -140,7 +194,9 @@ ARGPARSE_QUALIFIER_MAP = {
     Qualifiers.OPTIONAL: argparse.OPTIONAL,
     Qualifiers.SUPPRESS: argparse.SUPPRESS,
     Qualifiers.ZERO_OR_MORE: argparse.ZERO_OR_MORE,
+    Qualifiers.ONE_OR_MORE: argparse.ONE_OR_MORE
 }
+ARGPARSE_IGNORE_KEYS = ('short_help', 'nested_options')
 
 
 def to_argparse(
@@ -152,7 +208,9 @@ def to_argparse(
         description=abstract_options.description,
         epilog=abstract_options.epilog,
     )
+    concrete_parser.spec = abstract_options
     concrete_parser.register('action', 'lazy_choices', LazyChoices)
+    concrete_parser.register('action', 'manual', Manual)
 
     for abstract_group in abstract_options.groups:
         concrete_group = concrete_parser.add_argument_group(
@@ -164,9 +222,9 @@ def to_argparse(
         for abstract_argument in abstract_group.arguments:
             concrete_group.add_argument(
                 *abstract_argument.aliases,
-                **map_qualifiers(
+                **drop_keys(map_qualifiers(
                     abstract_argument.configuration, ARGPARSE_QUALIFIER_MAP
-                )
+                ), ARGPARSE_IGNORE_KEYS)
             )
 
     return concrete_parser
@@ -181,9 +239,19 @@ JSON_DIRECT_MIRROR_OPTIONS = (
 JSON_QUALIFIER_TO_OPTIONS = {
     Qualifiers.OPTIONAL: {'is_optional': True},
     Qualifiers.ZERO_OR_MORE: {'is_optional': True, 'is_variadic': True},
+    Qualifiers.ONE_OR_MORE: {'is_optional': False, 'is_variadic': True},
     Qualifiers.SUPPRESS: {}
 }
 
 
 def to_data(abstract_options: ParserSpec) -> Dict[str, Any]:
     return {'version': PARSER_SPEC_VERSION, 'spec': abstract_options.serialize()}
+
+
+def parser_to_parser_spec(parser: argparse.ArgumentParser) -> ParserSpec:
+    """Take an existing argparse parser, and create a spec from it."""
+    return ParserSpec(
+        program=parser.prog,
+        description=parser.description,
+        epilog=parser.epilog
+    )
