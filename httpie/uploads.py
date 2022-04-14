@@ -2,7 +2,6 @@ import sys
 import os
 import zlib
 import functools
-import time
 import threading
 from typing import Any, Callable, IO, Iterable, Optional, Tuple, Union, TYPE_CHECKING
 from urllib.parse import urlencode
@@ -110,17 +109,20 @@ def observe_stdin_for_data_thread(env: Environment, file: IO, read_event: thread
         return None
 
     def worker(event: threading.Event) -> None:
-        time.sleep(READ_THRESHOLD)
-        if not event.is_set():
+        if not event.wait(timeout=READ_THRESHOLD):
             env.stderr.write(
                 f'> warning: no stdin data read in {READ_THRESHOLD}s '
                 f'(perhaps you want to --ignore-stdin)\n'
                 f'> See: https://httpie.io/docs/cli/best-practices\n'
             )
 
+    # Making it a daemon ensures that if the user exits from the main program
+    # (e.g. either regularly or with Ctrl-C), the thread will not
+    # block them.
     thread = threading.Thread(
         target=worker,
-        args=(read_event,)
+        args=(read_event,),
+        daemon=True
     )
     thread.start()
 
