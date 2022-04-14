@@ -1,6 +1,6 @@
 from textwrap import dedent
 from httpie.cli.argparser import HTTPieManagerArgumentParser
-from httpie.cli.options import Qualifiers, ARGPARSE_QUALIFIER_MAP, map_qualifiers, parser_to_parser_spec, to_data
+from httpie.cli.options import Qualifiers, ARGPARSE_QUALIFIER_MAP, map_qualifiers, parser_to_parser_spec
 from httpie import __version__
 
 CLI_SESSION_UPGRADE_FLAGS = [
@@ -114,7 +114,7 @@ def generate_subparsers(root, parent_parser, definitions, spec):
             generate_subparsers(root, command_parser, properties, spec)
             continue
 
-        group = spec.add_group(command, description=descr)
+        group = spec.add_group(parent_parser.prog + ' ' + command, description=descr)
         for argument in properties:
             argument = argument.copy()
             flags = argument.pop('flags', [])
