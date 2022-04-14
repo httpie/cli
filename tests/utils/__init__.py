@@ -21,6 +21,8 @@ from httpie.context import Environment
 from httpie.utils import url_as_host
 
 
+REMOTE_HTTPBIN_DOMAIN = 'pie.dev'
+
 # pytest-httpbin currently does not support chunked requests:
 # <https://github.com/kevin1024/pytest-httpbin/issues/33>
 # <https://github.com/kevin1024/pytest-httpbin/issues/28>
