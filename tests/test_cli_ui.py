@@ -49,6 +49,7 @@ def ignore_terminal_size(monkeypatch):
     # Setting COLUMNS as an env var is required for 3.8<
     monkeypatch.setitem(os.environ, 'COLUMNS', str(PREDEFINED_TERMINAL_SIZE[0]))
     monkeypatch.setattr(shutil, 'get_terminal_size', fake_terminal_size)
+    monkeypatch.setattr(os, 'get_terminal_size', fake_terminal_size)
 
 
 @pytest.mark.parametrize(
