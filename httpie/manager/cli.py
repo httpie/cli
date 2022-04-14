@@ -1,5 +1,6 @@
 from textwrap import dedent
 from httpie.cli.argparser import HTTPieManagerArgumentParser
+from httpie.cli.options import Qualifiers, ARGPARSE_QUALIFIER_MAP, map_qualifiers, parser_to_parser_spec
 from httpie import __version__
 
 CLI_SESSION_UPGRADE_FLAGS = [
@@ -58,7 +59,8 @@ COMMANDS['plugins'] = COMMANDS['cli']['plugins'] = {
         'or from a local paths.',
         {
             'dest': 'targets',
-            'nargs': '+',
+            'metavar': 'TARGET',
+            'nargs': Qualifiers.ONE_OR_MORE,
             'help': 'targets to install'
         }
     ],
@@ -66,7 +68,8 @@ COMMANDS['plugins'] = COMMANDS['cli']['plugins'] = {
         'Upgrade the given plugins',
         {
             'dest': 'targets',
-            'nargs': '+',
+            'metavar': 'TARGET',
+            'nargs': Qualifiers.ONE_OR_MORE,
             'help': 'targets to upgrade'
         }
     ],
@@ -74,7 +77,8 @@ COMMANDS['plugins'] = COMMANDS['cli']['plugins'] = {
         'Uninstall the given HTTPie plugins.',
         {
             'dest': 'targets',
-            'nargs': '+',
+            'metavar': 'TARGET',
+            'nargs': Qualifiers.ONE_OR_MORE,
             'help': 'targets to install'
         }
     ],
@@ -94,7 +98,7 @@ def missing_subcommand(*args) -> str:
     return f'Please specify one of these: {subcommands}'
 
 
-def generate_subparsers(root, parent_parser, definitions):
+def generate_subparsers(root, parent_parser, definitions, spec):
     action_dest = '_'.join(parent_parser.prog.split()[1:] + ['action'])
     actions = parent_parser.add_subparsers(
         dest=action_dest
@@ -107,13 +111,15 @@ def generate_subparsers(root, parent_parser, definitions):
         command_parser = actions.add_parser(command, description=descr)
         command_parser.root = root
         if is_subparser:
-            generate_subparsers(root, command_parser, properties)
+            generate_subparsers(root, command_parser, properties, spec)
             continue
 
+        group = spec.add_group(parent_parser.prog + ' ' + command, description=descr)
         for argument in properties:
             argument = argument.copy()
             flags = argument.pop('flags', [])
-            command_parser.add_argument(*flags, **argument)
+            command_parser.add_argument(*flags, **map_qualifiers(argument, ARGPARSE_QUALIFIER_MAP))
+            group.add_argument(*flags, **argument)
 
 
 parser = HTTPieManagerArgumentParser(
@@ -160,4 +166,5 @@ parser.add_argument(
     '''
 )
 
-generate_subparsers(parser, parser, COMMANDS)
+options = parser_to_parser_spec(parser)
+generate_subparsers(parser, parser, COMMANDS, options)

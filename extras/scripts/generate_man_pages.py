@@ -1,13 +1,12 @@
-import textwrap
-import datetime
 import re
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Optional, Iterator, Iterable
 
 import httpie
-from httpie.cli.definition import options
-from httpie.cli.options import Argument, ParserSpec, Qualifiers
+from httpie.cli.definition import options as core_options
+from httpie.cli.options import ParserSpec
+from httpie.manager.cli import options as manager_options
 from httpie.output.ui.rich_help import OptionsHighlighter, to_usage
 from httpie.output.ui.rich_utils import render_as_string
 from httpie.utils import split
@@ -143,9 +142,14 @@ def to_man_page(program_name: str, spec: ParserSpec) -> str:
 
 
 def main() -> None:
-    for program_name in ['http', 'https']:
+    for program_name, spec in [
+        ('http', core_options),
+        ('https', core_options),
+        ('httpie', manager_options),
+    ]:
         with open((MAN_PAGE_PATH / program_name).with_suffix('.1'), 'w') as stream:
-            stream.write(to_man_page(program_name, options))
+            stream.write(to_man_page(program_name, spec))
+
 
 
 if __name__ == '__main__':
