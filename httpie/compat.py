@@ -12,7 +12,10 @@ cookiejar.DefaultCookiePolicy = HTTPieCookiePolicy
 
 
 is_windows = 'win32' in str(sys.platform).lower()
+is_frozen = getattr(sys, 'frozen', False)
 
+MIN_SUPPORTED_PY_VERSION = (3, 7)
+MAX_SUPPORTED_PY_VERSION = (3, 11)
 
 try:
     from functools import cached_property

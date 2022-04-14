@@ -1,20 +1,19 @@
 import argparse
 import os
+import textwrap
 import re
 import shutil
-import subprocess
-import sys
-import textwrap
 from collections import defaultdict
 from contextlib import suppress
 from pathlib import Path
 from typing import List, Optional, Tuple
 
+from httpie.manager.compat import PipError, run_pip
+from httpie.manager.cli import parser, missing_subcommand
 from httpie.compat import get_dist_name, importlib_metadata
 from httpie.context import Environment
-from httpie.manager.cli import missing_subcommand, parser
 from httpie.status import ExitStatus
-from httpie.utils import as_site
+from httpie.utils import get_site_paths
 
 PEP_503 = re.compile(r"[-_.]+")
 
@@ -58,46 +57,37 @@ class PluginInstaller:
         self.env.stderr.write(message + '\n')
         return ExitStatus.ERROR
 
-    def pip(self, *args, **kwargs) -> subprocess.CompletedProcess:
-        options = {
-            'check': True,
-            'shell': False,
-            'stdout': self.env.stdout,
-            'stderr': subprocess.PIPE,
-        }
-        options.update(kwargs)
-
-        cmd = [sys.executable, '-m', 'pip', *args]
-        return subprocess.run(
-            cmd,
-            **options
-        )
-
-    def _install(self, targets: List[str], mode='install', **process_options) -> Tuple[
-        Optional[bytes], ExitStatus
+    def _install(self, targets: List[str], mode='install') -> Tuple[
+        bytes, ExitStatus
     ]:
         pip_args = [
             'install',
+            '--prefer-binary',
             f'--prefix={self.dir}',
             '--no-warn-script-location',
         ]
         if mode == 'upgrade':
             pip_args.append('--upgrade')
+        pip_args.extend(targets)
 
         try:
-            process = self.pip(
-                *pip_args,
-                *targets,
-                **process_options,
-            )
-        except subprocess.CalledProcessError as error:
+            stdout = run_pip(pip_args)
+        except PipError as pip_error:
+            error = pip_error
+            stdout = pip_error.stdout
+        else:
+            error = None
+
+        self.env.stdout.write(stdout.decode())
+
+        if error:
             reason = None
             if error.stderr:
                 stderr = error.stderr.decode()
 
                 if self.debug:
                     self.env.stderr.write('Command failed: ')
-                    self.env.stderr.write(' '.join(error.cmd) + '\n')
+                    self.env.stderr.write('pip ' + ' '.join(pip_args) + '\n')
                     self.env.stderr.write(textwrap.indent('  ', stderr))
 
                 last_line = stderr.strip().splitlines()[-1]
@@ -108,7 +98,6 @@ class PluginInstaller:
             stdout = error.stdout
             exit_status = self.fail(mode, ', '.join(targets), reason)
         else:
-            stdout = process.stdout
             exit_status = ExitStatus.SUCCESS
 
         return stdout, exit_status
@@ -124,10 +113,11 @@ class PluginInstaller:
         # existing metadata for old versions manually.
         # [0]: https://github.com/pypa/pip/issues/10727
         result_deps = defaultdict(list)
-        for child in as_site(self.dir).iterdir():
-            if child.suffix in {'.dist-info', '.egg-info'}:
-                name, _, version = child.stem.rpartition('-')
-                result_deps[name].append((version, child))
+        for site_dir in get_site_paths(self.dir):
+            for child in site_dir.iterdir():
+                if child.suffix in {'.dist-info', '.egg-info'}:
+                    name, _, version = child.stem.rpartition('-')
+                    result_deps[name].append((version, child))
 
         for target in targets:
             name, _, version = target.rpartition('-')
@@ -145,15 +135,12 @@ class PluginInstaller:
 
         raw_stdout, exit_status = self._install(
             targets,
-            mode='upgrade',
-            stdout=subprocess.PIPE
+            mode='upgrade'
         )
         if not raw_stdout:
             return exit_status
 
         stdout = raw_stdout.decode()
-        self.env.stdout.write(stdout)
-
         installation_line = stdout.splitlines()[-1]
         if installation_line.startswith('Successfully installed'):
             self._clear_metadata(installation_line.split()[2:])

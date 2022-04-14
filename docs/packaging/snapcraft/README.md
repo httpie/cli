@@ -13,7 +13,16 @@ We will discuss setting up the environment, installing development tools, instal
 
 ## Overall process
 
-Trigger a new [build](https://snapcraft.io/httpie/builds), then [promote it](https://snapcraft.io/httpie/releases). If more management is needed: [revisions supervision](https://dashboard.snapcraft.io/snaps/httpie/revisions/).
+Trigger the [`Release on Snap`](https://github.com/httpie/httpie/actions/workflows/release-snap.yml) action, which will
+create a snap package for HTTPie and then push it to Snap Store in the following channels:
+
+- Edge
+- Beta
+- Candidate
+- Stable
+
+If a push to any of them fail, all the release tasks for the following channels will be cancelled so that the
+release manager can look into the underlying cause.
 
 ## Hacking
 

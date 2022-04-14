@@ -214,12 +214,31 @@ def parse_content_type_header(header):
     return content_type, params_dict
 
 
-def as_site(path: Path) -> Path:
+def as_site(path: Path, **extra_vars) -> Path:
     site_packages_path = sysconfig.get_path(
         'purelib',
-        vars={'base': str(path)}
+        vars={'base': str(path), **extra_vars}
     )
     return Path(site_packages_path)
+
+
+def get_site_paths(path: Path) -> Iterable[Path]:
+    from httpie.compat import (
+        MIN_SUPPORTED_PY_VERSION,
+        MAX_SUPPORTED_PY_VERSION,
+        is_frozen
+    )
+
+    if is_frozen:
+        [major, min_minor] = MIN_SUPPORTED_PY_VERSION
+        [major, max_minor] = MAX_SUPPORTED_PY_VERSION
+        for minor in range(min_minor, max_minor + 1):
+            yield as_site(
+                path,
+                py_version_short=f'{major}.{minor}'
+            )
+    else:
+        yield as_site(path)
 
 
 def split(iterable: Iterable[T], key: Callable[[T], bool]) -> Tuple[List[T], List[T]]:

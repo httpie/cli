@@ -1,5 +1,5 @@
 Name:           httpie
-Version:        3.0.2
+Version:        3.1.0
 Release:        1%{?dist}
 Summary:        A Curl-like tool for humans
 
@@ -78,6 +78,10 @@ help2man %{buildroot}%{_bindir}/httpie > %{buildroot}%{_mandir}/man1/httpie.1
 
 
 %changelog
+* Tue Mar 08 2022 Miro Hrončok <mhroncok@redhat.com> - 3.1.0-1
+- Update to 3.1.0
+- Fixes: rhbz#2061597
+
 * Mon Jan 24 2022 Miro Hrončok <mhroncok@redhat.com> - 3.0.2-1
 - Update to 3.0.2
 - Fixes: rhbz#2044572

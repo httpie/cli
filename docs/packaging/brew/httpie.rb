@@ -3,18 +3,18 @@ class Httpie < Formula
 
   desc "User-friendly cURL replacement (command-line HTTP client)"
   homepage "https://httpie.io/"
-  url "https://files.pythonhosted.org/packages/7b/f9/13070f19226b7db3641fb787df36bb715063abe1b8ca03fbaeca0f465d27/httpie-3.0.1.tar.gz"
-  sha256 "0e9bc93ebdcdd2d32ec24b8fa46cf7e4fde9eec7a6bd0c5d0ef224f25d7466b2"
+  url "https://files.pythonhosted.org/packages/32/85/bb095699be20cc98731261cb80884e9458178f8fef2a38273530ce77c0a5/httpie-3.1.0.tar.gz"
+  sha256 "2e4a2040b84a912e65c01fb34f7aafe88cad2a3af2da8c685ca65080f376feda"
   license "BSD-3-Clause"
   head "https://github.com/httpie/httpie.git", branch: "master"
 
   bottle do
-    sha256 cellar: :any_skip_relocation, arm64_monterey: "9d285fcfb55ce8ed787d1b01966d51e6e07f7e77c44a204695a2d6eee9c8698d"
-    sha256 cellar: :any_skip_relocation, arm64_big_sur:  "743a282b475e87a4eaf11e545f761aef1b8e4bfe49eaee47251d7629a35a8ced"
-    sha256 cellar: :any_skip_relocation, monterey:       "5d63ea4f47b2028b2ba68abe12a4176934193e058edd869270221b41cc946c76"
-    sha256 cellar: :any_skip_relocation, big_sur:        "5a53221a680a35d1aa00cbadde279dbe4f562d22ed207c15bd4221cb8c3180f1"
-    sha256 cellar: :any_skip_relocation, catalina:       "5feadb6d76f55d6f9681682e221008c282dccf0e46ae22a959b4bad2efde204a"
-    sha256 cellar: :any_skip_relocation, x86_64_linux:   "d530ddbec49588b0d481f156d35f7e5bb7d3b6427d203f04750e55cd3eecc303"
+    sha256 cellar: :any_skip_relocation, arm64_monterey: "9bb6e8c1ef5ba8b019ddedd7e908dd2174da695351aa9a238dfb28b0f57ef005"
+    sha256 cellar: :any_skip_relocation, arm64_big_sur:  "47ffccd3241155d863e1b4f6259d538a34d42a0cdeed8152bda257ee607b51be"
+    sha256 cellar: :any_skip_relocation, monterey:       "dc4a04cb05a9cd1bfa6a632a0e4a21975905954af54ece41f9050c52474267be"
+    sha256 cellar: :any_skip_relocation, big_sur:        "ae469e37864e967e0fd99fba15a78e719dcb351b462f98f3843c78ed1473df6d"
+    sha256 cellar: :any_skip_relocation, catalina:       "291a3eaecb2a2cc845c1652686a9a14b21053d7e3a7d0115245b2150ca2e199e"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:   "710836e27c44c8e3ad181d668f4a9f78c4cb4c355d7b148a397599a7cd42713d"
   end
 
   depends_on "python@3.10"
@@ -25,8 +25,8 @@ class Httpie < Formula
   end
 
   resource "charset-normalizer" do
-    url "https://files.pythonhosted.org/packages/48/44/76b179e0d1afe6e6a91fd5661c284f60238987f3b42b676d141d01cd5b97/charset-normalizer-2.0.10.tar.gz"
-    sha256 "876d180e9d7432c5d1dfd4c5d26b72f099d503e8fcc0feb7532c9289be60fcbd"
+    url "https://files.pythonhosted.org/packages/56/31/7bcaf657fafb3c6db8c787a865434290b726653c912085fbd371e9b92e1c/charset-normalizer-2.0.12.tar.gz"
+    sha256 "2857e29ff0d34db842cd7ca3230549d1a697f96ee6d3fb071cfa6c7393832597"
   end
 
   resource "defusedxml" do
@@ -40,8 +40,8 @@ class Httpie < Formula
   end
 
   resource "multidict" do
-    url "https://files.pythonhosted.org/packages/8e/7c/e12a69795b7b7d5071614af2c691c97fbf16a2a513c66ec52dd7d0a115bb/multidict-5.2.0.tar.gz"
-    sha256 "0dd1c93edb444b33ba2274b66f63def8a327d607c6c790772f448a53b6ea59ce"
+    url "https://files.pythonhosted.org/packages/fa/a7/71c253cdb8a1528802bac7503bf82fe674367e4055b09c28846fdfa4ab90/multidict-6.0.2.tar.gz"
+    sha256 "5ff3bd75f38e4c43f1f470f2df7a4d430b821c4ce22be384e1459cb57d6bb013"
   end
 
   resource "Pygments" do

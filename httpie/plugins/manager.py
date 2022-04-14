@@ -4,13 +4,13 @@ import warnings
 
 from itertools import groupby
 from operator import attrgetter
-from typing import Dict, List, Type, Iterator, Optional, ContextManager
+from typing import Dict, List, Type, Iterator, Iterable, Optional, ContextManager
 from pathlib import Path
 from contextlib import contextmanager, nullcontext
 
 from ..compat import importlib_metadata, find_entry_points, get_dist_name
 
-from ..utils import repr_dict, as_site
+from ..utils import repr_dict, get_site_paths
 from . import AuthPlugin, ConverterPlugin, FormatterPlugin, TransportPlugin
 from .base import BasePlugin
 
@@ -25,20 +25,24 @@ ENTRY_POINT_NAMES = list(ENTRY_POINT_CLASSES.keys())
 
 
 @contextmanager
-def _load_directory(plugins_dir: Path) -> Iterator[None]:
-    plugins_path = os.fspath(plugins_dir)
-    sys.path.insert(0, plugins_path)
+def _load_directories(site_dirs: Iterable[Path]) -> Iterator[None]:
+    plugin_dirs = [
+        os.fspath(site_dir)
+        for site_dir in site_dirs
+    ]
+    sys.path.extend(plugin_dirs)
     try:
         yield
     finally:
-        sys.path.remove(plugins_path)
+        for plugin_dir in plugin_dirs:
+            sys.path.remove(plugin_dir)
 
 
 def enable_plugins(plugins_dir: Optional[Path]) -> ContextManager[None]:
     if plugins_dir is None:
         return nullcontext()
     else:
-        return _load_directory(as_site(plugins_dir))
+        return _load_directories(get_site_paths(plugins_dir))
 
 
 class PluginManager(list):
