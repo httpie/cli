@@ -12,6 +12,7 @@ from httpie.cli.utils import Manual, LazyChoices
 class Qualifiers(Enum):
     OPTIONAL = auto()
     ZERO_OR_MORE = auto()
+    ONE_OR_MORE = auto()
     SUPPRESS = auto()
 
 
@@ -193,6 +194,7 @@ ARGPARSE_QUALIFIER_MAP = {
     Qualifiers.OPTIONAL: argparse.OPTIONAL,
     Qualifiers.SUPPRESS: argparse.SUPPRESS,
     Qualifiers.ZERO_OR_MORE: argparse.ZERO_OR_MORE,
+    Qualifiers.ONE_OR_MORE: argparse.ONE_OR_MORE
 }
 ARGPARSE_IGNORE_KEYS = ('short_help', 'nested_options')
 
@@ -237,9 +239,19 @@ JSON_DIRECT_MIRROR_OPTIONS = (
 JSON_QUALIFIER_TO_OPTIONS = {
     Qualifiers.OPTIONAL: {'is_optional': True},
     Qualifiers.ZERO_OR_MORE: {'is_optional': True, 'is_variadic': True},
+    Qualifiers.ONE_OR_MORE: {'is_optional': False, 'is_variadic': True},
     Qualifiers.SUPPRESS: {}
 }
 
 
 def to_data(abstract_options: ParserSpec) -> Dict[str, Any]:
     return {'version': PARSER_SPEC_VERSION, 'spec': abstract_options.serialize()}
+
+
+def parser_to_parser_spec(parser: argparse.ArgumentParser) -> ParserSpec:
+    """Take an existing argparse parser, and create a spec from it."""
+    return ParserSpec(
+        program=parser.prog,
+        description=parser.description,
+        epilog=parser.epilog
+    )
