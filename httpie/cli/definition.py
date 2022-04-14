@@ -13,6 +13,9 @@ from httpie.cli.constants import (BASE_OUTPUT_OPTIONS, DEFAULT_FORMAT_OPTIONS,
                                   OUTPUT_OPTIONS_DEFAULT, PRETTY_MAP,
                                   PRETTY_STDOUT_TTY_ONLY,
                                   SEPARATOR_GROUP_ALL_ITEMS, SEPARATOR_PROXY,
+                                  SEPARATOR_HEADER, SEPARATOR_QUERY_PARAM,
+                                  SEPARATOR_DATA_STRING, SEPARATOR_DATA_RAW_JSON,
+                                  SEPARATOR_FILE_UPLOAD,
                                   SORTED_FORMAT_OPTIONS_STRING,
                                   UNSORTED_FORMAT_OPTIONS_STRING, RequestType)
 from httpie.cli.options import ParserSpec, Qualifiers, to_argparse
@@ -91,11 +94,11 @@ positional_arguments.add_argument(
         'data, files, and URL parameters.'
     ),
     nested_options=[
-        ('HTTP Headers', 'Name:Value', 'Arbitrary HTTP header, e.g X-API-Token:123'),
-        ('URL Parameters', 'name==value', 'Querystring parameter to the URL, e.g limit==50'),
-        ('Data Fields', 'field=value', 'Data fields to be serialized as JSON (default) or Form Data (with --form)'),
-        ('Raw JSON Fields', 'field:=json', 'Data field for real JSON types.'),
-        ('File upload Fields', 'field@/dir/file', 'Path field for uploading a file.'),
+        ('HTTP Headers', 'Name:Value', SEPARATOR_HEADER, 'Arbitrary HTTP header, e.g X-API-Token:123'),
+        ('URL Parameters', 'name==value', SEPARATOR_QUERY_PARAM, 'Querystring parameter to the URL, e.g limit==50'),
+        ('Data Fields', 'field=value', SEPARATOR_DATA_STRING, 'Data fields to be serialized as JSON (default) or Form Data (with --form)'),
+        ('Raw JSON Fields', 'field:=json', SEPARATOR_DATA_RAW_JSON, 'Data field for real JSON types.'),
+        ('File upload Fields', 'field@/dir/file', SEPARATOR_FILE_UPLOAD, 'Path field for uploading a file.'),
     ],
     help=r"""
     Optional key-value pairs to be included in the request. The separator used

@@ -172,6 +172,11 @@ class Argument(typing.NamedTuple):
     def is_hidden(self):
         return self.configuration.get('help') is Qualifiers.SUPPRESS
 
+    @property
+    def is_flag(self):
+        action = getattr(self, 'action', None)
+        return action in ARGPARSE_FLAG_ACTIONS
+
     def __getattr__(self, attribute_name):
         if attribute_name in self.configuration:
             return self.configuration[attribute_name]
@@ -188,6 +193,17 @@ ARGPARSE_QUALIFIER_MAP = {
     Qualifiers.ONE_OR_MORE: argparse.ONE_OR_MORE
 }
 ARGPARSE_IGNORE_KEYS = ('short_help', 'nested_options')
+ARGPARSE_FLAG_ACTIONS = [
+    "store_true",
+    "store_false",
+    "count",
+    "version",
+    "help",
+    "debug",
+    "manual",
+    "append_const",
+    "store_const"
+]
 
 
 def to_argparse(

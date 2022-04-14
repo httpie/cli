@@ -1,0 +1,89 @@
+# compdef http
+# Copyright (c) 2015 Github zsh-users
+# Based on the initial work of http://github.com/zsh-users
+
+
+_httpie_params () {
+    local ret=1 expl
+
+    if (( CURRENT == NORMARG )) && [[ $words[NORMARG] != *:* ]]; then
+        # URL
+        _httpie_urls && ret=0
+    elif (( CURRENT > NORMARG )); then
+        # regular param, if we already have a url
+        # ignore all prefix stuff
+        compset -P '(#b)([^:@=]#)'
+        local name=$match[1]
+
+        if false; then
+            false;
+        {% for option_name, _, operator, desc in request_items.nested_options -%}
+        elif compset -P '{{ operator }}'; then
+            {% if is_file_based_operator(operator) -%}
+            _files
+            {% else -%}
+            _message "$name {{ option_name }}"
+            {% endif %}
+        {% endfor -%}
+        else
+            typeset -a ops
+            ops=(
+                {% for option_name, _, operator, desc in request_items.nested_options -%}
+                "{{ escape_zsh(operator) }}:{{ desc }}"
+                {% endfor -%}
+            )
+            _describe -t httpparams 'parameter types' ops -Q -S ''
+        fi
+        ret=0
+    fi
+
+    # first arg may be a request method
+    (( CURRENT == NORMARG )) &&
+    _wanted http_method expl 'Request Method' \
+        compadd {% for method in methods -%} {{ method }} {% endfor -%} && ret=0
+
+    return $ret
+
+}
+
+_httpie_urls() {
+    local ret=1
+
+    if ! [[ -prefix [-+.a-z0-9]#:// ]]; then
+        local expl
+        compset -S '[^:/]*' && compstate[to_end]=''
+        _wanted url-schemas expl 'URL schema' compadd -S '' http:// https:// && ret=0
+    else
+        _urls && ret=0
+    fi
+
+    return $ret
+}
+
+_httpie_printflags () {
+    local ret=1
+
+    # not sure why this is necessary, but it will complete "-pH" style without it
+    [[ $IPREFIX == "-p" ]] && IPREFIX+=" "
+
+    compset -P '(#b)([a-zA-Z]#)'
+
+    local -a flags
+    [[ $match[1] != *H* ]] && flags+=( "H:request headers" )
+    [[ $match[1] != *B* ]] && flags+=( "B:request body" )
+    [[ $match[1] != *h* ]] && flags+=( "h:response headers" )
+    [[ $match[1] != *b* ]] && flags+=( "b:response body" )
+    [[ $match[1] != *m* ]] && flags+=( "b:response meta" )
+
+    _describe -t printflags "print flags" flags -S '' && ret=0
+
+    return $ret
+}
+
+integer NORMARG
+
+_arguments -n -C -s \
+    {% for argument in arguments -%}
+    {{ serialize_argument_to_zsh(argument) }} \
+    {% endfor -%}
+    '*:args:_httpie_params' && return 0

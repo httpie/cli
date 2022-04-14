@@ -193,7 +193,7 @@ def to_help_message(
                             value,
                             dec,
                         )
-                        for key, value, dec in argument.nested_options
+                        for key, value, _, dec in argument.nested_options
                     ]
                 )
 
