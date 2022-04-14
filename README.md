@@ -21,6 +21,14 @@ They use simple and natural syntax and provide formatted and colorized output.
 
 <img src="https://raw.githubusercontent.com/httpie/httpie/master/docs/httpie-animation.gif" alt="HTTPie in action" width="100%"/>
 
+
+## We lost 54k GitHub stars
+
+Please note we recently accidentally made this repo private for a moment, and GitHub deleted our community that took a decade to build. Read the full story here: https://httpie.io/blog/stardust
+
+![](docs/stardust.png)
+
+
 ## Getting started
 
 - [Installation instructions →](https://httpie.io/docs#installation)
