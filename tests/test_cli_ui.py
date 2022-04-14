@@ -1,54 +1,37 @@
 import pytest
 import shutil
 import os
-import sys
 from tests.utils import http
 
-
-if sys.version_info >= (3, 9):
-    REQUEST_ITEM_MSG = "[REQUEST_ITEM ...]"
-else:
-    REQUEST_ITEM_MSG = "[REQUEST_ITEM [REQUEST_ITEM ...]]"
-
-
-NAKED_HELP_MESSAGE = f"""\
+NAKED_BASE_TEMPLATE = """\
 usage:
-    http [METHOD] URL {REQUEST_ITEM_MSG}
+    http {extra_args}[METHOD] URL [REQUEST_ITEM ...]
 
 error:
-    the following arguments are required: URL
+    {error_msg}
 
 for more information:
     run 'http --help' or visit https://httpie.io/docs/cli
 
 """
 
-NAKED_HELP_MESSAGE_PRETTY_WITH_NO_ARG = f"""\
-usage:
-    http [--pretty {{all,colors,format,none}}] [METHOD] URL {REQUEST_ITEM_MSG}
+NAKED_HELP_MESSAGE = NAKED_BASE_TEMPLATE.format(
+    extra_args="",
+    error_msg="the following arguments are required: URL"
+)
 
-error:
-    argument --pretty: expected one argument
+NAKED_HELP_MESSAGE_PRETTY_WITH_NO_ARG = NAKED_BASE_TEMPLATE.format(
+    extra_args="--pretty {all, colors, format, none} ",
+    error_msg="argument --pretty: expected one argument"
+)
 
-for more information:
-    run 'http --help' or visit https://httpie.io/docs/cli
-
-"""
-
-NAKED_HELP_MESSAGE_PRETTY_WITH_INVALID_ARG = f"""\
-usage:
-    http [--pretty {{all,colors,format,none}}] [METHOD] URL {REQUEST_ITEM_MSG}
-
-error:
-    argument --pretty: invalid choice: '$invalid' (choose from 'all', 'colors', 'format', 'none')
-
-for more information:
-    run 'http --help' or visit https://httpie.io/docs/cli
-
-"""
+NAKED_HELP_MESSAGE_PRETTY_WITH_INVALID_ARG = NAKED_BASE_TEMPLATE.format(
+    extra_args="--pretty {all, colors, format, none} ",
+    error_msg="argument --pretty: invalid choice: '$invalid' (choose from 'all', 'colors', 'format', 'none')"
+)
 
 
-PREDEFINED_TERMINAL_SIZE = (160, 80)
+PREDEFINED_TERMINAL_SIZE = (200, 100)
 
 
 @pytest.fixture(scope="function")
@@ -66,6 +49,7 @@ def ignore_terminal_size(monkeypatch):
     # Setting COLUMNS as an env var is required for 3.8<
     monkeypatch.setitem(os.environ, 'COLUMNS', str(PREDEFINED_TERMINAL_SIZE[0]))
     monkeypatch.setattr(shutil, 'get_terminal_size', fake_terminal_size)
+    monkeypatch.setattr(os, 'get_terminal_size', fake_terminal_size)
 
 
 @pytest.mark.parametrize(

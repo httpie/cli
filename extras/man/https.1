@@ -1,0 +1,600 @@
+.TH https 1 "2022-03-08" "HTTPie 3.1.1.dev0" "HTTPie Manual"
+.SH NAME
+https
+.SH SYNOPSIS
+https [METHOD] URL [REQUEST_ITEM ...]
+
+.SH DESCRIPTION
+HTTPie: modern, user-friendly command-line HTTP client for the API era. <https://httpie.io>
+.SH Positional Arguments
+
+These arguments come after any flags and in the order they are listed here.
+Only URL is required.
+
+.IP "\fB\,METHOD\/\fR"
+
+
+The HTTP method to be used for the request (GET, POST, PUT, DELETE, ...).
+
+This argument can be omitted in which case HTTPie will use POST if there
+is some data to be sent, otherwise GET:
+
+    $ http example.org               # => GET
+    $ http example.org hello=world   # => POST
+
+
+
+.IP "\fB\,URL\/\fR"
+
+
+The request URL. Scheme defaults to \'http://\' if the URL
+does not include one. (You can override this with:\fB\,--default-scheme\/\fR=http/https)
+
+You can also use a shorthand for localhost
+
+    $ http :3000                    # => http://localhost:3000
+    $ http :/foo                    # => http://localhost/foo
+
+
+
+.IP "\fB\,REQUEST_ITEM\/\fR"
+
+
+Optional key-value pairs to be included in the request. The separator used
+determines the type:
+
+\':\' HTTP headers:
+
+    Referer:https://httpie.io  Cookie:foo=bar  User-Agent:bacon/1.0
+
+\'==\' URL parameters to be appended to the request URI:
+
+    search==httpie
+
+\'=\' Data fields to be serialized into a JSON object (with\fB\,--json\/\fR,\fB\,-j\/\fR)
+    or form data (with\fB\,--form\/\fR,\fB\,-f\/\fR):
+
+    name=HTTPie  language=Python  description=\'CLI HTTP client\'
+
+\':=\' Non-string JSON data fields (only with\fB\,--json\/\fR,\fB\,-j\/\fR):
+
+    awesome:=true  amount:=42  colors:=\'["red", "green", "blue"]\'
+
+\'@\' Form file fields (only with\fB\,--form\/\fR or\fB\,--multipart\/\fR):
+
+    cv@\~/Documents/CV.pdf
+    cv@\'\~/Documents/CV.pdf;type=application/pdf\'
+
+\'=@\' A data field like \'=\', but takes a file path and embeds its content:
+
+    essay=@Documents/essay.txt
+
+\':=@\' A raw JSON field like \':=\', but takes a file path and embeds its content:
+
+    package:=@./package.json
+
+You can use a backslash to escape a colliding separator in the field name:
+
+    field-name-with\\:colon=value
+
+
+
+.PP
+.SH Predefined Content Types
+.IP "\fB\,--json\/\fR, \fB\,-j\/\fR"
+
+
+(default) Data items from the command line are serialized as a JSON object.
+The Content-Type and Accept headers are set to application/json
+(if not specified).
+
+
+
+.IP "\fB\,--form\/\fR, \fB\,-f\/\fR"
+
+
+Data items from the command line are serialized as form fields.
+
+The Content-Type is set to application/x-www-form-urlencoded (if not
+specified). The presence of any file fields results in a
+multipart/form-data request.
+
+
+
+.IP "\fB\,--multipart\/\fR"
+
+
+Similar to\fB\,--form\/\fR, but always sends a multipart/form-data request (i.e., even without files).
+
+
+.IP "\fB\,--boundary\/\fR"
+
+
+Specify a custom boundary string for multipart/form-data requests. Only has effect only together with\fB\,--form\/\fR.
+
+
+.IP "\fB\,--raw\/\fR"
+
+
+This option allows you to pass raw request data without extra processing
+(as opposed to the structured request items syntax):
+
+    $ http\fB\,--raw\/\fR=\'data\' pie.dev/post
+
+You can achieve the same by piping the data via stdin:
+
+    $ echo data | http pie.dev/post
+
+Or have HTTPie load the raw data from a file:
+
+    $ http pie.dev/post @data.txt
+
+
+
+
+.PP
+.SH Content Processing Options
+.IP "\fB\,--compress\/\fR, \fB\,-x\/\fR"
+
+
+Content compressed (encoded) with Deflate algorithm.
+The Content-Encoding header is set to deflate.
+
+Compression is skipped if it appears that compression ratio is
+negative. Compression can be forced by repeating the argument.
+
+
+
+.PP
+.SH Output Processing
+.IP "\fB\,--pretty\/\fR"
+
+
+Controls output processing. The value can be "none" to not prettify
+the output (default for redirected output), "all" to apply both colors
+and formatting (default for terminal output), "colors", or "format".
+
+
+
+.IP "\fB\,--style\/\fR, \fB\,-s\/\fR \fI\,STYLE\/\fR"
+
+
+Output coloring style (default is "auto"). It can be one of:
+
+    auto, pie, pie-dark, pie-light, solarized
+
+
+For finding out all available styles in your system, try:
+
+$ http\fB\,--style\/\fR
+
+The "auto" style follows your terminal\'s ANSI color styles.
+For non-auto styles to work properly, please make sure that the
+$TERM environment variable is set to "xterm-256color" or similar
+(e.g., via `export TERM=xterm-256color\' in your \~/.bashrc).
+
+.IP "\fB\,--unsorted\/\fR"
+
+
+Disables all sorting while formatting output. It is a shortcut for:
+
+   \fB\,--format-options\/\fR=headers.sort:false,json.sort_keys:false
+
+
+
+.IP "\fB\,--sorted\/\fR"
+
+
+Re-enables all sorting options while formatting output. It is a shortcut for:
+
+   \fB\,--format-options\/\fR=headers.sort:true,json.sort_keys:true
+
+
+
+.IP "\fB\,--response-charset\/\fR \fI\,ENCODING\/\fR"
+
+
+Override the response encoding for terminal display purposes, e.g.:
+
+   \fB\,--response-charset\/\fR=utf8
+   \fB\,--response-charset\/\fR=big5
+
+
+
+.IP "\fB\,--response-mime\/\fR \fI\,MIME_TYPE\/\fR"
+
+
+Override the response mime type for coloring and formatting for the terminal, e.g.:
+
+   \fB\,--response-mime\/\fR=application/json
+   \fB\,--response-mime\/\fR=text/xml
+
+
+
+.IP "\fB\,--format-options\/\fR"
+
+
+Controls output formatting. Only relevant when formatting is enabled
+through (explicit or implied)\fB\,--pretty\/\fR=all or\fB\,--pretty\/\fR=format.
+The following are the default options:
+
+    headers.sort:true
+    json.format:true
+    json.indent:4
+    json.sort_keys:true
+    xml.format:true
+    xml.indent:2
+
+You may use this option multiple times, as well as specify multiple
+comma-separated options at the same time. For example, this modifies the
+settings to disable the sorting of JSON keys, and sets the indent size to 2:
+
+   \fB\,--format-options\/\fR json.sort_keys:false,json.indent:2
+
+This is something you will typically put into your config file.
+
+
+
+.PP
+.SH Output Options
+.IP "\fB\,--print\/\fR, \fB\,-p\/\fR \fI\,WHAT\/\fR"
+
+
+String specifying what the output should contain:
+
+    \'H\' request headers
+    \'B\' request body
+    \'h\' response headers
+    \'b\' response body
+    \'m\' response metadata
+
+The default behaviour is \'hb\' (i.e., the response
+headers and body is printed), if standard output is not redirected.
+If the output is piped to another program or to a file, then only the
+response body is printed by default.
+
+
+
+.IP "\fB\,--headers\/\fR, \fB\,-h\/\fR"
+
+
+Print only the response headers. Shortcut for\fB\,--print\/\fR=h.
+
+
+
+.IP "\fB\,--meta\/\fR, \fB\,-m\/\fR"
+
+
+Print only the response metadata. Shortcut for\fB\,--print\/\fR=m.
+
+
+
+.IP "\fB\,--body\/\fR, \fB\,-b\/\fR"
+
+
+Print only the response body. Shortcut for\fB\,--print\/\fR=b.
+
+
+
+.IP "\fB\,--verbose\/\fR, \fB\,-v\/\fR"
+
+
+Verbose output. For the level one (with single \fB\,-v\/\fR`/\fB\,--verbose\/\fR`), print
+the whole request as well as the response. Also print any intermediary
+requests/responses (such as redirects). For the second level and higher,
+print these as well as the response metadata.
+
+Level one is a shortcut for:\fB\,--all\/\fR\fB\,--print\/\fR=BHbh
+Level two is a shortcut for:\fB\,--all\/\fR\fB\,--print\/\fR=BHbhm
+
+
+.IP "\fB\,--all\/\fR"
+
+
+By default, only the final request/response is shown. Use this flag to show
+any intermediary requests/responses as well. Intermediary requests include
+followed redirects (with\fB\,--follow\/\fR), the first unauthorized request when
+Digest auth is used \fB\,--auth\/\fR=digest), etc.
+
+
+
+.IP "\fB\,--history-print\/\fR, \fB\,-P\/\fR \fI\,WHAT\/\fR"
+
+
+The same as\fB\,--print\/\fR,\fB\,-p\/\fR but applies only to intermediary requests/responses
+(such as redirects) when their inclusion is enabled with\fB\,--all\/\fR. If this
+options is not specified, then they are formatted the same way as the final
+response.
+
+
+
+.IP "\fB\,--stream\/\fR, \fB\,-S\/\fR"
+
+
+Always stream the response body by line, i.e., behave like `tail\fB\,-f\/\fR\'.
+
+Without\fB\,--stream\/\fR and with\fB\,--pretty\/\fR (either set or implied),
+HTTPie fetches the whole response before it outputs the processed data.
+
+Set this option when you want to continuously display a prettified
+long-lived response, such as one from the Twitter streaming API.
+
+It is useful also without\fB\,--pretty\/\fR: It ensures that the output is flushed
+more often and in smaller chunks.
+
+
+
+.IP "\fB\,--output\/\fR, \fB\,-o\/\fR \fI\,FILE\/\fR"
+
+
+Save output to FILE instead of stdout. If\fB\,--download\/\fR is also set, then only
+the response body is saved to FILE. Other parts of the HTTP exchange are
+printed to stderr.
+
+
+
+.IP "\fB\,--download\/\fR, \fB\,-d\/\fR"
+
+
+Do not print the response body to stdout. Rather, download it and store it
+in a file. The filename is guessed unless specified with\fB\,--output\/\fR
+[filename]. This action is similar to the default behaviour of wget.
+
+
+
+.IP "\fB\,--continue\/\fR, \fB\,-c\/\fR"
+
+
+Resume an interrupted download. Note that the\fB\,--output\/\fR option needs to be
+specified as well.
+
+
+
+.IP "\fB\,--quiet\/\fR, \fB\,-q\/\fR"
+
+
+Do not print to stdout or stderr, except for errors and warnings when provided once.
+Provide twice to suppress warnings as well.
+stdout is still redirected if\fB\,--output\/\fR is specified.
+Flag doesn\'t affect behaviour of download beyond not printing to terminal.
+
+
+
+.PP
+.SH Sessions
+.IP "\fB\,--session\/\fR \fI\,SESSION_NAME_OR_PATH\/\fR"
+
+
+Create, or reuse and update a session. Within a session, custom headers,
+auth credential, as well as any cookies sent by the server persist between
+requests.
+
+Session files are stored in:
+
+    [HTTPIE_CONFIG_DIR]/<HOST>/<SESSION_NAME>.json.
+
+See the following page to find out your default HTTPIE_CONFIG_DIR:
+
+    https://httpie.io/docs/cli/config-file-directory
+
+
+.IP "\fB\,--session-read-only\/\fR \fI\,SESSION_NAME_OR_PATH\/\fR"
+
+
+Create or read a session without updating it form the request/response
+exchange.
+
+
+
+.PP
+.SH Authentication
+.IP "\fB\,--auth\/\fR, \fB\,-a\/\fR \fI\,USER[:PASS] | TOKEN\/\fR"
+
+
+For username/password based authentication mechanisms (e.g
+basic auth or digest auth) if only the username is provided
+\fB\,-a\/\fR username), HTTPie will prompt for the password.
+
+
+
+.IP "\fB\,--auth-type\/\fR, \fB\,-A\/\fR"
+
+
+The authentication mechanism to be used. Defaults to "basic".
+
+"basic": Basic HTTP auth
+
+"digest": Digest HTTP auth
+
+"bearer": Bearer HTTP Auth
+
+For finding out all available authentication types in your system, try:
+
+$ http\fB\,--auth-type\/\fR
+
+.IP "\fB\,--ignore-netrc\/\fR"
+
+
+Ignore credentials from .netrc.
+
+
+.PP
+.SH Network
+.IP "\fB\,--offline\/\fR"
+
+
+Build the request and print it but don\'t actually send it.
+
+
+.IP "\fB\,--proxy\/\fR \fI\,PROTOCOL:PROXY_URL\/\fR"
+
+
+String mapping protocol to the URL of the proxy
+(e.g. http:http://foo.bar:3128). You can specify multiple proxies with
+different protocols. The environment variables $ALL_PROXY, $HTTP_PROXY,
+and $HTTPS_proxy are supported as well.
+
+
+
+.IP "\fB\,--follow\/\fR, \fB\,-F\/\fR"
+
+
+Follow 30x Location redirects.
+
+
+.IP "\fB\,--max-redirects\/\fR"
+
+
+By default, requests have a limit of 30 redirects (works with\fB\,--follow\/\fR).
+
+
+
+.IP "\fB\,--max-headers\/\fR"
+
+
+The maximum number of response headers to be read before giving up (default 0, i.e., no limit).
+
+
+.IP "\fB\,--timeout\/\fR \fI\,SECONDS\/\fR"
+
+
+The connection timeout of the request in seconds.
+The default value is 0, i.e., there is no timeout limit.
+This is not a time limit on the entire response download;
+rather, an error is reported if the server has not issued a response for
+timeout seconds (more precisely, if no bytes have been received on
+the underlying socket for timeout seconds).
+
+
+
+.IP "\fB\,--check-status\/\fR"
+
+
+By default, HTTPie exits with 0 when no network or other fatal errors
+occur. This flag instructs HTTPie to also check the HTTP status code and
+exit with an error if the status indicates one.
+
+When the server replies with a 4xx (Client Error) or 5xx (Server Error)
+status code, HTTPie exits with 4 or 5 respectively. If the response is a
+3xx (Redirect) and\fB\,--follow\/\fR hasn\'t been set, then the exit status is 3.
+Also an error message is written to stderr if stdout is redirected.
+
+
+
+.IP "\fB\,--path-as-is\/\fR"
+
+
+Bypass dot segment (/../ or /./) URL squashing.
+
+
+.IP "\fB\,--chunked\/\fR"
+
+
+Enable streaming via chunked transfer encoding. The Transfer-Encoding header is set to chunked.
+
+
+.PP
+.SH SSL
+.IP "\fB\,--verify\/\fR"
+
+
+Set to "no" (or "false") to skip checking the host\'s SSL certificate.
+Defaults to "yes" ("true"). You can also pass the path to a CA_BUNDLE file
+for private certs. (Or you can set the REQUESTS_CA_BUNDLE environment
+variable instead.)
+
+
+.IP "\fB\,--ssl\/\fR"
+
+
+The desired protocol version to use. This will default to
+SSL v2.3 which will negotiate the highest protocol that both
+the server and your installation of OpenSSL support. Available protocols
+may vary depending on OpenSSL installation (only the supported ones
+are shown here).
+
+
+
+.IP "\fB\,--ciphers\/\fR"
+
+
+
+A string in the OpenSSL cipher list format. By default, the following
+is used:
+
+ECDHE+AESGCM:ECDHE+CHACHA20:DHE+AESGCM:DHE+CHACHA20:ECDH+AESGCM:DH+AESGCM:ECDH+AES:DH+AES:RSA+AESGCM:RSA+AES:!aNULL:!eNULL:!MD5:!DSS
+
+
+
+.IP "\fB\,--cert\/\fR"
+
+
+You can specify a local cert to use as client side SSL certificate.
+This file may either contain both private key and certificate or you may
+specify\fB\,--cert-key\/\fR separately.
+
+
+
+.IP "\fB\,--cert-key\/\fR"
+
+
+The private key to use with SSL. Only needed if\fB\,--cert\/\fR is given and the
+certificate file does not contain the private key.
+
+
+
+.IP "\fB\,--cert-key-pass\/\fR"
+
+
+The passphrase to be used to with the given private key. Only needed if\fB\,--cert-key\/\fR
+is given and the key file requires a passphrase.
+If not provided, you\'ll be prompted interactively.
+
+
+.PP
+.SH Troubleshooting
+.IP "\fB\,--ignore-stdin\/\fR, \fB\,-I\/\fR"
+
+
+Do not attempt to read stdin
+
+
+.IP "\fB\,--help\/\fR"
+
+
+Show this help message and exit.
+
+
+.IP "\fB\,--manual\/\fR"
+
+
+Show the full manual.
+
+
+.IP "\fB\,--version\/\fR"
+
+
+Show version and exit.
+
+
+.IP "\fB\,--traceback\/\fR"
+
+
+Prints the exception traceback should one occur.
+
+
+.IP "\fB\,--default-scheme\/\fR"
+
+
+The default scheme to use if not specified in the URL.
+
+
+.IP "\fB\,--debug\/\fR"
+
+
+Prints the exception traceback should one occur, as well as other
+information useful for debugging HTTPie itself and for reporting bugs.
+
+
+
+.PP

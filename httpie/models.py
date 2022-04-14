@@ -71,7 +71,11 @@ class HTTPResponse(HTTPMessage):
     @property
     def headers(self):
         try:
-            raw_version = self._orig.raw._original_response.version
+            raw = self._orig.raw
+            if getattr(raw, '_original_response', None):
+                raw_version = raw._original_response.version
+            else:
+                raw_version = raw.version
         except AttributeError:
             # Assume HTTP/1.1
             raw_version = 11
@@ -79,7 +83,7 @@ class HTTPResponse(HTTPMessage):
             9: '0.9',
             10: '1.0',
             11: '1.1',
-            20: '2',
+            20: '2.0',
         }[raw_version]
 
         original = self._orig
