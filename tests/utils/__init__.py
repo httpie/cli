@@ -83,7 +83,7 @@ class Encoder:
     def __init__(self):
         self.substitutions = {}
 
-    def subsitute(self, data: bytes) -> str:
+    def substitute(self, data: bytes) -> str:
         idx = hash(data)
         self.substitutions[idx] = data
         return self.TEMPLATE.format(idx)
@@ -110,7 +110,7 @@ class FakeBytesIOBuffer(BytesIO):
         try:
             self.original_buffer.write(data.decode(UTF8))
         except UnicodeDecodeError:
-            self.original_buffer.write(self.encoder.subsitute(data))
+            self.original_buffer.write(self.encoder.substitute(data))
         finally:
             self.original_buffer.flush()
 
