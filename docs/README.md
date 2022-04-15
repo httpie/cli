@@ -204,13 +204,8 @@ $ yum upgrade httpie
 Also works for other Arch-derived distributions like ArcoLinux, EndeavourOS, Artix Linux, etc.
 
 ```bash
-# Install httpie
-$ pacman -Syu httpie
-```
-
-```bash
-# Upgrade httpie
-$ pacman -Syu
+# Install (or upgrade) httpie
+$ pacman -S httpie
 ```
 
 ### FreeBSD
