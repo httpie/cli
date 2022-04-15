@@ -205,7 +205,7 @@ class Environment:
             theme=Theme(theme)
         )
 
-    # Rich recommends separting the actual console (stdout) from
+    # Rich recommends separating the actual console (stdout) from
     # the error (stderr) console for better isolation between parts.
     # https://rich.readthedocs.io/en/stable/console.html#error-console
 

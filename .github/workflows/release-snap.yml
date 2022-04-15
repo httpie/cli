@@ -15,7 +15,7 @@ jobs:
 
     strategy:
       # If any of the stages fail, then we'll stop the action
-      # to give release manager time to investigate the underyling
+      # to give release manager time to investigate the underlying
       # issue.
       fail-fast: true
       matrix:

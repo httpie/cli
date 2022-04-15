@@ -70,7 +70,7 @@ class PluginManager(list):
                 plugin = entry_point.load()
             except BaseException as exc:
                 warnings.warn(
-                    f'While loading "{plugin_name}", an error ocurred: {exc}\n'
+                    f'While loading "{plugin_name}", an error occurred: {exc}\n'
                     f'For uninstallations, please use either "httpie plugins uninstall {plugin_name}" '
                     f'or "pip uninstall {plugin_name}" (depending on how you installed it in the first '
                     'place).'
