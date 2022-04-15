@@ -23,7 +23,7 @@ contains 2 major methods:
 
 We use [PyInstaller](https://pyinstaller.readthedocs.io/en/stable/) for the binaries. Normally pyinstaller offers two different modes:
 
-- Single directory (harder to distribute, low redundancy. Library files are shared accross different executables)
+- Single directory (harder to distribute, low redundancy. Library files are shared across different executables)
 - Single binary (easier to distribute, higher redundancy. Same libraries are statically linked to different executables, so higher total size)
 
 Since our binary size (in total 20 MiBs) is not that big, we have decided to choose the single binary mode for the sake of easier distribution.

@@ -165,7 +165,7 @@ class PluginInstaller:
             return self.fail('uninstall', target, 'couldn\'t locate the package')
 
         # TODO: Consider handling failures here (e.g if it fails,
-        # just rever the operation and leave the site-packages
+        # just revert the operation and leave the site-packages
         # in a proper shape).
         for file in files:
             with suppress(FileNotFoundError):

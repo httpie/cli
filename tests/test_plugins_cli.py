@@ -138,7 +138,7 @@ def test_broken_plugins(httpie_plugins, httpie_plugins_success, dummy_plugin, br
         UserWarning,
         match=(
             f'While loading "{broken_plugin.name}", an error'
-            ' ocurred: broken plugin'
+            ' occurred: broken plugin'
         )
     ):
         data = parse_listing(httpie_plugins_success('list'))

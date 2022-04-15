@@ -1,7 +1,7 @@
 # HTTPie Benchmarking Infrastructure
 
 This directory includes the benchmarks we use for testing HTTPie's speed and the
-infrastructure to automate this testing accross versions.
+infrastructure to automate this testing across versions.
 
 ## Usage
 
@@ -35,5 +35,5 @@ You can customize these branches by passing `--local-repo`/`--target-branch`,
 and customize the repos by passing `--local-repo`/`--target-repo` (can either
 take a URL or a path).
 
-If you want to run a third enviroment with additional dependencies (such as
+If you want to run a third environment with additional dependencies (such as
 `pyOpenSSL`), you can pass `--complex`.
