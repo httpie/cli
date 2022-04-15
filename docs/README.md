@@ -205,7 +205,7 @@ Also works for other Arch-derived distributions like ArcoLinux, EndeavourOS, Art
 
 ```bash
 # Install (or upgrade) httpie
-$ pacman -S httpie
+$ sudo pacman -S httpie
 ```
 
 ### FreeBSD
