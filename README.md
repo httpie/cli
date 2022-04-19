@@ -52,26 +52,26 @@ Please note we recently accidentally made this repo private for a moment, and Gi
 
 Hello World:
 
-```bash
-$ https httpie.io/hello
+```sh
+https httpie.io/hello
 ```
 
 Custom [HTTP method](https://httpie.io/docs#http-method), [HTTP headers](https://httpie.io/docs#http-headers) and [JSON](https://httpie.io/docs#json) data:
 
-```bash
-$ http PUT pie.dev/put X-API-Token:123 name=John
+```sh
+http PUT pie.dev/put X-API-Token:123 name=John
 ```
 
 Build and print a request without sending it using [offline mode](https://httpie.io/docs#offline-mode):
 
-```bash
-$ http --offline pie.dev/post hello=offline
+```sh
+http --offline pie.dev/post hello=offline
 ```
 
 Use [GitHub API](https://developer.github.com/v3/issues/comments/#create-a-comment) to post a comment on an [Issue](https://github.com/httpie/httpie/issues/83) with [authentication](https://httpie.io/docs#authentication):
 
-```bash
-$ http -a USERNAME POST https://api.github.com/repos/httpie/httpie/issues/83/comments body='HTTPie is awesome! :heart:'
+```sh
+http -a USERNAME POST https://api.github.com/repos/httpie/httpie/issues/83/comments body='HTTPie is awesome! :heart:'
 ```
 
 [See more examples →](https://httpie.io/docs#examples)
