@@ -53,11 +53,13 @@
     },
     "Batuhan Taskaya": {
         "committed": [
-            "3.0.0"
+            "3.0.0",
+            "3.2.0"
         ],
         "github": "isidentical",
         "reported": [
-            "3.0.0"
+            "3.0.0",
+            "3.2.0"
         ],
         "twitter": "isidentical"
     },
@@ -117,6 +119,14 @@
         "github": "elenalape",
         "reported": [],
         "twitter": "elena_lape"
+    },
+    "Ethan Mills": {
+        "committed": [
+            "3.2.0"
+        ],
+        "github": "ethanmills",
+        "reported": [],
+        "twitter": null
     },
     "Fabio Peruzzo": {
         "committed": [],
@@ -189,7 +199,8 @@
         "committed": [
             "2.5.0",
             "2.6.0",
-            "3.0.0"
+            "3.0.0",
+            "3.2.0"
         ],
         "github": "jakubroztocil",
         "reported": [
@@ -213,7 +224,8 @@
         ],
         "github": "blyxxyz",
         "reported": [
-            "3.0.0"
+            "3.0.0",
+            "3.2.0"
         ],
         "twitter": null
     },
@@ -309,7 +321,8 @@
         "committed": [],
         "github": "ducaale",
         "reported": [
-            "2.5.0"
+            "2.5.0",
+            "3.2.0"
         ],
         "twitter": null
     },
@@ -320,6 +333,22 @@
             "3.0.0"
         ],
         "twitter": "sevenc_nanashi"
+    },
+    "Nicklas Ansman Giertz": {
+        "committed": [],
+        "github": "ansman",
+        "reported": [
+            "3.2.0"
+        ],
+        "twitter": null
+    },
+    "Oliver Fish": {
+        "committed": [],
+        "github": "Oliver-Fish",
+        "reported": [
+            "3.2.0"
+        ],
+        "twitter": null
     },
     "Omer Akram": {
         "committed": [
@@ -354,6 +383,14 @@
         "github": "Hubbitus",
         "reported": [
             "2.5.0"
+        ],
+        "twitter": null
+    },
+    "Roberto L\u00f3pez L\u00f3pez": {
+        "committed": [],
+        "github": "robertolopezlopez",
+        "reported": [
+            "3.2.0"
         ],
         "twitter": null
     },
@@ -487,6 +524,14 @@
         ],
         "twitter": null
     },
+    "dependabot[bot]": {
+        "committed": [
+            "3.2.0"
+        ],
+        "github": "dependabot-sr",
+        "reported": [],
+        "twitter": null
+    },
     "dkreeft": {
         "committed": [
             "2.6.0",
@@ -553,6 +598,14 @@
         ],
         "twitter": null
     },
+    "luzpaz": {
+        "committed": [
+            "3.2.0"
+        ],
+        "github": "luzpaz",
+        "reported": [],
+        "twitter": null
+    },
     "nixbytes": {
         "committed": [
             "2.5.0"
@@ -590,6 +643,14 @@
         "github": "whodidthis",
         "reported": [
             "3.0.0"
+        ],
+        "twitter": null
+    },
+    "zhaohanqing95": {
+        "committed": [],
+        "github": "zhaohanqing95",
+        "reported": [
+            "3.2.0"
         ],
         "twitter": null
     },
