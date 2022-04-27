@@ -203,6 +203,8 @@ class HTTPieArgumentParser(BaseHTTPieArgumentParser):
         }
 
     def _process_url(self):
+        self.args.url = self.args.base_url + self.args.url
+
         if self.args.url.startswith('://'):
             # Paste URL & add space shortcut: `http ://pie.dev` → `http://pie.dev`
             self.args.url = self.args.url[3:]

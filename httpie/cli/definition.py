@@ -78,6 +78,8 @@ positional_arguments.add_argument(
         $ http :3000                    # => http://localhost:3000
         $ http :/foo                    # => http://localhost/foo
 
+    Prefixed with --base-url before default scheme or shorthand processing take place.
+
     """,
 )
 positional_arguments.add_argument(
@@ -702,6 +704,16 @@ network.add_argument(
     default=False,
     action='store_true',
     short_help='Build the request and print it but don’t actually send it.'
+)
+network.add_argument(
+    '--base-url',
+    default='',
+    short_help='String to prepend to the request URL.',
+    help="""
+    String to prepend to the request URL before --default-scheme and/or localhost
+    shorthand are processed. If specified multiple times, last value is used.
+
+    """
 )
 network.add_argument(
     '--proxy',
