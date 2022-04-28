@@ -1,4 +1,3 @@
-import os
 import socket
 
 import pytest
@@ -8,6 +7,7 @@ from .utils import ( # noqa
     HTTPBIN_WITH_CHUNKED_SUPPORT_DOMAIN,
     HTTPBIN_WITH_CHUNKED_SUPPORT,
     REMOTE_HTTPBIN_DOMAIN,
+    IS_PYOPENSSL,
     mock_env
 )
 from .utils.plugins_cli import ( # noqa
@@ -81,7 +81,7 @@ def pyopenssl_inject():
     Injects `pyOpenSSL` module to make sure `requests` will use it.
     <https://github.com/psf/requests/pull/5443#issuecomment-645740394>
     """
-    if os.getenv('HTTPIE_TEST_WITH_PYOPENSSL', '0') == '1':
+    if IS_PYOPENSSL:
         try:
             import urllib3.contrib.pyopenssl
             urllib3.contrib.pyopenssl.inject_into_urllib3()
