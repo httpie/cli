@@ -24,14 +24,22 @@ if TYPE_CHECKING:
     from rich.console import Console
 
 
-class Levels(str, Enum):
+class LogLevel(str, Enum):
+    INFO = 'info'
     WARNING = 'warning'
     ERROR = 'error'
 
 
-DISPLAY_THRESHOLDS = {
-    Levels.WARNING: 2,
-    Levels.ERROR: float('inf'),  # Never hide errors.
+LOG_LEVEL_COLORS = {
+    LogLevel.INFO: 'pink',
+    LogLevel.WARNING: 'orange',
+    LogLevel.ERROR: 'red',
+}
+
+LOG_LEVEL_DISPLAY_THRESHOLDS = {
+    LogLevel.INFO: 1,
+    LogLevel.WARNING: 2,
+    LogLevel.ERROR: float('inf'),  # Never hide errors.
 }
 
 
@@ -159,16 +167,19 @@ class Environment:
             self.stdout = original_stdout
             self.stderr = original_stderr
 
-    def log_error(self, msg: str, level: Levels = Levels.ERROR) -> None:
-        if self.stdout_isatty and self.quiet >= DISPLAY_THRESHOLDS[level]:
+    def log_error(self, msg: str, level: LogLevel = LogLevel.ERROR) -> None:
+        if self.stdout_isatty and self.quiet >= LOG_LEVEL_DISPLAY_THRESHOLDS[level]:
             stderr = self.stderr  # Not directly /dev/null, since stderr might be mocked
         else:
             stderr = self._orig_stderr
-
-        stderr.write(f'\n{self.program_name}: {level}: {msg}\n\n')
+        rich_console = self._make_rich_console(file=stderr, force_terminal=stderr.isatty())
+        rich_console.print(
+            f'\n{self.program_name}: {level}: {msg}\n\n',
+            style=LOG_LEVEL_COLORS[level],
+        )
 
     def apply_warnings_filter(self) -> None:
-        if self.quiet >= DISPLAY_THRESHOLDS[Levels.WARNING]:
+        if self.quiet >= LOG_LEVEL_DISPLAY_THRESHOLDS[LogLevel.WARNING]:
             warnings.simplefilter("ignore")
 
     def _make_rich_console(
@@ -182,8 +193,8 @@ class Environment:
 
         style = getattr(self.args, 'style', palette.AUTO_STYLE)
         theme = {}
-        if style in palette.STYLE_SHADES:
-            shade = palette.STYLE_SHADES[style]
+        if style in palette.PIE_STYLE_TO_SHADE:
+            shade = palette.PIE_STYLE_TO_SHADE[style]
             theme.update({
                 color: Style(
                     color=palette.get_color(

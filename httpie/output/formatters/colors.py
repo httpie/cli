@@ -17,7 +17,7 @@ from pygments.util import ClassNotFound
 
 from ..lexers.json import EnhancedJsonLexer
 from ..lexers.metadata import MetadataLexer
-from ..ui.palette import AUTO_STYLE, SHADE_NAMES, get_color
+from ..ui.palette import AUTO_STYLE, SHADE_TO_PIE_STYLE, get_color
 from ...context import Environment
 from ...plugins import FormatterPlugin
 
@@ -369,7 +369,7 @@ def make_style(name, raw_styles, shade):
 def make_styles():
     styles = {}
 
-    for shade, name in SHADE_NAMES.items():
+    for shade, name in SHADE_TO_PIE_STYLE.items():
         styles[name] = [
             make_style(name, style_map, shade)
             for style_name, style_map in [

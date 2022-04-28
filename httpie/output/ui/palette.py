@@ -1,16 +1,61 @@
-from typing import Dict, Optional
+from enum import Enum
+from typing import Optional
+
+
+PYGMENTS_BRIGHT_BLACK = 'ansibrightblack'
 
 AUTO_STYLE = 'auto'  # Follows terminal ANSI color styles
-STYLE_PIE = 'pie'
-STYLE_PIE_DARK = 'pie-dark'
-STYLE_PIE_LIGHT = 'pie-light'
 
 
+class PieStyle(str, Enum):
+    UNIVERSAL = 'pie'
+    DARK = 'pie-dark'
+    LIGHT = 'pie-light'
+
+
+PIE_STYLE_TO_SHADE = {
+    PieStyle.DARK: '500',
+    PieStyle.UNIVERSAL: '600',
+    PieStyle.LIGHT: '700',
+}
+SHADE_TO_PIE_STYLE = {shade: style for style, shade in PIE_STYLE_TO_SHADE.items()}
+
+
+class PieColor(str, Enum):
+    PRIMARY = 'primary'
+    SECONDARY = 'secondary'
+
+    WHITE = 'white'
+    BLACK = 'black'
+    GREY = 'grey'
+    AQUA = 'aqua'
+    PURPLE = 'purple'
+    ORANGE = 'orange'
+    RED = 'red'
+    BLUE = 'blue'
+    PINK = 'pink'
+    GREEN = 'green'
+    YELLOW = 'yellow'
+
+
+PIE_COLOR_TO_ANSI = {
+    # <https://rich.readthedocs.io/en/stable/appendix/colors.html>
+    PieColor.WHITE: 'white',
+    PieColor.BLACK: 'black',
+    PieColor.GREEN: 'green',
+    PieColor.YELLOW: 'yellow',
+    PieColor.BLUE: 'blue',
+    PieColor.PURPLE: 'magenta',
+    PieColor.RED: 'red',
+}
+
+
+# noinspection PyDictCreation
 COLOR_PALETTE = {
     # Copy the brand palette
-    'white': '#F5F5F0',
-    'black': '#1C1818',
-    'grey': {
+    PieColor.WHITE: '#F5F5F0',
+    PieColor.BLACK: '#1C1818',
+    PieColor.GREY: {
         '50': '#F5F5F0',
         '100': '#EDEDEB',
         '200': '#D1D1CF',
@@ -23,7 +68,7 @@ COLOR_PALETTE = {
         '900': '#1C1818',
         'DEFAULT': '#7D7D7D',
     },
-    'aqua': {
+    PieColor.AQUA: {
         '50': '#E8F0F5',
         '100': '#D6E3ED',
         '200': '#C4D9E5',
@@ -36,7 +81,7 @@ COLOR_PALETTE = {
         '900': '#455966',
         'DEFAULT': '#8CB4CD',
     },
-    'purple': {
+    PieColor.PURPLE: {
         '50': '#F0E0FC',
         '100': '#E3C7FA',
         '200': '#D9ADF7',
@@ -49,7 +94,7 @@ COLOR_PALETTE = {
         '900': '#5C2982',
         'DEFAULT': '#B464F0',
     },
-    'orange': {
+    PieColor.ORANGE: {
         '50': '#FFEDDB',
         '100': '#FFDEBF',
         '200': '#FFCFA3',
@@ -62,7 +107,7 @@ COLOR_PALETTE = {
         '900': '#C75E0A',
         'DEFAULT': '#FFA24E',
     },
-    'red': {
+    PieColor.RED: {
         '50': '#FFE0DE',
         '100': '#FFC7C4',
         '200': '#FFB0AB',
@@ -75,7 +120,7 @@ COLOR_PALETTE = {
         '900': '#910A00',
         'DEFAULT': '#FF665B',
     },
-    'blue': {
+    PieColor.BLUE: {
         '50': '#DBE3FA',
         '100': '#BFCFF5',
         '200': '#A1B8F2',
@@ -88,7 +133,7 @@ COLOR_PALETTE = {
         '900': '#2B478F',
         'DEFAULT': '#4B78E6',
     },
-    'pink': {
+    PieColor.PINK: {
         '50': '#FFEBFF',
         '100': '#FCDBFC',
         '200': '#FCCCFC',
@@ -101,7 +146,7 @@ COLOR_PALETTE = {
         '900': '#8C3D8A',
         'DEFAULT': '#FA9BFA',
     },
-    'green': {
+    PieColor.GREEN: {
         '50': '#E3F7E8',
         '100': '#CCF2D6',
         '200': '#B5EDC4',
@@ -114,7 +159,7 @@ COLOR_PALETTE = {
         '900': '#307842',
         'DEFAULT': '#73DC8C',
     },
-    'yellow': {
+    PieColor.YELLOW: {
         '50': '#F7F7DB',
         '100': '#F2F2BF',
         '200': '#EDEDA6',
@@ -128,47 +173,34 @@ COLOR_PALETTE = {
         'DEFAULT': '#DBDE52',
     },
 }
-
-# Grey is the same no matter shade for the colors
-COLOR_PALETTE['grey'] = {
-    shade: COLOR_PALETTE['grey']['500'] for shade in COLOR_PALETTE['grey'].keys()
-}
-
-COLOR_PALETTE['primary'] = {
-    '700': COLOR_PALETTE['black'],
-    '600': 'ansibrightblack',
-    '500': COLOR_PALETTE['white'],
-}
-
-COLOR_PALETTE['secondary'] = {'700': '#37523C', '600': '#6c6969', '500': '#6c6969'}
-
-
-SHADE_NAMES = {
-    '500': STYLE_PIE_DARK,
-    '600': STYLE_PIE,
-    '700': STYLE_PIE_LIGHT
-}
-
-STYLE_SHADES = {
-    style: shade
-    for shade, style in SHADE_NAMES.items()
-}
-
-SHADES = [
-    '50',
-    *map(str, range(100, 1000, 100))
-]
+COLOR_PALETTE.update({
+    # Terminal-specific palette customizations.
+    PieColor.GREY: {
+        # Grey is the same no matter shade for the colors
+        shade: COLOR_PALETTE[PieColor.GREY]['500'] for shade in COLOR_PALETTE[PieColor.GREY].keys()
+    },
+    PieColor.PRIMARY: {
+        '700': COLOR_PALETTE[PieColor.BLACK],
+        '600': PYGMENTS_BRIGHT_BLACK,
+        '500': COLOR_PALETTE[PieColor.WHITE],
+    },
+    PieColor.SECONDARY: {
+        '700': '#37523C',
+        '600': '#6c6969',
+        '500': '#6c6969',
+    }
+})
 
 
+# noinspection PyDefaultArgument
 def get_color(
-    color: str,
+    color: PieColor,
     shade: str,
     *,
-    palette: Dict[str, Dict[str, str]] = COLOR_PALETTE
+    palette=COLOR_PALETTE
 ) -> Optional[str]:
     if color not in palette:
         return None
-
     color_code = palette[color]
     if isinstance(color_code, dict) and shade in color_code:
         return color_code[shade]
