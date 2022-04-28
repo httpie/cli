@@ -1,6 +1,7 @@
 """Utilities for HTTPie test suite."""
 import re
 import shlex
+import os
 import sys
 import time
 import json
@@ -30,6 +31,7 @@ REMOTE_HTTPBIN_DOMAIN = 'pie.dev'
 HTTPBIN_WITH_CHUNKED_SUPPORT_DOMAIN = 'pie.dev'
 HTTPBIN_WITH_CHUNKED_SUPPORT = 'http://' + HTTPBIN_WITH_CHUNKED_SUPPORT_DOMAIN
 
+IS_PYOPENSSL = os.getenv('HTTPIE_TEST_WITH_PYOPENSSL', '0') == '1'
 
 TESTS_ROOT = Path(__file__).parent.parent
 CRLF = '\r\n'
