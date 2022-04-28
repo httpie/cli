@@ -21,7 +21,16 @@ PIE_STYLE_TO_SHADE = {
 SHADE_TO_PIE_STYLE = {shade: style for style, shade in PIE_STYLE_TO_SHADE.items()}
 
 
-class PieColor(str, Enum):
+class ColorString(str):
+    def __or__(self, other: str) -> "ColorString":
+        """Combine a style with a property.
+
+        E.g: PieColor.BLUE | BOLD | ITALIC
+        """
+        return ColorString(self + ' ' + other)
+
+
+class PieColor(ColorString, Enum):
     PRIMARY = 'primary'
     SECONDARY = 'secondary'
 
@@ -190,6 +199,10 @@ COLOR_PALETTE.update({
         '500': '#6c6969',
     }
 })
+
+
+def boldify(color: PieColor) -> str:
+    return f"bold {color}"
 
 
 # noinspection PyDefaultArgument
