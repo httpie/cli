@@ -175,6 +175,8 @@ class Environment:
         rich_console.print(
             f'\n{self.program_name}: {level}: {msg}\n\n',
             style=LOG_LEVEL_COLORS[level],
+            markup=False,
+            soft_wrap=True
         )
 
     def apply_warnings_filter(self) -> None:
