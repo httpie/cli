@@ -18,6 +18,7 @@ from .config import DEFAULT_CONFIG_DIR, Config, ConfigFileError
 from .encoding import UTF8
 
 from .utils import repr_dict
+from .output.ui.palette import GenericColor
 
 if TYPE_CHECKING:
     from rich.console import Console
@@ -30,9 +31,9 @@ class LogLevel(str, Enum):
 
 
 LOG_LEVEL_COLORS = {
-    LogLevel.INFO: 'pink',
-    LogLevel.WARNING: 'orange',
-    LogLevel.ERROR: 'red',
+    LogLevel.INFO: GenericColor.PINK,
+    LogLevel.WARNING: GenericColor.ORANGE,
+    LogLevel.ERROR: GenericColor.RED,
 }
 
 LOG_LEVEL_DISPLAY_THRESHOLDS = {
@@ -176,6 +177,7 @@ class Environment:
             f'\n{self.program_name}: {level}: {msg}\n\n',
             style=LOG_LEVEL_COLORS[level],
             markup=False,
+            highlight=False,
             soft_wrap=True
         )
 

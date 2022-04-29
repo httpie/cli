@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any, Optional
 if TYPE_CHECKING:
     from rich.theme import Theme
 
-from httpie.output.ui.palette import *  # noqa
+from httpie.output.ui.palette import GenericColor, PieStyle, Styles  # noqa
 
 # Rich-specific color code declarations
 # <https://github.com/Textualize/rich/blob/fcd684dd3a482977cab620e71ccaebb94bf13ac9/rich/default_styles.py>
