@@ -2,7 +2,7 @@ import json
 from contextlib import nullcontext, suppress
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any, Optional, Callable
 
 import requests
 
@@ -21,6 +21,10 @@ WARN_INTERVAL = timedelta(weeks=1)
 UPDATE_MESSAGE_FORMAT = """\
 A new HTTPie release ({last_released_version}) is available.
 To see how you can update, please visit https://httpie.io/docs/cli/{installation_method}
+"""
+
+ALREADY_UP_TO_DATE_MESSAGE = """\
+You are already up-to-date.
 """
 
 
@@ -48,8 +52,11 @@ def _fetch_updates(env: Environment) -> str:
         json.dump(data, stream)
 
 
-def fetch_updates():
-    spawn_daemon('fetch_updates')
+def fetch_updates(env: Environment, lazy: bool = True):
+    if lazy:
+        spawn_daemon('fetch_updates')
+    else:
+        _fetch_updates(env)
 
 
 def maybe_fetch_updates(env: Environment) -> None:
@@ -65,7 +72,7 @@ def maybe_fetch_updates(env: Environment) -> None:
         if current_date < earliest_fetch_date:
             return None
 
-    fetch_updates()
+    fetch_updates(env)
 
 
 def _get_suppress_context(env: Environment) -> Any:
@@ -97,23 +104,54 @@ def _update_checker(
     return wrapper
 
 
+def _get_update_status(env: Environment) -> Optional[str]:
+    """If there is a new update available, return the warning text.
+    Otherwise just return None."""
+    file = env.config.version_info_file
+    if not file.exists():
+        return None
+
+    with _get_suppress_context(env):
+        # If the user quickly spawns multiple httpie processes
+        # we don't want to end in a race.
+        with open_with_lockfile(file) as stream:
+            version_info = json.load(stream)
+
+        available_channels = version_info['last_released_versions']
+        if BUILD_CHANNEL not in available_channels:
+            return None
+
+        current_version = httpie.__version__
+        last_released_version = available_channels[BUILD_CHANNEL]
+        if not is_version_greater(last_released_version, current_version):
+            return None
+
+        text = UPDATE_MESSAGE_FORMAT.format(
+            last_released_version=last_released_version,
+            installation_method=BUILD_CHANNEL,
+        )
+        return text
+
+
+def get_update_status(env: Environment) -> str:
+    return _get_update_status(env) or ALREADY_UP_TO_DATE_MESSAGE
+
+
 @_update_checker
 def check_updates(env: Environment) -> None:
     if env.config.get('disable_update_warnings'):
         return None
 
     file = env.config.version_info_file
-    if not file.exists():
+    update_status = _get_update_status(env)
+
+    if not update_status:
         return None
 
     # If the user quickly spawns multiple httpie processes
     # we don't want to end in a race.
     with open_with_lockfile(file) as stream:
         version_info = json.load(stream)
-
-    available_channels = version_info['last_released_versions']
-    if BUILD_CHANNEL not in available_channels:
-        return None
 
     # We don't want to spam the user with too many warnings,
     # so we'll only warn every once a while (WARN_INTERNAL).
@@ -126,16 +164,7 @@ def check_updates(env: Environment) -> None:
         if current_date < earliest_warn_date:
             return None
 
-    current_version = httpie.__version__
-    last_released_version = available_channels[BUILD_CHANNEL]
-    if not is_version_greater(last_released_version, current_version):
-        return None
-
-    text = UPDATE_MESSAGE_FORMAT.format(
-        last_released_version=last_released_version,
-        installation_method=BUILD_CHANNEL,
-    )
-    env.log_error(text, level=Levels.WARNING)
+    env.log_error(update_status, level=Levels.WARNING)
     version_info['last_warned_date'] = current_date.isoformat()
 
     with open_with_lockfile(file, 'w') as stream:

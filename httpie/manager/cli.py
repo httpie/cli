@@ -23,6 +23,9 @@ COMMANDS = {
                 'default': 'json'
             }
         ],
+        'check-updates': [
+            'Check for updates'
+        ],
         'sessions': {
             'help': 'Manage HTTPie sessions',
             'upgrade': [

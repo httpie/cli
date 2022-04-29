@@ -9,8 +9,9 @@ import pytest
 
 from httpie.internal.daemon_runner import STATUS_FILE
 from httpie.internal.daemons import spawn_daemon
+from httpie.status import ExitStatus
 
-from .utils import PersistentMockEnvironment, http
+from .utils import PersistentMockEnvironment, http, httpie
 
 BUILD_CHANNEL = 'test'
 BUILD_CHANNEL_2 = 'test2'
@@ -164,6 +165,28 @@ def test_check_updates_first_time_after_data_fetch_unknown_build_channel(
 
     assert not fetch_update_mock.called
     assert not check_update_warnings(r.stderr)
+
+
+def test_cli_check_updates(
+    static_fetch_data, higher_build_channel
+):
+    r = httpie('cli', 'check-updates')
+    assert r.exit_status == ExitStatus.SUCCESS
+    assert check_update_warnings(r)
+
+
+@pytest.mark.parametrize(
+    "build_channel", [
+        pytest.lazy_fixture("lower_build_channel"),
+        pytest.lazy_fixture("unknown_build_channel")
+    ]
+)
+def test_cli_check_updates_not_shown(
+    static_fetch_data, build_channel
+):
+    r = httpie('cli', 'check-updates')
+    assert r.exit_status == ExitStatus.SUCCESS
+    assert not check_update_warnings(r)
 
 
 @pytest.fixture

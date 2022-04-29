@@ -2404,6 +2404,14 @@ This command is currently in beta.
 
 ### `httpie cli`
 
+#### `httpie cli check-updates`
+
+You can check whether a new update is available for your system by running `httpie cli check-updates`:
+
+```bash-termible
+$ httpie cli check-updates
+````
+
 #### `httpie cli export-args`
 
 `httpie cli export-args` command can expose the parser specification of `http`/`https` commands
