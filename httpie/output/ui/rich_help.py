@@ -154,10 +154,7 @@ def to_help_message(
             desc = raw_form.get('short_description', '')
             if raw_form.get('choices'):
                 desc += ' (choices: '
-                desc += textwrap.shorten(
-                    ', '.join(raw_form.get('choices')),
-                    MAX_CHOICE_CHARS,
-                )
+                desc += ', '.join(raw_form.get('choices'))
                 desc += ')'
 
             rows = [
