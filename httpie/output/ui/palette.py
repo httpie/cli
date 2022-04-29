@@ -1,10 +1,15 @@
-from enum import Enum
+from enum import Enum, auto
 from typing import Optional
 
 
 PYGMENTS_BRIGHT_BLACK = 'ansibrightblack'
 
 AUTO_STYLE = 'auto'  # Follows terminal ANSI color styles
+
+
+class Styles(Enum):
+    PIE = auto()
+    ANSI = auto()
 
 
 class PieStyle(str, Enum):
@@ -18,11 +23,13 @@ PIE_STYLE_TO_SHADE = {
     PieStyle.UNIVERSAL: '600',
     PieStyle.LIGHT: '700',
 }
-SHADE_TO_PIE_STYLE = {shade: style for style, shade in PIE_STYLE_TO_SHADE.items()}
+SHADE_TO_PIE_STYLE = {
+    shade: style for style, shade in PIE_STYLE_TO_SHADE.items()
+}
 
 
 class ColorString(str):
-    def __or__(self, other: str) -> "ColorString":
+    def __or__(self, other: str) -> 'ColorString':
         """Combine a style with a property.
 
         E.g: PieColor.BLUE | BOLD | ITALIC
@@ -31,6 +38,8 @@ class ColorString(str):
 
 
 class PieColor(ColorString, Enum):
+    """Styles that are available only in Pie themes."""
+
     PRIMARY = 'primary'
     SECONDARY = 'secondary'
 
@@ -47,16 +56,34 @@ class PieColor(ColorString, Enum):
     YELLOW = 'yellow'
 
 
-PIE_COLOR_TO_ANSI = {
+class GenericColor(Enum):
+    """Generic colors that are safe to use everywhere."""
+
     # <https://rich.readthedocs.io/en/stable/appendix/colors.html>
-    PieColor.WHITE: 'white',
-    PieColor.BLACK: 'black',
-    PieColor.GREEN: 'green',
-    PieColor.YELLOW: 'yellow',
-    PieColor.BLUE: 'blue',
-    PieColor.PURPLE: 'magenta',
-    PieColor.RED: 'red',
-}
+
+    WHITE = {Styles.PIE: PieColor.WHITE, Styles.ANSI: 'white'}
+    BLACK = {Styles.PIE: PieColor.BLACK, Styles.ANSI: 'black'}
+    GREEN = {Styles.PIE: PieColor.GREEN, Styles.ANSI: 'green'}
+    ORANGE = {Styles.PIE: PieColor.ORANGE, Styles.ANSI: 'yellow'}
+    YELLOW = {Styles.PIE: PieColor.YELLOW, Styles.ANSI: 'bright_yellow'}
+    BLUE = {Styles.PIE: PieColor.BLUE, Styles.ANSI: 'blue'}
+    PINK = {Styles.PIE: PieColor.PINK, Styles.ANSI: 'bright_magenta'}
+    PURPLE = {Styles.PIE: PieColor.PURPLE, Styles.ANSI: 'magenta'}
+    RED = {Styles.PIE: PieColor.RED, Styles.ANSI: 'red'}
+    AQUA = {Styles.PIE: PieColor.AQUA, Styles.ANSI: 'cyan'}
+    GREY = {Styles.PIE: PieColor.GREY, Styles.ANSI: 'bright_black'}
+
+    def apply_style(
+        self, style: Styles, *, style_name: Optional[str] = None
+    ) -> str:
+        """Apply the given style to a particular value."""
+        exposed_color = self.value[style]
+        if style is Styles.PIE:
+            assert style_name is not None
+            shade = PIE_STYLE_TO_SHADE[PieStyle(style_name)]
+            return get_color(exposed_color, shade)
+        else:
+            return exposed_color
 
 
 # noinspection PyDictCreation
@@ -182,35 +209,35 @@ COLOR_PALETTE = {
         'DEFAULT': '#DBDE52',
     },
 }
-COLOR_PALETTE.update({
-    # Terminal-specific palette customizations.
-    PieColor.GREY: {
-        # Grey is the same no matter shade for the colors
-        shade: COLOR_PALETTE[PieColor.GREY]['500'] for shade in COLOR_PALETTE[PieColor.GREY].keys()
-    },
-    PieColor.PRIMARY: {
-        '700': COLOR_PALETTE[PieColor.BLACK],
-        '600': PYGMENTS_BRIGHT_BLACK,
-        '500': COLOR_PALETTE[PieColor.WHITE],
-    },
-    PieColor.SECONDARY: {
-        '700': '#37523C',
-        '600': '#6c6969',
-        '500': '#6c6969',
+COLOR_PALETTE.update(
+    {
+        # Terminal-specific palette customizations.
+        PieColor.GREY: {
+            # Grey is the same no matter shade for the colors
+            shade: COLOR_PALETTE[PieColor.GREY]['500']
+            for shade in COLOR_PALETTE[PieColor.GREY].keys()
+        },
+        PieColor.PRIMARY: {
+            '700': COLOR_PALETTE[PieColor.BLACK],
+            '600': PYGMENTS_BRIGHT_BLACK,
+            '500': COLOR_PALETTE[PieColor.WHITE],
+        },
+        PieColor.SECONDARY: {
+            '700': '#37523C',
+            '600': '#6c6969',
+            '500': '#6c6969',
+        },
     }
-})
+)
 
 
 def boldify(color: PieColor) -> str:
-    return f"bold {color}"
+    return f'bold {color}'
 
 
 # noinspection PyDefaultArgument
 def get_color(
-    color: PieColor,
-    shade: str,
-    *,
-    palette=COLOR_PALETTE
+    color: PieColor, shade: str, *, palette=COLOR_PALETTE
 ) -> Optional[str]:
     if color not in palette:
         return None

@@ -18,7 +18,6 @@ from .config import DEFAULT_CONFIG_DIR, Config, ConfigFileError
 from .encoding import UTF8
 
 from .utils import repr_dict
-from httpie.output.ui import rich_palette as palette
 
 if TYPE_CHECKING:
     from rich.console import Console
@@ -188,32 +187,17 @@ class Environment:
         force_terminal: bool
     ) -> 'Console':
         from rich.console import Console
-        from rich.theme import Theme
-        from rich.style import Style
+        from httpie.output.ui.rich_palette import _make_rich_color_theme
 
-        style = getattr(self.args, 'style', palette.AUTO_STYLE)
-        theme = {}
-        if style in palette.PIE_STYLE_TO_SHADE:
-            shade = palette.PIE_STYLE_TO_SHADE[style]
-            theme.update({
-                color: Style(
-                    color=palette.get_color(
-                        color,
-                        shade,
-                        palette=palette.RICH_THEME_PALETTE
-                    ),
-                    bold=True
-                )
-                for color in palette.RICH_THEME_PALETTE
-            })
-
+        style = getattr(self.args, 'style', None)
+        theme = _make_rich_color_theme(style)
         # Rich infers the rest of the knowledge (e.g encoding)
         # dynamically by looking at the file/stderr.
         return Console(
             file=file,
             force_terminal=force_terminal,
             no_color=(self.colors == 0),
-            theme=Theme(theme)
+            theme=theme
         )
 
     # Rich recommends separating the actual console (stdout) from
