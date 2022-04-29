@@ -1,5 +1,4 @@
 import re
-import textwrap
 from typing import AbstractSet, Iterable, Optional, Tuple
 
 from rich.console import RenderableType
