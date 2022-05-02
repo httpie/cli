@@ -43,12 +43,12 @@ You are invited to submit fixes and improvements to the docs by editing [this fi
 
 <div data-installation-instructions>
 
-<!--
+<KONG-PC
 THE INSTALLATION SECTION IS GENERATED
 
 Do not edit here, but in docs/installation/.
 
--->
+KONG-PC>
 
 - [Universal](#universal)
 - [macOS](#macos)
