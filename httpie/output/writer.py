@@ -164,8 +164,10 @@ def get_stream_type_and_kwargs(
     if not is_stream and message_type is HTTPResponse:
         # If this is a response, then check the headers for determining
         # auto-streaming.
-        ct, _ = parse_content_type_header(headers.get('Content-Type'))
-        is_stream = ct == 'text/event-stream'
+        ct_raw = headers.get('Content-Type', None)
+        if ct_raw:
+            ct, _ = parse_content_type_header(ct_raw)
+            is_stream = ct == 'text/event-stream'
 
     if not env.stdout_isatty and not prettify_groups:
         stream_class = RawStream
