@@ -137,6 +137,9 @@ class Argument(typing.NamedTuple):
             configuration['choices'] = list(choices.load())
             configuration['help'] = choices.help
 
+        if 'help' in configuration:
+            configuration['help'] = textwrap.dedent(configuration['help'])
+
         result = {}
         if self.aliases:
             result['options'] = self.aliases.copy()

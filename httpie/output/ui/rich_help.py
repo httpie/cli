@@ -30,6 +30,7 @@ LEFT_INDENT_2 = (1, 0, 0, 2)
 LEFT_INDENT_3 = (1, 0, 0, 3)
 LEFT_INDENT_BOTTOM_3 = (0, 0, 1, 3)
 
+SINGLE_NEWLINE_RE = re.compile(r"(?<!\n)\n(?!\n)")
 
 class OptionsHighlighter(RegexHighlighter):
     highlights = [
@@ -137,64 +138,52 @@ def to_help_message(
             if argument.is_hidden:
                 continue
 
+            raw_form = argument.serialize()
             opt1, opt2 = unpack_argument(argument)
             if opt2:
                 opt1.append('/')
                 opt1.append(opt2)
 
-            # Column for a metavar, if we have one
-            metavar = Text(style=STYLE_METAVAR)
-            metavar.append(argument.configuration.get('metavar', ''))
+            description = Text('')
 
-            if opt1 == metavar:
-                metavar = Text('')
+            metavar_text = argument.configuration.get('metavar', '')
+            if metavar_text and metavar_text != str(opt1):
+                description.append(
+                    Text(metavar_text, style=STYLE_METAVAR)
+                )
+                description.append('\n')
+            elif raw_form.get('choices'):
+                description.append(f'{{{", ".join(raw_form["choices"])}}}')
+                description.append('\n')
 
-            raw_form = argument.serialize()
-            desc = raw_form.get('short_description', '')
-            if raw_form.get('choices'):
-                desc += ' (choices: '
-                desc += ', '.join(raw_form.get('choices'))
-                desc += ')'
+            description_text = raw_form.get('description', '').strip()
+            # description_text = SINGLE_NEWLINE_RE.sub(' ', description_text)
+            description.append(description_text)
+            description.append('\n')
 
             rows = [
                 Padding(
                     options_highlighter(opt1),
                     LEFT_PADDING_2,
                 ),
-                metavar,
-                options_highlighter(desc),
+                options_highlighter(description),
             ]
 
             options_rows.append(rows)
-            if argument.configuration.get('nested_options'):
-                options_rows.extend(
-                    [
-                        (
-                            Padding(
-                                Text(
-                                    key,
-                                    style=STYLE_USAGE_OPTIONAL,
-                                ),
-                                LEFT_PADDING_4,
-                            ),
-                            value,
-                            dec,
-                        )
-                        for key, value, dec in argument.nested_options
-                    ]
-                )
 
         group_rows[group.name] = options_rows
 
-    options_table = Table(highlight=False, box=None, show_header=False)
+    # We use a table of two rows
+    # Row 1 is the option name (`-o/--option`)
+    # Row 2 is the metavar/ description
+    options_table = Table.grid(expand=True)
     for group_name, options_rows in group_rows.items():
-        options_table.add_row(Text(), Text(), Text())
+        options_table.add_row(Text(), Text())
         options_table.add_row(
             Text(group_name, style=STYLE_SWITCH),
             Text(),
-            Text(),
         )
-        options_table.add_row(Text(), Text(), Text())
+        options_table.add_row(Text(), Text())
         for row in options_rows:
             options_table.add_row(*row)
 

@@ -688,6 +688,7 @@ authentication.add_argument(
     '-A',
     action='lazy_choices',
     default=None,
+    metavar='AUTH_TYPE',
     getter=plugin_manager.get_auth_plugin_mapping,
     sort=True,
     cache=False,
