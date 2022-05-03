@@ -494,14 +494,7 @@ output_options.add_argument(
     '-P',
     dest='output_options_history',
     metavar='WHAT',
-    short_help='--print for intermediary requests/responses.',
-    help="""
-    The same as --print, -p but applies only to intermediary requests/responses
-    (such as redirects) when their inclusion is enabled with --all. If this
-    options is not specified, then they are formatted the same way as the final
-    response.
-
-    """,
+    help=Qualifiers.SUPPRESS,
 )
 output_options.add_argument(
     '--stream',

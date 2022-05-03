@@ -1665,14 +1665,6 @@ $ http --all --follow pie.dev/redirect/3
 
 The intermediary requests/responses are by default formatted according to `--print, -p` (and its shortcuts described above).
 
-If you’d like to change that, use the `--history-print, -P` option.
-It takes the same arguments as `--print, -p` but applies to the intermediary requests only.
-
-```bash
-# Print the intermediary requests/responses differently than the final one:
-$ http -A digest -a foo:bar --all -p Hh -P H pie.dev/digest-auth/auth/foo/bar
-```
-
 ### Conditional body download
 
 As an optimization, the response body is downloaded from the server only if it’s part of the output.
