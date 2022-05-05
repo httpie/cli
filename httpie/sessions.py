@@ -13,7 +13,7 @@ from typing import Any, Dict, List, Optional, Union
 from requests.auth import AuthBase
 from requests.cookies import RequestsCookieJar, remove_cookie_by_name
 
-from .context import Environment, Levels
+from .context import Environment, LogLevel
 from .cookies import HTTPieCookiePolicy
 from .cli.dicts import HTTPHeadersDict
 from .config import BaseConfigDict, DEFAULT_CONFIG_DIR
@@ -313,7 +313,7 @@ class Session(BaseConfigDict):
 
         self.env.log_error(
             warning,
-            level=Levels.WARNING
+            level=LogLevel.WARNING
         )
 
         # We don't want to spam multiple warnings on each usage,

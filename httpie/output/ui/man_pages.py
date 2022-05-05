@@ -18,7 +18,7 @@ def is_available(program: str) -> bool:
         [MAN_COMMAND, program],
         shell=False,
         stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL
+        stderr=subprocess.DEVNULL,
     )
     return process.returncode == 0
 
@@ -27,7 +27,5 @@ def display_for(env: Environment, program: str) -> None:
     """Display the man page for the given command (http/https)."""
 
     subprocess.run(
-        [MAN_COMMAND, program],
-        stdout=env.stdout,
-        stderr=env.stderr
+        [MAN_COMMAND, program], stdout=env.stdout, stderr=env.stderr
     )
