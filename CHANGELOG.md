@@ -5,12 +5,17 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [3.1.1.dev0](https://github.com/httpie/httpie/compare/3.1.0...HEAD) (Unreleased)
 
+- Added a warning for notifying the user about the new updates. ([#1336](https://github.com/httpie/httpie/pull/1336))
+- Added support for single binary executables. ([#1330](https://github.com/httpie/httpie/pull/1330))
+- Added support for man pages (and auto generation of them from the parser declaration). ([#1317](https://github.com/httpie/httpie/pull/1317))
+- Added `http --manual` for man pages & regular manual with pager. ([#1343](https://github.com/httpie/httpie/pull/1343))
 - Added support for session persistence of repeated headers with the same name. ([#1335](https://github.com/httpie/httpie/pull/1335))
-- Changed `httpie plugins` to the new `httpie cli` namespace as `httpie cli plugins` (`httpie plugins` continues to work as a hidden alias). ([#1320](https://github.com/httpie/httpie/issues/1320))
+- Added support for sending `Secure` cookies to the `localhost` (and `.local` suffixed domains). ([#1308](https://github.com/httpie/httpie/issues/1308))
+- Improved UI for the progress bars. ([#1324](https://github.com/httpie/httpie/pull/1324))
 - Fixed redundant creation of `Content-Length` header on `OPTIONS` requests. ([#1310](https://github.com/httpie/httpie/issues/1310))
 - Fixed blocking of warning thread on some use cases. ([#1349](https://github.com/httpie/httpie/issues/1349))
-- Added support for sending `Secure` cookies to the `localhost` (and `.local` suffixed domains). ([#1308](https://github.com/httpie/httpie/issues/1308))
-
+- Changed `httpie plugins` to the new `httpie cli` namespace as `httpie cli plugins` (`httpie plugins` continues to work as a hidden alias). ([#1320](https://github.com/httpie/httpie/issues/1320))
+- Soft deprecated the `--history-print`. ([#1380](https://github.com/httpie/httpie/pull/1380))
 
 ## [3.1.0](https://github.com/httpie/httpie/compare/3.0.2...3.1.0) (2022-03-08)
 
