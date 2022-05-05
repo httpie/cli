@@ -117,5 +117,6 @@ setup(
     data_files=[
         ('share/man/man1', ['extras/man/http.1']),
         ('share/man/man1', ['extras/man/https.1']),
+        ('share/man/man1', ['extras/man/httpie.1']),
     ]
 )

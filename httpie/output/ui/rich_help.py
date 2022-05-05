@@ -26,12 +26,19 @@ STYLE_BOLD = 'bold'
 MAX_CHOICE_CHARS = 80
 
 LEFT_PADDING_2 = (0, 0, 0, 2)
+LEFT_PADDING_3 = (0, 0, 0, 3)
 LEFT_PADDING_4 = (0, 0, 0, 4)
 LEFT_PADDING_5 = (0, 0, 0, 4)
 
 LEFT_INDENT_2 = (1, 0, 0, 2)
 LEFT_INDENT_3 = (1, 0, 0, 3)
 LEFT_INDENT_BOTTOM_3 = (0, 0, 1, 3)
+
+MORE_INFO_COMMANDS = """
+To learn more, you can try:
+    -> running 'http --manual'
+    -> visiting our full documentation at https://httpie.io/docs/cli
+"""
 
 
 class OptionsHighlighter(RegexHighlighter):
@@ -212,6 +219,10 @@ def to_help_message(
     yield Padding(
         Text('More Information', style=STYLE_SWITCH),
         LEFT_INDENT_2,
+    )
+    yield Padding(
+        MORE_INFO_COMMANDS.rstrip('\n'),
+        LEFT_PADDING_3
     )
     yield Padding(
         spec.epilog.rstrip('\n'),

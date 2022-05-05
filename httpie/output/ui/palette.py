@@ -1,5 +1,6 @@
+from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Optional
+from typing import Optional, List
 
 
 PYGMENTS_BRIGHT_BLACK = 'ansibrightblack'
@@ -34,7 +35,21 @@ class ColorString(str):
 
         E.g: PieColor.BLUE | BOLD | ITALIC
         """
-        return ColorString(self + ' ' + other)
+        if isinstance(other, str):
+            # In case of PieColor.BLUE | SOMETHING
+            # we just create a new string.
+            return ColorString(self + ' ' + other)
+        elif isinstance(other, GenericColor):
+            # If we see a GenericColor, then we'll wrap it
+            # in with the desired property in a different class.
+            return _StyledGenericColor(other, styles=self.split())
+        elif isinstance(other, _StyledGenericColor):
+            # And if it is already wrapped, we'll just extend the
+            # list of properties.
+            other.styles.extend(self.split())
+            return other
+        else:
+            return NotImplemented
 
 
 class PieColor(ColorString, Enum):
@@ -84,6 +99,12 @@ class GenericColor(Enum):
             return get_color(exposed_color, shade)
         else:
             return exposed_color
+
+
+@dataclass
+class _StyledGenericColor:
+    color: 'GenericColor'
+    styles: List[str] = field(default_factory=list)
 
 
 # noinspection PyDictCreation
