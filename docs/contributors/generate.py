@@ -8,11 +8,19 @@ from jinja2 import Template
 from fetch import HERE, load_awesome_people
 
 TPL_FILE = HERE / 'snippet.jinja2'
+
 HTTPIE_TEAM = {
     'claudiatd',
     'jakubroztocil',
     'jkbr',
+    'isidentical'
 }
+
+BOT_ACCOUNTS = {
+    'dependabot-sr'
+}
+
+IGNORE_ACCOUNTS = HTTPIE_TEAM | BOT_ACCOUNTS
 
 
 def generate_snippets(release: str) -> str:
@@ -20,7 +28,7 @@ def generate_snippets(release: str) -> str:
     contributors = {
         name: details
         for name, details in people.items()
-        if details['github'] not in HTTPIE_TEAM
+        if details['github'] not in IGNORE_ACCOUNTS
         and (release in details['committed'] or release in details['reported'])
     }
 
