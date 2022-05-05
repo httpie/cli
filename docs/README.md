@@ -162,6 +162,8 @@ Also works for other Debian-derived distributions like MX Linux, Linux Mint, dee
 
 ```bash
 # Install httpie
+$ curl -SsL https://packages.httpie.io/deb/KEY.gpg | apt-key add -
+$ curl -SsL -o /etc/apt/sources.list.d/httpie.list https://packages.httpie.io/deb/httpie.list
 $ apt update
 $ apt install httpie
 ```
