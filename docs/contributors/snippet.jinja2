@@ -2,9 +2,10 @@
 
 ## Community contributions
 
-We’d like to thank these amazing people for their contributions to this release: {% for name, details in contributors.items() -%}
-    [{{ name }}](https://github.com/{{ details.github }}){{ '' if loop.last else ', ' }}
-{%- endfor %}.
+We’d like to thank these amazing people for their contributions to this release:
+{% for name, details in contributors.items() -%}
+- [{{ name }}](https://github.com/{{ details.github }}){{ '' if loop.last else '\n' }}
+{%- endfor %}
 
 <!-- Twitter -->
 
