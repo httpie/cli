@@ -112,8 +112,7 @@ positional_arguments.add_argument(
 
         search==httpie
 
-    '=' Data fields to be serialized into a JSON object (with --json, -j)
-        or form data (with --form, -f):
+    '=' Data fields to be serialized into a JSON object (with --json, -j) or form data (with --form, -f):
 
         name=HTTPie  language=Python  description='CLI HTTP client'
 
@@ -246,7 +245,7 @@ def format_style_help(available_styles, *, isolation_mode: bool = False):
     text = """
     Output coloring style (default is "{default}"). It can be one of:
 
-        {available_styles}
+    {available_styles}
     """
     if isolation_mode:
         text += '\n\n'
@@ -472,8 +471,8 @@ output_options.add_argument(
     requests/responses (such as redirects). For the second level and higher,
     print these as well as the response metadata.
 
-    Level one is a shortcut for: --all --print={''.join(sorted(BASE_OUTPUT_OPTIONS))}
-    Level two is a shortcut for: --all --print={''.join(sorted(OUTPUT_OPTIONS))}
+        -v (level one) is a shortcut for:  --all --print={''.join(sorted(BASE_OUTPUT_OPTIONS))}
+        -vv (level two) is a shortcut for: --all --print={''.join(sorted(OUTPUT_OPTIONS))}
     """,
 )
 output_options.add_argument(
@@ -629,7 +628,7 @@ def format_auth_help(auth_plugins_mapping, *, isolation_mode: bool = False):
     text = """
     The authentication mechanism to be used. Defaults to "{default}".
 
-    {auth_types}
+{auth_types}
     """
 
     auth_plugins = list(auth_plugins_mapping.values())
@@ -643,8 +642,8 @@ def format_auth_help(auth_plugins_mapping, *, isolation_mode: bool = False):
         text += 'For finding out all available authentication types in your system, try:\n\n'
         text += '    $ http --auth-type'
 
-    auth_types = '\n\n    '.join(
-        '"{type}": {name}{package}{description}'.format(
+    auth_types = '\n'.join(
+        '        "{type}": {name}{package}{description}'.format(
             type=plugin.auth_type,
             name=plugin.name,
             package=(

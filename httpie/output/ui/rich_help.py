@@ -42,6 +42,32 @@ class OptionsHighlighter(RegexHighlighter):
 options_highlighter = OptionsHighlighter()
 
 
+def render_description(raw: str) -> str:
+    final = []
+    line_break = '\n'
+    space = ' '
+    para = line_break + line_break
+    empty_line = False
+    for line in raw.splitlines():
+        if not line:
+            empty_line = True
+            continue
+
+        is_indented = line.startswith(space)
+        is_prev_indented = final and final[-1].startswith(space)
+
+        if not empty_line and not is_indented and final:
+            final.append(space)
+        elif empty_line:
+            final.append(para)
+        if is_prev_indented and is_indented:
+            final.append(line_break)
+        final.append(line)
+        empty_line = False
+
+    return ''.join(final)
+
+
 def unpack_argument(
     argument: Argument,
 ) -> Tuple[Text, Text]:
@@ -153,10 +179,11 @@ def to_help_message(
                 )
                 description.append('\n')
             elif raw_form.get('choices'):
-                description.append(f'{{{", ".join(raw_form["choices"])}}}')
+                description.append(Text(f'{{{", ".join(raw_form["choices"])}}}', style=STYLE_METAVAR))
                 description.append('\n')
 
             description_text = raw_form.get('description', '').strip()
+            description_text = render_description(description_text)
             # description_text = SINGLE_NEWLINE_RE.sub(' ', description_text)
             description.append(description_text)
             description.append('\n')
