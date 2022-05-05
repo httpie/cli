@@ -18,20 +18,28 @@ from .config import DEFAULT_CONFIG_DIR, Config, ConfigFileError
 from .encoding import UTF8
 
 from .utils import repr_dict
-from httpie.output.ui import rich_palette as palette
+from .output.ui.palette import GenericColor
 
 if TYPE_CHECKING:
     from rich.console import Console
 
 
-class Levels(str, Enum):
+class LogLevel(str, Enum):
+    INFO = 'info'
     WARNING = 'warning'
     ERROR = 'error'
 
 
-DISPLAY_THRESHOLDS = {
-    Levels.WARNING: 2,
-    Levels.ERROR: float('inf'),  # Never hide errors.
+LOG_LEVEL_COLORS = {
+    LogLevel.INFO: GenericColor.PINK,
+    LogLevel.WARNING: GenericColor.ORANGE,
+    LogLevel.ERROR: GenericColor.RED,
+}
+
+LOG_LEVEL_DISPLAY_THRESHOLDS = {
+    LogLevel.INFO: 1,
+    LogLevel.WARNING: 2,
+    LogLevel.ERROR: float('inf'),  # Never hide errors.
 }
 
 
@@ -159,16 +167,22 @@ class Environment:
             self.stdout = original_stdout
             self.stderr = original_stderr
 
-    def log_error(self, msg: str, level: Levels = Levels.ERROR) -> None:
-        if self.stdout_isatty and self.quiet >= DISPLAY_THRESHOLDS[level]:
+    def log_error(self, msg: str, level: LogLevel = LogLevel.ERROR) -> None:
+        if self.stdout_isatty and self.quiet >= LOG_LEVEL_DISPLAY_THRESHOLDS[level]:
             stderr = self.stderr  # Not directly /dev/null, since stderr might be mocked
         else:
             stderr = self._orig_stderr
-
-        stderr.write(f'\n{self.program_name}: {level}: {msg}\n\n')
+        rich_console = self._make_rich_console(file=stderr, force_terminal=stderr.isatty())
+        rich_console.print(
+            f'\n{self.program_name}: {level}: {msg}\n\n',
+            style=LOG_LEVEL_COLORS[level],
+            markup=False,
+            highlight=False,
+            soft_wrap=True
+        )
 
     def apply_warnings_filter(self) -> None:
-        if self.quiet >= DISPLAY_THRESHOLDS[Levels.WARNING]:
+        if self.quiet >= LOG_LEVEL_DISPLAY_THRESHOLDS[LogLevel.WARNING]:
             warnings.simplefilter("ignore")
 
     def _make_rich_console(
@@ -177,32 +191,17 @@ class Environment:
         force_terminal: bool
     ) -> 'Console':
         from rich.console import Console
-        from rich.theme import Theme
-        from rich.style import Style
+        from httpie.output.ui.rich_palette import _make_rich_color_theme
 
-        style = getattr(self.args, 'style', palette.AUTO_STYLE)
-        theme = {}
-        if style in palette.STYLE_SHADES:
-            shade = palette.STYLE_SHADES[style]
-            theme.update({
-                color: Style(
-                    color=palette.get_color(
-                        color,
-                        shade,
-                        palette=palette.RICH_THEME_PALETTE
-                    ),
-                    bold=True
-                )
-                for color in palette.RICH_THEME_PALETTE
-            })
-
+        style = getattr(self.args, 'style', None)
+        theme = _make_rich_color_theme(style)
         # Rich infers the rest of the knowledge (e.g encoding)
         # dynamically by looking at the file/stderr.
         return Console(
             file=file,
             force_terminal=force_terminal,
             no_color=(self.colors == 0),
-            theme=Theme(theme)
+            theme=theme
         )
 
     # Rich recommends separating the actual console (stdout) from

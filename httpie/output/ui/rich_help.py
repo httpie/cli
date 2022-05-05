@@ -10,16 +10,18 @@ from rich.text import Text
 
 from httpie.cli.constants import SEPARATOR_GROUP_ALL_ITEMS
 from httpie.cli.options import Argument, ParserSpec, Qualifiers
+from httpie.output.ui.palette import GenericColor
 
 SEPARATORS = '|'.join(map(re.escape, SEPARATOR_GROUP_ALL_ITEMS))
 
-STYLE_METAVAR = 'yellow'
-STYLE_SWITCH = 'green'
-STYLE_PROGRAM_NAME = 'bold green'
-STYLE_USAGE_OPTIONAL = 'grey46'
-STYLE_USAGE_REGULAR = 'white'
-STYLE_USAGE_ERROR = 'red'
-STYLE_USAGE_MISSING = 'yellow'
+STYLE_METAVAR = GenericColor.YELLOW
+STYLE_SWITCH = GenericColor.GREEN
+STYLE_PROGRAM_NAME = GenericColor.GREEN  # .boldify()
+STYLE_USAGE_OPTIONAL = GenericColor.GREY
+STYLE_USAGE_REGULAR = GenericColor.WHITE
+STYLE_USAGE_ERROR = GenericColor.RED
+STYLE_USAGE_MISSING = GenericColor.YELLOW
+STYLE_BOLD = 'bold'
 
 MAX_CHOICE_CHARS = 80
 
@@ -77,7 +79,7 @@ def to_usage(
     # shown first
     shown_arguments.sort(key=lambda argument: argument.aliases, reverse=True)
 
-    text = Text(program_name or spec.program, style='bold')
+    text = Text(program_name or spec.program, style=STYLE_BOLD)
     for argument in shown_arguments:
         text.append(' ')
 
