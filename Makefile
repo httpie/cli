@@ -154,10 +154,10 @@ doc-check:
 
 build:
 	rm -rf build/ dist/
-	mv httpie/internal/_build_channel.py httpie/internal/_build_channel.py.original
-	echo 'BUILD_CHANNEL = "pip"' > httpie/internal/_build_channel.py
+	mv httpie/internal/__build_channel__.py httpie/internal/__build_channel__.py.original
+	echo 'BUILD_CHANNEL = "pip"' > httpie/internal/__build_channel__.py
 	$(VENV_PYTHON) -m build --sdist --wheel --outdir dist/
-	mv httpie/internal/_build_channel.py.original httpie/internal/_build_channel.py
+	mv httpie/internal/__build_channel__.py.original httpie/internal/__build_channel__.py
 
 
 publish: test-all publish-no-test

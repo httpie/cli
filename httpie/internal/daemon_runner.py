@@ -6,7 +6,7 @@ from httpie.context import Environment
 from httpie.internal.update_warnings import _fetch_updates
 from httpie.status import ExitStatus
 
-STATUS_FILE = '.status'
+STATUS_FILE = '.httpie-test-daemon-status'
 
 
 def _check_status(env):

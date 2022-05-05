@@ -1,3 +1,10 @@
+"""
+This module provides an interface to spawn a detached task to be
+runned with httpie.internal.daemon_runner on a separate process. It is
+based on DVC's daemon system.
+https://github.com/iterative/dvc/blob/main/dvc/daemon.py
+"""
+
 import inspect
 import os
 import platform
@@ -6,12 +13,8 @@ import httpie.__main__
 from contextlib import suppress
 from subprocess import Popen
 from typing import Dict, List
-from httpie.compat import is_frozen
+from httpie.compat import is_frozen, is_windows
 
-# This module provides an interface to spawn a detached task to be
-# runned with httpie.internal.daemon_runner on a separate process. It is
-# based on DVC's daemon system.
-# https://github.com/iterative/dvc/blob/main/dvc/daemon.py
 
 ProcessContext = Dict[str, str]
 
@@ -50,13 +53,15 @@ def _spawn_windows(cmd: List[str], process_context: ProcessContext) -> None:
 
 
 def _spawn_posix(args: List[str], process_context: ProcessContext) -> None:
-    from httpie.core import main
+    """
+    Perform a double fork procedure* to detach from the parent
+    process so that we don't block the user even if their original
+    command's execution is done but the release fetcher is not.
 
-    # Perform a double fork procedure* to detach from the parent
-    # process so that we don't block the user even if their original
-    # command's execution is done but the release fetcher is not.
-    #
-    # [1]: https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap11.html#tag_11_01_03
+    [1]: https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap11.html#tag_11_01_03
+    """
+
+    from httpie.core import main
 
     try:
         pid = os.fork()
@@ -94,6 +99,16 @@ def _spawn_posix(args: List[str], process_context: ProcessContext) -> None:
     os._exit(0)
 
 
+def _spawn(args: List[str], process_context: ProcessContext) -> None:
+    """
+    Spawn a new process to run the given command.
+    """
+    if is_windows:
+        _spawn_windows(args, process_context)
+    else:
+        _spawn_posix(args, process_context)
+
+
 def spawn_daemon(task: str) -> None:
     args = [task, '--daemon']
     process_context = os.environ.copy()
@@ -103,9 +118,4 @@ def spawn_daemon(task: str) -> None:
             os.path.dirname(os.path.dirname(file_path))
         )
 
-    if os.name == 'nt':
-        # Windows lacks os.fork(), so we need to
-        # handle it separately.
-        _spawn_windows(args, process_context)
-    else:
-        _spawn_posix(args, process_context)
+    _spawn(args, process_context)
