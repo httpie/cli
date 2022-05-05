@@ -24,6 +24,8 @@ from .output.writer import write_message, write_stream, write_raw_data, MESSAGE_
 from .plugins.registry import plugin_manager
 from .status import ExitStatus, http_status_to_exit_status
 from .utils import unwrap_context
+from .internal.update_warnings import check_updates
+from .internal.daemon_runner import is_daemon_mode, run_daemon_task
 
 
 # noinspection PyDefaultArgument
@@ -37,6 +39,10 @@ def raw_main(
     program_name, *args = args
     env.program_name = os.path.basename(program_name)
     args = decode_raw_args(args, env.stdin_encoding)
+
+    if is_daemon_mode(args):
+        return run_daemon_task(env, args)
+
     plugin_manager.load_installed_plugins(env.config.plugins_dir)
 
     if use_default_options and env.config.default_options:
@@ -89,6 +95,7 @@ def raw_main(
                 raise
             exit_status = ExitStatus.ERROR
     else:
+        check_updates(env)
         try:
             exit_status = main_program(
                 args=parsed_args,

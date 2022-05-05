@@ -27,6 +27,7 @@ RUN python -m pip install /app
 RUN python -m pip install pyinstaller wheel
 RUN python -m pip install --force-reinstall --upgrade pip
 
+RUN echo 'BUILD_CHANNEL="pypi"' > /app/httpie/internal/__build_channel__.py
 RUN python build.py
 
 ENTRYPOINT ["mv", "/app/extras/packaging/linux/dist/", "/artifacts"]
