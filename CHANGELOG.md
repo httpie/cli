@@ -3,7 +3,7 @@
 This document records all notable changes to [HTTPie](https://httpie.io).
 This project adheres to [Semantic Versioning](https://semver.org/).
 
-## [3.1.1.dev0](https://github.com/httpie/httpie/compare/3.1.0...HEAD) (Unreleased)
+## [3.2.0](https://github.com/httpie/httpie/compare/3.1.0...3.2.0) (2022-05-05)
 
 - Added a warning for notifying the user about the new updates. ([#1336](https://github.com/httpie/httpie/pull/1336))
 - Added support for single binary executables. ([#1330](https://github.com/httpie/httpie/pull/1330))
