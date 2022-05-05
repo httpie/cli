@@ -42,7 +42,7 @@ class _GenericColorCaster(dict):
         return super().get(self._translate(key))
 
 
-def _make_rich_color_theme(style_name: Optional[str]) -> 'Theme':
+def _make_rich_color_theme(style_name: Optional[str] = None) -> 'Theme':
     from rich.style import Style
     from rich.theme import Theme
 

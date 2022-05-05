@@ -26,16 +26,13 @@ options = ParserSpec(
     'http',
     description=f'{__doc__.strip()} <https://httpie.io>',
     epilog="""
-    To learn more, you can try:
-        -> running 'http --manual'
-        -> visiting our full documentation at https://httpie.io/docs/cli
-
     For every --OPTION there is also a --no-OPTION that reverts OPTION
     to its default value.
 
     Suggestions and bug reports are greatly appreciated:
         https://github.com/httpie/httpie/issues
     """,
+    source_file=__file__
 )
 
 
