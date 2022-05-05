@@ -22,7 +22,7 @@ jobs:
           python-version: 3.9
 
       - name: Build a binary wheel and a source tarball
-        run: make build
+        run: make venv && make build
 
       - name: Release on PyPI
         uses: pypa/gh-action-pypi-publish@master
