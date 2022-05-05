@@ -47,7 +47,7 @@ def chunked_drip(handler):
     handler.send_response(200)
     accept = handler.headers.get('Accept')
     if accept is not None:
-        handler.send_header('Content-Type', accept + '; charset=utf-8')
+        handler.send_header('Content-Type', accept)
     handler.send_header('Transfer-Encoding', 'chunked')
     handler.end_headers()
 
