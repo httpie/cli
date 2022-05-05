@@ -279,7 +279,7 @@ Synopsis:
 $ http [flags] [METHOD] URL [ITEM [ITEM]]
 ```
 
-See also `http --help`.
+See also `http --help` (and for systems where man pages are available, you can use `man http`).
 
 ### Examples
 

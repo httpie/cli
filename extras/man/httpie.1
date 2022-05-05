@@ -1,9 +1,9 @@
+.\" This file is auto-generated from the parser declaration in httpie/manager/cli.py by extras/scripts/generate_man_pages.py.
 .TH httpie 1 "2022-03-08" "HTTPie 3.1.1.dev0" "HTTPie Manual"
 .SH NAME
 httpie
 .SH SYNOPSIS
-httpie HOSTNAME SESSION_NAME_OR_PATH TARGET TARGET TARGET TARGET TARGET TARGET
-
+httpie
 .SH DESCRIPTION
 
 Managing interface for the HTTPie itself. <https://httpie.io/docs#manager>
@@ -12,11 +12,17 @@ Be aware that you might be looking for http/https commands for sending
 HTTP requests. This command is only available for managing the HTTTPie
 plugins and the configuration around it.
 
+
+If you are looking for the man pages of http/https commands, try one of the following:
+    $ man http
+    $ man https
+
+
 .SH httpie cli export-args
 Export available options for the CLI
 .IP "\fB\,-f\/\fR, \fB\,--format\/\fR"
 
-
+Format to export in.
 
 .PP
 .SH httpie cli sessions upgrade
