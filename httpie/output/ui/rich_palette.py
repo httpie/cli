@@ -56,8 +56,7 @@ def _make_rich_color_theme(style_name: Optional[str]) -> 'Theme':
         GenericColor.__members__, CUSTOM_STYLES
     ).items():
         theme.styles[color.lower()] = Style(
-            color=color_set.apply_style(style, style_name=style_name),
-            bold=style is Styles.PIE,
+            color=color_set.apply_style(style, style_name=style_name)
         )
 
     # E.g translate GenericColor.BLUE into blue on key access
