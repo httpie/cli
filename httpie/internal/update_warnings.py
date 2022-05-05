@@ -8,7 +8,7 @@ import requests
 
 import httpie
 from httpie.context import Environment, LogLevel
-from httpie.internal._build_channel import BUILD_CHANNEL
+from httpie.internal.__build_channel__ import BUILD_CHANNEL
 from httpie.internal.daemons import spawn_daemon
 from httpie.utils import is_version_greater, open_with_lockfile
 
