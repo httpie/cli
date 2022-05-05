@@ -72,7 +72,6 @@ def raw_main(
             return ExitStatus.SUCCESS
 
     exit_status = ExitStatus.SUCCESS
-    check_updates(env)
 
     try:
         parsed_args = parser.parse_args(
@@ -96,6 +95,7 @@ def raw_main(
                 raise
             exit_status = ExitStatus.ERROR
     else:
+        check_updates(env)
         try:
             exit_status = main_program(
                 args=parsed_args,

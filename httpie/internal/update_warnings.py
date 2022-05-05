@@ -7,7 +7,7 @@ from typing import Any, Optional, Callable
 import requests
 
 import httpie
-from httpie.context import Environment, Levels
+from httpie.context import Environment, LogLevel
 from httpie.internal._build_channel import BUILD_CHANNEL
 from httpie.internal.daemons import spawn_daemon
 from httpie.utils import is_version_greater, open_with_lockfile
@@ -164,7 +164,7 @@ def check_updates(env: Environment) -> None:
         if current_date < earliest_warn_date:
             return None
 
-    env.log_error(update_status, level=Levels.WARNING)
+    env.log_error(update_status, level=LogLevel.INFO)
     version_info['last_warned_date'] = current_date.isoformat()
 
     with open_with_lockfile(file, 'w') as stream:
