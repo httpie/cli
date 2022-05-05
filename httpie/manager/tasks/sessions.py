@@ -1,11 +1,11 @@
 import argparse
-from typing import Tuple
 
 from httpie.sessions import SESSIONS_DIR_NAME, get_httpie_session
 from httpie.status import ExitStatus
 from httpie.context import Environment
 from httpie.legacy import v3_1_0_session_cookie_format, v3_2_0_session_header_format
 from httpie.manager.cli import missing_subcommand, parser
+from httpie.utils import is_version_greater
 
 
 FIXERS_TO_VERSIONS = {
@@ -25,25 +25,6 @@ def cli_sessions(env: Environment, args: argparse.Namespace) -> ExitStatus:
         return cli_upgrade_all_sessions(env, args)
     else:
         raise ValueError(f'Unexpected action: {action}')
-
-
-def is_version_greater(version_1: str, version_2: str) -> bool:
-    # In an ideal scenario, we would depend on `packaging` in order
-    # to offer PEP 440 compatible parsing. But since it might not be
-    # commonly available for outside packages, and since we are only
-    # going to parse HTTPie's own version it should be fine to compare
-    # this in a SemVer subset fashion.
-
-    def split_version(version: str) -> Tuple[int, ...]:
-        parts = []
-        for part in version.split('.')[:3]:
-            try:
-                parts.append(int(part))
-            except ValueError:
-                break
-        return tuple(parts)
-
-    return split_version(version_1) > split_version(version_2)
 
 
 def upgrade_session(env: Environment, args: argparse.Namespace, hostname: str, session_name: str):

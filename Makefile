@@ -30,7 +30,7 @@ install: venv install-reqs
 
 install-reqs:
 	@echo $(H1)Updating package tools$(H1END)
-	$(VENV_PIP) install --upgrade pip wheel
+	$(VENV_PIP) install --upgrade pip wheel build
 
 	@echo $(H1)Installing dev requirements$(H1END)
 	$(VENV_PIP) install --upgrade --editable '.[dev]'
@@ -153,8 +153,11 @@ doc-check:
 
 
 build:
-	rm -rf build/
-	$(VENV_PYTHON) setup.py sdist bdist_wheel
+	rm -rf build/ dist/
+	mv httpie/internal/__build_channel__.py httpie/internal/__build_channel__.py.original
+	echo 'BUILD_CHANNEL = "pip"' > httpie/internal/__build_channel__.py
+	$(VENV_PYTHON) -m build --sdist --wheel --outdir dist/
+	mv httpie/internal/__build_channel__.py.original httpie/internal/__build_channel__.py
 
 
 publish: test-all publish-no-test
@@ -198,7 +201,7 @@ brew-test:
 	- brew uninstall httpie
 
 	@echo $(H1)Building from source…$(H1END)
-	- brew install --build-from-source ./docs/packaging/brew/httpie.rb
+	- brew install --HEAD --build-from-source ./docs/packaging/brew/httpie.rb
 
 	@echo $(H1)Verifying…$(H1END)
 	http --version
