@@ -3,6 +3,11 @@
 This document records all notable changes to [HTTPie](https://httpie.io).
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## [3.2.1](https://github.com/httpie/httpie/compare/3.1.0...3.2.0) (2022-05-06)
+
+- Improved support for determining auto-streaming when the `Content-Type` header includes encoding information. ([#1383](https://github.com/httpie/httpie/pull/1383))
+- Fixed the display of the crash happening in the secondary process for update checks. ([#1388](https://github.com/httpie/httpie/issues/1388))
+
 ## [3.2.0](https://github.com/httpie/httpie/compare/3.1.0...3.2.0) (2022-05-05)
 
 - Added a warning for notifying the user about the new updates. ([#1336](https://github.com/httpie/httpie/pull/1336))
