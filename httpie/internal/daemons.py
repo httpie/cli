@@ -11,7 +11,7 @@ import platform
 import sys
 import httpie.__main__
 from contextlib import suppress
-from subprocess import Popen
+from subprocess import Popen, DEVNULL
 from typing import Dict, List
 from httpie.compat import is_frozen, is_windows
 
@@ -26,7 +26,7 @@ def _start_process(cmd: List[str], **kwargs) -> Popen:
     if not is_frozen:
         main_entrypoint = httpie.__main__.__file__
         prefix += [main_entrypoint]
-    return Popen(prefix + cmd, close_fds=True, shell=False, **kwargs)
+    return Popen(prefix + cmd, close_fds=True, shell=False, stdout=DEVNULL, stderr=DEVNULL, **kwargs)
 
 
 def _spawn_windows(cmd: List[str], process_context: ProcessContext) -> None:
