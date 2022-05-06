@@ -17,6 +17,7 @@ from .processing import Conversion, Formatting
 from .streams import (
     BaseStream, BufferedPrettyStream, EncodedStream, PrettyStream, RawStream,
 )
+from ..utils import parse_content_type_header
 
 
 MESSAGE_SEPARATOR = '\n\n'
@@ -163,7 +164,10 @@ def get_stream_type_and_kwargs(
     if not is_stream and message_type is HTTPResponse:
         # If this is a response, then check the headers for determining
         # auto-streaming.
-        is_stream = headers.get('Content-Type') == 'text/event-stream'
+        raw_content_type_header = headers.get('Content-Type', None)
+        if raw_content_type_header:
+            content_type_header, _ = parse_content_type_header(raw_content_type_header)
+            is_stream = (content_type_header == 'text/event-stream')
 
     if not env.stdout_isatty and not prettify_groups:
         stream_class = RawStream
