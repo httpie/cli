@@ -51,16 +51,17 @@ jobs:
       - name: Determine the release upload upload_url
         id: release_id
         run: |
-          sudo snap install --edge httpie
+          pip install httpie
           export API_URL="api.github.com/repos/httpie/httpie/releases/tags/${{ github.event.inputs.tag_name }}"
-          echo "UPLOAD_URL=`https $API_URL | jq -r '.upload_url'`" >> $GITHUB_ENV
+          export UPLOAD_URL=`https --ignore-stdin GET $API_URL | jq -r ".upload_url"`
+          echo "::set-output name=UPLOAD_URL::$UPLOAD_URL"
 
       - name: Publish Debian Package
         uses: actions/upload-release-asset@v1.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ env.UPLOAD_URL }}
+          upload_url: ${{ steps.release_id.outputs.UPLOAD_URL }}
           asset_path: extras/packaging/linux/artifacts/dist/httpie_${{ github.event.inputs.tag_name }}_amd64.deb
           asset_name: httpie-${{ github.event.inputs.tag_name }}.deb
           asset_content_type: binary/octet-stream
@@ -70,7 +71,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ env.UPLOAD_URL }}
+          upload_url: ${{ steps.release_id.outputs.UPLOAD_URL }}
           asset_path: extras/packaging/linux/artifacts/dist/http
           asset_name: http
           asset_content_type: binary/octet-stream
