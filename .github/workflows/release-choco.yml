@@ -13,7 +13,7 @@ jobs:
     name: Release the Chocolatey
     runs-on: windows-2019
     env:
-        package-dir: ./httpie/docs/packaging/windows-chocolatey
+        package-dir: docs\packaging\windows-chocolatey
 
     steps:
       - uses: actions/checkout@v3
