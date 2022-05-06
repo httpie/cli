@@ -1,9 +1,9 @@
 import argparse
-from contextlib import redirect_stderr, redirect_stdout
+from contextlib import redirect_stderr, redirect_stdout, suppress
 from typing import List
 
 from httpie.context import Environment
-from httpie.internal.update_warnings import _fetch_updates
+from httpie.internal.update_warnings import _fetch_updates, _get_suppress_context
 from httpie.status import ExitStatus
 
 STATUS_FILE = '.httpie-test-daemon-status'
@@ -44,6 +44,7 @@ def run_daemon_task(env: Environment, args: List[str]) -> ExitStatus:
     assert options.daemon
     assert options.task_id in DAEMONIZED_TASKS
     with redirect_stdout(env.devnull), redirect_stderr(env.devnull):
-        DAEMONIZED_TASKS[options.task_id](env)
+        with _get_suppress_context(env):
+            DAEMONIZED_TASKS[options.task_id](env)
 
     return ExitStatus.SUCCESS
