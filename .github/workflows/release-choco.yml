@@ -13,7 +13,7 @@ jobs:
     name: Release the Chocolatey
     runs-on: windows-2019
     env:
-        package-dir: ./httpie/docs/packaging/windows-chocolatey
+        package-dir: docs\packaging\windows-chocolatey
 
     steps:
       - uses: actions/checkout@v3
@@ -30,9 +30,21 @@ jobs:
         run: choco info httpie -s .
         working-directory: ${{ env.package-dir }}
 
-      - name: Check the Installation
+      - name: Local installation
         run: |
           choco install httpie -y -dv -s "'.;https://community.chocolatey.org/api/v2/'"
+        working-directory: ${{ env.package-dir }}
+
+      - name: Test the locally installed binaries
+        run: |
+          # Source: https://stackoverflow.com/a/46760714/15330941
+
+          # Make `refreshenv` available right away, by defining the $env:ChocolateyInstall
+          # variable and importing the Chocolatey profile module.
+          $env:ChocolateyInstall = Convert-Path "$((Get-Command choco).Path)\..\.."
+          Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
+          refreshenv
+
           http --version
           https --version
           httpie --version
@@ -46,3 +58,4 @@ jobs:
         run: |
           choco apikey --key $CHOCO_API_KEY --source https://push.chocolatey.org/
           choco push httpie*.nupkg --source https://push.chocolatey.org/
+        working-directory: ${{ env.package-dir }}
