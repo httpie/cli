@@ -1,5 +1,5 @@
 import argparse
-from contextlib import redirect_stderr, redirect_stdout, suppress
+from contextlib import redirect_stderr, redirect_stdout
 from typing import List
 
 from httpie.context import Environment
