@@ -8,7 +8,7 @@ on:
         required: true
         default: "master"
       tag_name:
-        description: "Which release to upload the artifacts to (i.e., 3.0)"
+        description: "Which release to upload the artifacts to (e.g., 3.0)"
         required: true
 
   release:
