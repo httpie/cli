@@ -215,14 +215,14 @@ $ pacman -Syu httpie
 $ pacman -Syu
 ```
 
-#### Single Binary Executables
+#### Single binary executables
 
-Have a standalone HTTPie executable, when you don't want to go through the full installatin process.
+Have a standalone HTTPie executable when you don't want to go through the full installation process
 
 ```bash
 # Install httpie
 $ https --download packages.httpie.io/binaries/linux/http-latest -o http
-$ chmod +X ./http
+$ chmod +x ./http
 ```
 
 ```bash

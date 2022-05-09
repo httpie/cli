@@ -184,13 +184,13 @@ tools:
         - yum upgrade httpie
 
   single-binary:
-    title: Single Binary Executables
-    name: Single Binary Executables
-    note: Have a standalone HTTPie executable, when you don't want to go through the full installatin process.
+    title: Single binary executables
+    name: Single binary executables
+    note: Have a standalone HTTPie executable when you don't want to go through the full installation process.
     links:
     commands:
       install:
         - https --download packages.httpie.io/binaries/linux/http-latest -o http
-        - chmod +X ./http
+        - chmod +x ./http
       upgrade:
         - https --download packages.httpie.io/binaries/linux/http-latest -o http
