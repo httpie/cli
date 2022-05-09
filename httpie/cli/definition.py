@@ -47,24 +47,6 @@ positional_arguments = options.add_group(
     Only URL is required.
     """,
 )
-
-positional_arguments.add_argument(
-    dest='method',
-    metavar='METHOD',
-    nargs=Qualifiers.OPTIONAL,
-    default=None,
-    short_help='The HTTP method to be used for the request (GET, POST, PUT, DELETE, ...).',
-    help="""
-    The HTTP method to be used for the request (GET, POST, PUT, DELETE, ...).
-
-    This argument can be omitted in which case HTTPie will use POST if there
-    is some data to be sent, otherwise GET:
-
-        $ http example.org               # => GET
-        $ http example.org hello=world   # => POST
-
-    """,
-)
 positional_arguments.add_argument(
     dest='url',
     metavar='URL',
@@ -699,6 +681,23 @@ authentication.add_argument(
 
 network = options.add_group('Network')
 
+network.add_argument(
+    '--method',
+    '-X',
+    metavar='METHOD',
+    default=None,
+    short_help='The HTTP method to be used for the request (GET, POST, PUT, DELETE, ...).',
+    help="""
+    The HTTP method to be used for the request (GET, POST, PUT, DELETE, ...).
+
+    This argument can be omitted in which case HTTPie will use POST if there
+    is some data to be sent, otherwise GET:
+
+        $ http example.org               # => GET
+        $ http example.org hello=world   # => POST
+
+    """,
+)
 network.add_argument(
     '--offline',
     default=False,
