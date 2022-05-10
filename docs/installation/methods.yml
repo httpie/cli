@@ -186,7 +186,7 @@ tools:
   single-binary:
     title: Single binary executables
     name: Single binary executables
-    note: Have a standalone HTTPie executable when you don't want to go through the full installation process.
+    note: Get the standalone HTTPie Linux executables when you don't want to go through the full installation process.
     links:
     commands:
       install:
