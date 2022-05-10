@@ -18,7 +18,7 @@ from .config import DEFAULT_CONFIG_DIR, Config, ConfigFileError
 from .encoding import UTF8
 
 from .utils import repr_dict
-from .output.ui.palette import GenericColor
+from .output.ui.palette import RichColor
 
 if TYPE_CHECKING:
     from rich.console import Console
@@ -31,9 +31,9 @@ class LogLevel(str, Enum):
 
 
 LOG_LEVEL_COLORS = {
-    LogLevel.INFO: GenericColor.PINK,
-    LogLevel.WARNING: GenericColor.ORANGE,
-    LogLevel.ERROR: GenericColor.RED,
+    LogLevel.INFO: RichColor.PINK,
+    LogLevel.WARNING: RichColor.ORANGE,
+    LogLevel.ERROR: RichColor.RED,
 }
 
 LOG_LEVEL_DISPLAY_THRESHOLDS = {
@@ -191,10 +191,10 @@ class Environment:
         force_terminal: bool
     ) -> 'Console':
         from rich.console import Console
-        from httpie.output.ui.rich_palette import _make_rich_color_theme
+        from httpie.output.ui.palette import make_rich_theme_from_style
 
         style = getattr(self.args, 'style', None)
-        theme = _make_rich_color_theme(style)
+        theme = make_rich_theme_from_style(style)
         # Rich infers the rest of the knowledge (e.g encoding)
         # dynamically by looking at the file/stderr.
         return Console(

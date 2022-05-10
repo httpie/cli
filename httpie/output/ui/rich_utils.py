@@ -6,7 +6,7 @@ from contextlib import contextmanager
 from rich.console import Console, RenderableType
 from rich.highlighter import Highlighter
 
-from httpie.output.ui.rich_palette import _make_rich_color_theme
+from httpie.output.ui.palette import make_rich_theme_from_style
 
 
 def render_as_string(renderable: RenderableType) -> str:
@@ -14,7 +14,7 @@ def render_as_string(renderable: RenderableType) -> str:
     return a *style-less* version of it as a string."""
 
     with open(os.devnull, 'w') as null_stream:
-        fake_console = Console(file=null_stream, record=True, theme=_make_rich_color_theme())
+        fake_console = Console(file=null_stream, record=True, theme=make_rich_theme_from_style())
         fake_console.print(renderable)
         return fake_console.export_text()
 

@@ -1,16 +1,10 @@
-from dataclasses import dataclass, field
-from enum import Enum, auto
-from typing import Optional, List
-
+from enum import Enum
+from typing import Optional
+from httpie.output.ui.palette.utils import ColorString
 
 PYGMENTS_BRIGHT_BLACK = 'ansibrightblack'
 
 AUTO_STYLE = 'auto'  # Follows terminal ANSI color styles
-
-
-class Styles(Enum):
-    PIE = auto()
-    ANSI = auto()
 
 
 class PieStyle(str, Enum):
@@ -24,33 +18,10 @@ PIE_STYLE_TO_SHADE = {
     PieStyle.UNIVERSAL: '600',
     PieStyle.LIGHT: '700',
 }
+
 SHADE_TO_PIE_STYLE = {
     shade: style for style, shade in PIE_STYLE_TO_SHADE.items()
 }
-
-
-class ColorString(str):
-    def __or__(self, other: str) -> 'ColorString':
-        """Combine a style with a property.
-
-        E.g: PieColor.BLUE | BOLD | ITALIC
-        """
-        if isinstance(other, str):
-            # In case of PieColor.BLUE | SOMETHING
-            # we just create a new string.
-            return ColorString(self + ' ' + other)
-        elif isinstance(other, GenericColor):
-            # If we see a GenericColor, then we'll wrap it
-            # in with the desired property in a different class.
-            return _StyledGenericColor(other, styles=self.split())
-        elif isinstance(other, _StyledGenericColor):
-            # And if it is already wrapped, we'll just extend the
-            # list of properties.
-            other.styles.extend(self.split())
-            return other
-        else:
-            return NotImplemented
-
 
 class PieColor(ColorString, Enum):
     """Styles that are available only in Pie themes."""
@@ -69,42 +40,6 @@ class PieColor(ColorString, Enum):
     PINK = 'pink'
     GREEN = 'green'
     YELLOW = 'yellow'
-
-
-class GenericColor(Enum):
-    """Generic colors that are safe to use everywhere."""
-
-    # <https://rich.readthedocs.io/en/stable/appendix/colors.html>
-
-    WHITE = {Styles.PIE: PieColor.WHITE, Styles.ANSI: 'white'}
-    BLACK = {Styles.PIE: PieColor.BLACK, Styles.ANSI: 'black'}
-    GREEN = {Styles.PIE: PieColor.GREEN, Styles.ANSI: 'green'}
-    ORANGE = {Styles.PIE: PieColor.ORANGE, Styles.ANSI: 'yellow'}
-    YELLOW = {Styles.PIE: PieColor.YELLOW, Styles.ANSI: 'bright_yellow'}
-    BLUE = {Styles.PIE: PieColor.BLUE, Styles.ANSI: 'blue'}
-    PINK = {Styles.PIE: PieColor.PINK, Styles.ANSI: 'bright_magenta'}
-    PURPLE = {Styles.PIE: PieColor.PURPLE, Styles.ANSI: 'magenta'}
-    RED = {Styles.PIE: PieColor.RED, Styles.ANSI: 'red'}
-    AQUA = {Styles.PIE: PieColor.AQUA, Styles.ANSI: 'cyan'}
-    GREY = {Styles.PIE: PieColor.GREY, Styles.ANSI: 'bright_black'}
-
-    def apply_style(
-        self, style: Styles, *, style_name: Optional[str] = None
-    ) -> str:
-        """Apply the given style to a particular value."""
-        exposed_color = self.value[style]
-        if style is Styles.PIE:
-            assert style_name is not None
-            shade = PIE_STYLE_TO_SHADE[PieStyle(style_name)]
-            return get_color(exposed_color, shade)
-        else:
-            return exposed_color
-
-
-@dataclass
-class _StyledGenericColor:
-    color: 'GenericColor'
-    styles: List[str] = field(default_factory=list)
 
 
 # noinspection PyDictCreation
@@ -250,10 +185,6 @@ COLOR_PALETTE.update(
         },
     }
 )
-
-
-def boldify(color: PieColor) -> str:
-    return f'bold {color}'
 
 
 # noinspection PyDefaultArgument

@@ -10,17 +10,17 @@ from rich.text import Text
 
 from httpie.cli.constants import SEPARATOR_GROUP_ALL_ITEMS
 from httpie.cli.options import Argument, ParserSpec, Qualifiers
-from httpie.output.ui.palette import GenericColor
+from httpie.output.ui.palette import RichColor
 
 SEPARATORS = '|'.join(map(re.escape, SEPARATOR_GROUP_ALL_ITEMS))
 
-STYLE_METAVAR = GenericColor.YELLOW
-STYLE_SWITCH = GenericColor.GREEN
-STYLE_PROGRAM_NAME = GenericColor.GREEN  # .boldify()
-STYLE_USAGE_OPTIONAL = GenericColor.GREY
-STYLE_USAGE_REGULAR = GenericColor.WHITE
-STYLE_USAGE_ERROR = GenericColor.RED
-STYLE_USAGE_MISSING = GenericColor.YELLOW
+STYLE_METAVAR = RichColor.YELLOW
+STYLE_SWITCH = RichColor.GREEN
+STYLE_PROGRAM_NAME = RichColor.GREEN  # .boldify()
+STYLE_USAGE_OPTIONAL = RichColor.GREY
+STYLE_USAGE_REGULAR = RichColor.WHITE
+STYLE_USAGE_ERROR = RichColor.RED
+STYLE_USAGE_MISSING = RichColor.YELLOW
 STYLE_BOLD = 'bold'
 
 MAX_CHOICE_CHARS = 80
