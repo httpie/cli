@@ -2425,7 +2425,7 @@ You can check whether a new update is available for your system by running `http
 
 ```bash-termible
 $ httpie cli check-updates
-````
+```
 
 #### `httpie cli export-args`
 
