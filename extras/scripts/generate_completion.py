@@ -32,6 +32,7 @@ COMMON_HTTP_METHODS = [
     "CONNECT",
 ]
 
+COMPLETERS = {}
 
 def use_template(shell_type):
     def decorator(func):
@@ -51,6 +52,7 @@ def use_template(shell_type):
                 jinja_template.render(**extra_variables)
             )
 
+        COMPLETERS[shell_type] = wrapper
         return wrapper
 
     return decorator
@@ -73,6 +75,7 @@ def prepare_objects(spec: ParserSpec) -> Dict[str, Any]:
         if not argument.is_hidden
         if not argument.is_positional
     ]
+    global_objects["methods"] = COMMON_HTTP_METHODS
 
     return global_objects
 
@@ -92,7 +95,7 @@ def escape_zsh(text: str) -> str:
 
 
 def serialize_argument_to_zsh(argument):
-    # The argument format is the followig:
+    # The argument format is the following:
     # $prefix'$alias$has_value[$short_desc]:$metavar$:($choice_1 $choice_2)'
 
     prefix = ""
@@ -139,6 +142,18 @@ def serialize_argument_to_zsh(argument):
     return prefix + f"'{''.join(declaration)}'"
 
 
+def serialize_argument_to_fish(program_name, argument):
+    # The argument format is defined here
+    # <https://fishshell.com/docs/current/completions.html>
+
+    declaration = [
+        'complete',
+        '-c',
+        program_name
+    ]
+
+    
+     
 def find_argument_by_target_name(spec: ParserSpec, name: str) -> Argument:
     for group in spec.groups:
         for argument in group.arguments:
@@ -157,10 +172,23 @@ def find_argument_by_target_name(spec: ParserSpec, name: str) -> Argument:
 def zsh_completer(spec: ParserSpec) -> Dict[str, Any]:
     return {
         "escape_zsh": escape_zsh,
-        "serialize_argument_to_zsh": serialize_argument_to_zsh,
-        "methods": COMMON_HTTP_METHODS,
+        "serialize_argument_to_zsh": serialize_argument_to_zsh
     }
 
 
+@use_template("fish")
+def fish_completer(spec: ParserSpec) -> Dict[str, Any]:
+    return {
+        "escape_zsh": escape_zsh,
+        "serialize_argument_to_zsh": serialize_argument_to_zsh,
+    }
+
+
+def main():
+    for shell_type, completer in COMPLETERS.items():
+        print(f"Generating {shell_type} completer.")
+        completer(options)
+
+
 if __name__ == "__main__":
-    zsh_completer(options)
+    main()
