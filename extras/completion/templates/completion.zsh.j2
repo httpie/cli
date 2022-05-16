@@ -1,13 +1,17 @@
-# compdef http
+#compdef http
 # Copyright (c) 2015 Github zsh-users
 # Based on the initial work of http://github.com/zsh-users
 
+methods=({% for method in methods -%} "{{ method }}" {% endfor -%})
 
 _httpie_params () {
     local ret=1 expl
-
+    local first_arg=$words[NORMARG]
     if (( CURRENT == NORMARG )) && [[ $words[NORMARG] != *:* ]]; then
         # URL
+        _httpie_urls && ret=0
+    elif (( CURRENT == NORMARG + 1 )) && [[ ${methods[(ie)$first_arg]} -le ${{ '{#' }}methods} ]]; then
+        # When the first argument is the method, suggest the URL as well.
         _httpie_urls && ret=0
     elif (( CURRENT > NORMARG )); then
         # regular param, if we already have a url

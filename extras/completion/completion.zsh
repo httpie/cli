@@ -1,13 +1,17 @@
-# compdef http
+#compdef http
 # Copyright (c) 2015 Github zsh-users
 # Based on the initial work of http://github.com/zsh-users
 
+methods=("GET" "POST" "PUT" "DELETE" "HEAD" "OPTIONS" "PATCH" "TRACE" "CONNECT" )
 
 _httpie_params () {
     local ret=1 expl
-
+    local first_arg=$words[NORMARG]
     if (( CURRENT == NORMARG )) && [[ $words[NORMARG] != *:* ]]; then
         # URL
+        _httpie_urls && ret=0
+    elif (( CURRENT == NORMARG + 1 )) && [[ ${methods[(ie)$first_arg]} -le ${#methods} ]]; then
+        # When the first argument is the method, suggest the URL as well.
         _httpie_urls && ret=0
     elif (( CURRENT > NORMARG )); then
         # regular param, if we already have a url
@@ -111,7 +115,6 @@ _arguments -n -C -s \
     {--body,-b}'[Print only the response body.]' \
     {--verbose,-v}'[Make output more verbose.]' \
     '--all[Show any intermediary requests/responses.]' \
-    {--history-print,-P}'=[--print for intermediary requests/responses.]:WHAT:' \
     {--stream,-S}'[Always stream the response body by line, i.e., behave like `tail -f`.]' \
     {--output,-o}'=[Save output to FILE instead of stdout.]:FILE:' \
     {--download,-d}'[Download the body to a file instead of printing it to stdout.]' \
