@@ -11,38 +11,39 @@ from httpie.cli.constants import SEPARATOR_FILE_UPLOAD
 from httpie.cli.definition import options
 from httpie.cli.options import Argument, ParserSpec
 
-T = TypeVar("T")
+T = TypeVar('T')
 
-EXTRAS_DIR = Path(__file__).parent.parent
-COMPLETION_DIR = EXTRAS_DIR / "completion"
-TEMPLATES_DIR = COMPLETION_DIR / "templates"
+EXTRAS_DIR = Path(__file__).parent.parent.parent
+COMPLETION_DIR = EXTRAS_DIR / 'completion'
+TEMPLATES_DIR = COMPLETION_DIR / 'templates'
 
-COMPLETION_TEMPLATE_BASE = TEMPLATES_DIR / "completion"
-COMPLETION_SCRIPT_BASE = COMPLETION_DIR / "completion"
+COMPLETION_TEMPLATE_BASE = TEMPLATES_DIR / 'completion'
+COMPLETION_SCRIPT_BASE = COMPLETION_DIR / 'completion'
 
 COMMON_HTTP_METHODS = [
-    "GET",
-    "POST",
-    "PUT",
-    "DELETE",
-    "HEAD",
-    "OPTIONS",
-    "PATCH",
-    "TRACE",
-    "CONNECT",
+    'GET',
+    'POST',
+    'PUT',
+    'DELETE',
+    'HEAD',
+    'OPTIONS',
+    'PATCH',
+    'TRACE',
+    'CONNECT',
 ]
 
 COMPLETERS = {}
+
 
 def use_template(shell_type):
     def decorator(func):
         @functools.wraps(func)
         def wrapper(spec):
             template_file = COMPLETION_TEMPLATE_BASE.with_suffix(
-                f".{shell_type}.j2"
+                f'.{shell_type}.j2'
             )
             compiletion_script_file = COMPLETION_SCRIPT_BASE.with_suffix(
-                f".{shell_type}"
+                f'.{shell_type}'
             )
 
             jinja_template = Template(template_file.read_text())
@@ -65,17 +66,17 @@ def prepare_objects(spec: ParserSpec) -> Dict[str, Any]:
     global_objects = {
         **BASE_FUNCTIONS,
     }
-    global_objects["request_items"] = find_argument_by_target_name(
-        spec, "REQUEST_ITEM"
+    global_objects['request_items'] = find_argument_by_target_name(
+        spec, 'REQUEST_ITEM'
     )
-    global_objects["arguments"] = [
+    global_objects['arguments'] = [
         argument
         for group in spec.groups
         for argument in group.arguments
         if not argument.is_hidden
         if not argument.is_positional
     ]
-    global_objects["methods"] = COMMON_HTTP_METHODS
+    global_objects['methods'] = COMMON_HTTP_METHODS
 
     return global_objects
 
@@ -91,40 +92,40 @@ def is_file_based_operator(operator: str) -> bool:
 
 
 def escape_zsh(text: str) -> str:
-    return text.replace(":", "\\:")
+    return text.replace(':', '\\:')
 
 
 def serialize_argument_to_zsh(argument):
     # The argument format is the following:
     # $prefix'$alias$has_value[$short_desc]:$metavar$:($choice_1 $choice_2)'
 
-    prefix = ""
+    prefix = ''
     declaration = []
-    has_choices = "choices" in argument.configuration
+    has_choices = 'choices' in argument.configuration
 
     # The format for the argument declaration canges depending on the
     # the number of aliases. For a single $alias, we'll embed it directly
     # in the declaration string, but for multiple of them, we'll use a
     # $prefix.
     if len(argument.aliases) > 1:
-        prefix = "{" + ",".join(argument.aliases) + "}"
+        prefix = '{' + ','.join(argument.aliases) + '}'
     else:
         declaration.append(argument.aliases[0])
 
     if not argument.is_flag:
-        declaration.append("=")
+        declaration.append('=')
 
-    declaration.append("[" + argument.short_help + "]")
+    declaration.append('[' + argument.short_help + ']')
 
-    if "metavar" in argument.configuration:
+    if 'metavar' in argument.configuration:
         metavar = argument.metavar
     elif has_choices:
         # Choices always require a metavar, so even if we don't have one
         # we can generate it from the argument aliases.
         metavar = (
             max(argument.aliases, key=len)
-            .lstrip("-")
-            .replace("-", "_")
+            .lstrip('-')
+            .replace('-', '_')
             .upper()
         )
     else:
@@ -133,27 +134,50 @@ def serialize_argument_to_zsh(argument):
     if metavar:
         # Strip out any whitespace, and escape any characters that would
         # conflict with the shell.
-        metavar = escape_zsh(metavar.strip(" "))
-        declaration.append(f":{metavar}:")
+        metavar = escape_zsh(metavar.strip(' '))
+        declaration.append(f':{metavar}:')
 
     if has_choices:
-        declaration.append("(" + " ".join(argument.choices) + ")")
+        declaration.append('(' + ' '.join(argument.choices) + ')')
 
     return prefix + f"'{''.join(declaration)}'"
 
 
-def serialize_argument_to_fish(program_name, argument):
+def serialize_argument_to_fish(argument):
     # The argument format is defined here
     # <https://fishshell.com/docs/current/completions.html>
 
     declaration = [
         'complete',
         '-c',
-        program_name
+        'http',
     ]
 
-    
-     
+    try:
+        short_form, long_form = argument.aliases
+    except ValueError:
+        short_form = None
+        (long_form,) = argument.aliases
+
+    if short_form:
+        declaration.append('-s')
+        declaration.append(short_form)
+
+    declaration.append('-l')
+    declaration.append(long_form)
+
+    if 'choices' in argument.configuration:
+        declaration.append('-xa')
+        declaration.append('"' + ' '.join(argument.choices) + '"')
+    elif 'lazy_choices' in argument.configuration:
+        declaration.append('-x')
+
+    declaration.append('-d')
+    declaration.append("'" + argument.short_help.replace("'", r"\'") + "'")
+
+    return '\t'.join(declaration)
+
+
 def find_argument_by_target_name(spec: ParserSpec, name: str) -> Argument:
     for group in spec.groups:
         for argument in group.arguments:
@@ -165,30 +189,29 @@ def find_argument_by_target_name(spec: ParserSpec, name: str) -> Argument:
             if name in targets:
                 return argument
 
-    raise ValueError(f"Could not find argument with name {name}")
+    raise ValueError(f'Could not find argument with name {name}')
 
 
-@use_template("zsh")
+@use_template('zsh')
 def zsh_completer(spec: ParserSpec) -> Dict[str, Any]:
     return {
-        "escape_zsh": escape_zsh,
-        "serialize_argument_to_zsh": serialize_argument_to_zsh
+        'escape_zsh': escape_zsh,
+        'serialize_argument_to_zsh': serialize_argument_to_zsh,
     }
 
 
-@use_template("fish")
+@use_template('fish')
 def fish_completer(spec: ParserSpec) -> Dict[str, Any]:
     return {
-        "escape_zsh": escape_zsh,
-        "serialize_argument_to_zsh": serialize_argument_to_zsh,
+        'serialize_argument_to_fish': serialize_argument_to_fish,
     }
 
 
 def main():
     for shell_type, completer in COMPLETERS.items():
-        print(f"Generating {shell_type} completer.")
+        print(f'Generating {shell_type} completer.')
         completer(options)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
