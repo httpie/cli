@@ -1,6 +1,6 @@
 """
 This module provides an interface to spawn a detached task to be
-runned with httpie.internal.daemon_runner on a separate process. It is
+run with httpie.internal.daemon_runner on a separate process. It is
 based on DVC's daemon system.
 https://github.com/iterative/dvc/blob/main/dvc/daemon.py
 """
