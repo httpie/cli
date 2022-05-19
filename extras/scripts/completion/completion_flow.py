@@ -66,7 +66,7 @@ class Not(Node):
     check: Node
 
 
-def main_flow() -> Iterator[Node]:
+def generate_flow() -> Iterator[Node]:
     # yield from suggest_option()
     yield from suggest_method()
     yield from suggest_url()

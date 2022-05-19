@@ -1,5 +1,6 @@
 from functools import singledispatch
 from enum import Enum
+from lib2to3.pgen2.pgen import generate_grammar
 from completion_flow import (
     Node,
     Check,
@@ -10,7 +11,7 @@ from completion_flow import (
     If,
     And,
     Not,
-    main_flow,
+    generate_flow,
 )
 
 
@@ -59,7 +60,7 @@ def compile_check(node: Check) -> str:
         parts = [
             '[[ ${',
             args[0],
-            '[(ie)',
+            '[(ie)$',
             ZSHVariable.PREDECESSOR,
             ']}',
             ' -le ${#',
@@ -82,6 +83,3 @@ def compile_not(node: Not) -> str:
 @compile_zsh.register(Suggest)
 def compile_suggest(node: Suggest) -> str:
     return SUGGESTION_TO_FUNCTION[node.suggestion]
-
-for item in main_flow():
-    print(compile_zsh(item))

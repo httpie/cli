@@ -11,6 +11,8 @@ from httpie.cli.constants import SEPARATOR_FILE_UPLOAD
 from httpie.cli.definition import options
 from httpie.cli.options import Argument, ParserSpec
 
+from completion_flow import generate_flow
+
 T = TypeVar('T')
 
 EXTRAS_DIR = Path(__file__).parent.parent.parent
@@ -77,6 +79,7 @@ def prepare_objects(spec: ParserSpec) -> Dict[str, Any]:
         if not argument.is_positional
     ]
     global_objects['methods'] = COMMON_HTTP_METHODS
+    global_objects['generate_flow'] = generate_flow
 
     return global_objects
 
@@ -194,9 +197,12 @@ def find_argument_by_target_name(spec: ParserSpec, name: str) -> Argument:
 
 @use_template('zsh')
 def zsh_completer(spec: ParserSpec) -> Dict[str, Any]:
+    from zsh import compile_zsh
+
     return {
         'escape_zsh': escape_zsh,
         'serialize_argument_to_zsh': serialize_argument_to_zsh,
+        'compile_zsh': compile_zsh
     }
 
 

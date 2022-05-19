@@ -11,23 +11,11 @@ _httpie_params () {
         local predecessor=$words[(( $CURRENT - 1 ))]
     fi
 
-    {% raw %}
-    if (( CURRENT == NORMARG + 0 )); then
-        _httpie_method && ret=0
+    if ! [[ $current == -* ]]; then
+        {% for flow_item in generate_flow() -%}
+            {{ compile_zsh(flow_item) }}
+        {% endfor -%}
     fi
-    if (( CURRENT == NORMARG + 0 )); then
-        _httpie_url && ret=0
-    fi
-    if (( CURRENT == NORMARG + 1 )) && [[ ${METHODS[(ie)$predecessor]} -le ${#METHODS} ]]; then
-        _httpie_url && ret=0
-    fi
-    if (( CURRENT >= NORMARG + 2 )) && ! [[ $current == -* ]]; then
-        _httpie_request_item && ret=0
-    fi
-    if (( CURRENT >= NORMARG + 1 )) && ! [[ ${METHODS[(ie)$predecessor]} -le ${#METHODS} ]] && ! [[ $current == -* ]]; then
-        _httpie_request_item && ret=0
-    fi
-    {% endraw %}
 
     return $ret
 

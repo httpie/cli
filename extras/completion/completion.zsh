@@ -11,24 +11,24 @@ _httpie_params () {
         local predecessor=$words[(( $CURRENT - 1 ))]
     fi
 
-    
-    if (( CURRENT == NORMARG + 0 )); then
-        _httpie_method && ret=0
-    fi
-    if (( CURRENT == NORMARG + 0 )); then
-        _httpie_url && ret=0
-    fi
-    if (( CURRENT == NORMARG + 1 )) && [[ ${METHODS[(ie)$predecessor]} -le ${#METHODS} ]]; then
-        _httpie_url && ret=0
-    fi
-    if (( CURRENT >= NORMARG + 2 )) && ! [[ $current == -* ]]; then
-        _httpie_request_item && ret=0
-    fi
-    if (( CURRENT >= NORMARG + 1 )) && ! [[ ${METHODS[(ie)$predecessor]} -le ${#METHODS} ]] && ! [[ $current == -* ]]; then
-        _httpie_request_item && ret=0
-    fi
-    
-    
+    if ! [[ $current == -* ]]; then
+        if (( CURRENT == NORMARG + 0 )); then
+    _httpie_method && ret=0
+fi
+        if (( CURRENT == NORMARG + 0 )); then
+    _httpie_url && ret=0
+fi
+        if (( CURRENT == NORMARG + 1 )) && [[ ${METHODS[(ie)$predecessor]} -le ${#METHODS} ]]; then
+    _httpie_url && ret=0
+fi
+        if (( CURRENT >= NORMARG + 2 )); then
+    _httpie_request_item && ret=0
+fi
+        if (( CURRENT >= NORMARG + 1 )) && ! [[ ${METHODS[(ie)$predecessor]} -le ${#METHODS} ]]; then
+    _httpie_request_item && ret=0
+fi
+        fi
+
     return $ret
 
 }
