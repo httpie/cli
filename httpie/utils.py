@@ -277,7 +277,7 @@ def open_with_lockfile(file: Path, *args, **kwargs) -> Generator[IO[Any], None, 
     target_file = Path(tempfile.gettempdir()) / file_id
 
     # Have an atomic-like touch here, so we'll tighten the possibility of
-    # a race occuring between multiple processes accessing the same file.
+    # a race occurring between multiple processes accessing the same file.
     try:
         target_file.touch(exist_ok=False)
     except FileExistsError as exc:
