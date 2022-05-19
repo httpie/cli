@@ -35,9 +35,9 @@ def compile_zsh(node: Node) -> ...:
 
 @compile_zsh.register(If)
 def compile_if(node: If) -> str:
-    check = compile(node.check)
-    action = compile(node.action)
-    return f'if {check}; then\n    {action};\nfi'
+    check = compile_zsh(node.check)
+    action = compile_zsh(node.action)
+    return f'if {check}; then\n    {action} && ret=0\nfi'
 
 
 @compile_zsh.register(Check)
@@ -71,14 +71,17 @@ def compile_check(node: Check) -> str:
 
 @compile_zsh.register(And)
 def compile_and(node: And) -> str:
-    return ' && '.join(compile(check) for check in node.checks)
+    return ' && '.join(compile_zsh(check) for check in node.checks)
 
 
 @compile_zsh.register(Not)
 def compile_not(node: Not) -> str:
-    return f'! {compile(node.check)}'
+    return f'! {compile_zsh(node.check)}'
 
 
 @compile_zsh.register(Suggest)
 def compile_suggest(node: Suggest) -> str:
     return SUGGESTION_TO_FUNCTION[node.suggestion]
+
+for item in main_flow():
+    print(compile_zsh(item))

@@ -2,64 +2,79 @@
 # Copyright (c) 2015 Github zsh-users
 # Based on the initial work of http://github.com/zsh-users
 
-methods=("GET" "POST" "PUT" "DELETE" "HEAD" "OPTIONS" "PATCH" "TRACE" "CONNECT" )
+METHODS=("GET" "POST" "PUT" "DELETE" "HEAD" "OPTIONS" "PATCH" "TRACE" "CONNECT" )
 
 _httpie_params () {
     local ret=1 expl
-    local first_arg=$words[NORMARG]
-    if (( CURRENT == NORMARG )) && [[ $words[NORMARG] != *:* ]]; then
-        # URL
-        _httpie_urls && ret=0
-    elif (( CURRENT == NORMARG + 1 )) && [[ ${methods[(ie)$first_arg]} -le ${#methods} ]]; then
-        # When the first argument is the method, suggest the URL as well.
-        _httpie_urls && ret=0
-    elif (( CURRENT > NORMARG )); then
-        # regular param, if we already have a url
-        # ignore all prefix stuff
-        compset -P '(#b)([^:@=]#)'
-        local name=$match[1]
-
-        if false; then
-            false;
-        elif compset -P ':'; then
-            _message "$name HTTP Headers"
-            
-        elif compset -P '=='; then
-            _message "$name URL Parameters"
-            
-        elif compset -P '='; then
-            _message "$name Data Fields"
-            
-        elif compset -P ':='; then
-            _message "$name Raw JSON Fields"
-            
-        elif compset -P '@'; then
-            _files
-            
-        else
-            typeset -a ops
-            ops=(
-                "\::Arbitrary HTTP header, e.g X-API-Token:123"
-                "==:Querystring parameter to the URL, e.g limit==50"
-                "=:Data fields to be serialized as JSON (default) or Form Data (with --form)"
-                "\:=:Data field for real JSON types."
-                "@:Path field for uploading a file."
-                )
-            _describe -t httpparams 'parameter types' ops -Q -S ''
-        fi
-        ret=0
+    local current=$words[$CURRENT]
+    if (( CURRENT > NORMARG )); then
+        local predecessor=$words[(( $CURRENT - 1 ))]
     fi
 
-    # first arg may be a request method
-    (( CURRENT == NORMARG )) &&
-    _wanted http_method expl 'Request Method' \
-        compadd GET POST PUT DELETE HEAD OPTIONS PATCH TRACE CONNECT && ret=0
-
+    
+    if (( CURRENT == NORMARG + 0 )); then
+        _httpie_method && ret=0
+    fi
+    if (( CURRENT == NORMARG + 0 )); then
+        _httpie_url && ret=0
+    fi
+    if (( CURRENT == NORMARG + 1 )) && [[ ${METHODS[(ie)$predecessor]} -le ${#METHODS} ]]; then
+        _httpie_url && ret=0
+    fi
+    if (( CURRENT >= NORMARG + 2 )) && ! [[ $current == -* ]]; then
+        _httpie_request_item && ret=0
+    fi
+    if (( CURRENT >= NORMARG + 1 )) && ! [[ ${METHODS[(ie)$predecessor]} -le ${#METHODS} ]] && ! [[ $current == -* ]]; then
+        _httpie_request_item && ret=0
+    fi
+    
+    
     return $ret
 
 }
 
-_httpie_urls() {
+_httpie_request_item() {
+    compset -P '(#b)([^:@=]#)'
+    local name=$match[1]
+
+    if false; then
+        false;
+    elif compset -P ':'; then
+        _message "$name HTTP Headers"
+        
+    elif compset -P '=='; then
+        _message "$name URL Parameters"
+        
+    elif compset -P '='; then
+        _message "$name Data Fields"
+        
+    elif compset -P ':='; then
+        _message "$name Raw JSON Fields"
+        
+    elif compset -P '@'; then
+        _files
+        
+    else
+        typeset -a ops
+        ops=(
+            "\::Arbitrary HTTP header, e.g X-API-Token:123"
+            "==:Querystring parameter to the URL, e.g limit==50"
+            "=:Data fields to be serialized as JSON (default) or Form Data (with --form)"
+            "\:=:Data field for real JSON types."
+            "@:Path field for uploading a file."
+            )
+        _describe -t httpparams 'parameter types' ops -Q -S ''
+    fi
+    return 1;
+}
+
+_httpie_method() {
+    _wanted http_method expl 'Request Method' \
+            compadd GET POST PUT DELETE HEAD OPTIONS PATCH TRACE CONNECT && ret=0
+    return 1;
+}
+
+_httpie_url() {
     local ret=1
 
     if ! [[ -prefix [-+.a-z0-9]#:// ]]; then
@@ -69,26 +84,6 @@ _httpie_urls() {
     else
         _urls && ret=0
     fi
-
-    return $ret
-}
-
-_httpie_printflags () {
-    local ret=1
-
-    # not sure why this is necessary, but it will complete "-pH" style without it
-    [[ $IPREFIX == "-p" ]] && IPREFIX+=" "
-
-    compset -P '(#b)([a-zA-Z]#)'
-
-    local -a flags
-    [[ $match[1] != *H* ]] && flags+=( "H:request headers" )
-    [[ $match[1] != *B* ]] && flags+=( "B:request body" )
-    [[ $match[1] != *h* ]] && flags+=( "h:response headers" )
-    [[ $match[1] != *b* ]] && flags+=( "b:response body" )
-    [[ $match[1] != *m* ]] && flags+=( "b:response meta" )
-
-    _describe -t printflags "print flags" flags -S '' && ret=0
 
     return $ret
 }
