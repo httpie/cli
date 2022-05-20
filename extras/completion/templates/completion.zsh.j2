@@ -13,8 +13,8 @@ _httpie_params () {
 
     if ! [[ $current == -* ]]; then
         {% for flow_item in generate_flow() -%}
-            {{ compile_zsh(flow_item) }}
-        {% endfor -%}
+            {{ compile_zsh(flow_item) | indent(width=8) }}
+        {% endfor %}
     fi
 
     return $ret

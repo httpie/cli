@@ -1,17 +1,16 @@
-from atexit import register
 import functools
 import string
 import textwrap
-
-from jinja2 import Template
+from atexit import register
 from pathlib import Path
-from typing import Any, Dict, Callable, TypeVar
+from typing import Any, Callable, Dict, TypeVar
+
+from completion_flow import generate_flow
+from jinja2 import Template
 
 from httpie.cli.constants import SEPARATOR_FILE_UPLOAD
 from httpie.cli.definition import options
 from httpie.cli.options import Argument, ParserSpec
-
-from completion_flow import generate_flow
 
 T = TypeVar('T')
 
@@ -202,7 +201,7 @@ def zsh_completer(spec: ParserSpec) -> Dict[str, Any]:
     return {
         'escape_zsh': escape_zsh,
         'serialize_argument_to_zsh': serialize_argument_to_zsh,
-        'compile_zsh': compile_zsh
+        'compile_zsh': compile_zsh,
     }
 
 
@@ -210,6 +209,15 @@ def zsh_completer(spec: ParserSpec) -> Dict[str, Any]:
 def fish_completer(spec: ParserSpec) -> Dict[str, Any]:
     return {
         'serialize_argument_to_fish': serialize_argument_to_fish,
+    }
+
+
+@use_template('bash')
+def fish_completer(spec: ParserSpec) -> Dict[str, Any]:
+    from bash import compile_bash
+
+    return {
+        'compile_bash': compile_bash,
     }
 
 

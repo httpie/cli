@@ -1,17 +1,16 @@
-from functools import singledispatch
 from enum import Enum
-from lib2to3.pgen2.pgen import generate_grammar
+from functools import singledispatch
+
 from completion_flow import (
-    Node,
-    Check,
-    Suggest,
-    Variable,
-    Condition,
-    Suggestion,
-    If,
     And,
+    Check,
+    Condition,
+    If,
+    Node,
     Not,
-    generate_flow,
+    Suggest,
+    Suggestion,
+    Variable,
 )
 
 

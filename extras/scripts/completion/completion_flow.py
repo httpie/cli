@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import List, Iterator
+from typing import Iterator, List
 
 
 class Condition(Enum):

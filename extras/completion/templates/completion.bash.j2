@@ -1,0 +1,40 @@
+METHODS=({% for method in methods -%} "{{ method }}" {% endfor -%})
+NORMARG=1 # TO-DO: dynamically calculate this?
+
+_http_complete() {
+    local cur_word=${COMP_WORDS[COMP_CWORD]}
+    local prev_word=${COMP_WORDS[COMP_CWORD - 1]}
+
+    if [[ "$cur_word" == -* ]]; then
+        _http_complete_options "$cur_word"
+    else
+        {% for flow_item in generate_flow() -%}
+            {{ compile_bash(flow_item) | indent(width=8) }}
+        {% endfor %}
+    fi
+}
+
+complete -o default -F _http_complete http httpie.http httpie.https https
+
+_http_complete_methods() {
+    local cur_word=$1
+    local options="{{' '.join(methods)}}"
+    COMPREPLY+=( $( compgen -W "$options" -- "$cur_word" ) )
+}
+
+_http_complete_url() {
+    local cur_word=$1
+    local options="http:// https://"
+    COMPREPLY+=( $( compgen -W "$options" -- "$cur_word" ) )
+}
+
+_httpie_complete_request_item() {
+    local cur_word=$1
+    COMPREPLY+=("==" "=" ":=" ":=@")
+}
+
+_http_complete_options() {
+    local cur_word=$1
+    local options="{% for argument in arguments -%} {{ ' '.join(argument.aliases) }} {% endfor -%}"
+    COMPREPLY=( $( compgen -W "$options" -- "$cur_word" ) )
+}
