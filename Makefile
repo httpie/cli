@@ -33,7 +33,7 @@ install-reqs:
 	$(VENV_PIP) install --upgrade pip wheel build
 
 	@echo $(H1)Installing dev requirements$(H1END)
-	$(VENV_PIP) install --upgrade --editable '.[dev]'
+	$(VENV_PIP) install --upgrade '.[dev]' '.[test]'
 
 	@echo $(H1)Installing HTTPie$(H1END)
 	$(VENV_PIP) install --upgrade --editable .
