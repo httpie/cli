@@ -9,8 +9,14 @@ from typing import (
     Type,
     Union,
 )
-from httpie.cli.dicts import NestedJSONArray
-from httpie.cli.constants import EMPTY_STRING, OPEN_BRACKET, CLOSE_BRACKET, BACKSLASH, HIGHLIGHTER
+from .dicts import NestedJSONArray
+
+
+EMPTY_STRING = ''
+HIGHLIGHTER = '^'
+OPEN_BRACKET = '['
+CLOSE_BRACKET = ']'
+BACKSLASH = '\\'
 
 
 class HTTPieSyntaxError(ValueError):
@@ -31,7 +37,7 @@ class HTTPieSyntaxError(ValueError):
         if self.token is not None:
             lines.append(self.source)
             lines.append(
-                ' ' * (self.token.start)
+                ' ' * self.token.start
                 + HIGHLIGHTER * (self.token.end - self.token.start)
             )
         return '\n'.join(lines)
@@ -51,9 +57,15 @@ class TokenKind(Enum):
             return 'a ' + self.name.lower()
 
 
-OPERATORS = {OPEN_BRACKET: TokenKind.LEFT_BRACKET, CLOSE_BRACKET: TokenKind.RIGHT_BRACKET}
+OPERATORS = {
+    OPEN_BRACKET: TokenKind.LEFT_BRACKET,
+    CLOSE_BRACKET: TokenKind.RIGHT_BRACKET,
+}
 SPECIAL_CHARS = OPERATORS.keys() | {BACKSLASH}
-LITERAL_TOKENS = [TokenKind.TEXT, TokenKind.NUMBER]
+LITERAL_TOKENS = [
+    TokenKind.TEXT,
+    TokenKind.NUMBER,
+]
 
 
 class Token(NamedTuple):
