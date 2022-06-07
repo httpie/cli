@@ -17,13 +17,13 @@ docs-structure:
   Windows:
     - chocolatey
   Linux:
-    - snap-linux
-    - brew-linux
     - apt
     - dnf
     - yum
-    - pacman
     - single-binary
+    - snap-linux
+    - brew-linux
+    - pacman
   FreeBSD:
     - pkg
 
@@ -191,6 +191,7 @@ tools:
     commands:
       install:
         - https --download packages.httpie.io/binaries/linux/http-latest -o http
-        - chmod +x ./http
+        - ln -ls ./http ./https
+        - chmod +x ./http ./https
       upgrade:
         - https --download packages.httpie.io/binaries/linux/http-latest -o http
