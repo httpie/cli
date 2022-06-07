@@ -22,6 +22,26 @@ VENV_PYTHON=$(VENV_BIN)/python
 export PATH := $(VENV_BIN):$(PATH)
 
 
+
+default: list-tasks
+
+
+###############################################################################
+# Default task to get a list of tasks when `make' is run without args.
+# <https://stackoverflow.com/questions/4219255>
+###############################################################################
+
+list-tasks:
+	@echo Available tasks:
+	@echo ----------------
+	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$'
+	@echo
+
+
+###############################################################################
+# Installation
+###############################################################################
+
 all: uninstall-httpie install test
 
 
