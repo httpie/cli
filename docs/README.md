@@ -1453,7 +1453,8 @@ $ http --proxy=http:http://user:pass@10.10.1.10:3128 example.org
 
 ### Environment variables
 
-You can also configure proxies by environment variables `ALL_PROXY`, `HTTP_PROXY` and `HTTPS_PROXY`, and the underlying [Requests library](https://python-requests.org/) will pick them up.
+You can also configure proxies by environment variables `ALL_PROXY`, `HTTP_PROXY` and `HTTPS_PROXY`, and the underlying
+[Requests library](https://requests.readthedocs.io/en/latest/) will pick them up.
 If you want to disable proxies configured through the environment variables for certain hosts, you can specify them in `NO_PROXY`.
 
 In your `~/.bash_profile`:
@@ -2553,7 +2554,7 @@ HTTPie has the following community channels:
 
 Under the hood, HTTPie uses these two amazing libraries:
 
-- [Requests](https://python-requests.org) — Python HTTP library for humans
+- [Requests](https://requests.readthedocs.io/en/latest/) — Python HTTP library for humans
 - [Pygments](https://pygments.org/) — Python syntax highlighter
 
 #### HTTPie friends
