@@ -10,7 +10,7 @@ Ensure the following requirements are satisfied:
 - Python 3.7+
 - `pyperf`
 
-Then, run the `extras/benchmarks/run.py`:
+Then, run the `extras/profiling/run.py`:
 
 ```console
 $ python extras/profiling/run.py
