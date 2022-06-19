@@ -154,7 +154,7 @@ with the master branch of your repository (or a fresh checkout of HTTPie master,
 `--fresh`) and report the results back.
 
 ```bash
-$ python extras/benchmarks/run.py
+$ python extras/profiling/run.py
 ```
 
 The benchmarks can also be run on the CI. Since it is a long process, it requires manual

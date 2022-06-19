@@ -19,19 +19,19 @@ which would include additional dependencies like pyOpenSSL.
 Examples:
 
     # Run everything as usual, and compare last commit with master
-    $ python extras/benchmarks/run.py
+    $ python extras/profiling/run.py
 
     # Include complex environments
-    $ python extras/benchmarks/run.py --complex
+    $ python extras/profiling/run.py --complex
 
     # Compare against a fresh copy
-    $ python extras/benchmarks/run.py --fresh
+    $ python extras/profiling/run.py --fresh
 
     # Compare against a custom branch of a custom repo
-    $ python extras/benchmarks/run.py --target-repo my_repo --target-branch my_branch
+    $ python extras/profiling/run.py --target-repo my_repo --target-branch my_branch
 
     # Debug changes made on this script (only run benchmarks once)
-    $ python extras/benchmarks/run.py --debug
+    $ python extras/profiling/run.py --debug
 """
 
 import dataclasses
