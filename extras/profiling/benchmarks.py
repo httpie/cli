@@ -9,7 +9,7 @@ timings.
 
 The benchmarks are run through 'pyperf', which allows to
 do get very precise results. For micro-benchmarks like startup,
-please run `pyperf system tune` to get even more acurrate results.
+please run `pyperf system tune` to get even more accurate results.
 
 Examples:
 

@@ -24,7 +24,7 @@ def enable_highlighter(
     console: Console,
     highlighter: Highlighter,
 ) -> Iterator[Console]:
-    """Enable a higlighter temporarily."""
+    """Enable a highlighter temporarily."""
 
     original_highlighter = console.highlighter
     try:
