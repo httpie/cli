@@ -1,10 +1,11 @@
-<br/>
-<a href="https://httpie.io" target="blank_">
-    <img height="100" alt="HTTPie" src="https://raw.githubusercontent.com/httpie/httpie/master/docs/httpie-logo.svg" />
-</a>
-<br/>
 
-# HTTPie: human-friendly CLI HTTP client for the API era
+<h2 align="center">
+    <a href="https://httpie.io" target="blank_">
+        <img height="100" alt="HTTPie" src="https://raw.githubusercontent.com/httpie/httpie/master/docs/httpie-logo.svg" />
+    </a>
+    <br>
+    HTTPie: human-friendly CLI HTTP client for the API era
+ </h2>
 
 HTTPie (pronounced _aitch-tee-tee-pie_) is a command-line HTTP client.
 Its goal is to make CLI interaction with web services as human-friendly as possible.

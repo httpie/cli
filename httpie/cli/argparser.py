@@ -572,12 +572,6 @@ class HTTPieArgumentParser(BaseHTTPieArgumentParser):
                 highlight=False
             )
 
-    def print_help(self):
-        from httpie.output.ui import rich_help
-
-        for renderable in rich_help.to_help_message(self.spec):
-            self.env.rich_console.print(renderable)
-
     def print_usage(self, file):
         from rich.text import Text
         from httpie.output.ui import rich_help

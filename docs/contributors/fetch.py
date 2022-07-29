@@ -252,6 +252,7 @@ def fetch_missing_users_details(people: People) -> None:
 def save_awesome_people(people: People) -> None:
     with DB_FILE.open(mode='w', encoding='utf-8') as fh:
         json.dump(people, fh, indent=4, sort_keys=True)
+        fh.write("\n")
 
 
 def debug(*args: Any) -> None:

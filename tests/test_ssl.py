@@ -1,4 +1,3 @@
-import os
 import ssl
 
 import pytest
@@ -11,7 +10,7 @@ from unittest import mock
 from httpie.ssl_ import AVAILABLE_SSL_VERSION_ARG_MAPPING, DEFAULT_SSL_CIPHERS
 from httpie.status import ExitStatus
 
-from .utils import HTTP_OK, TESTS_ROOT, http
+from .utils import HTTP_OK, TESTS_ROOT, IS_PYOPENSSL, http
 
 
 try:
@@ -152,6 +151,7 @@ def test_ciphers(httpbin_secure):
     assert HTTP_OK in r
 
 
+@pytest.mark.skipif(IS_PYOPENSSL, reason='pyOpenSSL uses a different message format.')
 def test_ciphers_none_can_be_selected(httpbin_secure):
     r = http(
         httpbin_secure.url + '/get',
@@ -169,8 +169,7 @@ def test_ciphers_none_can_be_selected(httpbin_secure):
 
 
 def test_pyopenssl_presence():
-    using_pyopenssl = os.getenv('HTTPIE_TEST_WITH_PYOPENSSL', '0')
-    if using_pyopenssl == '0':
+    if not IS_PYOPENSSL:
         assert not urllib3.util.ssl_.IS_PYOPENSSL
         assert not urllib3.util.IS_PYOPENSSL
     else:

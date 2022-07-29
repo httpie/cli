@@ -13,7 +13,8 @@ import urllib3
 from . import __version__
 from .adapters import HTTPieHTTPAdapter
 from .context import Environment
-from .cli.constants import EMPTY_STRING, HTTP_OPTIONS
+from .cli.constants import HTTP_OPTIONS
+from .cli.nested_json import EMPTY_STRING
 from .cli.dicts import HTTPHeadersDict, NestedJSONArray
 from .encoding import UTF8
 from .models import RequestsMessage

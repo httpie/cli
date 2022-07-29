@@ -125,6 +125,10 @@ def test_redirected_stream(httpbin):
         3
     ),
     (
+        ['Accept:text/event-stream; charset=utf-8'],
+        3
+    ),
+    (
         ['Accept:text/plain'],
         1
     )

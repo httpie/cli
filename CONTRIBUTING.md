@@ -59,8 +59,10 @@ $ git checkout -b my_topical_branch
 
 #### Setup
 
-The [Makefile](https://github.com/httpie/httpie/blob/master/Makefile) contains a bunch of tasks to get you started. Just run
-the following command, which:
+The [Makefile](https://github.com/httpie/httpie/blob/master/Makefile) contains a bunch of tasks to get you started.
+You can run `$ make` to see all the available tasks.
+
+To get started, run the command below, which:
 
 - Creates an isolated Python virtual environment inside `./venv`
   (via the standard library [venv](https://docs.python.org/3/library/venv.html) tool);
@@ -70,7 +72,7 @@ the following command, which:
 - and runs tests (It is the same as running `make install test`).
 
 ```bash
-$ make
+$ make all
 ```
 
 #### Python virtual environment
@@ -152,7 +154,7 @@ with the master branch of your repository (or a fresh checkout of HTTPie master,
 `--fresh`) and report the results back.
 
 ```bash
-$ python extras/benchmarks/run.py
+$ python extras/profiling/run.py
 ```
 
 The benchmarks can also be run on the CI. Since it is a long process, it requires manual

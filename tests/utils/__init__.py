@@ -1,6 +1,7 @@
 """Utilities for HTTPie test suite."""
 import re
 import shlex
+import os
 import sys
 import time
 import json
@@ -30,6 +31,7 @@ REMOTE_HTTPBIN_DOMAIN = 'pie.dev'
 HTTPBIN_WITH_CHUNKED_SUPPORT_DOMAIN = 'pie.dev'
 HTTPBIN_WITH_CHUNKED_SUPPORT = 'http://' + HTTPBIN_WITH_CHUNKED_SUPPORT_DOMAIN
 
+IS_PYOPENSSL = os.getenv('HTTPIE_TEST_WITH_PYOPENSSL', '0') == '1'
 
 TESTS_ROOT = Path(__file__).parent.parent
 CRLF = '\r\n'
@@ -46,6 +48,10 @@ HTTP_OK_COLOR = (
 
 DUMMY_URL = 'http://this-should.never-resolve'  # Note: URL never fetched
 DUMMY_HOST = url_as_host(DUMMY_URL)
+
+# We don't want hundreds of subprocesses trying to access GitHub API
+# during the tests.
+Config.DEFAULTS['disable_update_warnings'] = True
 
 
 def strip_colors(colorized_msg: str) -> str:
@@ -161,6 +167,7 @@ class MockEnvironment(Environment):
         self._delete_config_dir = True
 
     def cleanup(self):
+        self.devnull.close()
         self.stdout.close()
         self.stderr.close()
         warnings.resetwarnings()
@@ -175,6 +182,11 @@ class MockEnvironment(Environment):
             self.cleanup()
         except Exception:
             pass
+
+
+class PersistentMockEnvironment(MockEnvironment):
+    def cleanup(self):
+        pass
 
 
 class BaseCLIResponse:
@@ -440,7 +452,4 @@ def http(
         return r
 
     finally:
-        devnull.close()
-        stdout.close()
-        stderr.close()
         env.cleanup()

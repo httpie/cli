@@ -7,11 +7,6 @@ actions:
   # Use this when the latest spec is not up-to-date.
   # post-upstream-clone: "cp docs/packaging/linux-fedora/httpie.spec.txt httpie.spec"
 jobs:
-- job: copr_build
-  trigger: pull_request
-  metadata:
-    targets:
-    - fedora-all
 - job: propose_downstream
   trigger: release
   metadata:

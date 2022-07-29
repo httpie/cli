@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
 	<metadata>
 		<id>httpie</id>
-		<version>3.1.0</version>
+		<version>3.2.1</version>
 		<summary>Modern, user-friendly command-line HTTP client for the API era</summary>
 		<description>
 HTTPie *aitch-tee-tee-pie* is a user-friendly command-line HTTP client for the API era.
@@ -33,7 +33,7 @@ Main features:
 		<licenseUrl>https://raw.githubusercontent.com/httpie/httpie/master/LICENSE</licenseUrl>
 		<iconUrl>https://pie-assets.s3.eu-central-1.amazonaws.com/LogoIcons/GB.png</iconUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
-		<releaseNotes>See the [changelog](https://github.com/httpie/httpie/releases/tag/3.1.0).</releaseNotes>
+		<releaseNotes>See the [changelog](https://github.com/httpie/httpie/releases/tag/3.2.0).</releaseNotes>
 		<tags>httpie http https rest api client curl python ssl cli foss oss url</tags>
 		<projectUrl>https://httpie.io</projectUrl>
 		<packageSourceUrl>https://github.com/httpie/httpie/tree/master/docs/packaging/windows-chocolatey</packageSourceUrl>

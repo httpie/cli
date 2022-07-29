@@ -22,7 +22,7 @@ If it is needed to be done manually, the following command can be used:
 $ brew bump-formula-pr httpie --version={TARGET_VERSION}
 ```
 
-which will bump the formala, and create a PR against the package index.
+which will bump the formula, and create a PR against the package index.
 
 ## Hacking
 

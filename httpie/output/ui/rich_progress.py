@@ -28,10 +28,7 @@ class BaseDisplay:
         return self.env.rich_error_console
 
     def _print_summary(
-        self,
-        is_finished: bool,
-        observed_steps: int,
-        time_spent: float
+        self, is_finished: bool, observed_steps: int, time_spent: float
     ):
         from rich import filesize
 
@@ -50,7 +47,9 @@ class BaseDisplay:
         else:
             total_time = f'{minutes:02d}:{seconds:0.5f}'
 
-        self.console.print(f'[progress.description]{verb}. {total_size} in {total_time} ({avg_speed}/s)')
+        self.console.print(
+            f'[progress.description]{verb}. {total_size} in {total_time} ({avg_speed}/s)'
+        )
 
 
 class DummyDisplay(BaseDisplay):
@@ -65,7 +64,9 @@ class StatusDisplay(BaseDisplay):
         self, *, total: Optional[float], at: float, description: str
     ) -> None:
         self.observed = at
-        self.description = f'[progress.description]{description}[/progress.description]'
+        self.description = (
+            f'[progress.description]{description}[/progress.description]'
+        )
 
         self.status = self.console.status(self.description, spinner='line')
         self.status.start()
@@ -75,8 +76,12 @@ class StatusDisplay(BaseDisplay):
 
         self.observed += steps
 
-        observed_amount, observed_unit = filesize.decimal(self.observed).split()
-        self.status.update(status=f'{self.description} [progress.download]{observed_amount}/? {observed_unit}[/progress.download]')
+        observed_amount, observed_unit = filesize.decimal(
+            self.observed
+        ).split()
+        self.status.update(
+            status=f'{self.description} [progress.download]{observed_amount}/? {observed_unit}[/progress.download]'
+        )
 
     def stop(self, time_spent: float) -> None:
         self.status.stop()
@@ -85,7 +90,7 @@ class StatusDisplay(BaseDisplay):
             self._print_summary(
                 is_finished=True,
                 observed_steps=self.observed,
-                time_spent=time_spent
+                time_spent=time_spent,
             )
 
 
@@ -114,7 +119,7 @@ class ProgressDisplay(BaseDisplay):
             TimeRemainingColumn(),
             TransferSpeedColumn(),
             console=self.console,
-            transient=True
+            transient=True,
         )
         self.progress_bar.start()
         self.transfer_task = self.progress_bar.add_task(
@@ -132,5 +137,5 @@ class ProgressDisplay(BaseDisplay):
             self._print_summary(
                 is_finished=task.finished,
                 observed_steps=task.completed,
-                time_spent=time_spent
+                time_spent=time_spent,
             )

@@ -20,8 +20,12 @@ COMMANDS = {
             {
                 'flags': ['-f', '--format'],
                 'choices': ['json'],
+                'help': 'Format to export in.',
                 'default': 'json'
             }
+        ],
+        'check-updates': [
+            'Check for updates'
         ],
         'sessions': {
             'help': 'Manage HTTPie sessions',
@@ -166,5 +170,12 @@ parser.add_argument(
     '''
 )
 
-options = parser_to_parser_spec(parser)
+man_page_hint = '''
+If you are looking for the man pages of http/https commands, try one of the following:
+    $ man http
+    $ man https
+
+'''
+
+options = parser_to_parser_spec(parser, man_page_hint=man_page_hint, source_file=__file__)
 generate_subparsers(parser, parser, COMMANDS, options)

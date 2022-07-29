@@ -13,6 +13,7 @@ tests_require = [
     'pytest-httpbin>=0.0.6',
     'pytest-lazy-fixture>=0.0.6',
     'responses',
+    'pytest-mock',
     'werkzeug<2.1.0'
 ]
 dev_require = [
@@ -116,5 +117,6 @@ setup(
     data_files=[
         ('share/man/man1', ['extras/man/http.1']),
         ('share/man/man1', ['extras/man/https.1']),
+        ('share/man/man1', ['extras/man/httpie.1']),
     ]
 )

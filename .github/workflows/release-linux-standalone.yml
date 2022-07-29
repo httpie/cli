@@ -7,6 +7,9 @@ on:
         description: "The branch, tag or SHA to release from"
         required: true
         default: "master"
+      tag_name:
+        description: "Which release to upload the artifacts to (e.g., 3.0)"
+        required: true
 
   release:
     types: [released, prereleased]
@@ -21,7 +24,7 @@ jobs:
         with:
           ref: ${{ github.event.inputs.branch }}
 
-      - uses: actions/setup-python@v3
+      - uses: actions/setup-python@v4
         with:
           python-version: 3.9
 
@@ -45,24 +48,30 @@ jobs:
           name: httpie.rpm
           path: extras/packaging/linux/artifacts/dist/*.rpm
 
+      - name: Determine the release upload upload_url
+        id: release_id
+        run: |
+          pip install httpie
+          export API_URL="api.github.com/repos/httpie/httpie/releases/tags/${{ github.event.inputs.tag_name }}"
+          export UPLOAD_URL=`https --ignore-stdin GET $API_URL | jq -r ".upload_url"`
+          echo "::set-output name=UPLOAD_URL::$UPLOAD_URL"
+
       - name: Publish Debian Package
-        if: github.event_name == 'release'
         uses: actions/upload-release-asset@v1.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: extras/packaging/linux/artifacts/dist/httpie-${{ github.event.release.tag_name }}.deb
-          asset_name: httpie-${{ github.event.release.tag_name }}.deb
+          upload_url: ${{ steps.release_id.outputs.UPLOAD_URL }}
+          asset_path: extras/packaging/linux/artifacts/dist/httpie_${{ github.event.inputs.tag_name }}_amd64.deb
+          asset_name: httpie-${{ github.event.inputs.tag_name }}.deb
           asset_content_type: binary/octet-stream
 
       - name: Publish Single Executable
-        if: github.event_name == 'release'
         uses: actions/upload-release-asset@v1.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ github.event.release.upload_url }}
+          upload_url: ${{ steps.release_id.outputs.UPLOAD_URL }}
           asset_path: extras/packaging/linux/artifacts/dist/http
           asset_name: http
           asset_content_type: binary/octet-stream

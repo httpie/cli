@@ -162,6 +162,8 @@ Also works for other Debian-derived distributions like MX Linux, Linux Mint, dee
 
 ```bash
 # Install httpie
+$ curl -SsL https://packages.httpie.io/deb/KEY.gpg | apt-key add -
+$ curl -SsL -o /etc/apt/sources.list.d/httpie.list https://packages.httpie.io/deb/httpie.list
 $ apt update
 $ apt install httpie
 ```
@@ -211,6 +213,21 @@ $ pacman -Syu httpie
 ```bash
 # Upgrade httpie
 $ pacman -Syu
+```
+
+#### Single binary executables
+
+Get the standalone HTTPie Linux executables when you don't want to go through the full installation process
+
+```bash
+# Install httpie
+$ https --download packages.httpie.io/binaries/linux/http-latest -o http
+$ chmod +x ./http
+```
+
+```bash
+# Upgrade httpie
+$ https --download packages.httpie.io/binaries/linux/http-latest -o http
 ```
 
 ### FreeBSD
@@ -277,7 +294,7 @@ Synopsis:
 $ http [flags] [METHOD] URL [ITEM [ITEM]]
 ```
 
-See also `http --help`.
+See also `http --help` (and for systems where man pages are available, you can use `man http`).
 
 ### Examples
 
@@ -1436,7 +1453,8 @@ $ http --proxy=http:http://user:pass@10.10.1.10:3128 example.org
 
 ### Environment variables
 
-You can also configure proxies by environment variables `ALL_PROXY`, `HTTP_PROXY` and `HTTPS_PROXY`, and the underlying [Requests library](https://python-requests.org/) will pick them up.
+You can also configure proxies by environment variables `ALL_PROXY`, `HTTP_PROXY` and `HTTPS_PROXY`, and the underlying
+[Requests library](https://requests.readthedocs.io/en/latest/) will pick them up.
 If you want to disable proxies configured through the environment variables for certain hosts, you can specify them in `NO_PROXY`.
 
 In your `~/.bash_profile`:
@@ -1653,6 +1671,10 @@ If you’d like to silence warnings as well, use `-q` or `--quiet` twice:
 $ http -qq --check-status pie.dev/post enjoy='the silence without warnings'
 ```
 
+### Update warnings
+
+When there is a new release available for your platform (for example; if you installed HTTPie through `pip`, it will check the latest version on `PyPI`), HTTPie will regularly warn you about the new update (once a week). If you want to disable this behavior, you can set `disable_update_warnings` to `true` in your [config](#config) file.
+
 ### Viewing intermediary requests/responses
 
 To see all the HTTP communication, i.e. the final request/response as well as any possible intermediary requests/responses, use the `--all` option.
@@ -1664,14 +1686,6 @@ $ http --all --follow pie.dev/redirect/3
 ```
 
 The intermediary requests/responses are by default formatted according to `--print, -p` (and its shortcuts described above).
-
-If you’d like to change that, use the `--history-print, -P` option.
-It takes the same arguments as `--print, -p` but applies to the intermediary requests only.
-
-```bash
-# Print the intermediary requests/responses differently than the final one:
-$ http -A digest -a foo:bar --all -p Hh -P H pie.dev/digest-auth/auth/foo/bar
-```
 
 ### Conditional body download
 
@@ -2406,6 +2420,14 @@ This command is currently in beta.
 
 ### `httpie cli`
 
+#### `httpie cli check-updates`
+
+You can check whether a new update is available for your system by running `httpie cli check-updates`:
+
+```bash-termible
+$ httpie cli check-updates
+```
+
 #### `httpie cli export-args`
 
 `httpie cli export-args` command can expose the parser specification of `http`/`https` commands
@@ -2532,7 +2554,7 @@ HTTPie has the following community channels:
 
 Under the hood, HTTPie uses these two amazing libraries:
 
-- [Requests](https://python-requests.org) — Python HTTP library for humans
+- [Requests](https://requests.readthedocs.io/en/latest/) — Python HTTP library for humans
 - [Pygments](https://pygments.org/) — Python syntax highlighter
 
 #### HTTPie friends

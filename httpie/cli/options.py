@@ -35,17 +35,6 @@ def drop_keys(
     }
 
 
-def _get_first_line(source: str) -> str:
-    parts = []
-    for line in source.strip().splitlines():
-        line = line.strip()
-        parts.append(line)
-        if line.endswith("."):
-            break
-
-    return " ".join(parts)
-
-
 PARSER_SPEC_VERSION = '0.0.1a0'
 
 
@@ -55,6 +44,8 @@ class ParserSpec:
     description: Optional[str] = None
     epilog: Optional[str] = None
     groups: List['Group'] = field(default_factory=list)
+    man_page_hint: Optional[str] = None
+    source_file: Optional[str] = None
 
     def finalize(self) -> 'ParserSpec':
         if self.description:
@@ -248,10 +239,11 @@ def to_data(abstract_options: ParserSpec) -> Dict[str, Any]:
     return {'version': PARSER_SPEC_VERSION, 'spec': abstract_options.serialize()}
 
 
-def parser_to_parser_spec(parser: argparse.ArgumentParser) -> ParserSpec:
+def parser_to_parser_spec(parser: argparse.ArgumentParser, **kwargs) -> ParserSpec:
     """Take an existing argparse parser, and create a spec from it."""
     return ParserSpec(
         program=parser.prog,
         description=parser.description,
-        epilog=parser.epilog
+        epilog=parser.epilog,
+        **kwargs
     )

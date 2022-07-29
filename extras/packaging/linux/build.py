@@ -6,6 +6,9 @@ from typing import Iterator, Tuple
 BUILD_DIR = Path(__file__).parent
 HTTPIE_DIR = BUILD_DIR.parent.parent.parent
 
+EXTRAS_DIR = HTTPIE_DIR / 'extras'
+MAN_PAGES_DIR = EXTRAS_DIR /  'man'
+
 SCRIPT_DIR = BUILD_DIR / Path('scripts')
 HOOKS_DIR = SCRIPT_DIR / 'hooks'
 
@@ -50,6 +53,11 @@ def build_packages(http_binary: Path, httpie_binary: Path) -> None:
         (http_binary, '/usr/bin/https'),
         (httpie_binary, '/usr/bin/httpie'),
     ]
+    files.extend(
+        (man_page, f'/usr/share/man/man1/{man_page.name}')
+        for man_page in MAN_PAGES_DIR.glob('*.1')
+    )
+
     # A list of additional dependencies
     deps = [
         'python3 >= 3.7',
@@ -92,8 +100,9 @@ def main():
     build_packages(binaries['http_cli'], binaries['httpie_cli'])
 
     # Rename http_cli/httpie_cli to http/httpie
-    binaries['http_cli'].rename('http')
-    binaries['httpie_cli'].rename('httpie')
+    binaries['http_cli'].rename(DIST_DIR / 'http')
+    binaries['httpie_cli'].rename(DIST_DIR / 'httpie')
+
 
 
 if __name__ == '__main__':

@@ -17,11 +17,12 @@ docs-structure:
   Windows:
     - chocolatey
   Linux:
-    - snap-linux
-    - brew-linux
     - apt
     - dnf
     - yum
+    - single-binary
+    - snap-linux
+    - brew-linux
     - pacman
   FreeBSD:
     - pkg
@@ -36,6 +37,8 @@ tools:
       package: https://packages.debian.org/sid/web/httpie
     commands:
       install:
+        - curl -SsL https://packages.httpie.io/deb/KEY.gpg | apt-key add -
+        - curl -SsL -o /etc/apt/sources.list.d/httpie.list https://packages.httpie.io/deb/httpie.list
         - apt update
         - apt install httpie
       upgrade:
@@ -179,3 +182,16 @@ tools:
         - yum install httpie
       upgrade:
         - yum upgrade httpie
+
+  single-binary:
+    title: Single binary executables
+    name: Single binary executables
+    note: Get the standalone HTTPie Linux executables when you don't want to go through the full installation process.
+    links:
+    commands:
+      install:
+        - https --download packages.httpie.io/binaries/linux/http-latest -o http
+        - ln -ls ./http ./https
+        - chmod +x ./http ./https
+      upgrade:
+        - https --download packages.httpie.io/binaries/linux/http-latest -o http
