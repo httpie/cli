@@ -13,7 +13,7 @@ please run `pyperf system tune` to get even more accurate results.
 
 Examples:
 
-    # Run everything as usual, the default is that we do 3 warmup runs
+    # Run everything as usual, the default is that we do 3 warm-up runs
     # and 5 actual runs.
     $ python extras/profiling/benchmarks.py
 
@@ -188,7 +188,7 @@ DownloadRunner('download', '`http --download :/big_file.txt` (3GB)', '3G')
 def main() -> None:
     # PyPerf will bring it's own argument parser, so configure the script.
     # The somewhat fast and also precise enough configuration is this. We run
-    # benchmarks 3 times to warmup (e.g especially for download benchmark, this
+    # benchmarks 3 times to warm up (e.g especially for download benchmark, this
     # is important). And then 5 actual runs where we record.
     sys.argv.extend(
         ['--worker', '--loops=1', '--warmup=3', '--values=5', '--processes=2']
