@@ -62,16 +62,16 @@ Do not edit here, but in docs/installation/.
 
 Please make sure you have Python 3.7 or newer (`python --version`).
 
+***Install httpie***
 ```bash
-# Install httpie
-$ python -m pip install --upgrade pip wheel
-$ python -m pip install httpie
+python -m pip install --upgrade pip wheel;
+python -m pip install httpie
 ```
 
+***Upgrade httpie***
 ```bash
-# Upgrade httpie
-$ python -m pip install --upgrade pip wheel
-$ python -m pip install --upgrade httpie
+python -m pip install --upgrade pip wheel;
+python -m pip install --upgrade httpie
 ```
 
 ### macOS
@@ -80,32 +80,32 @@ $ python -m pip install --upgrade httpie
 
 To install [Homebrew](https://brew.sh/), see [its installation](https://docs.brew.sh/Installation).
 
+***Install httpie***
 ```bash
-# Install httpie
-$ brew update
-$ brew install httpie
+brew update;
+brew install httpie
 ```
 
+***Upgrade httpie***
 ```bash
-# Upgrade httpie
-$ brew update
-$ brew upgrade httpie
+brew update;
+brew upgrade httpie
 ```
 
 #### MacPorts
 
 To install [MacPorts](https://www.macports.org/), see [its installation](https://www.macports.org/install.php).
 
+***Install httpie***
 ```bash
-# Install httpie
-$ port selfupdate
-$ port install httpie
+port selfupdate;
+port install httpie
 ```
 
+***Upgrade httpie***
 ```bash
-# Upgrade httpie
-$ port selfupdate
-$ port upgrade httpie
+port selfupdate;
+port upgrade httpie
 ```
 
 ### Windows
@@ -114,14 +114,14 @@ $ port upgrade httpie
 
 To install [Chocolatey](https://chocolatey.org/), see [its installation](https://chocolatey.org/install).
 
+***Install httpie***
 ```bash
-# Install httpie
-$ choco install httpie
+choco install httpie
 ```
 
+***Upgrade httpie***
 ```bash
-# Upgrade httpie
-$ choco upgrade httpie
+choco upgrade httpie
 ```
 
 ### Linux
@@ -130,118 +130,118 @@ $ choco upgrade httpie
 
 To install [Snapcraft](https://snapcraft.io/), see [its installation](https://snapcraft.io/docs/installing-snapd).
 
+***Install httpie***
 ```bash
-# Install httpie
-$ snap install httpie
+snap install httpie
 ```
 
+***Upgrade httpie***
 ```bash
-# Upgrade httpie
-$ snap refresh httpie
+snap refresh httpie
 ```
 
 #### Linuxbrew
 
 To install [Linuxbrew](https://docs.brew.sh/Homebrew-on-Linux), see [its installation](https://docs.brew.sh/Homebrew-on-Linux#install).
 
+***Install httpie***
 ```bash
-# Install httpie
-$ brew update
-$ brew install httpie
+brew update;
+brew install httpie
 ```
 
+***Upgrade httpie***
 ```bash
-# Upgrade httpie
-$ brew update
-$ brew upgrade httpie
+brew update;
+brew upgrade httpie
 ```
 
 #### Debian and Ubuntu
 
 Also works for other Debian-derived distributions like MX Linux, Linux Mint, deepin, Pop!_OS, KDE neon, Zorin OS, elementary OS, Kubuntu, Devuan, Linux Lite, Peppermint OS, Lubuntu, antiX, Xubuntu, etc.
 
+***Install httpie***
 ```bash
-# Install httpie
-$ curl -SsL https://packages.httpie.io/deb/KEY.gpg | apt-key add -
-$ curl -SsL -o /etc/apt/sources.list.d/httpie.list https://packages.httpie.io/deb/httpie.list
-$ apt update
-$ apt install httpie
+curl -SsL https://packages.httpie.io/deb/KEY.gpg | apt-key add -;
+curl -SsL -o /etc/apt/sources.list.d/httpie.list https://packages.httpie.io/deb/httpie.list;
+apt update;
+apt install httpie
 ```
 
+***Upgrade httpie***
 ```bash
-# Upgrade httpie
-$ apt update
-$ apt upgrade httpie
+apt update;
+apt upgrade httpie
 ```
 
 #### Fedora
 
+***Install httpie***
 ```bash
-# Install httpie
-$ dnf install httpie
+dnf install httpie
 ```
 
+***Upgrade httpie***
 ```bash
-# Upgrade httpie
-$ dnf upgrade httpie
+dnf upgrade httpie
 ```
 
 #### CentOS and RHEL
 
 Also works for other RHEL-derived distributions like ClearOS, Oracle Linux, etc.
 
+***Install httpie***
 ```bash
-# Install httpie
-$ yum install epel-release
-$ yum install httpie
+yum install epel-release;
+yum install httpie
 ```
 
+***Upgrade httpie***
 ```bash
-# Upgrade httpie
-$ yum upgrade httpie
+yum upgrade httpie
 ```
 
 #### Arch Linux
 
 Also works for other Arch-derived distributions like ArcoLinux, EndeavourOS, Artix Linux, etc.
 
+***Install httpie***
 ```bash
-# Install httpie
-$ pacman -Syu httpie
+pacman -Syu httpie
 ```
 
+***Upgrade httpie***
 ```bash
-# Upgrade httpie
-$ pacman -Syu
+pacman -Syu
 ```
 
 #### Single binary executables
 
-Get the standalone HTTPie Linux executables when you don't want to go through the full installation process
+Get the standalone HTTPie Linux executables when you don't want to go through the full installation process.
 
+***Install httpie***
 ```bash
-# Install httpie
-$ https --download packages.httpie.io/binaries/linux/http-latest -o http
-$ chmod +x ./http
+https --download packages.httpie.io/binaries/linux/http-latest -o http;
+chmod +x ./http
 ```
 
+***Upgrade httpie***
 ```bash
-# Upgrade httpie
-$ https --download packages.httpie.io/binaries/linux/http-latest -o http
+https --download packages.httpie.io/binaries/linux/http-latest -o http
 ```
 
 ### FreeBSD
 
 #### FreshPorts
 
+***Install httpie***
 ```bash
-# Install httpie
-$ pkg install www/py-httpie
+pkg install www/py-httpie
 ```
 
+***Upgrade httpie***
 ```bash
-# Upgrade httpie
-$ pkg upgrade www/py-httpie
+pkg upgrade www/py-httpie
 ```
 
 <!-- /GENERATED SECTION -->
@@ -256,28 +256,27 @@ It is a work-in-progress of a future stable release so the experience might be n
 You can install it on Linux, macOS, Windows, or FreeBSD with `pip`:
 
 ```bash
-$ python -m pip install --upgrade https://github.com/httpie/httpie/archive/master.tar.gz
+python -m pip install --upgrade https://github.com/httpie/httpie/archive/master.tar.gz
 ```
 
 Or on macOS, and Linux, with Homebrew:
 
 ```bash
-$ brew uninstall --force httpie
-$ brew install --HEAD httpie
+brew uninstall --force httpie;
+brew install --HEAD httpie
 ```
 
 And even on macOS, and Linux, with Snapcraft:
 
 ```bash
-$ snap remove httpie
-$ snap install httpie --edge
+snap remove httpie;
+snap install httpie --edge
 ```
 
 Verify that now you have the [current development version identifier](https://github.com/httpie/httpie/blob/master/httpie/__init__.py#L6) with the `.dev0` suffix, for example:
 
 ```bash
-$ http --version
-# 3.X.X.dev0
+http --version
 ```
 
 ## Usage
