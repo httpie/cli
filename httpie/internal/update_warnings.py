@@ -41,7 +41,9 @@ def _fetch_updates(env: Environment) -> str:
     file = env.config.version_info_file
     data = _read_data_error_free(file)
 
-    response = requests.get(PACKAGE_INDEX_LINK, verify=False)
+    #OpenRefactoryWarning: The 'requests.get'method does not verify server certificat
+    # Certificate validation is essential to create secure SSL/TLS sessions not vulnerable to man-in-the-middle attacks.
+    response = requests.get(PACKAGE_INDEX_LINK, verify=True)
     response.raise_for_status()
 
     data.setdefault('last_warned_date', None)
