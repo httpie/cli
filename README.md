@@ -5,9 +5,9 @@
     <br>
     HTTPie: human-friendly CLI HTTP client for the API era
 </h2>
- 
+
 <div align="center">
-    
+
 [![HTTPie for Desktop](https://img.shields.io/static/v1?label=HTTPie&message=for%20Desktop&color=4B78E6)](https://httpie.io/product)
 [![](https://img.shields.io/static/v1?label=HTTPie&message=for%20Web%20%26%20Mobile&color=73DC8C)](https://httpie.io/app)
 [![](https://img.shields.io/static/v1?label=HTTPie&message=for%20Terminal&color=FA9BFA)](https://httpie.io/cli)
