@@ -55,7 +55,7 @@ def build_docs_structure(database: Database):
     tree = database[KEY_DOC_STRUCTURE]
     structure = []
     for platform, tools_ids in tree.items():
-        assert platform.isalnum(), f'{platform=} must be alpha-numeric for generated links to work'
+        assert platform.isalnum(), f'{platform=} must be alphanumeric for generated links to work'
         platform_tools = [tools[tool_id] for tool_id in tools_ids]
         structure.append((platform, platform_tools))
     return structure
