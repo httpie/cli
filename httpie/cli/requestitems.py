@@ -18,7 +18,7 @@ from .dicts import (
 )
 from .exceptions import ParseError
 from .nested_json import interpret_nested_json
-from ..utils import get_content_type, load_json_preserve_order_and_dupe_keys, split
+from ..utils import get_content_type, load_json_preserve_order_and_dupe_keys, split_iterable
 
 
 class RequestItems:
@@ -78,25 +78,28 @@ class RequestItems:
                 instance.data,
             ),
             SEPARATOR_DATA_RAW_JSON: (
-                json_only(instance, process_data_raw_json_embed_arg),
+                convert_json_value_to_form_if_needed(
+                    in_json_mode=instance.is_json,
+                    processor=process_data_raw_json_embed_arg
+                ),
                 instance.data,
             ),
             SEPARATOR_DATA_EMBED_RAW_JSON_FILE: (
-                json_only(instance, process_data_embed_raw_json_file_arg),
+                convert_json_value_to_form_if_needed(
+                    in_json_mode=instance.is_json,
+                    processor=process_data_embed_raw_json_file_arg,
+                ),
                 instance.data,
             ),
         }
 
         if instance.is_json:
-            json_item_args, request_item_args = split(
-                request_item_args,
-                lambda arg: arg.sep in SEPARATOR_GROUP_NESTED_JSON_ITEMS
+            json_item_args, request_item_args = split_iterable(
+                iterable=request_item_args,
+                key=lambda arg: arg.sep in SEPARATOR_GROUP_NESTED_JSON_ITEMS
             )
             if json_item_args:
-                pairs = [
-                    (arg.key, rules[arg.sep][0](arg))
-                    for arg in json_item_args
-                ]
+                pairs = [(arg.key, rules[arg.sep][0](arg)) for arg in json_item_args]
                 processor_func, target_dict = rules[SEPARATOR_GROUP_NESTED_JSON_ITEMS]
                 value = processor_func(pairs)
                 target_dict.update(value)
@@ -159,35 +162,36 @@ def process_file_upload_arg(arg: KeyValueArg) -> Tuple[str, IO, str]:
     )
 
 
+def convert_json_value_to_form_if_needed(in_json_mode: bool, processor: Callable[[KeyValueArg], JSONType]) -> Callable[[], str]:
+    """
+    We allow primitive values to be passed to forms via JSON key/value syntax.
+
+    But complex values lead to an error because there’s no clear way to serialize them.
+
+    """
+    if in_json_mode:
+        return processor
+
+    @functools.wraps(processor)
+    def wrapper(*args, **kwargs) -> str:
+        try:
+            output = processor(*args, **kwargs)
+        except ParseError:
+            output = None
+        if isinstance(output, (str, int, float)):
+            return str(output)
+        else:
+            raise ParseError('Cannot use complex JSON value types with --form/--multipart.')
+
+    return wrapper
+
+
 def process_data_item_arg(arg: KeyValueArg) -> str:
     return arg.value
 
 
 def process_data_embed_file_contents_arg(arg: KeyValueArg) -> str:
     return load_text_file(arg)
-
-
-def json_only(items: RequestItems, func: Callable[[KeyValueArg], JSONType]) -> str:
-    if items.is_json:
-        return func
-
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs) -> str:
-        try:
-            ret = func(*args, **kwargs)
-        except ParseError:
-            ret = None
-
-        # If it is a basic type, then allow it
-        if isinstance(ret, (str, int, float)):
-            return str(ret)
-        else:
-            raise ParseError(
-                'Can\'t use complex JSON value types with '
-                '--form/--multipart.'
-            )
-
-    return wrapper
 
 
 def process_data_embed_raw_json_file_arg(arg: KeyValueArg) -> JSONType:

@@ -245,7 +245,7 @@ def get_site_paths(path: Path) -> Iterable[Path]:
         yield as_site(path)
 
 
-def split(iterable: Iterable[T], key: Callable[[T], bool]) -> Tuple[List[T], List[T]]:
+def split_iterable(iterable: Iterable[T], key: Callable[[T], bool]) -> Tuple[List[T], List[T]]:
     left, right = [], []
     for item in iterable:
         if key(item):

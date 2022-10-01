@@ -10,12 +10,13 @@ from urllib.parse import urlparse, urlunparse
 import requests
 # noinspection PyPackageRequirements
 import urllib3
+
 from . import __version__
 from .adapters import HTTPieHTTPAdapter
-from .context import Environment
 from .cli.constants import HTTP_OPTIONS
-from .cli.nested_json import EMPTY_STRING
-from .cli.dicts import HTTPHeadersDict, NestedJSONArray
+from .cli.dicts import HTTPHeadersDict
+from .cli.nested_json import unwrap_top_level_list_if_needed
+from .context import Environment
 from .encoding import UTF8
 from .models import RequestsMessage
 from .plugins.registry import plugin_manager
@@ -306,21 +307,13 @@ def make_send_kwargs_mergeable_from_env(args: argparse.Namespace) -> dict:
 
 
 def json_dict_to_request_body(data: Dict[str, Any]) -> str:
-    # Propagate the top-level list if there is only one
-    # item in the object, with an en empty key.
-    if len(data) == 1:
-        [(key, value)] = data.items()
-        if isinstance(value, NestedJSONArray):
-            assert key == EMPTY_STRING
-            data = value
-
+    data = unwrap_top_level_list_if_needed(data)
     if data:
         data = json.dumps(data)
     else:
         # We need to set data to an empty string to prevent requests
         # from assigning an empty list to `response.request.data`.
         data = ''
-
     return data
 
 

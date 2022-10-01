@@ -11,7 +11,7 @@ from requests import __version__ as requests_version
 
 from . import __version__ as httpie_version
 from .cli.constants import OUT_REQ_BODY
-from .cli.nested_json import HTTPieSyntaxError
+from .cli.nested_json import NestedJSONSyntaxError
 from .client import collect_messages
 from .context import Environment, LogLevel
 from .downloads import Downloader
@@ -78,7 +78,7 @@ def raw_main(
             args=args,
             env=env,
         )
-    except HTTPieSyntaxError as exc:
+    except NestedJSONSyntaxError as exc:
         env.stderr.write(str(exc) + "\n")
         if include_traceback:
             raise

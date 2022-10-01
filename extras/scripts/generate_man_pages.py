@@ -9,7 +9,7 @@ from httpie.cli.options import ParserSpec
 from httpie.manager.cli import options as manager_options
 from httpie.output.ui.rich_help import OptionsHighlighter, to_usage
 from httpie.output.ui.rich_utils import render_as_string
-from httpie.utils import split
+from httpie.utils import split_iterable
 
 
 # Escape certain characters so they are rendered properly on
