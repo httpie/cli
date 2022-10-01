@@ -5,9 +5,9 @@
     <br>
     HTTPie: human-friendly CLI HTTP client for the API era
 </h2>
- 
+
 <div align="center">
-    
+
 [![HTTPie for Desktop](https://img.shields.io/static/v1?label=HTTPie&message=for%20Desktop&color=4B78E6)](https://httpie.io/product)
 [![](https://img.shields.io/static/v1?label=HTTPie&message=for%20Web%20%26%20Mobile&color=73DC8C)](https://httpie.io/app)
 [![](https://img.shields.io/static/v1?label=HTTPie&message=for%20Terminal&color=FA9BFA)](https://httpie.io/cli)
@@ -73,25 +73,25 @@ Please note we recently accidentally made this repo private for a moment, and Gi
 Hello World:
 
 ```bash
-$ https httpie.io/hello
+https httpie.io/hello
 ```
 
 Custom [HTTP method](https://httpie.io/docs#http-method), [HTTP headers](https://httpie.io/docs#http-headers) and [JSON](https://httpie.io/docs#json) data:
 
 ```bash
-$ http PUT pie.dev/put X-API-Token:123 name=John
+http PUT pie.dev/put X-API-Token:123 name=John
 ```
 
 Build and print a request without sending it using [offline mode](https://httpie.io/docs#offline-mode):
 
 ```bash
-$ http --offline pie.dev/post hello=offline
+http --offline pie.dev/post hello=offline
 ```
 
 Use [GitHub API](https://developer.github.com/v3/issues/comments/#create-a-comment) to post a comment on an [Issue](https://github.com/httpie/httpie/issues/83) with [authentication](https://httpie.io/docs#authentication):
 
 ```bash
-$ http -a USERNAME POST https://api.github.com/repos/httpie/httpie/issues/83/comments body='HTTPie is awesome! :heart:'
+http -a USERNAME POST https://api.github.com/repos/httpie/httpie/issues/83/comments body='HTTPie is awesome! :heart:'
 ```
 
 [See more examples →](https://httpie.io/docs#examples)
