@@ -92,7 +92,3 @@ class MultipartRequestDataDict(MultiValueOrderedDict):
 
 class RequestFilesDict(RequestDataDict):
     pass
-
-
-class NestedJSONArray(list):
-    """Denotes a top-level JSON array."""

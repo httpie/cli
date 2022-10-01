@@ -5,7 +5,7 @@ import responses
 
 from httpie.cli.constants import PRETTY_MAP
 from httpie.cli.exceptions import ParseError
-from httpie.cli.nested_json import HTTPieSyntaxError
+from httpie.cli.nested_json import NestedJSONSyntaxError
 from httpie.output.formatters.colors import ColorFormatter
 from httpie.utils import JsonDictPreservingDuplicateKeys
 
@@ -157,7 +157,7 @@ def test_complex_json_arguments_with_non_json(httpbin, request_type, value):
             f'option:={json.dumps(value)}',
         )
 
-    cm.match("Can't use complex JSON value types")
+    cm.match('Cannot use complex JSON value types')
 
 
 @pytest.mark.parametrize(
@@ -508,23 +508,23 @@ def test_nested_json_syntax(input_json, expected_json, httpbin):
         ),
         (
             ['foo=1', 'foo[key]:=2'],
-            "HTTPie Type Error: Can't perform 'key' based access on 'foo' which has a type of 'string' but this operation requires a type of 'object'.\nfoo[key]\n   ^^^^^",
+            "HTTPie Type Error: Cannot perform 'key' based access on 'foo' which has a type of 'string' but this operation requires a type of 'object'.\nfoo[key]\n   ^^^^^",
         ),
         (
             ['foo=1', 'foo[0]:=2'],
-            "HTTPie Type Error: Can't perform 'index' based access on 'foo' which has a type of 'string' but this operation requires a type of 'array'.\nfoo[0]\n   ^^^",
+            "HTTPie Type Error: Cannot perform 'index' based access on 'foo' which has a type of 'string' but this operation requires a type of 'array'.\nfoo[0]\n   ^^^",
         ),
         (
             ['foo=1', 'foo[]:=2'],
-            "HTTPie Type Error: Can't perform 'append' based access on 'foo' which has a type of 'string' but this operation requires a type of 'array'.\nfoo[]\n   ^^",
+            "HTTPie Type Error: Cannot perform 'append' based access on 'foo' which has a type of 'string' but this operation requires a type of 'array'.\nfoo[]\n   ^^",
         ),
         (
             ['data[key]=value', 'data[key 2]=value 2', 'data[0]=value'],
-            "HTTPie Type Error: Can't perform 'index' based access on 'data' which has a type of 'object' but this operation requires a type of 'array'.\ndata[0]\n    ^^^",
+            "HTTPie Type Error: Cannot perform 'index' based access on 'data' which has a type of 'object' but this operation requires a type of 'array'.\ndata[0]\n    ^^^",
         ),
         (
             ['data[key]=value', 'data[key 2]=value 2', 'data[]=value'],
-            "HTTPie Type Error: Can't perform 'append' based access on 'data' which has a type of 'object' but this operation requires a type of 'array'.\ndata[]\n    ^^",
+            "HTTPie Type Error: Cannot perform 'append' based access on 'data' which has a type of 'object' but this operation requires a type of 'array'.\ndata[]\n    ^^",
         ),
         (
             [
@@ -532,7 +532,7 @@ def test_nested_json_syntax(input_json, expected_json, httpbin):
                 'foo[bar][baz][5][]:=4',
                 'foo[bar][baz][key][]:=5',
             ],
-            "HTTPie Type Error: Can't perform 'key' based access on 'foo[bar][baz]' which has a type of 'array' but this operation requires a type of 'object'.\nfoo[bar][baz][key][]\n             ^^^^^",
+            "HTTPie Type Error: Cannot perform 'key' based access on 'foo[bar][baz]' which has a type of 'array' but this operation requires a type of 'object'.\nfoo[bar][baz][key][]\n             ^^^^^",
         ),
         (
             ['foo[-10]:=[1,2]'],
@@ -540,32 +540,32 @@ def test_nested_json_syntax(input_json, expected_json, httpbin):
         ),
         (
             ['foo[0]:=1', 'foo[]:=2', 'foo[\\2]:=3'],
-            "HTTPie Type Error: Can't perform 'key' based access on 'foo' which has a type of 'array' but this operation requires a type of 'object'.\nfoo[\\2]\n   ^^^^",
+            "HTTPie Type Error: Cannot perform 'key' based access on 'foo' which has a type of 'array' but this operation requires a type of 'object'.\nfoo[\\2]\n   ^^^^",
         ),
         (
             ['foo[\\1]:=2', 'foo[5]:=3'],
-            "HTTPie Type Error: Can't perform 'index' based access on 'foo' which has a type of 'object' but this operation requires a type of 'array'.\nfoo[5]\n   ^^^",
+            "HTTPie Type Error: Cannot perform 'index' based access on 'foo' which has a type of 'object' but this operation requires a type of 'array'.\nfoo[5]\n   ^^^",
         ),
         (
             ['x=y', '[]:=2'],
-            "HTTPie Type Error: Can't perform 'append' based access on '' which has a type of 'object' but this operation requires a type of 'array'.",
+            "HTTPie Type Error: Cannot perform 'append' based access on '' which has a type of 'object' but this operation requires a type of 'array'.",
         ),
         (
             ['[]:=2', 'x=y'],
-            "HTTPie Type Error: Can't perform 'key' based access on '' which has a type of 'array' but this operation requires a type of 'object'.",
+            "HTTPie Type Error: Cannot perform 'key' based access on '' which has a type of 'array' but this operation requires a type of 'object'.",
         ),
         (
             [':=[1,2,3]', '[]:=4'],
-            "HTTPie Type Error: Can't perform 'append' based access on '' which has a type of 'object' but this operation requires a type of 'array'.",
+            "HTTPie Type Error: Cannot perform 'append' based access on '' which has a type of 'object' but this operation requires a type of 'array'.",
         ),
         (
             ['[]:=4', ':=[1,2,3]'],
-            "HTTPie Type Error: Can't perform 'key' based access on '' which has a type of 'array' but this operation requires a type of 'object'.",
+            "HTTPie Type Error: Cannot perform 'key' based access on '' which has a type of 'array' but this operation requires a type of 'object'.",
         ),
     ],
 )
 def test_nested_json_errors(input_json, expected_error, httpbin):
-    with pytest.raises(HTTPieSyntaxError) as exc:
+    with pytest.raises(NestedJSONSyntaxError) as exc:
         http(httpbin + '/post', *input_json)
 
     exc_lines = str(exc.value).splitlines()
