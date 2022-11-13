@@ -63,10 +63,12 @@ def test_chunked_stdin(httpbin_with_chunked_support):
 
 def test_chunked_stdin_multiple_chunks(httpbin_with_chunked_support):
     data = FILE_PATH.read_bytes()
-    stdin_bytes = data + b'\n' + data
+
+    stdin_bytes = data +\
+                     b'\n' + data
+
     r = http(
-        '--verbose',
-        '--chunked',
+        '--verbose', '--chunked',
         httpbin_with_chunked_support + '/post',
         env=MockEnvironment(
             stdin=StdinBytesIO(stdin_bytes),
@@ -74,6 +76,7 @@ def test_chunked_stdin_multiple_chunks(httpbin_with_chunked_support):
             stdout_isatty=True,
         )
     )
+
     assert HTTP_OK in r
     assert 'Transfer-Encoding: chunked' in r
     assert r.count(FILE_CONTENT) == 4
@@ -81,14 +84,36 @@ def test_chunked_stdin_multiple_chunks(httpbin_with_chunked_support):
 
 def test_chunked_raw(httpbin_with_chunked_support):
     r = http(
-        '--verbose',
-        '--chunked',
+        '--verbose', '--chunked',
         httpbin_with_chunked_support + '/post',
         '--raw',
-        json.dumps({'a': 1, 'b': '2fafds', 'c': '🥰'}),
+        json.dumps({'a': 1,
+                    'b': '2fafds',
+                    'c': '🥰'}),
     )
+
     assert HTTP_OK in r
+
     assert 'Transfer-Encoding: chunked' in r
+
+@pytest.mark.parametrize("wait", (True, False))
+@pytest.mark.requires_external_processes
+@pytest.mark.skipif(is_windows, reason="Windows doesn't support select() calls into files")
+def test_reading_from_stdin(httpbin, wait):
+    with stdin_processes(httpbin) as (process_1, process_2):
+        process_1.communicate(timeout=0.1, input=b"bleh")
+        # Since there is data, it doesn't matter if there
+        # you wait or not.
+        if wait:
+            time.sleep(1)
+
+        try:
+            _, errs = process_2.communicate(timeout=MAX_RESPONSE_WAIT_TIME)
+        except subprocess.TimeoutExpired:
+            errs = b''
+
+        assert b'> warning: no stdin data read in 0.1s' not in errs
+
 
 
 @contextlib.contextmanager
@@ -121,24 +146,6 @@ def stdin_processes(httpbin, *args, warn_threshold=0.1):
         process_1.terminate()
         process_2.terminate()
 
-
-@pytest.mark.parametrize("wait", (True, False))
-@pytest.mark.requires_external_processes
-@pytest.mark.skipif(is_windows, reason="Windows doesn't support select() calls into files")
-def test_reading_from_stdin(httpbin, wait):
-    with stdin_processes(httpbin) as (process_1, process_2):
-        process_1.communicate(timeout=0.1, input=b"bleh")
-        # Since there is data, it doesn't matter if there
-        # you wait or not.
-        if wait:
-            time.sleep(1)
-
-        try:
-            _, errs = process_2.communicate(timeout=MAX_RESPONSE_WAIT_TIME)
-        except subprocess.TimeoutExpired:
-            errs = b''
-
-        assert b'> warning: no stdin data read in 0.1s' not in errs
 
 
 @pytest.mark.requires_external_processes

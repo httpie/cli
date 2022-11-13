@@ -22,11 +22,23 @@ def detect_encoding(content: ContentBytes) -> str:
     ']"foo"'
     """
     encoding = UTF8
+
     if len(content) > TOO_SMALL_SEQUENCE:
         match = from_bytes(bytes(content)).best()
         if match:
             encoding = match.encoding
+
     return encoding
+
+def smart_encode(content: str, encoding: str) -> bytes:
+    """Encode `content` using the given `encoding`.
+
+    Unicode errors are replaced.
+
+    """
+    return content.encode(encoding,
+            'replace')
+
 
 
 def smart_decode(content: ContentBytes, encoding: str) -> Tuple[str, str]:
@@ -38,13 +50,6 @@ def smart_decode(content: ContentBytes, encoding: str) -> Tuple[str, str]:
     """
     if not encoding:
         encoding = detect_encoding(content)
+
     return content.decode(encoding, 'replace'), encoding
 
-
-def smart_encode(content: str, encoding: str) -> bytes:
-    """Encode `content` using the given `encoding`.
-
-    Unicode errors are replaced.
-
-    """
-    return content.encode(encoding, 'replace')

@@ -106,13 +106,6 @@ def test_unicode_url_query_arg_item_verbose(httpbin):
     assert HTTP_OK in r
     assert UNICODE in r
 
-
-def test_unicode_url(httpbin):
-    r = http(f'{httpbin.url}/get?test={UNICODE}')
-    assert HTTP_OK in r
-    assert r.json['args'] == {'test': UNICODE}
-
-
 def test_unicode_url_verbose(httpbin):
     r = http('--verbose', f'{httpbin.url}/get?test={UNICODE}')
     assert HTTP_OK in r
@@ -147,6 +140,12 @@ def test_terminal_output_response_charset_detection(text, charset):
     assert text in r
 
 
+def test_unicode_url(httpbin):
+    r = http(f'{httpbin.url}/get?test={UNICODE}')
+    assert HTTP_OK in r
+    assert r.json['args'] == {'test': UNICODE}
+
+
 @pytest.mark.parametrize('charset, text', CHARSET_TEXT_PAIRS)
 @responses.activate
 def test_terminal_output_response_content_type_charset(charset, text):
@@ -174,6 +173,20 @@ def test_terminal_output_response_content_type_charset_with_stream(charset, text
     r = http('--pretty', pretty, '--stream', DUMMY_URL)
     assert text in r
 
+@pytest.mark.parametrize('charset, text', CHARSET_TEXT_PAIRS)
+def test_terminal_output_request_charset_detection(charset, text):
+    r = http(
+        '--offline',
+        DUMMY_URL,
+        'Content-Type: text/plain',
+        env=MockEnvironment(
+            stdin=text.encode(charset),
+            stdin_isatty=False,
+        ),
+    )
+    assert text in r
+
+
 
 @pytest.mark.parametrize('charset, text', CHARSET_TEXT_PAIRS)
 @pytest.mark.parametrize('pretty', PRETTY_MAP.keys())
@@ -200,20 +213,6 @@ def test_terminal_output_request_content_type_charset(charset, text):
         '--offline',
         DUMMY_URL,
         f'Content-Type: text/plain; charset={charset.upper()}',
-        env=MockEnvironment(
-            stdin=text.encode(charset),
-            stdin_isatty=False,
-        ),
-    )
-    assert text in r
-
-
-@pytest.mark.parametrize('charset, text', CHARSET_TEXT_PAIRS)
-def test_terminal_output_request_charset_detection(charset, text):
-    r = http(
-        '--offline',
-        DUMMY_URL,
-        'Content-Type: text/plain',
         env=MockEnvironment(
             stdin=text.encode(charset),
             stdin_isatty=False,
