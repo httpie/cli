@@ -1,27 +1,26 @@
 """Utilities for HTTPie test suite."""
+import json
+import os
 import re
 import shlex
-import os
 import sys
-import time
-import json
 import tempfile
+import time
 import warnings
-import pytest
 from contextlib import suppress
 from io import BytesIO
 from pathlib import Path
-from typing import Any, Optional, Union, List, Iterable
+from typing import Any, Iterable, List, Optional, Union
 
-import httpie.core as core
+import pytest
+
 import httpie.manager.__main__ as manager
-
-from httpie.status import ExitStatus
+from httpie import core
 from httpie.config import Config
-from httpie.encoding import UTF8
 from httpie.context import Environment
+from httpie.encoding import UTF8
+from httpie.status import ExitStatus
 from httpie.utils import url_as_host
-
 
 REMOTE_HTTPBIN_DOMAIN = 'pie.dev'
 
@@ -101,7 +100,7 @@ class Encoder:
         raw_data = data.encode()
         return self.BYTES_PATTERN.sub(
             lambda match: self.substitutions[int(match.group(1))],
-            raw_data
+            raw_data,
         )
 
 
@@ -123,11 +122,13 @@ class FakeBytesIOBuffer(BytesIO):
 
 class StdinBytesIO(BytesIO):
     """To be used for `MockEnvironment.stdin`"""
+
     len = 0  # See `prepare_request_body()`
 
 
 class MockEnvironment(Environment):
     """Environment subclass with reasonable defaults for testing."""
+
     colors = 0  # For easier debugging
     stdin_isatty = True
     stdout_isatty = True
@@ -201,6 +202,7 @@ class BaseCLIResponse:
         - exit_status output: print(self.exit_status)
 
     """
+
     stderr: str = None
     devnull: str = None
     json: dict = None
@@ -289,14 +291,13 @@ def normalize_args(args: Iterable[Any]) -> List[str]:
 
 def httpie(
     *args,
-    **kwargs
+    **kwargs,
 ) -> StrCLIResponse:
     """
     Run HTTPie manager command with the given
     args/kwargs, and capture stderr/out and exit
     status.
     """
-
     env = kwargs.setdefault('env', MockEnvironment())
     cli_args = ['httpie']
     if not kwargs.pop('no_debug', False):
@@ -304,7 +305,7 @@ def httpie(
     cli_args += normalize_args(args)
     exit_status = manager.main(
         args=cli_args,
-        **kwargs
+        **kwargs,
     )
 
     env.stdout.seek(0)
@@ -420,7 +421,7 @@ def http(
                 dump_stderr()
                 raise ExitStatusError(
                     'httpie.core.main() unexpectedly returned'
-                    f' a non-zero exit status: {exit_status}'
+                    f' a non-zero exit status: {exit_status}',
                 )
 
         stdout.seek(0)

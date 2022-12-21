@@ -44,8 +44,7 @@ from argparse import ArgumentParser, FileType
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
-from typing import (IO, Dict, Generator, Iterable, List, Optional,
-                    Tuple)
+from typing import IO, Dict, Generator, Iterable, List, Optional, Tuple
 
 BENCHMARK_SCRIPT = Path(__file__).parent / 'benchmarks.py'
 CURRENT_REPO = Path(__file__).parent.parent.parent
@@ -119,7 +118,7 @@ class HTTPieEnvironment(Environment):
                     'wheel',
                     'pyperf==2.3.0',
                     *self.dependencies,
-                ]
+                ],
             )
 
             # Create a wheel distribution of HTTPie
@@ -148,7 +147,7 @@ class LocalCommandEnvironment(Environment):
 def dump_results(
     results: List[str],
     file: IO[str],
-    min_speed: Optional[str] = None
+    min_speed: Optional[str] = None,
 ) -> None:
     for result in results:
         lines = result.strip().splitlines()
@@ -213,7 +212,7 @@ def run(
         results.append(compare(
             *config.keys(),
             directory=result_directory,
-            min_speed=min_speed
+            min_speed=min_speed,
         ))
 
     dump_results(results, file=file, min_speed=min_speed)
@@ -252,7 +251,7 @@ def main() -> None:
     parser.add_argument(
         '--min-speed',
         help='Minimum of speed in percent to consider that a '
-             'benchmark is significant'
+             'benchmark is significant',
     )
     parser.add_argument(
         '--debug',

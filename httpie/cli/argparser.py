@@ -9,24 +9,21 @@ from urllib.parse import urlsplit
 
 from requests.utils import get_netrc_auth
 
-from .argtypes import (
-    AuthCredentials, SSLCredentials, KeyValueArgType,
-    PARSED_DEFAULT_FORMAT_OPTIONS,
-    parse_auth,
-    parse_format_options,
-)
-from .constants import (
-    HTTP_GET, HTTP_POST, BASE_OUTPUT_OPTIONS, OUTPUT_OPTIONS, OUTPUT_OPTIONS_DEFAULT,
-    OUTPUT_OPTIONS_DEFAULT_OFFLINE, OUTPUT_OPTIONS_DEFAULT_STDOUT_REDIRECTED,
-    OUT_RESP_BODY, PRETTY_MAP, PRETTY_STDOUT_TTY_ONLY, RequestType,
-    SEPARATOR_CREDENTIALS,
-    SEPARATOR_GROUP_ALL_ITEMS, SEPARATOR_GROUP_DATA_ITEMS, URL_SCHEME_RE,
-)
-from .exceptions import ParseError
-from .requestitems import RequestItems
 from ..context import Environment
 from ..plugins.registry import plugin_manager
 from ..utils import ExplicitNullAuth, get_content_type
+from .argtypes import (PARSED_DEFAULT_FORMAT_OPTIONS, AuthCredentials,
+                       KeyValueArgType, SSLCredentials, parse_auth,
+                       parse_format_options)
+from .constants import (BASE_OUTPUT_OPTIONS, HTTP_GET, HTTP_POST,
+                        OUT_RESP_BODY, OUTPUT_OPTIONS, OUTPUT_OPTIONS_DEFAULT,
+                        OUTPUT_OPTIONS_DEFAULT_OFFLINE,
+                        OUTPUT_OPTIONS_DEFAULT_STDOUT_REDIRECTED, PRETTY_MAP,
+                        PRETTY_STDOUT_TTY_ONLY, SEPARATOR_CREDENTIALS,
+                        SEPARATOR_GROUP_ALL_ITEMS, SEPARATOR_GROUP_DATA_ITEMS,
+                        URL_SCHEME_RE, RequestType)
+from .exceptions import ParseError
+from .requestitems import RequestItems
 
 
 class HTTPieHelpFormatter(RawDescriptionHelpFormatter):
@@ -72,7 +69,7 @@ class HTTPieHelpFormatter(RawDescriptionHelpFormatter):
             usage,
             displayed_actions,
             groups,
-            prefix="usage:\n    "
+            prefix="usage:\n    ",
         )
 
 
@@ -91,7 +88,7 @@ class BaseHTTPieArgumentParser(argparse.ArgumentParser):
         self,
         env: Environment,
         args=None,
-        namespace=None
+        namespace=None,
     ) -> argparse.Namespace:
         self.env = env
         self.args, no_options = self.parse_known_args(args, namespace)
@@ -117,7 +114,7 @@ class BaseHTTPieArgumentParser(argparse.ArgumentParser):
             file = {
                 sys.stdout: env.stdout,
                 sys.stderr: env.stderr,
-                None: env.stderr
+                None: env.stderr,
             }.get(file, file)
 
         if not hasattr(file, 'buffer') and isinstance(message, str):
@@ -152,7 +149,7 @@ class HTTPieArgumentParser(BaseHTTPieArgumentParser):
         self,
         env: Environment,
         args=None,
-        namespace=None
+        namespace=None,
     ) -> argparse.Namespace:
         self.env = env
         self.env.args = namespace = namespace or argparse.Namespace()
@@ -229,7 +226,6 @@ class HTTPieArgumentParser(BaseHTTPieArgumentParser):
         Modify `env.stdout` and `env.stdout_isatty` based on args, if needed.
 
         """
-
         self.args.output_file_specified = bool(self.args.output_file)
         if self.args.download:
             # FIXME: Come up with a cleaner solution.
@@ -295,7 +291,7 @@ class HTTPieArgumentParser(BaseHTTPieArgumentParser):
                     key=username,
                     value=password,
                     sep=SEPARATOR_CREDENTIALS,
-                    orig=SEPARATOR_CREDENTIALS.join([username, password])
+                    orig=SEPARATOR_CREDENTIALS.join([username, password]),
                 )
 
         if self.args.auth is not None or auth_type_set:
@@ -313,7 +309,7 @@ class HTTPieArgumentParser(BaseHTTPieArgumentParser):
                         key=netrc_credentials[0],
                         value=netrc_credentials[1],
                         sep=SEPARATOR_CREDENTIALS,
-                        orig=SEPARATOR_CREDENTIALS.join(netrc_credentials)
+                        orig=SEPARATOR_CREDENTIALS.join(netrc_credentials),
                     )
 
             if plugin.auth_require and self.args.auth is None:
@@ -338,7 +334,7 @@ class HTTPieArgumentParser(BaseHTTPieArgumentParser):
                         # Non-tty stdin read by now
                         self.error(
                             'Unable to prompt for passwords because'
-                            ' --ignore-stdin is set.'
+                            ' --ignore-stdin is set.',
                         )
                     credentials.prompt_password(url.netloc)
 
@@ -569,11 +565,12 @@ class HTTPieArgumentParser(BaseHTTPieArgumentParser):
         with self.env.rich_console.pager():
             self.env.rich_console.print(
                 text,
-                highlight=False
+                highlight=False,
             )
 
     def print_usage(self, file):
         from rich.text import Text
+
         from httpie.output.ui import rich_help
 
         whitelist = set()
@@ -607,7 +604,7 @@ class HTTPieArgumentParser(BaseHTTPieArgumentParser):
 
                 [bold]for more information[/bold]:
                     run '{self.prog} --help' or visit https://httpie.io/docs/cli
-                '''.rstrip()
-            )
+                '''.rstrip(),
+            ),
         )
         self.exit(2)

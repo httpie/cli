@@ -1,18 +1,19 @@
 import os
 import tempfile
 import time
-import requests
 from unittest import mock
 from urllib.request import urlopen
 
 import pytest
+import requests
 from requests.structures import CaseInsensitiveDict
 
-from httpie.downloads import (
-    parse_content_range, filename_from_content_disposition, filename_from_url,
-    get_unique_filename, ContentRangeError, Downloader, PARTIAL_CONTENT
-)
-from .utils import http, MockEnvironment
+from httpie.downloads import (PARTIAL_CONTENT, ContentRangeError, Downloader,
+                              filename_from_content_disposition,
+                              filename_from_url, get_unique_filename,
+                              parse_content_range)
+
+from .utils import MockEnvironment, http
 
 
 class Response(requests.Response):
@@ -55,7 +56,7 @@ class TestDownloadUtils:
         ('attachment; filename="white space.txt"', 'white space.txt'),
         (r'attachment; filename="\"quotes\".txt"', '"quotes".txt'),
         ('attachment; filename=/etc/hosts', 'hosts'),
-        ('attachment; filename=', None)
+        ('attachment; filename=', None),
     ])
     def test_Content_Disposition_parsing(self, header, expected_filename):
         assert filename_from_content_disposition(header) == expected_filename
@@ -63,19 +64,19 @@ class TestDownloadUtils:
     def test_filename_from_url(self):
         assert 'foo.txt' == filename_from_url(
             url='http://example.org/foo',
-            content_type='text/plain'
+            content_type='text/plain',
         )
         assert 'foo.html' == filename_from_url(
             url='http://example.org/foo',
-            content_type='text/html; charset=UTF-8'
+            content_type='text/html; charset=UTF-8',
         )
         assert 'foo' == filename_from_url(
             url='http://example.org/foo',
-            content_type=None
+            content_type=None,
         )
         assert 'foo' == filename_from_url(
             url='http://example.org/foo',
-            content_type='x-foo/bar'
+            content_type='x-foo/bar',
         )
 
     @pytest.mark.parametrize(
@@ -96,7 +97,7 @@ class TestDownloadUtils:
             ('foo.' + 'A' * 20, 0, 'foo.' + 'A' * 6),
             ('foo.' + 'A' * 20, 1, 'foo.' + 'A' * 4 + '-1'),
             ('foo.' + 'A' * 20, 10, 'foo.' + 'A' * 3 + '-10'),
-        ]
+        ],
     )
     @mock.patch('httpie.downloads.get_filename_max_length')
     def test_unique_filename(self, get_filename_max_length,
@@ -137,8 +138,8 @@ class TestDownloads:
                 initial_url='/',
                 final_response=Response(
                     url=httpbin_both.url + '/',
-                    headers={'Content-Length': 10}
-                )
+                    headers={'Content-Length': 10},
+                ),
             )
             time.sleep(1.1)
             downloader.chunk_downloaded(b'12345')
@@ -152,7 +153,7 @@ class TestDownloads:
             downloader = Downloader(mock_env, output_file=devnull)
             downloader.start(
                 final_response=Response(url=httpbin_both.url + '/'),
-                initial_url='/'
+                initial_url='/',
             )
             time.sleep(1.1)
             downloader.chunk_downloaded(b'12345')
@@ -172,9 +173,9 @@ class TestDownloads:
                         headers={
                             'Content-Length': 5,
                             'Content-Disposition': 'attachment; filename="filename.bin"',
-                        }
+                        },
                     ),
-                    initial_url='/'
+                    initial_url='/',
                 )
                 downloader.chunk_downloaded(b'12345')
                 downloader.finish()
@@ -193,9 +194,9 @@ class TestDownloads:
             downloader.start(
                 final_response=Response(
                     url=httpbin_both.url + '/',
-                    headers={'Content-Length': 5}
+                    headers={'Content-Length': 5},
                 ),
-                initial_url='/'
+                initial_url='/',
             )
             downloader.chunk_downloaded(b'1234')
             downloader.finish()
@@ -213,9 +214,9 @@ class TestDownloads:
                 downloader.start(
                     final_response=Response(
                         url=httpbin_both.url + '/',
-                        headers={'Content-Length': 5}
+                        headers={'Content-Length': 5},
                     ),
-                    initial_url='/'
+                    initial_url='/',
                 )
                 downloader.chunk_downloaded(b'123')
                 downloader.finish()
@@ -240,9 +241,9 @@ class TestDownloads:
                     final_response=Response(
                         url=httpbin_both.url + '/',
                         headers={'Content-Length': 5, 'Content-Range': 'bytes 3-4/5'},
-                        status_code=PARTIAL_CONTENT
+                        status_code=PARTIAL_CONTENT,
                     ),
-                    initial_url='/'
+                    initial_url='/',
                 )
                 downloader.chunk_downloaded(b'45')
                 downloader.finish()

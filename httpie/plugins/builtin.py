@@ -14,7 +14,7 @@ class HTTPBasicAuth(requests.auth.HTTPBasicAuth):
 
     def __call__(
         self,
-        request: requests.PreparedRequest
+        request: requests.PreparedRequest,
     ) -> requests.PreparedRequest:
         """
         Override username/password serialization to allow unicode.
@@ -63,7 +63,7 @@ class DigestAuthPlugin(BuiltinAuthPlugin):
     def get_auth(
         self,
         username: str,
-        password: str
+        password: str,
     ) -> requests.auth.HTTPDigestAuth:
         return requests.auth.HTTPDigestAuth(username, password)
 

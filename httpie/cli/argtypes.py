@@ -5,8 +5,8 @@ import sys
 from copy import deepcopy
 from typing import List, Optional, Union
 
-from .constants import DEFAULT_FORMAT_OPTIONS, SEPARATOR_CREDENTIALS
 from ..sessions import VALID_SESSION_NAME_PATTERN
+from .constants import DEFAULT_FORMAT_OPTIONS, SEPARATOR_CREDENTIALS
 
 
 class KeyValueArg:
@@ -62,7 +62,7 @@ class KeyValueArgType:
             self.special_characters.update(separator)
 
     def __call__(self, s: str) -> KeyValueArg:
-        """Parse raw string arg and return `self.key_value_class` instance.
+        r"""Parse raw string arg and return `self.key_value_class` instance.
 
         The best of `self.separators` is determined (first found, longest).
         Back slash escaped characters aren't considered as separators
@@ -184,7 +184,7 @@ class AuthCredentialsArgType(KeyValueArgType):
                 key=s,
                 value=None,
                 sep=SEPARATOR_CREDENTIALS,
-                orig=s
+                orig=s,
             )
 
 
@@ -245,7 +245,7 @@ def parse_format_options(s: str, defaults: Optional[dict]) -> dict:
                     'invalid value'
                     f' {value!r} in {option!r}'
                     f' (expected {default_type.__name__}'
-                    f' got {parsed_type.__name__})'
+                    f' got {parsed_type.__name__})',
                 )
 
         options[section][key] = parsed_value

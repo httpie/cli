@@ -2,7 +2,8 @@ import pytest
 
 from httpie.models import ELAPSED_TIME_LABEL
 from httpie.output.formatters.colors import PIE_STYLE_NAMES
-from .utils import http, MockEnvironment, COLOR
+
+from .utils import COLOR, MockEnvironment, http
 
 
 def test_meta_elapsed_time(httpbin):

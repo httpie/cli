@@ -1,5 +1,6 @@
 import argparse
-from typing import Any, Callable, Generic, Iterator, Iterable, Optional, TypeVar
+from typing import (Any, Callable, Generic, Iterable, Iterator, Optional,
+                    TypeVar)
 
 T = TypeVar('T')
 
@@ -10,14 +11,14 @@ class Manual(argparse.Action):
         option_strings,
         dest=argparse.SUPPRESS,
         default=argparse.SUPPRESS,
-        help=None
+        help=None,
     ):
         super().__init__(
             option_strings=option_strings,
             dest=dest,
             default=default,
             nargs=0,
-            help=help
+            help=help,
         )
 
     def __call__(self, parser, namespace, values, option_string=None):
@@ -34,7 +35,7 @@ class LazyChoices(argparse.Action, Generic[T]):
         sort: bool = False,
         cache: bool = True,
         isolation_mode: bool = False,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.getter = getter
         self.help_formatter = help_formatter
@@ -58,7 +59,7 @@ class LazyChoices(argparse.Action, Generic[T]):
         if self._help is None and self.help_formatter is not None:
             self._help = self.help_formatter(
                 self.load(),
-                isolation_mode=self.isolation_mode
+                isolation_mode=self.isolation_mode,
             )
         return self._help
 

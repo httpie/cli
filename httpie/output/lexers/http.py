@@ -1,5 +1,7 @@
 import re
+
 import pygments
+
 from httpie.output.lexers.common import precise
 
 RE_STATUS_LINE = re.compile(r'(\d{3})( +)?(.+)?')
@@ -31,13 +33,13 @@ def http_response_type(lexer, match, ctx):
     status_type = precise(
         lexer,
         STATUS_TYPES.get(status_code[0]),
-        pygments.token.Number
+        pygments.token.Number,
     )
 
     groups = pygments.lexer.bygroups(
         status_type,
         pygments.token.Text,
-        status_type
+        status_type,
     )
     yield from groups(lexer, status_match, ctx)
 
@@ -46,7 +48,7 @@ def request_method(lexer, match, ctx):
     response_type = precise(
         lexer,
         RESPONSE_TYPES.get(match.group()),
-        pygments.token.Name.Function
+        pygments.token.Name.Function,
     )
     yield match.start(), response_type, match.group()
 
@@ -60,6 +62,7 @@ class SimplifiedHTTPLexer(pygments.lexer.RegexLexer):
     Solarized color scheme is used.
 
     """
+
     name = 'HTTP'
     aliases = ['http']
     filenames = ['*.http']
@@ -74,7 +77,7 @@ class SimplifiedHTTPLexer(pygments.lexer.RegexLexer):
                  pygments.token.Text,
                  pygments.token.Keyword.Reserved,
                  pygments.token.Operator,
-                 pygments.token.Number
+                 pygments.token.Number,
              )),
             # Response Status-Line
             (r'(HTTP)(/)(\d+\.\d+)( +)(.+)',
@@ -91,7 +94,7 @@ class SimplifiedHTTPLexer(pygments.lexer.RegexLexer):
                 pygments.token.Text,
                 pygments.token.Operator,  # Colon
                 pygments.token.Text,
-                pygments.token.String  # Value
-            ))
-        ]
+                pygments.token.String,  # Value
+            )),
+        ],
     }

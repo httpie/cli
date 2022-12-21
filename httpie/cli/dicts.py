@@ -1,6 +1,6 @@
 from collections import OrderedDict
 
-from multidict import MultiDict, CIMultiDict
+from multidict import CIMultiDict, MultiDict
 
 
 class BaseMultiDict(MultiDict):

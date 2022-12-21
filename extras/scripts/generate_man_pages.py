@@ -1,7 +1,7 @@
 import re
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Optional, Iterator, Iterable
+from typing import Iterable, Iterator, Optional
 
 import httpie
 from httpie.cli.definition import options as core_options
@@ -10,7 +10,6 @@ from httpie.manager.cli import options as manager_options
 from httpie.output.ui.rich_help import OptionsHighlighter, to_usage
 from httpie.output.ui.rich_utils import render_as_string
 from httpie.utils import split_iterable
-
 
 # Escape certain characters so they are rendered properly on
 # all terminals.
@@ -29,8 +28,9 @@ MAN_PAGE_PATH = EXTRAS_DIR / 'man'
 PROJECT_ROOT = EXTRAS_DIR.parent
 
 OPTION_HIGHLIGHT_RE = re.compile(
-    OptionsHighlighter.highlights[0]
+    OptionsHighlighter.highlights[0],
 )
+
 
 class ManPageBuilder:
     def __init__(self):
@@ -45,7 +45,7 @@ class ManPageBuilder:
     ) -> None:
         self.source.append(
             f'.TH {program_name} 1 "{last_edit_date}" '
-            f'"{full_name} {program_version}" "{full_name} Manual"'
+            f'"{full_name} {program_version}" "{full_name} Manual"',
         )
 
     def set_name(self, program_name: str) -> None:
@@ -65,7 +65,7 @@ class ManPageBuilder:
         description = OPTION_HIGHLIGHT_RE.sub(
             # Boldify the option part, but don't remove the prefix (start of the match).
             lambda match: match[1] + self.boldify(match['option']),
-            description
+            description,
         )
         return description
 
@@ -110,9 +110,9 @@ def _escape_and_dedent(text: str) -> str:
 def to_man_page(program_name: str, spec: ParserSpec, *, is_top_level_cmd: bool = False) -> str:
     builder = ManPageBuilder()
     builder.add_comment(
-        f"This file is auto-generated from the parser declaration "
+        "This file is auto-generated from the parser declaration "
         + (f"in {Path(spec.source_file).relative_to(PROJECT_ROOT)} " if spec.source_file else "")
-        + f"by {Path(__file__).relative_to(PROJECT_ROOT)}."
+        + f"by {Path(__file__).relative_to(PROJECT_ROOT)}.",
     )
 
     builder.title_line(
@@ -153,7 +153,7 @@ def to_man_page(program_name: str, spec: ParserSpec, *, is_top_level_cmd: bool =
                 if raw_arg.get('is_positional'):
                     # In case of positional arguments, metavar is always equal
                     # to the list of options (e.g `METHOD`).
-                   metavar = None
+                    metavar = None
                 builder.add_options(raw_arg['options'], metavar=metavar)
 
                 desc = builder.format_desc(raw_arg.get('description', ''))
@@ -176,7 +176,6 @@ def main() -> None:
     ]:
         with open((MAN_PAGE_PATH / program_name).with_suffix('.1'), 'w') as stream:
             stream.write(to_man_page(program_name, spec, **config))
-
 
 
 if __name__ == '__main__':

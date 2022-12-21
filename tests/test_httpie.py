@@ -6,11 +6,12 @@ import pytest
 
 import httpie
 import httpie.__main__
-from .fixtures import FILE_CONTENT, FILE_PATH
 from httpie.cli.exceptions import ParseError
 from httpie.context import Environment
 from httpie.encoding import UTF8
 from httpie.status import ExitStatus
+
+from .fixtures import FILE_CONTENT, FILE_PATH
 from .utils import HTTP_OK, MockEnvironment, StdinBytesIO, http
 
 
@@ -54,7 +55,7 @@ def test_path_dot_normalization():
     r = http(
         '--offline',
         'example.org/../../etc/password',
-        'param==value'
+        'param==value',
     )
     assert 'GET /etc/password?param=value' in r
 
@@ -64,7 +65,7 @@ def test_path_as_is():
         '--offline',
         '--path-as-is',
         'example.org/../../etc/password',
-        'param==value'
+        'param==value',
     )
     assert 'GET /../../etc/password?param=value' in r
 
@@ -96,7 +97,7 @@ def test_POST_form_multiple_values(httpbin_both):
     r = http('--form', 'POST', httpbin_both + '/post', 'foo=bar', 'foo=baz')
     assert HTTP_OK in r
     assert r.json['form'] == {
-        'foo': ['bar', 'baz']
+        'foo': ['bar', 'baz'],
     }
 
 
@@ -248,15 +249,15 @@ def test_headers_multiple_values_repeated(httpbin_both):
 @pytest.mark.parametrize("headers, expected", [
     (
         ["Foo;", "Foo:bar"],
-        ",bar"
+        ",bar",
     ),
     (
         ["Foo:bar", "Foo;"],
-        "bar,"
+        "bar,",
     ),
     (
         ["Foo:bar", "Foo;", "Foo:baz"],
-        "bar,,baz"
+        "bar,,baz",
     ),
 ])
 def test_headers_multiple_values_with_empty(httpbin_both, headers, expected):
@@ -329,7 +330,7 @@ def test_json_input_preserve_order(httpbin_both):
 @pytest.mark.parametrize('extra_args, expected_content_length', [
     (
         ['Content-Length:0'],
-        '0'
+        '0',
     ),
     (
         ['Content-Length:xxx'],
@@ -337,19 +338,19 @@ def test_json_input_preserve_order(httpbin_both):
     ),
     (
         ['--raw=data'],
-        '4'
+        '4',
     ),
     (
         ['query[param]=something'],
-        '33'
-    )
+        '33',
+    ),
 ])
 def test_options_content_length_preservation(httpbin, extra_args, expected_content_length):
     r = http(
         '--offline',
         'OPTIONS',
         httpbin + '/anything',
-        *extra_args
+        *extra_args,
     )
     assert f'Content-Length: {expected_content_length}' in r
 
@@ -359,6 +360,6 @@ def test_options_dropping_redundant_content_length(httpbin, method):
     r = http(
         '--offline',
         method,
-        httpbin + '/anything'
+        httpbin + '/anything',
     )
     assert 'Content-Length' not in r

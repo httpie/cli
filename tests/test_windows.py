@@ -1,8 +1,9 @@
 import pytest
+
+from httpie.compat import is_windows
 from httpie.context import Environment
 
 from .utils import MockEnvironment, http
-from httpie.compat import is_windows
 
 
 @pytest.mark.skipif(not is_windows, reason='windows-only')

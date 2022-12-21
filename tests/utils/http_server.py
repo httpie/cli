@@ -1,12 +1,11 @@
-import threading
 import json
-
+import threading
 from collections import defaultdict
 from contextlib import contextmanager
 from http import HTTPStatus
 from http.cookies import SimpleCookie
-from http.server import HTTPServer, BaseHTTPRequestHandler
-from urllib.parse import urlparse, parse_qs
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from urllib.parse import parse_qs, urlparse
 
 import pytest
 
@@ -60,7 +59,8 @@ def chunked_drip(handler):
 
 @TestHandler.handler('GET', '/stream/encoding/random')
 def random_encoding(handler):
-    from tests.fixtures import ASCII_FILE_CONTENT, FILE_CONTENT as UNICODE_FILE_CONTENT
+    from tests.fixtures import ASCII_FILE_CONTENT
+    from tests.fixtures import FILE_CONTENT as UNICODE_FILE_CONTENT
 
     handler.send_response(200)
     handler.send_header('Transfer-Encoding', 'chunked')
@@ -94,7 +94,7 @@ def get_cookies(handler):
         'cookies': {
             key: cookie.value
             for key, cookie in SimpleCookie(handler.headers.get('Cookie')).items()
-        }
+        },
     }
     payload = json.dumps(cookies)
 
@@ -144,7 +144,6 @@ def http_server():
     """A custom HTTP server implementation for our tests, that is
     built on top of the http.server module. Handy when we need to
     deal with details which httpbin can not capture."""
-
     with _http_server() as server:
         yield '{0}:{1}'.format(*server.socket.getsockname())
 
@@ -153,6 +152,5 @@ def http_server():
 def localhost_http_server():
     """Just like the http_server, but uses the static
     `localhost` name for the host."""
-
     with _http_server() as server:
         yield 'localhost:{1}'.format(*server.socket.getsockname())

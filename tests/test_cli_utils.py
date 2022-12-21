@@ -1,6 +1,8 @@
-import pytest
 from argparse import ArgumentParser
 from unittest.mock import Mock
+
+import pytest
+
 from httpie.cli.utils import LazyChoices
 
 
@@ -25,7 +27,7 @@ def test_lazy_choices():
         metavar='SYMBOL',
         action='lazy_choices',
         getter=getter,
-        cache=False  # for test purposes
+        cache=False,  # for test purposes
     )
 
     # Parser initialization doesn't call it.
@@ -66,7 +68,7 @@ def test_lazy_choices_help():
         action='lazy_choices',
         getter=getter,
         help_formatter=help_formatter,
-        cache=False  # for test purposes
+        cache=False,  # for test purposes
     )
 
     # Parser initialization doesn't call it.

@@ -29,6 +29,6 @@ class JSONFormatter(FormatterPlugin):
                     obj=json_obj,
                     sort_keys=self.format_options['json']['sort_keys'],
                     ensure_ascii=False,
-                    indent=self.format_options['json']['indent']
+                    indent=self.format_options['json']['indent'],
                 )
         return body

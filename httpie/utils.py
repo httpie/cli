@@ -1,20 +1,20 @@
-import os
 import base64
 import json
 import mimetypes
+import os
 import re
 import sys
-import time
-import tempfile
 import sysconfig
-
+import tempfile
+import time
 from collections import OrderedDict
 from contextlib import contextmanager
 from http.cookiejar import parse_ns_headers
 from pathlib import Path
 from pprint import pformat
+from typing import (IO, Any, Callable, Generator, Iterable, List, Optional,
+                    Tuple, TypeVar)
 from urllib.parse import urlsplit
-from typing import Any, List, Optional, Tuple, Generator, Callable, Iterable, IO, TypeVar
 
 import requests.auth
 
@@ -107,7 +107,7 @@ def humanize_bytes(n, precision=2):
         (1 << 30, 'GB'),
         (1 << 20, 'MB'),
         (1 << 10, 'kB'),
-        (1, 'B')
+        (1, 'B'),
     ]
 
     if n == 1:
@@ -155,7 +155,7 @@ def split_cookies(cookies):
 
 def get_expired_cookies(
     cookies: str,
-    now: float = None
+    now: float = None,
 ) -> List[dict]:
 
     now = now or time.time()
@@ -164,7 +164,7 @@ def get_expired_cookies(
         return expires is not None and expires <= now
 
     attr_sets: List[Tuple[str, str]] = parse_ns_headers(
-        split_cookies(cookies)
+        split_cookies(cookies),
     )
 
     cookies = [
@@ -178,7 +178,7 @@ def get_expired_cookies(
     return [
         {
             'name': cookie['name'],
-            'path': cookie.get('path', '/')
+            'path': cookie.get('path', '/'),
         }
         for cookie in cookies
         if is_expired(expires=cookie.get('expires'))
@@ -221,17 +221,14 @@ def parse_content_type_header(header):
 def as_site(path: Path, **extra_vars) -> Path:
     site_packages_path = sysconfig.get_path(
         'purelib',
-        vars={'base': str(path), **extra_vars}
+        vars={'base': str(path), **extra_vars},
     )
     return Path(site_packages_path)
 
 
 def get_site_paths(path: Path) -> Iterable[Path]:
-    from httpie.compat import (
-        MIN_SUPPORTED_PY_VERSION,
-        MAX_SUPPORTED_PY_VERSION,
-        is_frozen
-    )
+    from httpie.compat import (MAX_SUPPORTED_PY_VERSION,
+                               MIN_SUPPORTED_PY_VERSION, is_frozen)
 
     if is_frozen:
         [major, min_minor] = MIN_SUPPORTED_PY_VERSION
@@ -239,7 +236,7 @@ def get_site_paths(path: Path) -> Iterable[Path]:
         for minor in range(min_minor, max_minor + 1):
             yield as_site(
                 path,
-                py_version_short=f'{major}.{minor}'
+                py_version_short=f'{major}.{minor}',
             )
     else:
         yield as_site(path)

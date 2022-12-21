@@ -9,7 +9,6 @@ import pytest
 from .parsing import OutputMatchingError, expect_tokens
 from .tokens import Expect, ExpectSequence
 
-
 __all__ = [
     'assert_output_matches',
     'assert_output_does_not_match',

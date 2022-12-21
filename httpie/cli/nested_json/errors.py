@@ -1,6 +1,6 @@
 from typing import Optional
 
-from .tokens import Token, HIGHLIGHTER
+from .tokens import HIGHLIGHTER, Token
 
 
 class NestedJSONSyntaxError(ValueError):
@@ -22,6 +22,6 @@ class NestedJSONSyntaxError(ValueError):
             lines.append(self.source)
             lines.append(
                 ' ' * self.token.start
-                + HIGHLIGHTER * (self.token.end - self.token.start)
+                + HIGHLIGHTER * (self.token.end - self.token.start),
             )
         return '\n'.join(lines)

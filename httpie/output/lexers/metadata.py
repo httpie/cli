@@ -25,7 +25,7 @@ def speed_based_token(lexer, match, ctx):
     response_type = precise(
         lexer,
         token,
-        pygments.token.Number
+        pygments.token.Number,
     )
     yield match.start(), response_type, match.group()
 
@@ -42,8 +42,8 @@ class MetadataLexer(pygments.lexer.RegexLexer):
                     pygments.token.Operator,  # Colon
                     pygments.token.Text,
                     speed_based_token,
-                    pygments.token.Name.Builtin  # Value
-                )
+                    pygments.token.Name.Builtin,  # Value
+                ),
             ),
             # Generic item
             (
@@ -52,8 +52,8 @@ class MetadataLexer(pygments.lexer.RegexLexer):
                     pygments.token.Text,
                     pygments.token.Operator,  # Colon
                     pygments.token.Text,
-                    pygments.token.Text  # Value
-                )
+                    pygments.token.Text,  # Value
+                ),
             ),
-        ]
+        ],
     }

@@ -3,7 +3,8 @@ from contextlib import redirect_stderr, redirect_stdout
 from typing import List
 
 from httpie.context import Environment
-from httpie.internal.update_warnings import _fetch_updates, _get_suppress_context
+from httpie.internal.update_warnings import (_fetch_updates,
+                                             _get_suppress_context)
 from httpie.status import ExitStatus
 
 STATUS_FILE = '.httpie-test-daemon-status'

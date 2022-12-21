@@ -2,7 +2,7 @@ import json
 from contextlib import nullcontext, suppress
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Optional, Callable
+from typing import Any, Callable, Optional
 
 import requests
 
@@ -89,7 +89,7 @@ def _get_suppress_context(env: Environment) -> Any:
 
 
 def _update_checker(
-    func: Callable[[Environment], None]
+    func: Callable[[Environment], None],
 ) -> Callable[[Environment], None]:
     """Control the execution of the update checker (suppress errors, trigger
     auto updates etc.)"""

@@ -1,17 +1,15 @@
 import ssl
+from unittest import mock
 
 import pytest
 import pytest_httpbin.certs
 import requests.exceptions
 import urllib3
 
-from unittest import mock
-
 from httpie.ssl_ import AVAILABLE_SSL_VERSION_ARG_MAPPING, DEFAULT_SSL_CIPHERS
 from httpie.status import ExitStatus
 
-from .utils import HTTP_OK, TESTS_ROOT, IS_PYOPENSSL, http
-
+from .utils import HTTP_OK, IS_PYOPENSSL, TESTS_ROOT, http
 
 try:
     # Handle OpenSSL errors, if installed.
@@ -55,7 +53,7 @@ def test_ssl_version(httpbin_secure, ssl_version):
     try:
         r = http(
             '--ssl', ssl_version,
-            httpbin_secure + '/get'
+            httpbin_secure + '/get',
         )
         assert HTTP_OK in r
     except ssl_errors as e:
@@ -120,14 +118,14 @@ class TestServerCert:
         assert HTTP_OK in r
 
     def test_verify_custom_ca_bundle_path(
-        self, httpbin_secure_untrusted
+        self, httpbin_secure_untrusted,
     ):
         r = http(httpbin_secure_untrusted + '/get', '--verify', CA_BUNDLE)
         assert HTTP_OK in r
 
     def test_self_signed_server_cert_by_default_raises_ssl_error(
         self,
-        httpbin_secure_untrusted
+        httpbin_secure_untrusted,
     ):
         with pytest.raises(ssl_errors):
             http(httpbin_secure_untrusted.url + '/get')

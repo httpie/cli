@@ -1,22 +1,20 @@
-import os
-import json
-import sys
-import subprocess
-import time
 import contextlib
-import httpie.__main__ as main
+import json
+import os
+import subprocess
+import sys
+import time
 
 import pytest
 
+import httpie.__main__ as main
 from httpie.cli.exceptions import ParseError
 from httpie.client import FORM_CONTENT_TYPE
 from httpie.compat import is_windows
 from httpie.status import ExitStatus
-from .utils import (
-    MockEnvironment, StdinBytesIO, http,
-    HTTP_OK,
-)
-from .fixtures import FILE_PATH_ARG, FILE_PATH, FILE_CONTENT
+
+from .fixtures import FILE_CONTENT, FILE_PATH, FILE_PATH_ARG
+from .utils import HTTP_OK, MockEnvironment, StdinBytesIO, http
 
 MAX_RESPONSE_WAIT_TIME = 5
 
@@ -54,7 +52,7 @@ def test_chunked_stdin(httpbin_with_chunked_support):
         env=MockEnvironment(
             stdin=StdinBytesIO(FILE_PATH.read_bytes()),
             stdin_isatty=False,
-        )
+        ),
     )
     assert HTTP_OK in r
     assert 'Transfer-Encoding: chunked' in r
@@ -72,7 +70,7 @@ def test_chunked_stdin_multiple_chunks(httpbin_with_chunked_support):
             stdin=StdinBytesIO(stdin_bytes),
             stdin_isatty=False,
             stdout_isatty=True,
-        )
+        ),
     )
     assert HTTP_OK in r
     assert 'Transfer-Encoding: chunked' in r
@@ -95,10 +93,10 @@ def test_chunked_raw(httpbin_with_chunked_support):
 def stdin_processes(httpbin, *args, warn_threshold=0.1):
     process_1 = subprocess.Popen(
         [
-            "cat"
+            "cat",
         ],
         stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE
+        stdout=subprocess.PIPE,
     )
     process_2 = subprocess.Popen(
         [
@@ -106,14 +104,14 @@ def stdin_processes(httpbin, *args, warn_threshold=0.1):
             main.__file__,
             "POST",
             httpbin + "/post",
-            *args
+            *args,
         ],
         stdin=process_1.stdout,
         stderr=subprocess.PIPE,
         env={
             **os.environ,
-            "HTTPIE_STDIN_READ_WARN_THRESHOLD": str(warn_threshold)
-        }
+            "HTTPIE_STDIN_READ_WARN_THRESHOLD": str(warn_threshold),
+        },
     )
     try:
         yield process_1, process_2
@@ -222,7 +220,7 @@ class TestMultipartFormDataFileUpload:
             '--form',
             '--verbose',
             httpbin.url + '/post',
-            f'test-file@{FILE_PATH_ARG};type=image/vnd.microsoft.icon'
+            f'test-file@{FILE_PATH_ARG};type=image/vnd.microsoft.icon',
         )
         assert HTTP_OK in r
         # Content type is stripped from the filename

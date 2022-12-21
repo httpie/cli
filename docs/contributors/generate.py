@@ -3,9 +3,8 @@ Generate snippets to copy-paste.
 """
 import sys
 
-from jinja2 import Template
-
 from fetch import HERE, load_awesome_people
+from jinja2 import Template
 
 TPL_FILE = HERE / 'snippet.jinja2'
 
@@ -13,11 +12,11 @@ HTTPIE_TEAM = {
     'claudiatd',
     'jakubroztocil',
     'jkbr',
-    'isidentical'
+    'isidentical',
 }
 
 BOT_ACCOUNTS = {
-    'dependabot-sr'
+    'dependabot-sr',
 }
 
 IGNORE_ACCOUNTS = HTTPIE_TEAM | BOT_ACCOUNTS

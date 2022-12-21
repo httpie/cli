@@ -1,24 +1,23 @@
-import os
 import functools
-from typing import Callable, Dict, IO, List, Optional, Tuple, Union
+import os
+from typing import IO, Callable, Dict, List, Optional, Tuple, Union
 
+from ..utils import (get_content_type, load_json_preserve_order_and_dupe_keys,
+                     split_iterable)
 from .argtypes import KeyValueArg
-from .constants import (
-    SEPARATORS_GROUP_MULTIPART, SEPARATOR_DATA_EMBED_FILE_CONTENTS,
-    SEPARATOR_DATA_EMBED_RAW_JSON_FILE, SEPARATOR_GROUP_NESTED_JSON_ITEMS,
-    SEPARATOR_DATA_RAW_JSON, SEPARATOR_DATA_STRING, SEPARATOR_FILE_UPLOAD,
-    SEPARATOR_FILE_UPLOAD_TYPE, SEPARATOR_HEADER, SEPARATOR_HEADER_EMPTY,
-    SEPARATOR_HEADER_EMBED, SEPARATOR_QUERY_PARAM,
-    SEPARATOR_QUERY_EMBED_FILE, RequestType
-)
-from .dicts import (
-    BaseMultiDict, MultipartRequestDataDict, RequestDataDict,
-    RequestFilesDict, HTTPHeadersDict, RequestJSONDataDict,
-    RequestQueryParamsDict,
-)
+from .constants import (SEPARATOR_DATA_EMBED_FILE_CONTENTS,
+                        SEPARATOR_DATA_EMBED_RAW_JSON_FILE,
+                        SEPARATOR_DATA_RAW_JSON, SEPARATOR_DATA_STRING,
+                        SEPARATOR_FILE_UPLOAD, SEPARATOR_FILE_UPLOAD_TYPE,
+                        SEPARATOR_GROUP_NESTED_JSON_ITEMS, SEPARATOR_HEADER,
+                        SEPARATOR_HEADER_EMBED, SEPARATOR_HEADER_EMPTY,
+                        SEPARATOR_QUERY_EMBED_FILE, SEPARATOR_QUERY_PARAM,
+                        SEPARATORS_GROUP_MULTIPART, RequestType)
+from .dicts import (BaseMultiDict, HTTPHeadersDict, MultipartRequestDataDict,
+                    RequestDataDict, RequestFilesDict, RequestJSONDataDict,
+                    RequestQueryParamsDict)
 from .exceptions import ParseError
 from .nested_json import interpret_nested_json
-from ..utils import get_content_type, load_json_preserve_order_and_dupe_keys, split_iterable
 
 
 class RequestItems:
@@ -80,7 +79,7 @@ class RequestItems:
             SEPARATOR_DATA_RAW_JSON: (
                 convert_json_value_to_form_if_needed(
                     in_json_mode=instance.is_json,
-                    processor=process_data_raw_json_embed_arg
+                    processor=process_data_raw_json_embed_arg,
                 ),
                 instance.data,
             ),
@@ -96,7 +95,7 @@ class RequestItems:
         if instance.is_json:
             json_item_args, request_item_args = split_iterable(
                 iterable=request_item_args,
-                key=lambda arg: arg.sep in SEPARATOR_GROUP_NESTED_JSON_ITEMS
+                key=lambda arg: arg.sep in SEPARATOR_GROUP_NESTED_JSON_ITEMS,
             )
             if json_item_args:
                 pairs = [(arg.key, rules[arg.sep][0](arg)) for arg in json_item_args]
@@ -135,7 +134,7 @@ def process_empty_header_arg(arg: KeyValueArg) -> str:
     if not arg.value:
         return arg.value
     raise ParseError(
-        f'Invalid item {arg.orig!r} (to specify an empty header use `Header;`)'
+        f'Invalid item {arg.orig!r} (to specify an empty header use `Header;`)',
     )
 
 
@@ -219,7 +218,7 @@ def load_text_file(item: KeyValueArg) -> str:
     except UnicodeDecodeError:
         raise ParseError(
             f'{item.orig!r}: cannot embed the content of {item.value!r},'
-            ' not a UTF-8 or ASCII-encoded text file'
+            ' not a UTF-8 or ASCII-encoded text file',
         )
 
 

@@ -6,16 +6,14 @@ from requests.exceptions import InvalidSchema
 
 import httpie.cli.argparser
 from httpie.cli import constants
-from httpie.cli.definition import parser
 from httpie.cli.argtypes import KeyValueArg, KeyValueArgType
+from httpie.cli.definition import parser
 from httpie.cli.requestitems import RequestItems
 from httpie.status import ExitStatus
 from httpie.utils import load_json_preserve_order_and_dupe_keys
 
-from .fixtures import (
-    FILE_CONTENT, FILE_PATH, FILE_PATH_ARG, JSON_FILE_CONTENT,
-    JSON_FILE_PATH_ARG,
-)
+from .fixtures import (FILE_CONTENT, FILE_PATH, FILE_PATH_ARG,
+                       JSON_FILE_CONTENT, JSON_FILE_PATH_ARG)
 from .utils import HTTP_OK, MockEnvironment, StdinBytesIO, http
 
 
@@ -47,7 +45,7 @@ class TestItemParsing:
             'jack@jill': 'hill',
         }
         assert items.data == {
-            'baz=bar': 'foo'
+            'baz=bar': 'foo',
         }
         assert 'bar@baz' in items.files
 
@@ -57,7 +55,7 @@ class TestItemParsing:
         ('path\\==c:\\windows', 'path=', '=', 'c:\\windows'),
     ])
     def test_backslash_before_non_special_character_does_not_escape(
-        self, string, key, sep, value
+        self, string, key, sep, value,
     ):
         expected = KeyValueArg(orig=string, key=key, sep=sep, value=value)
         actual = self.key_value_arg(string)
@@ -68,7 +66,7 @@ class TestItemParsing:
             self.key_value_arg(r'bob\:==foo'),
         ])
         assert items.params == {
-            'bob:': 'foo'
+            'bob:': 'foo',
         }
 
     def test_valid_items(self):
@@ -98,7 +96,7 @@ class TestItemParsing:
             'Header': 'value',
             'Unset-Header': None,
             'Empty-Header': '',
-            'Embedded-Header': FILE_CONTENT.rstrip('\n')
+            'Embedded-Header': FILE_CONTENT.rstrip('\n'),
         }
 
         # Parsed data
@@ -113,13 +111,13 @@ class TestItemParsing:
             'nested[2]': {'a': ['1']},
             'nested': [None, None, {'a': [1]}],
             'obj': load_json_preserve_order_and_dupe_keys('{"a": "b"}'),
-            'string-embed': FILE_CONTENT
+            'string-embed': FILE_CONTENT,
         }
 
         # Parsed query string parameters
         assert items.params == {
             'query': 'value',
-            'param-embed': FILE_CONTENT.rstrip('\n')
+            'param-embed': FILE_CONTENT.rstrip('\n'),
         }
 
         # Parsed file fields
@@ -138,7 +136,7 @@ class TestItemParsing:
         items = RequestItems.from_args(
             request_item_args=[
                 self.key_value_arg('text_field=a'),
-                self.key_value_arg('text_field=b')
+                self.key_value_arg('text_field=b'),
             ],
             request_type=constants.RequestType.FORM,
         )
@@ -224,14 +222,14 @@ class TestLocalhostShorthand:
     def test_dont_expand_longer_ipv6_as_shorthand(self):
         args = parser.parse_args(
             args=['::ffff:c000:0280'],
-            env=MockEnvironment()
+            env=MockEnvironment(),
         )
         assert args.url == 'http://::ffff:c000:0280'
 
     def test_dont_expand_full_ipv6_as_shorthand(self):
         args = parser.parse_args(
             args=['0000:0000:0000:0000:0000:0000:0000:0001'],
-            env=MockEnvironment()
+            env=MockEnvironment(),
         )
         assert args.url == 'http://0000:0000:0000:0000:0000:0000:0000:0001'
 
@@ -279,7 +277,7 @@ class TestArgumentParser:
             KeyValueArg(key='data',
                         value='field',
                         sep='=',
-                        orig='data=field')
+                        orig='data=field'),
         ]
 
     def test_guess_when_method_set_but_invalid_and_header_field(self):
@@ -296,7 +294,7 @@ class TestArgumentParser:
             KeyValueArg(key='test',
                         value='header',
                         sep=':',
-                        orig='test:header')
+                        orig='test:header'),
         ]
 
     def test_guess_when_method_set_but_invalid_and_item_exists(self):
@@ -305,7 +303,7 @@ class TestArgumentParser:
         self.parser.args.url = 'new_item=a'
         self.parser.args.request_items = [
             KeyValueArg(
-                key='old_item', value='b', sep='=', orig='old_item=b')
+                key='old_item', value='b', sep='=', orig='old_item=b'),
         ]
         self.parser.args.ignore_stdin = False
         self.parser.env = MockEnvironment()
