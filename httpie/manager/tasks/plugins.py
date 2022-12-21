@@ -1,17 +1,17 @@
 import argparse
 import os
-import textwrap
 import re
 import shutil
+import textwrap
 from collections import defaultdict
 from contextlib import suppress
 from pathlib import Path
 from typing import List, Optional, Tuple
 
-from httpie.manager.compat import PipError, run_pip
-from httpie.manager.cli import parser, missing_subcommand
 from httpie.compat import get_dist_name, importlib_metadata
 from httpie.context import Environment
+from httpie.manager.cli import missing_subcommand, parser
+from httpie.manager.compat import PipError, run_pip
 from httpie.status import ExitStatus
 from httpie.utils import get_site_paths
 
@@ -31,14 +31,14 @@ class PluginInstaller:
         try:
             self.dir.mkdir(
                 exist_ok=True,
-                parents=True
+                parents=True,
             )
         except OSError:
             self.env.stderr.write(
                 f'Couldn\'t create "{self.dir!s}"'
                 ' directory for plugin installation.'
                 ' Please re-check the permissions for that directory,'
-                ' and if needed, allow write-access.'
+                ' and if needed, allow write-access.',
             )
             raise
 
@@ -46,7 +46,7 @@ class PluginInstaller:
         self,
         command: str,
         target: Optional[str] = None,
-        reason: Optional[str] = None
+        reason: Optional[str] = None,
     ) -> ExitStatus:
         message = f'Can\'t {command}'
         if target:
@@ -58,7 +58,7 @@ class PluginInstaller:
         return ExitStatus.ERROR
 
     def _install(self, targets: List[str], mode='install') -> Tuple[
-        bytes, ExitStatus
+        bytes, ExitStatus,
     ]:
         pip_args = [
             'install',
@@ -135,7 +135,7 @@ class PluginInstaller:
 
         raw_stdout, exit_status = self._install(
             targets,
-            mode='upgrade'
+            mode='upgrade',
         )
         if not raw_stdout:
             return exit_status

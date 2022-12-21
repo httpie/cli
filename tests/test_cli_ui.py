@@ -1,6 +1,8 @@
-import pytest
-import shutil
 import os
+import shutil
+
+import pytest
+
 from tests.utils import http
 
 NAKED_BASE_TEMPLATE = """\
@@ -17,17 +19,17 @@ for more information:
 
 NAKED_HELP_MESSAGE = NAKED_BASE_TEMPLATE.format(
     extra_args="",
-    error_msg="the following arguments are required: URL"
+    error_msg="the following arguments are required: URL",
 )
 
 NAKED_HELP_MESSAGE_PRETTY_WITH_NO_ARG = NAKED_BASE_TEMPLATE.format(
     extra_args="--pretty {all, colors, format, none} ",
-    error_msg="argument --pretty: expected one argument"
+    error_msg="argument --pretty: expected one argument",
 )
 
 NAKED_HELP_MESSAGE_PRETTY_WITH_INVALID_ARG = NAKED_BASE_TEMPLATE.format(
     extra_args="--pretty {all, colors, format, none} ",
-    error_msg="argument --pretty: invalid choice: '$invalid' (choose from 'all', 'colors', 'format', 'none')"
+    error_msg="argument --pretty: invalid choice: '$invalid' (choose from 'all', 'colors', 'format', 'none')",
 )
 
 
@@ -58,7 +60,7 @@ def ignore_terminal_size(monkeypatch):
         (['--pretty'], NAKED_HELP_MESSAGE_PRETTY_WITH_NO_ARG),
         (['pie.dev', '--pretty'], NAKED_HELP_MESSAGE_PRETTY_WITH_NO_ARG),
         (['--pretty', '$invalid'], NAKED_HELP_MESSAGE_PRETTY_WITH_INVALID_ARG),
-    ]
+    ],
 )
 def test_naked_invocation(ignore_terminal_size, args, expected_msg):
     result = http(*args, tolerate_error_exit_status=True)

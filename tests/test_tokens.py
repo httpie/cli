@@ -9,8 +9,8 @@ TODO: cover more scenarios
  * streamed uploads
 
 """
-from .utils.matching import assert_output_matches, Expect, ExpectSequence
-from .utils import http, HTTP_OK, MockEnvironment
+from .utils import HTTP_OK, MockEnvironment, http
+from .utils.matching import Expect, ExpectSequence, assert_output_matches
 
 
 def test_headers():

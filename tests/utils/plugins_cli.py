@@ -2,22 +2,19 @@ import secrets
 import site
 import sys
 import textwrap
+from collections import defaultdict
+from dataclasses import asdict, dataclass, field
+from pathlib import Path
+from typing import Any, Dict, List, Tuple
+from unittest.mock import patch
 
 import pytest
 
-from collections import defaultdict
-from dataclasses import dataclass, field, asdict
-from pathlib import Path
-from typing import Any, List, Dict, Tuple
-from unittest.mock import patch
-
-from httpie.context import Environment
 from httpie.compat import importlib_metadata
+from httpie.context import Environment
+from httpie.plugins.manager import ENTRY_POINT_CLASSES as CLASSES
+from httpie.plugins.manager import enable_plugins
 from httpie.status import ExitStatus
-from httpie.plugins.manager import (
-    enable_plugins,
-    ENTRY_POINT_CLASSES as CLASSES,
-)
 
 
 def make_name() -> str:
@@ -49,7 +46,6 @@ class Plugin:
         as well as dummy classes in a python module to imitate
         real plugins.
         '''
-
         groups = defaultdict(list)
         for entry_point in self.entry_points:
             groups[entry_point.group].append(entry_point.name)
@@ -90,7 +86,7 @@ class Plugin:
             'entry_points': [
                 entry_point.dump()
                 for entry_point in self.entry_points
-            ]
+            ],
         }
 
     @property
@@ -150,14 +146,14 @@ def parse_listing(lines: List[str]) -> Dict[str, Any]:
             entry_point, group = parse_entry_point(line)
             plugins[current_plugin]['entry_points'].append({
                 'name': entry_point,
-                'group': group
+                'group': group,
             })
         else:
             # $plugin ($version)
             current_plugin, version = parse_plugin(line)
             plugins[current_plugin] = {
                 'version': version,
-                'entry_points': []
+                'entry_points': [],
             }
 
     return plugins
@@ -169,7 +165,7 @@ def interface(tmp_path):
 
     return Interface(
         path=tmp_path / 'interface',
-        environment=MockEnvironment()
+        environment=MockEnvironment(),
     )
 
 
@@ -192,21 +188,21 @@ def dummy_plugins(interface):
     return [
         interface.make_dummy_plugin(),
         interface.make_dummy_plugin(
-            version='3.2.0'
+            version='3.2.0',
         ),
         interface.make_dummy_plugin(
             entry_points=[
                 EntryPoint('test_1', 'httpie.plugins.converter.v1'),
-                EntryPoint('test_2', 'httpie.plugins.formatter.v1')
-            ]
+                EntryPoint('test_2', 'httpie.plugins.formatter.v1'),
+            ],
         ),
     ]
 
 
 @pytest.fixture
 def httpie_plugins(interface):
-    from tests.utils import httpie
     from httpie.plugins.registry import plugin_manager
+    from tests.utils import httpie
 
     def runner(*args, cli_mode: bool = True):
         args = list(args)

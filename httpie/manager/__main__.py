@@ -1,17 +1,16 @@
 import argparse
 import sys
-
 from typing import List, Union
 
 from httpie.context import Environment
-from httpie.status import ExitStatus
 from httpie.manager.cli import parser
-from httpie.manager.core import MSG_COMMAND_CONFUSION, program as main_program
+from httpie.manager.core import MSG_COMMAND_CONFUSION
+from httpie.manager.core import program as main_program
+from httpie.status import ExitStatus
 
 
 def is_http_command(args: List[Union[str, bytes]], env: Environment) -> bool:
     """Check whether http/https parser can parse the arguments."""
-
     from httpie.cli.definition import parser as http_parser
     from httpie.manager.cli import COMMANDS
 

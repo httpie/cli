@@ -1,4 +1,4 @@
-from typing import Union, Tuple
+from typing import Tuple, Union
 
 from charset_normalizer import from_bytes
 from charset_normalizer.constant import TOO_SMALL_SEQUENCE

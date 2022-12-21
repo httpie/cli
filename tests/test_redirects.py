@@ -3,10 +3,10 @@ import pytest
 
 from httpie.compat import is_windows
 from httpie.status import ExitStatus
-from .fixtures import FILE_PATH_ARG, FILE_CONTENT
-from .utils import http, HTTP_OK
-from .utils.matching import assert_output_matches, Expect, ExpectSequence
 
+from .fixtures import FILE_CONTENT, FILE_PATH_ARG
+from .utils import HTTP_OK, http
+from .utils.matching import Expect, ExpectSequence, assert_output_matches
 
 # <https://developer.mozilla.org/en-US/docs/Web/HTTP/Redirections>
 REDIRECTS_WITH_METHOD_BODY_PRESERVED = [307, 308]

@@ -179,8 +179,8 @@ for pretty in ['all', 'none']:
         [
             '--print=HBhb',
             f'--pretty={pretty}',
-            'httpbin.org/stream/1000'
-        ]
+            'httpbin.org/stream/1000',
+        ],
     )
 DownloadRunner('download', '`http --download :/big_file.txt` (3GB)', '3G')
 
@@ -191,7 +191,7 @@ def main() -> None:
     # benchmarks 3 times to warm up (e.g especially for download benchmark, this
     # is important). And then 5 actual runs where we record.
     sys.argv.extend(
-        ['--worker', '--loops=1', '--warmup=3', '--values=5', '--processes=2']
+        ['--worker', '--loops=1', '--warmup=3', '--values=5', '--processes=2'],
     )
 
     with Context() as context:

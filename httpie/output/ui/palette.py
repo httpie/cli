@@ -1,7 +1,6 @@
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Optional, List
-
+from typing import List, Optional
 
 PYGMENTS_BRIGHT_BLACK = 'ansibrightblack'
 
@@ -89,7 +88,7 @@ class GenericColor(Enum):
     GREY = {Styles.PIE: PieColor.GREY, Styles.ANSI: 'bright_black'}
 
     def apply_style(
-        self, style: Styles, *, style_name: Optional[str] = None
+        self, style: Styles, *, style_name: Optional[str] = None,
     ) -> str:
         """Apply the given style to a particular value."""
         exposed_color = self.value[style]
@@ -248,7 +247,7 @@ COLOR_PALETTE.update(
             '600': '#6c6969',
             '500': '#6c6969',
         },
-    }
+    },
 )
 
 
@@ -258,7 +257,7 @@ def boldify(color: PieColor) -> str:
 
 # noinspection PyDefaultArgument
 def get_color(
-    color: PieColor, shade: str, *, palette=COLOR_PALETTE
+    color: PieColor, shade: str, *, palette=COLOR_PALETTE,
 ) -> Optional[str]:
     if color not in palette:
         return None

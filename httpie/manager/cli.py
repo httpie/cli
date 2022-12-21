@@ -1,15 +1,17 @@
 from textwrap import dedent
-from httpie.cli.argparser import HTTPieManagerArgumentParser
-from httpie.cli.options import Qualifiers, ARGPARSE_QUALIFIER_MAP, map_qualifiers, parser_to_parser_spec
+
 from httpie import __version__
+from httpie.cli.argparser import HTTPieManagerArgumentParser
+from httpie.cli.options import (ARGPARSE_QUALIFIER_MAP, Qualifiers,
+                                map_qualifiers, parser_to_parser_spec)
 
 CLI_SESSION_UPGRADE_FLAGS = [
     {
         'flags': ['--bind-cookies'],
         'action': 'store_true',
         'default': False,
-        'help': 'Bind domainless cookies to the host that session belongs.'
-    }
+        'help': 'Bind domainless cookies to the host that session belongs.',
+    },
 ]
 
 COMMANDS = {
@@ -21,11 +23,11 @@ COMMANDS = {
                 'flags': ['-f', '--format'],
                 'choices': ['json'],
                 'help': 'Format to export in.',
-                'default': 'json'
-            }
+                'default': 'json',
+            },
         ],
         'check-updates': [
-            'Check for updates'
+            'Check for updates',
         ],
         'sessions': {
             'help': 'Manage HTTPie sessions',
@@ -36,23 +38,23 @@ COMMANDS = {
                 {
                     'dest': 'hostname',
                     'metavar': 'HOSTNAME',
-                    'help': 'The host this session belongs.'
+                    'help': 'The host this session belongs.',
                 },
                 {
                     'dest': 'session',
                     'metavar': 'SESSION_NAME_OR_PATH',
-                    'help': 'The name or the path for the session that will be upgraded.'
+                    'help': 'The name or the path for the session that will be upgraded.',
                 },
-                *CLI_SESSION_UPGRADE_FLAGS
+                *CLI_SESSION_UPGRADE_FLAGS,
             ],
             'upgrade-all': [
                 'Upgrade all named sessions with the latest layout. A list of '
                 'changes between different session versions can be found in the official '
                 'documentation.',
-                *CLI_SESSION_UPGRADE_FLAGS
+                *CLI_SESSION_UPGRADE_FLAGS,
             ],
-        }
-    }
+        },
+    },
 }
 
 
@@ -65,8 +67,8 @@ COMMANDS['plugins'] = COMMANDS['cli']['plugins'] = {
             'dest': 'targets',
             'metavar': 'TARGET',
             'nargs': Qualifiers.ONE_OR_MORE,
-            'help': 'targets to install'
-        }
+            'help': 'targets to install',
+        },
     ],
     'upgrade': [
         'Upgrade the given plugins',
@@ -74,8 +76,8 @@ COMMANDS['plugins'] = COMMANDS['cli']['plugins'] = {
             'dest': 'targets',
             'metavar': 'TARGET',
             'nargs': Qualifiers.ONE_OR_MORE,
-            'help': 'targets to upgrade'
-        }
+            'help': 'targets to upgrade',
+        },
     ],
     'uninstall': [
         'Uninstall the given HTTPie plugins.',
@@ -83,11 +85,11 @@ COMMANDS['plugins'] = COMMANDS['cli']['plugins'] = {
             'dest': 'targets',
             'metavar': 'TARGET',
             'nargs': Qualifiers.ONE_OR_MORE,
-            'help': 'targets to install'
-        }
+            'help': 'targets to install',
+        },
     ],
     'list': [
-        'List all installed HTTPie plugins.'
+        'List all installed HTTPie plugins.',
     ],
 }
 
@@ -105,7 +107,7 @@ def missing_subcommand(*args) -> str:
 def generate_subparsers(root, parent_parser, definitions, spec):
     action_dest = '_'.join(parent_parser.prog.split()[1:] + ['action'])
     actions = parent_parser.add_subparsers(
-        dest=action_dest
+        dest=action_dest,
     )
     for command, properties in definitions.items():
         is_subparser = isinstance(properties, dict)
@@ -135,7 +137,7 @@ parser = HTTPieManagerArgumentParser(
         Be aware that you might be looking for http/https commands for sending
         HTTP requests. This command is only available for managing the HTTTPie
         plugins and the configuration around it.
-        '''
+        ''',
     ),
 )
 
@@ -147,7 +149,7 @@ parser.add_argument(
     Prints the exception traceback should one occur, as well as other
     information useful for debugging HTTPie itself and for reporting bugs.
 
-    '''
+    ''',
 )
 
 parser.add_argument(
@@ -157,7 +159,7 @@ parser.add_argument(
     help='''
     Prints the exception traceback should one occur.
 
-    '''
+    ''',
 )
 
 parser.add_argument(
@@ -167,7 +169,7 @@ parser.add_argument(
     help='''
     Show version and exit.
 
-    '''
+    ''',
 )
 
 man_page_hint = '''

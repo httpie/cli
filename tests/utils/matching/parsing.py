@@ -2,9 +2,9 @@ import re
 from typing import Iterable
 
 from httpie.output.writer import MESSAGE_SEPARATOR
-from .tokens import Expect
-from ...utils import CRLF
 
+from ...utils import CRLF
+from .tokens import Expect
 
 SEPARATOR_RE = re.compile(f'^{MESSAGE_SEPARATOR}')
 KEY_VALUE_RE = re.compile(r'[\n]*((.*?):(.+)[\n]?)+[\n]*')
@@ -33,7 +33,7 @@ def make_headers_re(message_type: Expect):
             ({non_crlf}+:{non_crlf}+{crlf})+
             {crlf}
         ''',
-        flags=re.VERBOSE
+        flags=re.VERBOSE,
     )
 
 

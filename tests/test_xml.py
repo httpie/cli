@@ -6,8 +6,9 @@ import responses
 from httpie.encoding import UTF8
 from httpie.output.formatters.xml import parse_xml, pretty_xml
 
-from .fixtures import XML_FILES_PATH, XML_FILES_VALID, XML_FILES_INVALID, XML_DATA_RAW, XML_DATA_FORMATTED
-from .utils import http, DUMMY_URL
+from .fixtures import (XML_DATA_FORMATTED, XML_DATA_RAW, XML_FILES_INVALID,
+                       XML_FILES_PATH, XML_FILES_VALID)
+from .utils import DUMMY_URL, http
 
 
 @pytest.mark.parametrize(
@@ -16,7 +17,7 @@ from .utils import http, DUMMY_URL
         ('xml.format:false', XML_DATA_RAW),
         ('xml.indent:2', XML_DATA_FORMATTED),
         ('xml.indent:4', pretty_xml(parse_xml(XML_DATA_RAW), indent=4)),
-    ]
+    ],
 )
 @responses.activate
 def test_xml_format_options(options, expected_xml):

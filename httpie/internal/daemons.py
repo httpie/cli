@@ -9,12 +9,12 @@ import inspect
 import os
 import platform
 import sys
-import httpie.__main__
 from contextlib import suppress
-from subprocess import Popen, DEVNULL
+from subprocess import DEVNULL, Popen
 from typing import Dict, List
-from httpie.compat import is_frozen, is_windows
 
+import httpie.__main__
+from httpie.compat import is_frozen, is_windows
 
 ProcessContext = Dict[str, str]
 
@@ -30,12 +30,8 @@ def _start_process(cmd: List[str], **kwargs) -> Popen:
 
 
 def _spawn_windows(cmd: List[str], process_context: ProcessContext) -> None:
-    from subprocess import (
-        CREATE_NEW_PROCESS_GROUP,
-        CREATE_NO_WINDOW,
-        STARTF_USESHOWWINDOW,
-        STARTUPINFO,
-    )
+    from subprocess import (CREATE_NEW_PROCESS_GROUP, CREATE_NO_WINDOW,
+                            STARTF_USESHOWWINDOW, STARTUPINFO)
 
     # https://stackoverflow.com/a/7006424
     # https://bugs.python.org/issue41619
@@ -60,7 +56,6 @@ def _spawn_posix(args: List[str], process_context: ProcessContext) -> None:
 
     [1]: https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap11.html#tag_11_01_03
     """
-
     from httpie.core import main
 
     try:
@@ -115,7 +110,7 @@ def spawn_daemon(task: str) -> None:
     if not is_frozen:
         file_path = os.path.abspath(inspect.stack()[0][1])
         process_context['PYTHONPATH'] = os.path.dirname(
-            os.path.dirname(os.path.dirname(file_path))
+            os.path.dirname(os.path.dirname(file_path)),
         )
 
     _spawn(args, process_context)

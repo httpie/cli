@@ -61,6 +61,7 @@ class XMLFormatter(FormatterPlugin):
             return body
 
         from xml.parsers.expat import ExpatError
+
         from defusedxml.common import DefusedXmlException
 
         declaration = parse_declaration(body)

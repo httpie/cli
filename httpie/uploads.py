@@ -1,9 +1,10 @@
-import sys
-import os
-import zlib
 import functools
+import os
+import sys
 import threading
-from typing import Any, Callable, IO, Iterable, Optional, Tuple, Union, TYPE_CHECKING
+import zlib
+from typing import (IO, TYPE_CHECKING, Any, Callable, Iterable, Optional,
+                    Tuple, Union)
 from urllib.parse import urlencode
 
 import requests
@@ -12,9 +13,9 @@ from requests.utils import super_len
 if TYPE_CHECKING:
     from requests_toolbelt import MultipartEncoder
 
-from .context import Environment
 from .cli.dicts import MultipartRequestDataDict, RequestDataDict
 from .compat import is_windows
+from .context import Environment
 
 
 class ChunkedStream:
@@ -27,7 +28,7 @@ class ChunkedUploadStream(ChunkedStream):
         self,
         stream: Iterable,
         callback: Callable,
-        event: Optional[threading.Event] = None
+        event: Optional[threading.Event] = None,
     ) -> None:
         self.callback = callback
         self.stream = stream
@@ -47,7 +48,7 @@ class ChunkedMultipartUploadStream(ChunkedStream):
     def __init__(
         self,
         encoder: 'MultipartEncoder',
-        event: Optional[threading.Event] = None
+        event: Optional[threading.Event] = None,
     ) -> None:
         self.encoder = encoder
         self.event = event
@@ -74,7 +75,7 @@ CallbackT = Callable[[bytes], bytes]
 
 def _wrap_function_with_callback(
     func: Callable[..., Any],
-    callback: CallbackT
+    callback: CallbackT,
 ) -> Callable[..., Any]:
     @functools.wraps(func)
     def wrapped(*args, **kwargs):
@@ -113,7 +114,7 @@ def observe_stdin_for_data_thread(env: Environment, file: IO, read_event: thread
             env.stderr.write(
                 f'> warning: no stdin data read in {READ_THRESHOLD}s '
                 f'(perhaps you want to --ignore-stdin)\n'
-                f'> See: https://httpie.io/docs/cli/best-practices\n'
+                f'> See: https://httpie.io/docs/cli/best-practices\n',
             )
 
     # Making it a daemon ensures that if the user exits from the main program
@@ -122,7 +123,7 @@ def observe_stdin_for_data_thread(env: Environment, file: IO, read_event: thread
     thread = threading.Thread(
         target=worker,
         args=(read_event,),
-        daemon=True
+        daemon=True,
     )
     thread.start()
 
@@ -168,7 +169,7 @@ def _prepare_file_for_upload(
     else:
         file.read = _wrap_function_with_callback(
             file.read,
-            callback
+            callback,
         )
 
     if chunked:
@@ -182,7 +183,7 @@ def _prepare_file_for_upload(
             return ChunkedUploadStream(
                 stream=file,
                 callback=callback,
-                event=read_event
+                event=read_event,
             )
     else:
         return file
@@ -216,12 +217,12 @@ def prepare_request_body(
             body,
             chunked=chunked,
             callback=body_read_callback,
-            content_length_header_value=content_length_header_value
+            content_length_header_value=content_length_header_value,
         )
     elif chunked:
         return ChunkedUploadStream(
             stream=iter([body]),
-            callback=body_read_callback
+            callback=body_read_callback,
         )
     else:
         return body

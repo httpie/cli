@@ -193,7 +193,7 @@ def load_awesome_people() -> People:
 def fetch(url: str, params: Optional[Dict[str, str]] = None) -> UserInfo:
     headers = {
         'Accept': 'application/vnd.github.v3+json',
-        'Authentication': f'token {GITHUB_TOKEN}'
+        'Authentication': f'token {GITHUB_TOKEN}',
     }
     for retry in range(1, 6):
         debug(f'[{retry}/5]', f'{url = }', f'{params = }')

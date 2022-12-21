@@ -1,12 +1,12 @@
 import argparse
 
+from httpie.context import Environment
+from httpie.legacy import (v3_1_0_session_cookie_format,
+                           v3_2_0_session_header_format)
+from httpie.manager.cli import missing_subcommand, parser
 from httpie.sessions import SESSIONS_DIR_NAME, get_httpie_session
 from httpie.status import ExitStatus
-from httpie.context import Environment
-from httpie.legacy import v3_1_0_session_cookie_format, v3_2_0_session_header_format
-from httpie.manager.cli import missing_subcommand, parser
 from httpie.utils import is_version_greater
-
 
 FIXERS_TO_VERSIONS = {
     '3.1.0': v3_1_0_session_cookie_format.fix_layout,
@@ -34,7 +34,7 @@ def upgrade_session(env: Environment, args: argparse.Namespace, hostname: str, s
         session_name=session_name,
         host=hostname,
         url=hostname,
-        suppress_legacy_warnings=True
+        suppress_legacy_warnings=True,
     )
 
     session_name = session.path.stem
@@ -65,7 +65,7 @@ def cli_upgrade_session(env: Environment, args: argparse.Namespace) -> ExitStatu
         env,
         args=args,
         hostname=args.hostname,
-        session_name=args.session
+        session_name=args.session,
     )
 
 
@@ -81,6 +81,6 @@ def cli_upgrade_all_sessions(env: Environment, args: argparse.Namespace) -> Exit
                 env,
                 args=args,
                 hostname=hostname,
-                session_name=session_name
+                session_name=session_name,
             )
     return status

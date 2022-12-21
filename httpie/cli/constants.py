@@ -4,7 +4,6 @@
 import enum
 import re
 
-
 URL_SCHEME_RE = re.compile(r'^[a-z][a-z0-9.+-]*://', re.IGNORECASE)
 
 HTTP_POST = 'POST'
@@ -32,7 +31,7 @@ SEPARATOR_GROUP_DATA_ITEMS = frozenset({
     SEPARATOR_DATA_RAW_JSON,
     SEPARATOR_FILE_UPLOAD,
     SEPARATOR_DATA_EMBED_FILE_CONTENTS,
-    SEPARATOR_DATA_EMBED_RAW_JSON_FILE
+    SEPARATOR_DATA_EMBED_RAW_JSON_FILE,
 })
 
 SEPARATORS_GROUP_MULTIPART = frozenset({
@@ -101,7 +100,7 @@ PRETTY_MAP = {
     'all': ['format', 'colors'],
     'colors': ['colors'],
     'format': ['format'],
-    'none': []
+    'none': [],
 }
 PRETTY_STDOUT_TTY_ONLY = PrettyOptions.STDOUT_TTY_ONLY
 

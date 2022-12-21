@@ -10,7 +10,7 @@ def test_parser_serialization():
         "variadic_arg",
         metavar="META",
         help=Qualifiers.SUPPRESS,
-        nargs=Qualifiers.ZERO_OR_MORE
+        nargs=Qualifiers.ZERO_OR_MORE,
     )
     group_1.add_argument(
         "-O",

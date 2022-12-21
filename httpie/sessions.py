@@ -4,27 +4,22 @@ Persistent, JSON-serialized sessions.
 """
 import os
 import re
-
-from http.cookies import SimpleCookie
 from http.cookiejar import Cookie
+from http.cookies import SimpleCookie
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
 from requests.auth import AuthBase
 from requests.cookies import RequestsCookieJar, remove_cookie_by_name
 
+from .cli.dicts import HTTPHeadersDict
+from .config import DEFAULT_CONFIG_DIR, BaseConfigDict
 from .context import Environment, LogLevel
 from .cookies import HTTPieCookiePolicy
-from .cli.dicts import HTTPHeadersDict
-from .config import BaseConfigDict, DEFAULT_CONFIG_DIR
-from .utils import url_as_host
+from .legacy import v3_1_0_session_cookie_format as legacy_cookies
+from .legacy import v3_2_0_session_header_format as legacy_headers
 from .plugins.registry import plugin_manager
-
-from .legacy import (
-    v3_1_0_session_cookie_format as legacy_cookies,
-    v3_2_0_session_header_format as legacy_headers
-)
-
+from .utils import url_as_host
 
 SESSIONS_DIR_NAME = 'sessions'
 DEFAULT_SESSIONS_DIR = DEFAULT_CONFIG_DIR / SESSIONS_DIR_NAME
@@ -49,7 +44,7 @@ def session_hostname_to_dirname(hostname: str, session_name: str) -> str:
     return os.path.join(
         SESSIONS_DIR_NAME,
         hostname,
-        f'{session_name}.json'
+        f'{session_name}.json',
     )
 
 
@@ -83,7 +78,7 @@ def materialize_headers(headers: Dict[str, str]) -> List[Dict[str, Any]]:
     return [
         {
             'name': name,
-            'value': value
+            'value': value,
         }
         for name, value in headers.copy().items()
     ]
@@ -96,7 +91,7 @@ def get_httpie_session(
     host: Optional[str],
     url: str,
     *,
-    suppress_legacy_warnings: bool = False
+    suppress_legacy_warnings: bool = False,
 ) -> 'Session':
     bound_hostname = host or url_as_host(url)
     if not bound_hostname:
@@ -115,7 +110,7 @@ def get_httpie_session(
         env=env,
         session_id=session_id,
         bound_host=strip_port(bound_hostname),
-        suppress_legacy_warnings=suppress_legacy_warnings
+        suppress_legacy_warnings=suppress_legacy_warnings,
     )
     session.load()
     return session
@@ -141,7 +136,7 @@ class Session(BaseConfigDict):
         self['auth'] = {
             'type': None,
             'username': None,
-            'password': None
+            'password': None,
         }
 
         # Runtime state of the Session objects.
@@ -192,7 +187,7 @@ class Session(BaseConfigDict):
 
             data[key] = exporter(
                 values,
-                original_type=original_type
+                original_type=original_type,
             )
 
         return data
@@ -233,7 +228,6 @@ class Session(BaseConfigDict):
         certain name prefixes.
 
         """
-
         new_headers = self._compute_new_headers(request_headers)
         new_keys = new_headers.copy().keys()
 
@@ -266,7 +260,7 @@ class Session(BaseConfigDict):
                 self.cookie_jar,
                 cookie['name'],
                 domain=cookie.get('domain', None),
-                path=cookie.get('path', None)
+                path=cookie.get('path', None),
             )
 
     @property
@@ -313,7 +307,7 @@ class Session(BaseConfigDict):
 
         self.env.log_error(
             warning,
-            level=LogLevel.WARNING
+            level=LogLevel.WARNING,
         )
 
         # We don't want to spam multiple warnings on each usage,

@@ -24,6 +24,7 @@ class AuthPlugin(BasePlugin):
     See also `test_auth_plugins.py`
 
     """
+
     # The value that should be passed to --auth-type
     # to use this auth plugin. Eg. "my-auth"
     auth_type = None
@@ -126,6 +127,7 @@ class FormatterPlugin(BasePlugin):
     Possibly formats response body & headers for prettified terminal display.
 
     """
+
     group_name = 'format'
 
     def __init__(self, **kwargs):

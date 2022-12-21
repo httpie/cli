@@ -1,11 +1,11 @@
 """Test data"""
 import json
 from pathlib import Path
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
 
 import httpie
 from httpie.encoding import UTF8
-from httpie.output.formatters.xml import pretty_xml, parse_xml
+from httpie.output.formatters.xml import parse_xml, pretty_xml
 
 
 def patharg(path):
