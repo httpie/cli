@@ -18,7 +18,7 @@ jobs:
         with:
           ref: ${{ github.event.inputs.branch }}
 
-      - uses: mislav/bump-homebrew-formula-action@v1
+      - uses: mislav/bump-homebrew-formula-action@v2
         with:
           formula-name: httpie
           tag-name: ${{ github.events.inputs.branch }}
