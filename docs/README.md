@@ -78,7 +78,7 @@ $ python -m pip install --upgrade httpie
 
 #### Homebrew
 
-To install [Homebrew](https://brew.sh/), see [its installation](https://docs.brew.sh/Installation).
+To install via [Homebrew](https://brew.sh/), see [its installation](https://docs.brew.sh/Installation).
 
 ```bash
 # Install httpie
@@ -94,7 +94,7 @@ $ brew upgrade httpie
 
 #### MacPorts
 
-To install [MacPorts](https://www.macports.org/), see [its installation](https://www.macports.org/install.php).
+To install via [MacPorts](https://www.macports.org/), see [its installation](https://www.macports.org/install.php).
 
 ```bash
 # Install httpie
@@ -112,7 +112,7 @@ $ port upgrade httpie
 
 #### Chocolatey
 
-To install [Chocolatey](https://chocolatey.org/), see [its installation](https://chocolatey.org/install).
+To install via [Chocolatey](https://chocolatey.org/), see [its installation](https://chocolatey.org/install).
 
 ```bash
 # Install httpie
@@ -128,7 +128,7 @@ $ choco upgrade httpie
 
 #### Snapcraft (Linux)
 
-To install [Snapcraft](https://snapcraft.io/), see [its installation](https://snapcraft.io/docs/installing-snapd).
+To install via [Snapcraft](https://snapcraft.io/), see [its installation](https://snapcraft.io/docs/installing-snapd).
 
 ```bash
 # Install httpie
@@ -142,7 +142,7 @@ $ snap refresh httpie
 
 #### Linuxbrew
 
-To install [Linuxbrew](https://docs.brew.sh/Homebrew-on-Linux), see [its installation](https://docs.brew.sh/Homebrew-on-Linux#install).
+To install via [Linuxbrew](https://docs.brew.sh/Homebrew-on-Linux), see [its installation](https://docs.brew.sh/Homebrew-on-Linux#install).
 
 ```bash
 # Install httpie
