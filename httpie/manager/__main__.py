@@ -52,7 +52,6 @@ def program():
     try:
         exit_status = main()
     except KeyboardInterrupt:
-        from httpie.status import ExitStatus
         exit_status = ExitStatus.ERROR_CTRL_C
 
     return exit_status
