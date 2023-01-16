@@ -232,7 +232,6 @@ def program(args: argparse.Namespace, env: Environment) -> ExitStatus:
                     exit_status = http_status_to_exit_status(http_status=message.status_code, follow=args.follow)
                     if exit_status != ExitStatus.SUCCESS and (not env.stdout_isatty or args.quiet == 1):
                         env.log_error(f'HTTP {message.raw.status} {message.raw.reason}', level=LogLevel.WARNING)
-
             if args.auth_type == 'digest':
                 if isinstance(message, requests.models.PreparedRequest):
                     request_message = message
