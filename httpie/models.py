@@ -13,6 +13,7 @@ from .utils import parse_content_type_header, split_cookies
 
 ELAPSED_TIME_LABEL = 'Elapsed time'
 
+
 class HTTPMessage:
     """Abstract class for HTTP messages."""
 
