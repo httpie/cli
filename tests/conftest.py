@@ -5,7 +5,7 @@ from pytest_httpbin import certs
 
 from .utils import HTTPBIN_WITH_CHUNKED_SUPPORT  # noqa
 from .utils import (HTTPBIN_WITH_CHUNKED_SUPPORT_DOMAIN, IS_PYOPENSSL,
-                    REMOTE_HTTPBIN_DOMAIN, mock_env)
+                    REMOTE_HTTPBIN_DOMAIN)
 from .utils.http_server import http_server, localhost_http_server  # noqa
 from .utils.plugins_cli import (broken_plugin, dummy_plugin,  # noqa
                                 dummy_plugins, httpie_plugins,
