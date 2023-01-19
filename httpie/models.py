@@ -8,7 +8,9 @@ import requests
 from .cli.constants import (OUT_REQ_BODY, OUT_REQ_HEAD, OUT_RESP_BODY,
                             OUT_RESP_HEAD, OUT_RESP_META)
 from .compat import cached_property
+
 from .utils import parse_content_type_header, split_cookies
+
 
 ELAPSED_TIME_LABEL = 'Elapsed time'
 
@@ -60,27 +62,10 @@ class HTTPResponse(HTTPMessage):
     def iter_lines(self, chunk_size):
         return ((line, b'\n') for line in self._orig.iter_lines(chunk_size))
 
-    # noinspection PyProtectedMember
     @property
     def headers(self):
-        try:
-            raw = self._orig.raw
-            if getattr(raw, '_original_response', None):
-                raw_version = raw._original_response.version
-            else:
-                raw_version = raw.version
-        except AttributeError:
-            # Assume HTTP/1.1
-            raw_version = 11
-        version = {
-            9: '0.9',
-            10: '1.0',
-            11: '1.1',
-            20: '2.0',
-        }[raw_version]
-
         original = self._orig
-        status_line = f'HTTP/{version} {original.status_code} {original.reason}'
+        status_line = f'HTTP/{self.version} {original.status_code} {original.reason}'
         headers = [status_line]
         headers.extend(
             ': '.join(header)
@@ -109,6 +94,32 @@ class HTTPResponse(HTTPMessage):
             f'{key}: {value}'
             for key, value in data.items()
         )
+
+    @property
+    def version(self) -> str:
+        """
+        Return the HTTP version used by the server, e.g. '1.1'.
+
+        Assume HTTP/1.1 if version is not available.
+
+        """
+        mapping = {
+            9: '0.9',
+            10: '1.0',
+            11: '1.1',
+            20: '2.0',
+        }
+        fallback = 11
+        version = None
+        try:
+            raw = self._orig.raw
+            if getattr(raw, '_original_response', None):
+                version = raw._original_response.version
+            else:
+                version = raw.version
+        except AttributeError:
+            pass
+        return mapping[version or fallback]
 
 
 class HTTPRequest(HTTPMessage):

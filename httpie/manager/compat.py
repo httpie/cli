@@ -43,7 +43,6 @@ def _discover_system_pip() -> List[str]:
 
 
 def _run_pip_subprocess(pip_executable: List[str], args: List[str]) -> bytes:
-    import subprocess
 
     cmd = [*pip_executable, *args]
     try:
