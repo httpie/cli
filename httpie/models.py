@@ -8,7 +8,9 @@ import requests
 from .cli.constants import (OUT_REQ_BODY, OUT_REQ_HEAD, OUT_RESP_BODY,
                             OUT_RESP_HEAD, OUT_RESP_META)
 from .compat import cached_property
-from .utils import split_cookies, parse_content_type_header
+
+from .utils import parse_content_type_header, split_cookies
+
 
 
 ELAPSED_TIME_LABEL = 'Elapsed time'
