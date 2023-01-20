@@ -2,8 +2,9 @@
 import pytest
 
 from httpie.compat import is_windows
-from .utils.matching import assert_output_matches, Expect
+
 from .utils import HTTP_OK, MockEnvironment, http
+from .utils.matching import Expect, assert_output_matches
 
 
 def test_Host_header_overwrite(httpbin):

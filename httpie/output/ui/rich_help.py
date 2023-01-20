@@ -73,7 +73,7 @@ def to_usage(
     spec: ParserSpec,
     *,
     program_name: Optional[str] = None,
-    whitelist: AbstractSet[str] = frozenset()
+    whitelist: AbstractSet[str] = frozenset(),
 ) -> RenderableType:
     shown_arguments = [
         argument
@@ -194,7 +194,7 @@ def to_help_message(
                             dec,
                         )
                         for key, value, dec in argument.nested_options
-                    ]
+                    ],
                 )
 
         group_rows[group.name] = options_rows
@@ -222,7 +222,7 @@ def to_help_message(
     )
     yield Padding(
         MORE_INFO_COMMANDS.rstrip('\n'),
-        LEFT_PADDING_3
+        LEFT_PADDING_3,
     )
     yield Padding(
         spec.epilog.rstrip('\n'),

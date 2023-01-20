@@ -44,13 +44,13 @@ def test_daemon_runner():
 
     spawn_daemon('check_status')
 
-    for attempt in range(MAX_ATTEMPT):
+    for _ in range(MAX_ATTEMPT):
         time.sleep(MAX_TIMEOUT / MAX_ATTEMPT)
         if status_file.exists():
             break
     else:
         pytest.fail(
-            'Maximum number of attempts failed for daemon status check.'
+            'Maximum number of attempts failed for daemon status check.',
         )
 
     assert status_file.exists()
@@ -75,7 +75,7 @@ def test_fetch(static_fetch_data, without_warnings):
 
 
 def test_fetch_dont_override_existing_layout(
-    static_fetch_data, without_warnings
+    static_fetch_data, without_warnings,
 ):
     with open(without_warnings.config.version_info_file, 'w') as stream:
         existing_layout = {
@@ -116,7 +116,7 @@ def test_fetch_broken_json(static_fetch_data, without_warnings):
 
 
 def test_check_updates_disable_warnings(
-    without_warnings, httpbin, fetch_update_mock
+    without_warnings, httpbin, fetch_update_mock,
 ):
     r = http(httpbin + '/get', env=without_warnings)
     assert not fetch_update_mock.called
@@ -124,7 +124,7 @@ def test_check_updates_disable_warnings(
 
 
 def test_check_updates_first_invocation(
-    with_warnings, httpbin, fetch_update_mock
+    with_warnings, httpbin, fetch_update_mock,
 ):
     r = http(httpbin + '/get', env=with_warnings)
     assert fetch_update_mock.called
@@ -168,7 +168,7 @@ def test_check_updates_first_time_after_data_fetch_unknown_build_channel(
 
 
 def test_cli_check_updates(
-    static_fetch_data, higher_build_channel
+    static_fetch_data, higher_build_channel,
 ):
     r = httpie('cli', 'check-updates')
     assert r.exit_status == ExitStatus.SUCCESS
@@ -178,11 +178,11 @@ def test_cli_check_updates(
 @pytest.mark.parametrize(
     "build_channel", [
         pytest.lazy_fixture("lower_build_channel"),
-        pytest.lazy_fixture("unknown_build_channel")
-    ]
+        pytest.lazy_fixture("unknown_build_channel"),
+    ],
 )
 def test_cli_check_updates_not_shown(
-    static_fetch_data, build_channel
+    static_fetch_data, build_channel,
 ):
     r = httpie('cli', 'check-updates')
     assert r.exit_status == ExitStatus.SUCCESS

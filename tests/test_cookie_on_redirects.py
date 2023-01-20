@@ -1,4 +1,5 @@
 import pytest
+
 from .utils import http
 
 
@@ -18,7 +19,7 @@ def test_explicit_user_set_cookie(httpbin, instance):
         '--follow',
         httpbin + '/redirect-to',
         f'url=={_stringify(instance)}/cookies',
-        'Cookie:a=b'
+        'Cookie:a=b',
     )
     assert r.json == {'cookies': {}}
 
@@ -37,7 +38,7 @@ def test_explicit_user_set_cookie_in_session(tmp_path, httpbin, instance):
         str(tmp_path / 'session.json'),
         httpbin + '/redirect-to',
         f'url=={_stringify(instance)}/cookies',
-        'Cookie:a=b'
+        'Cookie:a=b',
     )
     assert r.json == {'cookies': {'a': 'b'}}
 
@@ -55,7 +56,7 @@ def test_saved_user_set_cookie_in_session(tmp_path, httpbin, instance):
         '--session',
         str(tmp_path / 'session.json'),
         httpbin + '/get',
-        'Cookie:a=b'
+        'Cookie:a=b',
     )
     r = http(
         '--follow',
@@ -80,7 +81,7 @@ def test_explicit_user_set_headers(httpbin, tmp_path, instance, session):
     if session:
         session_args.extend([
             '--session',
-            str(tmp_path / 'session.json')
+            str(tmp_path / 'session.json'),
         ])
 
     r = http(
@@ -88,7 +89,7 @@ def test_explicit_user_set_headers(httpbin, tmp_path, instance, session):
         *session_args,
         httpbin + '/redirect-to',
         f'url=={_stringify(instance)}/get',
-        'X-Custom-Header:value'
+        'X-Custom-Header:value',
     )
     assert 'X-Custom-Header' in r.json['headers']
 
@@ -102,7 +103,7 @@ def test_server_set_cookie_on_redirect_same_domain(tmp_path, httpbin, session):
     if session:
         session_args.extend([
             '--session',
-            str(tmp_path / 'session.json')
+            str(tmp_path / 'session.json'),
         ])
 
     r = http(
@@ -122,7 +123,7 @@ def test_server_set_cookie_on_redirect_different_domain(tmp_path, http_server, h
     if session:
         session_args.extend([
             '--session',
-            str(tmp_path / 'session.json')
+            str(tmp_path / 'session.json'),
         ])
 
     r = http(
@@ -130,7 +131,7 @@ def test_server_set_cookie_on_redirect_different_domain(tmp_path, http_server, h
         *session_args,
         http_server + '/cookies/set-and-redirect',
         f"X-Redirect-To:{httpbin + '/cookies'}",
-        'X-Cookies:a=b'
+        'X-Cookies:a=b',
     )
     assert r.json['cookies'] == {'a': 'b'}
 
@@ -141,12 +142,12 @@ def test_saved_session_cookies_on_same_domain(tmp_path, httpbin):
     http(
         '--session',
         str(tmp_path / 'session.json'),
-        httpbin + '/cookies/set/a/b'
+        httpbin + '/cookies/set/a/b',
     )
     r = http(
         '--session',
         str(tmp_path / 'session.json'),
-        httpbin + '/cookies'
+        httpbin + '/cookies',
     )
     assert r.json == {'cookies': {'a': 'b'}}
 
@@ -157,12 +158,12 @@ def test_saved_session_cookies_on_different_domain(tmp_path, httpbin, remote_htt
     http(
         '--session',
         str(tmp_path / 'session.json'),
-        httpbin + '/cookies/set/a/b'
+        httpbin + '/cookies/set/a/b',
     )
     r = http(
         '--session',
         str(tmp_path / 'session.json'),
-        remote_httpbin + '/cookies'
+        remote_httpbin + '/cookies',
     )
     assert r.json == {'cookies': {}}
 
@@ -209,14 +210,14 @@ def test_saved_session_cookies_on_redirect(tmp_path, initial_domain, first_reque
     http(
         '--session',
         str(tmp_path / 'session.json'),
-        initial_domain + '/cookies/set/a/b'
+        initial_domain + '/cookies/set/a/b',
     )
     r = http(
         '--session',
         str(tmp_path / 'session.json'),
         '--follow',
         first_request_domain + '/redirect-to',
-        f'url=={_stringify(second_request_domain)}/cookies'
+        f'url=={_stringify(second_request_domain)}/cookies',
     )
     if expect_cookies:
         expected_data = {'cookies': {'a': 'b'}}
@@ -229,29 +230,29 @@ def test_saved_session_cookie_pool(tmp_path, httpbin, remote_httpbin):
     http(
         '--session',
         str(tmp_path / 'session.json'),
-        httpbin + '/cookies/set/a/b'
+        httpbin + '/cookies/set/a/b',
     )
     http(
         '--session',
         str(tmp_path / 'session.json'),
-        remote_httpbin + '/cookies/set/a/c'
+        remote_httpbin + '/cookies/set/a/c',
     )
     http(
         '--session',
         str(tmp_path / 'session.json'),
-        remote_httpbin + '/cookies/set/b/d'
+        remote_httpbin + '/cookies/set/b/d',
     )
 
     response = http(
         '--session',
         str(tmp_path / 'session.json'),
-        httpbin + '/cookies'
+        httpbin + '/cookies',
     )
     assert response.json['cookies'] == {'a': 'b'}
 
     response = http(
         '--session',
         str(tmp_path / 'session.json'),
-        remote_httpbin + '/cookies'
+        remote_httpbin + '/cookies',
     )
     assert response.json['cookies'] == {'a': 'c', 'b': 'd'}

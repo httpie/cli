@@ -1,28 +1,27 @@
 import argparse
-from pathlib import Path
-from unittest import mock
-
+import io
 import json
 import os
-import io
 import warnings
+from pathlib import Path
+from unittest import mock
 from urllib.request import urlopen
 
 import pytest
 import requests
 import responses
 
-from httpie.cli.argtypes import (
-    PARSED_DEFAULT_FORMAT_OPTIONS,
-    parse_format_options,
-)
+from httpie.cli.argtypes import (PARSED_DEFAULT_FORMAT_OPTIONS,
+                                 parse_format_options)
 from httpie.cli.definition import parser
 from httpie.encoding import UTF8
-from httpie.output.formatters.colors import get_lexer, PIE_STYLE_NAMES, BUNDLED_STYLES
+from httpie.output.formatters.colors import (BUNDLED_STYLES, PIE_STYLE_NAMES,
+                                             get_lexer)
 from httpie.status import ExitStatus
-from .fixtures import XML_DATA_RAW, XML_DATA_FORMATTED
-from .utils import COLOR, CRLF, HTTP_OK, MockEnvironment, http, DUMMY_URL, strip_colors
 
+from .fixtures import XML_DATA_FORMATTED, XML_DATA_RAW
+from .utils import (COLOR, CRLF, DUMMY_URL, HTTP_OK, MockEnvironment, http,
+                    strip_colors)
 
 # For ensuring test reproducibility, avoid using the unsorted
 # BUNDLED_STYLES set.
@@ -52,7 +51,7 @@ class TestQuietFlag:
         env = MockEnvironment(
             stdin_isatty=True,
             stdout_isatty=True,
-            devnull=io.BytesIO()
+            devnull=io.BytesIO(),
         )
         r = http(*quiet_flags, 'GET', httpbin.url + '/get', env=env)
         assert env.stdout is env.devnull
@@ -72,7 +71,7 @@ class TestQuietFlag:
         r = http(
             '--quiet', '--check-status', httpbin + '/status/500',
             tolerate_error_exit_status=True,
-            env=MockEnvironment(stdout_isatty=False)
+            env=MockEnvironment(stdout_isatty=False),
         )
         assert 'http: warning: HTTP 500' in r.stderr
 
@@ -87,7 +86,7 @@ class TestQuietFlag:
         r = http(
             '--quiet', '--quiet', '--check-status', httpbin + '/status/500',
             tolerate_error_exit_status=True,
-            env=MockEnvironment(stdout_isatty=False)
+            env=MockEnvironment(stdout_isatty=False),
         )
         assert 'http: warning: HTTP 500' in r.stderr
 
@@ -130,12 +129,12 @@ class TestQuietFlag:
         env = MockEnvironment(
             stdin_isatty=True,
             stdout_isatty=True,
-            devnull=io.BytesIO()
+            devnull=io.BytesIO(),
         )
         r = http(
             *quiet_flags, '--auth', 'user', 'GET',
             httpbin.url + '/basic-auth/user/password',
-            env=env
+            env=env,
         )
         assert env.stdout is env.devnull
         assert env.stderr is env.devnull
@@ -170,7 +169,7 @@ class TestQuietFlag:
                 '--output', str(output_path),
                 *extra_args,
                 url,
-                env=env
+                env=env,
             )
             assert os.listdir('.') == [str(output_path)]
             assert r == ''
@@ -237,7 +236,7 @@ class TestColors:
             ('application/vnd.comverge.grid+hal+json', False, None, 'JSON'),
             ('text/plain', True, '{}', 'JSON'),
             ('text/plain', True, 'foo', 'Text only'),
-        ]
+        ],
     )
     def test_get_lexer(self, mime, explicit_json, body, expected_lexer_name):
         lexer = get_lexer(mime, body=body, explicit_json=explicit_json)
@@ -409,7 +408,7 @@ class TestFormatOptions:
                 json.dumps({'b': 0, 'a': 0}),
             ),
             # @formatter:on
-        ]
+        ],
     )
     def test_json_formatting_options(self, options: str, expected_json: str):
         r = http(
@@ -427,7 +426,7 @@ class TestFormatOptions:
             ({'foo': {'bar': True}}, 'foo.bar:false', {'foo': {'bar': False}}),
             ({'foo': {'bar': 'a'}}, 'foo.bar:b', {'foo': {'bar': 'b'}}),
             # @formatter:on
-        ]
+        ],
     )
     def test_parse_format_options(self, defaults, options_string, expected):
         actual = parse_format_options(s=options_string, defaults=defaults)
@@ -439,13 +438,13 @@ class TestFormatOptions:
             ('foo:2', 'invalid option'),
             ('foo.baz:2', 'invalid key'),
             ('foo.bar:false', 'expected int got bool'),
-        ]
+        ],
     )
     def test_parse_format_options_errors(self, options_string, expected_error):
         defaults = {
             'foo': {
-                'bar': 1
-            }
+                'bar': 1,
+            },
         }
         with pytest.raises(argparse.ArgumentTypeError, match=expected_error):
             parse_format_options(s=options_string, defaults=defaults)
@@ -457,41 +456,41 @@ class TestFormatOptions:
                 [
                     '--format-options',
                     'headers.sort:false,json.sort_keys:false',
-                    '--format-options=json.indent:10'
+                    '--format-options=json.indent:10',
                 ],
                 {
                     'headers': {
-                        'sort': False
+                        'sort': False,
                     },
                     'json': {
                         'sort_keys': False,
                         'indent': 10,
-                        'format': True
+                        'format': True,
                     },
                     'xml': {
                         'format': True,
                         'indent': 2,
                     },
-                }
+                },
             ),
             (
                 [
-                    '--unsorted'
+                    '--unsorted',
                 ],
                 {
                     'headers': {
-                        'sort': False
+                        'sort': False,
                     },
                     'json': {
                         'sort_keys': False,
                         'indent': 4,
-                        'format': True
+                        'format': True,
                     },
                     'xml': {
                         'format': True,
                         'indent': 2,
                     },
-                }
+                },
             ),
             (
                 [
@@ -501,18 +500,18 @@ class TestFormatOptions:
                 ],
                 {
                     'headers': {
-                        'sort': True
+                        'sort': True,
                     },
                     'json': {
                         'sort_keys': False,
                         'indent': 4,
-                        'format': True
+                        'format': True,
                     },
                     'xml': {
                         'format': True,
                         'indent': 2,
                     },
-                }
+                },
             ),
             (
                 [
@@ -533,18 +532,18 @@ class TestFormatOptions:
                 ],
                 {
                     'headers': {
-                        'sort': True
+                        'sort': True,
                     },
                     'json': {
                         'sort_keys': True,
                         'indent': 2,
-                        'format': True
+                        'format': True,
                     },
                     'xml': {
                         'format': False,
                         'indent': 4,
                     },
-                }
+                },
             ),
             (
                 [
@@ -554,18 +553,18 @@ class TestFormatOptions:
                 ],
                 {
                     'headers': {
-                        'sort': True
+                        'sort': True,
                     },
                     'json': {
                         'sort_keys': True,
                         'indent': 2,
-                        'format': True
+                        'format': True,
                     },
                     'xml': {
                         'format': True,
                         'indent': 2,
                     },
-                }
+                },
             ),
             (
                 [
@@ -576,18 +575,18 @@ class TestFormatOptions:
                 ],
                 {
                     'headers': {
-                        'sort': True
+                        'sort': True,
                     },
                     'json': {
                         'sort_keys': True,
                         'indent': 2,
-                        'format': True
+                        'format': True,
                     },
                     'xml': {
                         'format': True,
                         'indent': 2,
                     },
-                }
+                },
             ),
         ],
     )
@@ -610,7 +609,7 @@ def test_response_mime_overwrite():
     r = http(
         '--offline',
         '--raw', XML_DATA_RAW,
-        '--response-mime=application/xml', DUMMY_URL
+        '--response-mime=application/xml', DUMMY_URL,
     )
     assert XML_DATA_RAW in r  # not affecting request bodies
 

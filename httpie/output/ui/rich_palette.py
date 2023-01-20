@@ -1,10 +1,11 @@
 from collections import ChainMap
 from typing import TYPE_CHECKING, Any, Optional
 
+from httpie.output.ui.palette import (ColorString, GenericColor,  # noqa
+                                      PieStyle, Styles, _StyledGenericColor)
+
 if TYPE_CHECKING:
     from rich.theme import Theme
-
-from httpie.output.ui.palette import GenericColor, PieStyle, Styles, ColorString, _StyledGenericColor  # noqa
 
 RICH_BOLD = ColorString('bold')
 
@@ -55,7 +56,7 @@ def _make_rich_color_theme(style_name: Optional[str] = None) -> 'Theme':
 
     theme = Theme()
     for color, color_set in ChainMap(
-        GenericColor.__members__, CUSTOM_STYLES
+        GenericColor.__members__, CUSTOM_STYLES,
     ).items():
         if isinstance(color_set, _StyledGenericColor):
             properties = dict.fromkeys(color_set.styles, True)

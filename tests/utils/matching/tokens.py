@@ -6,6 +6,7 @@ class Expect(Enum):
     Predefined token types we can expect in the output.
 
     """
+
     REQUEST_HEADERS = auto()
     RESPONSE_HEADERS = auto()
     RESPONSE_META = auto()
@@ -18,6 +19,7 @@ class ExpectSequence:
     Standard combined chunks. These predefined requests and responses assume a body.
 
     """
+
     RAW_REQUEST = [
         Expect.REQUEST_HEADERS,
         Expect.BODY,
@@ -48,9 +50,9 @@ class ExpectSequence:
     ]
     TERMINAL_EXCHANGE_META = [
         *TERMINAL_EXCHANGE,
-        Expect.RESPONSE_META
+        Expect.RESPONSE_META,
     ]
     TERMINAL_BODY = [
         RAW_BODY,
-        Expect.SEPARATOR
+        Expect.SEPARATOR,
     ]

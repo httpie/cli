@@ -1,12 +1,14 @@
-import pytest
-import shutil
 import json
+import shutil
+
+import pytest
+
+from httpie.cli.options import PARSER_SPEC_VERSION
 from httpie.sessions import SESSIONS_DIR_NAME
 from httpie.status import ExitStatus
-from httpie.cli.options import PARSER_SPEC_VERSION
+from tests.fixtures import (SESSION_FILES_NEW, SESSION_FILES_OLD,
+                            SESSION_FILES_PATH, read_session_file)
 from tests.utils import DUMMY_HOST, httpie
-from tests.fixtures import SESSION_FILES_PATH, SESSION_FILES_NEW, SESSION_FILES_OLD, read_session_file
-
 
 OLD_SESSION_FILES_PATH = SESSION_FILES_PATH / 'old'
 
@@ -73,7 +75,7 @@ HTTPIE_CLI_SESSIONS_UPGRADE_OPTIONS = [
 
 
 @pytest.mark.parametrize(
-    'old_session_file, new_session_file', zip(SESSION_FILES_OLD, SESSION_FILES_NEW)
+    'old_session_file, new_session_file', zip(SESSION_FILES_OLD, SESSION_FILES_NEW),
 )
 @pytest.mark.parametrize(
     'extra_args, extra_variables',
@@ -84,11 +86,11 @@ def test_httpie_sessions_upgrade(tmp_path, old_session_file, new_session_file, e
     shutil.copyfile(old_session_file, session_path)
 
     result = httpie(
-        'cli', 'sessions', 'upgrade', *extra_args, DUMMY_HOST, str(session_path)
+        'cli', 'sessions', 'upgrade', *extra_args, DUMMY_HOST, str(session_path),
     )
     assert result.exit_status == ExitStatus.SUCCESS
     assert read_session_file(session_path) == read_session_file(
-        new_session_file, extra_variables=extra_variables
+        new_session_file, extra_variables=extra_variables,
     )
 
 
@@ -113,24 +115,24 @@ def test_httpie_sessions_upgrade_all(tmp_path, mock_env, extra_args, extra_varia
         shutil.copy(original_session_file, session_dir)
 
     result = httpie(
-        'cli', 'sessions', 'upgrade-all', *extra_args, env=mock_env
+        'cli', 'sessions', 'upgrade-all', *extra_args, env=mock_env,
     )
     assert result.exit_status == ExitStatus.SUCCESS
 
     for refactored_session_file, expected_session_file in zip(
         sorted(session_dir.glob("*.json")),
-        SESSION_FILES_NEW
+        SESSION_FILES_NEW,
     ):
         assert read_session_file(refactored_session_file) == read_session_file(
-            expected_session_file, extra_variables=extra_variables
+            expected_session_file, extra_variables=extra_variables,
         )
 
 
 @pytest.mark.parametrize(
     'load_func, extra_options', [
         (json.loads, []),
-        (json.loads, ['--format=json'])
-    ]
+        (json.loads, ['--format=json']),
+    ],
 )
 def test_cli_export(load_func, extra_options):
     response = httpie('cli', 'export-args', *extra_options)

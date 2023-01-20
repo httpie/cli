@@ -1,9 +1,9 @@
 import argparse
 import os
 import platform
-import sys
 import socket
-from typing import List, Optional, Union, Callable
+import sys
+from typing import Callable, List, Optional, Union
 
 import requests
 from pygments import __version__ as pygments_version
@@ -15,17 +15,15 @@ from .cli.nested_json import NestedJSONSyntaxError
 from .client import collect_messages
 from .context import Environment, LogLevel
 from .downloads import Downloader
-from .models import (
-    RequestsMessageKind,
-    OutputOptions
-)
+from .internal.daemon_runner import is_daemon_mode, run_daemon_task
+from .internal.update_warnings import check_updates
+from .models import OutputOptions, RequestsMessageKind
 from .output.models import ProcessingOptions
-from .output.writer import write_message, write_stream, write_raw_data, MESSAGE_SEPARATOR_BYTES
+from .output.writer import (MESSAGE_SEPARATOR_BYTES, write_message,
+                            write_raw_data, write_stream)
 from .plugins.registry import plugin_manager
 from .status import ExitStatus, http_status_to_exit_status
 from .utils import unwrap_context
-from .internal.update_warnings import check_updates
-from .internal.daemon_runner import is_daemon_mode, run_daemon_task
 
 
 # noinspection PyDefaultArgument
@@ -119,7 +117,7 @@ def raw_main(
             exit_status = ExitStatus.ERROR_TOO_MANY_REDIRECTS
             env.log_error(
                 f'Too many redirects'
-                f' (--max-redirects={parsed_args.max_redirects}).'
+                f' (--max-redirects={parsed_args.max_redirects}).',
             )
         except requests.exceptions.ConnectionError as exc:
             annotation = None
@@ -145,7 +143,7 @@ def raw_main(
 
 def main(
     args: List[Union[str, bytes]] = sys.argv,
-    env: Environment = Environment()
+    env: Environment = Environment(),
 ) -> ExitStatus:
     """
     The main function.
@@ -156,14 +154,13 @@ def main(
     Return exit status code.
 
     """
-
     from .cli.definition import parser
 
     return raw_main(
         parser=parser,
         main_program=program,
         args=args,
-        env=env
+        env=env,
     )
 
 
@@ -189,14 +186,14 @@ def program(args: argparse.Namespace, env: Environment) -> ExitStatus:
             # & not `.read()` already pre-request (e.g., for  compression)
             and initial_request
             # & non-EOF chunk
-            and chunk
+            and chunk,
         )
         if should_pipe_to_stdout:
             return write_raw_data(
                 env,
                 chunk,
                 processing_options=processing_options,
-                headers=initial_request.headers
+                headers=initial_request.headers,
             )
 
     try:
@@ -235,9 +232,9 @@ def program(args: argparse.Namespace, env: Environment) -> ExitStatus:
                 requests_message=message,
                 env=env,
                 output_options=output_options._replace(
-                    body=do_write_body
+                    body=do_write_body,
                 ),
-                processing_options=processing_options
+                processing_options=processing_options,
             )
             prev_with_body = output_options.body
 
@@ -256,7 +253,7 @@ def program(args: argparse.Namespace, env: Environment) -> ExitStatus:
                 exit_status = ExitStatus.ERROR
                 env.log_error(
                     f'Incomplete download: size={downloader.status.total_size};'
-                    f' downloaded={downloader.status.downloaded}'
+                    f' downloaded={downloader.status.downloaded}',
                 )
         return exit_status
 
@@ -284,7 +281,7 @@ def print_debug_info(env: Environment):
 
 def decode_raw_args(
     args: List[Union[str, bytes]],
-    stdin_encoding: str
+    stdin_encoding: str,
 ) -> List[str]:
     """
     Convert all bytes args to str
@@ -293,6 +290,6 @@ def decode_raw_args(
     """
     return [
         arg.decode(stdin_encoding)
-        if type(arg) is bytes else arg
+        if isinstance(arg, bytes) else arg
         for arg in args
     ]

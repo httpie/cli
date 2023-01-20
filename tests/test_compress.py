@@ -11,9 +11,10 @@ our zlib-encoded request data.
 import base64
 import zlib
 
-from .fixtures import FILE_PATH, FILE_CONTENT
 from httpie.status import ExitStatus
-from .utils import StdinBytesIO, http, HTTP_OK, MockEnvironment
+
+from .fixtures import FILE_CONTENT, FILE_PATH
+from .utils import HTTP_OK, MockEnvironment, StdinBytesIO, http
 
 
 def assert_decompressed_equal(base64_compressed_data, expected_str):

@@ -3,22 +3,9 @@ import socket
 import pytest
 from pytest_httpbin import certs
 
-from .utils import ( # noqa
-    HTTPBIN_WITH_CHUNKED_SUPPORT_DOMAIN,
-    HTTPBIN_WITH_CHUNKED_SUPPORT,
-    REMOTE_HTTPBIN_DOMAIN,
-    IS_PYOPENSSL,
-    mock_env
-)
-from .utils.plugins_cli import ( # noqa
-    broken_plugin,
-    dummy_plugin,
-    dummy_plugins,
-    httpie_plugins,
-    httpie_plugins_success,
-    interface,
-)
-from .utils.http_server import http_server, localhost_http_server # noqa
+from .utils import HTTPBIN_WITH_CHUNKED_SUPPORT  # noqa
+from .utils import (HTTPBIN_WITH_CHUNKED_SUPPORT_DOMAIN, IS_PYOPENSSL,
+                    REMOTE_HTTPBIN_DOMAIN)
 
 
 @pytest.fixture(scope='function', autouse=True)

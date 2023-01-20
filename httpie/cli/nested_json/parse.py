@@ -1,18 +1,8 @@
 from typing import Iterator
 
 from .errors import NestedJSONSyntaxError
-from .tokens import (
-    EMPTY_STRING,
-    BACKSLASH,
-    TokenKind,
-    OPERATORS,
-    SPECIAL_CHARS,
-    LITERAL_TOKENS,
-    Token,
-    PathAction,
-    Path,
-)
-
+from .tokens import (BACKSLASH, EMPTY_STRING, LITERAL_TOKENS, OPERATORS,
+                     SPECIAL_CHARS, Path, PathAction, Token, TokenKind)
 
 __all__ = [
     'parse',
@@ -35,7 +25,6 @@ def parse(source: str) -> Iterator[Path]:
     append_path: LEFT_BRACKET RIGHT_BRACKET
 
     """
-
     tokens = list(tokenize(source))
     cursor = 0
 
@@ -73,7 +62,7 @@ def parse(source: str) -> Iterator[Path]:
             return Path(
                 kind=PathAction.KEY,
                 accessor=EMPTY_STRING,
-                is_root=True
+                is_root=True,
             )
         # (literal | index_path | append_path)?
         token = expect(*LITERAL_TOKENS, TokenKind.LEFT_BRACKET)
@@ -100,7 +89,7 @@ def parse(source: str) -> Iterator[Path]:
             kind=action,
             accessor=value,
             tokens=tokens,
-            is_root=True
+            is_root=True,
         )
 
     yield parse_root()

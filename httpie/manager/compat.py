@@ -1,9 +1,9 @@
-import sys
 import shutil
 import subprocess
-
+import sys
 from contextlib import suppress
 from typing import List, Optional
+
 from httpie.compat import is_frozen
 
 
@@ -32,7 +32,7 @@ def _discover_system_pip() -> List[str]:
 
     targets = [
         "pip",
-        "pip3"
+        "pip3",
     ]
     for target in targets:
         pip_location = shutil.which(target)
@@ -51,7 +51,7 @@ def _run_pip_subprocess(pip_executable: List[str], args: List[str]) -> bytes:
             check=True,
             shell=False,
             stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
+            stderr=subprocess.PIPE,
         )
     except subprocess.CalledProcessError as error:
         raise PipError(error.stdout, error.stderr) from error

@@ -9,7 +9,7 @@ from tests.utils.plugins_cli import parse_listing
 def test_plugins_installation(httpie_plugins_success, interface, dummy_plugin, cli_mode):
     lines = httpie_plugins_success('install', dummy_plugin.path, cli_mode=cli_mode)
     assert lines[0].startswith(
-        f'Installing {dummy_plugin.path}'
+        f'Installing {dummy_plugin.path}',
     )
     assert f'Successfully installed {dummy_plugin.name}-{dummy_plugin.version}' in lines
     assert interface.is_installed(dummy_plugin.name)
@@ -22,7 +22,7 @@ def test_plugin_installation_with_custom_config(httpie_plugins_success, interfac
 
     lines = httpie_plugins_success('install', dummy_plugin.path)
     assert lines[0].startswith(
-        f'Installing {dummy_plugin.path}'
+        f'Installing {dummy_plugin.path}',
     )
     assert f'Successfully installed {dummy_plugin.name}-{dummy_plugin.version}' in lines
     assert interface.is_installed(dummy_plugin.name)
@@ -35,7 +35,7 @@ def test_plugins_listing(httpie_plugins_success, interface, dummy_plugin, cli_mo
     data = parse_listing(httpie_plugins_success('list'))
 
     assert data == {
-        dummy_plugin.name: dummy_plugin.dump()
+        dummy_plugin.name: dummy_plugin.dump(),
     }
 
 
@@ -139,7 +139,7 @@ def test_broken_plugins(httpie_plugins, httpie_plugins_success, dummy_plugin, br
         match=(
             f'While loading "{broken_plugin.name}", an error'
             ' occurred: broken plugin'
-        )
+        ),
     ):
         data = parse_listing(httpie_plugins_success('list'))
         assert len(data) == 2

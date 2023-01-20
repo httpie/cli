@@ -2,7 +2,7 @@ import json
 from contextlib import nullcontext, suppress
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Optional, Callable
+from typing import Any, Callable, Optional
 
 import requests
 
@@ -81,7 +81,8 @@ def _get_suppress_context(env: Environment) -> Any:
 
     Note: if you have set the developer_mode=True in
     your config, then it will show all errors for easier
-    debugging."""
+    debugging.
+    """
     if env.config.developer_mode:
         return nullcontext()
     else:
@@ -89,10 +90,11 @@ def _get_suppress_context(env: Environment) -> Any:
 
 
 def _update_checker(
-    func: Callable[[Environment], None]
+    func: Callable[[Environment], None],
 ) -> Callable[[Environment], None]:
     """Control the execution of the update checker (suppress errors, trigger
-    auto updates etc.)"""
+    auto updates etc.)
+    """
 
     def wrapper(env: Environment) -> None:
         with _get_suppress_context(env):
@@ -106,7 +108,8 @@ def _update_checker(
 
 def _get_update_status(env: Environment) -> Optional[str]:
     """If there is a new update available, return the warning text.
-    Otherwise just return None."""
+    Otherwise just return None.
+    """
     file = env.config.version_info_file
     if not file.exists():
         return None

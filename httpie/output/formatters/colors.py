@@ -1,5 +1,5 @@
 import json
-from typing import Optional, Type, Tuple
+from typing import Optional, Tuple, Type
 
 import pygments.formatters
 import pygments.lexer
@@ -15,12 +15,12 @@ from pygments.lexers.special import TextLexer
 from pygments.lexers.text import HttpLexer as PygmentsHttpLexer
 from pygments.util import ClassNotFound
 
-from ..lexers.json import EnhancedJsonLexer
-from ..lexers.metadata import MetadataLexer
-from ..ui.palette import AUTO_STYLE, SHADE_TO_PIE_STYLE, PieColor, ColorString, get_color
 from ...context import Environment
 from ...plugins import FormatterPlugin
-
+from ..lexers.json import EnhancedJsonLexer
+from ..lexers.metadata import MetadataLexer
+from ..ui.palette import (AUTO_STYLE, SHADE_TO_PIE_STYLE, ColorString,
+                          PieColor, get_color)
 
 DEFAULT_STYLE = AUTO_STYLE
 SOLARIZED_STYLE = 'solarized'  # Bundled here
@@ -29,7 +29,7 @@ PYGMENTS_ITALIC = ColorString('italic')
 
 BUNDLED_STYLES = {
     SOLARIZED_STYLE,
-    AUTO_STYLE
+    AUTO_STYLE,
 }
 
 
@@ -45,6 +45,7 @@ class ColorFormatter(FormatterPlugin):
     and also to the body if its content type is recognized.
 
     """
+
     group_name = 'colors'
     metadata_lexer = MetadataLexer()
 
@@ -53,7 +54,7 @@ class ColorFormatter(FormatterPlugin):
         env: Environment,
         explicit_json=False,
         color_scheme=DEFAULT_STYLE,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
 
@@ -104,7 +105,7 @@ class ColorFormatter(FormatterPlugin):
 
     def get_lexer_for_body(
         self, mime: str,
-        body: str
+        body: str,
     ) -> Optional[Type[Lexer]]:
         return get_lexer(
             mime=mime,
@@ -115,7 +116,7 @@ class ColorFormatter(FormatterPlugin):
     def get_formatters(self, color_scheme: str) -> Tuple[
         pygments.formatter.Formatter,
         pygments.formatter.Formatter,
-        bool
+        bool,
     ]:
         if color_scheme in PIE_STYLES:
             header_style, body_style = PIE_STYLES[color_scheme]
@@ -128,7 +129,7 @@ class ColorFormatter(FormatterPlugin):
         return (
             Terminal256Formatter(style=header_style),
             Terminal256Formatter(style=body_style),
-            precise
+            precise,
         )
 
     @staticmethod
@@ -142,7 +143,7 @@ class ColorFormatter(FormatterPlugin):
 def get_lexer(
     mime: str,
     explicit_json=False,
-    body=''
+    body='',
 ) -> Optional[Type[Lexer]]:
     # Build candidate mime type and lexer names.
     mime_types, lexer_names = [mime], []
@@ -205,6 +206,7 @@ class Solarized256Style(pygments.style.Style):
     :license: BSD, see LICENSE for more details.
 
     """
+
     BASE03 = "#1c1c1c"
     BASE02 = "#262626"
     BASE01 = "#4e4e4e"
@@ -363,7 +365,7 @@ def make_style(name, raw_styles, shade):
         'styles': {
             key: format_value(value)
             for key, value in raw_styles.items()
-        }
+        },
     }
     return type(name, bases, data)
 

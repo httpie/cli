@@ -1,24 +1,22 @@
 import argparse
-import sys
 import os
+import sys
 import warnings
 from contextlib import contextmanager
-from pathlib import Path
-from typing import Iterator, IO, Optional, TYPE_CHECKING
 from enum import Enum
-
+from pathlib import Path
+from typing import IO, TYPE_CHECKING, Iterator, Optional
 
 try:
     import curses
 except ImportError:
     curses = None  # Compiled w/o curses
 
-from .compat import is_windows, cached_property
+from .compat import cached_property, is_windows
 from .config import DEFAULT_CONFIG_DIR, Config, ConfigFileError
 from .encoding import UTF8
-
-from .utils import repr_dict
 from .output.ui.palette import GenericColor
+from .utils import repr_dict
 
 if TYPE_CHECKING:
     from rich.console import Console
@@ -53,6 +51,7 @@ class Environment:
     is used by the test suite to simulate various scenarios.
 
     """
+
     args = argparse.Namespace()
     is_windows: bool = is_windows
     config_dir: Path = DEFAULT_CONFIG_DIR
@@ -82,11 +81,11 @@ class Environment:
         import colorama.initialise
         stdout = colorama.initialise.wrap_stream(
             stdout, convert=None, strip=None,
-            autoreset=True, wrap=True
+            autoreset=True, wrap=True,
         )
         stderr = colorama.initialise.wrap_stream(
             stderr, convert=None, strip=None,
-            autoreset=True, wrap=True
+            autoreset=True, wrap=True,
         )
         del colorama
 
@@ -178,7 +177,7 @@ class Environment:
             style=LOG_LEVEL_COLORS[level],
             markup=False,
             highlight=False,
-            soft_wrap=True
+            soft_wrap=True,
         )
 
     def apply_warnings_filter(self) -> None:
@@ -188,9 +187,10 @@ class Environment:
     def _make_rich_console(
         self,
         file: IO[str],
-        force_terminal: bool
+        force_terminal: bool,
     ) -> 'Console':
         from rich.console import Console
+
         from httpie.output.ui.rich_palette import _make_rich_color_theme
 
         style = getattr(self.args, 'style', None)
@@ -201,7 +201,7 @@ class Environment:
             file=file,
             force_terminal=force_terminal,
             no_color=(self.colors == 0),
-            theme=theme
+            theme=theme,
         )
 
     # Rich recommends separating the actual console (stdout) from

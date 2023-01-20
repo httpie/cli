@@ -3,13 +3,12 @@ import json
 
 from httpie.cli.definition import options
 from httpie.cli.options import to_data
+from httpie.context import Environment
 from httpie.output.writer import write_raw_data
 from httpie.status import ExitStatus
-from httpie.context import Environment
-
 
 FORMAT_TO_CONTENT_TYPE = {
-    'json': 'application/json'
+    'json': 'application/json',
 }
 
 

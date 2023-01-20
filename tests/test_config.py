@@ -4,12 +4,13 @@ import pytest
 from _pytest.monkeypatch import MonkeyPatch
 
 from httpie.compat import is_windows
+from httpie.config import (DEFAULT_CONFIG_DIRNAME,
+                           DEFAULT_RELATIVE_LEGACY_CONFIG_DIR,
+                           DEFAULT_RELATIVE_XDG_CONFIG_HOME,
+                           DEFAULT_WINDOWS_CONFIG_DIR, ENV_HTTPIE_CONFIG_DIR,
+                           ENV_XDG_CONFIG_HOME, Config, get_default_config_dir)
 from httpie.encoding import UTF8
-from httpie.config import (
-    Config, DEFAULT_CONFIG_DIRNAME, DEFAULT_RELATIVE_LEGACY_CONFIG_DIR,
-    DEFAULT_RELATIVE_XDG_CONFIG_HOME, DEFAULT_WINDOWS_CONFIG_DIR,
-    ENV_HTTPIE_CONFIG_DIR, ENV_XDG_CONFIG_HOME, get_default_config_dir,
-)
+
 from .utils import HTTP_OK, MockEnvironment, http
 
 
@@ -19,7 +20,7 @@ def test_default_options(httpbin):
     env.config.save()
     r = http(httpbin.url + '/post', 'foo=bar', env=env)
     assert r.json['form'] == {
-        "foo": "bar"
+        "foo": "bar",
     }
 
 
@@ -53,7 +54,7 @@ def test_default_options_overwrite(httpbin):
     env.config.save()
     r = http('--json', httpbin.url + '/post', 'foo=bar', env=env)
     assert r.json['json'] == {
-        "foo": "bar"
+        "foo": "bar",
     }
 
 

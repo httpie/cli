@@ -1,9 +1,9 @@
-from typing import Type, Union, Any, Iterable, Tuple
+from typing import Any, Iterable, Tuple, Type, Union
 
-from .parse import parse, assert_cant_happen
 from .errors import NestedJSONSyntaxError
-from .tokens import EMPTY_STRING, TokenKind, Token, PathAction, Path, NestedJSONArray
-
+from .parse import assert_cant_happen, parse
+from .tokens import (EMPTY_STRING, NestedJSONArray, Path, PathAction, Token,
+                     TokenKind)
 
 __all__ = [
     'interpret_nested_json',

@@ -1,6 +1,6 @@
 import re
 
-from pygments.lexer import bygroups, using, RegexLexer
+from pygments.lexer import RegexLexer, bygroups, using
 from pygments.lexers.data import JsonLexer
 from pygments.token import Token
 
@@ -15,6 +15,7 @@ class EnhancedJsonLexer(RegexLexer):
     It adds support for eventual data prefixing the actual JSON body.
 
     """
+
     name = 'JSON'
     flags = re.IGNORECASE | re.DOTALL
     tokens = {
@@ -23,7 +24,7 @@ class EnhancedJsonLexer(RegexLexer):
             # FIX: data prefix + number (integer or float) is not correctly handled.
             (
                 fr'({PREFIX_REGEX})' + r'((?:[{\["]|true|false|null).+)',
-                bygroups(PREFIX_TOKEN, using(JsonLexer))
+                bygroups(PREFIX_TOKEN, using(JsonLexer)),
             ),
             # JSON body.
             (r'.+', using(JsonLexer)),

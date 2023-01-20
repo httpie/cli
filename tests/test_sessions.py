@@ -1,15 +1,15 @@
 import json
 import os
 import shutil
+from base64 import b64encode
 from contextlib import contextmanager
 from datetime import datetime
-from unittest import mock
 from pathlib import Path
 from typing import Iterator
+from unittest import mock
 
 import pytest
 
-from .fixtures import FILE_PATH_ARG, UNICODE
 from httpie.context import Environment
 from httpie.encoding import UTF8
 from httpie.plugins import AuthPlugin
@@ -17,9 +17,10 @@ from httpie.plugins.builtin import HTTPBasicAuth
 from httpie.plugins.registry import plugin_manager
 from httpie.sessions import Session
 from httpie.utils import get_expired_cookies
+
+from .fixtures import FILE_PATH_ARG, UNICODE
 from .test_auth_plugins import basic_auth
 from .utils import DUMMY_HOST, HTTP_OK, MockEnvironment, http, mk_config_dir
-from base64 import b64encode
 
 
 class SessionTestBase:
@@ -54,8 +55,8 @@ class CookieTestBase:
                 },
                 'cookie2': {
                     'value': 'foo',
-                }
-            }
+                },
+            },
         }
         self.session_path = self.config_dir / 'test-session.json'
         self.session_path.write_text(json.dumps(orig_session), encoding=UTF8)
@@ -84,7 +85,7 @@ class TestSessionFlow(SessionTestBase):
             'GET',
             httpbin.url + '/cookies/set?hello=world',
             'Hello:World',
-            env=self.env()
+            env=self.env(),
         )
         assert HTTP_OK in r1
 
@@ -209,8 +210,8 @@ class TestSession(SessionTestBase):
         session_data = {
             'headers': {
                 'cookie': '...',
-                'zzz': '...'
-            }
+                'zzz': '...',
+            },
         }
         session_path = self.config_dir / 'session-data.json'
         session_path.write_text(json.dumps(session_data))
@@ -266,8 +267,8 @@ class TestSession(SessionTestBase):
         [
             (False, False),
             (False, True),
-            (True, False)
-        ]
+            (True, False),
+        ],
     )
     def test_auth_type_reused_in_session(self, auth_require_param, auth_parse_param, httpbin):
         self.start_session(httpbin)
@@ -318,7 +319,7 @@ class TestSession(SessionTestBase):
 
         with mock.patch(
             'httpie.cli.argtypes.AuthCredentials._getpass',
-            new=lambda self, prompt: 'password'
+            new=lambda self, prompt: 'password',
         ):
             r1 = http(
                 '--session', str(session_path),
@@ -373,8 +374,8 @@ class TestExpiredCookies(CookieTestBase):
         'initial_cookie, expired_cookie',
         [
             ({'id': {'value': 123}}, {'name': 'id'}),
-            ({'id': {'value': 123}}, {'name': 'token'})
-        ]
+            ({'id': {'value': 123}}, {'name': 'token'}),
+        ],
     )
     def test_removes_expired_cookies_from_session_obj(self, initial_cookie, expired_cookie, httpbin, mock_env):
         session = Session(self.config_dir, env=mock_env, session_id=None, bound_host=None)
@@ -397,7 +398,7 @@ class TestExpiredCookies(CookieTestBase):
     def test_get_expired_cookies_using_max_age(self):
         cookies = 'one=two; Max-Age=0; path=/; domain=.tumblr.com; HttpOnly'
         expected_expired = [
-            {'name': 'one', 'path': '/'}
+            {'name': 'one', 'path': '/'},
         ]
         assert get_expired_cookies(cookies, now=None) == expected_expired
 
@@ -410,9 +411,9 @@ class TestExpiredCookies(CookieTestBase):
                 [
                     {
                         'name': 'hello',
-                        'path': '/'
-                    }
-                ]
+                        'path': '/',
+                    },
+                ],
             ),
             (
                 (
@@ -422,22 +423,22 @@ class TestExpiredCookies(CookieTestBase):
                 None,
                 [
                     {'name': 'hello', 'path': '/'},
-                    {'name': 'pea', 'path': '/ab'}
-                ]
+                    {'name': 'pea', 'path': '/ab'},
+                ],
             ),
             (
                 # Checks we gracefully ignore expires date in invalid format.
                 # <https://github.com/httpie/httpie/issues/963>
                 'pfg=; Expires=Sat, 19-Sep-2020 06:58:14 GMT+0000; Max-Age=0; path=/; domain=.tumblr.com; secure; HttpOnly',
                 None,
-                []
+                [],
             ),
             (
                 'hello=world; Path=/; Expires=Fri, 12 Jun 2020 12:28:55 GMT; HttpOnly',
                 datetime(2020, 6, 11).timestamp(),
-                []
+                [],
             ),
-        ]
+        ],
     )
     def test_get_expired_cookies_manages_multiple_cookie_headers(self, cookies, now, expected_expired):
         assert get_expired_cookies(cookies, now=now) == expected_expired
@@ -450,29 +451,29 @@ class TestCookieStorage(CookieTestBase):
         [(
             'new=bar',
             {'new': 'bar'},
-            'cookie1=foo; cookie2=foo; new=bar'
+            'cookie1=foo; cookie2=foo; new=bar',
         ),
             (
             'new=bar;chocolate=milk',
             {'new': 'bar', 'chocolate': 'milk'},
-            'chocolate=milk; cookie1=foo; cookie2=foo; new=bar'
+            'chocolate=milk; cookie1=foo; cookie2=foo; new=bar',
         ),
             (
             'new=bar; chocolate=milk',
             {'new': 'bar', 'chocolate': 'milk'},
-            'chocolate=milk; cookie1=foo; cookie2=foo; new=bar'
+            'chocolate=milk; cookie1=foo; cookie2=foo; new=bar',
         ),
             (
             'new=bar;; chocolate=milk;;;',
             {'new': 'bar', 'chocolate': 'milk'},
-            'cookie1=foo; cookie2=foo; new=bar'
+            'cookie1=foo; cookie2=foo; new=bar',
         ),
             (
             'new=bar; chocolate=milk;;;',
             {'new': 'bar', 'chocolate': 'milk'},
-            'chocolate=milk; cookie1=foo; cookie2=foo; new=bar'
-        )
-        ]
+            'chocolate=milk; cookie1=foo; cookie2=foo; new=bar',
+        ),
+        ],
     )
     def test_existing_and_new_cookies_sent_in_request(self, new_cookies, new_cookies_dict, expected, httpbin):
         r = http(
@@ -494,24 +495,24 @@ class TestCookieStorage(CookieTestBase):
         [(
             '',
             '/cookies/set/cookie1/bar',
-            'bar'
+            'bar',
         ),
             (
             'cookie1=not_foo',
             '/cookies/set/cookie1/bar',
-            'bar'
+            'bar',
         ),
             (
             'cookie1=not_foo',
             '',
-            'not_foo'
+            'not_foo',
         ),
             (
             '',
             '',
-            'foo'
-        )
-        ]
+            'foo',
+        ),
+        ],
     )
     def test_cookie_storage_priority(self, cli_cookie, set_cookie, expected, httpbin):
         """
@@ -535,7 +536,7 @@ def basic_session(httpbin, tmp_path):
     session_path = tmp_path / 'session.json'
     http(
         '--session', str(session_path),
-        httpbin + '/get'
+        httpbin + '/get',
     )
     return session_path
 
@@ -595,12 +596,12 @@ def test_old_session_cookie_layout_warning(basic_session, mock_env):
     (
         # Without 'domain' set
         {'foo': {'value': 'bar'}},
-        True
+        True,
     ),
     (
         # With 'domain' set to empty string
         {'foo': {'value': 'bar', 'domain': ''}},
-        True
+        True,
     ),
     (
         # With 'domain' set to null
@@ -616,12 +617,12 @@ def test_old_session_cookie_layout_warning(basic_session, mock_env):
     (
         # Without 'domain' set
         [{'name': 'foo', 'value': 'bar'}],
-        False
+        False,
     ),
     (
         # With 'domain' set to empty string
         [{'name': 'foo', 'value': 'bar', 'domain': ''}],
-        False
+        False,
     ),
     (
         # With 'domain' set to null
@@ -656,13 +657,13 @@ def test_old_session_cookie_layout_loading(basic_session, httpbin, mock_env):
 
     response = http(
         '--session', str(basic_session),
-        httpbin + '/cookies'
+        httpbin + '/cookies',
     )
     assert response.json['cookies'] == {'foo': 'bar'}
 
 
 @pytest.mark.parametrize('layout_type', [
-    dict, list
+    dict, list,
 ])
 def test_session_cookie_layout_preservation(basic_session, mock_env, layout_type):
     with open_session(basic_session, mock_env) as session:
@@ -675,7 +676,7 @@ def test_session_cookie_layout_preservation(basic_session, mock_env, layout_type
 
 
 @pytest.mark.parametrize('layout_type', [
-    dict, list
+    dict, list,
 ])
 def test_session_cookie_layout_preservation_on_new_cookies(basic_session, httpbin, mock_env, layout_type):
     with open_session(basic_session, mock_env) as session:
@@ -685,7 +686,7 @@ def test_session_cookie_layout_preservation_on_new_cookies(basic_session, httpbi
 
     http(
         '--session', str(basic_session),
-        httpbin + '/cookies/set/baz/quux'
+        httpbin + '/cookies/set/baz/quux',
     )
 
     with open_session(basic_session, mock_env, read_only=True) as session:
@@ -696,20 +697,20 @@ def test_session_cookie_layout_preservation_on_new_cookies(basic_session, httpbi
     # Old-style header format
     (
         {},
-        False
+        False,
     ),
     (
         {'Foo': 'bar'},
-        True
+        True,
     ),
     # New style header format
     (
         [],
-        False
+        False,
     ),
     (
         [{'name': 'Foo', 'value': 'Bar'}],
-        False
+        False,
     ),
 ])
 def test_headers_old_layout_warning(basic_session, mock_env, headers, expect_warning):
@@ -731,8 +732,8 @@ def test_outdated_layout_mixed(basic_session, mock_env):
         raw_session['headers'] = {'Foo': 'Bar'}
         raw_session['cookies'] = {
             'cookie': {
-                'value': 'value'
-            }
+                'value': 'value',
+            },
         }
 
     with open_session(basic_session, mock_env, read_only=True):
@@ -749,13 +750,13 @@ def test_old_session_header_layout_loading(basic_session, httpbin, mock_env):
 
     response = http(
         '--session', str(basic_session),
-        httpbin + '/get'
+        httpbin + '/get',
     )
     assert response.json['headers']['Foo'] == 'Bar'
 
 
 @pytest.mark.parametrize('layout_type', [
-    dict, list
+    dict, list,
 ])
 def test_session_header_layout_preservation(basic_session, mock_env, layout_type):
     with open_session(basic_session, mock_env) as session:
@@ -767,7 +768,7 @@ def test_session_header_layout_preservation(basic_session, mock_env, layout_type
 
 
 @pytest.mark.parametrize('layout_type', [
-    dict, list
+    dict, list,
 ])
 def test_session_header_layout_preservation_on_new_headers(basic_session, httpbin, mock_env, layout_type):
     with open_session(basic_session, mock_env) as session:
@@ -777,7 +778,7 @@ def test_session_header_layout_preservation_on_new_headers(basic_session, httpbi
     http(
         '--session', str(basic_session),
         httpbin + '/get',
-        'Baz:Quux'
+        'Baz:Quux',
     )
 
     with open_session(basic_session, mock_env, read_only=True) as session:
@@ -790,7 +791,7 @@ def test_session_multiple_headers_with_same_name(basic_session, httpbin):
         httpbin + '/get',
         'Foo:bar',
         'Foo:baz',
-        'Foo:bar'
+        'Foo:bar',
     )
 
     r = http(
@@ -807,13 +808,13 @@ def test_session_multiple_headers_with_same_name(basic_session, httpbin):
     [
         (
             pytest.lazy_fixture('localhost_http_server'),
-            {'secure_cookie': 'foo', 'insecure_cookie': 'bar'}
+            {'secure_cookie': 'foo', 'insecure_cookie': 'bar'},
         ),
         (
             pytest.lazy_fixture('remote_httpbin'),
-            {'insecure_cookie': 'bar'}
-        )
-    ]
+            {'insecure_cookie': 'bar'},
+        ),
+    ],
 )
 def test_secure_cookies_on_localhost(mock_env, tmp_path, server, expected_cookies):
     session_path = tmp_path / 'session.json'
@@ -821,7 +822,7 @@ def test_secure_cookies_on_localhost(mock_env, tmp_path, server, expected_cookie
         '--session', str(session_path),
         server + '/cookies/set',
         'secure_cookie==foo',
-        'insecure_cookie==bar'
+        'insecure_cookie==bar',
     )
 
     with open_session(session_path, mock_env) as session:
@@ -831,6 +832,6 @@ def test_secure_cookies_on_localhost(mock_env, tmp_path, server, expected_cookie
 
     r = http(
         '--session', str(session_path),
-        server + '/cookies'
+        server + '/cookies',
     )
     assert r.json == {'cookies': expected_cookies}

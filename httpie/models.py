@@ -1,20 +1,14 @@
+from enum import Enum, auto
 from time import monotonic
+from typing import Iterable, NamedTuple, Union
+from urllib.parse import urlsplit
 
 import requests
 
-from enum import Enum, auto
-from typing import Iterable, Union, NamedTuple
-from urllib.parse import urlsplit
-
-from .cli.constants import (
-    OUT_REQ_BODY,
-    OUT_REQ_HEAD,
-    OUT_RESP_BODY,
-    OUT_RESP_HEAD,
-    OUT_RESP_META
-)
+from .cli.constants import (OUT_REQ_BODY, OUT_REQ_HEAD, OUT_RESP_BODY,
+                            OUT_RESP_HEAD, OUT_RESP_META)
 from .compat import cached_property
-from .utils import split_cookies, parse_content_type_header
+from .utils import parse_content_type_header, split_cookies
 
 ELAPSED_TIME_LABEL = 'Elapsed time'
 
@@ -45,7 +39,7 @@ class HTTPMessage:
 
     @cached_property
     def encoding(self) -> str:
-        ct, params = parse_content_type_header(self.content_type)
+        _, params = parse_content_type_header(self.content_type)
         return params.get('charset', '')
 
     @property
@@ -142,7 +136,7 @@ class HTTPRequest(HTTPMessage):
         request_line = '{method} {path}{query} HTTP/1.1'.format(
             method=self._orig.method,
             path=url.path or '/',
-            query=f'?{url.query}' if url.query else ''
+            query=f'?{url.query}' if url.query else '',
         )
 
         headers = self._orig.headers.copy()
@@ -192,8 +186,8 @@ OPTION_TO_PARAM = {
     RequestsMessageKind.RESPONSE: {
         'headers': OUT_RESP_HEAD,
         'body': OUT_RESP_BODY,
-        'meta': OUT_RESP_META
-    }
+        'meta': OUT_RESP_META,
+    },
 }
 
 
@@ -215,7 +209,7 @@ class OutputOptions(NamedTuple):
         cls,
         message: RequestsMessage,
         raw_args: str = '',
-        **kwargs
+        **kwargs,
     ):
         kind = infer_requests_message_kind(message)
 
@@ -227,5 +221,5 @@ class OutputOptions(NamedTuple):
 
         return cls(
             kind=kind,
-            **options
+            **options,
         )

@@ -1,9 +1,8 @@
 import sys
-from typing import Any, Optional, Iterable
+from http import cookiejar  # noqa
+from typing import Any, Iterable, Optional
 
 from httpie.cookies import HTTPieCookiePolicy
-from http import cookiejar # noqa
-
 
 # Request does not carry the original policy attached to the
 # cookie jar, so until it is resolved we change the global cookie
@@ -32,13 +31,14 @@ except ImportError:
         The optional ``name`` argument is obsolete as of Python 3.6 and will be
         deprecated in Django 4.0 (#30127).
         """
+
         name = None
 
         @staticmethod
         def func(instance):
             raise TypeError(
                 'Cannot use cached_property instance without calling '
-                '__set_name__() on it.'
+                '__set_name__() on it.',
             )
 
         def __init__(self, func, name=None):
@@ -52,7 +52,7 @@ except ImportError:
             elif name != self.name:
                 raise TypeError(
                     "Cannot assign the same cached_property to two different names "
-                    "(%r and %r)." % (self.name, name)
+                    "(%r and %r)." % (self.name, name),
                 )
 
         def __get__(self, instance, cls=None):

@@ -1,24 +1,17 @@
 import errno
+from typing import IO, Any, Dict, Optional, TextIO, Tuple, Type, Union
+
 import requests
-from typing import Any, Dict, IO, Optional, TextIO, Tuple, Type, Union
 
 from ..cli.dicts import HTTPHeadersDict
 from ..context import Environment
-from ..models import (
-    HTTPRequest,
-    HTTPResponse,
-    HTTPMessage,
-    RequestsMessage,
-    RequestsMessageKind,
-    OutputOptions,
-)
+from ..models import (HTTPMessage, HTTPRequest, HTTPResponse, OutputOptions,
+                      RequestsMessage, RequestsMessageKind)
+from ..utils import parse_content_type_header
 from .models import ProcessingOptions
 from .processing import Conversion, Formatting
-from .streams import (
-    BaseStream, BufferedPrettyStream, EncodedStream, PrettyStream, RawStream,
-)
-from ..utils import parse_content_type_header
-
+from .streams import (BaseStream, BufferedPrettyStream, EncodedStream,
+                      PrettyStream, RawStream)
 
 MESSAGE_SEPARATOR = '\n\n'
 MESSAGE_SEPARATOR_BYTES = MESSAGE_SEPARATOR.encode()
@@ -29,7 +22,7 @@ def write_message(
     env: Environment,
     output_options: OutputOptions,
     processing_options: ProcessingOptions,
-    extra_stream_kwargs: Optional[Dict[str, Any]] = None
+    extra_stream_kwargs: Optional[Dict[str, Any]] = None,
 ):
     if not output_options.any():
         return
@@ -39,11 +32,11 @@ def write_message(
             requests_message=requests_message,
             output_options=output_options,
             processing_options=processing_options,
-            extra_stream_kwargs=extra_stream_kwargs
+            extra_stream_kwargs=extra_stream_kwargs,
         ),
         # NOTE: `env.stdout` will in fact be `stderr` with `--download`
         'outfile': env.stdout,
-        'flush': env.stdout_isatty or processing_options.stream
+        'flush': env.stdout_isatty or processing_options.stream,
     }
     try:
         if env.is_windows and 'colors' in processing_options.get_prettify(env):
@@ -61,7 +54,7 @@ def write_message(
 def write_stream(
     stream: BaseStream,
     outfile: Union[IO, TextIO],
-    flush: bool
+    flush: bool,
 ):
     """Write the output stream."""
     try:
@@ -79,7 +72,7 @@ def write_stream(
 def write_stream_with_colors_win(
     stream: 'BaseStream',
     outfile: TextIO,
-    flush: bool
+    flush: bool,
 ):
     """Like `write`, but colorized chunks are written as text
     directly to `outfile` to ensure it gets processed by colorama.
@@ -103,7 +96,7 @@ def write_raw_data(
     *,
     processing_options: Optional[ProcessingOptions] = None,
     headers: Optional[HTTPHeadersDict] = None,
-    stream_kwargs: Optional[Dict[str, Any]] = None
+    stream_kwargs: Optional[Dict[str, Any]] = None,
 ):
     msg = requests.PreparedRequest()
     msg.is_body_upload_chunk = True
@@ -115,7 +108,7 @@ def write_raw_data(
         env=env,
         output_options=msg_output_options,
         processing_options=processing_options or ProcessingOptions(),
-        extra_stream_kwargs=stream_kwargs
+        extra_stream_kwargs=stream_kwargs,
     )
 
 
@@ -124,7 +117,7 @@ def build_output_stream_for_message(
     requests_message: RequestsMessage,
     output_options: OutputOptions,
     processing_options: ProcessingOptions,
-    extra_stream_kwargs: Optional[Dict[str, Any]] = None
+    extra_stream_kwargs: Optional[Dict[str, Any]] = None,
 ):
     message_type = {
         RequestsMessageKind.REQUEST: HTTPRequest,
@@ -134,7 +127,7 @@ def build_output_stream_for_message(
         env=env,
         processing_options=processing_options,
         message_type=message_type,
-        headers=requests_message.headers
+        headers=requests_message.headers,
     )
     if extra_stream_kwargs:
         stream_kwargs.update(extra_stream_kwargs)
@@ -176,7 +169,7 @@ def get_stream_type_and_kwargs(
                 RawStream.CHUNK_SIZE_BY_LINE
                 if is_stream
                 else RawStream.CHUNK_SIZE
-            )
+            ),
         }
     else:
         stream_class = EncodedStream
@@ -198,7 +191,7 @@ def get_stream_type_and_kwargs(
                     color_scheme=processing_options.style,
                     explicit_json=processing_options.json,
                     format_options=processing_options.format_options,
-                )
+                ),
             })
 
     return stream_class, stream_kwargs
