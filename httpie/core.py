@@ -1,4 +1,5 @@
 import argparse
+import json
 import os
 import platform
 import sys
@@ -48,11 +49,32 @@ def raw_main(
     if use_default_options and env.config.default_options:
         args = env.config.default_options + args
 
+    def load_template(arg):
+        with open("httpie/cli/templates.json", "r+") as f:
+            stored_templates = {}
+            try:
+                stored_templates = json.load(f)
+            except json.JSONDecodeError:
+                pass
+            args = []
+            args_dict = stored_templates[arg]
+            if not args_dict is None:
+                args.append(args_dict.pop('method'))
+            args.append(args_dict.pop('url'))
+            data_dict = args_dict.pop('data')
+            for _, value in data_dict.items():
+                args.append(value)
+            return args
+        
     if (args[0] == "template"):
-        print("Testet fungerar -------")
         from httpie.cli.argtemplate import store_json_template
         store_json_template(args[1:])
         return ExitStatus.SUCCESS
+    
+    if (args[0] == "runt"):
+        from httpie.cli.argtemplate import store_json_template
+        args = load_template(args[1])
+        
 
     include_debug_info = '--debug' in args
     include_traceback = include_debug_info or '--traceback' in args
