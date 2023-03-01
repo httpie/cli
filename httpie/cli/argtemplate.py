@@ -32,7 +32,33 @@ def store_json_template(args):
             stored_templates = json.load(f)
         except json.JSONDecodeError:
             pass
+        if template_name in stored_templates:
+            stored_templates.pop(template_name)
         stored_templates[template_name] = template
         f.seek(0)
         json.dump(stored_templates, f)
+        f.truncate()
+
+def edit_json_template(args):
+    stored_templates = {}
+    with open("httpie/cli/templates.json", "r+") as f:
+        try:
+            stored_templates = json.load(f)
+        except json.JSONDecodeError:
+            pass
+        template_name = args.pop(0)
+        template_item = args.pop(0)
+        template_value = args.pop(0)  
+        updated_template = {}
+        if template_name in stored_templates:
+            updated_template = stored_templates.pop(template_name)
+
+        updated_template[template_item] = template_value
+        stored_templates[template_name] = updated_template
+        f.seek(0)
+        json.dump(stored_templates, f) 
+        f.truncate()
+
+
+
 

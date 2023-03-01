@@ -65,15 +65,23 @@ def raw_main(
             for _, value in data_dict.items():
                 args.append(value)
             return args
-        
+
+    # http template <name> |<METHOD>| <url> |<REQUEST_ITEM>|    
     if (args[0] == "template"):
         from httpie.cli.argtemplate import store_json_template
         store_json_template(args[1:])
         return ExitStatus.SUCCESS
     
+    # http runt <name>
     if (args[0] == "runt"):
         from httpie.cli.argtemplate import store_json_template
         args = load_template(args[1])
+
+    # http editt <name> <request_item> <new_value>
+    if (args[0] == "editt"):
+        from httpie.cli.argtemplate import edit_json_template
+        edit_json_template(args[1:])
+        return ExitStatus.SUCCESS
         
 
     include_debug_info = '--debug' in args
