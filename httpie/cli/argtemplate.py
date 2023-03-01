@@ -52,10 +52,22 @@ def edit_json_template(args):
         template_item = args.pop(0)
         template_value = args.pop(0)  
         updated_template = {}
+  
         if template_name in stored_templates:
             updated_template = stored_templates.pop(template_name)
+            
+        else:
+            raise Exception("Template doesn't exist")
+        
+        data_dict = {}
+        print(updated_template['data'])
+        if template_item in updated_template['data']:
+            data_dict = updated_template.pop('data')
+        else:
+            raise Exception("Item doesn't exist")
 
-        updated_template[template_item] = template_value
+        data_dict[template_item] = template_value
+        updated_template['data'] = data_dict
         stored_templates[template_name] = updated_template
         f.seek(0)
         json.dump(stored_templates, f) 
