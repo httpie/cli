@@ -1,0 +1,1 @@
+{"nytemplate": {"method": "POST", "url": "google.se", "data": {"name": "adam"}}, "nytemplate2": {"method": "POST", "url": "google.com", "data": {"name": "adam"}}}
