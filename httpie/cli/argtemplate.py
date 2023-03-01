@@ -60,7 +60,6 @@ def edit_json_template(args):
             raise Exception("Template doesn't exist")
         
         data_dict = {}
-        print(updated_template['data'])
         if template_item in updated_template['data']:
             data_dict = updated_template.pop('data')
         else:

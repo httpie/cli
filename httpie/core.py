@@ -49,22 +49,23 @@ def raw_main(
     if use_default_options and env.config.default_options:
         args = env.config.default_options + args
 
-    # http template <name> |<METHOD>| <url> |<REQUEST_ITEM>|
-    if (args[0] == "template"):
-        from httpie.cli.argtemplate import store_json_template
-        store_json_template(args[1:])
-        return ExitStatus.SUCCESS
+    if args[0] is not None:
+        # http template <name> |<METHOD>| <url> |<REQUEST_ITEM>|
+        if (args[0] == "template"):
+            from httpie.cli.argtemplate import store_json_template
+            store_json_template(args[1:])
+            return ExitStatus.SUCCESS
 
-    # http runt <name>
-    if (args[0] == "runt"):
-        from httpie.cli.argtemplate import store_json_template, load_template
-        args = load_template(args[1])
+        # http runt <name>
+        if (args[0] == "runt"):
+            from httpie.cli.argtemplate import store_json_template, load_template
+            args = load_template(args[1])
 
-    # http editt <name> <request_item> <new_value>
-    if (args[0] == "editt"):
-        from httpie.cli.argtemplate import edit_json_template
-        edit_json_template(args[1:])
-        return ExitStatus.SUCCESS
+        # http editt <name> <request_item> <new_value>
+        if (args[0] == "editt"):
+            from httpie.cli.argtemplate import edit_json_template
+            edit_json_template(args[1:])
+            return ExitStatus.SUCCESS
 
     include_debug_info = '--debug' in args
     include_traceback = include_debug_info or '--traceback' in args
