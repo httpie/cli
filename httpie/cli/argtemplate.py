@@ -2,6 +2,8 @@ import argparse
 import json
 import sys
 
+TEMPLATE_FILE = "httpie/cli/templates.json"
+
 def store_json_template(args):
     """
     Store a template as a string in templates.json, the format for running this is:
@@ -26,7 +28,7 @@ def store_json_template(args):
     template['method'] = template_method
     template['url'] = template_url
     template['data'] = template_variables
-    with open("httpie/cli/templates.json", "r+") as f:
+    with open(TEMPLATE_FILE, "r+") as f:
         stored_templates = {}
         try:
             stored_templates = json.load(f)
@@ -41,7 +43,7 @@ def store_json_template(args):
 
 def edit_json_template(args):
     stored_templates = {}
-    with open("httpie/cli/templates.json", "r+") as f:
+    with open(TEMPLATE_FILE, "r+") as f:
         try:
             stored_templates = json.load(f)
         except json.JSONDecodeError:
@@ -59,6 +61,19 @@ def edit_json_template(args):
         json.dump(stored_templates, f) 
         f.truncate()
 
-
-
-
+def load_template(arg):
+    with open(TEMPLATE_FILE, "r+") as f:
+        stored_templates = {}
+        try:
+            stored_templates = json.load(f)
+        except json.JSONDecodeError:
+            pass
+        args = []
+        args_dict = stored_templates[arg]
+        if not args_dict is None:
+            args.append(args_dict.pop('method'))
+        args.append(args_dict.pop('url'))
+        data_dict = args_dict.pop('data')
+        for _, value in data_dict.items():
+            args.append(value)
+        return args
