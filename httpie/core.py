@@ -48,6 +48,12 @@ def raw_main(
     if use_default_options and env.config.default_options:
         args = env.config.default_options + args
 
+    if (args[0] == "template"):
+        print("Testet fungerar -------")
+        from httpie.cli.argtemplate import store_json_template
+        store_json_template(args[1:])
+        return ExitStatus.SUCCESS
+
     include_debug_info = '--debug' in args
     include_traceback = include_debug_info or '--traceback' in args
 
