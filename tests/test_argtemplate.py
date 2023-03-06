@@ -99,9 +99,12 @@ class TestStoreTemplate:
             httpie.cli.argtemplate.store_json_template(args[2:])
 
             stored_templates = json.load(temp_fp)
-            print(stored_templates)
             template = stored_templates[args[2]]
+            assert template is not None
+            assert template['url'] == args[4]
             assert template['method'] is None
+            assert template['data']['param1'] == 'value1'
+            assert template['data']['param2'] == 'value2'
 
 class TestEditTemplate:
     def test_edit_template_update_value(self):
