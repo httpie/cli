@@ -129,3 +129,34 @@ class TestEditTemplate:
             template_data = template['data']
             assert template_data['param1'] == 'newvalue1'
             assert template_data['param2'] == 'value2'
+
+class TestLoadTemplate:
+    def test_load_template(self):
+        """
+        Tests that loading a template yields the same arguments that were passed (except for 'http template <name>')
+        """
+        with tempfile.NamedTemporaryFile('w+', delete=False) as temp_fp:
+            httpie.cli.argtemplate.TEMPLATE_FILE = temp_fp.name
+
+            command = 'http template test_template GET https://catfact.ninja/fact param1=value1 param2=value2'
+            args = command.split()
+
+            httpie.cli.argtemplate.store_json_template(args[2:])
+            loaded_args = httpie.cli.argtemplate.load_template(args[2])
+
+            for i in range(len(args)-3):
+                assert args[i+3] == loaded_args[i]
+
+    def test_load_template_not_found(self):
+        """
+        Tests loading a template when the name of the template to load cannot be found in the template file
+        """
+        with tempfile.NamedTemporaryFile('w+', delete=False) as temp_fp:
+            httpie.cli.argtemplate.TEMPLATE_FILE = temp_fp.name
+
+            command = 'http template test_template GET https://catfact.ninja/fact param1=value1 param2=value2'
+            args = command.split()
+
+            loaded_args = httpie.cli.argtemplate.load_template(args[2])
+            assert loaded_args is None
+                
