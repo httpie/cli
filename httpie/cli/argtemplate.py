@@ -69,7 +69,8 @@ def edit_json_template(args):
             stored_templates[template_name]['data'][template_item] = template_value
         # Add a new key-value pair to the data dictionary
         else:
-            stored_templates[template_name]['data'][template_item] = template_value
+            print(f"Item '{template_item}' does not exist.")
+            return
 
         # Save the updated template to file
         f.seek(0)
