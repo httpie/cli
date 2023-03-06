@@ -43,7 +43,7 @@ def store_json_template(args):
 
 def edit_json_template(args):
     stored_templates = {}
-    with open("httpie/cli/templates.json", "r+") as f:
+    with open(TEMPLATE_FILE, "r+") as f:
         try:
             stored_templates = json.load(f)
         except json.JSONDecodeError:
