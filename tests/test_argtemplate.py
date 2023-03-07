@@ -51,7 +51,7 @@ class TestStoreTemplate:
             assert stored_templates[args[2]] is not None
 
             template = stored_templates[args[2]]
-            assert template['method'] == None
+            assert template['method'] is None
             assert template['url'] == args[3]
             assert template['data'] is not None
 

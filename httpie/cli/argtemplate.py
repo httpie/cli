@@ -1,8 +1,8 @@
-import argparse
 import json
-import sys
+
 
 TEMPLATE_FILE = "httpie/cli/templates.json"
+
 
 def store_json_template(args):
     """
@@ -13,16 +13,21 @@ def store_json_template(args):
     template_method = None
     template_url = None
     template_variables = {}
-    
+
     if ["CONNECT", "DELETE", "GET", "HEAD", "OPTIONS", "POST", "PUT", "TRACE", "PATCH"].__contains__(args[0]):
         template_method = args.pop(0)
         template_url = args.pop(0)
     else:
+        temp = args.pop(0)
+        print(f"'{temp}' is not a valid http method, defaulting to null...")
         template_url = args.pop(0)
-    
+
     for arg in args:
-        variable_name, variable_value = arg.split("=")
-        template_variables[variable_name] = variable_value
+        if '=' in arg:
+            variable_name, variable_value = arg.split("=")
+            template_variables[variable_name] = variable_value
+        else:
+            template_variables[arg] = True
 
     template = {}
     template['method'] = template_method
@@ -41,6 +46,7 @@ def store_json_template(args):
         json.dump(stored_templates, f)
         f.truncate()
 
+
 def edit_json_template(args):
     stored_templates = {}
     with open(TEMPLATE_FILE, "r+") as f:
@@ -48,29 +54,34 @@ def edit_json_template(args):
             stored_templates = json.load(f)
         except json.JSONDecodeError:
             pass
+
         template_name = args.pop(0)
         template_item = args.pop(0)
-        template_value = args.pop(0)  
-        updated_template = {}
-  
-        if template_name in stored_templates:
-            updated_template = stored_templates.pop(template_name)
-            
-        else:
-            raise Exception("Template doesn't exist")
-        
-        data_dict = {}
-        if template_item in updated_template['data']:
-            data_dict = updated_template.pop('data')
-        else:
-            raise Exception("Item doesn't exist")
+        template_value = args.pop(0)
 
-        data_dict[template_item] = template_value
-        updated_template['data'] = data_dict
-        stored_templates[template_name] = updated_template
+        # Check if the template exists
+        if template_name not in stored_templates:
+            print(f"Template '{template_name}' does not exist.")
+            return
+
+        # Update the HTTP method
+        if template_item == 'method':
+            stored_templates[template_name]['method'] = template_value.upper()
+        # Update the URL
+        elif template_item == 'url':
+            stored_templates[template_name]['url'] = template_value
+        # Update a key-value pair in the data dictionary
+        elif template_item in stored_templates[template_name]['data']:
+            stored_templates[template_name]['data'][template_item] = template_value
+        # Add a new key-value pair to the data dictionary
+        else:
+            stored_templates[template_name]['data'][template_item] = template_value
+
+        # Save the updated template to file
         f.seek(0)
-        json.dump(stored_templates, f) 
+        json.dump(stored_templates, f)
         f.truncate()
+
 
 def load_template(arg):
     with open(TEMPLATE_FILE, "r+") as f:
@@ -81,7 +92,7 @@ def load_template(arg):
             pass
         args = []
         args_dict = stored_templates[arg]
-        if not args_dict is None:
+        if args_dict is not None:
             args.append(args_dict.pop('method'))
         args.append(args_dict.pop('url'))
         data_dict = args_dict.pop('data')
