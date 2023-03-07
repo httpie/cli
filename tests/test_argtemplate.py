@@ -2,8 +2,8 @@
 import httpie.cli.argtemplate
 import tempfile
 import json
-from .utils import http
 import pytest
+
 
 class TestStoreTemplate:
 
@@ -106,6 +106,7 @@ class TestStoreTemplate:
             assert template['data']['param1'] == 'value1'
             assert template['data']['param2'] == 'value2'
 
+
 class TestEditTemplate:
     def test_edit_template_update_value(self):
         """
@@ -132,7 +133,7 @@ class TestEditTemplate:
             template_data = template['data']
             assert template_data['param1'] == 'newvalue1'
             assert template_data['param2'] == 'value2'
-    
+
     def test_edit_template_add_method(self):
         """
         Tests that you can edit a template and add a method when there previously was none
@@ -178,7 +179,7 @@ class TestEditTemplate:
             assert template['method'] == 'GET'
             assert template['url'] == 'https://fake-url/'
             assert template['data'] is not None
-    
+
     def test_edit_template_not_found(self, capsys):
         """
         Tests that an exception is raised when trying to edit a template that doesn't exist
@@ -206,8 +207,9 @@ class TestEditTemplate:
             assert old_stored_templates[args[2]]['data']['param2'] is None
 
             httpie.cli.argtemplate.edit_json_template(['test_template', 'param2', 'value2'])
-            new_stored_template = json.load(temp_fp)
+            new_stored_templates = json.load(temp_fp)
             assert new_stored_templates[args[2]]['data']['param2'] == 'value2'
+
 
 class TestLoadTemplate:
     def test_load_template(self):
@@ -223,8 +225,8 @@ class TestLoadTemplate:
             httpie.cli.argtemplate.store_json_template(args[2:])
             loaded_args = httpie.cli.argtemplate.load_template(args[2])
 
-            for i in range(len(args)-3):
-                assert args[i+3] == loaded_args[i]
+            for i in range(len(args) - 3):
+                assert args[i + 3] == loaded_args[i]
 
     def test_load_template_not_found(self):
         """
@@ -238,4 +240,3 @@ class TestLoadTemplate:
 
             loaded_args = httpie.cli.argtemplate.load_template(args[2])
             assert loaded_args is None
-                
