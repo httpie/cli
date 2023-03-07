@@ -19,9 +19,8 @@ def store_json_template(args):
         template_method = args.pop(0)
         template_url = args.pop(0)
     else:
-        temp = args.pop(0)
-        print(f"'{temp}' is not a valid http method, defaulting to null...")
         template_url = args.pop(0)
+        print(f"'{template_url}' is not a valid http method, defaulting to null...")
 
     for arg in args:
         if '=' in arg:
