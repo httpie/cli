@@ -3,7 +3,7 @@ import httpie.cli.argtemplate
 import tempfile
 import json
 import pytest
-
+import os
 
 class TestStoreTemplate:
 
@@ -106,6 +106,23 @@ class TestStoreTemplate:
             assert template['data']['param1'] == 'value1'
             assert template['data']['param2'] == 'value2'
 
+    def test_store_template_no_templates_json(self):
+        """
+        Tests that a new file will be created for storing templates if templates.json (TEMPLATE_FILE) doesn't exist
+        """
+        httpie.cli.argtemplate.TEMPLATE_FILE = "NOT_A_REAL_FILE"
+        assert not os.path.isfile(httpie.cli.argtemplate.TEMPLATE_FILE)
+
+        httpie.cli.argtemplate.store_json_template(["fake_template", "GET", "https://catfact.ninja/fact"])
+        assert os.path.isfile(httpie.cli.argtemplate.TEMPLATE_FILE)
+
+        fp = open(httpie.cli.argtemplate.TEMPLATE_FILE, "r")
+        templates = json.load(fp)
+
+        assert templates["fake_template"]["method"] == "GET"
+        assert templates["fake_template"]["url"] == "https://catfact.ninja/fact"
+
+        os.remove(httpie.cli.argtemplate.TEMPLATE_FILE)
 
 class TestEditTemplate:
     def test_edit_template_update_value(self):
@@ -180,6 +197,29 @@ class TestEditTemplate:
             assert template['url'] == 'https://fake-url/'
             assert template['data'] is not None
 
+    def test_edit_template_change_method(self):
+        """
+        Tests that you can change the method of a template
+        """
+        with tempfile.NamedTemporaryFile('w+', delete=False) as temp_fp:
+            httpie.cli.argtemplate.TEMPLATE_FILE = temp_fp.name
+
+            command = 'http template test_template GET https://catfact.ninja/fact param1=value1 param2=value2'
+            args = command.split()
+
+            httpie.cli.argtemplate.store_json_template(args[2:])
+
+            httpie.cli.argtemplate.edit_json_template(['test_template', 'method', 'POST'])
+
+            stored_templates = json.load(temp_fp)
+            assert len(stored_templates) == 1
+            assert stored_templates[args[2]] is not None
+
+            template = stored_templates[args[2]]
+            assert template['method'] == 'POST'
+            assert template['url'] == 'https://catfact.ninja/fact'
+            assert template['data'] is not None
+
     def test_edit_template_not_found(self, capsys):
         """
         Tests that an exception is raised when trying to edit a template that doesn't exist
@@ -199,17 +239,29 @@ class TestEditTemplate:
         with tempfile.NamedTemporaryFile('w+', delete=False) as temp_fp:
             httpie.cli.argtemplate.TEMPLATE_FILE = temp_fp.name
 
-            command = 'http template test_template GET https://catfact.ninja/fact param1=value1 param2=value2'
+            command = 'http template test_template GET https://catfact.ninja/fact param1=value1'
             args = command.split()
 
             httpie.cli.argtemplate.store_json_template(args[2:])
             old_stored_templates = json.load(temp_fp)
-            assert old_stored_templates[args[2]]['data']['param2'] is None
-
+            assert 'param2' not in old_stored_templates[args[2]]['data']
+            
+            temp_fp.seek(0)
             httpie.cli.argtemplate.edit_json_template(['test_template', 'param2', 'value2'])
             new_stored_templates = json.load(temp_fp)
             assert new_stored_templates[args[2]]['data']['param2'] == 'value2'
 
+    def test_edit_template_no_templates_json(self):
+        """
+        Tests that a new file will be created for editing templates if templates.json (TEMPLATE_FILE) doesn't exist
+        """
+        httpie.cli.argtemplate.TEMPLATE_FILE = "NOT_A_REAL_FILE"
+        assert not os.path.isfile(httpie.cli.argtemplate.TEMPLATE_FILE)
+
+        httpie.cli.argtemplate.edit_json_template(["fake_template", "param2", "value2"])
+        assert os.path.isfile(httpie.cli.argtemplate.TEMPLATE_FILE)
+
+        os.remove(httpie.cli.argtemplate.TEMPLATE_FILE)
 
 class TestLoadTemplate:
     def test_load_template(self):
@@ -242,3 +294,15 @@ class TestLoadTemplate:
             out, _ = capsys.readouterr()
             assert loaded_args == []
             assert "Template 'test_template' does not exist." in out
+    
+    def test_load_template_no_templates_json(self):
+        """
+        Tests that a new file will be created for loading templates if templates.json (TEMPLATE_FILE) doesn't exist
+        """
+        httpie.cli.argtemplate.TEMPLATE_FILE = "NOT_A_REAL_FILE"
+        assert not os.path.isfile(httpie.cli.argtemplate.TEMPLATE_FILE)
+
+        httpie.cli.argtemplate.load_template("fake_template")
+        assert os.path.isfile(httpie.cli.argtemplate.TEMPLATE_FILE)
+
+        os.remove(httpie.cli.argtemplate.TEMPLATE_FILE)
