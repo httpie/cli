@@ -106,11 +106,15 @@ def load_template(arg):
         except json.JSONDecodeError:
             pass
         args = []
-        args_dict = stored_templates[arg]
+        args_dict = None
+        try:
+            args_dict = stored_templates[arg]
+        except KeyError:
+            print(f"Template '{arg}' does not exist.")
         if args_dict is not None:
             args.append(args_dict.pop('method'))
-        args.append(args_dict.pop('url'))
-        data_dict = args_dict.pop('data')
-        for _, value in data_dict.items():
-            args.append(value)
+            args.append(args_dict.pop('url'))
+            data_dict = args_dict.pop('data')
+            for _, value in data_dict.items():
+                args.append(value)
         return args

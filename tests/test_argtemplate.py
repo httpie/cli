@@ -228,7 +228,7 @@ class TestLoadTemplate:
             for i in range(len(args) - 3):
                 assert args[i + 3] == loaded_args[i]
 
-    def test_load_template_not_found(self):
+    def test_load_template_not_found(self, capsys):
         """
         Tests loading a template when the name of the template to load cannot be found in the template file
         """
@@ -239,4 +239,6 @@ class TestLoadTemplate:
             args = command.split()
 
             loaded_args = httpie.cli.argtemplate.load_template(args[2])
-            assert loaded_args is None
+            out, _ = capsys.readouterr()
+            assert loaded_args == []
+            assert "Template 'test_template' does not exist." in out
