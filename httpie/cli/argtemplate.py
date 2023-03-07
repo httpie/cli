@@ -15,7 +15,7 @@ def store_json_template(args):
     template_url = None
     template_variables = {}
 
-    if ["CONNECT", "DELETE", "GET", "HEAD", "OPTIONS", "POST", "PUT", "TRACE", "PATCH"].__contains__(args[0]):
+    if ["CONNECT", "DELETE", "GET", "HEAD", "OPTIONS", "POST", "PUT", "TRACE", "PATCH"].__contains__(args[0].upper()):
         template_method = args.pop(0)
         template_url = args.pop(0)
     else:
