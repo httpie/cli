@@ -2,7 +2,6 @@
 import httpie.cli.argtemplate
 import tempfile
 import json
-from .utils import http
 
 
 class TestStoreTemplate:
@@ -51,13 +50,14 @@ class TestStoreTemplate:
             assert stored_templates[args[2]] is not None
 
             template = stored_templates[args[2]]
-            assert template['method'] == None
+            assert template['method'] is None
             assert template['url'] == args[3]
             assert template['data'] is not None
 
             template_data = template['data']
             assert template_data['param1'] == 'value1'
             assert template_data['param2'] == 'value2'
+
 
 class TestEditTemplate:
     def test_edit_template_update_value(self):
