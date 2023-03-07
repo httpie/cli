@@ -84,6 +84,18 @@ def raw_main(
             from httpie.cli.argtemplate import edit_json_template
             edit_json_template(args[1:])
             return ExitStatus.SUCCESS
+        
+        # http delt <name>
+        if (args[0] == "delt"):
+            if len(args) < 2:
+                print("No template name was specified")
+                return ExitStatus.ERROR
+            if len(args) > 2:
+                print("Too many arguments, http <template name> expected.")
+                return ExitStatus.ERROR
+            from httpie.cli.argtemplate import delete_template
+            args = delete_template(args[1])
+            return ExitStatus.SUCCESS
 
     include_debug_info = '--debug' in args
     include_traceback = include_debug_info or '--traceback' in args

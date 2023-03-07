@@ -93,6 +93,28 @@ def edit_json_template(args):
         json.dump(stored_templates, f)
         f.truncate()
 
+def delete_template(arg):
+    stored_templates = {}
+
+    # Check if the templates.json file exists
+    if not os.path.isfile(TEMPLATE_FILE):
+        open(TEMPLATE_FILE, "w").close()
+
+    with open(TEMPLATE_FILE, "r+") as f:
+        try:
+            stored_templates = json.load(f)
+        except json.JSONDecodeError:
+            pass
+
+        # Check if the template exists
+        if arg not in stored_templates:
+            print(f"Template '{arg}' does not exist.")
+            return
+        del stored_templates[arg]
+        # Save the updated template to file
+        f.seek(0)
+        json.dump(stored_templates, f)
+        f.truncate()
 
 def load_template(arg):
     # Check if the templates.json file exists
