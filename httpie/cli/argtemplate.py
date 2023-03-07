@@ -18,11 +18,16 @@ def store_json_template(args):
         template_method = args.pop(0)
         template_url = args.pop(0)
     else:
+        temp = args.pop(0)
+        print(f"'{temp}' is not a valid http method, defaulting to null...")
         template_url = args.pop(0)
 
     for arg in args:
-        variable_name, variable_value = arg.split("=")
-        template_variables[variable_name] = variable_value
+        if '=' in arg:
+            variable_name, variable_value = arg.split("=")
+            template_variables[variable_name] = variable_value
+        else:
+            template_variables[arg] = True
 
     template = {}
     template['method'] = template_method
