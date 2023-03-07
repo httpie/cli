@@ -27,8 +27,6 @@ def store_json_template(args):
         if '=' in arg:
             variable_name, variable_value = arg.split("=")
             template_variables[variable_name] = variable_value
-        else:
-            template_variables[arg] = True
 
     template = {}
     template['method'] = template_method
@@ -137,6 +135,6 @@ def load_template(arg):
             args.append(args_dict.pop('method'))
             args.append(args_dict.pop('url'))
             data_dict = args_dict.pop('data')
-            for _, value in data_dict.items():
-                args.append(value)
+            for key, value in data_dict.items():
+                args.append(key+"="+value)
         return args
