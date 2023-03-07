@@ -1,4 +1,5 @@
 import json
+import os
 
 
 TEMPLATE_FILE = "httpie/cli/templates.json"
@@ -33,6 +34,11 @@ def store_json_template(args):
     template['method'] = template_method
     template['url'] = template_url
     template['data'] = template_variables
+
+    # Check if the templates.json file exists
+    if not os.path.isfile(TEMPLATE_FILE):
+        open(TEMPLATE_FILE, "w").close()
+
     with open(TEMPLATE_FILE, "r+") as f:
         stored_templates = {}
         try:
@@ -49,6 +55,11 @@ def store_json_template(args):
 
 def edit_json_template(args):
     stored_templates = {}
+
+    # Check if the templates.json file exists
+    if not os.path.isfile(TEMPLATE_FILE):
+        open(TEMPLATE_FILE, "w").close()
+
     with open(TEMPLATE_FILE, "r+") as f:
         try:
             stored_templates = json.load(f)
@@ -84,6 +95,10 @@ def edit_json_template(args):
 
 
 def load_template(arg):
+    # Check if the templates.json file exists
+    if not os.path.isfile(TEMPLATE_FILE):
+        open(TEMPLATE_FILE, "w").close()
+
     with open(TEMPLATE_FILE, "r+") as f:
         stored_templates = {}
         try:
