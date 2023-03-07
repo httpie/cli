@@ -49,19 +49,38 @@ def raw_main(
         args = env.config.default_options + args
 
     if args[0] is not None:
-        # http template <name> |<METHOD>| <url> |<REQUEST_ITEM>|
+        # Unlike when running httpie commands without templates, when creating templates you need to specify an http method
+        # http template <name> <method> <url> |<REQUEST_ITEM>|
         if (args[0] == "template"):
+            if len(args) < 2:
+                print("No template name was specified")
+                return ExitStatus.ERROR
+            if len(args) < 4:
+                print("Template needs at least a METHOD and a URL")
+                return ExitStatus.ERROR
             from httpie.cli.argtemplate import store_json_template
             store_json_template(args[1:])
             return ExitStatus.SUCCESS
 
         # http runt <name>
         if (args[0] == "runt"):
+            if len(args) < 2:
+                print("No template name was specified")
+                return ExitStatus.ERROR
+            if len(args) > 2:
+                print("Too many arguments, http <template name> expected.")
+                return ExitStatus.ERROR
             from httpie.cli.argtemplate import store_json_template, load_template
             args = load_template(args[1])
 
         # http editt <name> <request_item> <new_value>
         if (args[0] == "editt"):
+            if len(args) < 2:
+                print("No template name was specified")
+                return ExitStatus.ERROR
+            if len(args) < 4:
+                print("Specify at least one parameter and its new value to edit a template")
+                return ExitStatus.ERROR
             from httpie.cli.argtemplate import edit_json_template
             edit_json_template(args[1:])
             return ExitStatus.SUCCESS
