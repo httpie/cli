@@ -93,6 +93,10 @@ def edit_json_template(args):
 
 
 def delete_template(arg):
+    """
+    Tries to delete the template with name 'arg'
+    Usage format: http delt <arg>
+    """
     stored_templates = {}
 
     # Check if the templates.json file exists
