@@ -81,10 +81,9 @@ def raw_main(
                 return ExitStatus.ERROR
             from httpie.cli.argtemplate import edit_json_template
             edit_json_template(args[1:])
-            return ExitStatus.SUCCESS
-        
-        # http delt <name>
-        if (args[0] == "delt"):
+            return ExitStatus.SUCCESS 
+        elif (args[0] == "delt"):
+            # http delt <name>
             if len(args) < 2:
                 print("No template name was specified")
                 return ExitStatus.ERROR
