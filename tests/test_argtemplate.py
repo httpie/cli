@@ -4,6 +4,7 @@ import tempfile
 import json
 import os
 
+
 class TestStoreTemplate:
 
     def test_store_normal_template_with_method(self):
@@ -96,6 +97,7 @@ class TestStoreTemplate:
         assert templates["fake_template"]["url"] == "https://catfact.ninja/fact"
 
         os.remove(httpie.cli.argtemplate.TEMPLATE_FILE)
+
 
 class TestEditTemplate:
     def test_edit_template_update_value(self):
@@ -194,7 +196,7 @@ class TestEditTemplate:
             httpie.cli.argtemplate.store_json_template(args[2:])
             old_stored_templates = json.load(temp_fp)
             assert 'param2' not in old_stored_templates[args[2]]['data']
-            
+
             temp_fp.seek(0)
             httpie.cli.argtemplate.edit_json_template(['test_template', 'param2', 'value2'])
             new_stored_templates = json.load(temp_fp)
@@ -211,6 +213,7 @@ class TestEditTemplate:
         assert os.path.isfile(httpie.cli.argtemplate.TEMPLATE_FILE)
 
         os.remove(httpie.cli.argtemplate.TEMPLATE_FILE)
+
 
 class TestLoadTemplate:
     def test_load_template(self):
@@ -243,7 +246,7 @@ class TestLoadTemplate:
             out, _ = capsys.readouterr()
             assert loaded_args == []
             assert "Template 'test_template' does not exist." in out
-    
+
     def test_load_template_no_templates_json(self):
         """
         Tests that a new file will be created for loading templates if templates.json (TEMPLATE_FILE) doesn't exist
@@ -255,6 +258,7 @@ class TestLoadTemplate:
         assert os.path.isfile(httpie.cli.argtemplate.TEMPLATE_FILE)
 
         os.remove(httpie.cli.argtemplate.TEMPLATE_FILE)
+
 
 class TestDeleteTemplate:
     def test_delete_template(self):
@@ -272,7 +276,7 @@ class TestDeleteTemplate:
             args2 = command2.split()
 
             httpie.cli.argtemplate.delete_template(args2[2])
-            
+
             fp = open(httpie.cli.argtemplate.TEMPLATE_FILE, "r")
             stored_templates = json.load(fp)
             assert "test_template" in stored_templates
@@ -288,18 +292,18 @@ class TestDeleteTemplate:
         Tests that a template can be deleted when it's the only template in templates.json
         """
         with tempfile.NamedTemporaryFile('w+', delete=False) as temp_fp:
-                httpie.cli.argtemplate.TEMPLATE_FILE = temp_fp.name
+            httpie.cli.argtemplate.TEMPLATE_FILE = temp_fp.name
 
-                command = 'http template test_template GET https://catfact.ninja/fact param1=value1'
-                args = command.split()
+            command = 'http template test_template GET https://catfact.ninja/fact param1=value1'
+            args = command.split()
 
-                httpie.cli.argtemplate.store_json_template(args[2:])
+            httpie.cli.argtemplate.store_json_template(args[2:])
 
-                httpie.cli.argtemplate.delete_template(args[2])
-                
-                fp = open(httpie.cli.argtemplate.TEMPLATE_FILE, "r")
-                stored_templates = json.load(fp)
-                assert stored_templates == {}
+            httpie.cli.argtemplate.delete_template(args[2])
+
+            fp = open(httpie.cli.argtemplate.TEMPLATE_FILE, "r")
+            stored_templates = json.load(fp)
+            assert stored_templates == {}
 
     def test_delete_template_no_templates_json(self):
         """

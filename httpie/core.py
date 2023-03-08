@@ -81,7 +81,7 @@ def raw_main(
                 return ExitStatus.ERROR
             from httpie.cli.argtemplate import edit_json_template
             edit_json_template(args[1:])
-            return ExitStatus.SUCCESS 
+            return ExitStatus.SUCCESS
         elif (args[0] == "delt"):
             # http delt <name>
             if len(args) < 2:
