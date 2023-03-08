@@ -53,10 +53,8 @@ def raw_main(
         if (args[0] == "template"):
             # http template <name> <method> <url> |<REQUEST_ITEM>|
             if len(args) < 2:
-                print("No template name was specified")
                 return ExitStatus.ERROR
             if len(args) < 4:
-                print("Template needs at least a METHOD and a URL")
                 return ExitStatus.ERROR
             from httpie.cli.argtemplate import store_json_template
             store_json_template(args[1:])
@@ -67,7 +65,7 @@ def raw_main(
                 print("No template name was specified")
                 return ExitStatus.ERROR
             if len(args) > 2:
-                print("Too many arguments, http <template name> expected.")
+                print("Too many arguments, http runt <template name> expected.")
                 return ExitStatus.ERROR
             from httpie.cli.argtemplate import store_json_template, load_template
             args = load_template(args[1])
@@ -82,14 +80,13 @@ def raw_main(
             from httpie.cli.argtemplate import edit_json_template
             edit_json_template(args[1:])
             return ExitStatus.SUCCESS
-        
-        # http delt <name>
-        if (args[0] == "delt"):
+        elif (args[0] == "delt"):
+            # http delt <name>
             if len(args) < 2:
                 print("No template name was specified")
                 return ExitStatus.ERROR
             if len(args) > 2:
-                print("Too many arguments, http <template name> expected.")
+                print("Too many arguments, http delt <template name> expected.")
                 return ExitStatus.ERROR
             from httpie.cli.argtemplate import delete_template
             args = delete_template(args[1])

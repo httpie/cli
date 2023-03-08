@@ -95,7 +95,12 @@ def edit_json_template(args):
         json.dump(stored_templates, f)
         f.truncate()
 
+
 def delete_template(arg):
+    """
+    Tries to delete the template with name 'arg'
+    Usage format: http delt <arg>
+    """
     stored_templates = {}
 
     # Check if the templates.json file exists
@@ -117,6 +122,7 @@ def delete_template(arg):
         f.seek(0)
         json.dump(stored_templates, f)
         f.truncate()
+
 
 def load_template(arg):
     """
@@ -146,5 +152,5 @@ def load_template(arg):
             args.append(args_dict.pop('url'))
             data_dict = args_dict.pop('data')
             for key, value in data_dict.items():
-                args.append(key+"="+value)
+                args.append(key + "=" + value)
         return args
