@@ -83,7 +83,7 @@ def raw_main(
                 print("No template name was specified")
                 return ExitStatus.ERROR
             from httpie.cli.argtemplate import delete_template
-            args = delete_template(args[1])
+            delete_template(args[1])
             return ExitStatus.SUCCESS
 
     include_debug_info = '--debug' in args
