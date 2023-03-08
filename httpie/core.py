@@ -64,9 +64,6 @@ def raw_main(
             if len(args) < 2:
                 print("No template name was specified")
                 return ExitStatus.ERROR
-            if len(args) > 2:
-                print("Too many arguments, http runt <template name> expected.")
-                return ExitStatus.ERROR
             from httpie.cli.argtemplate import store_json_template, load_template
             args = load_template(args[1])
         elif (args[0] == "editt"):
@@ -85,11 +82,8 @@ def raw_main(
             if len(args) < 2:
                 print("No template name was specified")
                 return ExitStatus.ERROR
-            if len(args) > 2:
-                print("Too many arguments, http delt <template name> expected.")
-                return ExitStatus.ERROR
             from httpie.cli.argtemplate import delete_template
-            args = delete_template(args[1])
+            delete_template(args[1])
             return ExitStatus.SUCCESS
 
     include_debug_info = '--debug' in args
