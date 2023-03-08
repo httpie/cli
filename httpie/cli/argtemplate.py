@@ -52,6 +52,10 @@ def store_json_template(args):
 
 
 def edit_json_template(args):
+    """
+    Edit a template in templates.json, the format for running this is:
+        http editt <name> <item> <value>
+    """
     stored_templates = {}
 
     # Check if the templates.json file exists
@@ -115,6 +119,12 @@ def delete_template(arg):
         f.truncate()
 
 def load_template(arg):
+    """
+    Load a template from templates.json and return a list of arguments to be passed to the main function
+    the format for running this is:
+        http runt <template>
+    """
+
     # Check if the templates.json file exists
     if not os.path.isfile(TEMPLATE_FILE):
         open(TEMPLATE_FILE, "w").close()
