@@ -2395,12 +2395,9 @@ fi
 The default behavior of automatically reading `stdin` is typically not desirable during non-interactive invocations.
 You most likely want to use the `--ignore-stdin` option to disable it.
 
-It is a common *gotcha* that without this option HTTPie seemingly hangs.
-What happens is that when HTTPie is invoked, for example, from a cron job, `stdin` is not connected to a terminal.
-Therefore, the rules for [redirected input](#redirected-input) apply, i.e. HTTPie starts to read it expecting that the request body will be passed through.
-And since there’s neither data nor `EOF`, it will get stuck. So unless you’re piping some data to HTTPie, the `--ignore-stdin` flag should be used in scripts.
+It's important to know that without the `--ignore-stdin` option, HTTPie may appear to have stopped working (hang). This happens because, in situations where HTTPie is invoked outside of an interactive session, such as from a cron job, stdin is not connected to a terminal. This means that the rules for [redirected input](#redirected-input) will be followed. When stdin is redirected, HTTPie assumes that the input will contain the request body, and it waits for the input to be provided. However, since there is no input data or an end-of-file signal, HTTPie gets stuck. To avoid this problem, the `--ignore-stdin` flag should be used in scripts, unless data is being piped to HTTPie.
 
-Also, it might be good to set a connection `--timeout` limit to prevent your program from hanging if the server never responds.
+To prevent your program from becoming unresponsive when the server fails to respond, it's a good idea to use the `--timeout` option to set a connection timeout limit.
 
 ## Plugin manager
 
