@@ -274,7 +274,7 @@ $ snap remove httpie
 $ snap install httpie --edge
 ```
 
-To verify the installation, you can compare the [version identifier on GitHub](https://github.com/httpie/httpie/blob/master/httpie/__init__.py#L6) with the one available on your machine. You can check the version of HTTPie on your machine by using the command `http --version`. 
+To verify the installation, you can compare the [version identifier on GitHub](https://github.com/httpie/httpie/blob/master/httpie/__init__.py#L6) with the one available on your machine. You can check the version of HTTPie on your machine by using the command `http --version`.
 
 ```bash
 $ http --version
