@@ -252,7 +252,7 @@ $ pkg upgrade www/py-httpie
 
 If you want to try out the latest version of HTTPie that hasn't been officially released yet, you can install the development or unstable version directly from the master branch on GitHub. However, keep in mind that the development version is a work in progress and may not be as reliable as the stable version.
 
-You can use the following command to install the development version of HTTPie on Linux, macOS, Windows, or FreeBSD operating systems. Basically, the code present in the master branch is downloaded and installed using pip.
+You can use the following command to install the development version of HTTPie on Linux, macOS, Windows, or FreeBSD operating systems. Basically, the code present in the master branch is downloaded and installed using `pip`.
 
 ```bash
 $ python -m pip install --upgrade https://github.com/httpie/httpie/archive/master.tar.gz
