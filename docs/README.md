@@ -912,6 +912,8 @@ http --offline --print=B pie.dev/post \
 ]
 ```
 
+Sending other JSON types (`null`, `true`/`false`, numbers or strings) as the top level object is not possible.
+
 ##### Escaping behavior
 
 Nested JSON syntax uses the same [escaping rules](#escaping-rules) as
