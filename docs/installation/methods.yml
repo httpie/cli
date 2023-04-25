@@ -30,7 +30,7 @@ docs-structure:
 tools:
   apt:
     title: Debian and Ubuntu
-    note: Also works for other Debian-derived distributions like MX Linux, Linux Mint, deepin, Pop!_OS, KDE neon, Zorin OS, elementary OS, Kubuntu, Devuan, Linux Lite, Peppermint OS, Lubuntu, antiX, Xubuntu, etc.
+    note: This method also works for other Debian-derived distributions like MX Linux, Linux Mint, deepin, Pop!_OS, KDE neon, Zorin OS, elementary OS, Kubuntu, Devuan, Linux Lite, Peppermint OS, Lubuntu, antiX, Xubuntu, etc.
     name: APT
     links:
       homepage: https://en.wikipedia.org/wiki/APT_(software)
