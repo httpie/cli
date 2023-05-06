@@ -831,8 +831,8 @@ ssl.add_argument(
     short_help='A string in the OpenSSL cipher list format.',
     help=f"""
 
-    A string in the OpenSSL cipher list format. By default, the following
-    is used:
+    A string in the OpenSSL cipher list format. By default, the available
+    system ciphers will be used, which are:
 
     {DEFAULT_SSL_CIPHERS}
 

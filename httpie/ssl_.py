@@ -3,13 +3,9 @@ from typing import NamedTuple, Optional
 
 from httpie.adapters import HTTPAdapter
 # noinspection PyPackageRequirements
-from urllib3.util.ssl_ import (
-    DEFAULT_CIPHERS, create_urllib3_context,
-    resolve_ssl_version,
-)
+from urllib3.util.ssl_ import create_urllib3_context, resolve_ssl_version
 
 
-DEFAULT_SSL_CIPHERS = DEFAULT_CIPHERS
 SSL_VERSION_ARG_MAPPING = {
     'ssl2.3': 'PROTOCOL_SSLv23',
     'ssl3': 'PROTOCOL_SSLv3',
@@ -94,3 +90,12 @@ def _is_key_file_encrypted(key_file):
                 return True
 
     return False
+
+
+try:
+    from urllib3.util.ssl_ import DEFAULT_CIPHERS
+except ImportError:
+    _context = HTTPieHTTPSAdapter._create_ssl_context(verify=False)
+    DEFAULT_CIPHERS = ":".join([cipher["name"] for cipher in _context.get_ciphers()])
+
+DEFAULT_SSL_CIPHERS = DEFAULT_CIPHERS
