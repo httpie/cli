@@ -250,35 +250,38 @@ $ pkg upgrade www/py-httpie
 
 ### Unstable version
 
-You can also install the latest unreleased development version directly from the `master` branch on GitHub.
-It is a work-in-progress of a future stable release so the experience might be not as smooth.
+If you want to try out the latest version of HTTPie that hasn't been officially released yet, you can install the development or unstable version directly from the master branch on GitHub. However, keep in mind that the development version is a work in progress and may not be as reliable as the stable version.
 
-You can install it on Linux, macOS, Windows, or FreeBSD with `pip`:
+You can use the following command to install the development version of HTTPie on Linux, macOS, Windows, or FreeBSD operating systems. With this command, the code present in the `master` branch is downloaded and installed using `pip`.
 
 ```bash
 $ python -m pip install --upgrade https://github.com/httpie/httpie/archive/master.tar.gz
 ```
 
-Or on macOS, and Linux, with Homebrew:
+There are other ways to install the development version of HTTPie on macOS and Linux.
+
+You can install it using Homebrew by running the following commands:
 
 ```bash
 $ brew uninstall --force httpie
 $ brew install --HEAD httpie
 ```
 
-And even on macOS, and Linux, with Snapcraft:
+You can install it using Snapcraft by running the following commands:
 
 ```bash
 $ snap remove httpie
 $ snap install httpie --edge
 ```
 
-Verify that now you have the [current development version identifier](https://github.com/httpie/httpie/blob/master/httpie/__init__.py#L6) with the `.dev0` suffix, for example:
+To verify the installation, you can compare the [version identifier on GitHub](https://github.com/httpie/httpie/blob/master/httpie/__init__.py#L6) with the one available on your machine. You can check the version of HTTPie on your machine by using the command `http --version`.
 
 ```bash
 $ http --version
 # 3.X.X.dev0
 ```
+
+Note that on your machine, the version name will have the `.dev0` suffix.
 
 ## Usage
 
