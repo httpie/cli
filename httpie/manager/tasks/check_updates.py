@@ -1,7 +1,8 @@
 import argparse
+
 from httpie.context import Environment
-from httpie.status import ExitStatus
 from httpie.internal.update_warnings import fetch_updates, get_update_status
+from httpie.status import ExitStatus
 
 
 def cli_check_updates(env: Environment, args: argparse.Namespace) -> ExitStatus:

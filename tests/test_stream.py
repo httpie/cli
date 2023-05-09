@@ -1,22 +1,18 @@
 import json
+from unittest.mock import Mock
 
 import pytest
 import responses
-from unittest.mock import Mock
 
-from httpie.compat import is_windows
 from httpie.cli.constants import PRETTY_MAP
+from httpie.compat import is_windows
 from httpie.output.streams import BINARY_SUPPRESSED_NOTICE
 from httpie.plugins import ConverterPlugin
 from httpie.plugins.registry import plugin_manager
 
-from .utils import StdinBytesIO, http, MockEnvironment, DUMMY_URL
-from .fixtures import (
-    ASCII_FILE_CONTENT,
-    BIN_FILE_CONTENT,
-    BIN_FILE_PATH,
-    FILE_CONTENT as UNICODE_FILE_CONTENT
-)
+from .fixtures import ASCII_FILE_CONTENT, BIN_FILE_CONTENT, BIN_FILE_PATH
+from .fixtures import FILE_CONTENT as UNICODE_FILE_CONTENT
+from .utils import DUMMY_URL, MockEnvironment, StdinBytesIO, http
 
 PRETTY_OPTIONS = list(PRETTY_MAP.keys())
 
@@ -92,7 +88,8 @@ def test_pretty_options_with_and_without_stream_with_converter(pretty, stream):
 
 def test_encoded_stream(httpbin):
     """Test that --stream works with non-prettified
-    redirected terminal output."""
+    redirected terminal output.
+    """
     env = MockEnvironment(
         stdin=StdinBytesIO(BIN_FILE_PATH.read_bytes()),
         stdin_isatty=False,
@@ -104,7 +101,8 @@ def test_encoded_stream(httpbin):
 
 def test_redirected_stream(httpbin):
     """Test that --stream works with non-prettified
-    redirected terminal output."""
+    redirected terminal output.
+    """
     env = MockEnvironment(
         stdout_isatty=False,
         stdin_isatty=False,
@@ -122,16 +120,16 @@ def test_redirected_stream(httpbin):
 @pytest.mark.parametrize('extras, expected', [
     (
         ['Accept:text/event-stream'],
-        3
+        3,
     ),
     (
         ['Accept:text/event-stream; charset=utf-8'],
-        3
+        3,
     ),
     (
         ['Accept:text/plain'],
-        1
-    )
+        1,
+    ),
 ])
 def test_auto_streaming(http_server, extras, expected):
     env = MockEnvironment()

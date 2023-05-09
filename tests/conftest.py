@@ -8,7 +8,7 @@ from .utils import ( # noqa
     HTTPBIN_WITH_CHUNKED_SUPPORT,
     REMOTE_HTTPBIN_DOMAIN,
     IS_PYOPENSSL,
-    mock_env
+    mock_env,
 )
 from .utils.plugins_cli import ( # noqa
     broken_plugin,

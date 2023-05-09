@@ -1,8 +1,9 @@
 """Tests for dealing with binary request and response data."""
 import requests
 
-from .fixtures import BIN_FILE_PATH, BIN_FILE_CONTENT, BIN_FILE_PATH_ARG
 from httpie.output.streams import BINARY_SUPPRESSED_NOTICE
+
+from .fixtures import BIN_FILE_CONTENT, BIN_FILE_PATH, BIN_FILE_PATH_ARG
 from .utils import MockEnvironment, http
 
 
@@ -13,7 +14,7 @@ class TestBinaryRequestData:
             env = MockEnvironment(
                 stdin=stdin,
                 stdin_isatty=False,
-                stdout_isatty=False
+                stdout_isatty=False,
             )
             r = http('--print=B', 'POST', httpbin.url + '/post', env=env)
             assert r == BIN_FILE_CONTENT

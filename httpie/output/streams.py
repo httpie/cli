@@ -2,12 +2,11 @@ from abc import ABCMeta, abstractmethod
 from itertools import chain
 from typing import Callable, Iterable, Optional, Union
 
-from .processing import Conversion, Formatting
 from ..context import Environment
-from ..encoding import smart_decode, smart_encode, UTF8
+from ..encoding import UTF8, smart_decode, smart_encode
 from ..models import HTTPMessage, OutputOptions
 from ..utils import parse_content_type_header
-
+from .processing import Conversion, Formatting
 
 BINARY_SUPPRESSED_NOTICE = (
     b'\n'
@@ -23,7 +22,9 @@ class DataSuppressedError(Exception):
 
 class BinarySuppressedError(DataSuppressedError):
     """An error indicating that the body is binary and won't be written,
-     e.g., for terminal output)."""
+    e.g., for terminal output).
+    """
+
     message = BINARY_SUPPRESSED_NOTICE
 
 
@@ -35,7 +36,7 @@ class BaseStream(metaclass=ABCMeta):
         msg: HTTPMessage,
         output_options: OutputOptions,
         on_body_chunk_downloaded: Callable[[bytes], None] = None,
-        **kwargs
+        **kwargs,
     ):
         """
         :param msg: a :class:`models.HTTPMessage` subclass
@@ -110,6 +111,7 @@ class EncodedStream(BaseStream):
     is suppressed. The body is always streamed by line.
 
     """
+
     CHUNK_SIZE = 1
 
     def __init__(
@@ -117,7 +119,7 @@ class EncodedStream(BaseStream):
         env=Environment(),
         mime_overwrite: str = None,
         encoding_overwrite: str = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
         if mime_overwrite:

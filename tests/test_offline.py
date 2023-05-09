@@ -36,7 +36,7 @@ def test_offline_form():
         '--offline',
         '--form',
         'https://this-should.never-resolve/foo',
-        'foo=bar'
+        'foo=bar',
     )
     assert 'POST /foo' in r
     assert 'foo=bar' in r
@@ -46,7 +46,7 @@ def test_offline_json():
     r = http(
         '--offline',
         'https://this-should.never-resolve/foo',
-        'foo=bar'
+        'foo=bar',
     )
     assert 'POST /foo' in r
     assert r.json == {'foo': 'bar'}
@@ -57,7 +57,7 @@ def test_offline_multipart():
         '--offline',
         '--multipart',
         'https://this-should.never-resolve/foo',
-        'foo=bar'
+        'foo=bar',
     )
     assert 'POST /foo' in r
     assert 'name="foo"' in r
@@ -67,7 +67,7 @@ def test_offline_from_file():
     r = http(
         '--offline',
         'https://this-should.never-resolve/foo',
-        f'@{FILE_PATH_ARG}'
+        f'@{FILE_PATH_ARG}',
     )
     assert 'POST /foo' in r
     assert FILE_CONTENT in r
@@ -79,7 +79,7 @@ def test_offline_chunked():
         '--chunked',
         '--form',
         'https://this-should.never-resolve/foo',
-        'hello=world'
+        'hello=world',
     )
     assert 'POST /foo' in r
     assert 'Transfer-Encoding: chunked' in r, r

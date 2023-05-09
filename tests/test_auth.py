@@ -1,13 +1,15 @@
 """HTTP authentication-related tests."""
 from unittest import mock
+
 import pytest
 
+import httpie.cli.constants
+import httpie.cli.definition
 from httpie.plugins.builtin import HTTPBasicAuth
 from httpie.status import ExitStatus
 from httpie.utils import ExplicitNullAuth
-from .utils import http, add_auth, HTTP_OK, MockEnvironment
-import httpie.cli.constants
-import httpie.cli.definition
+
+from .utils import HTTP_OK, MockEnvironment, add_auth, http
 
 
 def test_basic_auth(httpbin_both):
@@ -57,7 +59,8 @@ def test_credentials_in_url(httpbin_both):
 
 def test_credentials_in_url_auth_flag_has_priority(httpbin_both):
     """When credentials are passed in URL and via -a at the same time,
-     then the ones from -a are used."""
+    then the ones from -a are used.
+    """
     url = add_auth(httpbin_both.url + '/basic-auth/user/password',
                    auth='user:wrong')
     r = http('--auth=user:password', 'GET', url)
@@ -85,7 +88,7 @@ def test_missing_auth(httpbin):
         '--auth-type=basic',
         'GET',
         httpbin + '/basic-auth/user/password',
-        tolerate_error_exit_status=True
+        tolerate_error_exit_status=True,
     )
     assert HTTP_OK not in r
     assert '--auth required' in r.stderr
@@ -136,7 +139,7 @@ def test_ignore_netrc_with_auth_type_resulting_in_missing_auth(httpbin):
     [
         ('basic', '/basic-auth/httpie/password'),
         ('digest', '/digest-auth/auth/httpie/password'),
-    ]
+    ],
 )
 def test_auth_plugin_netrc_parse(auth_type, endpoint, httpbin):
     # Test

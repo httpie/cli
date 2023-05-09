@@ -3,10 +3,10 @@ import textwrap
 import typing
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any, Optional, Dict, List, Tuple, Type, TypeVar
+from typing import Any, Dict, List, Optional, Tuple, Type, TypeVar
 
 from httpie.cli.argparser import HTTPieArgumentParser
-from httpie.cli.utils import Manual, LazyChoices
+from httpie.cli.utils import LazyChoices, Manual
 
 
 class Qualifiers(Enum):
@@ -17,7 +17,7 @@ class Qualifiers(Enum):
 
 
 def map_qualifiers(
-    configuration: Dict[str, Any], qualifier_map: Dict[Qualifiers, Any]
+    configuration: Dict[str, Any], qualifier_map: Dict[Qualifiers, Any],
 ) -> Dict[str, Any]:
     return {
         key: qualifier_map[value] if isinstance(value, Qualifiers) else value
@@ -26,7 +26,7 @@ def map_qualifiers(
 
 
 def drop_keys(
-    configuration: Dict[str, Any], key_blacklist: Tuple[str, ...]
+    configuration: Dict[str, Any], key_blacklist: Tuple[str, ...],
 ):
     return {
         key: value
@@ -123,7 +123,7 @@ class Argument(typing.NamedTuple):
             choices = LazyChoices(
                 self.aliases,
                 **{'dest': None, **configuration},
-                isolation_mode=isolation_mode
+                isolation_mode=isolation_mode,
             )
             configuration['choices'] = list(choices.load())
             configuration['help'] = choices.help
@@ -185,7 +185,7 @@ ARGPARSE_QUALIFIER_MAP = {
     Qualifiers.OPTIONAL: argparse.OPTIONAL,
     Qualifiers.SUPPRESS: argparse.SUPPRESS,
     Qualifiers.ZERO_OR_MORE: argparse.ZERO_OR_MORE,
-    Qualifiers.ONE_OR_MORE: argparse.ONE_OR_MORE
+    Qualifiers.ONE_OR_MORE: argparse.ONE_OR_MORE,
 }
 ARGPARSE_IGNORE_KEYS = ('short_help', 'nested_options')
 
@@ -205,7 +205,7 @@ def to_argparse(
 
     for abstract_group in abstract_options.groups:
         concrete_group = concrete_parser.add_argument_group(
-            title=abstract_group.name, description=abstract_group.description
+            title=abstract_group.name, description=abstract_group.description,
         )
         if abstract_group.is_mutually_exclusive:
             concrete_group = concrete_group.add_mutually_exclusive_group(required=False)
@@ -214,8 +214,8 @@ def to_argparse(
             concrete_group.add_argument(
                 *abstract_argument.aliases,
                 **drop_keys(map_qualifiers(
-                    abstract_argument.configuration, ARGPARSE_QUALIFIER_MAP
-                ), ARGPARSE_IGNORE_KEYS)
+                    abstract_argument.configuration, ARGPARSE_QUALIFIER_MAP,
+                ), ARGPARSE_IGNORE_KEYS),
             )
 
     return concrete_parser
@@ -223,7 +223,7 @@ def to_argparse(
 
 JSON_DIRECT_MIRROR_OPTIONS = (
     'choices',
-    'metavar'
+    'metavar',
 )
 
 
@@ -231,7 +231,7 @@ JSON_QUALIFIER_TO_OPTIONS = {
     Qualifiers.OPTIONAL: {'is_optional': True},
     Qualifiers.ZERO_OR_MORE: {'is_optional': True, 'is_variadic': True},
     Qualifiers.ONE_OR_MORE: {'is_optional': False, 'is_variadic': True},
-    Qualifiers.SUPPRESS: {}
+    Qualifiers.SUPPRESS: {},
 }
 
 
@@ -245,5 +245,5 @@ def parser_to_parser_spec(parser: argparse.ArgumentParser, **kwargs) -> ParserSp
         program=parser.prog,
         description=parser.description,
         epilog=parser.epilog,
-        **kwargs
+        **kwargs,
     )

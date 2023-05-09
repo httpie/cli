@@ -1,16 +1,18 @@
 import argparse
-from typing import Any, Dict, Union, List, NamedTuple, Optional
+from typing import Any, Dict, List, NamedTuple, Optional, Union
 
-from httpie.context import Environment
-from httpie.cli.constants import PrettyOptions, PRETTY_MAP, PRETTY_STDOUT_TTY_ONLY
 from httpie.cli.argtypes import PARSED_DEFAULT_FORMAT_OPTIONS
+from httpie.cli.constants import (PRETTY_MAP, PRETTY_STDOUT_TTY_ONLY,
+                                  PrettyOptions)
+from httpie.context import Environment
 from httpie.output.formatters.colors import AUTO_STYLE
 
 
 class ProcessingOptions(NamedTuple):
     """Represents a set of stylistic options
     that are used when deciding which stream
-    should be used."""
+    should be used.
+    """
 
     debug: bool = False
     traceback: bool = False

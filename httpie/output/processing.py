@@ -1,10 +1,9 @@
 import re
-from typing import Optional, List
+from typing import List, Optional
 
+from ..context import Environment
 from ..plugins import ConverterPlugin
 from ..plugins.registry import plugin_manager
-from ..context import Environment
-
 
 MIME_RE = re.compile(r'^[^/]+/[^/]+$')
 

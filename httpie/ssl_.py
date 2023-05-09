@@ -1,13 +1,11 @@
 import ssl
 from typing import NamedTuple, Optional
 
-from httpie.adapters import HTTPAdapter
 # noinspection PyPackageRequirements
-from urllib3.util.ssl_ import (
-    DEFAULT_CIPHERS, create_urllib3_context,
-    resolve_ssl_version,
-)
+from urllib3.util.ssl_ import (DEFAULT_CIPHERS, create_urllib3_context,
+                               resolve_ssl_version)
 
+from httpie.adapters import HTTPAdapter
 
 DEFAULT_SSL_CIPHERS = DEFAULT_CIPHERS
 SSL_VERSION_ARG_MAPPING = {
@@ -32,7 +30,8 @@ class HTTPieCertificate(NamedTuple):
 
     def to_raw_cert(self):
         """Synthesize a requests-compatible (2-item tuple of cert and key file)
-        object from HTTPie's internal representation of a certificate."""
+        object from HTTPie's internal representation of a certificate.
+        """
         return (self.cert_file, self.key_file)
 
 
@@ -42,7 +41,7 @@ class HTTPieHTTPSAdapter(HTTPAdapter):
         verify: bool,
         ssl_version: str = None,
         ciphers: str = None,
-        **kwargs
+        **kwargs,
     ):
         self._ssl_context = self._create_ssl_context(
             verify=verify,
@@ -78,15 +77,14 @@ class HTTPieHTTPSAdapter(HTTPAdapter):
             # Since we are using a custom SSL context, we need to pass this
             # here manually, even though it’s also passed to the connection
             # in `super().cert_verify()`.
-            cert_reqs=ssl.CERT_REQUIRED if verify else ssl.CERT_NONE
+            cert_reqs=ssl.CERT_REQUIRED if verify else ssl.CERT_NONE,
         )
 
 
 def _is_key_file_encrypted(key_file):
     """Detects if a key file is encrypted or not.
-
-    Copy of the internal urllib function (urllib3.util.ssl_)"""
-
+    Copy of the internal urllib function (urllib3.util.ssl_)
+    """
     with open(key_file, "r") as f:
         for line in f:
             # Look for Proc-Type: 4,ENCRYPTED

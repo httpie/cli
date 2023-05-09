@@ -1,14 +1,10 @@
-"""
-Utilities for testing output composition.
-
-"""
+"""Utilities for testing output composition."""
 from typing import Iterable
 
 import pytest
 
 from .parsing import OutputMatchingError, expect_tokens
 from .tokens import Expect, ExpectSequence
-
 
 __all__ = [
     'assert_output_matches',

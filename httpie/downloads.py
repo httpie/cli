@@ -12,10 +12,9 @@ from urllib.parse import urlsplit
 
 import requests
 
+from .context import Environment
 from .models import HTTPResponse, OutputOptions
 from .output.streams import RawStream
-from .context import Environment
-
 
 PARTIAL_CONTENT = 206
 
@@ -76,14 +75,14 @@ def parse_content_range(content_range: str, resumed_from: int) -> int:
         # Not what we asked for.
         raise ContentRangeError(
             f'Unexpected Content-Range returned ({content_range!r})'
-            f' for the requested Range ("bytes={resumed_from}-")'
+            f' for the requested Range ("bytes={resumed_from}-")',
         )
 
     return last_byte_pos + 1
 
 
 def filename_from_content_disposition(
-    content_disposition: str
+    content_disposition: str,
 ) -> Optional[str]:
     """
     Extract and validate filename from a Content-Disposition header.
@@ -165,7 +164,7 @@ class Downloader:
         self,
         env: Environment,
         output_file: IO = None,
-        resume: bool = False
+        resume: bool = False,
     ):
         """
         :param resume: Should the download resume if partial download
@@ -202,7 +201,7 @@ class Downloader:
     def start(
         self,
         initial_url: str,
-        final_response: requests.Response
+        final_response: requests.Response,
     ) -> Tuple[RawStream, IO]:
         """
         Initiate and return a stream for `response` body  with progress
@@ -233,7 +232,7 @@ class Downloader:
             if self._resume and final_response.status_code == PARTIAL_CONTENT:
                 total_size = parse_content_range(
                     final_response.headers.get('Content-Range'),
-                    self._resumed_from
+                    self._resumed_from,
                 )
 
             else:
@@ -254,7 +253,7 @@ class Downloader:
         self.status.started(
             output_file=self._output_file,
             resumed_from=self._resumed_from,
-            total_size=total_size
+            total_size=total_size,
         )
 
         return stream, self._output_file
@@ -323,11 +322,9 @@ class DownloadStatus:
         self.start_display(output_file=output_file)
 
     def start_display(self, output_file):
-        from httpie.output.ui.rich_progress import (
-            DummyDisplay,
-            StatusDisplay,
-            ProgressDisplay
-        )
+        from httpie.output.ui.rich_progress import (DummyDisplay,
+                                                    ProgressDisplay,
+                                                    StatusDisplay)
 
         message = f'Downloading to {output_file.name}'
         if self.env.show_displays:
@@ -343,7 +340,7 @@ class DownloadStatus:
         self.display.start(
             total=self.total_size,
             at=self.downloaded,
-            description=message
+            description=message,
         )
 
     def chunk_downloaded(self, size):

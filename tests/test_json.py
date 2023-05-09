@@ -9,13 +9,8 @@ from httpie.cli.nested_json import NestedJSONSyntaxError
 from httpie.output.formatters.colors import ColorFormatter
 from httpie.utils import JsonDictPreservingDuplicateKeys
 
-from .fixtures import (
-    FILE_CONTENT,
-    FILE_PATH,
-    JSON_FILE_CONTENT,
-    JSON_FILE_PATH,
-    JSON_WITH_DUPE_KEYS_FILE_PATH,
-)
+from .fixtures import (FILE_CONTENT, FILE_PATH, JSON_FILE_CONTENT,
+                       JSON_FILE_PATH, JSON_WITH_DUPE_KEYS_FILE_PATH)
 from .utils import DUMMY_URL, MockEnvironment, http
 
 TEST_JSON_XXSI_PREFIXES = [
@@ -60,7 +55,7 @@ JSON_WITH_DUPES_FORMATTED_UNSORTED = """{
 @pytest.mark.parametrize('pretty', PRETTY_MAP.keys())
 @responses.activate
 def test_json_formatter_with_body_preceded_by_non_json_data(
-    data_prefix, json_data, pretty
+    data_prefix, json_data, pretty,
 ):
     """Test JSON bodies preceded by non-JSON data."""
     body = data_prefix + json.dumps(json_data)
@@ -80,7 +75,7 @@ def test_json_formatter_with_body_preceded_by_non_json_data(
     expected_body = data_prefix + json.dumps(json_data, indent=indent)
     if colored_output:
         fmt = ColorFormatter(
-            env, format_options={'json': {'format': True, 'indent': 4}}
+            env, format_options={'json': {'format': True, 'indent': 4}},
         )
         expected_body = fmt.format_body(expected_body, content_type)
         # Check to ensure the non-JSON data prefix is colored only one time,
@@ -195,7 +190,7 @@ def test_complex_json_arguments_with_non_json(httpbin, request_type, value):
                 'pet': [
                     {'species': 'Dahut', 'name': 'Hypatia'},
                     {'species': 'Felis Stultus', 'name': 'Billie'},
-                ]
+                ],
             },
         ),
         (
@@ -208,9 +203,9 @@ def test_complex_json_arguments_with_non_json(httpbin, request_type, value):
                             None,
                             None,
                             {'much': {'power': {'!': 'Amaze'}}},
-                        ]
-                    }
-                }
+                        ],
+                    },
+                },
             },
         ),
         (
@@ -311,7 +306,7 @@ def test_complex_json_arguments_with_non_json(httpbin, request_type, value):
                         {'x': 'dfasfdas'},
                     ],
                     'baz': [1, 2, 3, 4],
-                }
+                },
             },
         ),
         (
@@ -330,7 +325,7 @@ def test_complex_json_arguments_with_non_json(httpbin, request_type, value):
                     {'key': 'value', 'key 2': 'value 2', 'key [': 'value 3'},
                 ],
                 'bar': {
-                    'nesting': {'under': {'!': {'empty': {'?': {'\\key': 4}}}}}
+                    'nesting': {'under': {'!': {'empty': {'?': {'\\key': 4}}}}},
                 },
             },
         ),
@@ -416,7 +411,7 @@ def test_complex_json_arguments_with_non_json(httpbin, request_type, value):
                     '-1\\': -1,
                     '-2\\\\': -2,
                     '\\-3\\\\': -3,
-                }
+                },
             },
         ),
         (

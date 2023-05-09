@@ -1,5 +1,5 @@
 import argparse
-from typing import Any, Type, List, Dict, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict, List, Type
 
 if TYPE_CHECKING:
     from httpie.sessions import Session
@@ -35,14 +35,14 @@ INSECURE_COOKIE_SECURITY_LINK = '\nSee https://pie.co/docs/security for more inf
 
 def pre_process(session: 'Session', cookies: Any) -> List[Dict[str, Any]]:
     """Load the given cookies to the cookie jar while maintaining
-    support for the old cookie layout."""
-
+    support for the old cookie layout.
+    """
     is_old_style = isinstance(cookies, dict)
     if is_old_style:
         normalized_cookies = [
             {
                 'name': key,
-                **value
+                **value,
             }
             for key, value in cookies.items()
         ]
@@ -67,11 +67,11 @@ def pre_process(session: 'Session', cookies: Any) -> List[Dict[str, Any]]:
 def post_process(
     normalized_cookies: List[Dict[str, Any]],
     *,
-    original_type: Type[Any]
+    original_type: Type[Any],
 ) -> Any:
     """Convert the cookies to their original format for
-    maximum compatibility."""
-
+    maximum compatibility.
+    """
     if issubclass(original_type, dict):
         return {
             cookie.pop('name'): cookie
@@ -88,7 +88,7 @@ def fix_layout(session: 'Session', hostname: str, args: argparse.Namespace) -> N
     session['cookies'] = [
         {
             'name': key,
-            **value
+            **value,
         }
         for key, value in session['cookies'].items()
     ]

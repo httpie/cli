@@ -1,25 +1,23 @@
-import sys
 import os
+import sys
 import warnings
-
+from contextlib import contextmanager, nullcontext
 from itertools import groupby
 from operator import attrgetter
-from typing import Dict, List, Type, Iterator, Iterable, Optional, ContextManager
 from pathlib import Path
-from contextlib import contextmanager, nullcontext
+from typing import (ContextManager, Dict, Iterable, Iterator, List, Optional,
+                    Type)
 
-from ..compat import importlib_metadata, find_entry_points, get_dist_name
-
-from ..utils import repr_dict, get_site_paths
+from ..compat import find_entry_points, get_dist_name, importlib_metadata
+from ..utils import get_site_paths, repr_dict
 from . import AuthPlugin, ConverterPlugin, FormatterPlugin, TransportPlugin
 from .base import BasePlugin
-
 
 ENTRY_POINT_CLASSES = {
     'httpie.plugins.auth.v1': AuthPlugin,
     'httpie.plugins.converter.v1': ConverterPlugin,
     'httpie.plugins.formatter.v1': FormatterPlugin,
-    'httpie.plugins.transport.v1': TransportPlugin
+    'httpie.plugins.transport.v1': TransportPlugin,
 }
 ENTRY_POINT_NAMES = list(ENTRY_POINT_CLASSES.keys())
 
@@ -73,7 +71,7 @@ class PluginManager(list):
                     f'While loading "{plugin_name}", an error occurred: {exc}\n'
                     f'For uninstallations, please use either "httpie plugins uninstall {plugin_name}" '
                     f'or "pip uninstall {plugin_name}" (depending on how you installed it in the first '
-                    'place).'
+                    'place).',
                 )
                 continue
             plugin.package_name = plugin_name

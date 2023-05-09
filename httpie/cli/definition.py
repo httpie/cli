@@ -16,7 +16,8 @@ from httpie.cli.constants import (BASE_OUTPUT_OPTIONS, DEFAULT_FORMAT_OPTIONS,
                                   SORTED_FORMAT_OPTIONS_STRING,
                                   UNSORTED_FORMAT_OPTIONS_STRING, RequestType)
 from httpie.cli.options import ParserSpec, Qualifiers, to_argparse
-from httpie.output.formatters.colors import (AUTO_STYLE, DEFAULT_STYLE, BUNDLED_STYLES,
+from httpie.output.formatters.colors import (AUTO_STYLE, BUNDLED_STYLES,
+                                             DEFAULT_STYLE,
                                              get_available_styles)
 from httpie.plugins.builtin import BuiltinAuthPlugin
 from httpie.plugins.registry import plugin_manager
@@ -32,7 +33,7 @@ options = ParserSpec(
     Suggestions and bug reports are greatly appreciated:
         https://github.com/httpie/httpie/issues
     """,
-    source_file=__file__
+    source_file=__file__,
 )
 
 
@@ -182,14 +183,14 @@ content_types.add_argument(
     short_help=(
         'Similar to --form, but always sends a multipart/form-data '
         'request (i.e., even without files).'
-    )
+    ),
 )
 content_types.add_argument(
     '--boundary',
     short_help=(
         'Specify a custom boundary string for multipart/form-data requests. '
         'Only has effect only together with --form.'
-    )
+    ),
 )
 content_types.add_argument(
     '--raw',
@@ -311,10 +312,10 @@ output_processing.add_argument(
 # The closest approx. of the documented resetting to default via --no-<option>.
 # We hide them from the doc because they act only as low-level aliases here.
 output_processing.add_argument(
-    '--no-unsorted', **_sorted_kwargs, help=Qualifiers.SUPPRESS
+    '--no-unsorted', **_sorted_kwargs, help=Qualifiers.SUPPRESS,
 )
 output_processing.add_argument(
-    '--no-sorted', **_unsorted_kwargs, help=Qualifiers.SUPPRESS
+    '--no-sorted', **_unsorted_kwargs, help=Qualifiers.SUPPRESS,
 )
 
 output_processing.add_argument(
@@ -387,7 +388,7 @@ output_processing.add_argument(
     """.format(
         option_list='\n'.join(
             f'        {option}' for option in DEFAULT_FORMAT_OPTIONS
-        ).strip()
+        ).strip(),
     ),
 )
 
@@ -574,7 +575,7 @@ output_options.add_argument(
 #######################################################################
 
 session_name_validator = SessionNameValidator(
-    'Session name contains invalid characters.'
+    'Session name contains invalid characters.',
 )
 
 sessions = options.add_group('Sessions', is_mutually_exclusive=True)
@@ -688,7 +689,7 @@ authentication.add_argument(
     '--ignore-netrc',
     default=False,
     action='store_true',
-    short_help='Ignore credentials from .netrc.'
+    short_help='Ignore credentials from .netrc.',
 )
 
 #######################################################################
@@ -701,7 +702,7 @@ network.add_argument(
     '--offline',
     default=False,
     action='store_true',
-    short_help='Build the request and print it but don’t actually send it.'
+    short_help='Build the request and print it but don’t actually send it.',
 )
 network.add_argument(
     '--proxy',
@@ -723,7 +724,7 @@ network.add_argument(
     '-F',
     default=False,
     action='store_true',
-    short_help='Follow 30x Location redirects.'
+    short_help='Follow 30x Location redirects.',
 )
 
 network.add_argument(
@@ -743,7 +744,7 @@ network.add_argument(
     short_help=(
         'The maximum number of response headers to be read before '
         'giving up (default 0, i.e., no limit).'
-    )
+    ),
 )
 
 network.add_argument(
@@ -783,7 +784,7 @@ network.add_argument(
     '--path-as-is',
     default=False,
     action='store_true',
-    short_help='Bypass dot segment (/../ or /./) URL squashing.'
+    short_help='Bypass dot segment (/../ or /./) URL squashing.',
 )
 network.add_argument(
     '--chunked',
@@ -792,7 +793,7 @@ network.add_argument(
     short_help=(
         'Enable streaming via chunked transfer encoding. '
         'The Transfer-Encoding header is set to chunked.'
-    )
+    ),
 )
 
 #######################################################################
@@ -871,7 +872,7 @@ ssl.add_argument(
     The passphrase to be used to with the given private key. Only needed if --cert-key
     is given and the key file requires a passphrase.
     If not provided, you’ll be prompted interactively.
-    """
+    """,
 )
 
 #######################################################################
@@ -884,7 +885,7 @@ troubleshooting.add_argument(
     '-I',
     action='store_true',
     default=False,
-    short_help='Do not attempt to read stdin'
+    short_help='Do not attempt to read stdin',
 )
 troubleshooting.add_argument(
     '--help',
@@ -913,7 +914,7 @@ troubleshooting.add_argument(
 troubleshooting.add_argument(
     '--default-scheme',
     default='http',
-    short_help='The default scheme to use if not specified in the URL.'
+    short_help='The default scheme to use if not specified in the URL.',
 )
 troubleshooting.add_argument(
     '--debug',

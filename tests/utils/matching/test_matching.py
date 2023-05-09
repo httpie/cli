@@ -4,8 +4,9 @@ Here we test our output parsing and matching implementation, not HTTPie itself.
 """
 from httpie.models import ELAPSED_TIME_LABEL
 from httpie.output.writer import MESSAGE_SEPARATOR
+
 from ...utils import CRLF
-from . import assert_output_does_not_match, assert_output_matches, Expect
+from . import Expect, assert_output_does_not_match, assert_output_matches
 
 
 def test_assert_output_matches_headers_incomplete():
@@ -93,7 +94,7 @@ def test_assert_output_matches_headers_and_body():
             f'{CRLF}'
             'CCC'
         ),
-        [Expect.RESPONSE_HEADERS, Expect.BODY]
+        [Expect.RESPONSE_HEADERS, Expect.BODY],
     )
 
 
@@ -104,7 +105,7 @@ def test_assert_output_matches_headers_with_body_and_separator():
             f'AAA:BBB{CRLF}{CRLF}'
             f'CCC{MESSAGE_SEPARATOR}'
         ),
-        [Expect.RESPONSE_HEADERS, Expect.BODY, Expect.SEPARATOR]
+        [Expect.RESPONSE_HEADERS, Expect.BODY, Expect.SEPARATOR],
     )
 
 
@@ -114,7 +115,7 @@ def test_assert_output_matches_response_meta():
             'Key: Value\n'
             f'{ELAPSED_TIME_LABEL}: 3.3s'
         ),
-        [Expect.RESPONSE_META]
+        [Expect.RESPONSE_META],
     )
 
 
@@ -127,7 +128,7 @@ def test_assert_output_matches_whole_response():
             f'CCC{MESSAGE_SEPARATOR}'
             f'{ELAPSED_TIME_LABEL}: 3.3s'
         ),
-        [Expect.RESPONSE_HEADERS, Expect.BODY, Expect.RESPONSE_META]
+        [Expect.RESPONSE_HEADERS, Expect.BODY, Expect.RESPONSE_META],
     )
 
 
@@ -154,7 +155,7 @@ def test_assert_output_matches_multiple_messages():
             Expect.RESPONSE_HEADERS,
             Expect.BODY,
             Expect.SEPARATOR,
-        ]
+        ],
     )
 
 
@@ -210,5 +211,5 @@ def test_assert_output_matches_multipart_body_with_separator():
 def test_assert_output_matches_multiple_separators():
     assert_output_matches(
         MESSAGE_SEPARATOR + MESSAGE_SEPARATOR + 'AAA' + MESSAGE_SEPARATOR + MESSAGE_SEPARATOR,
-        [Expect.SEPARATOR, Expect.SEPARATOR, Expect.BODY, Expect.SEPARATOR, Expect.SEPARATOR]
+        [Expect.SEPARATOR, Expect.SEPARATOR, Expect.BODY, Expect.SEPARATOR, Expect.SEPARATOR],
     )

@@ -9,9 +9,8 @@ from charset_normalizer.constant import TOO_SMALL_SEQUENCE
 from httpie.cli.constants import PRETTY_MAP
 from httpie.encoding import UTF8
 
-from .utils import http, HTTP_OK, DUMMY_URL, MockEnvironment
 from .fixtures import UNICODE
-
+from .utils import DUMMY_URL, HTTP_OK, MockEnvironment, http
 
 CHARSET_TEXT_PAIRS = [
     ('big5', '卷首卷首卷首卷首卷卷首卷首卷首卷首卷首卷首卷首卷首卷首卷首卷首卷首卷首'),

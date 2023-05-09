@@ -2,9 +2,9 @@ import argparse
 from typing import Optional
 
 from httpie.context import Environment
-from httpie.status import ExitStatus
 from httpie.manager.cli import missing_subcommand, parser
 from httpie.manager.tasks import CLI_TASKS
+from httpie.status import ExitStatus
 
 MSG_COMMAND_CONFUSION = '''\
 This command is only for managing HTTPie plugins.

@@ -1,7 +1,8 @@
 """Logic for checking and displaying man pages."""
 
-import subprocess
 import os
+import subprocess
+
 from httpie.context import Environment
 
 MAN_COMMAND = 'man'
@@ -17,7 +18,6 @@ MAN_PAGE_SECTION = '1'
 
 def is_available(program: str) -> bool:
     """Check whether HTTPie's man pages are available in this system."""
-
     if NO_MAN_PAGES or os.system == 'nt':
         return False
 
@@ -26,7 +26,7 @@ def is_available(program: str) -> bool:
             [MAN_COMMAND, MAN_PAGE_SECTION, program],
             shell=False,
             stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL
+            stderr=subprocess.DEVNULL,
         )
     except Exception:
         # There might be some errors outside of the process, e.g
@@ -39,9 +39,8 @@ def is_available(program: str) -> bool:
 
 def display_for(env: Environment, program: str) -> None:
     """Display the man page for the given command (http/https)."""
-
     subprocess.run(
         [MAN_COMMAND, MAN_PAGE_SECTION, program],
         stdout=env.stdout,
-        stderr=env.stderr
+        stderr=env.stderr,
     )

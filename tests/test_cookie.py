@@ -16,7 +16,7 @@ class TestIntegration:
         # Start running mock server in a separate thread.
         # Daemon threads automatically shut down when the main process exits.
         self.mock_server_thread = Thread(target=self.mock_server.serve_forever)
-        self.mock_server_thread.setDaemon(True)
+        self.mock_server_thread.daemon = True
         self.mock_server_thread.start()
 
     def test_cookie_parser(self):
@@ -25,7 +25,7 @@ class TestIntegration:
         """
 
         class MockServerRequestHandler(BaseHTTPRequestHandler):
-            """"HTTP request handler."""
+            """HTTP request handler."""
 
             def do_GET(self):
                 """Handle GET requests."""

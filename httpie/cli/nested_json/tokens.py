@@ -1,5 +1,5 @@
 from enum import Enum, auto
-from typing import NamedTuple, Union, Optional, List
+from typing import List, NamedTuple, Optional, Union
 
 EMPTY_STRING = ''
 HIGHLIGHTER = '^'

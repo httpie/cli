@@ -12,7 +12,7 @@ class BaseDisplay:
     env: Environment
 
     def start(
-        self, *, total: Optional[float], at: float, description: str
+        self, *, total: Optional[float], at: float, description: str,
     ) -> None:
         ...
 
@@ -28,7 +28,7 @@ class BaseDisplay:
         return self.env.rich_error_console
 
     def _print_summary(
-        self, is_finished: bool, observed_steps: int, time_spent: float
+        self, is_finished: bool, observed_steps: int, time_spent: float,
     ):
         from rich import filesize
 
@@ -48,7 +48,7 @@ class BaseDisplay:
             total_time = f'{minutes:02d}:{seconds:0.5f}'
 
         self.console.print(
-            f'[progress.description]{verb}. {total_size} in {total_time} ({avg_speed}/s)'
+            f'[progress.description]{verb}. {total_size} in {total_time} ({avg_speed}/s)',
         )
 
 
@@ -61,7 +61,7 @@ class DummyDisplay(BaseDisplay):
 
 class StatusDisplay(BaseDisplay):
     def start(
-        self, *, total: Optional[float], at: float, description: str
+        self, *, total: Optional[float], at: float, description: str,
     ) -> None:
         self.observed = at
         self.description = (
@@ -77,10 +77,10 @@ class StatusDisplay(BaseDisplay):
         self.observed += steps
 
         observed_amount, observed_unit = filesize.decimal(
-            self.observed
+            self.observed,
         ).split()
         self.status.update(
-            status=f'{self.description} [progress.download]{observed_amount}/? {observed_unit}[/progress.download]'
+            status=f'{self.description} [progress.download]{observed_amount}/? {observed_unit}[/progress.download]',
         )
 
     def stop(self, time_spent: float) -> None:
@@ -96,15 +96,10 @@ class StatusDisplay(BaseDisplay):
 
 class ProgressDisplay(BaseDisplay):
     def start(
-        self, *, total: Optional[float], at: float, description: str
+        self, *, total: Optional[float], at: float, description: str,
     ) -> None:
-        from rich.progress import (
-            Progress,
-            BarColumn,
-            DownloadColumn,
-            TimeRemainingColumn,
-            TransferSpeedColumn,
-        )
+        from rich.progress import (BarColumn, DownloadColumn, Progress,
+                                   TimeRemainingColumn, TransferSpeedColumn)
 
         assert total is not None
         self.console.print(f'[progress.description]{description}')
@@ -123,7 +118,7 @@ class ProgressDisplay(BaseDisplay):
         )
         self.progress_bar.start()
         self.transfer_task = self.progress_bar.add_task(
-            description, completed=at, total=total
+            description, completed=at, total=total,
         )
 
     def update(self, steps: float) -> None:

@@ -7,7 +7,6 @@ from . import __version__
 from .compat import is_windows
 from .encoding import UTF8
 
-
 ENV_XDG_CONFIG_HOME = 'XDG_CONFIG_HOME'
 ENV_HTTPIE_CONFIG_DIR = 'HTTPIE_CONFIG_DIR'
 DEFAULT_CONFIG_DIRNAME = 'httpie'
@@ -50,7 +49,7 @@ def get_default_config_dir() -> Path:
     # 4. XDG
     xdg_config_home_dir = os.environ.get(
         ENV_XDG_CONFIG_HOME,  # 4.1. explicit
-        home_dir / DEFAULT_RELATIVE_XDG_CONFIG_HOME  # 4.2. default
+        home_dir / DEFAULT_RELATIVE_XDG_CONFIG_HOME,  # 4.2. default
     )
     return Path(xdg_config_home_dir) / DEFAULT_CONFIG_DIRNAME
 
@@ -69,7 +68,7 @@ def read_raw_config(config_type: str, path: Path) -> Dict[str, Any]:
                 return json.load(f)
             except ValueError as e:
                 raise ConfigFileError(
-                    f'invalid {config_type} file: {e} [{path}]'
+                    f'invalid {config_type} file: {e} [{path}]',
                 )
     except FileNotFoundError:
         pass
@@ -130,14 +129,14 @@ class BaseConfigDict(dict):
     @property
     def version(self):
         return self.get(
-            '__meta__', {}
+            '__meta__', {},
         ).get('httpie', __version__)
 
 
 class Config(BaseConfigDict):
     FILENAME = 'config.json'
     DEFAULTS = {
-        'default_options': []
+        'default_options': [],
     }
 
     def __init__(self, directory: Union[str, Path] = DEFAULT_CONFIG_DIR):
@@ -151,7 +150,7 @@ class Config(BaseConfigDict):
 
     def _configured_path(self, config_option: str, default: str) -> None:
         return Path(
-            self.get(config_option, self.directory / default)
+            self.get(config_option, self.directory / default),
         ).expanduser().resolve()
 
     @property
@@ -167,6 +166,6 @@ class Config(BaseConfigDict):
         """This is a special setting for the development environment. It is
         different from the --debug mode in the terms that it might change
         the behavior for certain parameters (e.g updater system) that
-        we usually ignore."""
-
+        we usually ignore.
+        """
         return self.get('developer_mode')

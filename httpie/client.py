@@ -4,7 +4,7 @@ import json
 import sys
 from contextlib import contextmanager
 from time import monotonic
-from typing import Any, Dict, Callable, Iterable
+from typing import Any, Callable, Dict, Iterable
 from urllib.parse import urlparse, urlunparse
 
 import requests
@@ -21,13 +21,11 @@ from .encoding import UTF8
 from .models import RequestsMessage
 from .plugins.registry import plugin_manager
 from .sessions import get_httpie_session
-from .ssl_ import AVAILABLE_SSL_VERSION_ARG_MAPPING, HTTPieCertificate, HTTPieHTTPSAdapter
-from .uploads import (
-    compress_request, prepare_request_body,
-    get_multipart_data_and_content_type,
-)
+from .ssl_ import (AVAILABLE_SSL_VERSION_ARG_MAPPING, HTTPieCertificate,
+                   HTTPieHTTPSAdapter)
+from .uploads import (compress_request, get_multipart_data_and_content_type,
+                      prepare_request_body)
 from .utils import get_expired_cookies, repr_dict
-
 
 urllib3.disable_warnings()
 
@@ -60,14 +58,14 @@ def collect_messages(
         env,
         args=args,
         base_headers=httpie_session_headers,
-        request_body_read_callback=request_body_read_callback
+        request_body_read_callback=request_body_read_callback,
     )
     send_kwargs = make_send_kwargs(args)
     send_kwargs_mergeable_from_env = make_send_kwargs_mergeable_from_env(args)
     requests_session = build_requests_session(
         ssl_version=args.ssl_version,
         ciphers=args.ciphers,
-        verify=bool(send_kwargs_mergeable_from_env['verify'])
+        verify=bool(send_kwargs_mergeable_from_env['verify']),
     )
 
     if httpie_session:
@@ -117,7 +115,7 @@ def collect_messages(
                 )
             response._httpie_headers_parsed_at = monotonic()
             expired_cookies += get_expired_cookies(
-                response.headers.get('Set-Cookie', '')
+                response.headers.get('Set-Cookie', ''),
             )
 
             response_count += 1
@@ -206,11 +204,11 @@ def finalize_headers(headers: HTTPHeadersDict) -> HTTPHeadersDict:
 
 def transform_headers(
     request: requests.Request,
-    prepared_request: requests.PreparedRequest
+    prepared_request: requests.PreparedRequest,
 ) -> None:
     """Apply various transformations on top of the `prepared_requests`'s
-    headers to change the request prepreation behavior."""
-
+    headers to change the request prepreation behavior.
+    """
     # Remove 'Content-Length' when it is misplaced by requests.
     if (
         prepared_request.method in IGNORE_CONTENT_LENGTH_METHODS
@@ -221,18 +219,18 @@ def transform_headers(
 
     apply_missing_repeated_headers(
         request.headers,
-        prepared_request
+        prepared_request,
     )
 
 
 def apply_missing_repeated_headers(
     original_headers: HTTPHeadersDict,
-    prepared_request: requests.PreparedRequest
+    prepared_request: requests.PreparedRequest,
 ) -> None:
     """Update the given `prepared_request`'s headers with the original
     ones. This allows the requests to be prepared as usual, and then later
-    merged with headers that are specified multiple times."""
-
+    merged with headers that are specified multiple times.
+    """
     new_headers = HTTPHeadersDict(prepared_request.headers)
     for prepared_name, prepared_value in prepared_request.headers.items():
         if prepared_name not in original_headers:
@@ -240,7 +238,7 @@ def apply_missing_repeated_headers(
 
         original_keys, original_values = zip(*filter(
             lambda item: item[0].casefold() == prepared_name.casefold(),
-            original_headers.items()
+            original_headers.items(),
         ))
 
         if prepared_value not in original_values:
@@ -257,7 +255,7 @@ def apply_missing_repeated_headers(
 
 def make_default_headers(args: argparse.Namespace) -> HTTPHeadersDict:
     default_headers = HTTPHeadersDict({
-        'User-Agent': DEFAULT_UA
+        'User-Agent': DEFAULT_UA,
     })
 
     auto_json = args.data and not args.form
@@ -321,7 +319,7 @@ def make_request_kwargs(
     env: Environment,
     args: argparse.Namespace,
     base_headers: HTTPHeadersDict = None,
-    request_body_read_callback=lambda chunk: chunk
+    request_body_read_callback=lambda chunk: chunk,
 ) -> dict:
     """
     Translate our `args` into `requests.Request` keyword arguments.

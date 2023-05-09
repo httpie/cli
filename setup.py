@@ -2,10 +2,9 @@
 
 import sys
 
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 import httpie
-
 
 # Note: keep requirements here to ease distributions packaging
 tests_require = [
@@ -14,7 +13,7 @@ tests_require = [
     'pytest-lazy-fixture>=0.0.6',
     'responses',
     'pytest-mock',
-    'werkzeug<2.1.0'
+    'werkzeug<2.1.0',
 ]
 dev_require = [
     *tests_require,
@@ -28,7 +27,7 @@ dev_require = [
     'pyyaml',
     'twine',
     'wheel',
-    'Jinja2'
+    'Jinja2',
 ]
 install_requires = [
     'pip',
@@ -40,7 +39,7 @@ install_requires = [
     'multidict>=4.7.0',
     'setuptools',
     'importlib-metadata>=1.4.0; python_version < "3.8"',
-    'rich>=9.10.0'
+    'rich>=9.10.0',
 ]
 install_requires_win_only = [
     'colorama>=0.2.4',
@@ -105,7 +104,7 @@ setup(
         'Topic :: System :: Networking',
         'Topic :: Terminals',
         'Topic :: Text Processing',
-        'Topic :: Utilities'
+        'Topic :: Utilities',
     ],
     project_urls={
         'GitHub': 'https://github.com/httpie/httpie',
@@ -118,5 +117,5 @@ setup(
         ('share/man/man1', ['extras/man/http.1']),
         ('share/man/man1', ['extras/man/https.1']),
         ('share/man/man1', ['extras/man/httpie.1']),
-    ]
+    ],
 )

@@ -1,4 +1,4 @@
-from typing import Any, Type, List, Dict, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict, List, Type
 
 if TYPE_CHECKING:
     from httpie.sessions import Session
@@ -25,8 +25,8 @@ OLD_HEADER_STORE_LINK = '\nSee $INSERT_LINK for more information.'
 
 def pre_process(session: 'Session', headers: Any) -> List[Dict[str, Any]]:
     """Serialize the headers into a unified form and issue a warning if
-    the session file is using the old layout."""
-
+    the session file is using the old layout.
+    """
     is_old_style = isinstance(headers, dict)
     if is_old_style:
         normalized_headers = list(headers.items())
@@ -49,11 +49,11 @@ def pre_process(session: 'Session', headers: Any) -> List[Dict[str, Any]]:
 def post_process(
     normalized_headers: List[Dict[str, Any]],
     *,
-    original_type: Type[Any]
+    original_type: Type[Any],
 ) -> Any:
     """Deserialize given header store into the original form it was
-    used in."""
-
+    used in.
+    """
     if issubclass(original_type, dict):
         # For the legacy behavior, preserve the last value.
         return {
