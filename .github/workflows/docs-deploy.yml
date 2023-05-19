@@ -17,6 +17,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install HTTPie
-        run: sudo snap install --edge httpie
+        run: sudo pip install httpie
       - name: Trigger new documentation build
         run: http --ignore-stdin POST ${{ secrets.DOCS_UPDATE_VERCEL_HOOK }}
