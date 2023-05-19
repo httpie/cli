@@ -20,7 +20,7 @@ from httpie.output.formatters.colors import (AUTO_STYLE, DEFAULT_STYLE, BUNDLED_
                                              get_available_styles)
 from httpie.plugins.builtin import BuiltinAuthPlugin
 from httpie.plugins.registry import plugin_manager
-from httpie.ssl_ import AVAILABLE_SSL_VERSION_ARG_MAPPING, DEFAULT_SSL_CIPHERS
+from httpie.ssl_ import AVAILABLE_SSL_VERSION_ARG_MAPPING, DEFAULT_SSL_CIPHERS_STRING
 
 options = ParserSpec(
     'http',
@@ -832,9 +832,9 @@ ssl.add_argument(
     help=f"""
 
     A string in the OpenSSL cipher list format. By default, the following
-    is used:
+    ciphers are used on your system:
 
-    {DEFAULT_SSL_CIPHERS}
+    {DEFAULT_SSL_CIPHERS_STRING}
 
     """,
 )
