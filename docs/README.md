@@ -367,44 +367,48 @@ $ http localhost:8000 Host:example.com
 
 ## HTTP method
 
-The name of the HTTP method comes right before the URL argument:
+HTTP methods determine the action to be performed when interacting with a web server. In HTTPie, the HTTP method is specified before the URL. It can be any of the standard HTTP methods (`GET`, `HEAD`, `POST`, `PUT`, `DELETE`, `CONNECT`, `TRACE`, `PATCH` & `OPTIONS`) or a custom one.
+
+The following command shows how to send a request with `DELETE` method to URL `pie.dev/delete`:
 
 ```bash
 $ http DELETE pie.dev/delete
 ```
 
-Which looks similar to the actual `Request-Line` that is sent:
+This resembles to the actual `Request-Line` that is sent:
 
 ```http
 DELETE /delete HTTP/1.1
 ```
 
-In addition to the standard methods (`GET`, `POST`, `HEAD`, `PUT`, `PATCH`, `DELETE`, etc.), you can use custom method names, for example:
+The following command shows how to use a custom HTTP method `AHOY`:
 
 ```bash
 $ http AHOY pie.dev/post
 ```
 
-There are no restrictions regarding which request methods can include a body. You can send an empty `POST` request:
+HTTPie does not place any restrictions regarding which request methods can include a body.
+
+For instance, you can send an empty `POST` request as shown below:
 
 ```bash
 $ http POST pie.dev/post
 ```
 
-You can also make `GET` requests containing a body:
+You can also send a `GET` request with body. Here is an example of this:
 
 ```bash
 $ http GET pie.dev/get hello=world
 ```
 
-### Optional `GET` and `POST`
+### Defaults for the method argument
 
-The `METHOD` argument is optional, and when you don’t specify it, HTTPie defaults to:
+Specifying the method argument is optional. If not specified, it defaults to:
 
 - `GET` for requests without body
 - `POST` for requests with body
 
-Here we don’t specify any request data, so both commands will send the same `GET` request:
+This means that the following commands are equivalent:
 
 ```bash
 $ http GET pie.dev/get
@@ -414,7 +418,10 @@ $ http GET pie.dev/get
 $ http pie.dev/get
 ```
 
-Here, on the other hand, we do have some data, so both commands will make the same `POST` request:
+In the last command, the method defaults to `GET`, since the request does not contain a body.
+
+Similarly, the following commands are equivalent:
+
 
 ```bash
 $ http POST pie.dev/post hello=world
@@ -423,6 +430,8 @@ $ http POST pie.dev/post hello=world
 ```bash
 $ http pie.dev/post hello=world
 ```
+
+In the last command, the method defaults to `POST`, since the request contains a body.
 
 ## Request URL
 
