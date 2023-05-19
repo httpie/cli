@@ -8,46 +8,46 @@ from urllib3.util.ssl_ import (
     resolve_ssl_version,
 )
 
-
-# Default ciphers imported from urllib3 as a work around for https://github.com/httpie/httpie/issues/1499
-# Removed from urllib3 in this commit: https://github.com/urllib3/urllib3/commit/e5eac0c
-####################
-# A secure default.
-# Sources for more information on TLS ciphers:
-#
-# - https://wiki.mozilla.org/Security/Server_Side_TLS
-# - https://www.ssllabs.com/projects/best-practices/index.html
-# - https://hynek.me/articles/hardening-your-web-servers-ssl-ciphers/
-#
-# The general intent is:
-# - prefer cipher suites that offer perfect forward secrecy (DHE/ECDHE),
-# - prefer ECDHE over DHE for better performance,
-# - prefer any AES-GCM and ChaCha20 over any AES-CBC for better performance and
-#   security,
-# - prefer AES-GCM over ChaCha20 because hardware-accelerated AES is common,
-# - disable NULL authentication, MD5 MACs, DSS, and other
-#   insecure ciphers for security reasons.
-# - NOTE: TLS 1.3 cipher suites are managed through a different interface
-#   not exposed by CPython (yet!) and are enabled by default if they're available.
-DEFAULT_SSL_CIPHERS = ":".join(
-    [
-        "ECDHE+AESGCM",
-        "ECDHE+CHACHA20",
-        "DHE+AESGCM",
-        "DHE+CHACHA20",
-        "ECDH+AESGCM",
-        "DH+AESGCM",
-        "ECDH+AES",
-        "DH+AES",
-        "RSA+AESGCM",
-        "RSA+AES",
-        "!aNULL",
-        "!eNULL",
-        "!MD5",
-        "!DSS",
-        "!AESCCM",
-    ]
-)
+# We used to import default SSL ciphers via `SSL_CIPHERS` from `urllib3` but it’s been removed,
+# so we’ve copied the original list here.
+# Our issue: <https://github.com/httpie/httpie/issues/1499>
+# Removal commit: <https://github.com/urllib3/urllib3/commit/e5eac0c>
+DEFAULT_SSL_CIPHERS = ":".join([
+    # <urllib3>
+    # A secure default.
+    # Sources for more information on TLS ciphers:
+    #
+    # - https://wiki.mozilla.org/Security/Server_Side_TLS
+    # - https://www.ssllabs.com/projects/best-practices/index.html
+    # - https://hynek.me/articles/hardening-your-web-servers-ssl-ciphers/
+    #
+    # The general intent is:
+    # - prefer cipher suites that offer perfect forward secrecy (DHE/ECDHE),
+    # - prefer ECDHE over DHE for better performance,
+    # - prefer any AES-GCM and ChaCha20 over any AES-CBC for better performance and
+    #   security,
+    # - prefer AES-GCM over ChaCha20 because hardware-accelerated AES is common,
+    # - disable NULL authentication, MD5 MACs, DSS, and other
+    #   insecure ciphers for security reasons.
+    # - NOTE: TLS 1.3 cipher suites are managed through a different interface
+    #   not exposed by CPython (yet!) and are enabled by default if they're available.
+    "ECDHE+AESGCM",
+    "ECDHE+CHACHA20",
+    "DHE+AESGCM",
+    "DHE+CHACHA20",
+    "ECDH+AESGCM",
+    "DH+AESGCM",
+    "ECDH+AES",
+    "DH+AES",
+    "RSA+AESGCM",
+    "RSA+AES",
+    "!aNULL",
+    "!eNULL",
+    "!MD5",
+    "!DSS",
+    "!AESCCM",
+    # </urllib3>
+])
 SSL_VERSION_ARG_MAPPING = {
     'ssl2.3': 'PROTOCOL_SSLv23',
     'ssl3': 'PROTOCOL_SSLv3',
