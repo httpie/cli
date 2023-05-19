@@ -434,7 +434,7 @@ In the last command, the method defaults to `POST`, since the request contains a
 
 ## Request URL
 
-The Request URL is a unique web address to which the request is sent. This argument is required to initiate a request. All other arguments can be omitted, in which case HTTPie uses default values.
+The request URL is a unique web address to which a request is sent. This argument is required to initiate a request. All other arguments can be omitted, in which case HTTPie uses default values.
 
 Specifying the scheme (`http://` or `https://`) is optional as well. If it is not specified, HTTPie defaults to using `http://`.
 
