@@ -446,7 +446,7 @@ class TestExpiredCookies(CookieTestBase):
 class TestCookieStorage(CookieTestBase):
 
     @pytest.mark.parametrize(
-        'new_cookies, new_cookies_dict, expected',
+        ['specified_cookie_header', 'new_cookies_dict', 'expected_effective_cookie_header'],
         [(
             'new=bar',
             {'new': 'bar'},
@@ -463,9 +463,9 @@ class TestCookieStorage(CookieTestBase):
             'chocolate=milk; cookie1=foo; cookie2=foo; new=bar'
         ),
             (
-            'new=bar;; chocolate=milk;;;',
+            'new=bar; chocolate=milk',
             {'new': 'bar', 'chocolate': 'milk'},
-            'cookie1=foo; cookie2=foo; new=bar'
+            'cookie1=foo; cookie2=foo; new=bar; chocolate=milk'
         ),
             (
             'new=bar; chocolate=milk;;;',
@@ -474,20 +474,35 @@ class TestCookieStorage(CookieTestBase):
         )
         ]
     )
-    def test_existing_and_new_cookies_sent_in_request(self, new_cookies, new_cookies_dict, expected, httpbin):
+    def test_existing_and_new_cookies_sent_in_request(
+        self,
+        specified_cookie_header,
+        new_cookies_dict,
+        expected_effective_cookie_header,
+        httpbin,
+    ):
         r = http(
             '--session', str(self.session_path),
             '--print=H',
             httpbin.url,
-            'Cookie:' + new_cookies,
+            'Cookie:' + specified_cookie_header,
         )
-        # Note: cookies in response are in alphabetical order
-        assert f'Cookie: {expected}' in r
+        parsed_request_headers = {
+            name: value for name, value in [
+                line.split(': ', 1)
+                for line in r.splitlines()
+                if line and ':' in line
+            ]
+        }
+        # Note: cookies in the request are in an undefined order.
+        expected_request_cookie_set = set(expected_effective_cookie_header.split('; '))
+        actual_request_cookie_set = set(parsed_request_headers['Cookie'].split('; '))
+        assert actual_request_cookie_set == expected_request_cookie_set
 
         updated_session = json.loads(self.session_path.read_text(encoding=UTF8))
+        assert 'Cookie' not in updated_session['headers']
         for name, value in new_cookies_dict.items():
-            assert name, value in updated_session['cookies']
-            assert 'Cookie' not in updated_session['headers']
+            assert updated_session['cookies'][name]['value'] == value
 
     @pytest.mark.parametrize(
         'cli_cookie, set_cookie, expected',
