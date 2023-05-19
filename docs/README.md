@@ -450,7 +450,7 @@ $ https example.org
 # → https://example.org
 ```
 
-HTTPie includes a helpful feature that allows you to quickly turn a URL into an HTTPie command. This can be useful when you need to convert a URL from your clipboard into an HTTPie command. To use this feature, paste a URL into a terminal window, making sure to include a space after the protocol name. HTTPie will transform this into an HTTPie command.
+HTTPie provides a useful functionality that enables conversion of a URL into an HTTPie command. This can be useful when you need to convert a URL from clipboard to an HTTPie command. To use this feature, paste a URL into a terminal window, making sure to include a space after the protocol name. HTTPie will do the necessary (ignore `://`) and process the input as an HTTPie command.
 
 The following examples illustrate this feature:
 
