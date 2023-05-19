@@ -388,7 +388,7 @@ $ http AHOY pie.dev/post
 ```
 
 HTTPie does not place any restrictions regarding which request methods can include a body.
-For instance, you can smake an empty `POST` request as shown below:
+For instance, you can make an empty `POST` request as shown below:
 
 ```bash
 $ http POST pie.dev/post
