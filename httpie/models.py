@@ -1,6 +1,7 @@
 from time import monotonic
 
 import requests
+from urllib3.util import SKIP_HEADER, SKIPPABLE_HEADERS
 
 from enum import Enum, auto
 from typing import Iterable, Union, NamedTuple
@@ -152,6 +153,7 @@ class HTTPRequest(HTTPMessage):
         headers = [
             f'{name}: {value if isinstance(value, str) else value.decode()}'
             for name, value in headers.items()
+            if not (name.lower() in SKIPPABLE_HEADERS and value == SKIP_HEADER)
         ]
 
         headers.insert(0, request_line)

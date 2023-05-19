@@ -10,6 +10,7 @@ from urllib.parse import urlparse, urlunparse
 import requests
 # noinspection PyPackageRequirements
 import urllib3
+from urllib3.util import SKIP_HEADER, SKIPPABLE_HEADERS
 
 from . import __version__
 from .adapters import HTTPieHTTPAdapter
@@ -200,6 +201,10 @@ def finalize_headers(headers: HTTPHeadersDict) -> HTTPHeadersDict:
             if isinstance(value, str):
                 # See <https://github.com/httpie/httpie/issues/212>
                 value = value.encode()
+        elif name.lower() in SKIPPABLE_HEADERS:
+            # Some headers get overwritten by urllib3 when set to `None`
+            # and should be replaced with the `SKIP_HEADER` constant.
+            value = SKIP_HEADER
         final_headers.add(name, value)
     return final_headers
 

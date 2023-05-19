@@ -196,6 +196,14 @@ def test_unset_host_header(httpbin_both):
     assert 'Host' not in r.json['headers']  # default Host unset
 
 
+def test_unset_useragent_header(httpbin_both):
+    r = http('GET', httpbin_both + '/headers')
+    assert 'User-Agent' in r.json['headers']  # default User-Agent present
+
+    r = http('GET', httpbin_both + '/headers', 'User-Agent:')
+    assert 'User-Agent' not in r.json['headers']  # default User-Agent unset
+
+
 def test_headers_empty_value(httpbin_both):
     r = http('GET', httpbin_both + '/headers')
     assert r.json['headers']['Accept']  # default Accept has value
