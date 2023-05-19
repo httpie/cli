@@ -487,7 +487,7 @@ class TestCookieStorage(CookieTestBase):
             httpbin.url,
             'Cookie:' + specified_cookie_header,
         )
-        parsed_request_headers = {
+        parsed_request_headers = {  # noqa
             name: value for name, value in [
                 line.split(': ', 1)
                 for line in r.splitlines()
