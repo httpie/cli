@@ -3,6 +3,10 @@
 This document records all notable changes to [HTTPie](https://httpie.io).
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## [3.2.2](https://github.com/httpie/httpie/compare/3.2.1...3.2.2) (2022-05-19)
+
+- Fixed compatibility with urllib3 2.0.0. ([#1499](https://github.com/httpie/httpie/issue/1499))
+
 ## [3.2.1](https://github.com/httpie/httpie/compare/3.1.0...3.2.1) (2022-05-06)
 
 - Improved support for determining auto-streaming when the `Content-Type` header includes encoding information. ([#1383](https://github.com/httpie/httpie/pull/1383))
