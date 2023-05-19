@@ -145,7 +145,7 @@ class Environment:
                 try:
                     config.load()
                 except ConfigFileError as e:
-                    self.log_error(e, level='warning')
+                    self.log_error(e, level=LogLevel.WARNING)
         return config
 
     @property
@@ -174,7 +174,7 @@ class Environment:
             stderr = self._orig_stderr
         rich_console = self._make_rich_console(file=stderr, force_terminal=stderr.isatty())
         rich_console.print(
-            f'\n{self.program_name}: {level}: {msg}\n\n',
+            f'\n{self.program_name}: {level.value}: {msg}\n\n',
             style=LOG_LEVEL_COLORS[level],
             markup=False,
             highlight=False,
