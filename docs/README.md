@@ -1174,7 +1174,7 @@ User-Agent: HTTPie/<version>
 Host: <taken-from-URL>
 ```
 
-Any of these can be overwritten and some of them unset (see below).
+All of these can be overwritten or unset (see below).
 
 ### Reading headers from a file
 
