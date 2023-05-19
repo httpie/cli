@@ -2596,3 +2596,4 @@ BSD-3-Clause: [LICENSE](https://github.com/httpie/httpie/blob/master/LICENSE).
 ### Authors
 
 [Jakub Roztocil](https://roztocil.co) ([@jakubroztocil](https://twitter.com/jakubroztocil)) created HTTPie and [these fine people](https://github.com/httpie/httpie/blob/master/AUTHORS.md) have contributed.
+
