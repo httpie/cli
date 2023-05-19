@@ -369,7 +369,7 @@ $ http localhost:8000 Host:example.com
 
 HTTP methods determine the action to be performed when interacting with a web server. In HTTPie, the HTTP method is specified before the URL. It can be any of the standard HTTP methods (`GET`, `HEAD`, `POST`, `PUT`, `DELETE`, `CONNECT`, `TRACE`, `PATCH` & `OPTIONS`) or a custom one.
 
-The following command shows how to send a request with `DELETE` method to URL `pie.dev/delete`:
+The following command shows how to make a request with `DELETE` method to URL `pie.dev/delete`:
 
 ```bash
 $ http DELETE pie.dev/delete
@@ -388,13 +388,13 @@ $ http AHOY pie.dev/post
 ```
 
 HTTPie does not place any restrictions regarding which request methods can include a body.
-For instance, you can send an empty `POST` request as shown below:
+For instance, you can smake an empty `POST` request as shown below:
 
 ```bash
 $ http POST pie.dev/post
 ```
 
-You can also send a `GET` request with body. Here is an example of this:
+You can also make a `GET` request with body. Here is an example of this:
 
 ```bash
 $ http GET pie.dev/get hello=world
