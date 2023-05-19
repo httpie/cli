@@ -365,7 +365,7 @@ Set a custom `Host` header to work around missing DNS records:
 $ http localhost:8000 Host:example.com
 ```
 
-## HTTP methods
+## HTTP method
 
 HTTP methods determine the action to be performed when interacting with a web server. In HTTPie, the HTTP method is specified before the URL. It can be any of the standard HTTP methods (`GET`, `HEAD`, `POST`, `PUT`, `DELETE`, `CONNECT`, `TRACE`, `PATCH` & `OPTIONS`) or a custom one.
 
