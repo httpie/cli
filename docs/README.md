@@ -435,23 +435,25 @@ In the last command, the method defaults to `POST`, since the request contains a
 
 ## Request URL
 
-The only information HTTPie needs to perform a request is a URL.
+The Request URL is a unique web address to which the request is sent. This argument is required to initiate a request. All other arguments can be omitted, in which case HTTPie uses default values.
 
-The default scheme is `http://` and can be omitted from the argument:
+Specifying the scheme (`http://` or `https://`) is optional as well. If it is not specified, HTTPie defaults to using `http://`.
 
 ```bash
 $ http example.org
 # → http://example.org
 ```
 
-HTTPie also installs an `https` executable, where the default scheme is `https://`:
+HTTPie includes an `https` executable specifically designed to handle HTTPS requests. To use this, simply replace `http` with `https` in your command. When `https` is used to initiate a request, the default scheme is `https://`.
 
 ```bash
 $ https example.org
 # → https://example.org
 ```
 
-When you paste a URL into the terminal, you can even keep the `://` bit in the URL argument to quickly convert the URL into an HTTPie call just by adding a space after the protocol name.
+HTTPie includes a helpful feature that allows you to quickly turn a URL into an HTTPie command. This can be useful when you need to convert a URL from your clipboard into an HTTPie command. To use this feature, paste a URL into a terminal window, making sure to include a space after the protocol name. HTTPie will transform this into an HTTPie command.
+
+The following examples illustrate this feature:
 
 ```bash
 $ https ://example.org
