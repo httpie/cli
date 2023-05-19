@@ -436,7 +436,7 @@ In the last command, the method defaults to `POST`, since the request contains a
 
 The request URL is a unique web address to which a request is sent. This argument is required to initiate a request. All other arguments can be omitted, in which case HTTPie uses default values.
 
-Specifying the scheme (`http://` or `https://`) is optional as well. If it is not specified, HTTPie defaults to using `http://`.
+Specifying the scheme (`http://` or `https://`) is optional as well. If not specified, HTTPie defaults to using `http://`.
 
 ```bash
 $ http example.org
