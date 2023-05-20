@@ -187,7 +187,7 @@ ARGPARSE_QUALIFIER_MAP = {
     Qualifiers.ZERO_OR_MORE: argparse.ZERO_OR_MORE,
     Qualifiers.ONE_OR_MORE: argparse.ONE_OR_MORE
 }
-ARGPARSE_IGNORE_KEYS = ('short_help', 'nested_options')
+ARGPARSE_IGNORE_KEYS = ('short_help', 'nested_options', 'completer')
 
 
 def to_argparse(
@@ -211,12 +211,14 @@ def to_argparse(
             concrete_group = concrete_group.add_mutually_exclusive_group(required=False)
 
         for abstract_argument in abstract_group.arguments:
-            concrete_group.add_argument(
+            argument = concrete_group.add_argument(
                 *abstract_argument.aliases,
                 **drop_keys(map_qualifiers(
                     abstract_argument.configuration, ARGPARSE_QUALIFIER_MAP
                 ), ARGPARSE_IGNORE_KEYS)
             )
+            if 'completer' in abstract_argument.configuration:
+                argument.completer = abstract_argument.configuration['completer']
 
     return concrete_parser
 

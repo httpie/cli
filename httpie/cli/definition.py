@@ -3,6 +3,8 @@ from __future__ import annotations
 import textwrap
 from argparse import FileType
 
+from argcomplete.completers import ChoicesCompleter, FilesCompleter
+
 from httpie import __doc__, __version__
 from httpie.cli.argtypes import (KeyValueArgType, SessionNameValidator,
                                  SSLCredentials, readable_file_arg,
@@ -64,6 +66,7 @@ positional_arguments.add_argument(
         $ http example.org hello=world   # => POST
 
     """,
+    completer=ChoicesCompleter(('GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'))
 )
 positional_arguments.add_argument(
     dest='url',
@@ -79,6 +82,7 @@ positional_arguments.add_argument(
         $ http :/foo                    # => http://localhost/foo
 
     """,
+    completer=ChoicesCompleter(()),
 )
 positional_arguments.add_argument(
     dest='request_items',
@@ -136,6 +140,7 @@ positional_arguments.add_argument(
         field-name-with\:colon=value
 
     """,
+    completer=ChoicesCompleter(()),
 )
 
 #######################################################################
@@ -189,7 +194,8 @@ content_types.add_argument(
     short_help=(
         'Specify a custom boundary string for multipart/form-data requests. '
         'Only has effect only together with --form.'
-    )
+    ),
+    completer=ChoicesCompleter(()),
 )
 content_types.add_argument(
     '--raw',
@@ -351,6 +357,7 @@ output_processing.add_argument(
         --response-charset=big5
 
     """,
+    completer=ChoicesCompleter(()),
 )
 output_processing.add_argument(
     '--response-mime',
@@ -364,6 +371,7 @@ output_processing.add_argument(
         --response-mime=text/xml
 
     """,
+    completer=ChoicesCompleter(()),
 )
 output_processing.add_argument(
     '--format-options',
@@ -389,6 +397,7 @@ output_processing.add_argument(
             f'        {option}' for option in DEFAULT_FORMAT_OPTIONS
         ).strip()
     ),
+    completer=ChoicesCompleter(()),
 )
 
 #######################################################################
@@ -418,6 +427,7 @@ output_options.add_argument(
     response body is printed by default.
 
     """,
+    completer=ChoicesCompleter(()),
 )
 output_options.add_argument(
     '--headers',
@@ -492,6 +502,7 @@ output_options.add_argument(
     dest='output_options_history',
     metavar='WHAT',
     help=Qualifiers.SUPPRESS,
+    completer=ChoicesCompleter(()),
 )
 output_options.add_argument(
     '--stream',
@@ -526,6 +537,7 @@ output_options.add_argument(
     printed to stderr.
 
     """,
+    completer=FilesCompleter(),
 )
 
 output_options.add_argument(
@@ -597,6 +609,7 @@ sessions.add_argument(
 
         https://httpie.io/docs/cli/config-file-directory
     """,
+    completer=FilesCompleter(('json',)),
 )
 sessions.add_argument(
     '--session-read-only',
@@ -608,6 +621,7 @@ sessions.add_argument(
     exchange.
 
     """,
+    completer=FilesCompleter(('json',)),
 )
 
 #######################################################################
@@ -672,6 +686,7 @@ authentication.add_argument(
     (-a username), HTTPie will prompt for the password.
 
     """,
+    completer=ChoicesCompleter(()),
 )
 authentication.add_argument(
     '--auth-type',
@@ -717,6 +732,7 @@ network.add_argument(
     and $HTTPS_proxy are supported as well.
 
     """,
+    completer=ChoicesCompleter(()),
 )
 network.add_argument(
     '--follow',
@@ -735,6 +751,7 @@ network.add_argument(
     By default, requests have a limit of 30 redirects (works with --follow).
 
     """,
+    completer=ChoicesCompleter(()),
 )
 network.add_argument(
     '--max-headers',
@@ -743,7 +760,8 @@ network.add_argument(
     short_help=(
         'The maximum number of response headers to be read before '
         'giving up (default 0, i.e., no limit).'
-    )
+    ),
+    completer=ChoicesCompleter(()),
 )
 
 network.add_argument(
@@ -761,6 +779,7 @@ network.add_argument(
     the underlying socket for timeout seconds).
 
     """,
+    completer=ChoicesCompleter(()),
 )
 network.add_argument(
     '--check-status',
@@ -811,6 +830,7 @@ ssl.add_argument(
     for private certs. (Or you can set the REQUESTS_CA_BUNDLE environment
     variable instead.)
     """,
+    completer=ChoicesCompleter(('yes', 'no')),
 )
 ssl.add_argument(
     '--ssl',
@@ -825,6 +845,7 @@ ssl.add_argument(
     are shown here).
 
     """,
+    completer=ChoicesCompleter(()),
 )
 ssl.add_argument(
     '--ciphers',
@@ -837,6 +858,7 @@ ssl.add_argument(
     {DEFAULT_SSL_CIPHERS_STRING}
 
     """,
+    completer=ChoicesCompleter(()),
 )
 ssl.add_argument(
     '--cert',
@@ -849,6 +871,7 @@ ssl.add_argument(
     specify --cert-key separately.
 
     """,
+    completer=FilesCompleter(('crt', 'cert', 'pem')),
 )
 ssl.add_argument(
     '--cert-key',
@@ -860,6 +883,7 @@ ssl.add_argument(
     certificate file does not contain the private key.
 
     """,
+    completer=FilesCompleter(('key', 'pem')),
 )
 
 ssl.add_argument(
@@ -871,7 +895,8 @@ ssl.add_argument(
     The passphrase to be used to with the given private key. Only needed if --cert-key
     is given and the key file requires a passphrase.
     If not provided, you’ll be prompted interactively.
-    """
+    """,
+    completer=ChoicesCompleter(()),
 )
 
 #######################################################################
@@ -913,7 +938,8 @@ troubleshooting.add_argument(
 troubleshooting.add_argument(
     '--default-scheme',
     default='http',
-    short_help='The default scheme to use if not specified in the URL.'
+    short_help='The default scheme to use if not specified in the URL.',
+    completer=ChoicesCompleter(('http', 'https')),
 )
 troubleshooting.add_argument(
     '--debug',

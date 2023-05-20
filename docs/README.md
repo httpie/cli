@@ -2540,6 +2540,17 @@ The two modes, `--pretty=all` (default for terminal) and `--pretty=none` (defaul
 In the future, the command line syntax and some of the `--OPTIONS` may change slightly, as HTTPie improves and new features are added.
 All changes are recorded in the [change log](#change-log).
 
+### Shell completion
+
+Shell completion is provided using the argcomplete library. It is suggested
+to load the completion without falling back to the shell defaults in order
+to avoid default completions in contexts where they do not apply. For example
+for bash:
+
+```bash
+$ eval "$(register-python-argcomplete --complete-arguments -- http https)"
+```
+
 ### Community and Support
 
 HTTPie has the following community channels:
@@ -2552,10 +2563,11 @@ HTTPie has the following community channels:
 
 #### Dependencies
 
-Under the hood, HTTPie uses these two amazing libraries:
+Under the hood, HTTPie uses these three amazing libraries:
 
 - [Requests](https://requests.readthedocs.io/en/latest/) — Python HTTP library for humans
 - [Pygments](https://pygments.org/) — Python syntax highlighter
+- [argcomplete](https://github.com/kislyuk/argcomplete) — Shell completion generator
 
 #### HTTPie friends
 
