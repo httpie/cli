@@ -1,20 +1,25 @@
+import os
 import re
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Optional, Iterator, Iterable
 
+
+# So that httpie.cli.definition can provide man-page-specific output. Must be set before importing httpie.
+os.environ['HTTPIE_BUILDING_MAN_PAGES'] = '1'
+
 import httpie
-from httpie.cli.definition import options as core_options
+from httpie.cli.definition import options as core_options, IS_MAN_PAGE
 from httpie.cli.options import ParserSpec
 from httpie.manager.cli import options as manager_options
 from httpie.output.ui.rich_help import OptionsHighlighter, to_usage
 from httpie.output.ui.rich_utils import render_as_string
-from httpie.utils import split_iterable
 
 
-# Escape certain characters so they are rendered properly on
-# all terminals.
-# https://man7.org/linux/man-pages/man7/groff_char.7.html
+assert IS_MAN_PAGE, 'CLI definition does not understand we’re building man pages'
+
+# Escape certain characters, so they are rendered properly on all terminals.
+# <https://man7.org/linux/man-pages/man7/groff_char.7.html>
 ESCAPE_MAP = {
     '"': '\[dq]',
     "'": '\[aq]',
@@ -31,6 +36,7 @@ PROJECT_ROOT = EXTRAS_DIR.parent
 OPTION_HIGHLIGHT_RE = re.compile(
     OptionsHighlighter.highlights[0]
 )
+
 
 class ManPageBuilder:
     def __init__(self):
@@ -125,7 +131,7 @@ def to_man_page(program_name: str, spec: ParserSpec, *, is_top_level_cmd: bool =
 
     with builder.section('SYNOPSIS'):
         # `http` and `https` are commands that can be directly used, so they can have
-        # have a valid usage. But `httpie` is a top-level command with multiple sub commands,
+        # a valid usage. But `httpie` is a top-level command with multiple sub commands,
         # so for the synopsis we'll only reference the `httpie` name.
         if is_top_level_cmd:
             synopsis = program_name
@@ -153,7 +159,7 @@ def to_man_page(program_name: str, spec: ParserSpec, *, is_top_level_cmd: bool =
                 if raw_arg.get('is_positional'):
                     # In case of positional arguments, metavar is always equal
                     # to the list of options (e.g `METHOD`).
-                   metavar = None
+                    metavar = None
                 builder.add_options(raw_arg['options'], metavar=metavar)
 
                 desc = builder.format_desc(raw_arg.get('description', ''))
@@ -176,7 +182,6 @@ def main() -> None:
     ]:
         with open((MAN_PAGE_PATH / program_name).with_suffix('.1'), 'w') as stream:
             stream.write(to_man_page(program_name, spec, **config))
-
 
 
 if __name__ == '__main__':

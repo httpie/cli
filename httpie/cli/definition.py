@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import textwrap
 from argparse import FileType
 
@@ -22,6 +23,12 @@ from httpie.plugins.builtin import BuiltinAuthPlugin
 from httpie.plugins.registry import plugin_manager
 from httpie.ssl_ import AVAILABLE_SSL_VERSION_ARG_MAPPING, DEFAULT_SSL_CIPHERS_STRING
 
+
+# Man pages are static (built when making a release).
+# We use this check to not include generated, system-specific information there (e.g., default --ciphers).
+IS_MAN_PAGE = bool(os.environ.get('HTTPIE_BUILDING_MAN_PAGES'))
+
+
 options = ParserSpec(
     'http',
     description=f'{__doc__.strip()} <https://httpie.io>',
@@ -34,7 +41,6 @@ options = ParserSpec(
     """,
     source_file=__file__
 )
-
 
 #######################################################################
 # Positional arguments.
@@ -233,6 +239,7 @@ processing_options.add_argument(
 
     """,
 )
+
 
 #######################################################################
 # Output processing
@@ -610,6 +617,7 @@ sessions.add_argument(
     """,
 )
 
+
 #######################################################################
 # Authentication
 #######################################################################
@@ -630,7 +638,7 @@ def format_auth_help(auth_plugins_mapping, *, isolation_mode: bool = False):
             if issubclass(auth_plugin, BuiltinAuthPlugin)
         ]
         text += '\n'
-        text += 'For finding out all available authentication types in your system, try:\n\n'
+        text += 'To see all available auth types on your system, including ones installed via plugins, run:\n\n'
         text += '    $ http --auth-type'
 
     auth_types = '\n\n    '.join(
@@ -646,7 +654,7 @@ def format_auth_help(auth_plugins_mapping, *, isolation_mode: bool = False):
                 ''
                 if not plugin.description
                 else '\n      '
-                + ('\n      '.join(textwrap.wrap(plugin.description)))
+                     + ('\n      '.join(textwrap.wrap(plugin.description)))
             ),
         )
         for plugin in auth_plugins
@@ -826,23 +834,36 @@ ssl.add_argument(
 
     """,
 )
+
+CIPHERS_CURRENT_DEFAULTS = (
+    """
+    See `http --help` for the default ciphers list on you system.
+
+    """
+    if IS_MAN_PAGE else
+    f"""
+    By default, the following ciphers are used on your system:
+
+    {DEFAULT_SSL_CIPHERS_STRING}
+
+    """
+)
 ssl.add_argument(
     '--ciphers',
     short_help='A string in the OpenSSL cipher list format.',
     help=f"""
 
-    A string in the OpenSSL cipher list format. By default, the following
-    ciphers are used on your system:
+    A string in the OpenSSL cipher list format.
 
-    {DEFAULT_SSL_CIPHERS_STRING}
+    {CIPHERS_CURRENT_DEFAULTS}
 
-    """,
+    """
 )
 ssl.add_argument(
     '--cert',
     default=None,
     type=readable_file_arg,
-    short_help='Specifys a local cert to use as client side SSL certificate.',
+    short_help='Specifies a local cert to use as the client-side SSL certificate.',
     help="""
     You can specify a local cert to use as client side SSL certificate.
     This file may either contain both private key and certificate or you may

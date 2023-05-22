@@ -1,5 +1,5 @@
 .\" This file is auto-generated from the parser declaration in httpie/cli/definition.py by extras/scripts/generate_man_pages.py.
-.TH https 1 "2022-05-06" "HTTPie 3.2.1" "HTTPie Manual"
+.TH https 1 "2022-05-06" "HTTPie 3.2.2" "HTTPie Manual"
 .SH NAME
 https
 .SH SYNOPSIS
@@ -399,7 +399,7 @@ The authentication mechanism to be used. Defaults to \[dq]basic\[dq].
 
 \[dq]bearer\[dq]: Bearer HTTP Auth
 
-For finding out all available authentication types in your system, try:
+To see all available auth types on your system, including ones installed via plugins, run:
 
 $ http \fB\,--auth-type\/\fR
 
@@ -510,10 +510,12 @@ are shown here).
 
 
 
-A string in the OpenSSL cipher list format. By default, the following
-is used:
+A string in the OpenSSL cipher list format.
 
-ECDHE+AESGCM:ECDHE+CHACHA20:DHE+AESGCM:DHE+CHACHA20:ECDH+AESGCM:DH+AESGCM:ECDH+AES:DH+AES:RSA+AESGCM:RSA+AES:!aNULL:!eNULL:!MD5:!DSS
+
+See `http \fB\,--help\/\fR` for the default ciphers list on you system.
+
+
 
 
 

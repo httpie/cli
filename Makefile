@@ -231,15 +231,15 @@ brew-test:
 	brew audit --strict httpie
 
 ###############################################################################
-# Regeneration
+# Generated content
 ###############################################################################
 
-regen-all: regen-man-pages regen-install-methods
+content: man installation-docs
 
-regen-man-pages: install
+man: install
 	@echo $(H1)Regenerate man pages$(H1END)
 	$(VENV_PYTHON) extras/scripts/generate_man_pages.py
 
-regen-install-methods:
+installation-docs:
 	@echo $(H1)Updating installation instructions in the docs$(H1END)
 	$(VENV_PYTHON) docs/installation/generate.py
