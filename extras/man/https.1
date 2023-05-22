@@ -399,7 +399,7 @@ The authentication mechanism to be used. Defaults to \[dq]basic\[dq].
 
 \[dq]bearer\[dq]: Bearer HTTP Auth
 
-For finding out all available authentication types in your system, try:
+To see all available auth types on your system, including ones installed via plugins, run:
 
 $ http \fB\,--auth-type\/\fR
 
@@ -509,12 +509,10 @@ are shown here).
 .IP "\fB\,--ciphers\/\fR"
 
 
+A string in the OpenSSL cipher list format.
 
-A string in the OpenSSL cipher list format. By default, the following
-ciphers are used on your system:
 
-TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384:DHE-RSA-AES256-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES256-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES128-SHA:DHE-RSA-AES128-SHA:AES256-GCM-SHA384:AES128-GCM-SHA256:AES256-SHA256:AES128-SHA256:AES256-SHA:AES128-SHA
-
+See `http \fB\,--help\/\fR` for the default ciphers list on you system.
 
 
 .IP "\fB\,--cert\/\fR"
