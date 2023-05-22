@@ -126,6 +126,66 @@ $ choco upgrade httpie
 
 ### Linux
 
+#### Debian and Ubuntu
+
+Also works for other Debian-derived distributions like MX Linux, Linux Mint, deepin, Pop!_OS, KDE neon, Zorin OS, elementary OS, Kubuntu, Devuan, Linux Lite, Peppermint OS, Lubuntu, antiX, Xubuntu, etc.
+
+```bash
+# Install httpie
+$ curl -SsL https://packages.httpie.io/deb/KEY.gpg | sudo gpg --dearmor -o /usr/share/keyrings/httpie.gpg
+$ sudo echo "deb [arch=amd64 signed-by=/usr/share/keyrings/httpie.gpg] https://packages.httpie.io/deb ./" > /etc/apt/sources.list.d/httpie.list
+$ sudo apt update
+$ sudo apt install httpie
+```
+
+```bash
+# Upgrade httpie
+$ sudo apt update && sudo apt upgrade httpie
+```
+
+#### Fedora
+
+```bash
+# Install httpie
+$ dnf install httpie
+```
+
+```bash
+# Upgrade httpie
+$ dnf upgrade httpie
+```
+
+#### CentOS and RHEL
+
+Also works for other RHEL-derived distributions like ClearOS, Oracle Linux, etc.
+
+```bash
+# Install httpie
+$ yum install epel-release
+$ yum install httpie
+```
+
+```bash
+# Upgrade httpie
+$ yum upgrade httpie
+```
+
+#### Single binary executables
+
+Get the standalone HTTPie Linux executables when you don't want to go through the full installation process.
+
+```bash
+# Install httpie
+$ https --download packages.httpie.io/binaries/linux/http-latest -o http
+$ ln -ls ./http ./https
+$ chmod +x ./http ./https
+```
+
+```bash
+# Upgrade httpie
+$ https --download packages.httpie.io/binaries/linux/http-latest -o http
+```
+
 #### Snapcraft (Linux)
 
 To install [Snapcraft](https://snapcraft.io/), see [its installation](https://snapcraft.io/docs/installing-snapd).
@@ -156,52 +216,6 @@ $ brew update
 $ brew upgrade httpie
 ```
 
-#### Debian and Ubuntu
-
-Also works for other Debian-derived distributions like MX Linux, Linux Mint, deepin, Pop!_OS, KDE neon, Zorin OS, elementary OS, Kubuntu, Devuan, Linux Lite, Peppermint OS, Lubuntu, antiX, Xubuntu, etc.
-
-```bash
-# Install httpie
-$ sudo -i
-$ curl -SsL https://packages.httpie.io/deb/KEY.gpg | apt-key add -
-$ curl -SsL -o /etc/apt/sources.list.d/httpie.list https://packages.httpie.io/deb/httpie.list
-$ apt update
-$ apt install httpie
-```
-
-```bash
-# Upgrade httpie
-$ apt update
-$ apt upgrade httpie
-```
-
-#### Fedora
-
-```bash
-# Install httpie
-$ dnf install httpie
-```
-
-```bash
-# Upgrade httpie
-$ dnf upgrade httpie
-```
-
-#### CentOS and RHEL
-
-Also works for other RHEL-derived distributions like ClearOS, Oracle Linux, etc.
-
-```bash
-# Install httpie
-$ yum install epel-release
-$ yum install httpie
-```
-
-```bash
-# Upgrade httpie
-$ yum upgrade httpie
-```
-
 #### Arch Linux
 
 Also works for other Arch-derived distributions like ArcoLinux, EndeavourOS, Artix Linux, etc.
@@ -214,21 +228,6 @@ $ pacman -Syu httpie
 ```bash
 # Upgrade httpie
 $ pacman -Syu
-```
-
-#### Single binary executables
-
-Get the standalone HTTPie Linux executables when you don't want to go through the full installation process
-
-```bash
-# Install httpie
-$ https --download packages.httpie.io/binaries/linux/http-latest -o http
-$ chmod +x ./http
-```
-
-```bash
-# Upgrade httpie
-$ https --download packages.httpie.io/binaries/linux/http-latest -o http
 ```
 
 ### FreeBSD
