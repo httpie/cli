@@ -915,6 +915,8 @@ http --offline --print=B pie.dev/post \
 ]
 ```
 
+Sending scalar JSON types (a single `null`, `true`, `false`,  string or number) as the top-level object is impossible using the key/value syntax. But you can still pass it via [`--raw='<value>'`](#raw-request-body).
+
 ##### Escaping behavior
 
 Nested JSON syntax uses the same [escaping rules](#escaping-rules) as
