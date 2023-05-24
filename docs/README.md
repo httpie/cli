@@ -1180,7 +1180,7 @@ All of these can be overwritten or unset (see below).
 
 ### Reading headers from a file
 
-You can read headers from a file by using the `:@` operator. This would also effectively strip the newlines from the end. See [#file-based-separators] for more examples.
+You can read headers from a file by using the `:@` operator. This would also effectively strip the newlines from the end. See [file based separators](#file-based-separators) for more examples.
 
 ```bash
 $ http pie.dev/headers X-Data:@files/text.txt
