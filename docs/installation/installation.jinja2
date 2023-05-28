@@ -24,12 +24,12 @@ Do not edit here, but in docs/installation/.
 
         ```bash
         # Install httpie
-        $ {{ tool.commands.install|join('\n$ ') }}
+        {{ tool.commands.install|join(';\n') }}
         ```
 
         ```bash
         # Upgrade httpie
-        $ {{ tool.commands.upgrade|join('\n$ ') }}
+        {{ tool.commands.upgrade|join(';\n') }}
         ```
     {% endfor %}
 
