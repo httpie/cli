@@ -112,7 +112,8 @@ class HTTPResponse(HTTPMessage):
             9: '0.9',
             10: '1.0',
             11: '1.1',
-            20: '2.0',
+            20: '2',
+            30: '3',
         }
         fallback = 11
         version = None
