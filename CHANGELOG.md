@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 ## [3.3.0-dev](https://github.com/httpie/httpie/compare/3.2.2...master) (unreleased)
 
 - Make it possible to [unset](https://httpie.io/docs/cli/default-request-headers) the `User-Agent`, `Accept-Encoding`, and `Host` request headers. ([#1502](https://github.com/httpie/httpie/issues/1502))
+- Add HTTP/3 version mapping into the HTTPResponse wrapper and rename HTTP/2.0 to HTTP/2. ([#1513](https://github.com/httpie/httpie/issues/1513))
 
 ## [3.2.2](https://github.com/httpie/httpie/compare/3.2.1...3.2.2) (2022-05-19)
 
