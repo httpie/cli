@@ -3,7 +3,7 @@
         <img height="100" alt="HTTPie" src="https://raw.githubusercontent.com/httpie/cli/master/docs/httpie-logo.svg" />
     </a>
     <br>
-    HTTPie for Terminal: human-friendly CLI HTTP client for the API era
+    HTTPie CLI: human-friendly HTTP client for the API era
 </h2>
 
 <div align="center">
