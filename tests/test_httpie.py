@@ -36,7 +36,7 @@ def test_debug():
 def test_help():
     r = http('--help', tolerate_error_exit_status=True)
     assert r.exit_status == ExitStatus.SUCCESS
-    assert 'https://github.com/httpie/httpie/issues' in r
+    assert 'https://github.com/httpie/cli/issues' in r
 
 
 def test_version():
@@ -124,7 +124,7 @@ def test_POST_file(httpbin_both):
 
 def test_form_POST_file_redirected_stdin(httpbin):
     """
-    <https://github.com/httpie/httpie/issues/840>
+    <https://github.com/httpie/cli/issues/840>
 
     """
     with open(FILE_PATH, encoding=UTF8):

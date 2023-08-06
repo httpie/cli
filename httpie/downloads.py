@@ -217,7 +217,7 @@ class Downloader:
         assert not self.status.time_started
 
         # FIXME: some servers still might sent Content-Encoding: gzip
-        # <https://github.com/httpie/httpie/issues/423>
+        # <https://github.com/httpie/cli/issues/423>
         try:
             total_size = int(final_response.headers['Content-Length'])
         except (KeyError, ValueError, TypeError):

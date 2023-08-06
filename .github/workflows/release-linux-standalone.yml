@@ -52,7 +52,7 @@ jobs:
         id: release_id
         run: |
           pip install httpie
-          export API_URL="api.github.com/repos/httpie/httpie/releases/tags/${{ github.event.inputs.tag_name }}"
+          export API_URL="api.github.com/repos/httpie/cli/releases/tags/${{ github.event.inputs.tag_name }}"
           export UPLOAD_URL=`https --ignore-stdin GET $API_URL | jq -r ".upload_url"`
           echo "::set-output name=UPLOAD_URL::$UPLOAD_URL"
 

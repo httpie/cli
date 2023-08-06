@@ -203,7 +203,7 @@ class TestSession(SessionTestBase):
 
     def test_session_with_cookie_followed_by_another_header(self, httpbin):
         """
-        Make sure headers don’t get mutated — <https://github.com/httpie/httpie/issues/1126>
+        Make sure headers don’t get mutated — <https://github.com/httpie/cli/issues/1126>
         """
         self.start_session(httpbin)
         session_data = {
@@ -239,7 +239,7 @@ class TestSession(SessionTestBase):
 
     def test_session_default_header_value_overwritten(self, httpbin):
         self.start_session(httpbin)
-        # https://github.com/httpie/httpie/issues/180
+        # https://github.com/httpie/cli/issues/180
         r1 = http('--session=test',
                   httpbin.url + '/headers', 'User-Agent:custom',
                   env=self.env())
@@ -251,7 +251,7 @@ class TestSession(SessionTestBase):
         assert r2.json['headers']['User-Agent'] == 'custom'
 
     def test_download_in_session(self, tmp_path, httpbin):
-        # https://github.com/httpie/httpie/issues/412
+        # https://github.com/httpie/cli/issues/412
         self.start_session(httpbin)
         cwd = os.getcwd()
         os.chdir(tmp_path)
@@ -335,7 +335,7 @@ class TestSession(SessionTestBase):
         assert HTTP_OK in r1
         assert HTTP_OK in r2
 
-        # additional test for issue: https://github.com/httpie/httpie/issues/1098
+        # additional test for issue: https://github.com/httpie/cli/issues/1098
         with open(session_path) as session_file:
             session_file_lines = ''.join(session_file.readlines())
             assert "\"type\": \"test-prompted\"" in session_file_lines
@@ -427,7 +427,7 @@ class TestExpiredCookies(CookieTestBase):
             ),
             (
                 # Checks we gracefully ignore expires date in invalid format.
-                # <https://github.com/httpie/httpie/issues/963>
+                # <https://github.com/httpie/cli/issues/963>
                 'pfg=; Expires=Sat, 19-Sep-2020 06:58:14 GMT+0000; Max-Age=0; path=/; domain=.tumblr.com; secure; HttpOnly',
                 None,
                 []

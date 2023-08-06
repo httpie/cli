@@ -101,5 +101,5 @@ def _is_key_file_encrypted(key_file):
 
 # We used to import the default set of TLS ciphers from urllib3, but they removed it.
 # Instead, now urllib3 uses the list of ciphers configured by the system.
-# <https://github.com/httpie/httpie/pull/1501>
+# <https://github.com/httpie/cli/pull/1501>
 DEFAULT_SSL_CIPHERS_STRING = ':'.join(HTTPieHTTPSAdapter.get_default_ciphers_names())

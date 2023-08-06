@@ -13,7 +13,7 @@ We will discuss setting up the environment, installing development tools, instal
 
 ## Overall process
 
-Trigger the [`Release on Snap`](https://github.com/httpie/httpie/actions/workflows/release-snap.yml) action, which will
+Trigger the [`Release on Snap`](https://github.com/httpie/cli/actions/workflows/release-snap.yml) action, which will
 create a snap package for HTTPie and then push it to Snap Store in the following channels:
 
 - Edge
@@ -37,7 +37,7 @@ From inside the container:
 
 ```bash
 # Clone
-git clone --depth=1 https://github.com/httpie/httpie.git
+git clone --depth=1 https://github.com/httpie/cli.git
 cd httpie
 
 # Build

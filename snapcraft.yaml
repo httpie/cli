@@ -31,7 +31,7 @@ description: |
   Links
     - Documentation: https://httpie.io/docs
     - Try in browser: https://httpie.io/run
-    - GitHub: https://github.com/httpie/httpie
+    - GitHub: https://github.com/httpie/cli
     - Twitter: https://twitter.com/httpie
     - Discord: https://httpie.io/chat
 license: BSD-3-Clause-LBNL

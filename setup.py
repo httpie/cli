@@ -77,7 +77,7 @@ setup(
     long_description=long_description(),
     long_description_content_type='text/markdown',
     url='https://httpie.io/',
-    download_url=f'https://github.com/httpie/httpie/archive/{httpie.__version__}.tar.gz',
+    download_url=f'https://github.com/httpie/cli/archive/{httpie.__version__}.tar.gz',
     author=httpie.__author__,
     author_email='jakub@roztocil.co',
     license=httpie.__licence__,
@@ -108,7 +108,7 @@ setup(
         'Topic :: Utilities'
     ],
     project_urls={
-        'GitHub': 'https://github.com/httpie/httpie',
+        'GitHub': 'https://github.com/httpie/cli',
         'Twitter': 'https://twitter.com/httpie',
         'Discord': 'https://httpie.io/discord',
         'Documentation': 'https://httpie.io/docs',

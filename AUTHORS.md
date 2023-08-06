@@ -4,7 +4,7 @@
 
 ## Patches, features, ideas
 
-[Complete list of contributors on GitHub](https://github.com/httpie/httpie/graphs/contributors)
+[Complete list of contributors on GitHub](https://github.com/httpie/cli/graphs/contributors)
 
 - [Cláudia T. Delgado](https://github.com/claudiatd)
 - [Hank Gay](https://github.com/gthank)

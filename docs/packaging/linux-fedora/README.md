@@ -15,7 +15,7 @@ The current maintainer is [Miro Hrončok](https://github.com/hroncok).
 
 ## Overall process
 
-We added the [.packit.yaml](https://github.com/httpie/httpie/blob/master/.packit.yaml) local file.
+We added the [.packit.yaml](https://github.com/httpie/cli/blob/master/.packit.yaml) local file.
 It unlocks real-time Fedora checks on pull requests and new releases.
 
 So there is nothing to do on our side: `Packit` will see the new release and open a pull request [there](https://src.fedoraproject.org/rpms/httpie). Then, the Fedora maintainer will review and merge.

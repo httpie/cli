@@ -26,7 +26,7 @@ def test_follow_without_all_redirects_hidden(httpbin, follow_flag):
     assert HTTP_OK in r
 
 
-@pytest.mark.xfail(True, reason="https://github.com/httpie/httpie/issues/1082")
+@pytest.mark.xfail(True, reason="https://github.com/httpie/cli/issues/1082")
 def test_follow_output_options_used_for_redirects(httpbin):
     r = http('--follow', '--print=H', httpbin.url + '/redirect/2')
     assert r.count('GET /') == 1

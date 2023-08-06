@@ -19,7 +19,7 @@ This documentation is best viewed at [httpie.io/docs](https://httpie.org/docs).
 You can select your corresponding HTTPie version as well as run examples directly from the browser using a [termible.io](https://termible.io?utm_source=httpie-readme) embedded terminal.
 
 If you are reading this on GitHub, then this text covers the current *development* version.
-You are invited to submit fixes and improvements to the docs by editing [this file](https://github.com/httpie/httpie/blob/master/docs/README.md).
+You are invited to submit fixes and improvements to the docs by editing [this file](https://github.com/httpie/cli/blob/master/docs/README.md).
 
 </div>
 
@@ -255,7 +255,7 @@ If you want to try out the latest version of HTTPie that hasn't been officially 
 You can use the following command to install the development version of HTTPie on Linux, macOS, Windows, or FreeBSD operating systems. With this command, the code present in the `master` branch is downloaded and installed using `pip`.
 
 ```bash
-$ python -m pip install --upgrade https://github.com/httpie/httpie/archive/master.tar.gz
+$ python -m pip install --upgrade https://github.com/httpie/cli/archive/master.tar.gz
 ```
 
 There are other ways to install the development version of HTTPie on macOS and Linux.
@@ -274,7 +274,7 @@ $ snap remove httpie
 $ snap install httpie --edge
 ```
 
-To verify the installation, you can compare the [version identifier on GitHub](https://github.com/httpie/httpie/blob/master/httpie/__init__.py#L6) with the one available on your machine. You can check the version of HTTPie on your machine by using the command `http --version`.
+To verify the installation, you can compare the [version identifier on GitHub](https://github.com/httpie/cli/blob/master/httpie/__init__.py#L6) with the one available on your machine. You can check the version of HTTPie on your machine by using the command `http --version`.
 
 ```bash
 $ http --version
@@ -325,10 +325,10 @@ Build and print a request without sending it using [offline mode](#offline-mode)
 $ http --offline pie.dev/post hello=offline
 ```
 
-Use [GitHub API](https://developer.github.com/v3/issues/comments/#create-a-comment) to post a comment on an [issue](https://github.com/httpie/httpie/issues/83) with [authentication](#authentication):
+Use [GitHub API](https://developer.github.com/v3/issues/comments/#create-a-comment) to post a comment on an [issue](https://github.com/httpie/cli/issues/83) with [authentication](#authentication):
 
 ```bash
-$ http -a USERNAME POST https://api.github.com/repos/httpie/httpie/issues/83/comments body='HTTPie is awesome! :heart:'
+$ http -a USERNAME POST https://api.github.com/repos/httpie/cli/issues/83/comments body='HTTPie is awesome! :heart:'
 ```
 
 Upload a file using [redirected input](#redirected-input):
@@ -1754,7 +1754,7 @@ $ http pie.dev/post <<<'{"name": "John"}'
 You can even pipe web services together using HTTPie:
 
 ```bash
-$ http GET https://api.github.com/repos/httpie/httpie | http POST pie.dev/post
+$ http GET https://api.github.com/repos/httpie/cli | http POST pie.dev/post
 ```
 
 You can use `cat` to enter multiline data on the terminal:
@@ -2002,7 +2002,7 @@ HTTPie features a download mode in which it acts similarly to `wget`.
 When enabled using the `--download, -d` flag, response headers are printed to the terminal (`stderr`), and a progress bar is shown while the response body is being saved to a file.
 
 ```bash
-$ http --download https://github.com/httpie/httpie/archive/master.tar.gz
+$ http --download https://github.com/httpie/cli/archive/master.tar.gz
 ```
 
 ```http
@@ -2031,7 +2031,7 @@ To prevent data loss by overwriting, HTTPie adds a unique numerical suffix to th
 You can also redirect the response body to another program while the response headers and progress are still shown in the terminal:
 
 ```bash
-$ http -d https://github.com/httpie/httpie/archive/master.tar.gz | tar zxf -
+$ http -d https://github.com/httpie/cli/archive/master.tar.gz | tar zxf -
 ```
 
 ### Resuming downloads
@@ -2313,7 +2313,7 @@ These flags are available for both `sessions upgrade` and `sessions upgrade-all`
 
 | Option           | Description                                                                                                                                                                   |
 |------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `--bind-cookies` | Bind all previously [unbound cookies](#host-based-cookie-policy) to the session’s host ([context](https://github.com/httpie/httpie/security/advisories/GHSA-9w4w-cpc8-h2fq)). |
+| `--bind-cookies` | Bind all previously [unbound cookies](#host-based-cookie-policy) to the session’s host ([context](https://github.com/httpie/cli/security/advisories/GHSA-9w4w-cpc8-h2fq)). |
 
 
 ## Config
@@ -2406,7 +2406,7 @@ To prevent your program from becoming unresponsive when the server fails to resp
 
 ## Plugin manager
 
-HTTPie offers extensibility through a [plugin API](https://github.com/httpie/httpie/blob/master/httpie/plugins/base.py),
+HTTPie offers extensibility through a [plugin API](https://github.com/httpie/cli/blob/master/httpie/plugins/base.py),
 and there are dozens of plugins available to try!
 They add things like new authentication methods ([akamai/httpie-edgegrid](https://github.com/akamai/httpie-edgegrid)),
 transport mechanisms ([httpie/httpie-unixsocket](https://github.com/httpie/httpie-unixsocket)),
@@ -2546,7 +2546,7 @@ All changes are recorded in the [change log](#change-log).
 
 HTTPie has the following community channels:
 
-- [GitHub Issues](https://github.com/httpie/httpie/issues) for bug reports and feature requests
+- [GitHub Issues](https://github.com/httpie/cli/issues) for bug reports and feature requests
 - [Discord server](https://httpie.io/discord) to ask questions, discuss features, and for general API development discussion
 - [StackOverflow](https://stackoverflow.com) to ask questions (make sure to use the [httpie](https://stackoverflow.com/questions/tagged/httpie) tag)
 
@@ -2577,25 +2577,25 @@ Helpers to convert from other client tools:
 
 ### Contributing
 
-See [CONTRIBUTING](https://github.com/httpie/httpie/blob/master/CONTRIBUTING.md).
+See [CONTRIBUTING](https://github.com/httpie/cli/blob/master/CONTRIBUTING.md).
 
 ### Security policy
 
-See [github.com/httpie/httpie/security/policy](https://github.com/httpie/httpie/security/policy).
+See [github.com/httpie/cli/security/policy](https://github.com/httpie/cli/security/policy).
 
 ### Change log
 
-See [CHANGELOG](https://github.com/httpie/httpie/blob/master/CHANGELOG.md).
+See [CHANGELOG](https://github.com/httpie/cli/blob/master/CHANGELOG.md).
 
 ### Artwork
 
-- [README Animation](https://github.com/httpie/httpie/blob/master/docs/httpie-animation.gif) by [Allen Smith](https://github.com/loranallensmith).
+- [README Animation](https://github.com/httpie/cli/blob/master/docs/httpie-animation.gif) by [Allen Smith](https://github.com/loranallensmith).
 
 ### Licence
 
-BSD-3-Clause: [LICENSE](https://github.com/httpie/httpie/blob/master/LICENSE).
+BSD-3-Clause: [LICENSE](https://github.com/httpie/cli/blob/master/LICENSE).
 
 ### Authors
 
-[Jakub Roztocil](https://roztocil.co) ([@jakubroztocil](https://twitter.com/jakubroztocil)) created HTTPie and [these fine people](https://github.com/httpie/httpie/blob/master/AUTHORS.md) have contributed.
+[Jakub Roztocil](https://roztocil.co) ([@jakubroztocil](https://twitter.com/jakubroztocil)) created HTTPie and [these fine people](https://github.com/httpie/cli/blob/master/AUTHORS.md) have contributed.
 

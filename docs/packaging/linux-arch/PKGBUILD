@@ -7,7 +7,7 @@ pkgname=httpie
 pkgver=2.6.0
 pkgrel=1
 pkgdesc="human-friendly CLI HTTP client for the API era"
-url="https://github.com/httpie/httpie"
+url="https://github.com/httpie/cli"
 depends=('python-defusedxml'
          'python-pygments'
          'python-pysocks'
@@ -22,7 +22,7 @@ conflicts=(python-httpie)
 replaces=(python-httpie python2-httpie)
 license=('BSD')
 arch=('any')
-source=($pkgname-$pkgver.tar.gz::"https://github.com/httpie/httpie/archive/$pkgver.tar.gz")
+source=($pkgname-$pkgver.tar.gz::"https://github.com/httpie/cli/archive/$pkgver.tar.gz")
 sha256sums=('3bcd9a8cb2b11299da12d3af36c095c6d4b665e41c395898a07f1ae4d99fc14a')
 
 build() {

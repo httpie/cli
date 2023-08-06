@@ -19,7 +19,7 @@ Open a pull request to update the [downstream file](https://github.com/macports/
 
   ```bash
   # Download the archive
-  $ wget https://api.github.com/repos/httpie/httpie/tarball/2.5.0
+  $ wget https://api.github.com/repos/httpie/cli/tarball/2.5.0
 
   # Size
   $ stat --printf="%s\n" 2.5.0

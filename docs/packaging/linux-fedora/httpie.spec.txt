@@ -5,7 +5,7 @@ Summary:        A Curl-like tool for humans
 
 License:        BSD
 URL:            https://httpie.org/
-Source0:        https://github.com/httpie/httpie/archive/%{version}/%{name}-%{version}.tar.gz
+Source0:        https://github.com/httpie/cli/archive/%{version}/%{name}-%{version}.tar.gz
 
 BuildArch:      noarch
 

@@ -50,7 +50,7 @@ from typing import (IO, Dict, Generator, Iterable, List, Optional,
 BENCHMARK_SCRIPT = Path(__file__).parent / 'benchmarks.py'
 CURRENT_REPO = Path(__file__).parent.parent.parent
 
-GITHUB_URL = 'https://github.com/httpie/httpie.git'
+GITHUB_URL = 'https://github.com/httpie/cli.git'
 TARGET_BRANCH = 'master'
 
 # Additional dependencies for --complex

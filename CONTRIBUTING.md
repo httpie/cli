@@ -19,7 +19,7 @@ $ http --debug <COMPLETE ARGUMENT LIST THAT TRIGGERS THE ERROR>
 
 ## 2. Contributing Code and Docs
 
-Before working on a new feature or a bug, please browse [existing issues](https://github.com/httpie/httpie/issues)
+Before working on a new feature or a bug, please browse [existing issues](https://github.com/httpie/cli/issues)
 to see whether it has previously been discussed.
 
 If your change alters HTTPie’s behaviour or interface, it's a good idea to
@@ -38,13 +38,13 @@ for existing-yet-previously-untested behavior will very likely be merged.
 Therefore, docs and tests improvements are a great candidate for your first
 contribution.
 
-Consider also adding a [CHANGELOG](https://github.com/httpie/httpie/blob/master/CHANGELOG.md) entry for your changes.
+Consider also adding a [CHANGELOG](https://github.com/httpie/cli/blob/master/CHANGELOG.md) entry for your changes.
 
 ### Development Environment
 
 #### Getting the code
 
-Go to <https://github.com/httpie/httpie> and fork the project repository.
+Go to <https://github.com/httpie/cli> and fork the project repository.
 
 ```bash
 # Clone your fork
@@ -59,7 +59,7 @@ $ git checkout -b my_topical_branch
 
 #### Setup
 
-The [Makefile](https://github.com/httpie/httpie/blob/master/Makefile) contains a bunch of tasks to get you started.
+The [Makefile](https://github.com/httpie/cli/blob/master/Makefile) contains a bunch of tasks to get you started.
 You can run `$ make` to see all the available tasks.
 
 To get started, run the command below, which:
@@ -112,7 +112,7 @@ and that `make pycodestyle` passes.
 
 Please add tests for any new features and bug fixes.
 
-When you open a Pull Request, [GitHub Actions](https://github.com/httpie/httpie/actions) will automatically run HTTPie’s [test suite](https://github.com/httpie/httpie/tree/master/tests) against your code, so please make sure all checks pass.
+When you open a Pull Request, [GitHub Actions](https://github.com/httpie/cli/actions) will automatically run HTTPie’s [test suite](https://github.com/httpie/cli/tree/master/tests) against your code, so please make sure all checks pass.
 
 #### Running tests locally
 
@@ -144,7 +144,7 @@ $ python -m pytest tests/test_uploads.py::TestMultipartFormDataFileUpload
 $ python -m pytest tests/test_uploads.py::TestMultipartFormDataFileUpload::test_upload_ok
 ```
 
-See [Makefile](https://github.com/httpie/httpie/blob/master/Makefile) for additional development utilities.
+See [Makefile](https://github.com/httpie/cli/blob/master/Makefile) for additional development utilities.
 
 #### Running benchmarks
 
@@ -209,4 +209,4 @@ $ python -m pytest
 
 ______________________________________________________________________
 
-Finally, feel free to add yourself to [AUTHORS](https://github.com/httpie/httpie/blob/master/AUTHORS.md)!
+Finally, feel free to add yourself to [AUTHORS](https://github.com/httpie/cli/blob/master/AUTHORS.md)!

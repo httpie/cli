@@ -15,7 +15,7 @@ from .utils import HTTP_OK, TESTS_ROOT, IS_PYOPENSSL, http
 
 try:
     # Handle OpenSSL errors, if installed.
-    # See <https://github.com/httpie/httpie/issues/729>
+    # See <https://github.com/httpie/cli/issues/729>
     # noinspection PyUnresolvedReferences
     import OpenSSL.SSL
     ssl_errors = (

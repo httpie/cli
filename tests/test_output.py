@@ -199,7 +199,7 @@ class TestVerboseFlag:
         assert 'foo bar' in r
 
     def test_verbose_form(self, httpbin):
-        # https://github.com/httpie/httpie/issues/53
+        # https://github.com/httpie/cli/issues/53
         r = http('--verbose', '--form', 'POST', httpbin.url + '/post',
                  'A=B', 'C=D')
         assert HTTP_OK in r

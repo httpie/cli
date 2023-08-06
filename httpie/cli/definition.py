@@ -37,7 +37,7 @@ options = ParserSpec(
     to its default value.
 
     Suggestions and bug reports are greatly appreciated:
-        https://github.com/httpie/httpie/issues
+        https://github.com/httpie/cli/issues
     """,
     source_file=__file__
 )

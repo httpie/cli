@@ -7,13 +7,13 @@ This directory contains the build scripts for creating:
 - A self-contained binary executable for the HTTPie itself
 - `httpie.deb` and `httpie.rpm` packages for Debian and Fedora.
 
-The process of constructing them are fully automated, and can be easily done through the [`Release as Standalone Linux Package`](https://github.com/httpie/httpie/actions/workflows/release-linux-standalone.yml)
+The process of constructing them are fully automated, and can be easily done through the [`Release as Standalone Linux Package`](https://github.com/httpie/cli/actions/workflows/release-linux-standalone.yml)
 action. Once it finishes, the release artifacts will be attached in the summary page of the triggered run.
 
 
 ## Hacking
 
-The main entry point for the package builder is the [`build.py`](https://github.com/httpie/httpie/blob/master/extras/packaging/linux/build.py). It
+The main entry point for the package builder is the [`build.py`](https://github.com/httpie/cli/blob/master/extras/packaging/linux/build.py). It
 contains 2 major methods:
 
 - `build_binaries`, for the self-contained executables
@@ -39,7 +39,7 @@ Since the `httpie` depends on having a pip executable, we explicitly depend on t
 
 ### Docker Image
 
-This directory also contains a [docker image](https://github.com/httpie/httpie/blob/master/extras/packaging/linux/Dockerfile) which helps
+This directory also contains a [docker image](https://github.com/httpie/cli/blob/master/extras/packaging/linux/Dockerfile) which helps
 building our standalone binaries in an isolated environment with the lowest possible library versions. This is important, since even though
 the executables are standalone they still depend on some main system C libraries (like `glibc`) so we need to create our executables inside
 an environment with a very old (but not deprecated) glibc version. It makes us soundproof for all active Ubuntu/Debian versions.

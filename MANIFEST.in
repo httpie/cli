@@ -4,5 +4,5 @@ include CHANGELOG.md
 include AUTHORS.md
 include docs/README.md
 
-# <https://github.com/httpie/httpie/issues/182>
+# <https://github.com/httpie/cli/issues/182>
 recursive-include tests/ *

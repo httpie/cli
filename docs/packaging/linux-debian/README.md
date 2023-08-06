@@ -17,7 +17,7 @@ command (due to the underlying `httpie cli plugins` interface) explicitly depend
 
 ## Overall process
 
-The [`Release as Standalone Linux Binary`](https://github.com/httpie/httpie/actions/workflows/release-linux-standalone.yml) will be automatically
+The [`Release as Standalone Linux Binary`](https://github.com/httpie/cli/actions/workflows/release-linux-standalone.yml) will be automatically
 triggered when a new release is created, and it will submit the `.deb` package as a release asset.
 
 For making that asset available for all debian users, the release manager needs to go to the [`httpie/debian.httpie.io`](https://github.com/httpie/debian.httpie.io) repo

@@ -30,16 +30,16 @@ Main features:
 		<authors>HTTPie</authors>
 		<owners>jakubroztocil</owners>
 		<copyright>2012-2022 Jakub Roztocil</copyright>
-		<licenseUrl>https://raw.githubusercontent.com/httpie/httpie/master/LICENSE</licenseUrl>
+		<licenseUrl>https://raw.githubusercontent.com/httpie/cli/master/LICENSE</licenseUrl>
 		<iconUrl>https://pie-assets.s3.eu-central-1.amazonaws.com/LogoIcons/GB.png</iconUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
-		<releaseNotes>See the [changelog](https://github.com/httpie/httpie/releases/tag/3.2.2).</releaseNotes>
+		<releaseNotes>See the [changelog](https://github.com/httpie/cli/releases/tag/3.2.2).</releaseNotes>
 		<tags>httpie http https rest api client curl python ssl cli foss oss url</tags>
 		<projectUrl>https://httpie.io</projectUrl>
-		<packageSourceUrl>https://github.com/httpie/httpie/tree/master/docs/packaging/windows-chocolatey</packageSourceUrl>
-		<projectSourceUrl>https://github.com/httpie/httpie</projectSourceUrl>
+		<packageSourceUrl>https://github.com/httpie/cli/tree/master/docs/packaging/windows-chocolatey</packageSourceUrl>
+		<projectSourceUrl>https://github.com/httpie/cli</projectSourceUrl>
 		<docsUrl>https://httpie.io/docs</docsUrl>
-		<bugTrackerUrl>https://github.com/httpie/httpie/issues</bugTrackerUrl>
+		<bugTrackerUrl>https://github.com/httpie/cli/issues</bugTrackerUrl>
 		<dependencies>
 			<dependency id="python3" version="3.7" />
 		</dependencies>
