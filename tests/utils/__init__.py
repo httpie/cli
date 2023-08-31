@@ -1,6 +1,5 @@
 """Utilities for HTTPie test suite."""
 import re
-import shlex
 import os
 import sys
 import time
@@ -205,15 +204,8 @@ class BaseCLIResponse:
     devnull: str = None
     json: dict = None
     exit_status: ExitStatus = None
-    command: str = None
     args: List[str] = []
     complete_args: List[str] = []
-
-    @property
-    def command(self):
-        cmd = ' '.join(shlex.quote(arg) for arg in ['http', *self.args])
-        # pytest-httpbin to real httpbin.
-        return re.sub(r'127\.0\.0\.1:\d+', 'httpbin.org', cmd)
 
     @classmethod
     def from_raw_data(self, data: Union[str, bytes]) -> 'BaseCLIResponse':
@@ -448,7 +440,6 @@ def http(
         if r.exit_status != ExitStatus.SUCCESS:
             sys.stderr.write(r.stderr)
 
-        # print(f'\n\n$ {r.command}\n')
         return r
 
     finally:
