@@ -87,10 +87,7 @@ def _spawn_posix(args: List[str], process_context: ProcessContext) -> None:
     if platform.system() == 'Darwin':
         # Double-fork is not reliable on MacOS, so we'll use a subprocess
         # to ensure the task is isolated properly.
-        process = _start_process(args, env=process_context)
-        # Unlike windows, since we already completed the fork procedure
-        # we can simply join the process and wait for it.
-        process.communicate()
+        _start_process(args, env=process_context)
     else:
         os.environ.update(process_context)
         with suppress(BaseException):
