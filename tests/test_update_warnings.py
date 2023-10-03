@@ -213,7 +213,7 @@ def fetch_update_mock(mocker):
 
 @pytest.fixture
 def static_fetch_data(mocker):
-    mock_get = mocker.patch('requests.get')
+    mock_get = mocker.patch('niquests.get')
     mock_get.return_value.status_code = 200
     mock_get.return_value.json.return_value = {
         BUILD_CHANNEL: HIGHEST_VERSION,

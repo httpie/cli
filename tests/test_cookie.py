@@ -16,8 +16,18 @@ class TestIntegration:
         # Start running mock server in a separate thread.
         # Daemon threads automatically shut down when the main process exits.
         self.mock_server_thread = Thread(target=self.mock_server.serve_forever)
-        self.mock_server_thread.setDaemon(True)
+        self.mock_server_thread.daemon = True
         self.mock_server_thread.start()
+
+    def shutdown_mock_server(self):
+        if self.mock_server is None:
+            return
+        self.mock_server.socket.close()
+        self.mock_server.shutdown()
+        self.mock_server_thread.join()
+
+        self.mock_server = None
+        self.mock_server_port = None
 
     def test_cookie_parser(self):
         """Not directly testing HTTPie but `requests` to ensure their cookies handling
@@ -28,7 +38,7 @@ class TestIntegration:
             """"HTTP request handler."""
 
             def do_GET(self):
-                """Handle GET requests."""
+                """Handle GET niquests."""
                 # Craft multiple cookies
                 cookie = SimpleCookie()
                 cookie['hello'] = 'world'
@@ -45,3 +55,4 @@ class TestIntegration:
         response = http(f'http://localhost:{self.mock_server_port}/')
         assert 'Set-Cookie: hello=world; Path=/' in response
         assert 'Set-Cookie: oatmeal_raisin="is the best"; Path=/' in response
+        self.shutdown_mock_server()

@@ -1562,9 +1562,9 @@ be printed via several options:
 |---------------------------:|----------------------------------------------------------------------------------------------------|
 |            `--headers, -h` | Only the response headers are printed                                                              |
 |               `--body, -b` | Only the response body is printed                                                                  |
-|               `--meta, -m` | Only the [response metadata](#response-meta) is printed                                            |
+|               `--meta, -m` | Only the [request, response metadata](#response-meta) are printed                                  |
 |            `--verbose, -v` | Print the whole HTTP exchange (request and response). This option also enables `--all` (see below) |
-| `--verbose --verbose, -vv` | Just like `-v`, but also include the response metadata.                                            |
+| `--verbose --verbose, -vv` | Just like `-v`, but also include the request, and response metadata.                               |
 |              `--print, -p` | Selects parts of the HTTP exchange                                                                 |
 |              `--quiet, -q` | Don’t print anything to `stdout` and `stderr`                                                      |
 
@@ -1573,13 +1573,13 @@ be printed via several options:
 All the other [output options](#output-options) are under the hood just shortcuts for the more powerful `--print, -p`.
 It accepts a string of characters each of which represents a specific part of the HTTP exchange:
 
-| Character | Stands for                      |
-|----------:|---------------------------------|
-|       `H` | request headers                 |
-|       `B` | request body                    |
-|       `h` | response headers                |
-|       `b` | response body                   |
-|       `m` | [response meta](#response-meta) |
+| Character | Stands for                               |
+|----------:|------------------------------------------|
+|       `H` | request headers                          |
+|       `B` | request body                             |
+|       `h` | response headers                         |
+|       `b` | response body                            |
+|       `m` | [request, response meta](#response-meta) |
 
 Print request and response headers:
 
@@ -1592,27 +1592,49 @@ $ http --print=Hh PUT pie.dev/put hello=world
 The response metadata section currently includes the total time elapsed. It’s the number of seconds between opening the network connection and downloading the last byte of response the body.
 
 
-To _only_ show the response metadata, use `--meta, -m` (analogically to `--headers, -h` and `--body, -b`):
+To _only_ show the request, and response metadata, use `--meta, -m` (analogically to `--headers, -h` and `--body, -b`):
 
 ```bash
 $ http --meta pie.dev/delay/1
 ```
 
 ```console
-Elapsed time: 1.099171542s
+Connected to: 2a06:98c1:3120::2 port 443
+Connection secured using: TLSv1.3 with AES-256-GCM-SHA384
+Server certificate: commonName="pie.dev"; DNS="*.pie.dev"; DNS="pie.dev"
+Certificate validity: "Nov 11 01:14:24 2023 UTC" to "Feb 09 01:14:23 2024 UTC"
+Issuer: countryName="US"; organizationName="Let's Encrypt"; commonName="E1"
+Revocation status: Good
+
+Elapsed DNS: 0.11338s
+Elapsed established connection: 3.8e-05s
+Elapsed TLS handshake: 0.057503s
+Elapsed emitting request: 0.000275s
+Elapsed time: 0.292854214s
 ```
 
 The [extra verbose `-vv` output](#extra-verbose-output) includes the meta section by default. You can also show it in combination with other parts of the exchange via [`--print=m`](#what-parts-of-the-http-exchange-should-be-printed). For example, here we print it together with the response headers:
 
 ```bash
-$ http --print=hm pie.dev/get
+$ https --print=hm pie.dev/get
 ```
 
 ```http
-HTTP/1.1 200 OK
+Connected to: 2a06:98c1:3120::2 port 443
+Connection secured using: TLSv1.3 with AES-256-GCM-SHA384
+Server certificate: commonName="pie.dev"; DNS="*.pie.dev"; DNS="pie.dev"
+Certificate validity: "Nov 11 01:14:24 2023 UTC" to "Feb 09 01:14:23 2024 UTC"
+Issuer: countryName="US"; organizationName="Let's Encrypt"; commonName="E1"
+Revocation status: Good
+
+HTTP/2 200 OK
 Content-Type: application/json
 
-Elapsed time: 0.077538375s
+Elapsed DNS: 0.11338s
+Elapsed established connection: 3.8e-05s
+Elapsed TLS handshake: 0.057503s
+Elapsed emitting request: 0.000275s
+Elapsed time: 0.292854214s
 ```
 
 
@@ -1626,19 +1648,19 @@ If you [use `--style` with one of the Pie themes](#colors-and-formatting), you�
 `--verbose` can often be useful for debugging the request and generating documentation examples:
 
 ```bash
-$ http --verbose PUT pie.dev/put hello=world
-PUT /put HTTP/1.1
+$ https --verbose PUT pie.dev/put hello=world
+PUT /put HTTP/2
 Accept: application/json, */*;q=0.5
 Accept-Encoding: gzip, deflate
 Content-Type: application/json
 Host: pie.dev
-User-Agent: HTTPie/0.2.7dev
+User-Agent: HTTPie/4.0.0
 
 {
     "hello": "world"
 }
 
-HTTP/1.1 200 OK
+HTTP/2 200 OK
 Connection: keep-alive
 Content-Length: 477
 Content-Type: application/json
@@ -1652,10 +1674,10 @@ Server: gunicorn/0.13.4
 
 #### Extra verbose output
 
-If you run HTTPie with `-vv` or `--verbose --verbose`, then it would also display the [response metadata](#response-meta).
+If you run HTTPie with `-vv` or `--verbose --verbose`, then it would also display the [response and request metadata](#response-meta).
 
 ```bash
-# Just like the above, but with additional columns like the total elapsed time
+# Just like the above, but with additional columns like the total elapsed time, remote peer connection informations
 $ http -vv pie.dev/get
 ```
 
@@ -1831,6 +1853,101 @@ $ http --chunked pie.dev/post @files/data.xml
 
 ```bash
 $ cat files/data.xml | http --chunked pie.dev/post
+```
+
+## Disable HTTP/2, or HTTP/3
+
+You can at your own discretion toggle on and off HTTP/2, or/and HTTP/3.
+
+```bash
+$ https --disable-http2 PUT pie.dev/put hello=world
+```
+
+```bash
+$ https --disable-http3 PUT pie.dev/put hello=world
+```
+
+## Force HTTP/3
+
+By opposition to the previous section, you can force the HTTP/3 negotiation.
+
+```bash
+$ https --http3 pie.dev/get
+```
+
+By default, HTTPie cannot negotiate HTTP/3 without a first HTTP/1.1, or HTTP/2 successful response unless the
+remote host specified a DNS HTTPS record that indicate its support.
+
+The remote server yield its support for HTTP/3 in the Alt-Svc header, if present HTTPie will issue
+the successive requests via HTTP/3. You may use that argument in case the remote peer does not support
+either HTTP/1.1 or HTTP/2.
+
+## Custom DNS resolver
+
+### Using DNS url
+
+You can specify one or many custom DNS resolvers using the `--resolver` flag. They will be tested in
+presented order to resolver given hostname.
+
+```bash
+$ https --resolver "doh+cloudflare://" pie.dev/get
+```
+
+To know more about DNS url and supported protocols, visit [Niquests documentation](https://niquests.readthedocs.io/en/stable/user/quickstart.html#dns-resolution).
+
+### Forcing hostname to resolve with a manual entry
+
+It is possible to fake DNS resolution using a virtual resolver. We'll make use of the `--resolver` flag
+using the `in-memory` provider.
+
+```bash
+$ https --resolver "in-memory://default/?hosts=pie.dev:10.10.4.1" pie.dev/get
+```
+
+In that example, `pie.dev` will resolve to `10.10.4.1`. The TLS HELLO / SNI will be set with host = `pie.dev`.
+
+HTTPie allows to pass directly the hostname and associated IPs directly as a shortcut to previous the example like so:
+
+```bash
+$ https --resolver "pie.dev:10.10.4.1" pie.dev/get
+```
+
+You can specify multiple entries, concatenated with a comma:
+
+```bash
+$ https --resolver "pie.dev:10.10.4.1,re.pie.dev:10.10.8.1" pie.dev/get
+```
+
+## Attach to a specific network adapter
+
+In order to bind emitted request from a specific network adapter you can use the `--interface` flag.
+
+```bash
+$ https --interface 172.17.0.1 pie.dev/get
+```
+
+## Local port
+
+You can choose to select the outgoing port manually by passing the `--local-port` flag.
+
+```bash
+$ https --local-port 5411 pie.dev/get
+```
+
+or using a range.
+
+```bash
+$ https --local-port 5000-10000 pie.dev/get
+```
+
+Beware that some ports requires elevated privileges.
+
+## Enforcing IPv4 or IPv6
+
+Since HTTPie 4, you may pass the flags `--ipv4, -4` or `--ipv6, -6` to enforce connecting to an IPv4 or IPv6 address.
+
+```bash
+$ https -4 pie.dev/get
 ```
 
 ## Compressed request body
@@ -2556,7 +2673,7 @@ HTTPie has the following community channels:
 
 Under the hood, HTTPie uses these two amazing libraries:
 
-- [Requests](https://requests.readthedocs.io/en/latest/) — Python HTTP library for humans
+- [Niquests](https://niquests.readthedocs.io/en/latest/) — Python HTTP library for humans
 - [Pygments](https://pygments.org/) — Python syntax highlighter
 
 #### HTTPie friends

@@ -63,7 +63,7 @@ class AuthPlugin(BasePlugin):
         Use `self.raw_auth` to access the raw value passed through
         `--auth, -a`.
 
-        Return a ``requests.auth.AuthBase`` subclass instance.
+        Return a ``niquests.auth.AuthBase`` subclass instance.
 
         """
         raise NotImplementedError()
@@ -73,7 +73,7 @@ class TransportPlugin(BasePlugin):
     """
     Requests transport adapter docs:
 
-        <https://requests.readthedocs.io/en/latest/user/advanced/#transport-adapters>
+        <https://niquests.readthedocs.io/en/latest/user/advanced/#transport-adapters>
 
     See httpie-unixsocket for an example transport plugin:
 
@@ -86,7 +86,7 @@ class TransportPlugin(BasePlugin):
 
     def get_adapter(self):
         """
-        Return a ``requests.adapters.BaseAdapter`` subclass instance to be
+        Return a ``niquests.adapters.BaseAdapter`` subclass instance to be
         mounted to ``self.prefix``.
 
         """

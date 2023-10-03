@@ -5,9 +5,9 @@ import sys
 import socket
 from typing import List, Optional, Union, Callable
 
-import requests
+import niquests
 from pygments import __version__ as pygments_version
-from requests import __version__ as requests_version
+from niquests import __version__ as requests_version
 
 from . import __version__ as httpie_version
 from .cli.constants import OUT_REQ_BODY
@@ -112,16 +112,16 @@ def raw_main(
                 if include_traceback:
                     raise
                 exit_status = ExitStatus.ERROR
-        except requests.Timeout:
+        except niquests.Timeout:
             exit_status = ExitStatus.ERROR_TIMEOUT
             env.log_error(f'Request timed out ({parsed_args.timeout}s).')
-        except requests.TooManyRedirects:
+        except niquests.TooManyRedirects:
             exit_status = ExitStatus.ERROR_TOO_MANY_REDIRECTS
             env.log_error(
                 f'Too many redirects'
                 f' (--max-redirects={parsed_args.max_redirects}).'
             )
-        except requests.exceptions.ConnectionError as exc:
+        except niquests.exceptions.ConnectionError as exc:
             annotation = None
             original_exc = unwrap_context(exc)
             if isinstance(original_exc, socket.gaierror):
@@ -175,8 +175,8 @@ def program(args: argparse.Namespace, env: Environment) -> ExitStatus:
     # TODO: Refactor and drastically simplify, especially so that the separator logic is elsewhere.
     exit_status = ExitStatus.SUCCESS
     downloader = None
-    initial_request: Optional[requests.PreparedRequest] = None
-    final_response: Optional[requests.Response] = None
+    initial_request: Optional[niquests.PreparedRequest] = None
+    final_response: Optional[niquests.Response] = None
     processing_options = ProcessingOptions.from_raw_args(args)
 
     def separate():
@@ -204,8 +204,35 @@ def program(args: argparse.Namespace, env: Environment) -> ExitStatus:
             args.follow = True  # --download implies --follow.
             downloader = Downloader(env, output_file=args.output_file, resume=args.download_resume)
             downloader.pre_request(args.headers)
-        messages = collect_messages(env, args=args,
-                                    request_body_read_callback=request_body_read_callback)
+
+        def prepared_request_readiness(pr):
+
+            oo = OutputOptions.from_message(
+                pr,
+                args.output_options
+            )
+
+            oo = oo._replace(
+                body=isinstance(pr.body, (str, bytes)) and (args.verbose or oo.body)
+            )
+
+            write_message(
+                requests_message=pr,
+                env=env,
+                output_options=oo,
+                processing_options=processing_options
+            )
+
+            if oo.body > 1:
+                separate()
+
+        messages = collect_messages(
+            env,
+            args=args,
+            request_body_read_callback=request_body_read_callback,
+            prepared_request_readiness=prepared_request_readiness
+        )
+
         force_separator = False
         prev_with_body = False
 
@@ -225,6 +252,9 @@ def program(args: argparse.Namespace, env: Environment) -> ExitStatus:
                     is_streamed_upload = not isinstance(message.body, (str, bytes))
                     do_write_body = not is_streamed_upload
                     force_separator = is_streamed_upload and env.stdout_isatty
+                if message.conn_info is None and not args.offline:
+                    prev_with_body = output_options.body
+                    continue
             else:
                 final_response = message
                 if args.check_status or downloader:
@@ -261,6 +291,11 @@ def program(args: argparse.Namespace, env: Environment) -> ExitStatus:
         return exit_status
 
     finally:
+        if args.data and hasattr(args.data, "close"):
+            args.data.close()
+        if args.files and hasattr(args.files, "items"):
+            for fd in args.files.items():
+                fd[1][1].close()
         if downloader and not downloader.finished:
             downloader.failed()
         if args.output_file and args.output_file_specified:
@@ -270,7 +305,7 @@ def program(args: argparse.Namespace, env: Environment) -> ExitStatus:
 def print_debug_info(env: Environment):
     env.stderr.writelines([
         f'HTTPie {httpie_version}\n',
-        f'Requests {requests_version}\n',
+        f'Niquests {requests_version}\n',
         f'Pygments {pygments_version}\n',
         f'Python {sys.version}\n{sys.executable}\n',
         f'{platform.system()} {platform.release()}',

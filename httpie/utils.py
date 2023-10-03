@@ -16,7 +16,7 @@ from pprint import pformat
 from urllib.parse import urlsplit
 from typing import Any, List, Optional, Tuple, Generator, Callable, Iterable, IO, TypeVar
 
-import requests.auth
+import niquests.auth
 
 RE_COOKIE_SPLIT = re.compile(r', (?=[^ ;]+=)')
 Item = Tuple[str, Any]
@@ -121,7 +121,7 @@ def humanize_bytes(n, precision=2):
     return f'{n / factor:.{precision}f} {suffix}'
 
 
-class ExplicitNullAuth(requests.auth.AuthBase):
+class ExplicitNullAuth(niquests.auth.AuthBase):
     """Forces requests to ignore the ``.netrc``.
     <https://github.com/psf/requests/issues/2773#issuecomment-174312831>
     """
@@ -201,7 +201,7 @@ def _max_age_to_expires(cookies, now):
 
 
 def parse_content_type_header(header):
-    """Borrowed from requests."""
+    """Borrowed from niquests."""
     tokens = header.split(';')
     content_type, params = tokens[0].strip(), tokens[1:]
     params_dict = {}

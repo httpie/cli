@@ -1,7 +1,7 @@
 """
 Generate the contributors database.
 
-FIXME: replace `requests` calls with the HTTPie API, when available.
+FIXME: replace `niquests` calls with the HTTPie API, when available.
 """
 import json
 import os
@@ -14,7 +14,7 @@ from subprocess import check_output
 from time import sleep
 from typing import Any, Dict, Optional, Set
 
-import requests
+import niquests
 
 FullNames = Set[str]
 GitHubLogins = Set[str]
@@ -197,10 +197,10 @@ def fetch(url: str, params: Optional[Dict[str, str]] = None) -> UserInfo:
     }
     for retry in range(1, 6):
         debug(f'[{retry}/5]', f'{url = }', f'{params = }')
-        with requests.get(url, params=params, headers=headers) as req:
+        with niquests.get(url, params=params, headers=headers) as req:
             try:
                 req.raise_for_status()
-            except requests.exceptions.HTTPError as exc:
+            except niquests.exceptions.HTTPError as exc:
                 if exc.response.status_code == 403:
                     # 403 Client Error: rate limit exceeded for url: ...
                     now = int(datetime.utcnow().timestamp())

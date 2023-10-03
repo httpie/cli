@@ -9,12 +9,13 @@ import httpie
 
 # Note: keep requirements here to ease distributions packaging
 tests_require = [
-    'pytest',
+    'pytest<8',
     'pytest-httpbin>=0.0.6',
     'pytest-lazy-fixture>=0.0.6',
     'responses',
     'pytest-mock',
-    'werkzeug<2.1.0'
+    'werkzeug<2.1.0',
+    'flaky',
 ]
 dev_require = [
     *tests_require,
@@ -23,7 +24,6 @@ dev_require = [
     'flake8-deprecated',
     'flake8-mutable',
     'flake8-tuple',
-    'pyopenssl',
     'pytest-cov',
     'pyyaml',
     'twine',
@@ -34,13 +34,11 @@ install_requires = [
     'pip',
     'charset_normalizer>=2.0.0',
     'defusedxml>=0.6.0',
-    'requests[socks]>=2.22.0',
+    'niquests[socks]>=3.4.0,<4',
     'Pygments>=2.5.2',
-    'requests-toolbelt>=0.9.1',
-    'multidict>=4.7.0',
     'setuptools',
     'importlib-metadata>=1.4.0; python_version < "3.8"',
-    'rich>=9.10.0'
+    'rich>=9.10.0',
 ]
 install_requires_win_only = [
     'colorama>=0.2.4',

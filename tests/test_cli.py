@@ -2,7 +2,7 @@
 import argparse
 
 import pytest
-from requests.exceptions import InvalidSchema
+from niquests.exceptions import InvalidSchema
 
 import httpie.cli.argparser
 from httpie.cli import constants
@@ -133,6 +133,9 @@ class TestItemParsing:
             self.key_value_arg('file_field@' + FILE_PATH_ARG),
         ])
         assert len(items.files['file_field']) == 2
+
+        for md in items.multipart_data['file_field']:
+            md[1].close()
 
     def test_multiple_text_fields_with_same_field_name(self):
         items = RequestItems.from_args(

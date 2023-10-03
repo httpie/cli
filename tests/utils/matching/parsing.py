@@ -8,6 +8,7 @@ from ...utils import CRLF
 
 SEPARATOR_RE = re.compile(f'^{MESSAGE_SEPARATOR}')
 KEY_VALUE_RE = re.compile(r'[\n]*((.*?):(.+)[\n]?)+[\n]*')
+KEY_VALUE_RE_NO_LF = re.compile(r'((.*?):(.+)(\n))+(\n)')
 
 
 def make_headers_re(message_type: Expect):
@@ -18,7 +19,7 @@ def make_headers_re(message_type: Expect):
     non_crlf = rf'[^{CRLF}]'
 
     # language=RegExp
-    http_version = r'HTTP/\d+\.\d+'
+    http_version = r'HTTP/((\d+\.\d+)|\d+)'
     if message_type is Expect.REQUEST_HEADERS:
         # POST /post HTTP/1.1
         start_line_re = fr'{non_crlf}*{http_version}{crlf}'
@@ -42,6 +43,7 @@ BODY_ENDINGS = [
     CRLF,  # Not really but useful for testing (just remember not to include it in a body).
 ]
 TOKEN_REGEX_MAP = {
+    Expect.REQUEST_META: KEY_VALUE_RE_NO_LF,
     Expect.REQUEST_HEADERS: make_headers_re(Expect.REQUEST_HEADERS),
     Expect.RESPONSE_HEADERS: make_headers_re(Expect.RESPONSE_HEADERS),
     Expect.RESPONSE_META: KEY_VALUE_RE,
@@ -56,6 +58,7 @@ class OutputMatchingError(ValueError):
 def expect_tokens(tokens: Iterable[Expect], s: str):
     for token in tokens:
         s = expect_token(token, s)
+        # print(token, "OK")
     if s:
         raise OutputMatchingError(f'Unmatched remaining output for {tokens} in {s!r}')
 

@@ -93,8 +93,8 @@ def test_missing_auth(httpbin):
 
 def test_netrc(httpbin_both):
     # This one gets handled by requests (no --auth, --auth-type present),
-    # that’s why we patch inside `requests.sessions`.
-    with mock.patch('requests.sessions.get_netrc_auth') as get_netrc_auth:
+    # that’s why we patch inside `niquests.sessions`.
+    with mock.patch('niquests.sessions.get_netrc_auth') as get_netrc_auth:
         get_netrc_auth.return_value = ('httpie', 'password')
         r = http(httpbin_both + '/basic-auth/httpie/password')
         assert get_netrc_auth.call_count == 1
@@ -106,7 +106,7 @@ def test_ignore_netrc(httpbin_both):
         get_netrc_auth.return_value = ('httpie', 'password')
         r = http('--ignore-netrc', httpbin_both + '/basic-auth/httpie/password')
         assert get_netrc_auth.call_count == 0
-        assert 'HTTP/1.1 401 UNAUTHORIZED' in r
+        assert 'HTTP/1.1 401 Unauthorized' in r
 
 
 def test_ignore_netrc_together_with_auth():

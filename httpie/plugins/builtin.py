@@ -1,6 +1,6 @@
 from base64 import b64encode
 
-import requests.auth
+import niquests.auth
 
 from .base import AuthPlugin
 
@@ -10,12 +10,12 @@ class BuiltinAuthPlugin(AuthPlugin):
     package_name = '(builtin)'
 
 
-class HTTPBasicAuth(requests.auth.HTTPBasicAuth):
+class HTTPBasicAuth(niquests.auth.HTTPBasicAuth):
 
     def __call__(
         self,
-        request: requests.PreparedRequest
-    ) -> requests.PreparedRequest:
+        request: niquests.PreparedRequest
+    ) -> niquests.PreparedRequest:
         """
         Override username/password serialization to allow unicode.
 
@@ -34,12 +34,12 @@ class HTTPBasicAuth(requests.auth.HTTPBasicAuth):
         return f'Basic {token}'
 
 
-class HTTPBearerAuth(requests.auth.AuthBase):
+class HTTPBearerAuth(niquests.auth.AuthBase):
 
     def __init__(self, token: str) -> None:
         self.token = token
 
-    def __call__(self, request: requests.PreparedRequest) -> requests.PreparedRequest:
+    def __call__(self, request: niquests.PreparedRequest) -> niquests.PreparedRequest:
         request.headers['Authorization'] = f'Bearer {self.token}'
         return request
 
@@ -64,8 +64,8 @@ class DigestAuthPlugin(BuiltinAuthPlugin):
         self,
         username: str,
         password: str
-    ) -> requests.auth.HTTPDigestAuth:
-        return requests.auth.HTTPDigestAuth(username, password)
+    ) -> niquests.auth.HTTPDigestAuth:
+        return niquests.auth.HTTPDigestAuth(username, password)
 
 
 class BearerAuthPlugin(BuiltinAuthPlugin):
@@ -75,5 +75,5 @@ class BearerAuthPlugin(BuiltinAuthPlugin):
     auth_parse = False
 
     # noinspection PyMethodOverriding
-    def get_auth(self, **kwargs) -> requests.auth.HTTPDigestAuth:
+    def get_auth(self, **kwargs) -> niquests.auth.HTTPDigestAuth:
         return HTTPBearerAuth(self.raw_auth)

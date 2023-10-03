@@ -10,8 +10,8 @@ from http.cookiejar import Cookie
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
-from requests.auth import AuthBase
-from requests.cookies import RequestsCookieJar, remove_cookie_by_name
+from niquests.auth import AuthBase
+from niquests.cookies import RequestsCookieJar, remove_cookie_by_name
 
 from .context import Environment, LogLevel
 from .cookies import HTTPieCookiePolicy

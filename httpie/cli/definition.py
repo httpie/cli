@@ -727,6 +727,20 @@ network.add_argument(
     """,
 )
 network.add_argument(
+    '--ipv6',
+    '-6',
+    default=False,
+    action='store_true',
+    short_help='Force using a IPv6 address to reach the remote peer.'
+)
+network.add_argument(
+    '--ipv4',
+    '-4',
+    default=False,
+    action='store_true',
+    short_help='Force using a IPv4 address to reach the remote peer.'
+)
+network.add_argument(
     '--follow',
     '-F',
     default=False,
@@ -801,6 +815,61 @@ network.add_argument(
         'Enable streaming via chunked transfer encoding. '
         'The Transfer-Encoding header is set to chunked.'
     )
+)
+network.add_argument(
+    "--disable-http2",
+    default=False,
+    action="store_true",
+    short_help="Disable the HTTP/2 protocol."
+)
+network.add_argument(
+    "--disable-http3",
+    default=False,
+    action="store_true",
+    short_help="Disable the HTTP/3 over QUIC protocol."
+)
+network.add_argument(
+    "--http3",
+    default=False,
+    dest="force_http3",
+    action="store_true",
+    short_help="Use the HTTP/3 protocol for the request.",
+    help="""
+    By default, HTTPie cannot negotiate HTTP/3 without a first HTTP/1.1, or HTTP/2 successful response unless the
+    remote host specified a DNS HTTPS record that indicate its support.
+
+    The remote server yield its support for HTTP/3 in the Alt-Svc header, if present HTTPie will issue
+    the successive requests via HTTP/3. You may use that argument in case the remote peer does not support
+    either HTTP/1.1 or HTTP/2.
+
+    """
+)
+network.add_argument(
+    "--resolver",
+    default=[],
+    action='append',
+    short_help="Specify a DNS resolver url to resolve hostname.",
+    help="""
+    By default, HTTPie use the system DNS through Python standard library.
+    You can specify an alternative DNS server to be used. (e.g. doh://cloudflare-dns.com or doh://google.dns).
+    You can specify multiple resolvers with different protocols. The environment
+    variable $NIQUESTS_DNS_URL is supported as well.
+
+    """
+)
+network.add_argument(
+    "--interface",
+    default=None,
+    short_help="Bind to a specific network interface.",
+)
+network.add_argument(
+    "--local-port",
+    default=None,
+    short_help="Set the local port to be used for the outgoing request.",
+    help="""
+    It can be either a port range (e.g. "11221-14555") or a single port.
+    Some port may require root privileges (e.g. < 1024).
+    """
 )
 
 #######################################################################

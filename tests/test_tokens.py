@@ -92,10 +92,10 @@ def test_redirected_headers_multipart_no_separator():
 
 
 def test_verbose_chunked(httpbin_with_chunked_support):
-    r = http('--verbose', '--chunked', httpbin_with_chunked_support + '/post', 'hello=world')
+    r = http('-vv', '--chunked', httpbin_with_chunked_support + '/post', 'hello=world')
     assert HTTP_OK in r
     assert 'Transfer-Encoding: chunked' in r
-    assert_output_matches(r, ExpectSequence.TERMINAL_EXCHANGE)
+    assert_output_matches(r, ExpectSequence.TERMINAL_EXCHANGE_META)
 
 
 def test_request_headers_response_body(httpbin):
@@ -115,4 +115,4 @@ def test_request_double_verbose(httpbin):
 
 def test_request_meta(httpbin):
     r = http('--meta', httpbin + '/get')
-    assert_output_matches(r, [Expect.RESPONSE_META])
+    assert_output_matches(r, [Expect.REQUEST_META, Expect.RESPONSE_META])

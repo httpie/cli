@@ -116,6 +116,15 @@ def test_POST_stdin(httpbin_both):
     assert FILE_CONTENT in r
 
 
+def test_empty_stdin(httpbin_both):
+    env = MockEnvironment(
+        stdin=io.TextIOWrapper(StdinBytesIO(b"")),
+        stdin_isatty=False,
+    )
+    r = http(httpbin_both + '/get', env=env)
+    assert HTTP_OK in r
+
+
 def test_POST_file(httpbin_both):
     r = http('--form', 'POST', httpbin_both + '/post', f'file@{FILE_PATH}')
     assert HTTP_OK in r

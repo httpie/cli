@@ -1,16 +1,23 @@
 import argparse
-import http.client
 import json
 import sys
-from contextlib import contextmanager
+import typing
+from random import randint
 from time import monotonic
 from typing import Any, Dict, Callable, Iterable
 from urllib.parse import urlparse, urlunparse
 
-import requests
-# noinspection PyPackageRequirements
-import urllib3
-from urllib3.util import SKIP_HEADER, SKIPPABLE_HEADERS
+import niquests
+from niquests._compat import HAS_LEGACY_URLLIB3
+
+if not HAS_LEGACY_URLLIB3:
+    # noinspection PyPackageRequirements
+    import urllib3
+    from urllib3.util import SKIP_HEADER, SKIPPABLE_HEADERS, parse_url
+else:
+    # noinspection PyPackageRequirements
+    import urllib3_future as urllib3
+    from urllib3_future.util import SKIP_HEADER, SKIPPABLE_HEADERS, parse_url
 
 from . import __version__
 from .adapters import HTTPieHTTPAdapter
@@ -22,7 +29,7 @@ from .encoding import UTF8
 from .models import RequestsMessage
 from .plugins.registry import plugin_manager
 from .sessions import get_httpie_session
-from .ssl_ import AVAILABLE_SSL_VERSION_ARG_MAPPING, HTTPieCertificate, HTTPieHTTPSAdapter
+from .ssl_ import AVAILABLE_SSL_VERSION_ARG_MAPPING, HTTPieCertificate, HTTPieHTTPSAdapter, QuicCapabilityCache
 from .uploads import (
     compress_request, prepare_request_body,
     get_multipart_data_and_content_type,
@@ -44,6 +51,7 @@ def collect_messages(
     env: Environment,
     args: argparse.Namespace,
     request_body_read_callback: Callable[[bytes], None] = None,
+    prepared_request_readiness: Callable[[niquests.PreparedRequest], None] = None,
 ) -> Iterable[RequestsMessage]:
     httpie_session = None
     httpie_session_headers = None
@@ -65,11 +73,33 @@ def collect_messages(
     )
     send_kwargs = make_send_kwargs(args)
     send_kwargs_mergeable_from_env = make_send_kwargs_mergeable_from_env(args)
+
+    source_address = None
+
+    if args.interface:
+        source_address = (args.interface, 0)
+    if args.local_port:
+        if '-' not in args.local_port:
+            source_address = (args.interface or "0.0.0.0", int(args.local_port))
+        else:
+            min_port, max_port = args.local_port.split('-', 1)
+            source_address = (args.interface or "0.0.0.0", randint(int(min_port), int(max_port)))
+
     requests_session = build_requests_session(
         ssl_version=args.ssl_version,
         ciphers=args.ciphers,
-        verify=bool(send_kwargs_mergeable_from_env['verify'])
+        verify=bool(send_kwargs_mergeable_from_env['verify']),
+        disable_http2=args.disable_http2,
+        disable_http3=args.disable_http3,
+        resolver=args.resolver or None,
+        disable_ipv6=args.ipv4,
+        disable_ipv4=args.ipv6,
+        source_address=source_address,
     )
+
+    if args.disable_http3 is False and args.force_http3 is True:
+        url = parse_url(args.url)
+        requests_session.quic_cache_layer[(url.host, url.port or 443)] = (url.host, url.port or 443)
 
     if httpie_session:
         httpie_session.update_headers(request_kwargs['headers'])
@@ -88,7 +118,12 @@ def collect_messages(
         # TODO: reflect the split between request and send kwargs.
         dump_request(request_kwargs)
 
-    request = requests.Request(**request_kwargs)
+    hooks = None
+
+    if prepared_request_readiness:
+        hooks = {"pre_send": [prepared_request_readiness]}
+
+    request = niquests.Request(**request_kwargs, hooks=hooks)
     prepared_request = requests_session.prepare_request(request)
     transform_headers(request, prepared_request)
     if args.path_as_is:
@@ -110,12 +145,13 @@ def collect_messages(
                 url=prepared_request.url,
                 **send_kwargs_mergeable_from_env,
             )
-            with max_headers(args.max_headers):
-                response = requests_session.send(
-                    request=prepared_request,
-                    **send_kwargs_merged,
-                    **send_kwargs,
-                )
+            response = requests_session.send(
+                request=prepared_request,
+                **send_kwargs_merged,
+                **send_kwargs,
+            )
+            if args.max_headers and len(response.headers) > args.max_headers:
+                raise niquests.ConnectionError(f"got more than {args.max_headers} headers")
             response._httpie_headers_parsed_at = monotonic()
             expired_cookies += get_expired_cookies(
                 response.headers.get('Set-Cookie', '')
@@ -124,7 +160,7 @@ def collect_messages(
             response_count += 1
             if response.next:
                 if args.max_redirects and response_count == args.max_redirects:
-                    raise requests.TooManyRedirects
+                    raise niquests.TooManyRedirects
                 if args.follow:
                     prepared_request = response.next
                     if args.all:
@@ -140,28 +176,36 @@ def collect_messages(
             httpie_session.save()
 
 
-# noinspection PyProtectedMember
-@contextmanager
-def max_headers(limit):
-    # <https://github.com/httpie/cli/issues/802>
-    # noinspection PyUnresolvedReferences
-    orig = http.client._MAXHEADERS
-    http.client._MAXHEADERS = limit or float('Inf')
-    try:
-        yield
-    finally:
-        http.client._MAXHEADERS = orig
-
-
 def build_requests_session(
     verify: bool,
     ssl_version: str = None,
     ciphers: str = None,
-) -> requests.Session:
-    requests_session = requests.Session()
+    disable_http2: bool = False,
+    disable_http3: bool = False,
+    resolver: typing.List[str] = None,
+    disable_ipv4: bool = False,
+    disable_ipv6: bool = False,
+    source_address: typing.Tuple[str, int] = None,
+) -> niquests.Session:
+    requests_session = niquests.Session()
+    requests_session.quic_cache_layer = QuicCapabilityCache()
+
+    if resolver:
+        resolver_rebuilt = []
+        for r in resolver:
+            # assume it is the in-memory resolver
+            if "://" not in r:
+                r = f"in-memory://default/?hosts={r}"
+            resolver_rebuilt.append(r)
+        resolver = resolver_rebuilt
 
     # Install our adapter.
-    http_adapter = HTTPieHTTPAdapter()
+    http_adapter = HTTPieHTTPAdapter(
+        resolver=resolver,
+        disable_ipv4=disable_ipv4,
+        disable_ipv6=disable_ipv6,
+        source_address=source_address,
+    )
     https_adapter = HTTPieHTTPSAdapter(
         ciphers=ciphers,
         verify=verify,
@@ -169,6 +213,13 @@ def build_requests_session(
             AVAILABLE_SSL_VERSION_ARG_MAPPING[ssl_version]
             if ssl_version else None
         ),
+        disable_http2=disable_http2,
+        disable_http3=disable_http3,
+        resolver=resolver,
+        disable_ipv4=disable_ipv4,
+        disable_ipv6=disable_ipv6,
+        source_address=source_address,
+        quic_cache_layer=requests_session.quic_cache_layer,
     )
     requests_session.mount('http://', http_adapter)
     requests_session.mount('https://', https_adapter)
@@ -186,7 +237,7 @@ def build_requests_session(
 
 def dump_request(kwargs: dict):
     sys.stderr.write(
-        f'\n>>> requests.request(**{repr_dict(kwargs)})\n\n')
+        f'\n>>> niquests.request(**{repr_dict(kwargs)})\n\n')
 
 
 def finalize_headers(headers: HTTPHeadersDict) -> HTTPHeadersDict:
@@ -210,13 +261,13 @@ def finalize_headers(headers: HTTPHeadersDict) -> HTTPHeadersDict:
 
 
 def transform_headers(
-    request: requests.Request,
-    prepared_request: requests.PreparedRequest
+    request: niquests.Request,
+    prepared_request: niquests.PreparedRequest
 ) -> None:
     """Apply various transformations on top of the `prepared_requests`'s
     headers to change the request prepreation behavior."""
 
-    # Remove 'Content-Length' when it is misplaced by requests.
+    # Remove 'Content-Length' when it is misplaced by niquests.
     if (
         prepared_request.method in IGNORE_CONTENT_LENGTH_METHODS
         and prepared_request.headers.get('Content-Length') == '0'
@@ -232,7 +283,7 @@ def transform_headers(
 
 def apply_missing_repeated_headers(
     original_headers: HTTPHeadersDict,
-    prepared_request: requests.PreparedRequest
+    prepared_request: niquests.PreparedRequest
 ) -> None:
     """Update the given `prepared_request`'s headers with the original
     ones. This allows the requests to be prepared as usual, and then later
@@ -290,12 +341,6 @@ def make_send_kwargs_mergeable_from_env(args: argparse.Namespace) -> dict:
     if args.cert:
         cert = args.cert
         if args.cert_key:
-            # Having a client certificate key passphrase is not supported
-            # by requests. So we are using our own transportation structure
-            # which is compatible with their format (a tuple of minimum two
-            # items).
-            #
-            # See: https://github.com/psf/requests/issues/2519
             cert = HTTPieCertificate(cert, args.cert_key, args.cert_key_pass.value)
 
     return {
@@ -329,7 +374,7 @@ def make_request_kwargs(
     request_body_read_callback=lambda chunk: chunk
 ) -> dict:
     """
-    Translate our `args` into `requests.Request` keyword arguments.
+    Translate our `args` into `niquests.Request` keyword arguments.
 
     """
     files = args.files

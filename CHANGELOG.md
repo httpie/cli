@@ -3,9 +3,25 @@
 This document records all notable changes to [HTTPie](https://httpie.io).
 This project adheres to [Semantic Versioning](https://semver.org/).
 
-## [3.3.0-dev](https://github.com/httpie/cli/compare/3.2.2...master) (unreleased)
+## [4.0.0.b1](https://github.com/httpie/cli/compare/3.2.2...master) (unreleased)
 
-- Make it possible to [unset](https://httpie.io/docs/cli/default-request-headers) the `User-Agent`, `Accept-Encoding`, and `Host` request headers. ([#1502](https://github.com/httpie/cli/issues/1502))
+- Make it possible to [unset](https://httpie.io/docs/cli/default-request-headers) the `User-Agent`, and `Accept-Encoding` headers. ([#1502](https://github.com/httpie/cli/issues/1502))
+- Dependency on requests was changed in favor of compatible niquests. ([#1531](https://github.com/httpie/cli/pull/1531))
+- Added support for HTTP/2, and HTTP/3 protocols. ([#523](https://github.com/httpie/cli/issues/523)) ([#692](https://github.com/httpie/cli/issues/692)) ([#1531](https://github.com/httpie/cli/pull/1531))
+- Added request metadata for the TLS certificate, negotiated version with cipher, the revocation status and the remote peer IP address. ([#1495](https://github.com/httpie/cli/issues/1495)) ([#1023](https://github.com/httpie/cli/issues/1023)) ([#826](https://github.com/httpie/cli/issues/826)) ([#1531](https://github.com/httpie/cli/pull/1531))
+- Added support to load the operating system trust store for the peer certificate validation. ([#480](https://github.com/httpie/cli/issues/480)) ([#1531](https://github.com/httpie/cli/pull/1531))
+- Added detailed timings in response metadata with DNS resolution, established, TLS handshake, and request sending delays. ([#1023](https://github.com/httpie/cli/issues/1023)) ([#1531](https://github.com/httpie/cli/pull/1531))
+- Added support for using alternative DNS resolver using `--resolver`. DNS over HTTPS, DNS over TLS, DNS over QUIC, and DNS over UDP are accepted. ([#99](https://github.com/httpie/cli/issues/99)) ([#1531](https://github.com/httpie/cli/pull/1531))
+- Added support for binding to a specific network adapter with `--interface`. ([#1422](https://github.com/httpie/cli/issues/1422)) ([#1531](https://github.com/httpie/cli/pull/1531))
+- Added support for specifying the local port with `--local-port`. ([#1456](https://github.com/httpie/cli/issues/1456)) ([#1531](https://github.com/httpie/cli/pull/1531))
+- Added support for forcing either IPv4 or IPv6 to reach the remote HTTP server with `-6` or `-4`. ([#94](https://github.com/httpie/cli/issues/94)) ([#1531](https://github.com/httpie/cli/pull/1531))
+- Removed support for pyopenssl. ([#1531](https://github.com/httpie/cli/pull/1531))
+- Dropped dependency on `requests_toolbelt` in favor of directly including `MultipartEncoder` into HTTPie due to its direct dependency to requests. ([#1531](https://github.com/httpie/cli/pull/1531))
+- Dropped dependency on `multidict` in favor of implementing an internal one due to often missing pre-built wheels. ([#1522](https://github.com/httpie/cli/issues/1522)) ([#1531](https://github.com/httpie/cli/pull/1531))
+- Fixed the case when multiple headers where concatenated in the response output. ([#1413](https://github.com/httpie/cli/issues/1413)) ([#1531](https://github.com/httpie/cli/pull/1531))
+- Fixed an edge case where HTTPie could be lead to believe data was passed in stdin, thus sending a POST by default. ([#1551](https://github.com/httpie/cli/issues/1551)) ([#1531](https://github.com/httpie/cli/pull/1531))
+- Slightly improved performance while downloading by setting chunk size to `-1` to retrieve packets as they arrive. ([#1531](https://github.com/httpie/cli/pull/1531))
+- Added support for using the system trust store to retrieve root CAs for verifying TLS certificates. ([#1531](https://github.com/httpie/cli/pull/1531))
 
 ## [3.2.2](https://github.com/httpie/cli/compare/3.2.1...3.2.2) (2022-05-19)
 

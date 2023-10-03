@@ -3,11 +3,12 @@ import errno
 import os
 import re
 import sys
+import threading
 from argparse import RawDescriptionHelpFormatter
 from textwrap import dedent
 from urllib.parse import urlsplit
 
-from requests.utils import get_netrc_auth
+from niquests.utils import get_netrc_auth
 
 from .argtypes import (
     AuthCredentials, SSLCredentials, KeyValueArgType,
@@ -27,6 +28,7 @@ from .requestitems import RequestItems
 from ..context import Environment
 from ..plugins.registry import plugin_manager
 from ..utils import ExplicitNullAuth, get_content_type
+from ..uploads import observe_stdin_for_data_thread
 
 
 class HTTPieHelpFormatter(RawDescriptionHelpFormatter):
@@ -164,7 +166,6 @@ class HTTPieArgumentParser(BaseHTTPieArgumentParser):
             and not self.args.ignore_stdin
             and not self.env.stdin_isatty
         )
-        self.has_input_data = self.has_stdin_data or self.args.raw is not None
         # Arguments processing and environment setup.
         self._apply_no_options(no_options)
         self._process_request_type()
@@ -173,6 +174,22 @@ class HTTPieArgumentParser(BaseHTTPieArgumentParser):
         self._process_output_options()
         self._process_pretty_options()
         self._process_format_options()
+
+        # bellow is a fix for detecting "false-or empty" stdin
+        if self.has_stdin_data:
+            read_event = threading.Event()
+            observe_stdin_for_data_thread(env, self.env.stdin, read_event)
+            if (
+                hasattr(self.env.stdin, 'buffer')
+                and hasattr(self.env.stdin.buffer, "peek")
+                and not self.env.stdin.buffer.peek(1)
+            ):
+                self.has_stdin_data = False
+
+            read_event.set()
+
+        self.has_input_data = self.has_stdin_data or self.args.raw is not None
+
         self._guess_method()
         self._parse_items()
         self._process_url()

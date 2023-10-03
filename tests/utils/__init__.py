@@ -1,17 +1,16 @@
 """Utilities for HTTPie test suite."""
 import re
 import shlex
-import os
 import sys
 import time
 import json
 import tempfile
-import warnings
 import pytest
 from contextlib import suppress
 from io import BytesIO
 from pathlib import Path
 from typing import Any, Optional, Union, List, Iterable
+from shutil import rmtree
 
 import httpie.core as core
 import httpie.manager.__main__ as manager
@@ -30,8 +29,6 @@ REMOTE_HTTPBIN_DOMAIN = 'pie.dev'
 # <https://github.com/kevin1024/pytest-httpbin/issues/28>
 HTTPBIN_WITH_CHUNKED_SUPPORT_DOMAIN = 'pie.dev'
 HTTPBIN_WITH_CHUNKED_SUPPORT = 'http://' + HTTPBIN_WITH_CHUNKED_SUPPORT_DOMAIN
-
-IS_PYOPENSSL = os.getenv('HTTPIE_TEST_WITH_PYOPENSSL', '0') == '1'
 
 TESTS_ROOT = Path(__file__).parent.parent
 CRLF = '\r\n'
@@ -125,6 +122,11 @@ class StdinBytesIO(BytesIO):
     """To be used for `MockEnvironment.stdin`"""
     len = 0  # See `prepare_request_body()`
 
+    def peek(self, size):
+        buf = self.read(size)
+        self.seek(0)
+        return buf
+
 
 class MockEnvironment(Environment):
     """Environment subclass with reasonable defaults for testing."""
@@ -139,7 +141,7 @@ class MockEnvironment(Environment):
         if 'stdout' not in kwargs:
             kwargs['stdout'] = tempfile.NamedTemporaryFile(
                 mode='w+t',
-                prefix='httpie_stderr',
+                prefix='httpie_stdout',
                 newline='',
                 encoding=UTF8,
             )
@@ -170,10 +172,15 @@ class MockEnvironment(Environment):
         self.devnull.close()
         self.stdout.close()
         self.stderr.close()
-        warnings.resetwarnings()
+        if self._orig_stdout and self._orig_stdout != self.stdout:
+            self._orig_stdout.close()
+        if self._orig_stderr and self.stderr != self._orig_stderr:
+            self._orig_stderr.close()
+        self.devnull.close()
+        # it breaks without reasons pytest filterwarnings
+        # warnings.resetwarnings()
         if self._delete_config_dir:
             assert self._temp_dir in self.config_dir.parents
-            from shutil import rmtree
             rmtree(self.config_dir, ignore_errors=True)
 
     def __del__(self):
@@ -210,7 +217,7 @@ class BaseCLIResponse:
     complete_args: List[str] = []
 
     @property
-    def command(self):
+    def command(self):  # noqa: F811
         cmd = ' '.join(shlex.quote(arg) for arg in ['http', *self.args])
         # pytest-httpbin to real httpbin.
         return re.sub(r'127\.0\.0\.1:\d+', 'httpbin.org', cmd)

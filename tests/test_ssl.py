@@ -2,7 +2,7 @@ import ssl
 
 import pytest
 import pytest_httpbin.certs
-import requests.exceptions
+import niquests.exceptions
 import urllib3
 
 from unittest import mock
@@ -10,23 +10,11 @@ from unittest import mock
 from httpie.ssl_ import AVAILABLE_SSL_VERSION_ARG_MAPPING, DEFAULT_SSL_CIPHERS_STRING
 from httpie.status import ExitStatus
 
-from .utils import HTTP_OK, TESTS_ROOT, IS_PYOPENSSL, http
+from .utils import HTTP_OK, TESTS_ROOT, http
 
-
-try:
-    # Handle OpenSSL errors, if installed.
-    # See <https://github.com/httpie/cli/issues/729>
-    # noinspection PyUnresolvedReferences
-    import OpenSSL.SSL
-    ssl_errors = (
-        requests.exceptions.SSLError,
-        OpenSSL.SSL.Error,
-        ValueError,  # TODO: Remove with OSS-65
-    )
-except ImportError:
-    ssl_errors = (
-        requests.exceptions.SSLError,
-    )
+ssl_errors = (
+    niquests.exceptions.SSLError,
+)
 
 CERTS_ROOT = TESTS_ROOT / 'client_certs'
 CLIENT_CERT = str(CERTS_ROOT / 'client.crt')
@@ -59,10 +47,7 @@ def test_ssl_version(httpbin_secure, ssl_version):
         )
         assert HTTP_OK in r
     except ssl_errors as e:
-        if ssl_version == 'ssl3':
-            # pytest-httpbin doesn't support ssl3
-            pass
-        elif e.__context__ is not None:  # Check if root cause was an unsupported TLS version
+        if e.__context__ is not None:  # Check if root cause was an unsupported TLS version
             root = e.__context__
             while root.__context__ is not None:
                 root = root.__context__
@@ -151,7 +136,6 @@ def test_ciphers(httpbin_secure):
     assert HTTP_OK in r
 
 
-@pytest.mark.skipif(IS_PYOPENSSL, reason='pyOpenSSL uses a different message format.')
 def test_ciphers_none_can_be_selected(httpbin_secure):
     r = http(
         httpbin_secure.url + '/get',
@@ -166,15 +150,6 @@ def test_ciphers_none_can_be_selected(httpbin_secure):
     #   <https://marc.info/?l=openbsd-ports&m=159251948515635&w=2>
     #   http: error: Error: [('SSL routines', '(UNKNOWN)SSL_internal', 'no cipher match')]
     assert 'cipher' in r.stderr
-
-
-def test_pyopenssl_presence():
-    if not IS_PYOPENSSL:
-        assert not urllib3.util.ssl_.IS_PYOPENSSL
-        assert not urllib3.util.IS_PYOPENSSL
-    else:
-        assert urllib3.util.ssl_.IS_PYOPENSSL
-        assert urllib3.util.IS_PYOPENSSL
 
 
 @mock.patch('httpie.cli.argtypes.SSLCredentials._prompt_password',

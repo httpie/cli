@@ -72,7 +72,7 @@ def test_pretty_options_with_and_without_stream_with_converter(pretty, stream):
 
         body = b'\x00{"foo":42,\n"bar":"baz"}'
         responses.add(responses.GET, DUMMY_URL, body=body,
-                      stream=True, content_type='json/bytes')
+                      content_type='json/bytes')
 
         args = ['--pretty=' + pretty, 'GET', DUMMY_URL]
         if stream:

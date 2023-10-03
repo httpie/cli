@@ -10,7 +10,7 @@ from time import monotonic
 from typing import IO, Optional, Tuple
 from urllib.parse import urlsplit
 
-import requests
+import niquests
 
 from .models import HTTPResponse, OutputOptions
 from .output.streams import RawStream
@@ -179,6 +179,7 @@ class Downloader:
         """
         self.finished = False
         self.status = DownloadStatus(env=env)
+        self._output_file_created = False
         self._output_file = output_file
         self._resume = resume
         self._resumed_from = 0
@@ -202,7 +203,7 @@ class Downloader:
     def start(
         self,
         initial_url: str,
-        final_response: requests.Response
+        final_response: niquests.Response
     ) -> Tuple[RawStream, IO]:
         """
         Initiate and return a stream for `response` body  with progress
@@ -228,6 +229,7 @@ class Downloader:
                 initial_url=initial_url,
                 final_response=final_response,
             )
+            self._output_file_created = True
         else:
             # `--output, -o` provided
             if self._resume and final_response.status_code == PARTIAL_CONTENT:
@@ -263,6 +265,9 @@ class Downloader:
         assert not self.finished
         self.finished = True
         self.status.finished()
+        # we created the output file in the process, closing it now.
+        if self._output_file_created:
+            self._output_file.close()
 
     def failed(self):
         self.status.terminate()
@@ -288,7 +293,7 @@ class Downloader:
     @staticmethod
     def _get_output_file_from_response(
         initial_url: str,
-        final_response: requests.Response,
+        final_response: niquests.Response,
     ) -> IO:
         # Output file not specified. Pick a name that doesn't exist yet.
         filename = None

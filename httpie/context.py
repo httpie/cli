@@ -99,8 +99,9 @@ class Environment:
         assert all(hasattr(type(self), attr) for attr in kwargs.keys())
         self.__dict__.update(**kwargs)
 
-        # The original STDERR unaffected by --quiet’ing.
+        # The original STDERR/STDOUT unaffected by --quiet’ing.
         self._orig_stderr = self.stderr
+        self._orig_stdout = self.stdout
         self._devnull = devnull
 
         # Keyword arguments > stream.encoding > default UTF-8

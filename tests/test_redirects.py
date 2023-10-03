@@ -15,7 +15,7 @@ REDIRECTS_WITH_METHOD_BODY_PRESERVED = [307, 308]
 def test_follow_all_redirects_shown(httpbin):
     r = http('--follow', '--all', httpbin.url + '/redirect/2')
     assert r.count('HTTP/1.1') == 3
-    assert r.count('HTTP/1.1 302 FOUND', 2)
+    assert r.count('HTTP/1.1 302 Found', 2)
     assert HTTP_OK in r
 
 

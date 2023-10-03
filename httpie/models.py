@@ -1,7 +1,17 @@
 from time import monotonic
 
-import requests
-from urllib3.util import SKIP_HEADER, SKIPPABLE_HEADERS
+import niquests
+
+from niquests._compat import HAS_LEGACY_URLLIB3
+
+if not HAS_LEGACY_URLLIB3:
+    from urllib3 import ConnectionInfo
+    from urllib3.util import SKIP_HEADER, SKIPPABLE_HEADERS
+else:
+    from urllib3_future import ConnectionInfo
+    from urllib3_future.util import SKIP_HEADER, SKIPPABLE_HEADERS
+
+from kiss_headers.utils import prettify_header_name
 
 from enum import Enum, auto
 from typing import Iterable, Union, NamedTuple
@@ -18,6 +28,10 @@ from .compat import cached_property
 from .utils import split_cookies, parse_content_type_header
 
 ELAPSED_TIME_LABEL = 'Elapsed time'
+ELAPSED_DNS_RESOLUTION_LABEL = 'Elapsed DNS'
+ELAPSED_TLS_HANDSHAKE = 'Elapsed TLS handshake'
+ELAPSED_REQUEST_SEND = 'Elapsed emitting request'
+ELAPSED_ESTABLISH_CONN = 'Elapsed established connection'
 
 
 class HTTPMessage:
@@ -59,7 +73,7 @@ class HTTPMessage:
 
 
 class HTTPResponse(HTTPMessage):
-    """A :class:`requests.models.Response` wrapper."""
+    """A :class:`niquests.models.Response` wrapper."""
 
     def iter_body(self, chunk_size=1):
         return self._orig.iter_content(chunk_size=chunk_size)
@@ -70,18 +84,19 @@ class HTTPResponse(HTTPMessage):
     @property
     def headers(self):
         original = self._orig
+        http_headers = original.raw.headers if original.raw and hasattr(original.raw, "headers") else original.headers
         status_line = f'HTTP/{self.version} {original.status_code} {original.reason}'
         headers = [status_line]
         headers.extend(
-            ': '.join(header)
-            for header in original.headers.items()
-            if header[0] != 'Set-Cookie'
+            ': '.join([prettify_header_name(header), value])
+            for header, value in http_headers.items()
+            if header.lower() != 'set-cookie'
         )
         headers.extend(
             f'Set-Cookie: {cookie}'
-            for header, value in original.headers.items()
+            for header, value in http_headers.items()
             for cookie in split_cookies(value)
-            if header == 'Set-Cookie'
+            if header.lower() == 'set-cookie'
         )
         return '\r\n'.join(headers)
 
@@ -89,12 +104,23 @@ class HTTPResponse(HTTPMessage):
     def metadata(self) -> str:
         data = {}
         time_to_parse_headers = self._orig.elapsed.total_seconds()
+
         # noinspection PyProtectedMember
         time_since_headers_parsed = monotonic() - self._orig._httpie_headers_parsed_at
         time_elapsed = time_to_parse_headers + time_since_headers_parsed
-        # data['Headers time'] = str(round(time_to_parse_headers, 5)) + 's'
-        # data['Body time'] = str(round(time_since_headers_parsed, 5)) + 's'
+
+        if hasattr(self._orig, "conn_info") and self._orig.conn_info:
+            if self._orig.conn_info.resolution_latency:
+                data[ELAPSED_DNS_RESOLUTION_LABEL] = str(round(self._orig.conn_info.resolution_latency.total_seconds(), 10)) + 's'
+            if self._orig.conn_info.established_latency:
+                data[ELAPSED_ESTABLISH_CONN] = str(round(self._orig.conn_info.established_latency.total_seconds(), 10)) + 's'
+            if self._orig.conn_info.tls_handshake_latency:
+                data[ELAPSED_TLS_HANDSHAKE] = str(round(self._orig.conn_info.tls_handshake_latency.total_seconds(), 10)) + 's'
+            if self._orig.conn_info.request_sent_latency:
+                data[ELAPSED_REQUEST_SEND] = str(round(self._orig.conn_info.request_sent_latency.total_seconds(), 10)) + 's'
+
         data[ELAPSED_TIME_LABEL] = str(round(time_elapsed, 10)) + 's'
+
         return '\n'.join(
             f'{key}: {value}'
             for key, value in data.items()
@@ -108,27 +134,11 @@ class HTTPResponse(HTTPMessage):
         Assume HTTP/1.1 if version is not available.
 
         """
-        mapping = {
-            9: '0.9',
-            10: '1.0',
-            11: '1.1',
-            20: '2.0',
-        }
-        fallback = 11
-        version = None
-        try:
-            raw = self._orig.raw
-            if getattr(raw, '_original_response', None):
-                version = raw._original_response.version
-            else:
-                version = raw.version
-        except AttributeError:
-            pass
-        return mapping[version or fallback]
+        return self._orig.conn_info.http_version.value.replace("HTTP/", "").replace(".0", "") if self._orig.conn_info and self._orig.conn_info.http_version else "1.1"
 
 
 class HTTPRequest(HTTPMessage):
-    """A :class:`requests.models.Request` wrapper."""
+    """A :class:`niquests.models.Request` wrapper."""
 
     def iter_body(self, chunk_size):
         yield self.body
@@ -137,13 +147,68 @@ class HTTPRequest(HTTPMessage):
         yield self.body, b''
 
     @property
+    def metadata(self) -> str:
+        conn_info: ConnectionInfo = self._orig.conn_info
+
+        metadatum = f"Connected to: {conn_info.destination_address[0]} port {conn_info.destination_address[1]}\n"
+
+        if conn_info.certificate_dict:
+            metadatum += (
+                f"Connection secured using: {conn_info.tls_version.name.replace('_', '.')} with {conn_info.cipher.replace('TLS_', '').replace('_', '-')}\n"
+                f"Server certificate: "
+            )
+
+            for entry in conn_info.certificate_dict['subject']:
+                if len(entry) == 2:
+                    rdns, value = entry
+                elif len(entry) == 1:
+                    rdns, value = entry[0]
+                else:
+                    continue
+
+                metadatum += f'{rdns}="{value}"; '
+
+            if "subjectAltName" in conn_info.certificate_dict:
+                for entry in conn_info.certificate_dict['subjectAltName']:
+                    if len(entry) == 2:
+                        rdns, value = entry
+                        metadatum += f'{rdns}="{value}"; '
+
+            metadatum = metadatum[:-2] + "\n"
+
+            metadatum += f'Certificate validity: "{conn_info.certificate_dict["notBefore"]}" to "{conn_info.certificate_dict["notAfter"]}"\n'
+
+            if "issuer" in conn_info.certificate_dict:
+                metadatum += "Issuer: "
+
+                for entry in conn_info.certificate_dict['issuer']:
+                    if len(entry) == 2:
+                        rdns, value = entry
+                    elif len(entry) == 1:
+                        rdns, value = entry[0]
+                    else:
+                        continue
+
+                    metadatum += f'{rdns}="{value}"; '
+
+                metadatum = metadatum[:-2] + "\n"
+
+            if self._orig.ocsp_verified is None:
+                metadatum += "Revocation status: Unverified\n"
+            elif self._orig.ocsp_verified is True:
+                metadatum += "Revocation status: Good\n"
+
+        return metadatum[:-1]
+
+    @property
     def headers(self):
         url = urlsplit(self._orig.url)
 
-        request_line = '{method} {path}{query} HTTP/1.1'.format(
+        request_line = '{method} {path}{query} {http_version}'.format(
             method=self._orig.method,
             path=url.path or '/',
-            query=f'?{url.query}' if url.query else ''
+            query=f'?{url.query}' if url.query else '',
+            http_version=self._orig.conn_info.http_version.value.replace(".0", "") if self._orig.conn_info and self._orig.conn_info.http_version else "HTTP/1.1"
         )
 
         headers = self._orig.headers.copy()
@@ -158,6 +223,7 @@ class HTTPRequest(HTTPMessage):
 
         headers.insert(0, request_line)
         headers = '\r\n'.join(headers).strip()
+
         return headers
 
     @property
@@ -169,7 +235,7 @@ class HTTPRequest(HTTPMessage):
         return body or b''
 
 
-RequestsMessage = Union[requests.PreparedRequest, requests.Response]
+RequestsMessage = Union[niquests.PreparedRequest, niquests.Response]
 
 
 class RequestsMessageKind(Enum):
@@ -178,9 +244,9 @@ class RequestsMessageKind(Enum):
 
 
 def infer_requests_message_kind(message: RequestsMessage) -> RequestsMessageKind:
-    if isinstance(message, requests.PreparedRequest):
+    if isinstance(message, niquests.PreparedRequest):
         return RequestsMessageKind.REQUEST
-    elif isinstance(message, requests.Response):
+    elif isinstance(message, niquests.Response):
         return RequestsMessageKind.RESPONSE
     else:
         raise TypeError(f"Unexpected message type: {type(message).__name__}")
@@ -190,6 +256,7 @@ OPTION_TO_PARAM = {
     RequestsMessageKind.REQUEST: {
         'headers': OUT_REQ_HEAD,
         'body': OUT_REQ_BODY,
+        'meta': OUT_RESP_META
     },
     RequestsMessageKind.RESPONSE: {
         'headers': OUT_RESP_HEAD,

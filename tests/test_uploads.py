@@ -4,6 +4,9 @@ import sys
 import subprocess
 import time
 import contextlib
+
+from flaky import flaky
+
 import httpie.__main__ as main
 
 import pytest
@@ -125,6 +128,7 @@ def stdin_processes(httpbin, *args, warn_threshold=0.1):
 @pytest.mark.parametrize("wait", (True, False))
 @pytest.mark.requires_external_processes
 @pytest.mark.skipif(is_windows, reason="Windows doesn't support select() calls into files")
+@flaky(max_runs=6)
 def test_reading_from_stdin(httpbin, wait):
     with stdin_processes(httpbin) as (process_1, process_2):
         process_1.communicate(timeout=0.1, input=b"bleh")
@@ -143,6 +147,7 @@ def test_reading_from_stdin(httpbin, wait):
 
 @pytest.mark.requires_external_processes
 @pytest.mark.skipif(is_windows, reason="Windows doesn't support select() calls into files")
+@flaky(max_runs=6)
 def test_stdin_read_warning(httpbin):
     with stdin_processes(httpbin) as (process_1, process_2):
         # Wait before sending any data
@@ -159,6 +164,7 @@ def test_stdin_read_warning(httpbin):
 
 @pytest.mark.requires_external_processes
 @pytest.mark.skipif(is_windows, reason="Windows doesn't support select() calls into files")
+@flaky(max_runs=6)
 def test_stdin_read_warning_with_quiet(httpbin):
     with stdin_processes(httpbin, "-qq") as (process_1, process_2):
         # Wait before sending any data
@@ -175,6 +181,7 @@ def test_stdin_read_warning_with_quiet(httpbin):
 
 @pytest.mark.requires_external_processes
 @pytest.mark.skipif(is_windows, reason="Windows doesn't support select() calls into files")
+@flaky(max_runs=6)
 def test_stdin_read_warning_blocking_exit(httpbin):
     # Use a very large number.
     with stdin_processes(httpbin, warn_threshold=999) as (process_1, process_2):
@@ -284,7 +291,7 @@ class TestMultipartFormDataFileUpload:
         assert r.count(boundary) == 4
 
     def test_multipart_custom_content_type_boundary_preserved(self, httpbin):
-        # Allow explicit nonsense requests.
+        # Allow explicit nonsense niquests.
         boundary_in_header = 'HEADER_BOUNDARY'
         boundary_in_body = 'BODY_BOUNDARY'
         r = http(

@@ -26,7 +26,7 @@ def test_ok_response_exits_0(httpbin):
 
 def test_error_response_exits_0_without_check_status(httpbin):
     r = http('GET', httpbin.url + '/status/500')
-    assert '500 INTERNAL SERVER ERROR' in r
+    assert '500 Internal Server Error' in r
     assert r.exit_status == ExitStatus.SUCCESS
     assert not r.stderr
 
@@ -44,7 +44,7 @@ def test_3xx_check_status_exits_3_and_stderr_when_stdout_redirected(
     r = http('--check-status', '--headers',
              'GET', httpbin.url + '/status/301',
              env=env, tolerate_error_exit_status=True)
-    assert '301 MOVED PERMANENTLY' in r
+    assert '301 Moved Permanently' in r
     assert r.exit_status == ExitStatus.ERROR_HTTP_3XX
     assert '301 moved permanently' in r.stderr.lower()
 
@@ -61,7 +61,7 @@ def test_3xx_check_status_redirects_allowed_exits_0(httpbin):
 def test_4xx_check_status_exits_4(httpbin):
     r = http('--check-status', 'GET', httpbin.url + '/status/401',
              tolerate_error_exit_status=True)
-    assert '401 UNAUTHORIZED' in r
+    assert '401 Unauthorized' in r
     assert r.exit_status == ExitStatus.ERROR_HTTP_4XX
     # Also stderr should be empty since stdout isn't redirected.
     assert not r.stderr
@@ -70,5 +70,5 @@ def test_4xx_check_status_exits_4(httpbin):
 def test_5xx_check_status_exits_5(httpbin):
     r = http('--check-status', 'GET', httpbin.url + '/status/500',
              tolerate_error_exit_status=True)
-    assert '500 INTERNAL SERVER ERROR' in r
+    assert '500 Internal Server Error' in r
     assert r.exit_status == ExitStatus.ERROR_HTTP_5XX
