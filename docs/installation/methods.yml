@@ -70,7 +70,7 @@ tools:
     commands:
       install:
         - brew update
-        - brew install httpie
+        - brew install httpie --cask
       upgrade:
         - brew update
         - brew upgrade httpie
