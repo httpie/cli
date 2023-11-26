@@ -28,7 +28,7 @@ from .legacy import (
 
 SESSIONS_DIR_NAME = 'sessions'
 DEFAULT_SESSIONS_DIR = DEFAULT_CONFIG_DIR / SESSIONS_DIR_NAME
-VALID_SESSION_NAME_PATTERN = re.compile('^[a-zA-Z0-9_.-]+$')
+VALID_SESSION_NAME_PATTERN = re.compile('^[\w.-]+$')
 # Request headers starting with these prefixes won't be stored in sessions.
 # They are specific to each request.
 # <https://en.wikipedia.org/wiki/List_of_HTTP_header_fields#Requests>
