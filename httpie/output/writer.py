@@ -21,7 +21,7 @@ from ..utils import parse_content_type_header
 
 
 MESSAGE_SEPARATOR = '\n\n'
-MESSAGE_SEPARATOR_BYTES = MESSAGE_SEPARATOR.encode()
+MESSAGE_SEPARATOR_BYTES = (MESSAGE_SEPARATOR.encode()).rstrip()
 
 
 def write_message(
