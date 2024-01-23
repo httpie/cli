@@ -124,7 +124,8 @@ test-dist: test-sdist test-bdist-wheel
 
 test-sdist: clean venv
 	@echo $(H1)Testing sdist build an installation$(H1END)
-	$(VENV_PYTHON) setup.py sdist
+	$(VENV_PIP) install build
+	$(VENV_PYTHON) -m build --sdist
 	$(VENV_PIP) install --force-reinstall --upgrade dist/*.gz
 	$(VENV_BIN)/http --version
 	@echo
@@ -132,8 +133,8 @@ test-sdist: clean venv
 
 test-bdist-wheel: clean venv
 	@echo $(H1)Testing wheel build an installation$(H1END)
-	$(VENV_PIP) install wheel
-	$(VENV_PYTHON) setup.py bdist_wheel
+	$(VENV_PIP) install build
+	$(VENV_PYTHON) -m build --wheel
 	$(VENV_PIP) install --force-reinstall --upgrade dist/*.whl
 	$(VENV_BIN)/http --version
 	@echo
