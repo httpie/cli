@@ -12,7 +12,7 @@ def test_Host_header_overwrite(httpbin):
 
     """
     host = 'pie.dev'
-    url = httpbin.url + '/get'
+    url = httpbin + '/get'
     r = http('--print=hH', url, f'host:{host}')
     assert HTTP_OK in r
     assert r.lower().count('host:') == 1
@@ -35,7 +35,7 @@ def test_verbose_redirected_stdout_separator(httpbin):
     """
     r = http(
         '-v',
-        httpbin.url + '/post',
+        httpbin + '/post',
         'a=b',
         env=MockEnvironment(stdout_isatty=False),
     )

@@ -29,14 +29,14 @@ def assert_decompressed_equal(base64_compressed_data, expected_str):
 
 
 def test_cannot_combine_compress_with_chunked(httpbin):
-    r = http('--compress', '--chunked', httpbin.url + '/get',
+    r = http('--compress', '--chunked', httpbin + '/get',
              tolerate_error_exit_status=True)
     assert r.exit_status == ExitStatus.ERROR
     assert 'cannot combine --compress and --chunked' in r.stderr
 
 
 def test_cannot_combine_compress_with_multipart(httpbin):
-    r = http('--compress', '--multipart', httpbin.url + '/get',
+    r = http('--compress', '--multipart', httpbin + '/get',
              tolerate_error_exit_status=True)
     assert r.exit_status == ExitStatus.ERROR
     assert 'cannot combine --compress and --multipart' in r.stderr
