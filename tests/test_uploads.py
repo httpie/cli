@@ -192,10 +192,10 @@ class TestMultipartFormDataFileUpload:
     def test_non_existent_file_raises_parse_error(self, httpbin):
         with pytest.raises(ParseError):
             http('--form',
-                 'POST', httpbin.url + '/post', 'foo@/__does_not_exist__')
+                 'POST', httpbin + '/post', 'foo@/__does_not_exist__')
 
     def test_upload_ok(self, httpbin):
-        r = http('--form', '--verbose', 'POST', httpbin.url + '/post',
+        r = http('--form', '--verbose', 'POST', httpbin + '/post',
                  f'test-file@{FILE_PATH_ARG}', 'foo=bar')
         assert HTTP_OK in r
         assert 'Content-Disposition: form-data; name="foo"' in r
@@ -206,7 +206,7 @@ class TestMultipartFormDataFileUpload:
         assert 'Content-Type: text/plain' in r
 
     def test_upload_multiple_fields_with_the_same_name(self, httpbin):
-        r = http('--form', '--verbose', 'POST', httpbin.url + '/post',
+        r = http('--form', '--verbose', 'POST', httpbin + '/post',
                  f'test-file@{FILE_PATH_ARG}',
                  f'test-file@{FILE_PATH_ARG}')
         assert HTTP_OK in r
@@ -221,7 +221,7 @@ class TestMultipartFormDataFileUpload:
         r = http(
             '--form',
             '--verbose',
-            httpbin.url + '/post',
+            httpbin + '/post',
             f'test-file@{FILE_PATH_ARG};type=image/vnd.microsoft.icon'
         )
         assert HTTP_OK in r
@@ -235,7 +235,7 @@ class TestMultipartFormDataFileUpload:
         r = http(
             '--form',
             '--verbose',
-            httpbin.url + '/post',
+            httpbin + '/post',
             'AAAA=AAA',
             'BBB=BBB',
         )
@@ -246,7 +246,7 @@ class TestMultipartFormDataFileUpload:
         r = http(
             '--verbose',
             '--multipart',
-            httpbin.url + '/post',
+            httpbin + '/post',
             'AAAA=AAA',
             'BBB=BBB',
         )
@@ -261,7 +261,7 @@ class TestMultipartFormDataFileUpload:
             '--check-status',
             '--multipart',
             f'--boundary={boundary}',
-            httpbin.url + '/post',
+            httpbin + '/post',
             'AAAA=AAA',
             'BBB=BBB',
         )
@@ -275,7 +275,7 @@ class TestMultipartFormDataFileUpload:
             '--check-status',
             '--multipart',
             f'--boundary={boundary}',
-            httpbin.url + '/post',
+            httpbin + '/post',
             'Content-Type: multipart/magic',
             'AAAA=AAA',
             'BBB=BBB',
@@ -292,7 +292,7 @@ class TestMultipartFormDataFileUpload:
             '--check-status',
             '--multipart',
             f'--boundary={boundary_in_body}',
-            httpbin.url + '/post',
+            httpbin + '/post',
             f'Content-Type: multipart/magic; boundary={boundary_in_header}',
             'AAAA=AAA',
             'BBB=BBB',
@@ -342,7 +342,7 @@ class TestRequestBodyFromFilePath:
     def test_request_body_from_file_by_path(self, httpbin):
         r = http(
             '--verbose',
-            'POST', httpbin.url + '/post',
+            'POST', httpbin + '/post',
             '@' + FILE_PATH_ARG,
         )
         assert HTTP_OK in r
@@ -363,7 +363,7 @@ class TestRequestBodyFromFilePath:
     def test_request_body_from_file_by_path_with_explicit_content_type(
             self, httpbin):
         r = http('--verbose',
-                 'POST', httpbin.url + '/post', '@' + FILE_PATH_ARG,
+                 'POST', httpbin + '/post', '@' + FILE_PATH_ARG,
                  'Content-Type:text/plain; charset=UTF-8')
         assert HTTP_OK in r
         assert FILE_CONTENT in r
@@ -372,7 +372,7 @@ class TestRequestBodyFromFilePath:
     def test_request_body_from_file_by_path_no_field_name_allowed(
             self, httpbin):
         env = MockEnvironment(stdin_isatty=True)
-        r = http('POST', httpbin.url + '/post', 'field-name@' + FILE_PATH_ARG,
+        r = http('POST', httpbin + '/post', 'field-name@' + FILE_PATH_ARG,
                  env=env, tolerate_error_exit_status=True)
         assert 'perhaps you meant --form?' in r.stderr
 
@@ -381,7 +381,7 @@ class TestRequestBodyFromFilePath:
         env = MockEnvironment(stdin_isatty=False)
         r = http(
             'POST',
-            httpbin.url + '/post',
+            httpbin + '/post',
             '@' + FILE_PATH_ARG, 'foo=bar',
             env=env,
             tolerate_error_exit_status=True,
@@ -393,7 +393,7 @@ class TestRequestBodyFromFilePath:
         env = MockEnvironment(stdin_isatty=True)
         r = http(
             '--verbose',
-            'POST', httpbin.url + '/post',
+            'POST', httpbin + '/post',
             '@' + FILE_PATH_ARG,
             '@' + FILE_PATH_ARG,
             env=env,

@@ -17,7 +17,7 @@ def test_default_options(httpbin):
     env = MockEnvironment()
     env.config['default_options'] = ['--form']
     env.config.save()
-    r = http(httpbin.url + '/post', 'foo=bar', env=env)
+    r = http(httpbin + '/post', 'foo=bar', env=env)
     assert r.json['form'] == {
         "foo": "bar"
     }
@@ -51,7 +51,7 @@ def test_default_options_overwrite(httpbin):
     env = MockEnvironment()
     env.config['default_options'] = ['--form']
     env.config.save()
-    r = http('--json', httpbin.url + '/post', 'foo=bar', env=env)
+    r = http('--json', httpbin + '/post', 'foo=bar', env=env)
     assert r.json['json'] == {
         "foo": "bar"
     }

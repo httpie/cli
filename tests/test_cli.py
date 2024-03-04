@@ -151,17 +151,17 @@ class TestItemParsing:
 
 class TestQuerystring:
     def test_query_string_params_in_url(self, httpbin):
-        r = http('--print=Hhb', 'GET', httpbin.url + '/get?a=1&b=2')
+        r = http('--print=Hhb', 'GET', httpbin + '/get?a=1&b=2')
         path = '/get?a=1&b=2'
-        url = httpbin.url + path
+        url = httpbin + path
         assert HTTP_OK in r
         assert f'GET {path} HTTP/1.1' in r
         assert f'"url": "{url}"' in r
 
     def test_query_string_params_items(self, httpbin):
-        r = http('--print=Hhb', 'GET', httpbin.url + '/get', 'a==1')
+        r = http('--print=Hhb', 'GET', httpbin + '/get', 'a==1')
         path = '/get?a=1'
-        url = httpbin.url + path
+        url = httpbin + path
         assert HTTP_OK in r
         assert f'GET {path} HTTP/1.1' in r
         assert f'"url": "{url}"' in r
@@ -169,9 +169,9 @@ class TestQuerystring:
     def test_query_string_params_in_url_and_items_with_duplicates(self,
                                                                   httpbin):
         r = http('--print=Hhb', 'GET',
-                 httpbin.url + '/get?a=1&a=1', 'a==1', 'a==1')
+                 httpbin + '/get?a=1&a=1', 'a==1', 'a==1')
         path = '/get?a=1&a=1&a=1&a=1'
-        url = httpbin.url + path
+        url = httpbin + path
         assert HTTP_OK in r
         assert f'GET {path} HTTP/1.1' in r
         assert f'"url": "{url}"' in r
@@ -320,11 +320,11 @@ class TestArgumentParser:
 class TestNoOptions:
 
     def test_valid_no_options(self, httpbin):
-        r = http('--verbose', '--no-verbose', 'GET', httpbin.url + '/get')
+        r = http('--verbose', '--no-verbose', 'GET', httpbin + '/get')
         assert 'GET /get HTTP/1.1' not in r
 
     def test_invalid_no_options(self, httpbin):
-        r = http('--no-war', 'GET', httpbin.url + '/get',
+        r = http('--no-war', 'GET', httpbin + '/get',
                  tolerate_error_exit_status=True)
         assert r.exit_status == ExitStatus.ERROR
         assert 'unrecognized arguments: --no-war' in r.stderr
@@ -338,13 +338,13 @@ class TestStdin:
             stdin=StdinBytesIO(FILE_PATH.read_bytes()),
             stdin_isatty=False,
         )
-        r = http('--ignore-stdin', '--verbose', httpbin.url + '/get', env=env)
+        r = http('--ignore-stdin', '--verbose', httpbin + '/get', env=env)
         assert HTTP_OK in r
         assert 'GET /get HTTP' in r, "Don't default to POST."
         assert FILE_CONTENT not in r, "Don't send stdin data."
 
     def test_ignore_stdin_cannot_prompt_password(self, httpbin):
-        r = http('--ignore-stdin', '--auth=no-password', httpbin.url + '/get',
+        r = http('--ignore-stdin', '--auth=no-password', httpbin + '/get',
                  tolerate_error_exit_status=True)
         assert r.exit_status == ExitStatus.ERROR
         assert 'because --ignore-stdin' in r.stderr

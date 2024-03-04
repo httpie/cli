@@ -75,15 +75,8 @@ def _remote_httpbin_available():
 
 @pytest.fixture
 def remote_httpbin(_remote_httpbin_available):
-
     if _remote_httpbin_available:
-        class Server(str):
-            """Look like `pytest_httpbin.serve.Server` but only provide URL info."""
-            @property
-            def url(self):
-                return self
-
-        return Server('http://' + REMOTE_HTTPBIN_DOMAIN)
+        return 'http://' + REMOTE_HTTPBIN_DOMAIN
     pytest.skip(f'{REMOTE_HTTPBIN_DOMAIN} not resolvable')
 
 

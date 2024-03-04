@@ -12,7 +12,7 @@ def test_explicit_user_set_cookie(httpbin, target_httpbin, request):
     r = http(
         '--follow',
         httpbin + '/redirect-to',
-        f'url=={target_httpbin.url}/cookies',
+        f'url=={target_httpbin}/cookies',
         'Cookie:a=b'
     )
     assert r.json == {'cookies': {}}
