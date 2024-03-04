@@ -83,7 +83,7 @@ Custom [HTTP method](https://httpie.io/docs#http-method), [HTTP headers](https:/
 http PUT pie.dev/put X-API-Token:123 name=John
 ```
 
-Build and print a request without sending it using [offline mode](https://httpie.io/docs#offline-mode):
+Build and print a request without sending it using [offline mode](https://httpie.io/docs/cli/offline-mode):
 
 ```bash
 http --offline pie.dev/post hello=offline
