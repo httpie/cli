@@ -2,6 +2,7 @@ import socket
 
 import pytest
 from pytest_httpbin import certs
+from pytest_httpbin.serve import Server as PyTestHttpBinServer
 
 from .utils import (  # noqa
     HTTPBIN_WITH_CHUNKED_SUPPORT_DOMAIN,
@@ -19,8 +20,10 @@ from .utils.plugins_cli import (  # noqa
     interface,
 )
 from .utils.http_server import http_server, localhost_http_server  # noqa
-# noinspection PyUnresolvedReferences
-from .fixtures import pytest_lazy_fixture
+
+
+# Patch to support `url = str(server)` in addition to `url = server + '/foo'`.
+PyTestHttpBinServer.__str__ = lambda self: self.url
 
 
 @pytest.fixture(scope='function', autouse=True)
@@ -72,8 +75,15 @@ def _remote_httpbin_available():
 
 @pytest.fixture
 def remote_httpbin(_remote_httpbin_available):
+
     if _remote_httpbin_available:
-        return 'http://' + REMOTE_HTTPBIN_DOMAIN
+        class Server(str):
+            """Look like `pytest_httpbin.serve.Server` but only provide URL info."""
+            @property
+            def url(self):
+                return self
+
+        return Server('http://' + REMOTE_HTTPBIN_DOMAIN)
     pytest.skip(f'{REMOTE_HTTPBIN_DOMAIN} not resolvable')
 
 

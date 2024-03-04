@@ -821,16 +821,17 @@ def test_session_multiple_headers_with_same_name(basic_session, httpbin):
     'server, expected_cookies',
     [
         (
-            pytest.lazy_fixture('localhost_http_server'),
+            'localhost_http_server',
             {'secure_cookie': 'foo', 'insecure_cookie': 'bar'}
         ),
         (
-            pytest.lazy_fixture('remote_httpbin'),
+            'remote_httpbin',
             {'insecure_cookie': 'bar'}
         )
     ]
 )
-def test_secure_cookies_on_localhost(mock_env, tmp_path, server, expected_cookies):
+def test_secure_cookies_on_localhost(mock_env, tmp_path, server, expected_cookies, request):
+    server = request.getfixturevalue(server)
     session_path = tmp_path / 'session.json'
     http(
         '--session', str(session_path),
