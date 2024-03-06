@@ -149,7 +149,7 @@ class Config(BaseConfigDict):
     @property
     def default_options(self) -> list:
         return self['default_options']
-    
+
     @property
     def default_headers(self) -> list:
         return self["default_headers"]
