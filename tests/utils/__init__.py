@@ -210,7 +210,7 @@ class BaseCLIResponse:
     complete_args: List[str] = []
 
     @property
-    def command(self):
+    def command(self):  # noqa: F811
         cmd = ' '.join(shlex.quote(arg) for arg in ['http', *self.args])
         # pytest-httpbin to real httpbin.
         return re.sub(r'127\.0\.0\.1:\d+', 'httpbin.org', cmd)
