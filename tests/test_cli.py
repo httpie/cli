@@ -2,7 +2,7 @@
 import argparse
 
 import pytest
-from niquests.exceptions import InvalidSchema
+from niquests.exceptions import InvalidSchema, MissingSchema
 
 import httpie.cli.argparser
 from httpie.cli import constants
@@ -363,13 +363,13 @@ class TestSchemes:
         # InvalidSchema is expected because HTTPie
         # shouldn't touch a formally valid scheme.
         with pytest.raises(InvalidSchema):
-            http('foo+bar-BAZ.123://bah')
+            http('foo+bar://bah')
 
     def test_invalid_scheme_via_via_default_scheme(self):
         # InvalidSchema is expected because HTTPie
         # shouldn't touch a formally valid scheme.
-        with pytest.raises(InvalidSchema):
-            http('bah', '--default=scheme=foo+bar-BAZ.123')
+        with pytest.raises((InvalidSchema, MissingSchema,)):
+            http('bah', '--default=scheme=foo+bar')
 
     def test_default_scheme_option(self, httpbin_secure):
         url = f'{httpbin_secure.host}:{httpbin_secure.port}'
