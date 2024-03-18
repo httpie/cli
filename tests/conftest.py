@@ -3,6 +3,10 @@ import socket
 import pytest
 from pytest_httpbin import certs
 from pytest_httpbin.serve import Server as PyTestHttpBinServer
+from sys import modules
+
+import niquests
+import urllib3
 
 from .utils import (  # noqa
     HTTPBIN_WITH_CHUNKED_SUPPORT_DOMAIN,
@@ -24,12 +28,10 @@ from .utils.http_server import http_server, localhost_http_server  # noqa
 # Patch to support `url = str(server)` in addition to `url = server + '/foo'`.
 PyTestHttpBinServer.__str__ = lambda self: self.url
 
-from sys import modules
-
-import niquests
-import urllib3
-
 # the mock utility 'response' only works with 'requests'
+# we're trying to fool it, thinking requests is there.
+# to remove when a similar (or same, but compatible)
+# utility emerge for Niquests.
 modules["requests"] = niquests
 modules["requests.adapters"] = niquests.adapters
 modules["requests.exceptions"] = niquests.exceptions
