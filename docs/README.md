@@ -133,7 +133,7 @@ Also works for other Debian-derived distributions like MX Linux, Linux Mint, dee
 ```bash
 # Install httpie
 $ curl -SsL https://packages.httpie.io/deb/KEY.gpg | sudo gpg --dearmor -o /usr/share/keyrings/httpie.gpg
-$ sudo echo "deb [arch=amd64 signed-by=/usr/share/keyrings/httpie.gpg] https://packages.httpie.io/deb ./" > /etc/apt/sources.list.d/httpie.list
+$ echo "deb [arch=amd64 signed-by=/usr/share/keyrings/httpie.gpg] https://packages.httpie.io/deb ./" | sudo tee /etc/apt/sources.list.d/httpie.list > /dev/null
 $ sudo apt update
 $ sudo apt install httpie
 ```
@@ -477,7 +477,7 @@ $ http pie.dev/get text==@files/text.txt
 ### URL shortcuts for `localhost`
 
 Additionally, curl-like shorthand for localhost is supported.
-This means that, for example, `:3000` would expand to `http://localhost:3000`
+This means that, for example, `:3000` would expand to `http://localhost:3000`.
 If the port is omitted, then port 80 is assumed.
 
 ```bash
@@ -530,7 +530,7 @@ $ http-unix %2Fvar%2Frun%2Fdocker.sock/info
 
 ### `--path-as-is`
 
-The standard behavior of HTTP clients is to normalize the path portion of URLs by squashing dot segments as a typically filesystem would:
+The standard behavior of HTTP clients is to normalize the path portion of URLs by squashing dot segments as a typical filesystem would:
 
 ```bash
 $ http -v example.org/./../../etc/password
@@ -583,7 +583,7 @@ Note that the structured data fields aren’t the only way to specify request da
 ### File based separators
 
 Using file contents as values for specific fields is a very common use case, which can be achieved through adding the `@` suffix to
-the operators above. For example instead of using a static string as the value for some header, you can use `:@` operator
+the operators above. For example, instead of using a static string as the value for some header, you can use `:@` operator
 to pass the desired value from a file.
 
 ```bash
@@ -749,7 +749,7 @@ $ http --offline --print=B pie.dev/post \
 
 In the example above, the `search[type]` is an instruction for creating an object called `search`, and setting the `type` field of it to the given value (`"id"`).
 
-Also note that, just as the regular syntax, you can use the `:=` operator to directly pass raw JSON values (e.g, numbers in the case above).
+Also note that, just as the regular syntax, you can use the `:=` operator to directly pass raw JSON values (e.g., numbers in the case above).
 
 ```json
 {
@@ -1235,7 +1235,7 @@ by individual commands when sending a request instead of being joined together.
 
 ### Limiting response headers
 
-The `--max-headers=n` options allows you to control the number of headers HTTPie reads before giving up (the default `0`, i.e., there’s no limit).
+The `--max-headers=n` option allows you to control the number of headers HTTPie reads before giving up (the default `0`, i.e., there’s no limit).
 
 ```bash
 $ http --max-headers=100 pie.dev/get

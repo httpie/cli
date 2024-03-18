@@ -255,7 +255,7 @@ class TestDownloads:
             os.chdir(tmp_dirname)
             try:
                 assert os.listdir('.') == []
-                http('--download', httpbin.url + '/redirect/1')
+                http('--download', httpbin + '/redirect/1')
                 assert os.listdir('.') == [expected_filename]
             finally:
                 os.chdir(orig_cwd)

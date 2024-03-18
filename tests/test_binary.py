@@ -15,18 +15,18 @@ class TestBinaryRequestData:
                 stdin_isatty=False,
                 stdout_isatty=False
             )
-            r = http('--print=B', 'POST', httpbin.url + '/post', env=env)
+            r = http('--print=B', 'POST', httpbin + '/post', env=env)
             assert r == BIN_FILE_CONTENT
 
     def test_binary_file_path(self, httpbin):
         env = MockEnvironment(stdin_isatty=True, stdout_isatty=False)
-        r = http('--print=B', 'POST', httpbin.url + '/post',
+        r = http('--print=B', 'POST', httpbin + '/post',
                  '@' + BIN_FILE_PATH_ARG, env=env)
         assert r == BIN_FILE_CONTENT
 
     def test_binary_file_form(self, httpbin):
         env = MockEnvironment(stdin_isatty=True, stdout_isatty=False)
-        r = http('--print=B', '--form', 'POST', httpbin.url + '/post',
+        r = http('--print=B', '--form', 'POST', httpbin + '/post',
                  'test@' + BIN_FILE_PATH_ARG, env=env)
         assert bytes(BIN_FILE_CONTENT) in bytes(r)
 

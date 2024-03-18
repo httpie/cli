@@ -42,7 +42,7 @@ def test_bearer_auth(httpbin_both, token):
             new=lambda self, prompt: 'password')
 def test_password_prompt(httpbin):
     r = http('--auth', 'user',
-             'GET', httpbin.url + '/basic-auth/user/password')
+             'GET', httpbin + '/basic-auth/user/password')
     assert HTTP_OK in r
     assert r.json == {'authenticated': True, 'user': 'user'}
 

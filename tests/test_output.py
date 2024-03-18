@@ -54,7 +54,7 @@ class TestQuietFlag:
             stdout_isatty=True,
             devnull=io.BytesIO()
         )
-        r = http(*quiet_flags, 'GET', httpbin.url + '/get', env=env)
+        r = http(*quiet_flags, 'GET', httpbin + '/get', env=env)
         assert env.stdout is env.devnull
         assert env.stderr is env.devnull
         assert HTTP_OK in r.devnull
@@ -138,7 +138,7 @@ class TestQuietFlag:
         )
         r = http(
             *quiet_flags, '--auth', 'user', 'GET',
-            httpbin.url + '/basic-auth/user/password',
+            httpbin + '/basic-auth/user/password',
             env=env
         )
         assert env.stdout is env.devnull
@@ -151,7 +151,7 @@ class TestQuietFlag:
     @pytest.mark.parametrize('output_options', ['-h', '-b', '-v', '-p=hH'])
     def test_quiet_with_explicit_output_options(self, httpbin, quiet_flags, output_options):
         env = MockEnvironment(stdin_isatty=True, stdout_isatty=True)
-        r = http(*quiet_flags, output_options, httpbin.url + '/get', env=env)
+        r = http(*quiet_flags, output_options, httpbin + '/get', env=env)
         assert env.stdout is env.devnull
         assert env.stderr is env.devnull
         assert r == ''
@@ -192,26 +192,26 @@ class TestQuietFlag:
 class TestVerboseFlag:
     def test_verbose(self, httpbin):
         r = http('--verbose',
-                 'GET', httpbin.url + '/get', 'test-header:__test__')
+                 'GET', httpbin + '/get', 'test-header:__test__')
         assert HTTP_OK in r
         assert r.count('__test__') == 2
 
     def test_verbose_raw(self, httpbin):
         r = http('--verbose', '--raw', 'foo bar',
-                 'POST', httpbin.url + '/post')
+                 'POST', httpbin + '/post')
         assert HTTP_OK in r
         assert 'foo bar' in r
 
     def test_verbose_form(self, httpbin):
         # https://github.com/httpie/cli/issues/53
-        r = http('--verbose', '--form', 'POST', httpbin.url + '/post',
+        r = http('--verbose', '--form', 'POST', httpbin + '/post',
                  'A=B', 'C=D')
         assert HTTP_OK in r
         assert 'A=B&C=D' in r
 
     def test_verbose_json(self, httpbin):
         r = http('--verbose',
-                 'POST', httpbin.url + '/post', 'foo=bar', 'baz=bar')
+                 'POST', httpbin + '/post', 'foo=bar', 'baz=bar')
         assert HTTP_OK in r
         assert '"baz": "bar"' in r
 
@@ -300,20 +300,20 @@ class TestPrettyOptions:
 
     def test_pretty_enabled_by_default(self, httpbin):
         env = MockEnvironment(colors=256)
-        r = http('GET', httpbin.url + '/get', env=env)
+        r = http('GET', httpbin + '/get', env=env)
         assert COLOR in r
 
     def test_pretty_enabled_by_default_unless_stdout_redirected(self, httpbin):
-        r = http('GET', httpbin.url + '/get')
+        r = http('GET', httpbin + '/get')
         assert COLOR not in r
 
     def test_force_pretty(self, httpbin):
         env = MockEnvironment(stdout_isatty=False, colors=256)
-        r = http('--pretty=all', 'GET', httpbin.url + '/get', env=env)
+        r = http('--pretty=all', 'GET', httpbin + '/get', env=env)
         assert COLOR in r
 
     def test_force_ugly(self, httpbin):
-        r = http('--pretty=none', 'GET', httpbin.url + '/get')
+        r = http('--pretty=none', 'GET', httpbin + '/get')
         assert COLOR not in r
 
     def test_subtype_based_pygments_lexer_match(self, httpbin):
@@ -322,14 +322,14 @@ class TestPrettyOptions:
 
         """
         env = MockEnvironment(colors=256)
-        r = http('--print=B', '--pretty=all', httpbin.url + '/post',
+        r = http('--print=B', '--pretty=all', httpbin + '/post',
                  'Content-Type:text/foo+json', 'a=b', env=env)
         assert COLOR in r
 
     def test_colors_option(self, httpbin):
         env = MockEnvironment(colors=256)
         r = http('--print=B', '--pretty=colors',
-                 'GET', httpbin.url + '/get', 'a=b',
+                 'GET', httpbin + '/get', 'a=b',
                  env=env)
         # Tests that the JSON data isn't formatted.
         assert not r.strip().count('\n')
@@ -338,7 +338,7 @@ class TestPrettyOptions:
     def test_format_option(self, httpbin):
         env = MockEnvironment(colors=256)
         r = http('--print=B', '--pretty=format',
-                 'GET', httpbin.url + '/get', 'a=b',
+                 'GET', httpbin + '/get', 'a=b',
                  env=env)
         # Tests that the JSON data is formatted.
         assert r.strip().count('\n') == 2
@@ -365,25 +365,25 @@ class TestLineEndings:
         return body
 
     def test_CRLF_headers_only(self, httpbin):
-        r = http('--headers', 'GET', httpbin.url + '/get')
+        r = http('--headers', 'GET', httpbin + '/get')
         body = self._validate_crlf(r)
         assert not body, f'Garbage after headers: {r!r}'
 
     def test_CRLF_ugly_response(self, httpbin):
-        r = http('--pretty=none', 'GET', httpbin.url + '/get')
+        r = http('--pretty=none', 'GET', httpbin + '/get')
         self._validate_crlf(r)
 
     def test_CRLF_formatted_response(self, httpbin):
-        r = http('--pretty=format', 'GET', httpbin.url + '/get')
+        r = http('--pretty=format', 'GET', httpbin + '/get')
         assert r.exit_status == ExitStatus.SUCCESS
         self._validate_crlf(r)
 
     def test_CRLF_ugly_request(self, httpbin):
-        r = http('--pretty=none', '--print=HB', 'GET', httpbin.url + '/get')
+        r = http('--pretty=none', '--print=HB', 'GET', httpbin + '/get')
         self._validate_crlf(r)
 
     def test_CRLF_formatted_request(self, httpbin):
-        r = http('--pretty=format', '--print=HB', 'GET', httpbin.url + '/get')
+        r = http('--pretty=format', '--print=HB', 'GET', httpbin + '/get')
         self._validate_crlf(r)
 
 

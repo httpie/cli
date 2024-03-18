@@ -8,9 +8,9 @@
 
 <div align="center">
 
-[![HTTPie for Desktop](https://img.shields.io/static/v1?label=HTTPie&message=for%20Desktop&color=4B78E6)](https://httpie.io/product)
-[![](https://img.shields.io/static/v1?label=HTTPie&message=for%20Web%20%26%20Mobile&color=73DC8C)](https://httpie.io/app)
-[![](https://img.shields.io/static/v1?label=HTTPie&message=for%20Terminal&color=FA9BFA)](https://httpie.io/cli)
+[![HTTPie for Desktop](https://img.shields.io/static/v1?label=HTTPie&message=Desktop&color=4B78E6)](https://httpie.io/product)
+[![](https://img.shields.io/static/v1?label=HTTPie&message=Web%20%26%20Mobile&color=73DC8C)](https://httpie.io/app)
+[![](https://img.shields.io/static/v1?label=HTTPie&message=CLI&color=FA9BFA)](https://httpie.io/cli)
 [![Twitter](https://img.shields.io/twitter/follow/httpie?style=flat&color=%234B78E6&logoColor=%234B78E6)](https://twitter.com/httpie)
 [![Chat](https://img.shields.io/discord/725351238698270761?style=flat&label=Chat%20on%20Discord&color=%23FA9BFA)](https://httpie.io/discord)
 
@@ -23,6 +23,7 @@
 [![Latest version](https://img.shields.io/pypi/v/httpie.svg?style=flat&label=Latest&color=%234B78E6&logo=&logoColor=white)](https://pypi.python.org/pypi/httpie)
 [![Build](https://img.shields.io/github/actions/workflow/status/httpie/cli/tests.yml?branch=master&color=%23FA9BFA&label=Build)](https://github.com/httpie/cli/actions)
 [![Coverage](https://img.shields.io/codecov/c/github/httpie/cli?style=flat&label=Coverage&color=%2373DC8C)](https://codecov.io/gh/httpie/cli)
+[![PyPi downloads](https://img.shields.io/pepy/dt/httpie?style=flat&label=Downloads%20from%20PyPi%20only&color=4B78E6)](https://www.pepy.tech/projects/httpie)
 
 </div>
 
@@ -82,7 +83,7 @@ Custom [HTTP method](https://httpie.io/docs#http-method), [HTTP headers](https:/
 http PUT pie.dev/put X-API-Token:123 name=John
 ```
 
-Build and print a request without sending it using [offline mode](https://httpie.io/docs#offline-mode):
+Build and print a request without sending it using [offline mode](https://httpie.io/docs/cli/offline-mode):
 
 ```bash
 http --offline pie.dev/post hello=offline

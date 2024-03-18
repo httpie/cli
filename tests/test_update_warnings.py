@@ -132,10 +132,10 @@ def test_check_updates_first_invocation(
 
 
 @pytest.mark.parametrize(
-    'should_issue_warning, build_channel',
+    ['should_issue_warning', 'build_channel'],
     [
-        (False, pytest.lazy_fixture('lower_build_channel')),
-        (True, pytest.lazy_fixture('higher_build_channel')),
+        (False, 'lower_build_channel'),
+        (True, 'higher_build_channel'),
     ],
 )
 def test_check_updates_first_time_after_data_fetch(
@@ -145,7 +145,9 @@ def test_check_updates_first_time_after_data_fetch(
     static_fetch_data,
     should_issue_warning,
     build_channel,
+    request,
 ):
+    request.getfixturevalue(build_channel)
     http('fetch_updates', '--daemon', env=with_warnings)
     r = http(httpbin + '/get', env=with_warnings)
 
@@ -176,14 +178,15 @@ def test_cli_check_updates(
 
 
 @pytest.mark.parametrize(
-    "build_channel", [
-        pytest.lazy_fixture("lower_build_channel"),
-        pytest.lazy_fixture("unknown_build_channel")
+    'build_channel', [
+        'lower_build_channel',
+        'unknown_build_channel',
     ]
 )
 def test_cli_check_updates_not_shown(
-    static_fetch_data, build_channel
+    static_fetch_data, build_channel, request
 ):
+    request.getfixturevalue(build_channel)
     r = httpie('cli', 'check-updates')
     assert r.exit_status == ExitStatus.SUCCESS
     assert not check_update_warnings(r)

@@ -46,7 +46,7 @@ def test_pretty_redirected_stream(httpbin):
         stdout_isatty=False,
     )
     r = http('--verbose', '--pretty=all', '--stream', 'GET',
-             httpbin.url + '/get', env=env)
+             httpbin + '/get', env=env)
     assert BINARY_SUPPRESSED_NOTICE.decode() in r
 
 
@@ -57,7 +57,7 @@ def test_pretty_stream_ensure_full_stream_is_retrieved(httpbin):
         stdout_isatty=False,
     )
     r = http('--pretty=format', '--stream', 'GET',
-             httpbin.url + '/stream/3', env=env)
+             httpbin + '/stream/3', env=env)
     assert r.count('/stream/3') == 3
 
 
@@ -98,7 +98,7 @@ def test_encoded_stream(httpbin):
         stdin_isatty=False,
     )
     r = http('--pretty=none', '--stream', '--verbose', 'GET',
-             httpbin.url + '/get', env=env)
+             httpbin + '/get', env=env)
     assert BINARY_SUPPRESSED_NOTICE.decode() in r
 
 
@@ -111,7 +111,7 @@ def test_redirected_stream(httpbin):
         stdin=StdinBytesIO(BIN_FILE_PATH.read_bytes()),
     )
     r = http('--pretty=none', '--stream', '--verbose', 'GET',
-             httpbin.url + '/get', env=env)
+             httpbin + '/get', env=env)
     assert BIN_FILE_CONTENT in r
 
 

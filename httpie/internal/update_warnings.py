@@ -41,6 +41,8 @@ def _fetch_updates(env: Environment) -> str:
     file = env.config.version_info_file
     data = _read_data_error_free(file)
 
+    print("fetch update...?")
+
     response = niquests.get(PACKAGE_INDEX_LINK, verify=False)
     response.raise_for_status()
 

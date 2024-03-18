@@ -2,14 +2,15 @@ import socket
 
 import pytest
 from pytest_httpbin import certs
+from pytest_httpbin.serve import Server as PyTestHttpBinServer
 
-from .utils import ( # noqa
+from .utils import (  # noqa
     HTTPBIN_WITH_CHUNKED_SUPPORT_DOMAIN,
     HTTPBIN_WITH_CHUNKED_SUPPORT,
     REMOTE_HTTPBIN_DOMAIN,
     mock_env
 )
-from .utils.plugins_cli import ( # noqa
+from .utils.plugins_cli import (  # noqa
     broken_plugin,
     dummy_plugin,
     dummy_plugins,
@@ -17,7 +18,11 @@ from .utils.plugins_cli import ( # noqa
     httpie_plugins_success,
     interface,
 )
-from .utils.http_server import http_server, localhost_http_server # noqa
+from .utils.http_server import http_server, localhost_http_server  # noqa
+
+
+# Patch to support `url = str(server)` in addition to `url = server + '/foo'`.
+PyTestHttpBinServer.__str__ = lambda self: self.url
 
 from sys import modules
 

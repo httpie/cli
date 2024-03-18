@@ -2,54 +2,47 @@ import pytest
 from .utils import http
 
 
-def _stringify(fixture):
-    return fixture + ''
-
-
-@pytest.mark.parametrize('instance', [
-    pytest.lazy_fixture('httpbin'),
-    pytest.lazy_fixture('remote_httpbin'),
+@pytest.mark.parametrize('target_httpbin', [
+    'httpbin',
+    'remote_httpbin',
 ])
-def test_explicit_user_set_cookie(httpbin, instance):
-    # User set cookies ARE NOT persisted within redirects
-    # when there is no session, even on the same domain.
-
+def test_explicit_user_set_cookie(httpbin, target_httpbin, request):
+    """User set cookies ARE NOT persisted within redirects when there is no session, even on the same domain."""
+    target_httpbin = request.getfixturevalue(target_httpbin)
     r = http(
         '--follow',
         httpbin + '/redirect-to',
-        f'url=={_stringify(instance)}/cookies',
+        f'url=={target_httpbin}/cookies',
         'Cookie:a=b'
     )
     assert r.json == {'cookies': {}}
 
 
-@pytest.mark.parametrize('instance', [
-    pytest.lazy_fixture('httpbin'),
-    pytest.lazy_fixture('remote_httpbin'),
+@pytest.mark.parametrize('target_httpbin', [
+    'httpbin',
+    'remote_httpbin',
 ])
-def test_explicit_user_set_cookie_in_session(tmp_path, httpbin, instance):
-    # User set cookies ARE persisted within redirects
-    # when there is A session, even on the same domain.
-
+def test_explicit_user_set_cookie_in_session(tmp_path, httpbin, target_httpbin, request):
+    """User set cookies ARE persisted within redirects when there is A session, even on the same domain."""
+    target_httpbin = request.getfixturevalue(target_httpbin)
     r = http(
         '--follow',
         '--session',
         str(tmp_path / 'session.json'),
         httpbin + '/redirect-to',
-        f'url=={_stringify(instance)}/cookies',
+        f'url=={target_httpbin}/cookies',
         'Cookie:a=b'
     )
     assert r.json == {'cookies': {'a': 'b'}}
 
 
-@pytest.mark.parametrize('instance', [
-    pytest.lazy_fixture('httpbin'),
-    pytest.lazy_fixture('remote_httpbin'),
+@pytest.mark.parametrize('target_httpbin', [
+    'httpbin',
+    'remote_httpbin',
 ])
-def test_saved_user_set_cookie_in_session(tmp_path, httpbin, instance):
-    # User set cookies ARE persisted within redirects
-    # when there is A session, even on the same domain.
-
+def test_saved_user_set_cookie_in_session(tmp_path, httpbin, target_httpbin, request):
+    """User set cookies ARE persisted within redirects when there is A session, even on the same domain."""
+    target_httpbin = request.getfixturevalue(target_httpbin)
     http(
         '--follow',
         '--session',
@@ -62,32 +55,33 @@ def test_saved_user_set_cookie_in_session(tmp_path, httpbin, instance):
         '--session',
         str(tmp_path / 'session.json'),
         httpbin + '/redirect-to',
-        f'url=={_stringify(instance)}/cookies',
+        f'url=={target_httpbin}/cookies',
     )
     assert r.json == {'cookies': {'a': 'b'}}
 
 
-@pytest.mark.parametrize('instance', [
-    pytest.lazy_fixture('httpbin'),
-    pytest.lazy_fixture('remote_httpbin'),
+@pytest.mark.parametrize('target_httpbin', [
+    'httpbin',
+    'remote_httpbin',
 ])
 @pytest.mark.parametrize('session', [True, False])
-def test_explicit_user_set_headers(httpbin, tmp_path, instance, session):
-    # User set headers ARE persisted within redirects
-    # even on different domains domain with or without
-    # an active session.
+def test_explicit_user_set_headers(httpbin, tmp_path, target_httpbin, session, request):
+    """
+    User set headers ARE persisted within redirects even on different domains domain with or without an active session.
+
+    """
+    target_httpbin = request.getfixturevalue(target_httpbin)
     session_args = []
     if session:
         session_args.extend([
             '--session',
             str(tmp_path / 'session.json')
         ])
-
     r = http(
         '--follow',
         *session_args,
         httpbin + '/redirect-to',
-        f'url=={_stringify(instance)}/get',
+        f'url=={target_httpbin}/get',
         'X-Custom-Header:value'
     )
     assert 'X-Custom-Header' in r.json['headers']
@@ -95,16 +89,13 @@ def test_explicit_user_set_headers(httpbin, tmp_path, instance, session):
 
 @pytest.mark.parametrize('session', [True, False])
 def test_server_set_cookie_on_redirect_same_domain(tmp_path, httpbin, session):
-    # Server set cookies ARE persisted on the same domain
-    # when they are forwarded.
-
+    """Server set cookies ARE persisted on the same domain when they are forwarded."""
     session_args = []
     if session:
         session_args.extend([
             '--session',
             str(tmp_path / 'session.json')
         ])
-
     r = http(
         '--follow',
         *session_args,
@@ -136,8 +127,7 @@ def test_server_set_cookie_on_redirect_different_domain(tmp_path, http_server, h
 
 
 def test_saved_session_cookies_on_same_domain(tmp_path, httpbin):
-    # Saved session cookies ARE persisted when making a new
-    # request to the same domain.
+    """Saved session cookies ARE persisted when making a new request to the same domain."""
     http(
         '--session',
         str(tmp_path / 'session.json'),
@@ -152,8 +142,7 @@ def test_saved_session_cookies_on_same_domain(tmp_path, httpbin):
 
 
 def test_saved_session_cookies_on_different_domain(tmp_path, httpbin, remote_httpbin):
-    # Saved session cookies ARE persisted when making a new
-    # request to a different domain.
+    """Saved session cookies ARE persisted when making a new request to a different domain."""
     http(
         '--session',
         str(tmp_path / 'session.json'),
@@ -167,45 +156,49 @@ def test_saved_session_cookies_on_different_domain(tmp_path, httpbin, remote_htt
     assert r.json == {'cookies': {}}
 
 
-@pytest.mark.parametrize('initial_domain, first_request_domain, second_request_domain, expect_cookies', [
+@pytest.mark.parametrize(['initial_domain', 'first_request_domain', 'second_request_domain', 'expect_cookies'], [
     (
         # Cookies are set by    Domain A
         # Initial domain is     Domain A
         # Redirected domain is  Domain A
-        pytest.lazy_fixture('httpbin'),
-        pytest.lazy_fixture('httpbin'),
-        pytest.lazy_fixture('httpbin'),
+        'httpbin',
+        'httpbin',
+        'httpbin',
         True,
     ),
     (
         # Cookies are set by    Domain A
         # Initial domain is     Domain B
         # Redirected domain is  Domain B
-        pytest.lazy_fixture('httpbin'),
-        pytest.lazy_fixture('remote_httpbin'),
-        pytest.lazy_fixture('remote_httpbin'),
+        'httpbin',
+        'remote_httpbin',
+        'remote_httpbin',
         False,
     ),
     (
         # Cookies are set by    Domain A
         # Initial domain is     Domain A
         # Redirected domain is  Domain B
-        pytest.lazy_fixture('httpbin'),
-        pytest.lazy_fixture('httpbin'),
-        pytest.lazy_fixture('remote_httpbin'),
+        'httpbin',
+        'httpbin',
+        'remote_httpbin',
         False,
     ),
     (
         # Cookies are set by    Domain A
         # Initial domain is     Domain B
         # Redirected domain is  Domain A
-        pytest.lazy_fixture('httpbin'),
-        pytest.lazy_fixture('remote_httpbin'),
-        pytest.lazy_fixture('httpbin'),
+        'httpbin',
+        'remote_httpbin',
+        'httpbin',
         True,
     ),
 ])
-def test_saved_session_cookies_on_redirect(tmp_path, initial_domain, first_request_domain, second_request_domain, expect_cookies):
+def test_saved_session_cookies_on_redirect(
+        tmp_path, initial_domain, first_request_domain, second_request_domain, expect_cookies, request):
+    initial_domain = request.getfixturevalue(initial_domain)
+    first_request_domain = request.getfixturevalue(first_request_domain)
+    second_request_domain = request.getfixturevalue(second_request_domain)
     http(
         '--session',
         str(tmp_path / 'session.json'),
@@ -216,7 +209,7 @@ def test_saved_session_cookies_on_redirect(tmp_path, initial_domain, first_reque
         str(tmp_path / 'session.json'),
         '--follow',
         first_request_domain + '/redirect-to',
-        f'url=={_stringify(second_request_domain)}/cookies'
+        f'url=={second_request_domain}/cookies'
     )
     if expect_cookies:
         expected_data = {'cookies': {'a': 'b'}}
