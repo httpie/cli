@@ -192,8 +192,16 @@ class MockEnvironment(Environment):
 
 
 class PersistentMockEnvironment(MockEnvironment):
-    def cleanup(self):
-        pass
+    def cleanup(self, *, force: bool = False):
+        if force:
+            self.devnull.close()
+            self.stdout.close()
+            self.stderr.close()
+            if self._orig_stdout and self._orig_stdout != self.stdout:
+                self._orig_stdout.close()
+            if self._orig_stderr and self.stderr != self._orig_stderr:
+                self._orig_stderr.close()
+            self.devnull.close()
 
 
 class BaseCLIResponse:

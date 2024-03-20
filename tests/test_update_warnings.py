@@ -197,7 +197,8 @@ def with_warnings(tmp_path):
     env = PersistentMockEnvironment()
     env.config['version_info_file'] = tmp_path / 'version.json'
     env.config['disable_update_warnings'] = False
-    return env
+    yield env
+    env.cleanup(force=True)
 
 
 @pytest.fixture
@@ -205,7 +206,8 @@ def without_warnings(tmp_path):
     env = PersistentMockEnvironment()
     env.config['version_info_file'] = tmp_path / 'version.json'
     env.config['disable_update_warnings'] = True
-    return env
+    yield env
+    env.cleanup(force=True)
 
 
 @pytest.fixture
