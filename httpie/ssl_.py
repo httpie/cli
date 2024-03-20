@@ -1,4 +1,5 @@
 import ssl
+import typing
 from typing import NamedTuple, Optional, Tuple, MutableMapping
 import json
 import os.path
@@ -37,16 +38,21 @@ class QuicCapabilityCache(
     See https://urllib3future.readthedocs.io/en/latest/advanced-usage.html#remembering-http-3-over-quic-support for
     the implementation guide."""
 
+    __file__ = os.path.join(DEFAULT_CONFIG_DIR, "quic.json")
+
     def __init__(self):
         self._cache = {}
         if not os.path.exists(DEFAULT_CONFIG_DIR):
             makedirs(DEFAULT_CONFIG_DIR, exist_ok=True)
-        if os.path.exists(os.path.join(DEFAULT_CONFIG_DIR, "quic.json")):
-            with open(os.path.join(DEFAULT_CONFIG_DIR, "quic.json"), "r") as fp:
-                self._cache = json.load(fp)
+        if os.path.exists(QuicCapabilityCache.__file__):
+            with open(QuicCapabilityCache.__file__, "r") as fp:
+                try:
+                    self._cache = json.load(fp)
+                except json.JSONDecodeError:  # if the file is corrupted (invalid json) then, ignore it.
+                    pass
 
     def save(self):
-        with open(os.path.join(DEFAULT_CONFIG_DIR, "quic.json"), "w+") as fp:
+        with open(QuicCapabilityCache.__file__, "w+") as fp:
             json.dump(self._cache, fp)
 
     def __contains__(self, item: Tuple[str, int]):
@@ -82,8 +88,11 @@ class HTTPieCertificate(NamedTuple):
     key_file: Optional[str] = None
     key_password: Optional[str] = None
 
-    def to_raw_cert(self):
-        """Synthesize a requests-compatible (2-item tuple of cert and key file)
+    def to_raw_cert(self) -> typing.Union[
+        typing.Tuple[typing.Optional[str], typing.Optional[str], typing.Optional[str]],  # with password
+        typing.Tuple[typing.Optional[str], typing.Optional[str]]  # without password
+    ]:
+        """Synthesize a niquests-compatible (2(or 3)-item tuple of cert, key file and optionally password)
         object from HTTPie's internal representation of a certificate."""
         if self.key_password:
             # Niquests support 3-tuple repr in addition to the 2-tuple repr

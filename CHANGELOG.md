@@ -16,12 +16,19 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - Added support for specifying the local port with `--local-port`. ([#1456](https://github.com/httpie/cli/issues/1456)) ([#1531](https://github.com/httpie/cli/pull/1531))
 - Added support for forcing either IPv4 or IPv6 to reach the remote HTTP server with `-6` or `-4`. ([#94](https://github.com/httpie/cli/issues/94)) ([#1531](https://github.com/httpie/cli/pull/1531))
 - Removed support for pyopenssl. ([#1531](https://github.com/httpie/cli/pull/1531))
+- Removed support for dead SSL protocols < TLS 1.0 (e.g. sslv3) as per pyopenssl removal. ([#1531](https://github.com/httpie/cli/pull/1531))
 - Dropped dependency on `requests_toolbelt` in favor of directly including `MultipartEncoder` into HTTPie due to its direct dependency to requests. ([#1531](https://github.com/httpie/cli/pull/1531))
 - Dropped dependency on `multidict` in favor of implementing an internal one due to often missing pre-built wheels. ([#1522](https://github.com/httpie/cli/issues/1522)) ([#1531](https://github.com/httpie/cli/pull/1531))
 - Fixed the case when multiple headers where concatenated in the response output. ([#1413](https://github.com/httpie/cli/issues/1413)) ([#1531](https://github.com/httpie/cli/pull/1531))
 - Fixed an edge case where HTTPie could be lead to believe data was passed in stdin, thus sending a POST by default. ([#1551](https://github.com/httpie/cli/issues/1551)) ([#1531](https://github.com/httpie/cli/pull/1531))
+  This fix has the particularity to consider 0 byte long stdin buffer as absent stdin. Empty stdin buffer will be ignored.
 - Slightly improved performance while downloading by setting chunk size to `-1` to retrieve packets as they arrive. ([#1531](https://github.com/httpie/cli/pull/1531))
 - Added support for using the system trust store to retrieve root CAs for verifying TLS certificates. ([#1531](https://github.com/httpie/cli/pull/1531))
+- Removed support for keeping the original casing of HTTP headers. This come from an outer constraint by newer protocols, namely HTTP/2+ that normalize header keys by default.
+  From the HTTPie user perspective, they are "prettified" on the output by default. e.g. "x-hello-world" is displayed as "X-Hello-World".
+
+The plugins are expected to work without any changes. The only caveat would be that certain plugin explicitly require `requests`.
+Future contributions may be made in order to relax the constraints where applicable.
 
 ## [3.2.2](https://github.com/httpie/cli/compare/3.2.1...3.2.2) (2022-05-19)
 

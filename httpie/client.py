@@ -8,21 +8,10 @@ from typing import Any, Dict, Callable, Iterable
 from urllib.parse import urlparse, urlunparse
 
 import niquests
-# to understand why this is required
-# see https://niquests.readthedocs.io/en/latest/community/faq.html#what-is-urllib3-future
-from niquests._compat import HAS_LEGACY_URLLIB3
-
-if not HAS_LEGACY_URLLIB3:
-    # noinspection PyPackageRequirements
-    import urllib3
-    from urllib3.util import SKIP_HEADER, SKIPPABLE_HEADERS, parse_url
-else:
-    # noinspection PyPackageRequirements
-    import urllib3_future as urllib3
-    from urllib3_future.util import SKIP_HEADER, SKIPPABLE_HEADERS, parse_url
 
 from . import __version__
 from .adapters import HTTPieHTTPAdapter
+from .compat import urllib3, SKIP_HEADER, SKIPPABLE_HEADERS, parse_url, Timeout
 from .cli.constants import HTTP_OPTIONS
 from .cli.dicts import HTTPHeadersDict
 from .cli.nested_json import unwrap_top_level_list_if_needed
@@ -99,9 +88,20 @@ def collect_messages(
         source_address=source_address,
     )
 
+    parsed_url = parse_url(args.url)
+
     if args.disable_http3 is False and args.force_http3 is True:
-        url = parse_url(args.url)
-        requests_session.quic_cache_layer[(url.host, url.port or 443)] = (url.host, url.port or 443)
+        requests_session.quic_cache_layer[(parsed_url.host, parsed_url.port or 443)] = (parsed_url.host, parsed_url.port or 443)
+    # well, this one is tricky. If we allow HTTP/3, and remote host was marked as QUIC capable
+    # but is not anymore, we may face an indefinite hang if timeout isn't set. This could surprise some user.
+    elif (
+        args.disable_http3 is False
+        and requests_session.quic_cache_layer.get((parsed_url.host, parsed_url.port or 443)) is not None
+        and send_kwargs["timeout"] is None
+    ):
+        # we only set the connect timeout, the rest is still indefinite.
+        send_kwargs["timeout"] = Timeout(connect=3)
+        setattr(args, "_failsafe_http3", True)
 
     if httpie_session:
         httpie_session.update_headers(request_kwargs['headers'])

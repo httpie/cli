@@ -21,14 +21,7 @@ import io
 import os
 from uuid import uuid4
 
-# to understand why this is required
-# see https://niquests.readthedocs.io/en/latest/community/faq.html#what-is-urllib3-future
-from niquests._compat import HAS_LEGACY_URLLIB3
-
-if HAS_LEGACY_URLLIB3:
-    from urllib3_future.fields import RequestField
-else:
-    from urllib3.fields import RequestField
+from ..compat import RequestField
 
 
 class MultipartEncoder(object):

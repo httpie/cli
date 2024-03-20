@@ -2,17 +2,6 @@ from time import monotonic
 
 import niquests
 
-# to understand why this is required
-# see https://niquests.readthedocs.io/en/latest/community/faq.html#what-is-urllib3-future
-from niquests._compat import HAS_LEGACY_URLLIB3
-
-if not HAS_LEGACY_URLLIB3:
-    from urllib3 import ConnectionInfo
-    from urllib3.util import SKIP_HEADER, SKIPPABLE_HEADERS
-else:
-    from urllib3_future import ConnectionInfo
-    from urllib3_future.util import SKIP_HEADER, SKIPPABLE_HEADERS
-
 from kiss_headers.utils import prettify_header_name
 
 from enum import Enum, auto
@@ -26,7 +15,7 @@ from .cli.constants import (
     OUT_RESP_HEAD,
     OUT_RESP_META
 )
-from .compat import cached_property
+from .compat import urllib3, SKIP_HEADER, SKIPPABLE_HEADERS, cached_property
 from .utils import split_cookies, parse_content_type_header
 
 ELAPSED_TIME_LABEL = 'Elapsed time'
@@ -152,7 +141,7 @@ class HTTPRequest(HTTPMessage):
 
     @property
     def metadata(self) -> str:
-        conn_info: ConnectionInfo = self._orig.conn_info
+        conn_info: urllib3.ConnectionInfo = self._orig.conn_info
 
         metadatum = f"Connected to: {conn_info.destination_address[0]} port {conn_info.destination_address[1]}\n"
 
