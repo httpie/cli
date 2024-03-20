@@ -12,11 +12,17 @@ from urllib3.util.ssl_ import (
     resolve_ssl_version,
 )
 
-
+# the minimum one may hope to negotiate with Python 3.7+ is tls1+
+# anything else would be unsupported.
 SSL_VERSION_ARG_MAPPING = {
+    'tls1': 'PROTOCOL_TLSv1',
+    'tls1.1': 'PROTOCOL_TLSv1_1',
     'tls1.2': 'PROTOCOL_TLSv1_2',
     'tls1.3': 'PROTOCOL_TLSv1_3',
 }
+# todo: we'll need to update this in preparation for Python 3.13+
+# could be a removal (after a long deprecation about constants
+# PROTOCOL_TLSv1, PROTOCOL_TLSv1_1, ...).
 AVAILABLE_SSL_VERSION_ARG_MAPPING = {
     arg: getattr(ssl, constant_name)
     for arg, constant_name in SSL_VERSION_ARG_MAPPING.items()
@@ -27,6 +33,9 @@ AVAILABLE_SSL_VERSION_ARG_MAPPING = {
 class QuicCapabilityCache(
     MutableMapping[Tuple[str, int], Optional[Tuple[str, int]]]
 ):
+    """This class will help us keep (persistent across runs) what hosts are QUIC capable.
+    See https://urllib3future.readthedocs.io/en/latest/advanced-usage.html#remembering-http-3-over-quic-support for
+    the implementation guide."""
 
     def __init__(self):
         self._cache = {}
@@ -77,6 +86,7 @@ class HTTPieCertificate(NamedTuple):
         """Synthesize a requests-compatible (2-item tuple of cert and key file)
         object from HTTPie's internal representation of a certificate."""
         if self.key_password:
+            # Niquests support 3-tuple repr in addition to the 2-tuple repr
             return self.cert_file, self.key_file, self.key_password
         return self.cert_file, self.key_file
 

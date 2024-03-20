@@ -8,6 +8,8 @@ from typing import Any, Dict, Callable, Iterable
 from urllib.parse import urlparse, urlunparse
 
 import niquests
+# to understand why this is required
+# see https://niquests.readthedocs.io/en/latest/community/faq.html#what-is-urllib3-future
 from niquests._compat import HAS_LEGACY_URLLIB3
 
 if not HAS_LEGACY_URLLIB3:
@@ -120,6 +122,10 @@ def collect_messages(
 
     hooks = None
 
+    # The hook set up bellow is crucial for HTTPie.
+    # It will help us yield the request before it is
+    # actually sent. This will permit us to know about
+    # the connection information for example.
     if prepared_request_readiness:
         hooks = {"pre_send": [prepared_request_readiness]}
 

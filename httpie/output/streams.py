@@ -91,7 +91,7 @@ class BaseStream(metaclass=ABCMeta):
 class RawStream(BaseStream):
     """The message is streamed in chunks with no processing."""
 
-    CHUNK_SIZE = -1
+    CHUNK_SIZE = -1  # '-1' means that we want to receive chunks exactly as they arrive.
     CHUNK_SIZE_BY_LINE = 1
 
     def __init__(self, chunk_size=CHUNK_SIZE, **kwargs):

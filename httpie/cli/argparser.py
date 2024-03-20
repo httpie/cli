@@ -175,7 +175,8 @@ class HTTPieArgumentParser(BaseHTTPieArgumentParser):
         self._process_pretty_options()
         self._process_format_options()
 
-        # bellow is a fix for detecting "false-or empty" stdin
+        # bellow is a fix for detecting "false-or empty" stdin.
+        # see https://github.com/httpie/cli/issues/1551 for more information.
         if self.has_stdin_data:
             read_event = threading.Event()
             observe_stdin_for_data_thread(env, self.env.stdin, read_event)

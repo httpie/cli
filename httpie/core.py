@@ -206,6 +206,8 @@ def program(args: argparse.Namespace, env: Environment) -> ExitStatus:
             downloader.pre_request(args.headers)
 
         def prepared_request_readiness(pr):
+            """This callback is meant to output the request part. It is triggered by
+            the underlying Niquests library just after establishing the connection."""
 
             oo = OutputOptions.from_message(
                 pr,
@@ -252,7 +254,11 @@ def program(args: argparse.Namespace, env: Environment) -> ExitStatus:
                     is_streamed_upload = not isinstance(message.body, (str, bytes))
                     do_write_body = not is_streamed_upload
                     force_separator = is_streamed_upload and env.stdout_isatty
+                # We're in a REQUEST message, we rather output the message
+                # in prepared_request_readiness because we want "message.conn_info"
+                # to be set appropriately. (e.g. know about HTTP protocol version, etc...)
                 if message.conn_info is None and not args.offline:
+                    # bellow variable will be accessed by prepared_request_readiness just after.
                     prev_with_body = output_options.body
                     continue
             else:

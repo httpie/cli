@@ -2,6 +2,8 @@ from time import monotonic
 
 import niquests
 
+# to understand why this is required
+# see https://niquests.readthedocs.io/en/latest/community/faq.html#what-is-urllib3-future
 from niquests._compat import HAS_LEGACY_URLLIB3
 
 if not HAS_LEGACY_URLLIB3:
@@ -109,6 +111,8 @@ class HTTPResponse(HTTPMessage):
         time_since_headers_parsed = monotonic() - self._orig._httpie_headers_parsed_at
         time_elapsed = time_to_parse_headers + time_since_headers_parsed
 
+        # metrics aren't guaranteed to be there. act with caution.
+        # see https://niquests.readthedocs.io/en/latest/user/advanced.html#event-hooks for more.
         if hasattr(self._orig, "conn_info") and self._orig.conn_info:
             if self._orig.conn_info.resolution_latency:
                 data[ELAPSED_DNS_RESOLUTION_LABEL] = str(round(self._orig.conn_info.resolution_latency.total_seconds(), 10)) + 's'
