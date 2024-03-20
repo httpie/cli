@@ -175,6 +175,11 @@ def collect_messages(
             httpie_session.remove_cookies(expired_cookies)
             httpie_session.save()
 
+    try:
+        requests_session.close()
+    except NotImplementedError:
+        pass
+
 
 def build_requests_session(
     verify: bool,
