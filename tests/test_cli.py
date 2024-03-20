@@ -51,6 +51,9 @@ class TestItemParsing:
         }
         assert 'bar@baz' in items.files
 
+        # ensure we close the fixture file
+        items.multipart_data['bar@baz'][1].close()
+
     @pytest.mark.parametrize('string, key, sep, value', [
         ('path=c:\\windows', 'path', '=', 'c:\\windows'),
         ('path=c:\\windows\\', 'path', '=', 'c:\\windows\\'),
