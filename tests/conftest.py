@@ -90,3 +90,10 @@ def remote_httpbin(_remote_httpbin_available):
     if _remote_httpbin_available:
         return 'http://' + REMOTE_HTTPBIN_DOMAIN
     pytest.skip(f'{REMOTE_HTTPBIN_DOMAIN} not resolvable')
+
+
+@pytest.fixture
+def remote_httpbin_secure(_remote_httpbin_available):
+    if _remote_httpbin_available:
+        return 'https://' + REMOTE_HTTPBIN_DOMAIN
+    pytest.skip(f'{REMOTE_HTTPBIN_DOMAIN} not resolvable')
