@@ -285,7 +285,7 @@ class TestMultipartFormDataFileUpload:
         assert r.count(boundary) == 4
 
     def test_multipart_custom_content_type_boundary_preserved(self, httpbin):
-        # Allow explicit nonsense niquests.
+        # Allow explicit nonsense requests.
         boundary_in_header = 'HEADER_BOUNDARY'
         boundary_in_body = 'BODY_BOUNDARY'
         r = http(

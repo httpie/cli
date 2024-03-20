@@ -92,7 +92,7 @@ def test_missing_auth(httpbin):
 
 
 def test_netrc(httpbin_both):
-    # This one gets handled by requests (no --auth, --auth-type present),
+    # This one gets handled by niquests (no --auth, --auth-type present),
     # that’s why we patch inside `niquests.sessions`.
     with mock.patch('niquests.sessions.get_netrc_auth') as get_netrc_auth:
         get_netrc_auth.return_value = ('httpie', 'password')

@@ -38,7 +38,7 @@ class TestIntegration:
             """"HTTP request handler."""
 
             def do_GET(self):
-                """Handle GET niquests."""
+                """Handle GET requests."""
                 # Craft multiple cookies
                 cookie = SimpleCookie()
                 cookie['hello'] = 'world'

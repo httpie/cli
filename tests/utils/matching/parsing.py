@@ -58,7 +58,6 @@ class OutputMatchingError(ValueError):
 def expect_tokens(tokens: Iterable[Expect], s: str):
     for token in tokens:
         s = expect_token(token, s)
-        # print(token, "OK")
     if s:
         raise OutputMatchingError(f'Unmatched remaining output for {tokens} in {s!r}')
 

@@ -1599,18 +1599,12 @@ $ http --meta pie.dev/delay/1
 ```
 
 ```console
-Connected to: 2a06:98c1:3120::2 port 443
-Connection secured using: TLSv1.3 with AES-256-GCM-SHA384
-Server certificate: commonName="pie.dev"; DNS="*.pie.dev"; DNS="pie.dev"
-Certificate validity: "Nov 11 01:14:24 2023 UTC" to "Feb 09 01:14:23 2024 UTC"
-Issuer: countryName="US"; organizationName="Let's Encrypt"; commonName="E1"
-Revocation status: Good
+Connected to: 2a06:98c1:3120::2 port 80
 
-Elapsed DNS: 0.11338s
-Elapsed established connection: 3.8e-05s
-Elapsed TLS handshake: 0.057503s
-Elapsed emitting request: 0.000275s
-Elapsed time: 0.292854214s
+Elapsed DNS: 0.047945s
+Elapsed established connection: 0.013063s
+Elapsed emitting request: 0.000115s
+Elapsed time: 1.1325035701s
 ```
 
 The [extra verbose `-vv` output](#extra-verbose-output) includes the meta section by default. You can also show it in combination with other parts of the exchange via [`--print=m`](#what-parts-of-the-http-exchange-should-be-printed). For example, here we print it together with the response headers:
@@ -1623,18 +1617,26 @@ $ https --print=hm pie.dev/get
 Connected to: 2a06:98c1:3120::2 port 443
 Connection secured using: TLSv1.3 with AES-256-GCM-SHA384
 Server certificate: commonName="pie.dev"; DNS="*.pie.dev"; DNS="pie.dev"
-Certificate validity: "Nov 11 01:14:24 2023 UTC" to "Feb 09 01:14:23 2024 UTC"
+Certificate validity: "Mar 08 00:16:33 2024 UTC" to "Jun 06 00:16:32 2024 UTC"
 Issuer: countryName="US"; organizationName="Let's Encrypt"; commonName="E1"
 Revocation status: Good
 
-HTTP/2 200 OK
+HTTP/3 200 OK
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Origin: *
+Alt-Svc: h3=":443"; ma=86400
+Cf-Cache-Status: DYNAMIC
+Cf-Ray: 867351f9cf37d4fe-CDG
+Content-Encoding: br
 Content-Type: application/json
+Date: Wed, 20 Mar 2024 05:32:11 GMT
+Server: cloudflare
 
-Elapsed DNS: 0.11338s
-Elapsed established connection: 3.8e-05s
-Elapsed TLS handshake: 0.057503s
-Elapsed emitting request: 0.000275s
-Elapsed time: 0.292854214s
+Elapsed DNS: 0.000682s
+Elapsed established connection: 1.7e-05s
+Elapsed TLS handshake: 0.043641s
+Elapsed emitting request: 0.000397s
+Elapsed time: 0.1677905799s
 ```
 
 
@@ -1876,7 +1878,7 @@ $ https --http3 pie.dev/get
 ```
 
 By default, HTTPie cannot negotiate HTTP/3 without a first HTTP/1.1, or HTTP/2 successful response unless the
-remote host specified a DNS HTTPS record that indicate its support.
+remote host specified a DNS HTTPS record that indicate its support (and by using a custom DNS resolver, see bellow section).
 
 The remote server yield its support for HTTP/3 in the Alt-Svc header, if present HTTPie will issue
 the successive requests via HTTP/3. You may use that argument in case the remote peer does not support
@@ -1893,7 +1895,7 @@ presented order to resolver given hostname.
 $ https --resolver "doh+cloudflare://" pie.dev/get
 ```
 
-To know more about DNS url and supported protocols, visit [Niquests documentation](https://niquests.readthedocs.io/en/stable/user/quickstart.html#dns-resolution).
+To know more about DNS url and supported protocols, visit the [Niquests documentation](https://niquests.readthedocs.io/en/stable/user/quickstart.html#dns-resolution).
 
 ### Forcing hostname to resolve with a manual entry
 
@@ -1928,13 +1930,13 @@ $ https --interface 172.17.0.1 pie.dev/get
 
 ## Local port
 
-You can choose to select the outgoing port manually by passing the `--local-port` flag.
+You can choose to select the outgoing (local) network port manually by passing the `--local-port` flag.
 
 ```bash
 $ https --local-port 5411 pie.dev/get
 ```
 
-or using a range.
+or using a range. (bellow example will pick a free port between 5000 and 10000)
 
 ```bash
 $ https --local-port 5000-10000 pie.dev/get
@@ -2123,13 +2125,23 @@ $ http --download https://github.com/httpie/cli/archive/master.tar.gz
 ```
 
 ```http
-HTTP/1.1 200 OK
-Content-Disposition: attachment; filename=httpie-master.tar.gz
-Content-Length: 257336
+HTTP/2 200 OK
+Access-Control-Allow-Origin: https://render.githubusercontent.com
+Content-Disposition: attachment; filename=cli-master.tar.gz
+Content-Security-Policy: default-src 'none'; style-src 'unsafe-inline'; sandbox
 Content-Type: application/x-gzip
+Cross-Origin-Resource-Policy: cross-origin
+Date: Wed, 20 Mar 2024 05:37:32 GMT
+Etag: "68a7a50930daac494551b4576eef285f86da741c9b4a0f3a1deeac9fce4e80d4"
+Strict-Transport-Security: max-age=31536000
+Vary: Authorization,Accept-Encoding,Origin
+X-Content-Type-Options: nosniff
+X-Frame-Options: deny
+X-Github-Request-Id: 9E06:20C449:55A32E:636ADA:65FA761C
+X-Xss-Protection: 1; mode=block
 
-Downloading 251.30 kB to "httpie-master.tar.gz"
-Done. 251.30 kB in 2.73862s (91.76 kB/s)
+Downloading to cli-master.tar.gz
+Done. 1.3 MB in 00:0.54267 (2.4 MB/s)
 ```
 
 ### Downloaded filename

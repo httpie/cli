@@ -4,8 +4,6 @@ import json
 import os.path
 from os import makedirs
 
-from niquests import Response
-
 from httpie.config import DEFAULT_CONFIG_DIR
 from httpie.adapters import HTTPAdapter
 # noinspection PyPackageRequirements
@@ -145,13 +143,6 @@ class HTTPieHTTPSAdapter(HTTPAdapter):
     @classmethod
     def get_default_ciphers_names(cls):
         return [cipher['name'] for cipher in cls._create_ssl_context(verify=False).get_ciphers()]
-
-    def send(
-        self,
-        *args,
-        **kwargs
-    ) -> Response:
-        return super().send(*args, **kwargs)
 
 
 def _is_key_file_encrypted(key_file):

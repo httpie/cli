@@ -168,7 +168,6 @@ def test_terminal_output_response_content_type_charset_with_stream(charset, text
         method=responses.GET,
         url=DUMMY_URL,
         body=f'<?xml version="1.0"?>\n<c>{text}</c>'.encode(charset),
-        # stream=True,
         content_type=f'text/xml; charset={charset.upper()}',
     )
     r = http('--pretty', pretty, '--stream', DUMMY_URL)
