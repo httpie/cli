@@ -130,6 +130,8 @@ class TestItemParsing:
         assert (items.files['file'][1].read().strip().
                 decode() == FILE_CONTENT)
 
+        items.files['file'][1].close()
+
     def test_multiple_file_fields_with_same_field_name(self):
         items = RequestItems.from_args([
             self.key_value_arg('file_field@' + FILE_PATH_ARG),
