@@ -215,6 +215,8 @@ class MultipartEncoder(object):
 
     def _next_part(self):
         try:
+            if self._current_part is not None:
+                self._current_part.close()
             p = self._current_part = next(self._iter_parts)
         except StopIteration:
             p = None
@@ -333,6 +335,12 @@ class Part(object):
         self.body = body
         self.headers_unread = True
         self.len = len(self.headers) + total_len(self.body)
+
+    def close(self):
+        if hasattr(self.body, "fd") and hasattr(self.body.fd, "close"):
+            self.body.fd.close()
+        elif hasattr(self.body, "close"):
+            self.body.close()
 
     @classmethod
     def from_field(cls, field, encoding):
