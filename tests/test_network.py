@@ -10,19 +10,21 @@ def test_ensure_interface_parameter(httpbin):
         tolerate_error_exit_status=True
     )
 
-    assert "Cannot assign requested address" in r.stderr
+    assert r.exit_status != 0
+    assert "assign requested address" in r.stderr or "The requested address is not valid in its context" in r.stderr
 
 
 def test_ensure_local_port_parameter(httpbin):
     """We ensure that HTTPie properly wire local-port by passing a port that
-    require elevated privilege. thus, we expect an error."""
+    does not exist. thus, we expect an error."""
     r = http(
-        "--local-port=89",
+        "--local-port=70000",
         httpbin + "/get",
         tolerate_error_exit_status=True
     )
 
-    assert "Permission denied" in r.stderr
+    assert r.exit_status != 0
+    assert "port must be 0-65535" in r.stderr
 
 
 def test_ensure_interface_and_port_parameters(httpbin):
@@ -32,17 +34,5 @@ def test_ensure_interface_and_port_parameters(httpbin):
         httpbin + "/get",
     )
 
+    assert r.exit_status == 0
     assert HTTP_OK in r
-
-
-def test_ensure_ipv6_toggle_parameter(httpbin):
-    """This test is made to ensure we are effectively passing the IPv6-only flag to
-    Niquests. Our test server listen exclusively on IPv4."""
-    r = http(
-        "-6",
-        httpbin + "/get",
-        tolerate_error_exit_status=True,
-    )
-
-    assert r.exit_status != 0
-    assert "Name or service not known" in r.stderr

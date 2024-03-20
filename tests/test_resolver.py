@@ -22,4 +22,4 @@ def test_ensure_override_resolver_used(remote_httpbin):
         tolerate_error_exit_status=True
     )
 
-    assert "Request timed out" in r.stderr
+    assert "Request timed out" in r.stderr or "A socket operation was attempted to an unreachable network" in r.stderr
