@@ -616,6 +616,17 @@ class HTTPieArgumentParser(BaseHTTPieArgumentParser):
     def error(self, message):
         """Prints a usage message incorporating the message to stderr and
         exits."""
+
+        # We shall release the files in that case
+        # the process is going to quit early anyway.
+        if hasattr(self.args, "multipart_data"):
+            for f in self.args.multipart_data:
+                if isinstance(self.args.multipart_data[f], tuple):
+                    self.args.multipart_data[f][1].close()
+                elif isinstance(self.args.multipart_data[f], list):
+                    for item in self.args.multipart_data[f]:
+                        item[1].close()
+
         self.print_usage(sys.stderr)
         self.env.rich_error_console.print(
             dedent(

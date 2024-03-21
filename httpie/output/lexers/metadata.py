@@ -36,7 +36,7 @@ class MetadataLexer(pygments.lexer.RegexLexer):
     tokens = {
         'root': [
             (
-                fr'({ELAPSED_TIME_LABEL}|{ELAPSED_DNS_RESOLUTION_LABEL}|{ELAPSED_REQUEST_SEND}|{ELAPSED_TLS_HANDSHAKE}|{ELAPSED_ESTABLISH_CONN})( *)(:)( *)(\d+\.[\de\-]+)(s)', pygments.lexer.bygroups(
+                fr'({ELAPSED_TIME_LABEL}|{ELAPSED_DNS_RESOLUTION_LABEL}|{ELAPSED_REQUEST_SEND}|{ELAPSED_TLS_HANDSHAKE}|{ELAPSED_ESTABLISH_CONN})( *)(:)( *)([\d]+[.\d]{{0,}})(s)', pygments.lexer.bygroups(
                     pygments.token.Name.Decorator,  # Name
                     pygments.token.Text,
                     pygments.token.Operator,  # Colon

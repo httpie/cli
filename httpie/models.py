@@ -103,16 +103,28 @@ class HTTPResponse(HTTPMessage):
         # metrics aren't guaranteed to be there. act with caution.
         # see https://niquests.readthedocs.io/en/latest/user/advanced.html#event-hooks for more.
         if hasattr(self._orig, "conn_info") and self._orig.conn_info:
-            if self._orig.conn_info.resolution_latency:
-                data[ELAPSED_DNS_RESOLUTION_LABEL] = str(round(self._orig.conn_info.resolution_latency.total_seconds(), 10)) + 's'
-            if self._orig.conn_info.established_latency:
-                data[ELAPSED_ESTABLISH_CONN] = str(round(self._orig.conn_info.established_latency.total_seconds(), 10)) + 's'
-            if self._orig.conn_info.tls_handshake_latency:
-                data[ELAPSED_TLS_HANDSHAKE] = str(round(self._orig.conn_info.tls_handshake_latency.total_seconds(), 10)) + 's'
-            if self._orig.conn_info.request_sent_latency:
-                data[ELAPSED_REQUEST_SEND] = str(round(self._orig.conn_info.request_sent_latency.total_seconds(), 10)) + 's'
+            if self._orig.conn_info.resolution_latency is not None:
+                if self._orig.conn_info.resolution_latency:
+                    data[ELAPSED_DNS_RESOLUTION_LABEL] = f"{round(self._orig.conn_info.resolution_latency.total_seconds(), 10):6f}s"
+                else:
+                    data[ELAPSED_DNS_RESOLUTION_LABEL] = "0s"
+            if self._orig.conn_info.established_latency is not None:
+                if self._orig.conn_info.established_latency:
+                    data[ELAPSED_ESTABLISH_CONN] = f"{round(self._orig.conn_info.established_latency.total_seconds(), 10):6f}s"
+                else:
+                    data[ELAPSED_ESTABLISH_CONN] = "0s"
+            if self._orig.conn_info.tls_handshake_latency is not None:
+                if self._orig.conn_info.tls_handshake_latency:
+                    data[ELAPSED_TLS_HANDSHAKE] = f"{round(self._orig.conn_info.tls_handshake_latency.total_seconds(), 10):6f}s"
+                else:
+                    data[ELAPSED_TLS_HANDSHAKE] = "0s"
+            if self._orig.conn_info.request_sent_latency is not None:
+                if self._orig.conn_info.request_sent_latency:
+                    data[ELAPSED_REQUEST_SEND] = f"{round(self._orig.conn_info.request_sent_latency.total_seconds(), 10):6f}s"
+                else:
+                    data[ELAPSED_REQUEST_SEND] = "0s"
 
-        data[ELAPSED_TIME_LABEL] = str(round(time_elapsed, 10)) + 's'
+        data[ELAPSED_TIME_LABEL] = f"{round(time_elapsed, 10):6f}s"
 
         return '\n'.join(
             f'{key}: {value}'

@@ -19,6 +19,12 @@ def test_meta_extended_tls(remote_httpbin_secure):
     assert 'Issuer' in r
     assert 'Revocation status' in r
 
+    # If this fail, you missed two extraneous RC after the metadata render.
+    # see output/streams.py L89
+    # why do we need two? short story, in case of redirect, expect metadata to appear multiple times,
+    # and we don't want them glued to the request line for example.
+    assert str(r).endswith("\n\n")
+
 
 @pytest.mark.parametrize('style', ['auto', 'fruity', *PIE_STYLE_NAMES])
 def test_meta_elapsed_time_colors(httpbin, style):

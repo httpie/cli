@@ -157,6 +157,13 @@ def collect_messages(
                 **send_kwargs,
             )
             if args.max_headers and len(response.headers) > args.max_headers:
+                try:
+                    requests_session.close()
+                    # we consume the content to allow the connection to be put back into the pool, and closed!
+                    response.content
+                except NotImplementedError:  # We allow custom transports that may not implement close.
+                    pass
+
                 raise niquests.ConnectionError(f"got more than {args.max_headers} headers")
             response._httpie_headers_parsed_at = monotonic()
             expired_cookies += get_expired_cookies(
@@ -183,7 +190,7 @@ def collect_messages(
 
     try:
         requests_session.close()
-    except NotImplementedError:
+    except NotImplementedError:  # We allow custom transports that may not implement close.
         pass
 
 

@@ -86,6 +86,7 @@ class BaseStream(metaclass=ABCMeta):
                 yield b'\n\n'
 
             yield self.get_metadata()
+            yield b'\n\n'
 
 
 class RawStream(BaseStream):
