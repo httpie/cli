@@ -18,6 +18,7 @@ def test_ensure_override_resolver_used(remote_httpbin):
     """Just an additional check to ensure we are wired properly to Niquests resolver parameter."""
     r = http(
         "--resolver=pie.dev:240.0.0.0",  # override DNS response to TARPIT net addr.
+        "--disable-http3",
         remote_httpbin + "/get",
         tolerate_error_exit_status=True
     )

@@ -97,10 +97,11 @@ def collect_messages(
     elif (
         args.disable_http3 is False
         and requests_session.quic_cache_layer.get((parsed_url.host, parsed_url.port or 443)) is not None
-        and send_kwargs["timeout"] is None
+        and args.force_http3 is False
     ):
         # we only set the connect timeout, the rest is still indefinite.
-        send_kwargs["timeout"] = Timeout(connect=3)
+        if send_kwargs["timeout"] is None:
+            send_kwargs["timeout"] = Timeout(connect=3)
         setattr(args, "_failsafe_http3", True)
 
     if httpie_session:
