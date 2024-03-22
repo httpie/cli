@@ -853,7 +853,8 @@ network.add_argument(
     By default, HTTPie use the system DNS through Python standard library.
     You can specify an alternative DNS server to be used. (e.g. doh://cloudflare-dns.com or doh://google.dns).
     You can specify multiple resolvers with different protocols. The environment
-    variable $NIQUESTS_DNS_URL is supported as well.
+    variable $NIQUESTS_DNS_URL is supported as well. This flag also support overriding DNS resolution
+    e.g. passing "pie.dev:1.1.1.1" will resolve pie.dev to 1.1.1.1 IPv4.
 
     """
 )

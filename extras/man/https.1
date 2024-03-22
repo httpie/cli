@@ -1,5 +1,5 @@
 .\" This file is auto-generated from the parser declaration in httpie/cli/definition.py by extras/scripts/generate_man_pages.py.
-.TH https 1 "2022-05-06" "HTTPie 3.2.2" "HTTPie Manual"
+.TH https 1 "2024-01-01" "HTTPie 4.0.0.b1" "HTTPie Manual"
 .SH NAME
 https
 .SH SYNOPSIS
@@ -427,6 +427,18 @@ and $HTTPS_proxy are supported as well.
 
 
 
+.IP "\fB\,--ipv6\/\fR, \fB\,-6\/\fR"
+
+
+Force using a IPv6 address to reach the remote peer.
+
+
+.IP "\fB\,--ipv4\/\fR, \fB\,-4\/\fR"
+
+
+Force using a IPv4 address to reach the remote peer.
+
+
 .IP "\fB\,--follow\/\fR, \fB\,-F\/\fR"
 
 
@@ -482,6 +494,54 @@ Bypass dot segment (/../ or /./) URL squashing.
 
 
 Enable streaming via chunked transfer encoding. The Transfer-Encoding header is set to chunked.
+
+
+.IP "\fB\,--disable-http2\/\fR"
+
+
+Disable the HTTP/2 protocol.
+
+
+.IP "\fB\,--disable-http3\/\fR"
+
+
+Disable the HTTP/3 over QUIC protocol.
+
+
+.IP "\fB\,--http3\/\fR"
+
+
+By default, HTTPie cannot negotiate HTTP/3 without a first HTTP/1.1, or HTTP/2 successful response unless the
+remote host specified a DNS HTTPS record that indicate its support.
+
+The remote server yield its support for HTTP/3 in the Alt-Svc header, if present HTTPie will issue
+the successive requests via HTTP/3. You may use that argument in case the remote peer does not support
+either HTTP/1.1 or HTTP/2.
+
+
+
+.IP "\fB\,--resolver\/\fR"
+
+
+By default, HTTPie use the system DNS through Python standard library.
+You can specify an alternative DNS server to be used. (e.g. doh://cloudflare-dns.com or doh://google.dns).
+You can specify multiple resolvers with different protocols. The environment
+variable $NIQUESTS_DNS_URL is supported as well. This flag also support overriding DNS resolution
+e.g. passing \[dq]pie.dev:1.1.1.1\[dq] will resolve pie.dev to 1.1.1.1 IPv4.
+
+
+
+.IP "\fB\,--interface\/\fR"
+
+
+Bind to a specific network interface.
+
+
+.IP "\fB\,--local-port\/\fR"
+
+
+It can be either a port range (e.g. \[dq]11221-14555\[dq]) or a single port.
+Some port may require root privileges (e.g. < 1024).
 
 
 .PP
