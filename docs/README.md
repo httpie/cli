@@ -1601,10 +1601,10 @@ $ http --meta pie.dev/delay/1
 ```console
 Connected to: 2a06:98c1:3120::2 port 80
 
-Elapsed DNS: 0.047945s
-Elapsed established connection: 0.013063s
-Elapsed emitting request: 0.000115s
-Elapsed time: 1.1325035701s
+Elapsed DNS: 0.000833s
+Elapsed established connection: 0.020144s
+Elapsed emitting request: 0.000121s
+Elapsed time: 1.080282s
 ```
 
 The [extra verbose `-vv` output](#extra-verbose-output) includes the meta section by default. You can also show it in combination with other parts of the exchange via [`--print=m`](#what-parts-of-the-http-exchange-should-be-printed). For example, here we print it together with the response headers:
@@ -1632,11 +1632,11 @@ Content-Type: application/json
 Date: Wed, 20 Mar 2024 05:32:11 GMT
 Server: cloudflare
 
-Elapsed DNS: 0.000682s
-Elapsed established connection: 1.7e-05s
-Elapsed TLS handshake: 0.043641s
-Elapsed emitting request: 0.000397s
-Elapsed time: 0.1677905799s
+Elapsed DNS: 0.000629s
+Elapsed established connection: 0.000013s
+Elapsed TLS handshake: 0.043979s
+Elapsed emitting request: 0.000257s
+Elapsed time: 0.159567s
 ```
 
 
