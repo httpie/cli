@@ -135,7 +135,8 @@ def _http_server():
     thread = threading.Thread(target=server.serve_forever)
     thread.start()
     yield server
-    server.shutdown()
+    server.socket.close()
+    server.shutdown()  # shutdown seems only to stop the thread, not closing the socket.
     thread.join()
 
 

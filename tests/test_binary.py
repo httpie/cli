@@ -1,5 +1,5 @@
 """Tests for dealing with binary request and response data."""
-import requests
+import niquests
 
 from .fixtures import BIN_FILE_PATH, BIN_FILE_CONTENT, BIN_FILE_PATH_ARG
 from httpie.output.streams import BINARY_SUPPRESSED_NOTICE
@@ -46,5 +46,5 @@ class TestBinaryResponseData:
         env = MockEnvironment(stdin_isatty=True, stdout_isatty=False)
         url = httpbin + '/bytes/1024?seed=1'
         r = http('GET', url, env=env)
-        expected = requests.get(url).content
+        expected = niquests.get(url).content
         assert r == expected

@@ -1,12 +1,12 @@
 import os
 import tempfile
 import time
-import requests
+import niquests
 from unittest import mock
 from urllib.request import urlopen
 
 import pytest
-from requests.structures import CaseInsensitiveDict
+from niquests.structures import CaseInsensitiveDict
 
 from httpie.downloads import (
     parse_content_range, filename_from_content_disposition, filename_from_url,
@@ -15,7 +15,7 @@ from httpie.downloads import (
 from .utils import http, MockEnvironment
 
 
-class Response(requests.Response):
+class Response(niquests.Response):
     # noinspection PyDefaultArgument
     def __init__(self, url, headers={}, status_code=200):
         self.url = url

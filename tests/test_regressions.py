@@ -30,7 +30,6 @@ def test_output_devnull(httpbin):
 
 def test_verbose_redirected_stdout_separator(httpbin):
     """
-
     <https://github.com/httpie/cli/issues/1006>
     """
     r = http(

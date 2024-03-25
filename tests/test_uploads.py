@@ -1,9 +1,11 @@
 import os
 import json
+import platform
 import sys
 import subprocess
 import time
 import contextlib
+
 import httpie.__main__ as main
 
 import pytest
@@ -143,7 +145,14 @@ def test_reading_from_stdin(httpbin, wait):
 
 @pytest.mark.requires_external_processes
 @pytest.mark.skipif(is_windows, reason="Windows doesn't support select() calls into files")
+@pytest.mark.xfail(
+    platform.system() == "Darwin" and os.environ.get("CI") is not None,
+    reason="GitHub CI and MacOS raises random failures",
+    strict=False,
+)
 def test_stdin_read_warning(httpbin):
+    """This test is flaky. Expect random failure in the CI under MacOS.
+    It's mainly due to the poor VM performance."""
     with stdin_processes(httpbin) as (process_1, process_2):
         # Wait before sending any data
         time.sleep(1)

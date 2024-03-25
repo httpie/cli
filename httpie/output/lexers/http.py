@@ -66,7 +66,7 @@ class SimplifiedHTTPLexer(pygments.lexer.RegexLexer):
     tokens = {
         'root': [
             # Request-Line
-            (r'([A-Z]+)( +)([^ ]+)( +)(HTTP)(/)(\d+\.\d+)',
+            (r'([A-Z]+)( +)([^ ]+)( +)(HTTP)(/)([0-9].?[0-9]?)',
              pygments.lexer.bygroups(
                  request_method,
                  pygments.token.Text,
@@ -77,7 +77,7 @@ class SimplifiedHTTPLexer(pygments.lexer.RegexLexer):
                  pygments.token.Number
              )),
             # Response Status-Line
-            (r'(HTTP)(/)(\d+\.\d+)( +)(.+)',
+            (r'(HTTP)(/)([0-9].?[0-9]?)( +)(.+)',
              pygments.lexer.bygroups(
                  pygments.token.Keyword.Reserved,  # 'HTTP'
                  pygments.token.Operator,  # '/'

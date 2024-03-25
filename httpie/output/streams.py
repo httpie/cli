@@ -5,7 +5,7 @@ from typing import Callable, Iterable, Optional, Union
 from .processing import Conversion, Formatting
 from ..context import Environment
 from ..encoding import smart_decode, smart_encode, UTF8
-from ..models import HTTPMessage, OutputOptions
+from ..models import HTTPMessage, OutputOptions, RequestsMessageKind
 from ..utils import parse_content_type_header
 
 
@@ -62,6 +62,10 @@ class BaseStream(metaclass=ABCMeta):
 
     def __iter__(self) -> Iterable[bytes]:
         """Return an iterator over `self.msg`."""
+        if self.output_options.meta and self.output_options.kind is RequestsMessageKind.REQUEST:
+            yield self.get_metadata()
+            yield b'\n\n'
+
         if self.output_options.headers:
             yield self.get_headers()
             yield b'\r\n\r\n'
@@ -77,7 +81,7 @@ class BaseStream(metaclass=ABCMeta):
                     yield b'\n'
                 yield e.message
 
-        if self.output_options.meta:
+        if self.output_options.meta and self.output_options.kind is RequestsMessageKind.RESPONSE:
             if self.output_options.body:
                 yield b'\n\n'
 
@@ -88,7 +92,7 @@ class BaseStream(metaclass=ABCMeta):
 class RawStream(BaseStream):
     """The message is streamed in chunks with no processing."""
 
-    CHUNK_SIZE = 1024 * 100
+    CHUNK_SIZE = -1  # '-1' means that we want to receive chunks exactly as they arrive.
     CHUNK_SIZE_BY_LINE = 1
 
     def __init__(self, chunk_size=CHUNK_SIZE, **kwargs):

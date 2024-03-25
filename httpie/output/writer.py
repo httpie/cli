@@ -1,5 +1,5 @@
 import errno
-import requests
+import niquests
 from typing import Any, Dict, IO, Optional, TextIO, Tuple, Type, Union
 
 from ..cli.dicts import HTTPHeadersDict
@@ -105,7 +105,7 @@ def write_raw_data(
     headers: Optional[HTTPHeadersDict] = None,
     stream_kwargs: Optional[Dict[str, Any]] = None
 ):
-    msg = requests.PreparedRequest()
+    msg = niquests.PreparedRequest()
     msg.is_body_upload_chunk = True
     msg.body = data
     msg.headers = headers or HTTPHeadersDict()

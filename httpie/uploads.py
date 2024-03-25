@@ -3,18 +3,16 @@ import os
 import zlib
 import functools
 import threading
-from typing import Any, Callable, IO, Iterable, Optional, Tuple, Union, TYPE_CHECKING
+from typing import Any, Callable, IO, Iterable, Optional, Tuple, Union
 from urllib.parse import urlencode
 
-import requests
-from requests.utils import super_len
-
-if TYPE_CHECKING:
-    from requests_toolbelt import MultipartEncoder
+import niquests
+from niquests.utils import super_len
 
 from .context import Environment
 from .cli.dicts import MultipartRequestDataDict, RequestDataDict
 from .compat import is_windows
+from .internal.encoder import MultipartEncoder
 
 
 class ChunkedStream:
@@ -172,7 +170,6 @@ def _prepare_file_for_upload(
         )
 
     if chunked:
-        from requests_toolbelt import MultipartEncoder
         if isinstance(file, MultipartEncoder):
             return ChunkedMultipartUploadStream(
                 encoder=file,
@@ -232,7 +229,6 @@ def get_multipart_data_and_content_type(
     boundary: str = None,
     content_type: str = None,
 ) -> Tuple['MultipartEncoder', str]:
-    from requests_toolbelt import MultipartEncoder
 
     encoder = MultipartEncoder(
         fields=data.items(),
@@ -250,7 +246,7 @@ def get_multipart_data_and_content_type(
 
 
 def compress_request(
-    request: requests.PreparedRequest,
+    request: niquests.PreparedRequest,
     always: bool,
 ):
     deflater = zlib.compressobj()
