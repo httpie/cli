@@ -13,7 +13,8 @@ def test_should_not_do_http1_by_default(remote_httpbin_secure):
 
 def test_disable_http2n3(remote_httpbin_secure):
     r = http(
-        "--verify=no",
+        # Only for DEV environment!
+        "--verify=no",  # we have REQUESTS_CA_BUNDLE environment set, so we must disable ext verify.
         '--disable-http2',
         '--disable-http3',
         remote_httpbin_secure + '/get'
