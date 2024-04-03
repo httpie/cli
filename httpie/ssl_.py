@@ -1,11 +1,10 @@
 import ssl
 import typing
+from pathlib import Path
 from typing import NamedTuple, Optional, Tuple, MutableMapping
 import json
 import os.path
-from os import makedirs
 
-from httpie.config import DEFAULT_CONFIG_DIR
 from httpie.adapters import HTTPAdapter
 # noinspection PyPackageRequirements
 from urllib3.util.ssl_ import (
@@ -38,21 +37,18 @@ class QuicCapabilityCache(
     See https://urllib3future.readthedocs.io/en/latest/advanced-usage.html#remembering-http-3-over-quic-support for
     the implementation guide."""
 
-    __file__ = os.path.join(DEFAULT_CONFIG_DIR, "quic.json")
-
-    def __init__(self):
+    def __init__(self, path: Path):
+        self._path = path
         self._cache = {}
-        if not os.path.exists(DEFAULT_CONFIG_DIR):
-            makedirs(DEFAULT_CONFIG_DIR, exist_ok=True)
-        if os.path.exists(QuicCapabilityCache.__file__):
-            with open(QuicCapabilityCache.__file__, "r") as fp:
+        if os.path.exists(path):
+            with open(path, "r") as fp:
                 try:
                     self._cache = json.load(fp)
                 except json.JSONDecodeError:  # if the file is corrupted (invalid json) then, ignore it.
                     pass
 
     def save(self):
-        with open(QuicCapabilityCache.__file__, "w+") as fp:
+        with open(self._path, "w") as fp:
             json.dump(self._cache, fp)
 
     def __contains__(self, item: Tuple[str, int]):

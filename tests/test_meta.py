@@ -11,7 +11,11 @@ def test_meta_elapsed_time(httpbin):
 
 
 def test_meta_extended_tls(remote_httpbin_secure):
-    r = http('--verify=no', '--meta', remote_httpbin_secure + '/get')
+    # using --verify=no may cause the certificate information not to display with Python < 3.10
+    # it is guaranteed to be there when using HTTP/3 over QUIC. That's why we set the '--http3' flag.
+    # it's a known CPython limitation with getpeercert(binary_form=False).
+    r = http('--verify=no', '--http3', '--meta', remote_httpbin_secure + '/get')
+
     assert 'Connected to' in r
     assert 'Connection secured using' in r
     assert 'Server certificate' in r

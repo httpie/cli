@@ -26,7 +26,6 @@ from .status import ExitStatus, http_status_to_exit_status
 from .utils import unwrap_context
 from .internal.update_warnings import check_updates
 from .internal.daemon_runner import is_daemon_mode, run_daemon_task
-from .ssl_ import QuicCapabilityCache
 
 
 # noinspection PyDefaultArgument
@@ -119,7 +118,7 @@ def raw_main(
             if hasattr(parsed_args, "_failsafe_http3"):
                 env.log_error(
                     f'Unable to connect. Was the remote specified HTTP/3 compatible but is not anymore? '
-                    f'Remove "{QuicCapabilityCache.__file__}" to clear it out. Or set --disable-http3 flag.'
+                    f'Remove "{env.config.quic_file}" to clear it out. Or set --disable-http3 flag.'
                 )
             else:
                 env.log_error(f'Request timed out ({parsed_args.timeout}s).')

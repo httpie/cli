@@ -149,7 +149,7 @@ class Config(BaseConfigDict):
     def default_options(self) -> list:
         return self['default_options']
 
-    def _configured_path(self, config_option: str, default: str) -> None:
+    def _configured_path(self, config_option: str, default: str) -> Path:
         return Path(
             self.get(config_option, self.directory / default)
         ).expanduser().resolve()
@@ -161,6 +161,10 @@ class Config(BaseConfigDict):
     @property
     def version_info_file(self) -> Path:
         return self._configured_path('version_info_file', 'version_info.json')
+
+    @property
+    def quic_file(self) -> Path:
+        return self._configured_path('quic_file', 'quic.json')
 
     @property
     def developer_mode(self) -> bool:

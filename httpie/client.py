@@ -2,6 +2,7 @@ import argparse
 import json
 import sys
 import typing
+from pathlib import Path
 from random import randint
 from time import monotonic
 from typing import Any, Dict, Callable, Iterable
@@ -86,6 +87,7 @@ def collect_messages(
         disable_ipv6=args.ipv4,
         disable_ipv4=args.ipv6,
         source_address=source_address,
+        quic_cache=env.config.quic_file,
     )
 
     parsed_url = parse_url(args.url)
@@ -205,9 +207,10 @@ def build_requests_session(
     disable_ipv4: bool = False,
     disable_ipv6: bool = False,
     source_address: typing.Tuple[str, int] = None,
+    quic_cache: typing.Optional[Path] = None,
 ) -> niquests.Session:
     requests_session = niquests.Session()
-    requests_session.quic_cache_layer = QuicCapabilityCache()
+    requests_session.quic_cache_layer = QuicCapabilityCache(quic_cache)
 
     if resolver:
         resolver_rebuilt = []
