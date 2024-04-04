@@ -22,6 +22,7 @@ FILE_PATH = FIXTURES_ROOT / 'test.txt'
 JSON_FILE_PATH = FIXTURES_ROOT / 'test.json'
 JSON_WITH_DUPE_KEYS_FILE_PATH = FIXTURES_ROOT / 'test_with_dupe_keys.json'
 BIN_FILE_PATH = FIXTURES_ROOT / 'test.bin'
+UTF8_IN_NAME_FILE_PATH = FIXTURES_ROOT / '天狗.txt'
 
 XML_FILES_PATH = FIXTURES_ROOT / 'xmldata'
 XML_FILES_VALID = list((XML_FILES_PATH / 'valid').glob('*_raw.xml'))

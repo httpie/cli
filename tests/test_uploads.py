@@ -18,7 +18,7 @@ from .utils import (
     MockEnvironment, StdinBytesIO, http,
     HTTP_OK,
 )
-from .fixtures import FILE_PATH_ARG, FILE_PATH, FILE_CONTENT
+from .fixtures import FILE_PATH_ARG, FILE_PATH, FILE_CONTENT, UTF8_IN_NAME_FILE_PATH
 
 MAX_RESPONSE_WAIT_TIME = 5
 
@@ -262,6 +262,18 @@ class TestMultipartFormDataFileUpload:
         assert HTTP_OK in r
         assert FORM_CONTENT_TYPE not in r
         assert 'multipart/form-data' in r
+
+    def test_multipart_with_rfc2231(self, httpbin):
+        """Non ascii filename should be encoded properly, following RFC2231, even if it's said
+        to be half obsolete. HTTP headers don't support officially UTF-8! In 2024..."""
+        r = http(
+            '--verbose',
+            '--multipart',
+            httpbin + '/post',
+            f'my_file@{UTF8_IN_NAME_FILE_PATH}',
+        )
+        assert HTTP_OK in r
+        assert "filename*=utf-8\'\'%E5%A4%A9%E7%8B%97.txt" in r
 
     def test_form_multipart_custom_boundary(self, httpbin):
         boundary = 'HTTPIE_FTW'

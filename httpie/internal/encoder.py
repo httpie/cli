@@ -21,7 +21,7 @@ import io
 import os
 from uuid import uuid4
 
-from ..compat import RequestField
+from ..compat import RequestField, format_header_param_rfc2231
 
 
 class MultipartEncoder(object):
@@ -239,7 +239,8 @@ class MultipartEncoder(object):
                 name=k,
                 data=file_pointer,
                 filename=file_name,
-                headers=file_headers
+                headers=file_headers,
+                header_formatter=format_header_param_rfc2231
             )
 
             field.make_multipart(content_type=file_type)
