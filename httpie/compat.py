@@ -16,11 +16,19 @@ if not HAS_LEGACY_URLLIB3:
     import urllib3  # noqa: F401
     from urllib3.util import SKIP_HEADER, SKIPPABLE_HEADERS, parse_url, Timeout  # noqa: F401
     from urllib3.fields import RequestField  # noqa: F401
+    from urllib3.util.ssl_ import (  # noqa: F401
+        create_urllib3_context,
+        resolve_ssl_version,
+    )
 else:
     # noinspection PyPackageRequirements
     import urllib3_future as urllib3  # noqa: F401
     from urllib3_future.util import SKIP_HEADER, SKIPPABLE_HEADERS, parse_url, Timeout  # noqa: F401
     from urllib3_future.fields import RequestField  # noqa: F401
+    from urllib3_future.util.ssl_ import (  # noqa: F401
+        create_urllib3_context,
+        resolve_ssl_version,
+    )
 
 # Request does not carry the original policy attached to the
 # cookie jar, so until it is resolved we change the global cookie

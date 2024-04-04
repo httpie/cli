@@ -6,11 +6,7 @@ import json
 import os.path
 
 from httpie.adapters import HTTPAdapter
-# noinspection PyPackageRequirements
-from urllib3.util.ssl_ import (
-    create_urllib3_context,
-    resolve_ssl_version,
-)
+from .compat import create_urllib3_context, resolve_ssl_version
 
 # the minimum one may hope to negotiate with Python 3.7+ is tls1+
 # anything else would be unsupported.
