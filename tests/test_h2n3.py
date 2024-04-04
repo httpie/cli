@@ -1,6 +1,8 @@
 import pytest
 import json
 
+from httpie.ssl_ import QuicCapabilityCache
+
 from .utils import HTTP_OK, http, PersistentMockEnvironment
 
 
@@ -75,3 +77,33 @@ def test_ensure_quic_cache(remote_httpbin_secure, with_quic_cache_persistent):
 
     assert len(cache) == 1
     assert "pie.dev" in list(cache.keys())[0]
+
+
+def test_h3_not_compatible_anymore(remote_httpbin_secure, with_quic_cache_persistent):
+    tmp_path = with_quic_cache_persistent.config['quic_file']
+
+    cache = QuicCapabilityCache(tmp_path)
+
+    # doing a __setitem__ should trigger save automatically!
+    cache[("pie.dev", 443)] = ("pie.dev", 61443)  # nothing listen on 61443!
+
+    # without timeout
+    r = http(
+        "--verify=no",
+        remote_httpbin_secure + '/get',
+        env=with_quic_cache_persistent,
+        tolerate_error_exit_status=True
+    )
+
+    assert "Unable to connect. Was the remote specified HTTP/3 compatible but is not anymore?" in r.stderr
+
+    # with timeout
+    r = http(
+        "--verify=no",
+        "--timeout=1",
+        remote_httpbin_secure + '/get',
+        env=with_quic_cache_persistent,
+        tolerate_error_exit_status=True
+    )
+
+    assert "Unable to connect. Was the remote specified HTTP/3 compatible but is not anymore?" in r.stderr
