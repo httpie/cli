@@ -41,8 +41,7 @@ def _fetch_updates(env: Environment) -> str:
     file = env.config.version_info_file
     data = _read_data_error_free(file)
 
-    response = niquests.get(PACKAGE_INDEX_LINK, verify=False)
-    response.raise_for_status()
+    response = niquests.get(PACKAGE_INDEX_LINK).raise_for_status()
 
     data.setdefault('last_warned_date', None)
     data['last_fetched_date'] = datetime.now().isoformat()
