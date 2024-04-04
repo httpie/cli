@@ -210,7 +210,9 @@ def build_requests_session(
     quic_cache: typing.Optional[Path] = None,
 ) -> niquests.Session:
     requests_session = niquests.Session()
-    requests_session.quic_cache_layer = QuicCapabilityCache(quic_cache)
+
+    if quic_cache is not None:
+        requests_session.quic_cache_layer = QuicCapabilityCache(quic_cache)
 
     if resolver:
         resolver_rebuilt = []
