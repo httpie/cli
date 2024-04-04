@@ -1,3 +1,4 @@
+import os.path
 from pathlib import Path
 
 import pytest
@@ -21,6 +22,20 @@ def test_default_options(httpbin):
     assert r.json['form'] == {
         "foo": "bar"
     }
+
+
+def test_config_dir_is_created():
+    dir_path = str(get_default_config_dir()) + "--fake"
+
+    try:
+        os.rmdir(dir_path)
+    except FileNotFoundError:
+        pass
+
+    assert not os.path.exists(dir_path)
+    Config(dir_path)
+    assert os.path.exists(dir_path)
+    os.rmdir(dir_path)
 
 
 def test_config_file_not_valid(httpbin):

@@ -37,16 +37,34 @@ def _read_data_error_free(file: Path) -> Any:
         return {}
 
 
-def _fetch_updates(env: Environment) -> str:
+def _fetch_updates(env: Environment) -> None:
     file = env.config.version_info_file
     data = _read_data_error_free(file)
 
-    response = niquests.get(PACKAGE_INDEX_LINK)
-    response.raise_for_status()
+    try:
+        # HTTPie have a server that can return latest versions for various
+        # package channels, we shall attempt to retrieve this information once in a while
+        if hasattr(env.args, "verify"):
+            if env.args.verify.lower() in {"yes", "true", "no", "false"}:
+                verify = env.args.verify.lower() in {"yes", "true"}
+            else:
+                verify = env.args.verify
+        else:
+            verify = True
+
+        response = niquests.get(PACKAGE_INDEX_LINK, verify=verify)
+        response.raise_for_status()
+        versions = response.json()
+    except (niquests.exceptions.ConnectionError, niquests.exceptions.HTTPError):
+        # in case of an error, let's ignore to avoid looping indefinitely.
+        # (spawn daemon background task maybe_fetch_update)
+        versions = {
+            BUILD_CHANNEL: httpie.__version__
+        }
 
     data.setdefault('last_warned_date', None)
     data['last_fetched_date'] = datetime.now().isoformat()
-    data['last_released_versions'] = response.json()
+    data['last_released_versions'] = versions
 
     with open_with_lockfile(file, 'w') as stream:
         json.dump(data, stream)
@@ -54,7 +72,7 @@ def _fetch_updates(env: Environment) -> str:
 
 def fetch_updates(env: Environment, lazy: bool = True):
     if lazy:
-        spawn_daemon('fetch_updates')
+        spawn_daemon('fetch_updates', f'--verify={env.args.verify}')
     else:
         _fetch_updates(env)
 

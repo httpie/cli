@@ -143,6 +143,10 @@ class Config(BaseConfigDict):
     def __init__(self, directory: Union[str, Path] = DEFAULT_CONFIG_DIR):
         self.directory = Path(directory)
         super().__init__(path=self.directory / self.FILENAME)
+        # this one ensure we do not init HTTPie without the proper config directory
+        # there's an issue where the fetch_update daemon run without having the directory present. that induce a
+        # loop trying to fetch latest versions information.
+        self.ensure_directory()
         self.update(self.DEFAULTS)
 
     @property

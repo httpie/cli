@@ -109,8 +109,8 @@ def _spawn(args: List[str], process_context: ProcessContext) -> None:
         _spawn_posix(args, process_context)
 
 
-def spawn_daemon(task: str) -> None:
-    args = [task, '--daemon']
+def spawn_daemon(task: str, *args: str) -> None:
+    args = [task, '--daemon', *args]
     process_context = os.environ.copy()
     if not is_frozen:
         file_path = os.path.abspath(inspect.stack()[0][1])
