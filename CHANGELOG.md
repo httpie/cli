@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 ## [4.0.0.b1](https://github.com/httpie/cli/compare/3.2.2...master) (unreleased)
 
 - Make it possible to [unset](https://httpie.io/docs/cli/default-request-headers) the `User-Agent`, and `Accept-Encoding` headers. ([#1502](https://github.com/httpie/cli/issues/1502))
+  The `Host` header cannot be unset due to support for HTTP/2+ (internally translated into `:authority`).
 - Dependency on requests was changed in favor of compatible niquests. ([#1531](https://github.com/httpie/cli/pull/1531))
 - Added support for HTTP/2, and HTTP/3 protocols. ([#523](https://github.com/httpie/cli/issues/523)) ([#692](https://github.com/httpie/cli/issues/692)) ([#1531](https://github.com/httpie/cli/pull/1531))
 - Added request metadata for the TLS certificate, negotiated version with cipher, the revocation status and the remote peer IP address. ([#1495](https://github.com/httpie/cli/issues/1495)) ([#1023](https://github.com/httpie/cli/issues/1023)) ([#826](https://github.com/httpie/cli/issues/826)) ([#1531](https://github.com/httpie/cli/pull/1531))
