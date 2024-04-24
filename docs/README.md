@@ -283,6 +283,13 @@ $ http --version
 
 Note that on your machine, the version name will have the `.dev0` suffix.
 
+### HTTP/3 support
+
+Support for HTTP/3 is available by default if both your interpreter and architecture are served by `qh3` published pre-built wheels.
+The underlying library **Niquests** does not enforce its installation in order to avoid friction for most users.
+
+See https://urllib3future.readthedocs.io/en/latest/user-guide.html#http-2-and-http-3-support to learn more.
+
 ## Usage
 
 Hello World:
@@ -1883,6 +1890,21 @@ remote host specified a DNS HTTPS record that indicate its support (and by using
 The remote server yield its support for HTTP/3 in the Alt-Svc header, if present HTTPie will issue
 the successive requests via HTTP/3. You may use that argument in case the remote peer does not support
 either HTTP/1.1 or HTTP/2.
+
+## Protocol combinations
+
+Following `Force HTTP/3` and `Disable HTTP/2, or HTTP/3`, you may find a summary on how to make HTTPie negotiate a
+specific protocol.
+
+| Argument(s)                       | Enabled protocol(s) |
+|-----------------------------------|---------------------|
+| `--disable-http2`                 | HTTP/1.1 or HTTP/3  |
+| `--disable-http2 --disable-http3` | HTTP/1.1            |
+| `--disable-http3`                 | HTTP/1.1 or HTTP/2  |
+| `--http3`                         | HTTP/3              |
+
+You cannot enforce HTTP/2 without prior knowledge nor can you negotiate it without TLS and ALPN.
+Also, you may not disable HTTP/1.1 as it is ultimately used as a fallback in case HTTP/2 and HTTP/3 are not supported.
 
 ## Custom DNS resolver
 
