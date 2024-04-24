@@ -9,7 +9,7 @@ on:
 
 jobs:
   brew:
-    runs-on: macos-latest
+    runs-on: macos-13
     steps:
       - uses: actions/checkout@v3
       - name: Setup brew
