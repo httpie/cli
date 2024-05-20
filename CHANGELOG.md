@@ -30,7 +30,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - Fixed multipart form data having filename not rfc2231 compliant when name contain non-ascii characters. ([#1401](https://github.com/httpie/cli/issues/1401))
 - Fixed issue where the configuration directory was not created at runtime that made the update fetcher run everytime. ([#1527](https://github.com/httpie/cli/issues/1527))
 
-The plugins are expected to work without any changes. The only caveat would be that certain plugin explicitly require `requests`.
+Existing plugins are expected to work without any changes. The only caveat would be that certain plugin explicitly require `requests`.
 Future contributions may be made in order to relax the constraints where applicable.
 
 ## [3.2.2](https://github.com/httpie/cli/compare/3.2.1...3.2.2) (2022-05-19)
