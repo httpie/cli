@@ -822,19 +822,27 @@ def test_session_multiple_headers_with_same_name(basic_session, httpbin):
     [
         (
             'localhost_http_server',
-            {'secure_cookie': 'foo', 'insecure_cookie': 'bar'}
+            {'insecure_cookie': 'bar'}
         ),
         (
             'remote_httpbin',
             {'insecure_cookie': 'bar'}
+        ),
+        (
+            'httpbin_secure_untrusted',
+            {'secure_cookie': 'foo', 'insecure_cookie': 'bar'}
         )
     ]
 )
 def test_secure_cookies_on_localhost(mock_env, tmp_path, server, expected_cookies, request):
     server = request.getfixturevalue(server)
     session_path = tmp_path / 'session.json'
+    server = str(server).replace('127.0.0.1', 'localhost')
+    additional_args = ['--verify=no'] if "https" in server else []
+
     http(
         '--session', str(session_path),
+        *additional_args,
         server + '/cookies/set',
         'secure_cookie==foo',
         'insecure_cookie==bar'
@@ -847,6 +855,8 @@ def test_secure_cookies_on_localhost(mock_env, tmp_path, server, expected_cookie
 
     r = http(
         '--session', str(session_path),
+        *additional_args,
         server + '/cookies'
     )
+
     assert r.json == {'cookies': expected_cookies}

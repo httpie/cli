@@ -29,6 +29,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
   From the HTTPie user perspective, they are "prettified" on the output by default. e.g. "x-hello-world" is displayed as "X-Hello-World".
 - Fixed multipart form data having filename not rfc2231 compliant when name contain non-ascii characters. ([#1401](https://github.com/httpie/cli/issues/1401))
 - Fixed issue where the configuration directory was not created at runtime that made the update fetcher run everytime. ([#1527](https://github.com/httpie/cli/issues/1527))
+- Fixed cookie persistence in HTTPie session when targeting localhost. They were dropped due to the standard library. ([#1527](https://github.com/httpie/cli/issues/1527))
 
 Existing plugins are expected to work without any changes. The only caveat would be that certain plugin explicitly require `requests`.
 Future contributions may be made in order to relax the constraints where applicable.
