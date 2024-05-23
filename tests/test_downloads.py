@@ -259,3 +259,7 @@ class TestDownloads:
                 assert os.listdir('.') == [expected_filename]
             finally:
                 os.chdir(orig_cwd)
+
+    def test_download_gzip_content_encoding(self, httpbin):
+        r = http('--download', httpbin + '/gzip')
+        assert r.exit_status == 0

@@ -217,11 +217,37 @@ class Downloader:
         """
         assert not self.status.time_started
 
-        # FIXME: some servers still might sent Content-Encoding: gzip
-        # <https://github.com/httpie/cli/issues/423>
         try:
-            total_size = int(final_response.headers['Content-Length'])
-        except (KeyError, ValueError, TypeError):
+            supported_decoders = final_response.raw.CONTENT_DECODERS
+        except AttributeError:
+            supported_decoders = ["gzip", "deflate"]
+
+        use_content_length = True
+
+        # If the content is actually compressed, the http client will automatically
+        # stream decompressed content. This ultimately means that the server send the content-length
+        # that is related to the compressed body. this might fool the downloader.
+        # but... there's a catch, we don't decompress everything, everytime. It depends on the
+        # Content-Encoding.
+        if 'Content-Encoding' in final_response.headers:
+            will_decompress = True
+
+            encoding_list = final_response.headers['Content-Encoding'].replace(' ', '').lower().split(',')
+
+            for encoding in encoding_list:
+                if encoding not in supported_decoders:
+                    will_decompress = False
+                    break
+
+            if will_decompress:
+                use_content_length = False
+
+        if use_content_length:
+            try:
+                total_size = int(final_response.headers['Content-Length'])
+            except (KeyError, ValueError, TypeError):
+                total_size = None
+        else:
             total_size = None
 
         if not self._output_file:
