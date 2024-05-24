@@ -46,3 +46,13 @@ def test_verbose_redirected_stdout_separator(httpbin):
         Expect.RESPONSE_HEADERS,
         Expect.BODY,
     ])
+
+
+def test_every_localhost_resolve(httpbin):
+    """
+    https://github.com/httpie/cli/issues/1458
+
+    """
+    new_target = str(httpbin).replace('127.0.0.1', 'example.localhost')
+    assert 'example.localhost' in new_target
+    http(str(httpbin).replace('127.0.0.1', 'example.localhost') + '/get')

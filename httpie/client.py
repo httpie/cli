@@ -77,20 +77,30 @@ def collect_messages(
             min_port, max_port = args.local_port.split('-', 1)
             source_address = (args.interface or "0.0.0.0", randint(int(min_port), int(max_port)))
 
+    parsed_url = parse_url(args.url)
+    resolver = args.resolver or None
+
+    # we want to make sure every ".localhost" host resolve to loopback
+    if parsed_url.host and parsed_url.host.endswith(".localhost"):
+        ensure_resolver = f"in-memory://default/?hosts={parsed_url.host}:127.0.0.1&hosts={parsed_url.host}:[::1]"
+
+        if resolver and isinstance(resolver, list):
+            resolver.append(ensure_resolver)
+        else:
+            resolver = [ensure_resolver, "system://"]
+
     requests_session = build_requests_session(
         ssl_version=args.ssl_version,
         ciphers=args.ciphers,
         verify=bool(send_kwargs_mergeable_from_env['verify']),
         disable_http2=args.disable_http2,
         disable_http3=args.disable_http3,
-        resolver=args.resolver or None,
+        resolver=resolver,
         disable_ipv6=args.ipv4,
         disable_ipv4=args.ipv6,
         source_address=source_address,
         quic_cache=env.config.quic_file,
     )
-
-    parsed_url = parse_url(args.url)
 
     if args.disable_http3 is False and args.force_http3 is True:
         requests_session.quic_cache_layer[(parsed_url.host, parsed_url.port or 443)] = (parsed_url.host, parsed_url.port or 443)
