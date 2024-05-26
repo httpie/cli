@@ -14,7 +14,7 @@ SSL_VERSION_ARG_MAPPING = {
     'tls1': 'PROTOCOL_TLSv1',
     'tls1.1': 'PROTOCOL_TLSv1_1',
     'tls1.2': 'PROTOCOL_TLSv1_2',
-    'tls1.3': 'PROTOCOL_TLSv1_3',
+    'tls1.3': 'PROTOCOL_TLS_CLIENT',  # CPython does not have a "PROTOCOL_TLSv1_3" constant, so, we'll improvise.
 }
 # todo: we'll need to update this in preparation for Python 3.13+
 # could be a removal (after a long deprecation about constants
@@ -104,6 +104,18 @@ class HTTPieHTTPSAdapter(HTTPAdapter):
         self._verify = None
 
         if ssl_version or ciphers:
+            # By default, almost all installed CPython have modern OpenSSL backends
+            # This actively prevent folks to negotiate "almost" dead TLS protocols
+            # HTTPie wants to help users when they explicitly expect "old" TLS support
+            # Common errors for user if not set:
+            #   >- [SSL: NO_CIPHERS_AVAILABLE] no ciphers available
+            #   >- [SSL: LEGACY_SIGALG_DISALLOWED_OR_UNSUPPORTED] legacy sigalg disallowed or unsupported
+            if ssl_version in {ssl.PROTOCOL_TLSv1, ssl.PROTOCOL_TLSv1_1} and ciphers is None:
+                # Please do not raise a "security" concern for that line.
+                # If the interpreter reach that line, it means that the user willingly set
+                # an unsafe TLS protocol.
+                ciphers = "DEFAULT:@SECLEVEL=0"
+
             # Only set the custom context if user supplied one.
             # Because urllib3-future set his own secure ctx with a set of
             # ciphers (moz recommended list). thus avoiding excluding QUIC
@@ -142,6 +154,19 @@ class HTTPieHTTPSAdapter(HTTPAdapter):
         ssl_version: str = None,
         ciphers: str = None,
     ) -> 'ssl.SSLContext':
+        # HTTPie will take `ssl.PROTOCOL_TLS_CLIENT` as TLS 1.3 enforced!
+        # This piece of code is only triggered if user supplied --ssl=tls1.3
+        if ssl_version is ssl.PROTOCOL_TLS_CLIENT:
+            return create_urllib3_context(
+                ciphers=ciphers,
+                ssl_minimum_version=ssl.TLSVersion.TLSv1_3,
+                ssl_maximum_version=ssl.TLSVersion.TLSv1_3,
+                # Since we are using a custom SSL context, we need to pass this
+                # here manually, even though it’s also passed to the connection
+                # in `super().cert_verify()`.
+                cert_reqs=ssl.CERT_REQUIRED if verify else ssl.CERT_NONE
+            )
+
         return create_urllib3_context(
             ciphers=ciphers,
             ssl_version=resolve_ssl_version(ssl_version),

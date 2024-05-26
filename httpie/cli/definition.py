@@ -906,12 +906,12 @@ ssl.add_argument(
 
 CIPHERS_CURRENT_DEFAULTS = (
     """
-    See `http --help` for the default ciphers list on you system.
+    See `http --help` for the default ciphers list.
 
     """
     if IS_MAN_PAGE else
     f"""
-    By default, the following ciphers are used on your system:
+    By default, the following ciphers are used:
 
     {DEFAULT_SSL_CIPHERS_STRING}
 
@@ -923,6 +923,7 @@ ssl.add_argument(
     help=f"""
 
     A string in the OpenSSL cipher list format.
+    tls1.3 ciphers are always present regardless of your cipher list.
 
     {CIPHERS_CURRENT_DEFAULTS}
 
