@@ -896,11 +896,10 @@ ssl.add_argument(
     choices=sorted(AVAILABLE_SSL_VERSION_ARG_MAPPING.keys()),
     short_help='The desired protocol version to used.',
     help="""
-    The desired protocol version to use. This will default to
-    SSL v2.3 which will negotiate the highest protocol that both
-    the server and your installation of OpenSSL support. Available protocols
-    may vary depending on OpenSSL installation (only the supported ones
-    are shown here).
+    The desired protocol version to use. If not specified, it tries to
+    negotiate the highest protocol that both the server and your installation
+    of OpenSSL support. Available protocols may vary depending on OpenSSL
+    installation (only the supported ones are shown here).
 
     """,
 )

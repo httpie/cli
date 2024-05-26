@@ -1537,7 +1537,7 @@ $ http --cert=client.pem --cert-key=client.key --cert-key-pass=my_password https
 ### SSL version
 
 Use the `--ssl=<PROTOCOL>` option to specify the desired protocol version to use.
-This will default to TLS v1.0 which will negotiate the highest protocol that both the server and your installation of OpenSSL support.
+If not specified, it tries to negotiate the highest protocol that both the server and your installation of OpenSSL support.
 The available protocols are `tls1`, `tls1.1`, `tls1.2`, `tls1.3`.
 (The actually available set of protocols may vary depending on your OpenSSL installation.)
 
