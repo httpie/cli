@@ -21,7 +21,7 @@ from httpie.encoding import UTF8
 from httpie.output.formatters.colors import get_lexer, PIE_STYLE_NAMES, BUNDLED_STYLES
 from httpie.status import ExitStatus
 from .fixtures import XML_DATA_RAW, XML_DATA_FORMATTED
-from .utils import COLOR, CRLF, HTTP_OK, MockEnvironment, http, DUMMY_URL, strip_colors
+from .utils import COLOR, CRLF, HTTP_OK, MockEnvironment, http, DUMMY_URL, strip_colors, cd_clean_tmp_dir
 
 
 # For ensuring test reproducibility, avoid using the unsorted
@@ -159,16 +159,13 @@ class TestQuietFlag:
 
     @pytest.mark.parametrize('quiet_flags', QUIET_SCENARIOS)
     @pytest.mark.parametrize('with_download', [True, False])
-    def test_quiet_with_output_redirection(self, tmp_path, httpbin, quiet_flags, with_download):
+    def test_quiet_with_output_redirection(self, httpbin, quiet_flags, with_download):
         url = httpbin + '/robots.txt'
         output_path = Path('output.txt')
         env = MockEnvironment()
-        orig_cwd = os.getcwd()
         output = niquests.get(url).text
         extra_args = ['--download'] if with_download else []
-        os.chdir(tmp_path)
-        try:
-            assert os.listdir('.') == []
+        with cd_clean_tmp_dir(assert_filenames_after=[str(output_path)]):
             r = http(
                 *quiet_flags,
                 '--output', str(output_path),
@@ -176,7 +173,6 @@ class TestQuietFlag:
                 url,
                 env=env
             )
-            assert os.listdir('.') == [str(output_path)]
             assert r == ''
             assert r.stderr == ''
             assert env.stderr is env.devnull
@@ -185,8 +181,6 @@ class TestQuietFlag:
             else:
                 assert env.stdout is not env.devnull  # --output swaps stdout.
             assert output_path.read_text(encoding=UTF8) == output
-        finally:
-            os.chdir(orig_cwd)
 
 
 class TestVerboseFlag:

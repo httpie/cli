@@ -18,7 +18,7 @@ from httpie.plugins.registry import plugin_manager
 from httpie.sessions import Session
 from httpie.utils import get_expired_cookies
 from .test_auth_plugins import basic_auth
-from .utils import DUMMY_HOST, HTTP_OK, MockEnvironment, http, mk_config_dir
+from .utils import DUMMY_HOST, HTTP_OK, MockEnvironment, http, mk_config_dir, cd_clean_tmp_dir
 from base64 import b64encode
 
 
@@ -253,13 +253,9 @@ class TestSession(SessionTestBase):
     def test_download_in_session(self, tmp_path, httpbin):
         # https://github.com/httpie/cli/issues/412
         self.start_session(httpbin)
-        cwd = os.getcwd()
-        os.chdir(tmp_path)
-        try:
+        with cd_clean_tmp_dir():
             http('--session=test', '--download',
                  httpbin + '/get', env=self.env())
-        finally:
-            os.chdir(cwd)
 
     @pytest.mark.parametrize(
         'auth_require_param, auth_parse_param',

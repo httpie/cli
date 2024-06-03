@@ -12,7 +12,7 @@ from httpie.downloads import (
     parse_content_range, filename_from_content_disposition, filename_from_url,
     get_unique_filename, ContentRangeError, Downloader, PARTIAL_CONTENT
 )
-from .utils import http, MockEnvironment
+from .utils import http, MockEnvironment, cd_clean_tmp_dir
 
 
 class Response(niquests.Response):
@@ -160,32 +160,26 @@ class TestDownloads:
             assert not downloader.interrupted
 
     def test_download_output_from_content_disposition(self, mock_env, httpbin_both):
-        with tempfile.TemporaryDirectory() as tmp_dirname:
-            orig_cwd = os.getcwd()
-            os.chdir(tmp_dirname)
-            try:
-                assert not os.path.isfile('filename.bin')
-                downloader = Downloader(mock_env)
-                downloader.start(
-                    final_response=Response(
-                        url=httpbin_both.url + '/',
-                        headers={
-                            'Content-Length': 5,
-                            'Content-Disposition': 'attachment; filename="filename.bin"',
-                        }
-                    ),
-                    initial_url='/'
-                )
-                downloader.chunk_downloaded(b'12345')
-                downloader.finish()
-                downloader.failed()  # Stop the reporter
-                assert not downloader.interrupted
+        output_file_name = 'filename.bin'
+        with cd_clean_tmp_dir(assert_filenames_after=[output_file_name]):
+            downloader = Downloader(mock_env)
+            downloader.start(
+                final_response=Response(
+                    url=httpbin_both.url + '/',
+                    headers={
+                        'Content-Length': 5,
+                        'Content-Disposition': f'attachment; filename="{output_file_name}"',
+                    }
+                ),
+                initial_url='/'
+            )
+            downloader.chunk_downloaded(b'12345')
+            downloader.finish()
+            downloader.failed()  # Stop the reporter
+            assert not downloader.interrupted
 
-                # TODO: Auto-close the file in that case?
-                downloader._output_file.close()
-                assert os.path.isfile('filename.bin')
-            finally:
-                os.chdir(orig_cwd)
+            # TODO: Auto-close the file in that case?
+            downloader._output_file.close()
 
     def test_download_interrupted(self, mock_env, httpbin_both):
         with open(os.devnull, 'w') as devnull:
@@ -239,7 +233,10 @@ class TestDownloads:
                 downloader.start(
                     final_response=Response(
                         url=httpbin_both.url + '/',
-                        headers={'Content-Length': 5, 'Content-Range': 'bytes 3-4/5'},
+                        headers={
+                            'Content-Length': 5,
+                            'Content-Range': 'bytes 3-4/5',
+                        },
                         status_code=PARTIAL_CONTENT
                     ),
                     initial_url='/'
@@ -250,16 +247,11 @@ class TestDownloads:
     def test_download_with_redirect_original_url_used_for_filename(self, httpbin):
         # Redirect from `/redirect/1` to `/get`.
         expected_filename = '1.json'
-        orig_cwd = os.getcwd()
-        with tempfile.TemporaryDirectory() as tmp_dirname:
-            os.chdir(tmp_dirname)
-            try:
-                assert os.listdir('.') == []
-                http('--download', httpbin + '/redirect/1')
-                assert os.listdir('.') == [expected_filename]
-            finally:
-                os.chdir(orig_cwd)
+        with cd_clean_tmp_dir(assert_filenames_after=[expected_filename]):
+            http('--download', httpbin + '/redirect/1')
 
     def test_download_gzip_content_encoding(self, httpbin):
-        r = http('--download', httpbin + '/gzip')
+        expected_filename = 'gzip.json'
+        with cd_clean_tmp_dir(assert_filenames_after=[expected_filename]):
+            r = http('--download', httpbin + '/gzip')
         assert r.exit_status == 0

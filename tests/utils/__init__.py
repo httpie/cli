@@ -1,4 +1,6 @@
 """Utilities for HTTPie test suite."""
+import contextlib
+import os
 import re
 import shlex
 import sys
@@ -407,6 +409,7 @@ def http(
             add_to_args.append('--timeout=3')
 
     complete_args = [program_name, *add_to_args, *args]
+
     # print(' '.join(complete_args))
 
     def dump_stderr():
@@ -468,3 +471,18 @@ def http(
 
     finally:
         env.cleanup()
+
+
+@contextlib.contextmanager
+def cd_clean_tmp_dir(assert_filenames_after: list = None):
+    """Run commands inside a clean temporary directory, optionally checking for created file names."""
+    orig_cwd = os.getcwd()
+    with tempfile.TemporaryDirectory() as tmp_dirname:
+        os.chdir(tmp_dirname)
+        assert os.listdir('.') == []
+        try:
+            yield tmp_dirname
+            if assert_filenames_after is not None:
+                assert os.listdir('.') == assert_filenames_after
+        finally:
+            os.chdir(orig_cwd)
