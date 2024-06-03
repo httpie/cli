@@ -286,7 +286,7 @@ Note that on your machine, the version name will have the `.dev0` suffix.
 ### HTTP/3 support
 
 Support for HTTP/3 is available by default if both your interpreter and architecture are served by `qh3` published pre-built wheels.
-The underlying library **Niquests** does not enforce its installation in order to avoid friction for most users.
+The underlying library Niquests does not enforce its installation in order to avoid friction for most users.
 
 See https://urllib3future.readthedocs.io/en/latest/user-guide.html#http-2-and-http-3-support to learn more.
 
@@ -1193,13 +1193,7 @@ You can read headers from a file by using the `:@` operator. This would also eff
 $ http pie.dev/headers X-Data:@files/text.txt
 ```
 
-### Empty headers and header un-setting
-
-To unset a previously specified header (such a one of the default headers), use `Header:`:
-
-```bash
-$ http pie.dev/headers Accept: User-Agent:
-```
+### Empty request headers
 
 To send a header with an empty value, use `Header;`, with a semicolon:
 
@@ -1207,8 +1201,16 @@ To send a header with an empty value, use `Header;`, with a semicolon:
 $ http pie.dev/headers 'Header;'
 ```
 
-Please note that some internal headers, such as `Content-Length`, can’t be unset if
-they are automatically added by the client itself.
+### Header un-setting
+
+To unset a previously specified header or one of the [default headers](#default-request-headers), use the `Header:` notation:
+
+```bash
+$ http pie.dev/headers Accept: User-Agent:
+```
+
+Please note that some internal headers, such as `Content-Length`, can’t be unset if  they are automatically added by the client itself.
+Also, the `Host` header cannot be unset due to support for HTTP/2+ (internally translated into `:authority`)
 
 ### Multiple header values with the same name
 
@@ -1864,7 +1866,11 @@ $ http --chunked pie.dev/post @files/data.xml
 $ cat files/data.xml | http --chunked pie.dev/post
 ```
 
-## Disable HTTP/2, or HTTP/3
+## Supported HTTP versions
+
+HTTPie has full support for HTTP/1.1, HTTP/2, and HTTP/3.
+
+### Disable HTTP/2, or HTTP/3
 
 You can at your own discretion toggle on and off HTTP/2, or/and HTTP/3.
 
@@ -1876,7 +1882,7 @@ $ https --disable-http2 PUT pie.dev/put hello=world
 $ https --disable-http3 PUT pie.dev/put hello=world
 ```
 
-## Force HTTP/3
+### Force HTTP/3
 
 By opposition to the previous section, you can force the HTTP/3 negotiation.
 
@@ -1887,21 +1893,22 @@ $ https --http3 pie.dev/get
 By default, HTTPie cannot negotiate HTTP/3 without a first HTTP/1.1, or HTTP/2 successful response unless the
 remote host specified a DNS HTTPS record that indicate its support (and by using a custom DNS resolver, see bellow section).
 
-The remote server yield its support for HTTP/3 in the Alt-Svc header, if present HTTPie will issue
+The remote server yield its support for HTTP/3 in the `Alt-Svc` header, if present HTTPie will issue
 the successive requests via HTTP/3. You may use that argument in case the remote peer does not support
 either HTTP/1.1 or HTTP/2.
 
-## Protocol combinations
+### Protocol combinations
 
 Following `Force HTTP/3` and `Disable HTTP/2, or HTTP/3`, you may find a summary on how to make HTTPie negotiate a
 specific protocol.
 
-| Argument(s)                       | Enabled protocol(s) |
-|-----------------------------------|---------------------|
-| `--disable-http2`                 | HTTP/1.1 or HTTP/3  |
-| `--disable-http2 --disable-http3` | HTTP/1.1            |
-| `--disable-http3`                 | HTTP/1.1 or HTTP/2  |
-| `--http3`                         | HTTP/3              |
+|                         Arguments | HTTP/1.1 <br>enabled | HTTP/2 <br>enabled | HTTP/3 <br>enabled |
+|----------------------------------:|:--------------------:|:------------------:|:------------------:|
+|                         (Default) |          ✔           |         ✔          |         ✔          |
+|                 `--disable-http2` |          ✔           |         ✗          |         ✔          |
+|                 `--disable-http3` |          ✔           |         ✔          |         ✗          |
+| `--disable-http2 --disable-http3` |          ✔           |         ✗          |         ✗          |
+|                         `--http3` |          ✗           |         ✗          |         ✔          |
 
 You cannot enforce HTTP/2 without prior knowledge nor can you negotiate it without TLS and ALPN.
 Also, you may not disable HTTP/1.1 as it is ultimately used as a fallback in case HTTP/2 and HTTP/3 are not supported.
@@ -1942,7 +1949,7 @@ You can specify multiple entries, concatenated with a comma:
 $ https --resolver "pie.dev:10.10.4.1,re.pie.dev:10.10.8.1" pie.dev/get
 ```
 
-## Attach to a specific network adapter
+## Network interface
 
 In order to bind emitted request from a specific network adapter you can use the `--interface` flag.
 
