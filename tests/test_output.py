@@ -1,17 +1,14 @@
 import argparse
+import io
+import json
+import warnings
 from pathlib import Path
 from unittest import mock
-
-import json
-import os
-import io
-import warnings
 from urllib.request import urlopen
 
-import pytest
 import niquests
+import pytest
 import responses
-
 from httpie.cli.argtypes import (
     PARSED_DEFAULT_FORMAT_OPTIONS,
     parse_format_options,
