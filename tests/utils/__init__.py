@@ -474,7 +474,7 @@ def http(
 
 
 @contextlib.contextmanager
-def cd_clean_tmp_dir(assert_filenames_after = []):
+def cd_clean_tmp_dir(assert_filenames_after=[]):
     """Run commands inside a clean temporary directory, and verify created file names."""
     orig_cwd = os.getcwd()
     with tempfile.TemporaryDirectory() as tmp_dirname:
