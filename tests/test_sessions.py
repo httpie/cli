@@ -251,7 +251,7 @@ class TestSession(SessionTestBase):
     def test_download_in_session(self, tmp_path, httpbin):
         # https://github.com/httpie/cli/issues/412
         self.start_session(httpbin)
-        with cd_clean_tmp_dir():
+        with cd_clean_tmp_dir(assert_filenames_after=['get.json']):
             http('--session=test', '--download',
                  httpbin + '/get', env=self.env())
 
