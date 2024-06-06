@@ -29,7 +29,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - Removed support for `pyopenssl`. ([#1531](https://github.com/httpie/cli/pull/1531))
 - Removed support for dead SSL protocols < TLS 1.0 (e.g. sslv3) as per pyopenssl removal. ([#1531](https://github.com/httpie/cli/pull/1531))
 - Removed dependency on `requests_toolbelt` in favor of directly including `MultipartEncoder` into HTTPie due to its direct dependency to requests. ([#1531](https://github.com/httpie/cli/pull/1531))
-- Removed dependency on `multidict` in favor aof an internal one due to often missing pre-built wheels. ([#1522](https://github.com/httpie/cli/issues/1522), [#1531](https://github.com/httpie/cli/pull/1531))
+- Removed dependency on `multidict` in favor of an internal one due to often missing pre-built wheels. ([#1522](https://github.com/httpie/cli/issues/1522), [#1531](https://github.com/httpie/cli/pull/1531))
 
 Existing plugins are expected to work without any changes. The only caveat would be that certain plugin explicitly require `requests`.
 Future contributions may be made in order to relax the constraints where applicable.
