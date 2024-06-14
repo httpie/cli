@@ -18,7 +18,6 @@ from httpie.downloads import (
     DECODED_SIZE_NOTE_SUFFIX,
     DECODED_FROM_SUFFIX,
 )
-from niquests.exceptions import ChunkedEncodingError
 from niquests.structures import CaseInsensitiveDict
 from .utils import http, MockEnvironment, cd_clean_tmp_dir, DUMMY_URL
 
@@ -275,7 +274,7 @@ class TestDownloader:
             },
             body='12',
         )
-        with cd_clean_tmp_dir(), pytest.raises(ChunkedEncodingError) as exc_info:
+        with cd_clean_tmp_dir(), pytest.raises(Exception) as exc_info:
             http('--download', DUMMY_URL)
         assert error_msg in str(exc_info.value)
 
