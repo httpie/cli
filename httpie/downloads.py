@@ -7,7 +7,7 @@ import os
 import re
 from mailbox import Message
 from time import monotonic
-from typing import IO, Optional, Tuple
+from typing import IO, Optional, Tuple, List
 from urllib.parse import urlsplit
 
 import niquests
@@ -15,6 +15,7 @@ import niquests
 from .models import HTTPResponse, OutputOptions
 from .output.streams import RawStream
 from .context import Environment
+from .utils import split_header_values
 
 
 PARTIAL_CONTENT = 206
@@ -159,6 +160,29 @@ def get_unique_filename(filename: str, exists=os.path.exists) -> str:
         attempt += 1
 
 
+def get_content_length(response: niquests.Response) -> Optional[int]:
+    try:
+        return int(response.headers['Content-Length'])
+    except (KeyError, ValueError, TypeError):
+        pass
+
+
+
+def get_decodeable_content_encodings(encoded_response: niquests.Response) -> Optional[List[str]]:
+    content_encoding = encoded_response.headers.get('Content-Encoding')
+    if not content_encoding:
+        return None
+    applied_encodings = split_header_values(content_encoding)
+    try:
+        supported_decoders = encoded_response.raw.CONTENT_DECODERS
+    except AttributeError:
+        supported_decoders = ['gzip', 'deflate']
+    for encoding in applied_encodings:
+        if encoding not in supported_decoders:
+            return None
+    return applied_encodings
+
+
 class Downloader:
 
     def __init__(
@@ -173,8 +197,6 @@ class Downloader:
 
         :param output_file: The file to store response body in. If not
                             provided, it will be guessed from the response.
-
-        :param progress_file: Where to report download progress.
 
         """
         self.finished = False
@@ -191,7 +213,11 @@ class Downloader:
 
         """
         # Ask the server not to encode the content so that we can resume, etc.
+        # TODO: Reconsider this once the underlying library can report raw download size (i.e., not decoded).
+        #       Then it might still be needed when resuming. But in the default case, it won’t probably be necessary.
+        #       <https://github.com/jawah/niquests/issues/127>
         request_headers['Accept-Encoding'] = 'identity'
+
         if self._resume:
             bytes_have = os.path.getsize(self._output_file.name)
             if bytes_have:
@@ -217,38 +243,11 @@ class Downloader:
         """
         assert not self.status.time_started
 
-        try:
-            supported_decoders = final_response.raw.CONTENT_DECODERS
-        except AttributeError:
-            supported_decoders = ["gzip", "deflate"]
-
-        use_content_length = True
-
-        # If the content is actually compressed, the http client will automatically
-        # stream decompressed content. This ultimately means that the server send the content-length
-        # that is related to the compressed body. this might fool the downloader.
-        # but... there's a catch, we don't decompress everything, everytime. It depends on the
-        # Content-Encoding.
-        if 'Content-Encoding' in final_response.headers:
-            will_decompress = True
-
-            encoding_list = final_response.headers['Content-Encoding'].replace(' ', '').lower().split(',')
-
-            for encoding in encoding_list:
-                if encoding not in supported_decoders:
-                    will_decompress = False
-                    break
-
-            if will_decompress:
-                use_content_length = False
-
-        if use_content_length:
-            try:
-                total_size = int(final_response.headers['Content-Length'])
-            except (KeyError, ValueError, TypeError):
-                total_size = None
-        else:
-            total_size = None
+        # Even though we specify `Accept-Encoding: identity`, the server might still encode the response.
+        # In such cases, the reported size will be of the decoded content, not the downloaded bytes.
+        # This is a limitation of the underlying Niquests library <https://github.com/jawah/niquests/issues/127>.
+        decoded_from = get_decodeable_content_encodings(final_response)
+        total_size = get_content_length(final_response)
 
         if not self._output_file:
             self._output_file = self._get_output_file_from_response(
@@ -282,7 +281,8 @@ class Downloader:
         self.status.started(
             output_file=self._output_file,
             resumed_from=self._resumed_from,
-            total_size=total_size
+            total_size=total_size,
+            decoded_from=decoded_from,
         )
 
         return stream, self._output_file
@@ -299,12 +299,8 @@ class Downloader:
         self.status.terminate()
 
     @property
-    def interrupted(self) -> bool:
-        return (
-            self.finished
-            and self.status.total_size
-            and self.status.total_size != self.status.downloaded
-        )
+    def is_interrupted(self) -> bool:
+        return self.status.is_interrupted
 
     def chunk_downloaded(self, chunk: bytes):
         """
@@ -334,6 +330,9 @@ class Downloader:
         unique_filename = get_unique_filename(filename)
         return open(unique_filename, buffering=0, mode='a+b')
 
+DECODED_FROM_SUFFIX = ' - decoded from {encodings}'
+DECODED_SIZE_NOTE_SUFFIX = ' - decoded size'
+
 
 class DownloadStatus:
     """Holds details about the download status."""
@@ -342,40 +341,49 @@ class DownloadStatus:
         self.env = env
         self.downloaded = 0
         self.total_size = None
+        self.decoded_from = []
         self.resumed_from = 0
         self.time_started = None
         self.time_finished = None
+        self.display = None
 
-    def started(self, output_file, resumed_from=0, total_size=None):
+    def started(self, output_file, resumed_from=0, total_size=None, decoded_from: List[str]=None):
         assert self.time_started is None
         self.total_size = total_size
+        self.decoded_from = decoded_from
         self.downloaded = self.resumed_from = resumed_from
         self.time_started = monotonic()
         self.start_display(output_file=output_file)
 
     def start_display(self, output_file):
         from httpie.output.ui.rich_progress import (
-            DummyDisplay,
-            StatusDisplay,
-            ProgressDisplay
+            DummyProgressDisplay,
+            ProgressDisplayNoTotal,
+            ProgressDisplayFull
         )
-
         message = f'Downloading to {output_file.name}'
-        if self.env.show_displays:
-            if self.total_size is None:
-                # Rich does not support progress bars without a total
-                # size given. Instead we use status objects.
-                self.display = StatusDisplay(self.env)
-            else:
-                self.display = ProgressDisplay(self.env)
+        message_suffix = ''
+        summary_suffix = ''
+        if not self.env.show_displays:
+            progress_display_class = DummyProgressDisplay
         else:
-            self.display = DummyDisplay(self.env)
-
-        self.display.start(
-            total=self.total_size,
-            at=self.downloaded,
-            description=message
+            has_reliable_total = self.total_size is not None and not self.decoded_from
+            if has_reliable_total:
+                progress_display_class = ProgressDisplayFull
+            else:
+                if self.decoded_from:
+                    encodings = ', '.join(f'`{enc}`' for enc in self.decoded_from)
+                    message_suffix = DECODED_FROM_SUFFIX.format(encodings=encodings)
+                    summary_suffix = DECODED_SIZE_NOTE_SUFFIX
+                progress_display_class = ProgressDisplayNoTotal
+        self.display = progress_display_class(
+            env=self.env,
+            total_size=self.total_size,
+            resumed_from=self.resumed_from,
+            description=message + message_suffix,
+            summary_suffix=summary_suffix,
         )
+        self.display.start()
 
     def chunk_downloaded(self, size):
         assert self.time_finished is None
@@ -385,6 +393,15 @@ class DownloadStatus:
     @property
     def has_finished(self):
         return self.time_finished is not None
+
+    @property
+    def is_interrupted(self):
+        return (
+            self.has_finished
+            and self.total_size is not None
+            and not self.decoded_from
+            and self.total_size != self.downloaded
+        )
 
     @property
     def time_spent(self):
@@ -400,9 +417,9 @@ class DownloadStatus:
         assert self.time_started is not None
         assert self.time_finished is None
         self.time_finished = monotonic()
-        if hasattr(self, 'display'):
+        if self.display:
             self.display.stop(self.time_spent)
 
     def terminate(self):
-        if hasattr(self, 'display'):
+        if self.display:
             self.display.stop(self.time_spent)

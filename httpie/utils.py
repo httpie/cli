@@ -307,3 +307,7 @@ def is_version_greater(version_1: str, version_2: str) -> bool:
         return tuple(parts)
 
     return split_version(version_1) > split_version(version_2)
+
+
+def split_header_values(header: str) -> List[str]:
+    return [value.strip() for value in header.split(',')]

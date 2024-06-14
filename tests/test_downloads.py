@@ -1,18 +1,26 @@
 import os
 import tempfile
 import time
-import niquests
 from unittest import mock
 from urllib.request import urlopen
 
+import niquests
 import pytest
-from niquests.structures import CaseInsensitiveDict
-
+import responses
 from httpie.downloads import (
-    parse_content_range, filename_from_content_disposition, filename_from_url,
-    get_unique_filename, ContentRangeError, Downloader, PARTIAL_CONTENT
+    parse_content_range,
+    filename_from_content_disposition,
+    filename_from_url,
+    get_unique_filename,
+    ContentRangeError,
+    Downloader,
+    PARTIAL_CONTENT,
+    DECODED_SIZE_NOTE_SUFFIX,
+    DECODED_FROM_SUFFIX,
 )
-from .utils import http, MockEnvironment, cd_clean_tmp_dir
+from niquests.exceptions import ChunkedEncodingError
+from niquests.structures import CaseInsensitiveDict
+from .utils import http, MockEnvironment, cd_clean_tmp_dir, DUMMY_URL
 
 
 class Response(niquests.Response):
@@ -102,7 +110,6 @@ class TestDownloadUtils:
     def test_unique_filename(self, get_filename_max_length,
                              orig_name, unique_on_attempt,
                              expected):
-
         def attempts(unique_on_attempt=0):
             # noinspection PyUnresolvedReferences,PyUnusedLocal
             def exists(filename):
@@ -120,7 +127,7 @@ class TestDownloadUtils:
         assert expected == actual
 
 
-class TestDownloads:
+class TestDownloader:
 
     def test_actual_download(self, httpbin_both, httpbin):
         robots_txt = '/robots.txt'
@@ -145,7 +152,7 @@ class TestDownloads:
             time.sleep(1.1)
             downloader.chunk_downloaded(b'12345')
             downloader.finish()
-            assert not downloader.interrupted
+            assert not downloader.is_interrupted
 
     def test_download_no_Content_Length(self, mock_env, httpbin_both):
         with open(os.devnull, 'w') as devnull:
@@ -157,7 +164,7 @@ class TestDownloads:
             time.sleep(1.1)
             downloader.chunk_downloaded(b'12345')
             downloader.finish()
-            assert not downloader.interrupted
+            assert not downloader.is_interrupted
 
     def test_download_output_from_content_disposition(self, mock_env, httpbin_both):
         output_file_name = 'filename.bin'
@@ -176,12 +183,12 @@ class TestDownloads:
             downloader.chunk_downloaded(b'12345')
             downloader.finish()
             downloader.failed()  # Stop the reporter
-            assert not downloader.interrupted
+            assert not downloader.is_interrupted
 
             # TODO: Auto-close the file in that case?
             downloader._output_file.close()
 
-    def test_download_interrupted(self, mock_env, httpbin_both):
+    def test_downloader_is_interrupted(self, mock_env, httpbin_both):
         with open(os.devnull, 'w') as devnull:
             downloader = Downloader(mock_env, output_file=devnull)
             downloader.start(
@@ -193,7 +200,7 @@ class TestDownloads:
             )
             downloader.chunk_downloaded(b'1234')
             downloader.finish()
-            assert downloader.interrupted
+            assert downloader.is_interrupted
 
     def test_download_resumed(self, mock_env, httpbin_both):
         with tempfile.TemporaryDirectory() as tmp_dirname:
@@ -214,7 +221,7 @@ class TestDownloads:
                 downloader.chunk_downloaded(b'123')
                 downloader.finish()
                 downloader.failed()
-                assert downloader.interrupted
+                assert downloader.is_interrupted
 
             # Write bytes
             with open(file, 'wb') as fh:
@@ -255,3 +262,101 @@ class TestDownloads:
         with cd_clean_tmp_dir(assert_filenames_after=[expected_filename]):
             r = http('--download', httpbin + '/gzip')
         assert r.exit_status == 0
+
+    @responses.activate
+    def test_incomplete_response(self):
+        # We have incompleteness checks in the downloader, but it might not be needed as it’s built into (ni|req)uests.
+        error_msg = 'peer closed connection without sending complete message body (received 2 bytes, expected 1 more)'
+        responses.add(
+            method=responses.GET,
+            url=DUMMY_URL,
+            headers={
+                'Content-Length': '3',
+            },
+            body='12',
+        )
+        with cd_clean_tmp_dir(), pytest.raises(ChunkedEncodingError) as exc_info:
+            http('--download', DUMMY_URL)
+        assert error_msg in str(exc_info.value)
+
+
+class TestDecodedDownloads:
+    """Test downloading responses with `Content-Encoding`"""
+
+    @responses.activate
+    def test_decoded_response_no_content_length(self):
+        responses.add(
+            method=responses.GET,
+            url=DUMMY_URL,
+            headers={
+                'Content-Encoding': 'gzip, br',
+            },
+            body='123',
+        )
+        with cd_clean_tmp_dir():
+            r = http('--download', '--headers', DUMMY_URL)
+        assert DECODED_FROM_SUFFIX.format(encodings='`gzip`, `br`') in r.stderr
+        assert DECODED_SIZE_NOTE_SUFFIX in r.stderr
+        print(r.stderr)
+
+    @responses.activate
+    def test_decoded_response_with_content_length(self):
+        responses.add(
+            method=responses.GET,
+            url=DUMMY_URL,
+            headers={
+                'Content-Encoding': 'gzip, br',
+                'Content-Length': '3',
+            },
+            body='123',
+        )
+        with cd_clean_tmp_dir():
+            r = http('--download', DUMMY_URL)
+        assert DECODED_FROM_SUFFIX.format(encodings='`gzip`, `br`') in r.stderr
+        assert DECODED_SIZE_NOTE_SUFFIX in r.stderr
+        print(r.stderr)
+
+    @responses.activate
+    def test_decoded_response_without_content_length(self):
+        responses.add(
+            method=responses.GET,
+            url=DUMMY_URL,
+            headers={
+                'Content-Encoding': 'gzip, br',
+            },
+            body='123',
+        )
+        with cd_clean_tmp_dir():
+            r = http('--download', DUMMY_URL)
+        assert DECODED_FROM_SUFFIX.format(encodings='`gzip`, `br`') in r.stderr
+        assert DECODED_SIZE_NOTE_SUFFIX in r.stderr
+        print(r.stderr)
+
+    @responses.activate
+    def test_non_decoded_response_without_content_length(self):
+        responses.add(
+            method=responses.GET,
+            url=DUMMY_URL,
+            headers={
+                'Content-Length': '3',
+            },
+            body='123',
+        )
+        with cd_clean_tmp_dir():
+            r = http('--download', DUMMY_URL)
+        assert DECODED_SIZE_NOTE_SUFFIX not in r.stderr
+        print(r.stderr)
+
+    @responses.activate
+    def test_non_decoded_response_with_content_length(self):
+        responses.add(
+            method=responses.GET,
+            url=DUMMY_URL,
+            headers={
+            },
+            body='123',
+        )
+        with cd_clean_tmp_dir():
+            r = http('--download', DUMMY_URL)
+        assert DECODED_SIZE_NOTE_SUFFIX not in r.stderr
+        print(r.stderr)

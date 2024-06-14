@@ -10,6 +10,7 @@ from pygments import __version__ as pygments_version
 from niquests import __version__ as requests_version
 
 from . import __version__ as httpie_version
+from .cli.argparser import HTTPieArgumentParser
 from .cli.constants import OUT_REQ_BODY
 from .cli.nested_json import NestedJSONSyntaxError
 from .client import collect_messages
@@ -30,7 +31,7 @@ from .internal.daemon_runner import is_daemon_mode, run_daemon_task
 
 # noinspection PyDefaultArgument
 def raw_main(
-    parser: argparse.ArgumentParser,
+    parser: HTTPieArgumentParser,
     main_program: Callable[[argparse.Namespace, Environment], ExitStatus],
     args: List[Union[str, bytes]] = sys.argv,
     env: Environment = Environment(),
@@ -97,10 +98,7 @@ def raw_main(
     else:
         check_updates(env)
         try:
-            exit_status = main_program(
-                args=parsed_args,
-                env=env,
-            )
+            exit_status = main_program(parsed_args, env)
         except KeyboardInterrupt:
             env.stderr.write('\n')
             if include_traceback:
@@ -150,6 +148,7 @@ def raw_main(
     return exit_status
 
 
+# noinspection PyDefaultArgument
 def main(
     args: List[Union[str, bytes]] = sys.argv,
     env: Environment = Environment()
@@ -295,7 +294,7 @@ def program(args: argparse.Namespace, env: Environment) -> ExitStatus:
             )
             write_stream(stream=download_stream, outfile=download_to, flush=False)
             downloader.finish()
-            if downloader.interrupted:
+            if downloader.is_interrupted:
                 exit_status = ExitStatus.ERROR
                 env.log_error(
                     f'Incomplete download: size={downloader.status.total_size};'
