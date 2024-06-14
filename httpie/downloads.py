@@ -167,7 +167,6 @@ def get_content_length(response: niquests.Response) -> Optional[int]:
         pass
 
 
-
 def get_decodeable_content_encodings(encoded_response: niquests.Response) -> Optional[List[str]]:
     content_encoding = encoded_response.headers.get('Content-Encoding')
     if not content_encoding:
@@ -330,6 +329,7 @@ class Downloader:
         unique_filename = get_unique_filename(filename)
         return open(unique_filename, buffering=0, mode='a+b')
 
+
 DECODED_FROM_SUFFIX = ' - decoded from {encodings}'
 DECODED_SIZE_NOTE_SUFFIX = ' - decoded size'
 
@@ -347,7 +347,7 @@ class DownloadStatus:
         self.time_finished = None
         self.display = None
 
-    def started(self, output_file, resumed_from=0, total_size=None, decoded_from: List[str]=None):
+    def started(self, output_file, resumed_from=0, total_size=None, decoded_from: List[str] = None):
         assert self.time_started is None
         self.total_size = total_size
         self.decoded_from = decoded_from
