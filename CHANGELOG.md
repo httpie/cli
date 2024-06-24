@@ -25,6 +25,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - Fixed issue where the configuration directory was not created at runtime that made the update fetcher run everytime. ([#1527](https://github.com/httpie/cli/issues/1527))
 - Fixed cookie persistence in HTTPie session when targeting localhost. They were dropped due to the standard library. ([#1527](https://github.com/httpie/cli/issues/1527))
 - Fixed downloader when trying to fetch compressed content. The process will no longer exit with the "Incomplete download" error. ([#1554](https://github.com/httpie/cli/issues/1554), [#423](https://github.com/httpie/cli/issues/423), [#1527](https://github.com/httpie/cli/issues/1527))
+- Fixed downloader yielding an incorrect speed when the remote is using `Content-Encoding` aka. compressed body. ([#1554](https://github.com/httpie/cli/issues/1554), [#423](https://github.com/httpie/cli/issues/423), [#1527](https://github.com/httpie/cli/issues/1527))
 - Removed support for preserving the original casing of HTTP headers. This comes as a constraint of newer protocols, namely HTTP/2+ that normalize header keys by default. From the HTTPie user perspective, they are "prettified" in the output by default. e.g. `x-hello-world` is displayed as `X-Hello-World`.
 - Removed support for `pyopenssl`. ([#1531](https://github.com/httpie/cli/pull/1531))
 - Removed support for dead SSL protocols < TLS 1.0 (e.g. sslv3) as per pyopenssl removal. ([#1531](https://github.com/httpie/cli/pull/1531))

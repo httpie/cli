@@ -477,13 +477,16 @@ def http(
 def cd_clean_tmp_dir(assert_filenames_after=None):
     """Run commands inside a clean temporary directory, and verify created file names."""
     orig_cwd = os.getcwd()
-    with tempfile.TemporaryDirectory() as tmp_dirname:
-        os.chdir(tmp_dirname)
-        assert os.listdir('.') == []
-        try:
-            yield tmp_dirname
-            actual_filenames = os.listdir('.')
-            if assert_filenames_after is not None:
-                assert actual_filenames == assert_filenames_after, (actual_filenames, assert_filenames_after)
-        finally:
-            os.chdir(orig_cwd)
+    try:
+        with tempfile.TemporaryDirectory() as tmp_dirname:
+            os.chdir(tmp_dirname)
+            assert os.listdir('.') == []
+            try:
+                yield tmp_dirname
+                actual_filenames = os.listdir('.')
+                if assert_filenames_after is not None:
+                    assert actual_filenames == assert_filenames_after, (actual_filenames, assert_filenames_after)
+            finally:
+                os.chdir(orig_cwd)
+    except (PermissionError, NotADirectoryError):
+        pass

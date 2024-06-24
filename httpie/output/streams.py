@@ -75,7 +75,13 @@ class BaseStream(metaclass=ABCMeta):
                 for chunk in self.iter_body():
                     yield chunk
                     if self.on_body_chunk_downloaded:
-                        self.on_body_chunk_downloaded(chunk)
+                        # Niquests 3.7+ have a way to determine the "real" amt of raw data collected
+                        # Useful when the remote compress the body. We use the "untouched" amt of data to determine
+                        # the download speed.
+                        if hasattr(self.msg, "_orig") and hasattr(self.msg._orig, "download_progress") and self.msg._orig.download_progress:
+                            self.on_body_chunk_downloaded(self.msg._orig.download_progress.total)
+                        else:
+                            self.on_body_chunk_downloaded(chunk)
             except DataSuppressedError as e:
                 if self.output_options.headers:
                     yield b'\n'

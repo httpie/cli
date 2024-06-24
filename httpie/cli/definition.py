@@ -817,10 +817,30 @@ network.add_argument(
     )
 )
 network.add_argument(
+    "--disable-http1",
+    default=False,
+    action="store_true",
+    short_help="Disable the HTTP/1 protocol."
+)
+network.add_argument(
+    "--http1",
+    default=False,
+    action="store_true",
+    dest="force_http1",
+    short_help="Use the HTTP/1 protocol for the request."
+)
+network.add_argument(
     "--disable-http2",
     default=False,
     action="store_true",
     short_help="Disable the HTTP/2 protocol."
+)
+network.add_argument(
+    "--http2",
+    default=False,
+    action="store_true",
+    dest="force_http2",
+    short_help="Use the HTTP/2 protocol for the request."
 )
 network.add_argument(
     "--disable-http3",

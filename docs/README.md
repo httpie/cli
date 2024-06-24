@@ -1872,19 +1872,19 @@ HTTPie has full support for HTTP/1.1, HTTP/2, and HTTP/3.
 
 ### Disable HTTP/2, or HTTP/3
 
-You can at your own discretion toggle on and off HTTP/2, or/and HTTP/3.
+You can at your own discretion toggle on and off HTTP/1, HTTP/2, or/and HTTP/3.
 
 ```bash
 $ https --disable-http2 PUT pie.dev/put hello=world
 ```
 
 ```bash
-$ https --disable-http3 PUT pie.dev/put hello=world
+$ https --disable-http3 --disable-http1 PUT pie.dev/put hello=world
 ```
 
-### Force HTTP/3
+### Force HTTP/3, HTTP/2 or HTTP/1.1
 
-By opposition to the previous section, you can force the HTTP/3 negotiation.
+By opposition to the previous section, you can force the HTTP/3, HTTP/2 or HTTP/1.1 negotiation.
 
 ```bash
 $ https --http3 pie.dev/get
@@ -1899,19 +1899,28 @@ either HTTP/1.1 or HTTP/2.
 
 ### Protocol combinations
 
-Following `Force HTTP/3` and `Disable HTTP/2, or HTTP/3`, you may find a summary on how to make HTTPie negotiate a
+Following `Force HTTP/3, HTTP/2 and HTTP/1` and `Disable HTTP/1, HTTP/2, or HTTP/3`, you may find a summary on how to make HTTPie negotiate a
 specific protocol.
 
 |                         Arguments | HTTP/1.1 <br>enabled | HTTP/2 <br>enabled | HTTP/3 <br>enabled |
 |----------------------------------:|:--------------------:|:------------------:|:------------------:|
 |                         (Default) |          ✔           |         ✔          |         ✔          |
+|                 `--disable-http1` |          ✗           |         ✔          |         ✔          |
 |                 `--disable-http2` |          ✔           |         ✗          |         ✔          |
 |                 `--disable-http3` |          ✔           |         ✔          |         ✗          |
 | `--disable-http2 --disable-http3` |          ✔           |         ✗          |         ✗          |
+| `--disable-http1 --disable-http2` |          ✗           |         ✗          |         ✔          |
+|                         `--http1` |          ✔           |         ✗          |         ✗          |
+|                         `--http2` |          ✗           |         ✔          |         ✗          |
 |                         `--http3` |          ✗           |         ✗          |         ✔          |
 
-You cannot enforce HTTP/2 without prior knowledge nor can you negotiate it without TLS and ALPN.
-Also, you may not disable HTTP/1.1 as it is ultimately used as a fallback in case HTTP/2 and HTTP/3 are not supported.
+Some specifics, through:
+
+- You cannot enforce HTTP/3 over non HTTPS URLs.
+- You cannot disable both HTTP/1.1 and HTTP/2 for non HTTPS URLs.
+- Of course, you cannot disable all three protocols.
+- Those toggles do not apply to the DNS-over-HTTPS custom resolver. You will have to specify it within the resolver URL.
+- When reaching a HTTPS URL, the ALPN extension sent during SSL/TLS handshake is affected.
 
 ## Custom DNS resolver
 

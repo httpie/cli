@@ -89,10 +89,26 @@ def collect_messages(
         else:
             resolver = [ensure_resolver, "system://"]
 
+    if args.force_http1:
+        args.disable_http1 = False
+        args.disable_http2 = True
+        args.disable_http3 = True
+
+    if args.force_http2:
+        args.disable_http1 = True
+        args.disable_http2 = False
+        args.disable_http3 = True
+
+    if args.force_http3:
+        args.disable_http1 = True
+        args.disable_http2 = True
+        args.disable_http3 = False
+
     requests_session = build_requests_session(
         ssl_version=args.ssl_version,
         ciphers=args.ciphers,
         verify=bool(send_kwargs_mergeable_from_env['verify']),
+        disable_http1=args.disable_http1,
         disable_http2=args.disable_http2,
         disable_http3=args.disable_http3,
         resolver=resolver,
@@ -211,6 +227,7 @@ def build_requests_session(
     verify: bool,
     ssl_version: str = None,
     ciphers: str = None,
+    disable_http1: bool = False,
     disable_http2: bool = False,
     disable_http3: bool = False,
     resolver: typing.List[str] = None,
@@ -239,6 +256,8 @@ def build_requests_session(
         disable_ipv4=disable_ipv4,
         disable_ipv6=disable_ipv6,
         source_address=source_address,
+        disable_http1=disable_http1,
+        disable_http2=disable_http2,
     )
     https_adapter = HTTPieHTTPSAdapter(
         ciphers=ciphers,
@@ -247,6 +266,7 @@ def build_requests_session(
             AVAILABLE_SSL_VERSION_ARG_MAPPING[ssl_version]
             if ssl_version else None
         ),
+        disable_http1=disable_http1,
         disable_http2=disable_http2,
         disable_http3=disable_http3,
         resolver=resolver,

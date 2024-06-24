@@ -7,7 +7,7 @@ import os
 import re
 from mailbox import Message
 from time import monotonic
-from typing import IO, Optional, Tuple, List
+from typing import IO, Optional, Tuple, List, Union
 from urllib.parse import urlsplit
 
 import niquests
@@ -301,7 +301,7 @@ class Downloader:
     def is_interrupted(self) -> bool:
         return self.status.is_interrupted
 
-    def chunk_downloaded(self, chunk: bytes):
+    def chunk_downloaded(self, chunk_or_new_total: Union[bytes, int]):
         """
         A download progress callback.
 
@@ -309,7 +309,10 @@ class Downloader:
                       been downloaded and written to the output.
 
         """
-        self.status.chunk_downloaded(len(chunk))
+        if isinstance(chunk_or_new_total, int):
+            self.status.set_total(chunk_or_new_total)
+        else:
+            self.status.chunk_downloaded(len(chunk_or_new_total))
 
     @staticmethod
     def _get_output_file_from_response(
@@ -367,7 +370,8 @@ class DownloadStatus:
         if not self.env.show_displays:
             progress_display_class = DummyProgressDisplay
         else:
-            has_reliable_total = self.total_size is not None and not self.decoded_from
+            has_reliable_total = self.total_size is not None
+
             if has_reliable_total:
                 progress_display_class = ProgressDisplayFull
             else:
@@ -389,6 +393,12 @@ class DownloadStatus:
         assert self.time_finished is None
         self.downloaded += size
         self.display.update(size)
+
+    def set_total(self, total: int) -> None:
+        assert self.time_finished is None
+        prev_value = self.downloaded
+        self.downloaded = total
+        self.display.update(total - prev_value)
 
     @property
     def has_finished(self):
