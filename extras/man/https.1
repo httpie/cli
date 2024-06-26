@@ -1,5 +1,5 @@
 .\" This file is auto-generated from the parser declaration in httpie/cli/definition.py by extras/scripts/generate_man_pages.py.
-.TH https 1 "2024-01-01" "HTTPie 4.0.0.b1" "HTTPie Manual"
+.TH https 1 "2024-06-25" "HTTPie 4.0.0" "HTTPie Manual"
 .SH NAME
 https
 .SH SYNOPSIS
@@ -496,10 +496,28 @@ Bypass dot segment (/../ or /./) URL squashing.
 Enable streaming via chunked transfer encoding. The Transfer-Encoding header is set to chunked.
 
 
+.IP "\fB\,--disable-http1\/\fR"
+
+
+Disable the HTTP/1 protocol.
+
+
+.IP "\fB\,--http1\/\fR"
+
+
+Use the HTTP/1 protocol for the request.
+
+
 .IP "\fB\,--disable-http2\/\fR"
 
 
 Disable the HTTP/2 protocol.
+
+
+.IP "\fB\,--http2\/\fR"
+
+
+Use the HTTP/2 protocol for the request.
 
 
 .IP "\fB\,--disable-http3\/\fR"

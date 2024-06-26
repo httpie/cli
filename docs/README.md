@@ -1890,6 +1890,41 @@ By opposition to the previous section, you can force the HTTP/3, HTTP/2 or HTTP/
 $ https --http3 pie.dev/get
 ```
 
+For HTTP (unencrypted) URLs, you can enforce HTTP 1 or HTTP 2 but not HTTP 3.
+You cannot enforce multiple protocols like `--http2 --http3`, they (toggles) are mutually exclusive.
+
+### Protocol selection
+
+By default, HTTPie follows what modern browser do to choose a protocol.
+
+#### For HTTP URLs
+
+HTTP/1.1 will always be chosen unless you specified `--http2` to enforce HTTP/2 with prior knowledge (also known as h2c).
+
+Notes:
+
+- You cannot enforce HTTP/3.
+- You cannot disable both HTTP/1.1 and HTTP/2.
+
+#### For HTTPS URLs
+
+When reaching to an SSL/TLS server, HTTPie negotiate the protocol through what is called the ALPN extension during
+the handshake.
+
+Basically, HTTPie says during the "Hello" phase: "I can speak HTTP/1.1 and HTTP/2 over TCP, and you?".
+Depending on what the server respond to us, we will choose a mutual supported protocols.
+
+Nowadays, it is most certainly be HTTP/2 by default.
+
+Some specifics:
+
+- You cannot disable all three protocols.
+- Those toggles do not apply to the DNS-over-HTTPS custom resolver. You will have to specify it within the resolver URL.
+- When reaching a HTTPS URL, the ALPN extension sent during SSL/TLS handshake is affected.
+- HTTPie never tries HTTP/3 by default unless something hints us that it is possible.
+
+##### HTTP 3 Negotiation
+
 By default, HTTPie cannot negotiate HTTP/3 without a first HTTP/1.1, or HTTP/2 successful response unless the
 remote host specified a DNS HTTPS record that indicate its support (and by using a custom DNS resolver, see bellow section).
 
@@ -1897,30 +1932,7 @@ The remote server yield its support for HTTP/3 in the `Alt-Svc` header, if prese
 the successive requests via HTTP/3. You may use that argument in case the remote peer does not support
 either HTTP/1.1 or HTTP/2.
 
-### Protocol combinations
-
-Following `Force HTTP/3, HTTP/2 and HTTP/1` and `Disable HTTP/1, HTTP/2, or HTTP/3`, you may find a summary on how to make HTTPie negotiate a
-specific protocol.
-
-|                         Arguments | HTTP/1.1 <br>enabled | HTTP/2 <br>enabled | HTTP/3 <br>enabled |
-|----------------------------------:|:--------------------:|:------------------:|:------------------:|
-|                         (Default) |          ✔           |         ✔          |         ✔          |
-|                 `--disable-http1` |          ✗           |         ✔          |         ✔          |
-|                 `--disable-http2` |          ✔           |         ✗          |         ✔          |
-|                 `--disable-http3` |          ✔           |         ✔          |         ✗          |
-| `--disable-http2 --disable-http3` |          ✔           |         ✗          |         ✗          |
-| `--disable-http1 --disable-http2` |          ✗           |         ✗          |         ✔          |
-|                         `--http1` |          ✔           |         ✗          |         ✗          |
-|                         `--http2` |          ✗           |         ✔          |         ✗          |
-|                         `--http3` |          ✗           |         ✗          |         ✔          |
-
-Some specifics, through:
-
-- You cannot enforce HTTP/3 over non HTTPS URLs.
-- You cannot disable both HTTP/1.1 and HTTP/2 for non HTTPS URLs.
-- Of course, you cannot disable all three protocols.
-- Those toggles do not apply to the DNS-over-HTTPS custom resolver. You will have to specify it within the resolver URL.
-- When reaching a HTTPS URL, the ALPN extension sent during SSL/TLS handshake is affected.
+Note: HTTPie caches what server are QUIC compatible in the `config` directory so that we can remember.
 
 ## Custom DNS resolver
 
