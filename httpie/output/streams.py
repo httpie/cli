@@ -79,8 +79,15 @@ class BaseStream(metaclass=ABCMeta):
                         # Useful when the remote compress the body. We use the "untouched" amt of data to determine
                         # the download speed.
                         if hasattr(self.msg, "_orig") and hasattr(self.msg._orig, "download_progress") and self.msg._orig.download_progress:
+                            # this is plan A: using public interfaces!
                             self.on_body_chunk_downloaded(self.msg._orig.download_progress.total)
+                        elif hasattr(self.msg, "_orig") and hasattr(self.msg._orig, "raw") and hasattr(self.msg._orig.raw, "_fp_bytes_read"):
+                            # plan B, falling back on a private property that may disapear from urllib3-future...
+                            # this case is mandatory due to how the mocking library works. it does not use any "socket" but
+                            # rather a simple io.BytesIO.
+                            self.on_body_chunk_downloaded(self.msg._orig.raw._fp_bytes_read)
                         else:
+                            # well. this case will certainly cause issues if the body is compressed.
                             self.on_body_chunk_downloaded(chunk)
             except DataSuppressedError as e:
                 if self.output_options.headers:

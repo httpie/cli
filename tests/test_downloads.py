@@ -1,6 +1,7 @@
 import os
 import tempfile
 import time
+import zlib
 from unittest import mock
 from urllib.request import urlopen
 
@@ -15,7 +16,7 @@ from httpie.downloads import (
     ContentRangeError,
     Downloader,
     PARTIAL_CONTENT,
-    DECODED_SIZE_NOTE_SUFFIX,
+    DECODED_FROM_SUFFIX,
 )
 from niquests.structures import CaseInsensitiveDict
 from .utils import http, MockEnvironment, cd_clean_tmp_dir, DUMMY_URL
@@ -232,7 +233,6 @@ class TestDownloader:
                 # Ensure `pre_request()` is working as expected too
                 headers = {}
                 downloader.pre_request(headers)
-                assert headers['Accept-Encoding'] == 'identity'
                 assert headers['Range'] == 'bytes=3-'
 
                 downloader.start(
@@ -264,7 +264,7 @@ class TestDownloader:
     @responses.activate
     def test_incomplete_response(self):
         # We have incompleteness checks in the downloader, but it might not be needed as it’s built into (ni|req)uests.
-        error_msg = 'peer closed connection without sending complete message body (received 2 bytes, expected 1 more)'
+        error_msg = 'IncompleteRead(2 bytes read, 1 more expected)'
         responses.add(
             method=responses.GET,
             url=DUMMY_URL,
@@ -281,55 +281,53 @@ class TestDownloader:
 class TestDecodedDownloads:
     """Test downloading responses with `Content-Encoding`"""
 
-    # todo: find an appropriate way to mock compressed bodies within those tests.
-    # @responses.activate
-    # def test_decoded_response_no_content_length(self):
-    #     responses.add(
-    #         method=responses.GET,
-    #         url=DUMMY_URL,
-    #         headers={
-    #             'Content-Encoding': 'gzip, br',
-    #         },
-    #         body='123',
-    #     )
-    #     with cd_clean_tmp_dir():
-    #         r = http('--download', '--headers', DUMMY_URL)
-    #     print(r.stderr)
-    #     assert DECODED_FROM_SUFFIX.format(encodings='`gzip`, `br`') in r.stderr
-    #     assert DECODED_SIZE_NOTE_SUFFIX in r.stderr
-    #
-    # @responses.activate
-    # def test_decoded_response_with_content_length(self):
-    #     responses.add(
-    #         method=responses.GET,
-    #         url=DUMMY_URL,
-    #         headers={
-    #             'Content-Encoding': 'gzip, br',
-    #             'Content-Length': '3',
-    #         },
-    #         body='123',
-    #     )
-    #     with cd_clean_tmp_dir():
-    #         r = http('--download', DUMMY_URL)
-    #     print(r.stderr)
-    #     assert DECODED_FROM_SUFFIX.format(encodings='`gzip`, `br`') in r.stderr
-    #     assert DECODED_SIZE_NOTE_SUFFIX in r.stderr
-    #
-    # @responses.activate
-    # def test_decoded_response_without_content_length(self):
-    #     responses.add(
-    #         method=responses.GET,
-    #         url=DUMMY_URL,
-    #         headers={
-    #             'Content-Encoding': 'gzip, br',
-    #         },
-    #         body='123',
-    #     )
-    #     with cd_clean_tmp_dir():
-    #         r = http('--download', DUMMY_URL)
-    #     print(r.stderr)
-    #     assert DECODED_FROM_SUFFIX.format(encodings='`gzip`, `br`') in r.stderr
-    #     assert DECODED_SIZE_NOTE_SUFFIX in r.stderr
+    @responses.activate
+    def test_decoded_response_no_content_length(self):
+        responses.add(
+            method=responses.GET,
+            url=DUMMY_URL,
+            headers={
+                'Content-Encoding': 'deflate',
+            },
+            body=zlib.compress(b"foobar"),
+        )
+        with cd_clean_tmp_dir():
+            r = http('--download', '--headers', DUMMY_URL)
+        print(r.stderr)
+        assert DECODED_FROM_SUFFIX.format(encodings='`deflate`') in r.stderr
+
+    @responses.activate
+    def test_decoded_response_with_content_length(self):
+        payload = zlib.compress(b"foobar")
+
+        responses.add(
+            method=responses.GET,
+            url=DUMMY_URL,
+            headers={
+                'Content-Encoding': 'deflate',
+                'Content-Length': str(len(payload)),
+            },
+            body=payload,
+        )
+        with cd_clean_tmp_dir():
+            r = http('--download', DUMMY_URL)
+        print(r.stderr)
+        assert DECODED_FROM_SUFFIX.format(encodings='`deflate`') in r.stderr
+
+    @responses.activate
+    def test_decoded_response_without_content_length(self):
+        responses.add(
+            method=responses.GET,
+            url=DUMMY_URL,
+            headers={
+                'Content-Encoding': 'deflate',
+            },
+            body=zlib.compress(b'foobar'),
+        )
+        with cd_clean_tmp_dir():
+            r = http('--download', DUMMY_URL)
+        print(r.stderr)
+        assert DECODED_FROM_SUFFIX.format(encodings='`deflate`') in r.stderr
 
     @responses.activate
     def test_non_decoded_response_without_content_length(self):
@@ -344,7 +342,6 @@ class TestDecodedDownloads:
         with cd_clean_tmp_dir():
             r = http('--download', DUMMY_URL)
         print(r.stderr)
-        assert DECODED_SIZE_NOTE_SUFFIX not in r.stderr
 
     @responses.activate
     def test_non_decoded_response_with_content_length(self):
@@ -358,4 +355,3 @@ class TestDecodedDownloads:
         with cd_clean_tmp_dir():
             r = http('--download', DUMMY_URL)
         print(r.stderr)
-        assert DECODED_SIZE_NOTE_SUFFIX not in r.stderr

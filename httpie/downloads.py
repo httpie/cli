@@ -211,12 +211,6 @@ class Downloader:
         Might alter `request_headers`.
 
         """
-        # Ask the server not to encode the content so that we can resume, etc.
-        # TODO: Reconsider this once the underlying library can report raw download size (i.e., not decoded).
-        #       Then it might still be needed when resuming. But in the default case, it won’t probably be necessary.
-        #       <https://github.com/jawah/niquests/issues/127>
-        request_headers['Accept-Encoding'] = 'identity'
-
         if self._resume:
             bytes_have = os.path.getsize(self._output_file.name)
             if bytes_have:
@@ -301,11 +295,11 @@ class Downloader:
     def is_interrupted(self) -> bool:
         return self.status.is_interrupted
 
-    def chunk_downloaded(self, chunk_or_new_total: Union[bytes, int]):
+    def chunk_downloaded(self, chunk_or_new_total: Union[bytes, int]) -> None:
         """
         A download progress callback.
 
-        :param chunk: A chunk of response body data that has just
+        :param chunk_or_new_total: A chunk of response body data that has just
                       been downloaded and written to the output.
 
         """
@@ -333,8 +327,7 @@ class Downloader:
         return open(unique_filename, buffering=0, mode='a+b')
 
 
-DECODED_FROM_SUFFIX = ' - decoded from {encodings}'
-DECODED_SIZE_NOTE_SUFFIX = ' - decoded size'
+DECODED_FROM_SUFFIX = ' - decoded using {encodings}'
 
 
 class DownloadStatus:
@@ -365,8 +358,14 @@ class DownloadStatus:
             ProgressDisplayFull
         )
         message = f'Downloading to {output_file.name}'
-        message_suffix = ''
         summary_suffix = ''
+
+        if self.decoded_from:
+            encodings = ', '.join(f'`{enc}`' for enc in self.decoded_from)
+            message_suffix = DECODED_FROM_SUFFIX.format(encodings=encodings)
+        else:
+            message_suffix = ''
+
         if not self.env.show_displays:
             progress_display_class = DummyProgressDisplay
         else:
@@ -375,11 +374,8 @@ class DownloadStatus:
             if has_reliable_total:
                 progress_display_class = ProgressDisplayFull
             else:
-                if self.decoded_from:
-                    encodings = ', '.join(f'`{enc}`' for enc in self.decoded_from)
-                    message_suffix = DECODED_FROM_SUFFIX.format(encodings=encodings)
-                    summary_suffix = DECODED_SIZE_NOTE_SUFFIX
                 progress_display_class = ProgressDisplayNoTotal
+
         self.display = progress_display_class(
             env=self.env,
             total_size=self.total_size,
