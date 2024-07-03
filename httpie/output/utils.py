@@ -13,15 +13,15 @@ def load_prefixed_json(data: str) -> Tuple[str, json.JSONDecoder]:
     # First, the full data.
     try:
         return '', load_json_preserve_order_and_dupe_keys(data)
-    except ValueError:
-        pass
+    except ValueError as exc:
+        raise ValueError('Invalid JSON') from exc
 
     # Then, try to find the start of the actual body.
     data_prefix, body = parse_prefixed_json(data)
     try:
         return data_prefix, load_json_preserve_order_and_dupe_keys(body)
-    except ValueError:
-        raise ValueError('Invalid JSON')
+    except ValueError as exc:
+        raise ValueError('Invalid JSON') from exc
 
 
 def parse_prefixed_json(data: str) -> Tuple[str, str]:

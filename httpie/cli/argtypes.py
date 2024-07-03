@@ -219,8 +219,8 @@ def parse_format_options(s: str, defaults: Optional[dict]) -> dict:
         try:
             path, value = option.lower().split(':')
             section, key = path.split('.')
-        except ValueError:
-            raise argparse.ArgumentTypeError(f'invalid option {option!r}')
+        except ValueError as exc:
+            raise argparse.ArgumentTypeError(f'invalid option {option!r}') from exc
 
         if value in value_map:
             parsed_value = value_map[value]
@@ -235,9 +235,8 @@ def parse_format_options(s: str, defaults: Optional[dict]) -> dict:
         else:
             try:
                 default_value = defaults[section][key]
-            except KeyError:
-                raise argparse.ArgumentTypeError(
-                    f'invalid key {path!r}')
+            except KeyError as exc:
+                raise argparse.ArgumentTypeError(f'invalid key {path!r}') from exc
 
             default_type, parsed_type = type(default_value), type(parsed_value)
             if parsed_type is not default_type:
@@ -246,7 +245,7 @@ def parse_format_options(s: str, defaults: Optional[dict]) -> dict:
                     f' {value!r} in {option!r}'
                     f' (expected {default_type.__name__}'
                     f' got {parsed_type.__name__})'
-                )
+                ) from exc
 
         options[section][key] = parsed_value
 
@@ -262,9 +261,8 @@ PARSED_DEFAULT_FORMAT_OPTIONS = parse_format_options(
 def response_charset_type(encoding: str) -> str:
     try:
         ''.encode(encoding)
-    except LookupError:
-        raise argparse.ArgumentTypeError(
-            f'{encoding!r} is not a supported encoding')
+    except LookupError as exc:
+        raise argparse.ArgumentTypeError(f'{encoding!r} is not a supported encoding') from exc
     return encoding
 
 
