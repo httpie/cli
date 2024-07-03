@@ -154,7 +154,7 @@ def process_file_upload_arg(arg: KeyValueArg) -> Tuple[str, IO, str]:
     try:
         f = open(os.path.expanduser(filename), 'rb')
     except OSError as e:
-        raise ParseError(f'{arg.orig!r}: {e}')
+        raise ParseError(f'{arg.orig!r}: {e}') from e
     return (
         os.path.basename(filename),
         f,
@@ -215,16 +215,16 @@ def load_text_file(item: KeyValueArg) -> str:
         with open(os.path.expanduser(path), 'rb') as f:
             return f.read().decode()
     except OSError as e:
-        raise ParseError(f'{item.orig!r}: {e}')
-    except UnicodeDecodeError:
+        raise ParseError(f'{item.orig!r}: {e}') from e
+    except UnicodeDecodeError as exc:
         raise ParseError(
             f'{item.orig!r}: cannot embed the content of {item.value!r},'
             ' not a UTF-8 or ASCII-encoded text file'
-        )
+        ) from exc
 
 
 def load_json(arg: KeyValueArg, contents: str) -> JSONType:
     try:
         return load_json_preserve_order_and_dupe_keys(contents)
     except ValueError as e:
-        raise ParseError(f'{arg.orig!r}: {e}')
+        raise ParseError(f'{arg.orig!r}: {e}') from e

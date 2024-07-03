@@ -207,12 +207,12 @@ def fetch(url: str, params: Optional[Dict[str, str]] = None) -> UserInfo:
                     xrate_limit_reset = int(exc.response.headers['X-RateLimit-Reset'])
                     wait = xrate_limit_reset - now
                     if wait > 20:
-                        raise FinishedForNow()
+                        raise FinishedForNow() from exc
                     debug(' !', 'Waiting', wait, 'seconds before another try ...')
                     sleep(wait)
                 continue
             return req.json()
-    assert ValueError('Rate limit exceeded')
+    raise ValueError('Rate limit exceeded')
 
 
 def new_person(**kwargs: str) -> Person:
