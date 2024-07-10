@@ -338,13 +338,14 @@ def test_complex_json_arguments_with_non_json(httpbin, request_type, value):
             [
                 r'foo\[key\]:=1',
                 r'bar\[1\]:=2',
-                r'baz\[\]:3',
+                r'baz\[\]:=3',
                 r'quux[key\[escape\]]:=4',
                 r'quux[key 2][\\][\\\\][\\\[\]\\\]\\\[\n\\]:=5',
             ],
             {
                 'foo[key]': 1,
                 'bar[1]': 2,
+                'baz[]': 3,
                 'quux': {
                     'key[escape]': 4,
                     'key 2': {'\\': {'\\\\': {'\\[]\\]\\[\\n\\': 5}}},

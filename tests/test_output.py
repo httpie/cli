@@ -1,17 +1,14 @@
 import argparse
+import io
+import json
+import warnings
 from pathlib import Path
 from unittest import mock
-
-import json
-import os
-import io
-import warnings
 from urllib.request import urlopen
 
+import niquests
 import pytest
-import requests
 import responses
-
 from httpie.cli.argtypes import (
     PARSED_DEFAULT_FORMAT_OPTIONS,
     parse_format_options,
@@ -21,7 +18,7 @@ from httpie.encoding import UTF8
 from httpie.output.formatters.colors import get_lexer, PIE_STYLE_NAMES, BUNDLED_STYLES
 from httpie.status import ExitStatus
 from .fixtures import XML_DATA_RAW, XML_DATA_FORMATTED
-from .utils import COLOR, CRLF, HTTP_OK, MockEnvironment, http, DUMMY_URL, strip_colors
+from .utils import COLOR, CRLF, HTTP_OK, MockEnvironment, http, DUMMY_URL, strip_colors, cd_clean_tmp_dir
 
 
 # For ensuring test reproducibility, avoid using the unsorted
@@ -97,18 +94,22 @@ class TestQuietFlag:
         (['-q'], 1),
         (['-qq'], 0),
     ])
-    # Might fail on Windows due to interference from other warnings.
-    @pytest.mark.xfail
     def test_quiet_on_python_warnings(self, test_patch, httpbin, flags, expected_warnings):
         def warn_and_run(*args, **kwargs):
             warnings.warn('warning!!')
             return ExitStatus.SUCCESS
 
         test_patch.side_effect = warn_and_run
-        with pytest.warns(None) as record:
-            http(*flags, httpbin + '/get')
 
-        assert len(record) == expected_warnings
+        if expected_warnings == 0:
+            with warnings.catch_warnings():
+                warnings.simplefilter("error")
+                http(*flags, httpbin + '/get')
+        else:
+            with pytest.warns(Warning) as record:
+                http(*flags, httpbin + '/get')
+
+            assert len(record) >= expected_warnings
 
     def test_double_quiet_on_error(self, httpbin):
         r = http(
@@ -116,7 +117,7 @@ class TestQuietFlag:
             tolerate_error_exit_status=True,
         )
         assert not r
-        assert 'Couldn’t resolve the given hostname' in r.stderr
+        assert 'Couldn’t resolve the given hostname' in r.stderr or 'Name or service not known' in r.stderr
 
     @pytest.mark.parametrize('quiet_flags', QUIET_SCENARIOS)
     @mock.patch('httpie.cli.argtypes.AuthCredentials._getpass',
@@ -155,16 +156,13 @@ class TestQuietFlag:
 
     @pytest.mark.parametrize('quiet_flags', QUIET_SCENARIOS)
     @pytest.mark.parametrize('with_download', [True, False])
-    def test_quiet_with_output_redirection(self, tmp_path, httpbin, quiet_flags, with_download):
+    def test_quiet_with_output_redirection(self, httpbin, quiet_flags, with_download):
         url = httpbin + '/robots.txt'
         output_path = Path('output.txt')
         env = MockEnvironment()
-        orig_cwd = os.getcwd()
-        output = requests.get(url).text
+        output = niquests.get(url).text
         extra_args = ['--download'] if with_download else []
-        os.chdir(tmp_path)
-        try:
-            assert os.listdir('.') == []
+        with cd_clean_tmp_dir(assert_filenames_after=[str(output_path)]):
             r = http(
                 *quiet_flags,
                 '--output', str(output_path),
@@ -172,7 +170,6 @@ class TestQuietFlag:
                 url,
                 env=env
             )
-            assert os.listdir('.') == [str(output_path)]
             assert r == ''
             assert r.stderr == ''
             assert env.stderr is env.devnull
@@ -181,8 +178,6 @@ class TestQuietFlag:
             else:
                 assert env.stdout is not env.devnull  # --output swaps stdout.
             assert output_path.read_text(encoding=UTF8) == output
-        finally:
-            os.chdir(orig_cwd)
 
 
 class TestVerboseFlag:
@@ -214,7 +209,7 @@ class TestVerboseFlag:
     def test_verbose_implies_all(self, httpbin):
         r = http('--verbose', '--follow', httpbin + '/redirect/1')
         assert 'GET /redirect/1 HTTP/1.1' in r
-        assert 'HTTP/1.1 302 FOUND' in r
+        assert 'HTTP/1.1 302 Found' in r
         assert 'GET /get HTTP/1.1' in r
         assert HTTP_OK in r
 
@@ -281,8 +276,14 @@ def test_ensure_status_code_is_shown_on_all_themes(http_server, style, msg):
              http_server + '/status/msg',
              '--raw', msg, env=env)
 
+    # Custom reason phrase are most likely to disappear,
+    # due to HTTP/2+ protocols. urllib3.future replace them anyway in HTTP/1.1
+    # for uniformity across protocols.
+    if 'CUSTOM' in msg:
+        msg = ' OK'
+
     # Trailing space is stripped away.
-    assert 'HTTP/1.0 200' + msg.rstrip() in strip_colors(r)
+    assert 'HTTP/1.1 200' + msg.rstrip() in strip_colors(r)
 
 
 class TestPrettyOptions:

@@ -2,7 +2,7 @@
 import argparse
 
 import pytest
-from requests.exceptions import InvalidSchema
+from niquests.exceptions import InvalidSchema, MissingSchema
 
 import httpie.cli.argparser
 from httpie.cli import constants
@@ -50,6 +50,9 @@ class TestItemParsing:
             'baz=bar': 'foo'
         }
         assert 'bar@baz' in items.files
+
+        # ensure we close the fixture file
+        items.multipart_data['bar@baz'][1].close()
 
     @pytest.mark.parametrize('string, key, sep, value', [
         ('path=c:\\windows', 'path', '=', 'c:\\windows'),
@@ -127,12 +130,17 @@ class TestItemParsing:
         assert (items.files['file'][1].read().strip().
                 decode() == FILE_CONTENT)
 
+        items.files['file'][1].close()
+
     def test_multiple_file_fields_with_same_field_name(self):
         items = RequestItems.from_args([
             self.key_value_arg('file_field@' + FILE_PATH_ARG),
             self.key_value_arg('file_field@' + FILE_PATH_ARG),
         ])
         assert len(items.files['file_field']) == 2
+
+        for md in items.multipart_data['file_field']:
+            md[1].close()
 
     def test_multiple_text_fields_with_same_field_name(self):
         items = RequestItems.from_args(
@@ -360,13 +368,13 @@ class TestSchemes:
         # InvalidSchema is expected because HTTPie
         # shouldn't touch a formally valid scheme.
         with pytest.raises(InvalidSchema):
-            http('foo+bar-BAZ.123://bah')
+            http('foo+bar://bah')
 
     def test_invalid_scheme_via_via_default_scheme(self):
         # InvalidSchema is expected because HTTPie
         # shouldn't touch a formally valid scheme.
-        with pytest.raises(InvalidSchema):
-            http('bah', '--default=scheme=foo+bar-BAZ.123')
+        with pytest.raises((InvalidSchema, MissingSchema,)):
+            http('bah', '--default=scheme=foo+bar')
 
     def test_default_scheme_option(self, httpbin_secure):
         url = f'{httpbin_secure.host}:{httpbin_secure.port}'

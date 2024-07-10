@@ -1,15 +1,13 @@
 import json
-import os
 import shutil
+from base64 import b64encode
 from contextlib import contextmanager
 from datetime import datetime
-from unittest import mock
 from pathlib import Path
 from typing import Iterator
+from unittest import mock
 
 import pytest
-
-from .fixtures import FILE_PATH_ARG, UNICODE
 from httpie.context import Environment
 from httpie.encoding import UTF8
 from httpie.plugins import AuthPlugin
@@ -17,9 +15,9 @@ from httpie.plugins.builtin import HTTPBasicAuth
 from httpie.plugins.registry import plugin_manager
 from httpie.sessions import Session
 from httpie.utils import get_expired_cookies
+from .fixtures import FILE_PATH_ARG, UNICODE
 from .test_auth_plugins import basic_auth
-from .utils import DUMMY_HOST, HTTP_OK, MockEnvironment, http, mk_config_dir
-from base64 import b64encode
+from .utils import DUMMY_HOST, HTTP_OK, MockEnvironment, http, mk_config_dir, cd_clean_tmp_dir
 
 
 class SessionTestBase:
@@ -253,13 +251,9 @@ class TestSession(SessionTestBase):
     def test_download_in_session(self, tmp_path, httpbin):
         # https://github.com/httpie/cli/issues/412
         self.start_session(httpbin)
-        cwd = os.getcwd()
-        os.chdir(tmp_path)
-        try:
+        with cd_clean_tmp_dir(assert_filenames_after=['get.json']):
             http('--session=test', '--download',
                  httpbin + '/get', env=self.env())
-        finally:
-            os.chdir(cwd)
 
     @pytest.mark.parametrize(
         'auth_require_param, auth_parse_param',
@@ -822,19 +816,27 @@ def test_session_multiple_headers_with_same_name(basic_session, httpbin):
     [
         (
             'localhost_http_server',
-            {'secure_cookie': 'foo', 'insecure_cookie': 'bar'}
+            {'insecure_cookie': 'bar'}
         ),
         (
             'remote_httpbin',
             {'insecure_cookie': 'bar'}
+        ),
+        (
+            'httpbin_secure_untrusted',
+            {'secure_cookie': 'foo', 'insecure_cookie': 'bar'}
         )
     ]
 )
 def test_secure_cookies_on_localhost(mock_env, tmp_path, server, expected_cookies, request):
     server = request.getfixturevalue(server)
     session_path = tmp_path / 'session.json'
+    server = str(server).replace('127.0.0.1', 'localhost')
+    additional_args = ['--verify=no'] if "https" in server else []
+
     http(
         '--session', str(session_path),
+        *additional_args,
         server + '/cookies/set',
         'secure_cookie==foo',
         'insecure_cookie==bar'
@@ -847,6 +849,8 @@ def test_secure_cookies_on_localhost(mock_env, tmp_path, server, expected_cookie
 
     r = http(
         '--session', str(session_path),
+        *additional_args,
         server + '/cookies'
     )
+
     assert r.json == {'cookies': expected_cookies}

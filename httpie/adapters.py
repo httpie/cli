@@ -1,5 +1,5 @@
 from httpie.cli.dicts import HTTPHeadersDict
-from requests.adapters import HTTPAdapter
+from niquests.adapters import HTTPAdapter
 
 
 class HTTPieHTTPAdapter(HTTPAdapter):

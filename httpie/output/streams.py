@@ -5,7 +5,7 @@ from typing import Callable, Iterable, Optional, Union
 from .processing import Conversion, Formatting
 from ..context import Environment
 from ..encoding import smart_decode, smart_encode, UTF8
-from ..models import HTTPMessage, OutputOptions
+from ..models import HTTPMessage, OutputOptions, RequestsMessageKind
 from ..utils import parse_content_type_header
 
 
@@ -62,6 +62,10 @@ class BaseStream(metaclass=ABCMeta):
 
     def __iter__(self) -> Iterable[bytes]:
         """Return an iterator over `self.msg`."""
+        if self.output_options.meta and self.output_options.kind is RequestsMessageKind.REQUEST:
+            yield self.get_metadata()
+            yield b'\n\n'
+
         if self.output_options.headers:
             yield self.get_headers()
             yield b'\r\n\r\n'
@@ -71,13 +75,26 @@ class BaseStream(metaclass=ABCMeta):
                 for chunk in self.iter_body():
                     yield chunk
                     if self.on_body_chunk_downloaded:
-                        self.on_body_chunk_downloaded(chunk)
+                        # Niquests 3.7+ have a way to determine the "real" amt of raw data collected
+                        # Useful when the remote compress the body. We use the "untouched" amt of data to determine
+                        # the download speed.
+                        if hasattr(self.msg, "_orig") and hasattr(self.msg._orig, "download_progress") and self.msg._orig.download_progress:
+                            # this is plan A: using public interfaces!
+                            self.on_body_chunk_downloaded(self.msg._orig.download_progress.total)
+                        elif hasattr(self.msg, "_orig") and hasattr(self.msg._orig, "raw") and hasattr(self.msg._orig.raw, "_fp_bytes_read"):
+                            # plan B, falling back on a private property that may disapear from urllib3-future...
+                            # this case is mandatory due to how the mocking library works. it does not use any "socket" but
+                            # rather a simple io.BytesIO.
+                            self.on_body_chunk_downloaded(self.msg._orig.raw._fp_bytes_read)
+                        else:
+                            # well. this case will certainly cause issues if the body is compressed.
+                            self.on_body_chunk_downloaded(chunk)
             except DataSuppressedError as e:
                 if self.output_options.headers:
                     yield b'\n'
                 yield e.message
 
-        if self.output_options.meta:
+        if self.output_options.meta and self.output_options.kind is RequestsMessageKind.RESPONSE:
             if self.output_options.body:
                 yield b'\n\n'
 
@@ -88,7 +105,7 @@ class BaseStream(metaclass=ABCMeta):
 class RawStream(BaseStream):
     """The message is streamed in chunks with no processing."""
 
-    CHUNK_SIZE = 1024 * 100
+    CHUNK_SIZE = -1  # '-1' means that we want to receive chunks exactly as they arrive.
     CHUNK_SIZE_BY_LINE = 1
 
     def __init__(self, chunk_size=CHUNK_SIZE, **kwargs):

@@ -143,13 +143,17 @@ class Config(BaseConfigDict):
     def __init__(self, directory: Union[str, Path] = DEFAULT_CONFIG_DIR):
         self.directory = Path(directory)
         super().__init__(path=self.directory / self.FILENAME)
+        # this one ensure we do not init HTTPie without the proper config directory
+        # there's an issue where the fetch_update daemon run without having the directory present. that induce a
+        # loop trying to fetch latest versions information.
+        self.ensure_directory()
         self.update(self.DEFAULTS)
 
     @property
     def default_options(self) -> list:
         return self['default_options']
 
-    def _configured_path(self, config_option: str, default: str) -> None:
+    def _configured_path(self, config_option: str, default: str) -> Path:
         return Path(
             self.get(config_option, self.directory / default)
         ).expanduser().resolve()
@@ -161,6 +165,10 @@ class Config(BaseConfigDict):
     @property
     def version_info_file(self) -> Path:
         return self._configured_path('version_info_file', 'version_info.json')
+
+    @property
+    def quic_file(self) -> Path:
+        return self._configured_path('quic_file', 'quic.json')
 
     @property
     def developer_mode(self) -> bool:

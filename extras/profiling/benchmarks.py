@@ -179,7 +179,7 @@ for pretty in ['all', 'none']:
         [
             '--print=HBhb',
             f'--pretty={pretty}',
-            'httpbin.org/stream/1000'
+            'pie.dev/stream/1000'
         ]
     )
 DownloadRunner('download', '`http --download :/big_file.txt` (3GB)', '3G')

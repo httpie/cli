@@ -6,6 +6,7 @@ class Expect(Enum):
     Predefined token types we can expect in the output.
 
     """
+    REQUEST_META = auto()
     REQUEST_HEADERS = auto()
     RESPONSE_HEADERS = auto()
     RESPONSE_META = auto()
@@ -47,6 +48,7 @@ class ExpectSequence:
         *TERMINAL_RESPONSE,
     ]
     TERMINAL_EXCHANGE_META = [
+        Expect.REQUEST_META,
         *TERMINAL_EXCHANGE,
         Expect.RESPONSE_META
     ]

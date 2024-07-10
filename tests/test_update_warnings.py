@@ -197,7 +197,8 @@ def with_warnings(tmp_path):
     env = PersistentMockEnvironment()
     env.config['version_info_file'] = tmp_path / 'version.json'
     env.config['disable_update_warnings'] = False
-    return env
+    yield env
+    env.cleanup(force=True)
 
 
 @pytest.fixture
@@ -205,7 +206,8 @@ def without_warnings(tmp_path):
     env = PersistentMockEnvironment()
     env.config['version_info_file'] = tmp_path / 'version.json'
     env.config['disable_update_warnings'] = True
-    return env
+    yield env
+    env.cleanup(force=True)
 
 
 @pytest.fixture
@@ -216,7 +218,7 @@ def fetch_update_mock(mocker):
 
 @pytest.fixture
 def static_fetch_data(mocker):
-    mock_get = mocker.patch('requests.get')
+    mock_get = mocker.patch('niquests.get')
     mock_get.return_value.status_code = 200
     mock_get.return_value.json.return_value = {
         BUILD_CHANNEL: HIGHEST_VERSION,

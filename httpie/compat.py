@@ -4,6 +4,31 @@ from typing import Any, Optional, Iterable
 from httpie.cookies import HTTPieCookiePolicy
 from http import cookiejar # noqa
 
+from niquests._compat import HAS_LEGACY_URLLIB3
+
+# to understand why this is required
+# see https://niquests.readthedocs.io/en/latest/community/faq.html#what-is-urllib3-future
+# short story, urllib3 (import/top-level import) may be the legacy one https://github.com/urllib3/urllib3
+# instead of urllib3-future https://github.com/jawah/urllib3.future used by Niquests
+# or only the secondary entry point could be available (e.g. urllib3_future on some distro without urllib3)
+if not HAS_LEGACY_URLLIB3:
+    # noinspection PyPackageRequirements
+    import urllib3  # noqa: F401
+    from urllib3.util import SKIP_HEADER, SKIPPABLE_HEADERS, parse_url, Timeout  # noqa: F401
+    from urllib3.fields import RequestField, format_header_param_rfc2231  # noqa: F401
+    from urllib3.util.ssl_ import (  # noqa: F401
+        create_urllib3_context,
+        resolve_ssl_version,
+    )
+else:
+    # noinspection PyPackageRequirements
+    import urllib3_future as urllib3  # noqa: F401
+    from urllib3_future.util import SKIP_HEADER, SKIPPABLE_HEADERS, parse_url, Timeout  # noqa: F401
+    from urllib3_future.fields import RequestField, format_header_param_rfc2231  # noqa: F401
+    from urllib3_future.util.ssl_ import (  # noqa: F401
+        create_urllib3_context,
+        resolve_ssl_version,
+    )
 
 # Request does not carry the original policy attached to the
 # cookie jar, so until it is resolved we change the global cookie

@@ -1,17 +1,18 @@
 """Utilities for HTTPie test suite."""
+import contextlib
+import os
 import re
 import shlex
-import os
 import sys
 import time
 import json
 import tempfile
-import warnings
 import pytest
 from contextlib import suppress
 from io import BytesIO
 from pathlib import Path
 from typing import Any, Optional, Union, List, Iterable
+from shutil import rmtree
 
 import httpie.core as core
 import httpie.manager.__main__ as manager
@@ -30,8 +31,6 @@ REMOTE_HTTPBIN_DOMAIN = 'pie.dev'
 # <https://github.com/kevin1024/pytest-httpbin/issues/28>
 HTTPBIN_WITH_CHUNKED_SUPPORT_DOMAIN = 'pie.dev'
 HTTPBIN_WITH_CHUNKED_SUPPORT = 'http://' + HTTPBIN_WITH_CHUNKED_SUPPORT_DOMAIN
-
-IS_PYOPENSSL = os.getenv('HTTPIE_TEST_WITH_PYOPENSSL', '0') == '1'
 
 TESTS_ROOT = Path(__file__).parent.parent
 CRLF = '\r\n'
@@ -125,6 +124,11 @@ class StdinBytesIO(BytesIO):
     """To be used for `MockEnvironment.stdin`"""
     len = 0  # See `prepare_request_body()`
 
+    def peek(self, size):
+        buf = self.read(size)
+        self.seek(0)
+        return buf
+
 
 class MockEnvironment(Environment):
     """Environment subclass with reasonable defaults for testing."""
@@ -132,14 +136,14 @@ class MockEnvironment(Environment):
     stdin_isatty = True
     stdout_isatty = True
     is_windows = False
-    show_displays = False
+    show_displays = True
 
     def __init__(self, create_temp_config_dir=True, **kwargs):
         self._encoder = Encoder()
         if 'stdout' not in kwargs:
             kwargs['stdout'] = tempfile.NamedTemporaryFile(
                 mode='w+t',
-                prefix='httpie_stderr',
+                prefix='httpie_stdout',
                 newline='',
                 encoding=UTF8,
             )
@@ -170,10 +174,15 @@ class MockEnvironment(Environment):
         self.devnull.close()
         self.stdout.close()
         self.stderr.close()
-        warnings.resetwarnings()
+        if self._orig_stdout and self._orig_stdout != self.stdout:
+            self._orig_stdout.close()
+        if self._orig_stderr and self.stderr != self._orig_stderr:
+            self._orig_stderr.close()
+        self.devnull.close()
+        # it breaks without reasons pytest filterwarnings
+        # warnings.resetwarnings()
         if self._delete_config_dir:
             assert self._temp_dir in self.config_dir.parents
-            from shutil import rmtree
             rmtree(self.config_dir, ignore_errors=True)
 
     def __del__(self):
@@ -185,8 +194,16 @@ class MockEnvironment(Environment):
 
 
 class PersistentMockEnvironment(MockEnvironment):
-    def cleanup(self):
-        pass
+    def cleanup(self, *, force: bool = False):
+        if force:
+            self.devnull.close()
+            self.stdout.close()
+            self.stderr.close()
+            if self._orig_stdout and self._orig_stdout != self.stdout:
+                self._orig_stdout.close()
+            if self._orig_stderr and self.stderr != self._orig_stderr:
+                self._orig_stderr.close()
+            self.devnull.close()
 
 
 class BaseCLIResponse:
@@ -392,6 +409,7 @@ def http(
             add_to_args.append('--timeout=3')
 
     complete_args = [program_name, *add_to_args, *args]
+
     # print(' '.join(complete_args))
 
     def dump_stderr():
@@ -453,3 +471,22 @@ def http(
 
     finally:
         env.cleanup()
+
+
+@contextlib.contextmanager
+def cd_clean_tmp_dir(assert_filenames_after=None):
+    """Run commands inside a clean temporary directory, and verify created file names."""
+    orig_cwd = os.getcwd()
+    try:
+        with tempfile.TemporaryDirectory() as tmp_dirname:
+            os.chdir(tmp_dirname)
+            assert os.listdir('.') == []
+            try:
+                yield tmp_dirname
+                actual_filenames = os.listdir('.')
+                if assert_filenames_after is not None:
+                    assert actual_filenames == assert_filenames_after, (actual_filenames, assert_filenames_after)
+            finally:
+                os.chdir(orig_cwd)
+    except (PermissionError, NotADirectoryError):
+        pass
