@@ -11,7 +11,6 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - Added support for alternative DNS resolvers via `--resolver`. DNS over HTTPS, DNS over TLS, DNS over QUIC, and DNS over UDP are accepted. ([#99](https://github.com/httpie/cli/issues/99), [#1531](https://github.com/httpie/cli/pull/1531))
 - Added support for binding to a specific network adapter with `--interface`. ([#1422](https://github.com/httpie/cli/issues/1422), [#1531](https://github.com/httpie/cli/pull/1531))
 - Added support for specifying the local port with `--local-port`. ([#1456](https://github.com/httpie/cli/issues/1456), [#1531](https://github.com/httpie/cli/pull/1531))
-- Added the ability to [unset](https://httpie.io/docs/cli/default-request-headers) the `User-Agent`, and `Accept-Encoding` headers. ([#1502](https://github.com/httpie/cli/issues/1502))
 - Added request metadata for the TLS certificate, negotiated version with cipher, the revocation status and the remote peer IP address. ([#1495](https://github.com/httpie/cli/issues/1495), [#1023](https://github.com/httpie/cli/issues/1023), [#826](https://github.com/httpie/cli/issues/826), [#1531](https://github.com/httpie/cli/pull/1531))
 - Added support to load the operating system trust store for the peer certificate validation. ([#480](https://github.com/httpie/cli/issues/480), [#1531](https://github.com/httpie/cli/pull/1531))
 - Added support for using the system trust store to retrieve root CAs for verifying TLS certificates. ([#1531](https://github.com/httpie/cli/pull/1531))
@@ -35,7 +34,13 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 Existing plugins are expected to work without any changes. The only caveat would be that certain plugins explicitly require `requests`.
 Future contributions may be made in order to relax the constraints where applicable.
 
-## [3.2.2](https://github.com/httpie/cli/compare/3.2.1...3.2.2) (2022-05-19)
+## [3.2.3](https://github.com/httpie/cli/compare/3.2.2...3.2.3) (2024-07-10)
+
+- Fix SSL connections by pinning the `requests` version to `2.31.0`. (#1583, #1581)
+- Make it possible to [unset](https://httpie.io/docs/cli/default-request-headers) the `User-Agent` and `Accept-Encoding` request headers. ([#1502](https://github.com/httpie/cli/issues/1502))
+
+
+## [3.2.2](https://github.com/httpie/cli/compare/3.2.1...3.2.2) (2023-05-19)
 
 - Fixed compatibility with urllib3 2.0.0. ([#1499](https://github.com/httpie/cli/issues/1499))
 
