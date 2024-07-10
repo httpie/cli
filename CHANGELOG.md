@@ -3,11 +3,12 @@
 This document records all notable changes to [HTTPie](https://httpie.io).
 This project adheres to [Semantic Versioning](https://semver.org/).
 
-## [3.3.0-dev](https://github.com/httpie/cli/compare/3.2.2...master) (unreleased)
+## [3.2.3](https://github.com/httpie/cli/compare/3.2.2...3.2.3) (2024-07-10)
 
-- Make it possible to [unset](https://httpie.io/docs/cli/default-request-headers) the `User-Agent`, `Accept-Encoding`, and `Host` request headers. ([#1502](https://github.com/httpie/cli/issues/1502))
+- Fix SSL connections by pinning the `requests` version to `2.31.0`. ([#1583], [#1581])
+- Make it possible to [unset](https://httpie.io/docs/cli/default-request-headers) the `User-Agent` and `Accept-Encoding` request headers. ([#1502](https://github.com/httpie/cli/issues/1502))
 
-## [3.2.2](https://github.com/httpie/cli/compare/3.2.1...3.2.2) (2022-05-19)
+## [3.2.2](https://github.com/httpie/cli/compare/3.2.1...3.2.2) (2023-05-19)
 
 - Fixed compatibility with urllib3 2.0.0. ([#1499](https://github.com/httpie/cli/issues/1499))
 
