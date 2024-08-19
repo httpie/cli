@@ -1044,7 +1044,7 @@ $ http POST pie.dev/post < files/data.json
 ## Forms
 
 Submitting forms is very similar to sending [JSON](#json) requests.
-Often the only difference is in adding the `--form, -f` option, which ensures that data fields are serialized as, and `Content-Type` is set to `application/x-www-form-urlencoded; charset=utf-8`.
+Often the only difference is in adding the `--form, -f` option, which ensures that data fields are serialized as key-value tuples separated by '&', with a '=' between the key and the value. In addition `Content-Type` is set to `application/x-www-form-urlencoded; charset=utf-8`.
 It is possible to make form data the implicit content type instead of JSON via the [config](#config) file.
 
 ### Regular forms
