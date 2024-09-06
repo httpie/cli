@@ -112,3 +112,10 @@ complete -c http      -l version           -d 'Show version'
 complete -c http      -l traceback         -d 'Prints exception traceback should one occur'
 complete -c http      -l default-scheme -x -d 'The default scheme to use'
 complete -c http      -l debug             -d 'Show debugging output'
+
+
+# Alias for https to http
+
+function https --wraps http
+        http $argv;
+end
