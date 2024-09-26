@@ -389,7 +389,7 @@ def http(
                 and '--traceback' not in args_with_config_defaults):
             add_to_args.append('--traceback')
         if not any('--timeout' in arg for arg in args_with_config_defaults):
-            add_to_args.append('--timeout=10')
+            add_to_args.append('--timeout=3')
 
     complete_args = [program_name, *add_to_args, *args]
     # print(' '.join(complete_args))
