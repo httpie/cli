@@ -273,8 +273,18 @@ class FilterStream(EncodedStream):
             chunk = self.decode_chunk(chunk)
         chunk_dict = eval(chunk)
         for word in self.filters:
-            if word in chunk_dict:
-                del chunk_dict[word]
+            temp_dict = chunk_dict
+            splitwords = word.split(".")
+            for i in range(len(splitwords)-1):
+                subword = splitwords[i]
+                if subword in temp_dict:
+                    temp_dict = temp_dict[subword]
+                else:
+                    break
+            else:
+                subword = splitwords[-1]
+                if subword in temp_dict:
+                    del temp_dict[subword]
         chunk = f'{chunk_dict}'
         return smart_encode(chunk, self.output_encoding)
     
@@ -308,9 +318,10 @@ class PrettyFilterStream(PrettyStream):
                     temp_dict = temp_dict[subword]
                 else:
                     break
-            subword = splitwords[-1]
-            if subword in temp_dict:
-                del temp_dict[subword]
+            else:
+                subword = splitwords[-1]
+                if subword in temp_dict:
+                    del temp_dict[subword]
         chunk = (f'{chunk_dict}').replace(" ", "").replace("'", '"')
         chunk = self.formatting.format_body(content=chunk, mime=self.mime)
         return smart_encode(chunk, self.output_encoding)
