@@ -80,6 +80,7 @@ def test_ensure_quic_cache(remote_httpbin_secure, with_quic_cache_persistent):
 
 
 def test_h3_not_compatible_anymore(remote_httpbin_secure, with_quic_cache_persistent):
+    """verify that we can handle failures and fallback appropriately."""
     tmp_path = with_quic_cache_persistent.config['quic_file']
 
     cache = QuicCapabilityCache(tmp_path)
