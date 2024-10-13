@@ -95,7 +95,7 @@ def test_h3_not_compatible_anymore(remote_httpbin_secure, with_quic_cache_persis
         tolerate_error_exit_status=True
     )
 
-    assert "Unable to connect. Was the remote specified HTTP/3 compatible but is not anymore?" in r.stderr
+    assert "HTTP/2 200 OK" in r
 
     # with timeout
     r = http(
@@ -106,4 +106,4 @@ def test_h3_not_compatible_anymore(remote_httpbin_secure, with_quic_cache_persis
         tolerate_error_exit_status=True
     )
 
-    assert "Unable to connect. Was the remote specified HTTP/3 compatible but is not anymore?" in r.stderr
+    assert "HTTP/2 200 OK" in r
