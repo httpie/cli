@@ -5,6 +5,11 @@ from httpie.ssl_ import QuicCapabilityCache
 
 from .utils import HTTP_OK, http, PersistentMockEnvironment
 
+try:
+    import qh3
+except ImportError:
+    qh3 = None
+
 
 def test_should_not_do_http1_by_default(remote_httpbin_secure):
     r = http(
@@ -29,6 +34,7 @@ def test_disable_http2n3(remote_httpbin_secure):
     assert HTTP_OK in r
 
 
+@pytest.mark.skipif(qh3 is None, reason="test require HTTP/3 support")
 def test_force_http3(remote_httpbin_secure):
     r = http(
         "--verify=no",
@@ -48,6 +54,7 @@ def with_quic_cache_persistent(tmp_path):
     env.cleanup(force=True)
 
 
+@pytest.mark.skipif(qh3 is None, reason="test require HTTP/3 support")
 def test_ensure_quic_cache(remote_httpbin_secure, with_quic_cache_persistent):
     """
     This test aim to verify that the QuicCapabilityCache work as intended.
@@ -79,6 +86,7 @@ def test_ensure_quic_cache(remote_httpbin_secure, with_quic_cache_persistent):
     assert "pie.dev" in list(cache.keys())[0]
 
 
+@pytest.mark.skipif(qh3 is None, reason="test require HTTP/3 support")
 def test_h3_not_compatible_anymore(remote_httpbin_secure, with_quic_cache_persistent):
     """verify that we can handle failures and fallback appropriately."""
     tmp_path = with_quic_cache_persistent.config['quic_file']

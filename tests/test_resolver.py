@@ -1,6 +1,14 @@
+import pytest
+
 from .utils import http
 
+try:
+    import qh3
+except ImportError:
+    qh3 = None
 
+
+@pytest.mark.skipif(qh3 is None, reason="test require HTTP/3 support")
 def test_ensure_resolver_used(remote_httpbin_secure):
     """This test ensure we're using specified resolver to get into pie.dev.
     Using a custom resolver with Niquests enable direct HTTP/3 negotiation and pie.dev

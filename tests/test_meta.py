@@ -4,12 +4,18 @@ from httpie.models import ELAPSED_TIME_LABEL
 from httpie.output.formatters.colors import PIE_STYLE_NAMES
 from .utils import http, MockEnvironment, COLOR
 
+try:
+    import qh3
+except ImportError:
+    qh3 = None
+
 
 def test_meta_elapsed_time(httpbin):
     r = http('--meta', httpbin + '/delay/1')
     assert f'{ELAPSED_TIME_LABEL}: 1.' in r
 
 
+@pytest.mark.skipif(qh3 is None, reason="test require HTTP/3 support")
 def test_meta_extended_tls(remote_httpbin_secure):
     # using --verify=no may cause the certificate information not to display with Python < 3.10
     # it is guaranteed to be there when using HTTP/3 over QUIC. That's why we set the '--http3' flag.
