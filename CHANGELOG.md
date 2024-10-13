@@ -3,10 +3,11 @@
 This document records all notable changes to [HTTPie](https://httpie.io).
 This project adheres to [Semantic Versioning](https://semver.org/).
 
-## [4.0.0.b1](https://github.com/httpie/cli/compare/3.2.2...master) (unreleased)
+## [4.0.0](https://github.com/httpie/cli/compare/3.2.3...master) (unreleased)
 
 - Switched from the [`requests`](https://github.com/psf/requests) library to the compatible [`niquests`](https://github.com/jawah/niquests). ([#1531](https://github.com/httpie/cli/pull/1531))
 - Added support for HTTP/2, and HTTP/3 protocols. ([#523](https://github.com/httpie/cli/issues/523), [#692](https://github.com/httpie/cli/issues/692), [#1531](https://github.com/httpie/cli/pull/1531))
+- Added support for early (informational) responses. ([#752](https://github.com/httpie/cli/issues/752)) ([#1531](https://github.com/httpie/cli/pull/1531))
 - Added support for IPv4/IPv6 enforcement with `-6` and `-4`. ([#94](https://github.com/httpie/cli/issues/94), [#1531](https://github.com/httpie/cli/pull/1531))
 - Added support for alternative DNS resolvers via `--resolver`. DNS over HTTPS, DNS over TLS, DNS over QUIC, and DNS over UDP are accepted. ([#99](https://github.com/httpie/cli/issues/99), [#1531](https://github.com/httpie/cli/pull/1531))
 - Added support for binding to a specific network adapter with `--interface`. ([#1422](https://github.com/httpie/cli/issues/1422), [#1531](https://github.com/httpie/cli/pull/1531))

@@ -3,6 +3,7 @@ import os
 import platform
 import sys
 import socket
+from time import monotonic
 from typing import List, Optional, Union, Callable
 
 import niquests
@@ -211,21 +212,26 @@ def program(args: argparse.Namespace, env: Environment) -> ExitStatus:
             downloader = Downloader(env, output_file=args.output_file, resume=args.download_resume)
             downloader.pre_request(args.headers)
 
-        def prepared_request_readiness(pr):
-            """This callback is meant to output the request part. It is triggered by
-            the underlying Niquests library just after establishing the connection."""
+        def request_or_response_callback(delayed_message):
+            """This callback is called in two scenario:
+
+            (i) just after initializing a connection to remote host
+            (ii) an early response has been received (1xx responses)"""
 
             oo = OutputOptions.from_message(
-                pr,
+                delayed_message,
                 args.output_options
             )
 
-            oo = oo._replace(
-                body=isinstance(pr.body, (str, bytes)) and (args.verbose or oo.body)
-            )
+            if hasattr(delayed_message, "body"):
+                oo = oo._replace(
+                    body=isinstance(delayed_message.body, (str, bytes)) and (args.verbose or oo.body)
+                )
+            else:
+                delayed_message._httpie_headers_parsed_at = monotonic()
 
             write_message(
-                requests_message=pr,
+                requests_message=delayed_message,
                 env=env,
                 output_options=oo,
                 processing_options=processing_options
@@ -238,7 +244,7 @@ def program(args: argparse.Namespace, env: Environment) -> ExitStatus:
             env,
             args=args,
             request_body_read_callback=request_body_read_callback,
-            prepared_request_readiness=prepared_request_readiness
+            request_or_response_callback=request_or_response_callback
         )
 
         force_separator = False

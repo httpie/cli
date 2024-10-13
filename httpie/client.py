@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import argparse
 import json
 import sys
@@ -43,7 +45,7 @@ def collect_messages(
     env: Environment,
     args: argparse.Namespace,
     request_body_read_callback: Callable[[bytes], None] = None,
-    prepared_request_readiness: Callable[[niquests.PreparedRequest], None] = None,
+    request_or_response_callback: Callable[[niquests.PreparedRequest | niquests.Response], None] = None,
 ) -> Iterable[RequestsMessage]:
     httpie_session = None
     httpie_session_headers = None
@@ -155,8 +157,8 @@ def collect_messages(
     # It will help us yield the request before it is
     # actually sent. This will permit us to know about
     # the connection information for example.
-    if prepared_request_readiness:
-        hooks = {"pre_send": [prepared_request_readiness]}
+    if request_or_response_callback:
+        hooks = {"pre_send": [request_or_response_callback], "early_response": [request_or_response_callback]}
 
     request = niquests.Request(**request_kwargs, hooks=hooks)
     prepared_request = requests_session.prepare_request(request)
