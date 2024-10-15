@@ -1970,6 +1970,17 @@ You can specify multiple entries, concatenated with a comma:
 $ https --resolver "pie.dev:10.10.4.1,re.pie.dev:10.10.8.1" pie.dev/get
 ```
 
+## Happy Eyeballs
+
+By default, when HTTPie establish the connection it asks for the IP(v4 or v6) records of
+the requested domain and then tries them sequentially preferring IPv6 by default. This
+may induce longer connection delays and in some case hangs due to an unresponsive endpoint.
+To concurrently try to connect to available IP(v4 or v6), set the following flag:
+
+```bash
+$ https --heb pie.dev/get
+```
+
 ## Network interface
 
 In order to bind emitted request from a specific network adapter you can use the `--interface` flag.

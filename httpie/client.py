@@ -118,6 +118,7 @@ def collect_messages(
         disable_ipv4=args.ipv6,
         source_address=source_address,
         quic_cache=env.config.quic_file,
+        happy_eyeballs=args.happy_eyeballs,
     )
 
     if args.disable_http3 is False and args.force_http3 is True:
@@ -237,6 +238,7 @@ def build_requests_session(
     disable_ipv6: bool = False,
     source_address: typing.Tuple[str, int] = None,
     quic_cache: typing.Optional[Path] = None,
+    happy_eyeballs: bool = False,
 ) -> niquests.Session:
     requests_session = niquests.Session()
 
@@ -260,6 +262,8 @@ def build_requests_session(
         source_address=source_address,
         disable_http1=disable_http1,
         disable_http2=disable_http2,
+        disable_http3=disable_http3,
+        happy_eyeballs=happy_eyeballs,
     )
     https_adapter = HTTPieHTTPSAdapter(
         ciphers=ciphers,
@@ -276,6 +280,7 @@ def build_requests_session(
         disable_ipv6=disable_ipv6,
         source_address=source_address,
         quic_cache_layer=requests_session.quic_cache_layer,
+        happy_eyeballs=happy_eyeballs,
     )
     requests_session.mount('http://', http_adapter)
     requests_session.mount('https://', https_adapter)

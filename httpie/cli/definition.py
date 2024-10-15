@@ -865,6 +865,20 @@ network.add_argument(
     """
 )
 network.add_argument(
+    "--heb",
+    default=False,
+    dest="happy_eyeballs",
+    action="store_true",
+    short_help="Establish the connection using IETF Happy Eyeballs algorithm",
+    help="""
+    By default, when HTTPie establish the connection it asks for the IP(v4 or v6) records of
+    the requested domain and then tries them sequentially preferring IPv6 by default. This
+    may induce longer connection delays and in some case hangs due to an unresponsive endpoint.
+    To concurrently try to connect to available IP(v4 or v6), set this flag.
+
+    """
+)
+network.add_argument(
     "--resolver",
     default=[],
     action='append',

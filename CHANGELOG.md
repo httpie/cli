@@ -9,6 +9,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - Added support for HTTP/2, and HTTP/3 protocols. ([#523](https://github.com/httpie/cli/issues/523), [#692](https://github.com/httpie/cli/issues/692), [#1531](https://github.com/httpie/cli/pull/1531))
 - Added support for early (informational) responses. ([#752](https://github.com/httpie/cli/issues/752)) ([#1531](https://github.com/httpie/cli/pull/1531))
 - Added support for IPv4/IPv6 enforcement with `-6` and `-4`. ([#94](https://github.com/httpie/cli/issues/94), [#1531](https://github.com/httpie/cli/pull/1531))
+- Added support for Happy Eyeballs algorithm via `--heb` flag (disabled by default). [#1599](https://github.com/httpie/cli/issues/1599) [#1531](https://github.com/httpie/cli/pull/1531)
 - Added support for alternative DNS resolvers via `--resolver`. DNS over HTTPS, DNS over TLS, DNS over QUIC, and DNS over UDP are accepted. ([#99](https://github.com/httpie/cli/issues/99), [#1531](https://github.com/httpie/cli/pull/1531))
 - Added support for binding to a specific network adapter with `--interface`. ([#1422](https://github.com/httpie/cli/issues/1422), [#1531](https://github.com/httpie/cli/pull/1531))
 - Added support for specifying the local port with `--local-port`. ([#1456](https://github.com/httpie/cli/issues/1456), [#1531](https://github.com/httpie/cli/pull/1531))

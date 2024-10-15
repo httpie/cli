@@ -36,3 +36,13 @@ def test_ensure_interface_and_port_parameters(httpbin):
 
     assert r.exit_status == 0
     assert HTTP_OK in r
+
+
+def test_happy_eyeballs(remote_httpbin_secure):
+    r = http(
+        "--heb",  # this will automatically and concurrently try IPv6 and IPv4 endpoints
+        remote_httpbin_secure + "/get",
+    )
+
+    assert r.exit_status == 0
+    assert HTTP_OK in r
