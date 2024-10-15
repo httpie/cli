@@ -41,6 +41,7 @@ def test_ensure_interface_and_port_parameters(httpbin):
 def test_happy_eyeballs(remote_httpbin_secure):
     r = http(
         "--heb",  # this will automatically and concurrently try IPv6 and IPv4 endpoints
+        "--verify=no",
         remote_httpbin_secure + "/get",
     )
 
