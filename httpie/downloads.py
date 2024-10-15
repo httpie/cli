@@ -289,6 +289,8 @@ class Downloader:
             self._output_file.close()
 
     def failed(self):
+        if self._output_file_created:
+            self._output_file.close()
         self.status.terminate()
 
     @property
