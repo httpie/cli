@@ -8,11 +8,22 @@ from typing import Dict, List, Type, Iterator, Iterable, Optional, ContextManage
 from pathlib import Path
 from contextlib import contextmanager, nullcontext
 
-from ..compat import importlib_metadata, find_entry_points, get_dist_name
+import niquests
+
+from ..compat import importlib_metadata, find_entry_points, get_dist_name, urllib3
 
 from ..utils import repr_dict, get_site_paths
 from . import AuthPlugin, ConverterPlugin, FormatterPlugin, TransportPlugin
 from .base import BasePlugin
+
+# make sure all the plugins are forced to migrate to Niquests
+# as it is a drop in replacement for Requests, everything should
+# run smooth.
+sys.modules["requests"] = niquests
+sys.modules["requests.adapters"] = niquests.adapters
+sys.modules["requests.sessions"] = niquests.sessions
+sys.modules["requests.exceptions"] = niquests.exceptions
+sys.modules["requests.packages.urllib3"] = urllib3
 
 
 ENTRY_POINT_CLASSES = {
