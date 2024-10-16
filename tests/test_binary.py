@@ -32,19 +32,22 @@ class TestBinaryRequestData:
 
 
 class TestBinaryResponseData:
+    """local httpbin crash due to an unfixed bug.
+    See https://github.com/psf/httpbin/pull/41
+    It is merged but not yet released."""
 
-    def test_binary_suppresses_when_terminal(self, httpbin):
-        r = http('GET', httpbin + '/bytes/1024?seed=1')
+    def test_binary_suppresses_when_terminal(self, remote_httpbin):
+        r = http('GET', remote_httpbin + '/bytes/1024?seed=1')
         assert BINARY_SUPPRESSED_NOTICE.decode() in r
 
-    def test_binary_suppresses_when_not_terminal_but_pretty(self, httpbin):
+    def test_binary_suppresses_when_not_terminal_but_pretty(self, remote_httpbin):
         env = MockEnvironment(stdin_isatty=True, stdout_isatty=False)
-        r = http('--pretty=all', 'GET', httpbin + '/bytes/1024?seed=1', env=env)
+        r = http('--pretty=all', 'GET', remote_httpbin + '/bytes/1024?seed=1', env=env)
         assert BINARY_SUPPRESSED_NOTICE.decode() in r
 
-    def test_binary_included_and_correct_when_suitable(self, httpbin):
+    def test_binary_included_and_correct_when_suitable(self, remote_httpbin):
         env = MockEnvironment(stdin_isatty=True, stdout_isatty=False)
-        url = httpbin + '/bytes/1024?seed=1'
+        url = remote_httpbin + '/bytes/1024?seed=1'
         r = http('GET', url, env=env)
         expected = niquests.get(url).content
         assert r == expected
