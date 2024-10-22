@@ -32,3 +32,37 @@ def test_ensure_override_resolver_used(remote_httpbin):
     )
 
     assert "Request timed out" in r.stderr or "A socket operation was attempted to an unreachable network" in r.stderr
+
+
+def test_invalid_override_resolver():
+    r = http(
+        "--resolver=pie.dev:abc",  # we do this nonsense on purpose
+        "pie.dev/get",
+        tolerate_error_exit_status=True
+    )
+
+    assert "'abc' does not appear to be an IPv4 or IPv6 address" in r.stderr
+
+    r = http(
+        "--resolver=abc",  # we do this nonsense on purpose
+        "pie.dev/get",
+        tolerate_error_exit_status=True
+    )
+
+    assert "The manual resolver for a specific host requires to be formatted like" in r.stderr
+
+    r = http(
+        "--resolver=pie.dev:127.0.0",  # we do this nonsense on purpose
+        "pie.dev/get",
+        tolerate_error_exit_status=True
+    )
+
+    assert "'127.0.0' does not appear to be an IPv4 or IPv6 address" in r.stderr
+
+    r = http(
+        "--resolver=doz://example.com",  # we do this nonsense on purpose
+        "pie.dev/get",
+        tolerate_error_exit_status=True
+    )
+
+    assert "'doz' is not a valid ProtocolResolver" in r.stderr

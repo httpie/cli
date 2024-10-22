@@ -9,6 +9,7 @@ from random import randint
 from time import monotonic
 from typing import Any, Dict, Callable, Iterable
 from urllib.parse import urlparse, urlunparse
+import ipaddress
 
 import niquests
 
@@ -71,12 +72,38 @@ def collect_messages(
     source_address = None
 
     if args.interface:
+        # automatically raises ValueError upon invalid IP
+        ipaddress.ip_address(args.interface)
+
         source_address = (args.interface, 0)
     if args.local_port:
+
         if '-' not in args.local_port:
-            source_address = (args.interface or "0.0.0.0", int(args.local_port))
+            try:
+                parsed_port = int(args.local_port)
+            except ValueError:
+                raise ValueError(f'"{args.local_port}" is not a valid port number.')
+
+            source_address = (args.interface or "0.0.0.0", parsed_port)
         else:
-            min_port, max_port = args.local_port.split('-', 1)
+            if args.local_port.count('-') != 1:
+                raise ValueError(f'"{args.local_port}" is not a valid port range. i.e. we accept value like "25441-65540".')
+
+            try:
+                min_port, max_port = args.local_port.split('-', 1)
+            except ValueError:
+                raise ValueError(f'The port range you gave in input "{args.local_port}" is not a valid range.')
+
+            if min_port == "":
+                raise ValueError("Negative port number are all invalid values.")
+            if max_port == "":
+                raise ValueError('Port range requires both start and end ports to be specified. e.g. "25441-65540".')
+
+            try:
+                min_port, max_port = int(min_port), int(max_port)
+            except ValueError:
+                raise ValueError(f'Either "{min_port}" or/and "{max_port}" is an invalid port number.')
+
             source_address = (args.interface or "0.0.0.0", randint(int(min_port), int(max_port)))
 
     parsed_url = parse_url(args.url)
@@ -90,6 +117,20 @@ def collect_messages(
             resolver.append(ensure_resolver)
         else:
             resolver = [ensure_resolver, "system://"]
+
+    force_opt_count = [args.force_http1, args.force_http2, args.force_http3].count(True)
+    disable_opt_count = [args.disable_http1, args.disable_http2, args.disable_http3].count(True)
+
+    if force_opt_count > 1:
+        raise ValueError(
+            'You may only force one of --http1, --http2 or --http3. Use --disable-http1, '
+            '--disable-http2 or --disable-http3 instead if you prefer the excluding logic.'
+        )
+    elif force_opt_count == 1 and disable_opt_count:
+        raise ValueError(
+            'You cannot both force a http protocol version and disable some other. e.g. '
+            '--http2 already force HTTP/2, do not use --disable-http1 at the same time.'
+        )
 
     if args.force_http1:
         args.disable_http1 = False
@@ -245,11 +286,22 @@ def build_requests_session(
     if quic_cache is not None:
         requests_session.quic_cache_layer = QuicCapabilityCache(quic_cache)
 
+    if urllib3.util.connection.HAS_IPV6 is False and disable_ipv4 is True:
+        raise ValueError('Unable to force IPv6 because your system lack IPv6 support.')
+    if disable_ipv4 and disable_ipv6:
+        raise ValueError('Unable to force both IPv4 and IPv6, omit the flags to allow both. The flags "-6" and "-4" are meant to force one of them.')
+
     if resolver:
         resolver_rebuilt = []
         for r in resolver:
             # assume it is the in-memory resolver
             if "://" not in r:
+                if ":" not in r or r.count(':') != 1:
+                    raise ValueError("The manual resolver for a specific host requires to be formatted like 'hostname:ip'. e.g. 'pie.dev:1.1.1.1'.")
+                hostname, override_ip = r.split(':')
+                if hostname.strip() == "" or override_ip.strip() == "":
+                    raise ValueError("The manual resolver for a specific host requires to be formatted like 'hostname:ip'. e.g. 'pie.dev:1.1.1.1'.")
+                ipaddress.ip_address(override_ip)
                 r = f"in-memory://default/?hosts={r}"
             resolver_rebuilt.append(r)
         resolver = resolver_rebuilt

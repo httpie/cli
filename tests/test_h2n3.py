@@ -46,6 +46,50 @@ def test_force_http3(remote_httpbin_secure):
     assert HTTP_OK in r
 
 
+def test_force_multiple_error(remote_httpbin_secure):
+    r = http(
+        "--verify=no",
+        '--http3',
+        '--http2',
+        remote_httpbin_secure + '/get',
+        tolerate_error_exit_status=True,
+    )
+
+    assert 'You may only force one of --http1, --http2 or --http3.' in r.stderr
+
+
+def test_disable_all_error_https(remote_httpbin_secure):
+    r = http(
+        "--verify=no",
+        '--disable-http1',
+        '--disable-http2',
+        '--disable-http3',
+        remote_httpbin_secure + '/get',
+        tolerate_error_exit_status=True,
+    )
+
+    assert 'You disabled every supported protocols.' in r.stderr
+
+
+def test_disable_all_error_http(remote_httpbin):
+    r = http(
+        "--verify=no",
+        '--disable-http1',
+        '--disable-http2',
+        remote_httpbin + '/get',
+        tolerate_error_exit_status=True,
+    )
+
+    try:
+        import qh3  # noqa: F401
+    except ImportError:
+        # that branch means that the user does not have HTTP/3
+        # so, the message says that he disabled everything.
+        assert 'You disabled every supported protocols.' in r.stderr
+    else:
+        assert 'No compatible protocol are enabled to emit request. You currently are connected using TCP Unencrypted and must have HTTP/1.1 or/and HTTP/2 enabled to pursue.' in r.stderr
+
+
 @pytest.fixture
 def with_quic_cache_persistent(tmp_path):
     env = PersistentMockEnvironment()
