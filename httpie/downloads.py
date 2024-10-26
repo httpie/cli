@@ -284,14 +284,15 @@ class Downloader:
         assert not self.finished
         self.finished = True
         self.status.finished()
-        # we created the output file in the process, closing it now.
-        if self._output_file_created:
-            self._output_file.close()
+        self._cleanup()
 
     def failed(self):
+        self.status.terminate()
+        self._cleanup()
+
+    def _cleanup(self):
         if self._output_file_created:
             self._output_file.close()
-        self.status.terminate()
 
     @property
     def is_interrupted(self) -> bool:
