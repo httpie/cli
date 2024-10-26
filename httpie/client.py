@@ -116,8 +116,8 @@ def collect_messages(
         disable_http2=args.disable_http2,
         disable_http3=args.disable_http3,
         resolver=resolver,
-        disable_ipv6=args.ipv4,
-        disable_ipv4=args.ipv6,
+        disable_ipv6=args.force_ipv4,
+        disable_ipv4=args.force_ipv6,
         source_address=(args.interface, args.local_port),
         quic_cache=env.config.quic_file,
         happy_eyeballs=args.happy_eyeballs,
@@ -156,12 +156,15 @@ def collect_messages(
 
     hooks = None
 
-    # The hook set up bellow is crucial for HTTPie.
-    # It will help us yield the request before it is
-    # actually sent. This will permit us to know about
-    # the connection information for example.
     if request_or_response_callback:
-        hooks = {"pre_send": [request_or_response_callback], "early_response": [request_or_response_callback]}
+        # The hook set up bellow is crucial for HTTPie.
+        # It will help us yield the request before it is
+        # actually sent. This will permit us to know about
+        # the connection information for example.
+        hooks = {
+            'pre_send': [request_or_response_callback],
+            'early_response': [request_or_response_callback],
+        }
 
     request = niquests.Request(**request_kwargs, hooks=hooks)
     prepared_request = requests_session.prepare_request(request)
@@ -246,11 +249,6 @@ def build_requests_session(
 
     if quic_cache is not None:
         requests_session.quic_cache_layer = QuicCapabilityCache(quic_cache)
-
-    if urllib3.util.connection.HAS_IPV6 is False and disable_ipv4 is True:
-        raise ValueError('Unable to force IPv6 because your system lack IPv6 support.')
-    if disable_ipv4 and disable_ipv6:
-        raise ValueError('Unable to force both IPv4 and IPv6, omit the flags to allow both. The flags "-6" and "-4" are meant to force one of them.')
 
     if resolver:
         resolver_rebuilt = []

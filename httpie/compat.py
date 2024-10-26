@@ -31,6 +31,14 @@ else:
         resolve_ssl_version,
     )
 
+
+def has_ipv6_support(new_value: Optional[bool] = None) -> bool:
+    if new_value is not None:
+        # Allow overriding the default value for testing purposes.
+        urllib3.util.connection.HAS_IPV6 = new_value
+    return urllib3.util.connection.HAS_IPV6
+
+
 def enforce_niquests():
     """
     Force imported 3rd-party plugins to use `niquests` instead of `requests` if they haven’t migrated yet.

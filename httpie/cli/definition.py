@@ -749,6 +749,7 @@ network.add_argument(
 network.add_argument(
     '--ipv6',
     '-6',
+    dest='force_ipv6',
     default=False,
     action='store_true',
     short_help='Force using a IPv6 address to reach the remote peer.'
@@ -756,6 +757,7 @@ network.add_argument(
 network.add_argument(
     '--ipv4',
     '-4',
+    dest='force_ipv4',
     default=False,
     action='store_true',
     short_help='Force using a IPv4 address to reach the remote peer.'

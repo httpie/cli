@@ -25,6 +25,7 @@ from .constants import (
 )
 from .exceptions import ParseError
 from .requestitems import RequestItems
+from ..compat import has_ipv6_support
 from ..context import Environment
 from ..plugins.registry import plugin_manager
 from ..utils import ExplicitNullAuth, get_content_type
@@ -174,6 +175,7 @@ class HTTPieArgumentParser(BaseHTTPieArgumentParser):
         self._process_output_options()
         self._process_pretty_options()
         self._process_format_options()
+        self._process_ip_version_options()
 
         # bellow is a fix for detecting "false-or empty" stdin.
         # see https://github.com/httpie/cli/issues/1551 for more information.
@@ -575,6 +577,15 @@ class HTTPieArgumentParser(BaseHTTPieArgumentParser):
         for options_group in format_options:
             parsed_options = parse_format_options(options_group, defaults=parsed_options)
         self.args.format_options = parsed_options
+
+    def _process_ip_version_options(self):
+        if not has_ipv6_support() and self.args.force_ipv6:
+            self.error('Unable to force IPv6 because your system lack IPv6 support.')
+        if self.args.force_ipv4 and self.args.force_ipv6:
+            self.error(
+                'Unable to force both IPv4 and IPv6, omit the flags to allow both. '
+                'The flags "-6" and "-4" are meant to force one of them.'
+            )
 
     def print_manual(self):
         from httpie.output.ui import man_pages

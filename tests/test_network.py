@@ -9,6 +9,7 @@ from httpie.cli.ports import (
     local_port_arg_type,
     parse_local_port_arg,
 )
+from httpie.compat import has_ipv6_support
 from .utils import HTTP_OK, http
 
 
@@ -98,17 +99,16 @@ def test_invalid_interface_arg(httpbin, interface_arg):
 
 
 def test_force_ipv6_on_unsupported_system(remote_httpbin):
-    from httpie.compat import urllib3
-    orig_has_ipv6 = urllib3.util.connection.HAS_IPV6
-    urllib3.util.connection.HAS_IPV6 = False
+    orig = has_ipv6_support()
+    has_ipv6_support(False)
     try:
         r = http(
-            "-6",  # invalid port
-            remote_httpbin + "/get",
+            '-6',
+            remote_httpbin + '/get',
             tolerate_error_exit_status=True,
         )
     finally:
-        urllib3.util.connection.HAS_IPV6 = orig_has_ipv6
+        has_ipv6_support(orig)
     assert 'Unable to force IPv6 because your system lack IPv6 support.' in r.stderr
 
 
