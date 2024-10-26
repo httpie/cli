@@ -68,7 +68,7 @@ def test_disable_all_error_https(remote_httpbin_secure):
         tolerate_error_exit_status=True,
     )
 
-    assert 'You disabled every supported protocols.' in r.stderr
+    assert 'At least one HTTP protocol version must be enabled.' in r.stderr
 
 
 def test_disable_all_error_http(remote_httpbin):
@@ -94,8 +94,10 @@ def test_disable_all_error_http(remote_httpbin):
 def with_quic_cache_persistent(tmp_path):
     env = PersistentMockEnvironment()
     env.config['quic_file'] = tmp_path / 'quic.json'
-    yield env
-    env.cleanup(force=True)
+    try:
+        yield env
+    finally:
+        env.cleanup(force=True)
 
 
 @pytest.mark.skipif(qh3 is None, reason="test require HTTP/3 support")

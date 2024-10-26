@@ -73,40 +73,10 @@ def collect_messages(
     # We want to make sure every ".localhost" host resolve to loopback
     if parsed_url.host and parsed_url.host.endswith(".localhost"):
         ensure_resolver = f"in-memory://default/?hosts={parsed_url.host}:127.0.0.1&hosts={parsed_url.host}:[::1]"
-
         if resolver and isinstance(resolver, list):
             resolver.append(ensure_resolver)
         else:
             resolver = [ensure_resolver, "system://"]
-
-    force_opt_count = [args.force_http1, args.force_http2, args.force_http3].count(True)
-    disable_opt_count = [args.disable_http1, args.disable_http2, args.disable_http3].count(True)
-
-    if force_opt_count > 1:
-        raise ValueError(
-            'You may only force one of --http1, --http2 or --http3. Use --disable-http1, '
-            '--disable-http2 or --disable-http3 instead if you prefer the excluding logic.'
-        )
-    elif force_opt_count == 1 and disable_opt_count:
-        raise ValueError(
-            'You cannot both force a http protocol version and disable some other. e.g. '
-            '--http2 already force HTTP/2, do not use --disable-http1 at the same time.'
-        )
-
-    if args.force_http1:
-        args.disable_http1 = False
-        args.disable_http2 = True
-        args.disable_http3 = True
-
-    if args.force_http2:
-        args.disable_http1 = True
-        args.disable_http2 = False
-        args.disable_http3 = True
-
-    if args.force_http3:
-        args.disable_http1 = True
-        args.disable_http2 = True
-        args.disable_http3 = False
 
     requests_session = build_requests_session(
         ssl_version=args.ssl_version,

@@ -169,6 +169,7 @@ class HTTPieArgumentParser(BaseHTTPieArgumentParser):
         )
         # Arguments processing and environment setup.
         self._apply_no_options(no_options)
+        self._process_http_versions()
         self._process_request_type()
         self._process_download_options()
         self._setup_standard_streams()
@@ -212,6 +213,38 @@ class HTTPieArgumentParser(BaseHTTPieArgumentParser):
                 self.error('cannot combine --compress and --multipart')
 
         return self.args
+
+    def _process_http_versions(self):
+        available, forced, disabled = (
+            {1, 2, 3},
+            {
+                self.args.force_http1 and 1,
+                self.args.force_http2 and 2,
+                self.args.force_http3 and 3,
+            } - {False},
+            {
+                self.args.disable_http1 and 1,
+                self.args.disable_http2 and 2,
+                self.args.disable_http3 and 3,
+            } - {False},
+        )
+        if forced and disabled:
+            self.error(
+                'You cannot both force a http protocol version and disable some other. e.g. '
+                '--http2 already force HTTP/2, do not use --disable-http1 at the same time.'
+            )
+        if len(forced) > 1:
+            self.error(
+                'You may only force one of --http1, --http2 or --http3. Use --disable-http1, '
+                '--disable-http2 or --disable-http3 instead if you prefer the excluding logic.'
+            )
+        if disabled == available:
+            self.error('At least one HTTP protocol version must be enabled.')
+
+        if forced:
+            self.args.disable_http1 = forced != {1}
+            self.args.disable_http2 = forced != {2}
+            self.args.disable_http3 = forced != {3}
 
     def _process_request_type(self):
         request_type = self.args.request_type
