@@ -4,6 +4,7 @@ from typing import Any, Optional, Iterable
 from httpie.cookies import HTTPieCookiePolicy
 from http import cookiejar # noqa
 
+import niquests
 from niquests._compat import HAS_LEGACY_URLLIB3
 
 # to understand why this is required
@@ -29,6 +30,19 @@ else:
         create_urllib3_context,
         resolve_ssl_version,
     )
+
+def enforce_niquests():
+    """
+    Force imported 3rd-party plugins to use `niquests` instead of `requests` if they haven’t migrated yet.
+
+    It’s a drop-in replacement for Requests so such plugins might continue to work unless they touch internals.
+
+    """
+    sys.modules["requests"] = niquests
+    sys.modules["requests.adapters"] = niquests.adapters
+    sys.modules["requests.sessions"] = niquests.sessions
+    sys.modules["requests.exceptions"] = niquests.exceptions
+    sys.modules["requests.packages.urllib3"] = urllib3
 
 # Request does not carry the original policy attached to the
 # cookie jar, so until it is resolved we change the global cookie
