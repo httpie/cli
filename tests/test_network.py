@@ -53,7 +53,7 @@ def test_non_existent_interface_arg(httpbin):
     ('-10-1', OUTSIDE_VALID_PORT_RANGE_ERROR),
     ('1--1', OUTSIDE_VALID_PORT_RANGE_ERROR),
     ('-10--1', OUTSIDE_VALID_PORT_RANGE_ERROR),
-    ('1-{MAX_PORT + 1}', OUTSIDE_VALID_PORT_RANGE_ERROR),
+    (f'1-{MAX_PORT + 1}', OUTSIDE_VALID_PORT_RANGE_ERROR),
 ])
 def test_parse_local_port_arg(local_port_arg, expected_output):
     expected_error = expected_output if isinstance(expected_output, str) else None
