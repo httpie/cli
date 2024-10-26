@@ -82,8 +82,8 @@ class Encoder:
 
     TEMPLATE = 'hash({})'
 
-    STR_PATTERN = re.compile(r'hash\((.*)\)')
-    BYTES_PATTERN = re.compile(rb'hash\((.*)\)')
+    STR_PATTERN = re.compile(r'hash\((.*?)\)')
+    BYTES_PATTERN = re.compile(rb'hash\((.*?)\)')
 
     def __init__(self):
         self.substitutions = {}
