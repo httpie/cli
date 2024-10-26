@@ -259,7 +259,7 @@ PARSED_DEFAULT_FORMAT_OPTIONS = parse_format_options(
 )
 
 
-def response_charset_type(encoding: str) -> str:
+def response_charset_arg_type(encoding: str) -> str:
     try:
         ''.encode(encoding)
     except LookupError:
@@ -268,8 +268,17 @@ def response_charset_type(encoding: str) -> str:
     return encoding
 
 
-def response_mime_type(mime_type: str) -> str:
+def response_mime_arg_type(mime_type: str) -> str:
     if mime_type.count('/') != 1:
         raise argparse.ArgumentTypeError(
             f'{mime_type!r} doesn’t look like a mime type; use type/subtype')
     return mime_type
+
+
+def interface_arg_type(interface: str) -> str:
+    import ipaddress
+    try:
+        ipaddress.ip_interface(interface)
+    except ValueError as e:
+        raise argparse.ArgumentTypeError(str(e))
+    return interface

@@ -5,29 +5,49 @@ import textwrap
 from argparse import FileType
 
 from httpie import __doc__, __version__
-from httpie.cli.argtypes import (KeyValueArgType, SessionNameValidator,
-                                 SSLCredentials, readable_file_arg,
-                                 response_charset_type, response_mime_type)
-from httpie.cli.constants import (BASE_OUTPUT_OPTIONS, DEFAULT_FORMAT_OPTIONS,
-                                  OUT_REQ_BODY, OUT_REQ_HEAD, OUT_RESP_BODY,
-                                  OUT_RESP_HEAD, OUT_RESP_META, OUTPUT_OPTIONS,
-                                  OUTPUT_OPTIONS_DEFAULT, PRETTY_MAP,
-                                  PRETTY_STDOUT_TTY_ONLY,
-                                  SEPARATOR_GROUP_ALL_ITEMS, SEPARATOR_PROXY,
-                                  SORTED_FORMAT_OPTIONS_STRING,
-                                  UNSORTED_FORMAT_OPTIONS_STRING, RequestType)
-from httpie.cli.options import ParserSpec, Qualifiers, to_argparse
-from httpie.output.formatters.colors import (AUTO_STYLE, DEFAULT_STYLE, BUNDLED_STYLES,
-                                             get_available_styles)
+from httpie.output.formatters.colors import (
+    AUTO_STYLE,
+    BUNDLED_STYLES,
+    DEFAULT_STYLE,
+    get_available_styles,
+)
 from httpie.plugins.builtin import BuiltinAuthPlugin
 from httpie.plugins.registry import plugin_manager
 from httpie.ssl_ import AVAILABLE_SSL_VERSION_ARG_MAPPING, DEFAULT_SSL_CIPHERS_STRING
+from .argtypes import (
+    KeyValueArgType,
+    SSLCredentials,
+    SessionNameValidator,
+    interface_arg_type,
+    readable_file_arg,
+    response_charset_arg_type,
+    response_mime_arg_type,
+)
+from .constants import (
+    BASE_OUTPUT_OPTIONS,
+    DEFAULT_FORMAT_OPTIONS,
+    OUTPUT_OPTIONS,
+    OUTPUT_OPTIONS_DEFAULT,
+    OUT_REQ_BODY,
+    OUT_REQ_HEAD,
+    OUT_RESP_BODY,
+    OUT_RESP_HEAD,
+    OUT_RESP_META,
+    PRETTY_MAP,
+    PRETTY_STDOUT_TTY_ONLY,
+    RequestType,
+    SEPARATOR_GROUP_ALL_ITEMS,
+    SEPARATOR_PROXY,
+    SORTED_FORMAT_OPTIONS_STRING,
+    UNSORTED_FORMAT_OPTIONS_STRING,
+)
+from .options import ParserSpec, Qualifiers, to_argparse
+from .ports import local_port_arg_type
 
 
 # Man pages are static (built when making a release).
 # We use this check to not include generated, system-specific information there (e.g., default --ciphers).
 IS_MAN_PAGE = bool(os.environ.get('HTTPIE_BUILDING_MAN_PAGES'))
-
 
 options = ParserSpec(
     'http',
@@ -349,7 +369,7 @@ output_processing.add_argument(
 output_processing.add_argument(
     '--response-charset',
     metavar='ENCODING',
-    type=response_charset_type,
+    type=response_charset_arg_type,
     short_help='Override the response encoding for terminal display purposes.',
     help="""
     Override the response encoding for terminal display purposes, e.g.:
@@ -362,7 +382,7 @@ output_processing.add_argument(
 output_processing.add_argument(
     '--response-mime',
     metavar='MIME_TYPE',
-    type=response_mime_type,
+    type=response_mime_arg_type,
     short_help='Override the response mime type for coloring and formatting for the terminal.',
     help="""
     Override the response mime type for coloring and formatting for the terminal, e.g.:
@@ -894,12 +914,14 @@ network.add_argument(
 )
 network.add_argument(
     "--interface",
-    default=None,
+    type=interface_arg_type,
+    default='0.0.0.0',
     short_help="Bind to a specific network interface.",
 )
 network.add_argument(
     "--local-port",
-    default=None,
+    type=local_port_arg_type,
+    default=0,
     short_help="Set the local port to be used for the outgoing request.",
     help="""
     It can be either a port range (e.g. "11221-14555") or a single port.

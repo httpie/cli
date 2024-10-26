@@ -32,9 +32,9 @@ class TestBinaryRequestData:
 
 
 class TestBinaryResponseData:
-    """local httpbin crash due to an unfixed bug.
-    See https://github.com/psf/httpbin/pull/41
-    It is merged but not yet released."""
+    # Local httpbin crashes due to an unfixed bug — it is merged but not yet released.
+    # <https://github.com/psf/httpbin/pull/41>
+    # TODO: switch to the local `httpbin` fixture when the fix is released.
 
     def test_binary_suppresses_when_terminal(self, remote_httpbin):
         r = http('GET', remote_httpbin + '/bytes/1024?seed=1')

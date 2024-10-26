@@ -5,7 +5,6 @@ import json
 import sys
 import typing
 from pathlib import Path
-from random import randint
 from time import monotonic
 from typing import Any, Dict, Callable, Iterable
 from urllib.parse import urlparse, urlunparse
@@ -68,48 +67,10 @@ def collect_messages(
     )
     send_kwargs = make_send_kwargs(args)
     send_kwargs_mergeable_from_env = make_send_kwargs_mergeable_from_env(args)
-
-    source_address = None
-
-    if args.interface:
-        # automatically raises ValueError upon invalid IP
-        ipaddress.ip_address(args.interface)
-
-        source_address = (args.interface, 0)
-    if args.local_port:
-
-        if '-' not in args.local_port:
-            try:
-                parsed_port = int(args.local_port)
-            except ValueError:
-                raise ValueError(f'"{args.local_port}" is not a valid port number.')
-
-            source_address = (args.interface or "0.0.0.0", parsed_port)
-        else:
-            if args.local_port.count('-') != 1:
-                raise ValueError(f'"{args.local_port}" is not a valid port range. i.e. we accept value like "25441-65540".')
-
-            try:
-                min_port, max_port = args.local_port.split('-', 1)
-            except ValueError:
-                raise ValueError(f'The port range you gave in input "{args.local_port}" is not a valid range.')
-
-            if min_port == "":
-                raise ValueError("Negative port number are all invalid values.")
-            if max_port == "":
-                raise ValueError('Port range requires both start and end ports to be specified. e.g. "25441-65540".')
-
-            try:
-                min_port, max_port = int(min_port), int(max_port)
-            except ValueError:
-                raise ValueError(f'Either "{min_port}" or/and "{max_port}" is an invalid port number.')
-
-            source_address = (args.interface or "0.0.0.0", randint(int(min_port), int(max_port)))
-
     parsed_url = parse_url(args.url)
     resolver = args.resolver or None
 
-    # we want to make sure every ".localhost" host resolve to loopback
+    # We want to make sure every ".localhost" host resolve to loopback
     if parsed_url.host and parsed_url.host.endswith(".localhost"):
         ensure_resolver = f"in-memory://default/?hosts={parsed_url.host}:127.0.0.1&hosts={parsed_url.host}:[::1]"
 
@@ -157,7 +118,7 @@ def collect_messages(
         resolver=resolver,
         disable_ipv6=args.ipv4,
         disable_ipv4=args.ipv6,
-        source_address=source_address,
+        source_address=(args.interface, args.local_port),
         quic_cache=env.config.quic_file,
         happy_eyeballs=args.happy_eyeballs,
     )

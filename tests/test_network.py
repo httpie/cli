@@ -1,121 +1,122 @@
+import argparse
+
+import pytest
+
+from httpie.cli.ports import (
+    MAX_PORT,
+    MIN_PORT,
+    OUTSIDE_VALID_PORT_RANGE_ERROR,
+    local_port_arg_type,
+    parse_local_port_arg,
+)
 from .utils import HTTP_OK, http
 
 
-def test_ensure_interface_parameter(httpbin):
-    """We ensure that HTTPie properly wire interface by passing an interface that
-        does not exist. thus, we expect an error."""
+def test_non_existent_interface_arg(httpbin):
+    """We ensure that HTTPie properly wire interface by passing an interface that does not exist. thus, we expect an error."""
     r = http(
-        "--interface=1.1.1.1",
-        httpbin + "/get",
+        '--interface=1.1.1.1',
+        httpbin + '/get',
         tolerate_error_exit_status=True
     )
-
     assert r.exit_status != 0
-    assert "assign requested address" in r.stderr or "The requested address is not valid in its context" in r.stderr
+    assert (
+        'assign requested address' in r.stderr
+        or 'The requested address is not valid in its context' in r.stderr
+    )
 
 
-def test_ensure_local_port_parameter(httpbin):
-    """We ensure that HTTPie properly wire local-port by passing a port that
-    does not exist. thus, we expect an error."""
+@pytest.mark.parametrize(['local_port_arg', 'expected_output'], [
+    # Single ports — valid
+    ('0', 0),
+    ('-0', 0),
+    (str(MAX_PORT), MAX_PORT),
+    ('8000', 8000),
+    # Single ports — invalid
+    (f'{MIN_PORT - 1}', OUTSIDE_VALID_PORT_RANGE_ERROR),
+    (f'{MAX_PORT + 1}', OUTSIDE_VALID_PORT_RANGE_ERROR),
+    ('-', 'not a number'),
+    ('AAA', 'not a number'),
+    (' ', 'not a number'),
+    # Port ranges — valid
+    (f'{MIN_PORT}-{MAX_PORT}', (MIN_PORT, MAX_PORT)),
+    ('3000-8000', (3000, 8000)),
+    ('-0-8000', (0, 8000)),
+    ('0-0', (0, 0)),
+    # Port ranges — invalid
+    (f'2-1', 'not a valid port range'),
+    (f'2-', 'not a number'),
+    (f'2-A', 'not a number'),
+    (f'A-A', 'not a number'),
+    (f'A-2', 'not a number'),
+    (f'-10-1', OUTSIDE_VALID_PORT_RANGE_ERROR),
+    (f'1--1', OUTSIDE_VALID_PORT_RANGE_ERROR),
+    (f'-10--1', OUTSIDE_VALID_PORT_RANGE_ERROR),
+    (f'1-{MAX_PORT + 1}', OUTSIDE_VALID_PORT_RANGE_ERROR),
+])
+def test_parse_local_port_arg(local_port_arg, expected_output):
+    expected_error = expected_output if isinstance(expected_output, str) else None
+    if not expected_error:
+        assert parse_local_port_arg(local_port_arg) == expected_output
+    else:
+        with pytest.raises(argparse.ArgumentTypeError, match=expected_error):
+            parse_local_port_arg(local_port_arg)
+
+
+def test_local_port_arg_type():
+    assert local_port_arg_type('1') == 1
+    assert local_port_arg_type('1-1') == 1
+    assert local_port_arg_type('1-3') in {1, 2, 3}
+
+
+def test_invoke_with_out_of_range_local_port_arg(httpbin):
+    # An addition to the unittest tests
     r = http(
-        "--local-port=70000",
-        httpbin + "/get",
+        '--local-port=70000',
+        httpbin + '/get',
         tolerate_error_exit_status=True
     )
-
     assert r.exit_status != 0
-    assert "port must be 0-65535" in r.stderr
+    assert OUTSIDE_VALID_PORT_RANGE_ERROR in r.stderr
 
 
-def test_ensure_interface_and_port_parameters(httpbin):
+@pytest.mark.parametrize('interface_arg', [
+    '',
+    '-',
+    '10.25.a.u',
+    'abc',
+    'localhost',
+])
+def test_invalid_interface_arg(httpbin, interface_arg):
     r = http(
-        "--interface=0.0.0.0",  # it's valid, setting 0.0.0.0 means "take the default" here.
-        "--local-port=0",  # this will automatically pick a free port in range 1024-65535
-        httpbin + "/get",
-    )
-
-    assert r.exit_status == 0
-    assert HTTP_OK in r
-
-
-def test_invalid_interface_given(httpbin):
-    r = http(
-        "--interface=10.25.a.u",  # invalid IP
-        httpbin + "/get",
+        '--interface',
+        interface_arg,
+        httpbin + '/get',
         tolerate_error_exit_status=True,
     )
-
-    assert "'10.25.a.u' does not appear to be an IPv4 or IPv6 address" in r.stderr
-
-    r = http(
-        "--interface=abc",  # invalid IP
-        httpbin + "/get",
-        tolerate_error_exit_status=True,
-    )
-
-    assert "'abc' does not appear to be an IPv4 or IPv6 address" in r.stderr
-
-
-def test_invalid_local_port_given(httpbin):
-    r = http(
-        "--local-port=127.0.0.1",  # invalid port
-        httpbin + "/get",
-        tolerate_error_exit_status=True,
-    )
-
-    assert '"127.0.0.1" is not a valid port number.' in r.stderr
-
-    r = http(
-        "--local-port=a8",  # invalid port
-        httpbin + "/get",
-        tolerate_error_exit_status=True,
-    )
-
-    assert '"a8" is not a valid port number.' in r.stderr
-
-    r = http(
-        "--local-port=-8",  # invalid port
-        httpbin + "/get",
-        tolerate_error_exit_status=True,
-    )
-
-    assert 'Negative port number are all invalid values.' in r.stderr
-
-    r = http(
-        "--local-port=a-8",  # invalid port range
-        httpbin + "/get",
-        tolerate_error_exit_status=True,
-    )
-
-    assert 'Either "a" or/and "8" is an invalid port number.' in r.stderr
-
-    r = http(
-        "--local-port=5555-",  # invalid port range
-        httpbin + "/get",
-        tolerate_error_exit_status=True,
-    )
-
-    assert 'Port range requires both start and end ports to be specified.' in r.stderr
+    assert f"'{interface_arg}' does not appear to be an IPv4 or IPv6" in r.stderr
 
 
 def test_force_ipv6_on_unsupported_system(remote_httpbin):
     from httpie.compat import urllib3
+    orig_has_ipv6 = urllib3.util.connection.HAS_IPV6
     urllib3.util.connection.HAS_IPV6 = False
-    r = http(
-        "-6",  # invalid port
-        remote_httpbin + "/get",
-        tolerate_error_exit_status=True,
-    )
-    urllib3.util.connection.HAS_IPV6 = True
-
+    try:
+        r = http(
+            "-6",  # invalid port
+            remote_httpbin + "/get",
+            tolerate_error_exit_status=True,
+        )
+    finally:
+        urllib3.util.connection.HAS_IPV6 = orig_has_ipv6
     assert 'Unable to force IPv6 because your system lack IPv6 support.' in r.stderr
 
 
 def test_force_both_ipv6_and_ipv4(remote_httpbin):
     r = http(
-        "-6",  # force IPv6
-        "-4",  # force IPv4
-        remote_httpbin + "/get",
+        '-6',  # force IPv6
+        '-4',  # force IPv4
+        remote_httpbin + '/get',
         tolerate_error_exit_status=True,
     )
 
@@ -124,9 +125,9 @@ def test_force_both_ipv6_and_ipv4(remote_httpbin):
 
 def test_happy_eyeballs(remote_httpbin_secure):
     r = http(
-        "--heb",  # this will automatically and concurrently try IPv6 and IPv4 endpoints
-        "--verify=no",
-        remote_httpbin_secure + "/get",
+        '--heb',  # this will automatically and concurrently try IPv6 and IPv4 endpoints
+        '--verify=no',
+        remote_httpbin_secure + '/get',
     )
 
     assert r.exit_status == 0
