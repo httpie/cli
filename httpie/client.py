@@ -123,14 +123,15 @@ def collect_messages(
         happy_eyeballs=args.happy_eyeballs,
     )
 
-    if args.disable_http3 is False and args.force_http3 is True:
+    if not args.disable_http3 and args.force_http3:
         requests_session.quic_cache_layer[(parsed_url.host, parsed_url.port or 443)] = (parsed_url.host, parsed_url.port or 443)
     # well, this one is tricky. If we allow HTTP/3, and remote host was marked as QUIC capable
     # but is not anymore, we may face an indefinite hang if timeout isn't set. This could surprise some user.
     elif (
-        args.disable_http3 is False
+        not args.disable_http3
+        and not args.force_http3
         and requests_session.quic_cache_layer.get((parsed_url.host, parsed_url.port or 443)) is not None
-        and args.force_http3 is False
+
     ):
         # we only set the connect timeout, the rest is still indefinite.
         if send_kwargs["timeout"] is None:

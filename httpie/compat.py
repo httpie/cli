@@ -2,10 +2,11 @@ import sys
 from typing import Any, Optional, Iterable
 
 from httpie.cookies import HTTPieCookiePolicy
-from http import cookiejar # noqa
+from http import cookiejar  # noqa
 
 import niquests
 from niquests._compat import HAS_LEGACY_URLLIB3
+
 
 # to understand why this is required
 # see https://niquests.readthedocs.io/en/latest/community/faq.html#what-is-urllib3-future
@@ -31,6 +32,25 @@ else:
         resolve_ssl_version,
     )
 
+# Importlib_metadata was a provisional module, so the APIs changed quite a few times
+# between 3.8-3.10. It was also not included in the standard library until 3.8, so
+# we install the backport for <3.8.
+if sys.version_info >= (3, 8):
+    import importlib.metadata as importlib_metadata
+else:
+    import importlib_metadata
+
+is_windows = 'win32' in str(sys.platform).lower()
+is_frozen = getattr(sys, 'frozen', False)
+
+MIN_SUPPORTED_PY_VERSION = (3, 7)
+MAX_SUPPORTED_PY_VERSION = (3, 11)
+
+# Request does not carry the original policy attached to the
+# cookie jar, so until it is resolved we change the global cookie
+# policy. <https://github.com/psf/requests/issues/5449>
+cookiejar.DefaultCookiePolicy = HTTPieCookiePolicy
+
 
 def has_ipv6_support(new_value: Optional[bool] = None) -> bool:
     if new_value is not None:
@@ -52,17 +72,6 @@ def enforce_niquests():
     sys.modules["requests.exceptions"] = niquests.exceptions
     sys.modules["requests.packages.urllib3"] = urllib3
 
-# Request does not carry the original policy attached to the
-# cookie jar, so until it is resolved we change the global cookie
-# policy. <https://github.com/psf/requests/issues/5449>
-cookiejar.DefaultCookiePolicy = HTTPieCookiePolicy
-
-
-is_windows = 'win32' in str(sys.platform).lower()
-is_frozen = getattr(sys, 'frozen', False)
-
-MIN_SUPPORTED_PY_VERSION = (3, 7)
-MAX_SUPPORTED_PY_VERSION = (3, 11)
 
 try:
     from functools import cached_property
@@ -112,16 +121,6 @@ except ImportError:
                 return self
             res = instance.__dict__[self.name] = self.func(instance)
             return res
-
-
-# importlib_metadata was a provisional module, so the APIs changed quite a few times
-# between 3.8-3.10. It was also not included in the standard library until 3.8, so
-# we install the backport for <3.8.
-
-if sys.version_info >= (3, 8):
-    import importlib.metadata as importlib_metadata
-else:
-    import importlib_metadata
 
 
 def find_entry_points(entry_points: Any, group: str) -> Iterable[importlib_metadata.EntryPoint]:

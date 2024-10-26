@@ -45,15 +45,15 @@ def test_non_existent_interface_arg(httpbin):
     ('-0-8000', (0, 8000)),
     ('0-0', (0, 0)),
     # Port ranges — invalid
-    (f'2-1', 'not a valid port range'),
-    (f'2-', 'not a number'),
-    (f'2-A', 'not a number'),
-    (f'A-A', 'not a number'),
-    (f'A-2', 'not a number'),
-    (f'-10-1', OUTSIDE_VALID_PORT_RANGE_ERROR),
-    (f'1--1', OUTSIDE_VALID_PORT_RANGE_ERROR),
-    (f'-10--1', OUTSIDE_VALID_PORT_RANGE_ERROR),
-    (f'1-{MAX_PORT + 1}', OUTSIDE_VALID_PORT_RANGE_ERROR),
+    ('2-1', 'not a valid port range'),
+    ('2-', 'not a number'),
+    ('2-A', 'not a number'),
+    ('A-A', 'not a number'),
+    ('A-2', 'not a number'),
+    ('-10-1', OUTSIDE_VALID_PORT_RANGE_ERROR),
+    ('1--1', OUTSIDE_VALID_PORT_RANGE_ERROR),
+    ('-10--1', OUTSIDE_VALID_PORT_RANGE_ERROR),
+    ('1-{MAX_PORT + 1}', OUTSIDE_VALID_PORT_RANGE_ERROR),
 ])
 def test_parse_local_port_arg(local_port_arg, expected_output):
     expected_error = expected_output if isinstance(expected_output, str) else None
