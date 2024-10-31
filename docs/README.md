@@ -2568,7 +2568,7 @@ HTTPie plays exceptionally well with the following tools:
 
 Helpers to convert from other client tools:
 
-- [CurliPie](https://curlipie.now.sh/) help convert cURL command line to HTTPie command line
+- [CurliPie](https://curlipie.open-api.vn) — library to convert cURL commands to HTTPie
 
 #### Alternatives
 
