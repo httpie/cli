@@ -32,7 +32,7 @@ class HTTPieCertificate(NamedTuple):
     def to_raw_cert(self):
         """Synthesize a requests-compatible (2-item tuple of cert and key file)
         object from HTTPie's internal representation of a certificate."""
-        return (self.cert_file, self.key_file)
+        return self.cert_file, self.key_file
 
 
 class HTTPieHTTPSAdapter(HTTPAdapter):
@@ -48,13 +48,6 @@ class HTTPieHTTPSAdapter(HTTPAdapter):
             ssl_version=ssl_version,
             ciphers=ciphers,
         )
-        # workaround for a bug in requests 2.32.3, see:
-        # https://github.com/httpie/cli/issues/1583
-        if getattr(self._ssl_context, 'load_default_certs', None) is not None:
-            # if load_default_certs is present, get_ca_certs must be
-            # also, no need for another getattr
-            if not self._ssl_context.get_ca_certs():
-                self._ssl_context.load_default_certs()
         super().__init__(**kwargs)
 
     def init_poolmanager(self, *args, **kwargs):
@@ -78,7 +71,7 @@ class HTTPieHTTPSAdapter(HTTPAdapter):
         ssl_version: str = None,
         ciphers: str = None,
     ) -> 'ssl.SSLContext':
-        return create_urllib3_context(
+        context = create_urllib3_context(
             ciphers=ciphers,
             ssl_version=resolve_ssl_version(ssl_version),
             # Since we are using a custom SSL context, we need to pass this
@@ -86,6 +79,11 @@ class HTTPieHTTPSAdapter(HTTPAdapter):
             # in `super().cert_verify()`.
             cert_reqs=ssl.CERT_REQUIRED if verify else ssl.CERT_NONE
         )
+        if not context.get_ca_certs():
+            # Workaround for a bug in requests 2.32.3
+            # See <https://github.com/httpie/cli/issues/1583>
+            context.load_default_certs()
+        return context
 
     @classmethod
     def get_default_ciphers_names(cls):
