@@ -1,12 +1,14 @@
 import ssl
 from typing import NamedTuple, Optional
 
-from httpie.adapters import HTTPAdapter
 # noinspection PyPackageRequirements
 from urllib3.util.ssl_ import (
     create_urllib3_context,
     resolve_ssl_version,
 )
+
+from .adapters import HTTPAdapter
+from .compat import ensure_default_certs_loaded
 
 
 SSL_VERSION_ARG_MAPPING = {
@@ -71,7 +73,7 @@ class HTTPieHTTPSAdapter(HTTPAdapter):
         ssl_version: str = None,
         ciphers: str = None,
     ) -> 'ssl.SSLContext':
-        context = create_urllib3_context(
+        ssl_context = create_urllib3_context(
             ciphers=ciphers,
             ssl_version=resolve_ssl_version(ssl_version),
             # Since we are using a custom SSL context, we need to pass this
@@ -79,11 +81,8 @@ class HTTPieHTTPSAdapter(HTTPAdapter):
             # in `super().cert_verify()`.
             cert_reqs=ssl.CERT_REQUIRED if verify else ssl.CERT_NONE
         )
-        if not context.get_ca_certs():
-            # Workaround for a bug in requests 2.32.3
-            # See <https://github.com/httpie/cli/issues/1583>
-            context.load_default_certs()
-        return context
+        ensure_default_certs_loaded(ssl_context)
+        return ssl_context
 
     @classmethod
     def get_default_ciphers_names(cls):

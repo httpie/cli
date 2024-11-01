@@ -1,15 +1,15 @@
 import sys
+from ssl import SSLContext
 from typing import Any, Optional, Iterable
 
 from httpie.cookies import HTTPieCookiePolicy
-from http import cookiejar # noqa
+from http import cookiejar  # noqa
 
 
 # Request does not carry the original policy attached to the
 # cookie jar, so until it is resolved we change the global cookie
 # policy. <https://github.com/psf/requests/issues/5449>
 cookiejar.DefaultCookiePolicy = HTTPieCookiePolicy
-
 
 is_windows = 'win32' in str(sys.platform).lower()
 is_frozen = getattr(sys, 'frozen', False)
@@ -66,7 +66,6 @@ except ImportError:
             res = instance.__dict__[self.name] = self.func(instance)
             return res
 
-
 # importlib_metadata was a provisional module, so the APIs changed quite a few times
 # between 3.8-3.10. It was also not included in the standard library until 3.8, so
 # we install the backport for <3.8.
@@ -100,3 +99,15 @@ def get_dist_name(entry_point: importlib_metadata.EntryPoint) -> Optional[str]:
         return None
     else:
         return metadata.get('name')
+
+
+def ensure_default_certs_loaded(ssl_context: SSLContext) -> None:
+    """
+    Workaround for a bug in Requests 2.32.3
+
+    See <https://github.com/httpie/cli/issues/1583>
+
+    """
+    if hasattr(ssl_context, 'load_default_certs'):
+        if not ssl_context.get_ca_certs():
+            ssl_context.load_default_certs()
