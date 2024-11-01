@@ -48,6 +48,13 @@ class HTTPieHTTPSAdapter(HTTPAdapter):
             ssl_version=ssl_version,
             ciphers=ciphers,
         )
+        # workaround for a bug in requests 2.32.3, see:
+        # https://github.com/httpie/cli/issues/1583
+        if getattr(self._ssl_context, 'load_default_certs', None) is not None:
+            # if load_default_certs is present, get_ca_certs must be
+            # also, no need for another getattr
+            if not self._ssl_context.get_ca_certs():
+                self._ssl_context.load_default_certs()
         super().__init__(**kwargs)
 
     def init_poolmanager(self, *args, **kwargs):
