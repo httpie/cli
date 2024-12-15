@@ -81,7 +81,8 @@ class PluginManager(list):
 
     # Auth
     def get_auth_plugins(self) -> List[Type[AuthPlugin]]:
-        return self.filter(AuthPlugin)
+        return [plugin for plugin in self if issubclass(plugin, AuthPlugin)]
+        # return self.filter(AuthPlugin)
 
     def get_auth_plugin_mapping(self) -> Dict[str, Type[AuthPlugin]]:
         return {
@@ -107,7 +108,8 @@ class PluginManager(list):
 
     # Adapters
     def get_transport_plugins(self) -> List[Type[TransportPlugin]]:
-        return self.filter(TransportPlugin)
+        return [plugin for plugin in self if issubclass(plugin, TransportPlugin)]
+        # return self.filter(TransportPlugin)
 
     def __str__(self):
         return repr_dict({
