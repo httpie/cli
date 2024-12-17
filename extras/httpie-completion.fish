@@ -116,6 +116,4 @@ complete -c http      -l debug             -d 'Show debugging output'
 
 # Alias for https to http
 
-function https --wraps http
-        http $argv;
-end
+complete -c https -w http
