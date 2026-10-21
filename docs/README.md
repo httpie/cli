@@ -177,7 +177,7 @@ Get the standalone HTTPie Linux executables when you don't want to go through th
 ```bash
 # Install httpie
 $ https --download packages.httpie.io/binaries/linux/http-latest -o http
-$ ln -ls ./http ./https
+$ ln -s ./http ./https
 $ chmod +x ./http ./https
 ```
 
