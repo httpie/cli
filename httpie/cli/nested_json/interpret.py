@@ -65,10 +65,11 @@ def interpret(context: Any, key: str, value: Any) -> Any:
         else:
             assert_cant_happen()
 
+    # Initialize the root only; nested null values must pass type checking.
+    if context is None:
+        context = cursor = object_for(paths[0].kind)
+
     for index, (path, next_path) in enumerate(zip(paths, paths[1:])):
-        # If there is no context yet, set it.
-        if cursor is None:
-            context = cursor = object_for(path.kind)
         if path.kind is PathAction.KEY:
             type_check(index, path, dict)
             if next_path.kind is PathAction.SET:

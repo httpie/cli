@@ -3,6 +3,10 @@
 This document records all notable changes to [HTTPie](https://httpie.io).
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## Unreleased
+
+- Reject nested object or array access through a JSON `null` field with a type error instead of silently replacing the request body. Plain `null` values, direct value overrides, and filling sparse array entries remain supported.
+
 ## [3.2.4](https://github.com/httpie/cli/compare/3.2.3...3.2.4) (2024-11-01)
 
 - Fix default certs loading and unpin `requests`. ([#1596](https://github.com/httpie/cli/issues/1596))

@@ -578,6 +578,41 @@ def test_nested_json_errors(input_json, expected_error, httpbin):
     assert expected_lines == exc_lines
 
 
+@pytest.mark.parametrize('field', ['foo', 'foo[bar]', '[0][foo]'])
+@pytest.mark.parametrize(
+    'access, kind, required_type',
+    [('[key]', 'key', 'object'), ('[0]', 'index', 'array'), ('[]', 'append', 'array')],
+)
+def test_nested_json_null_container(field, access, kind, required_type):
+    with pytest.raises(NestedJSONSyntaxError) as exc:
+        http('--offline', DUMMY_URL, f'{field}:=null', f'{field}{access}=value')
+
+    assert str(exc.value).splitlines()[0] == (
+        f"HTTPie Type Error: Cannot perform {kind!r} based access on {field!r} "
+        "which has a type of 'NoneType' but this operation "
+        f"requires a type of {required_type!r}."
+    )
+
+
+@pytest.mark.parametrize(
+    'input_json, expected_json',
+    [
+        (['keep=value', 'foo:=null'], {'keep': 'value', 'foo': None}),
+        (
+            ['keep=value', 'foo:=null', 'foo=value'],
+            {'keep': 'value', 'foo': 'value'},
+        ),
+        (
+            ['keep=value', 'foo[1]=last', 'foo[0][bar]=first'],
+            {'keep': 'value', 'foo': [{'bar': 'first'}, 'last']},
+        ),
+    ],
+)
+def test_nested_json_null_values(input_json, expected_json):
+    r = http('--offline', DUMMY_URL, *input_json)
+    assert r.json == expected_json
+
+
 def test_nested_json_sparse_array(httpbin_both):
     r = http(httpbin_both + '/post', 'test[0]:=1', 'test[100]:=1')
     assert len(r.json['json']['test']) == 101
