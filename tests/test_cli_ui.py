@@ -63,3 +63,14 @@ def ignore_terminal_size(monkeypatch):
 def test_naked_invocation(ignore_terminal_size, args, expected_msg):
     result = http(*args, tolerate_error_exit_status=True)
     assert result.stderr == expected_msg
+
+
+def test_invalid_style_lists_bundled_pie_styles_by_name():
+    result = http(
+        '--style', '$invalid', '--offline', 'pie.dev',
+        tolerate_error_exit_status=True,
+    )
+    assert 'invalid choice' in result.stderr
+    assert 'PieStyle' not in result.stderr
+    for name in ('pie', 'pie-dark', 'pie-light'):
+        assert name in result.stderr
