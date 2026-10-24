@@ -98,7 +98,7 @@ class TestQuietFlag:
         (['-qq'], 0),
     ])
     # Might fail on Windows due to interference from other warnings.
-    @pytest.mark.xfail
+    @pytest.mark.xfail(strict=False)
     def test_quiet_on_python_warnings(self, test_patch, httpbin, flags, expected_warnings):
         def warn_and_run(*args, **kwargs):
             warnings.warn('warning!!')
