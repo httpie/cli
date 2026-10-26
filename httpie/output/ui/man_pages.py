@@ -18,7 +18,7 @@ def is_available(program: str) -> bool:
     Check whether `program`'s man pages are available on this system.
 
     """
-    if NO_MAN_PAGES or os.system == 'nt':
+    if NO_MAN_PAGES or os.name == 'nt':
         return False
     try:
         process = subprocess.run(
