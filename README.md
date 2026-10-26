@@ -111,3 +111,4 @@ http -a USERNAME POST https://api.github.com/repos/httpie/cli/issues/83/comments
 Have a look through existing [Issues](https://github.com/httpie/cli/issues) and [Pull Requests](https://github.com/httpie/cli/pulls) that you could help with. If you'd like to request a feature or report a bug, please [create a GitHub Issue](https://github.com/httpie/cli/issues) using one of the templates provided.
 
 [See contribution guide →](https://github.com/httpie/cli/blob/master/CONTRIBUTING.md)
+
