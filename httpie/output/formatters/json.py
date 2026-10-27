@@ -15,8 +15,10 @@ class JSONFormatter(FormatterPlugin):
             'javascript',
             'text',
         ]
+        # Media type names are case-insensitive (RFC 2045 §5.1).
+        mime_lower = mime.lower()
         if (self.kwargs['explicit_json']
-                or any(token in mime for token in maybe_json)):
+                or any(token in mime_lower for token in maybe_json)):
             from ..utils import load_prefixed_json
             try:
                 data_prefix, json_obj = load_prefixed_json(body)

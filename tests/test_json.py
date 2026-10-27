@@ -581,3 +581,21 @@ def test_nested_json_errors(input_json, expected_error, httpbin):
 def test_nested_json_sparse_array(httpbin_both):
     r = http(httpbin_both + '/post', 'test[0]:=1', 'test[100]:=1')
     assert len(r.json['json']['test']) == 101
+
+
+@pytest.mark.parametrize('content_type', [
+    'application/json',
+    'APPLICATION/JSON',
+    'Application/Problem+JSON; charset=utf-8',
+])
+@responses.activate
+def test_json_formatter_is_case_insensitive_on_content_type(content_type):
+    """Media type names are case-insensitive (RFC 2045 5.1). See #1958."""
+    responses.add(
+        responses.GET,
+        DUMMY_URL,
+        body='{"message":"ok"}',
+        content_type=content_type,
+    )
+    r = http('--pretty', 'format', '--print', 'b', DUMMY_URL)
+    assert '{\n    "message": "ok"\n}' in r
