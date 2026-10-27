@@ -392,6 +392,22 @@ class TestFormatOptions:
         assert f'XXX: foo{CRLF}ZZZ: foo' in r_sorted
         assert f'ZZZ: foo{CRLF}XXX: foo' in r_unsorted
 
+    def test_header_sorting_is_case_insensitive(self):
+        # Field names are case-insensitive: repeated fields keep their
+        # relative order and sorting ignores case. See #1960.
+        r = http(
+            '--offline', '--pretty=format', '--print=H',
+            '--format-options', 'headers.sort:true',
+            'example.org',
+            'set-cookie: first=1', 'X-Z: last',
+            'Set-Cookie: second=2', 'accept: text/plain',
+        )
+        accept = r.index('accept: text/plain')
+        first = r.index('set-cookie: first=1')
+        second = r.index('Set-Cookie: second=2')
+        last = r.index('X-Z: last')
+        assert accept < first < second < last
+
     @pytest.mark.parametrize(
         'options, expected_json',
         [
