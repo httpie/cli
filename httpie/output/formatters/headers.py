@@ -14,5 +14,7 @@ class HeadersFormatter(FormatterPlugin):
 
         """
         lines = headers.splitlines()
-        headers = sorted(lines[1:], key=lambda h: h.split(':')[0])
+        # Field names are case-insensitive: sort case-insensitively so
+        # repeated fields keep their relative order (stable sort).
+        headers = sorted(lines[1:], key=lambda h: h.split(':')[0].lower())
         return '\r\n'.join(lines[:1] + headers)
