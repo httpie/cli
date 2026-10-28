@@ -138,3 +138,31 @@ def test_compress_file(httpbin_both):
         'multipart/form-data; boundary=')
     assert r.json['files'] == {}
     assert FILE_CONTENT not in r
+
+
+def test_compress_json_normal(httpbin_both):
+    # Test normal compression with one --compress flag where compression
+    # reduces size (should compress)
+    r = http(
+        '--compress',
+        httpbin_both + '/post',
+        'foo=bar',
+    )
+    assert HTTP_OK in r
+    assert r.json['headers']['Content-Encoding'] == 'deflate'
+    assert_decompressed_equal(r.json['data'], '{"foo": "bar"}')
+    assert r.json['json'] is None
+
+
+def test_compress_raw_normal(httpbin_both):
+    # Test normal compression with one --compress flag where compression
+    # reduces size (should compress)
+    r = http(
+        '--raw',
+        FILE_CONTENT,
+        '--compress',
+        httpbin_both + '/post',
+    )
+    assert HTTP_OK in r
+    assert r.json['headers']['Content-Encoding'] == 'deflate'
+    assert_decompressed_equal(r.json['data'], FILE_CONTENT.strip())
