@@ -36,6 +36,7 @@ LOG_LEVEL_COLORS = {
     LogLevel.ERROR: GenericColor.RED,
 }
 
+
 LOG_LEVEL_DISPLAY_THRESHOLDS = {
     LogLevel.INFO: 1,
     LogLevel.WARNING: 2,
@@ -168,7 +169,9 @@ class Environment:
             self.stderr = original_stderr
 
     def log_error(self, msg: str, level: LogLevel = LogLevel.ERROR) -> None:
-        if self.stdout_isatty and self.quiet >= LOG_LEVEL_DISPLAY_THRESHOLDS[level]:
+        # FIXED: Removed self.stdout_isatty from condition
+        # This ensures that the quiet flag works correctly even when stdout is redirected
+        if self.quiet >= LOG_LEVEL_DISPLAY_THRESHOLDS[level]:
             stderr = self.stderr  # Not directly /dev/null, since stderr might be mocked
         else:
             stderr = self._orig_stderr
