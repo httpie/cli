@@ -1,5 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from itertools import chain
+import re
 from typing import Callable, Iterable, Optional, Union
 
 from .processing import Conversion, Formatting
@@ -7,6 +8,25 @@ from ..context import Environment
 from ..encoding import smart_decode, smart_encode, UTF8
 from ..models import HTTPMessage, OutputOptions
 from ..utils import parse_content_type_header
+
+
+# Regular expression to match terminal control characters and escape sequences
+# This pattern matches:
+# - C0 control characters (except tab, newline, carriage return)
+# - ANSI escape sequences (CSI, OSC, etc.)
+# - Other escape sequences
+CONTROL_CHAR_RE = re.compile(
+    r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]'  # C0 control chars (except \t, \n, \r)
+    r'|\x1b(?:\[[^a-zA-Z]*[a-zA-Z]'      # CSI sequences
+    r'|\][^\x07]*\x07'                   # OSC sequences  
+    r'|\(.'                              # charset selection
+    r'|.)'                               # other escape sequences
+)
+
+
+def sanitize_for_terminal(text: str) -> str:
+    """Sanitize terminal control characters from text when outputting to TTY."""
+    return CONTROL_CHAR_RE.sub('', text)
 
 
 BINARY_SUPPRESSED_NOTICE = (
@@ -140,6 +160,9 @@ class EncodedStream(BaseStream):
             if b'\0' in line:
                 raise BinarySuppressedError()
             line = self.decode_chunk(line)
+            # Sanitize terminal control characters when outputting to TTY
+            if hasattr(self, 'env') and self.env.stdout_isatty:
+                line = sanitize_for_terminal(line)
             yield smart_encode(line, self.output_encoding) + lf
 
     def decode_chunk(self, raw_chunk: str) -> str:
@@ -210,9 +233,15 @@ class PrettyStream(EncodedStream):
                             body.extend(lf)
                         self.mime, body = converter.convert(body)
                         assert isinstance(body, str)
+                        # Sanitize terminal control characters when outputting to TTY
+                        if hasattr(self, 'env') and self.env.stdout_isatty:
+                            body = sanitize_for_terminal(body)
                         yield self.process_body(body)
                         return
                 raise BinarySuppressedError()
+            # Sanitize terminal control characters when outputting to TTY
+            if hasattr(self, 'env') and self.env.stdout_isatty:
+                line = sanitize_for_terminal(line)
             yield self.process_body(line) + lf
             first_chunk = False
 
@@ -222,6 +251,9 @@ class PrettyStream(EncodedStream):
             # otherwise it will always be bytes.
             chunk = self.decode_chunk(chunk)
         chunk = self.formatting.format_body(content=chunk, mime=self.mime)
+        # Sanitize terminal control characters when outputting to TTY
+        if hasattr(self, 'env') and self.env.stdout_isatty:
+            chunk = sanitize_for_terminal(chunk)
         return smart_encode(chunk, self.output_encoding)
 
 
@@ -250,5 +282,8 @@ class BufferedPrettyStream(PrettyStream):
 
         if converter:
             self.mime, body = converter.convert(body)
+            # Sanitize terminal control characters when outputting to TTY
+            if hasattr(self, 'env') and self.env.stdout_isatty:
+                body = sanitize_for_terminal(body)
 
         yield self.process_body(body)
