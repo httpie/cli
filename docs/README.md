@@ -995,7 +995,7 @@ foo[baz][quux
              ^
 ```
 
-You can follow to given instruction (adding a `]`) and repair your expression.
+You can follow the given instruction (adding a `]`) and repair your expression.
 
 ##### Type safety
 
