@@ -89,7 +89,9 @@ class TestQuietFlag:
             tolerate_error_exit_status=True,
             env=MockEnvironment(stdout_isatty=False)
         )
-        assert 'http: warning: HTTP 500' in r.stderr
+        # Warnings are suppressed with -qq regardless of whether stdout
+        # is a TTY, as documented ("Provide twice to suppress warnings as well").
+        assert not r.stderr
 
     @mock.patch('httpie.core.program')
     @pytest.mark.parametrize('flags, expected_warnings', [
