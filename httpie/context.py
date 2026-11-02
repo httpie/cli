@@ -168,7 +168,7 @@ class Environment:
             self.stderr = original_stderr
 
     def log_error(self, msg: str, level: LogLevel = LogLevel.ERROR) -> None:
-        if self.stdout_isatty and self.quiet >= LOG_LEVEL_DISPLAY_THRESHOLDS[level]:
+        if self.quiet >= LOG_LEVEL_DISPLAY_THRESHOLDS[level]:
             stderr = self.stderr  # Not directly /dev/null, since stderr might be mocked
         else:
             stderr = self._orig_stderr
