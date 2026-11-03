@@ -31,7 +31,14 @@ def parse_prefixed_json(data: str) -> Tuple[str, str]:
     Return a tuple (data prefix, actual JSON body).
 
     """
-    matches = re.findall(PREFIX_REGEX, data)
+    # Find matches that start at the beginning of the string
+    matches = []
+    for match in re.finditer(PREFIX_REGEX, data):
+        if match.start() == 0:
+            matches.append(match.group())
+        else:
+            break
+    
     data_prefix = matches[0] if matches else ''
     body = data[len(data_prefix):]
     return data_prefix, body
