@@ -55,6 +55,53 @@ Please note we recently accidentally made this repo private for a moment, and Gi
 - [Installation instructions →](https://httpie.io/docs#installation)
 - [Full documentation →](https://httpie.io/docs)
 
+## Installation
+
+### Install with pipx
+pipx install httpie
+
+### Install with pip
+python -m pip install --upgrade pip wheel
+python -m pip install httpie
+
+### Install with Homebrew
+brew install httpie
+
+### Install with APT (Debian/Ubuntu)
+sudo apt update && sudo apt install httpie
+
+### Install with DNF (Fedora)
+dnf install httpie
+
+### Install with Yum (CentOS/RHEL)
+yum install epel-release
+yum install httpie
+
+### Install with Snap
+snap install httpie
+
+### Install with Pacman (Arch Linux)
+pacman -Syu httpie
+
+### Install with MacPorts
+port selfupdate
+port install httpie
+
+### Install with Chocolatey (Windows)
+choco install httpie
+
+### Install with FreeBSD
+pkg install www/py-httpie
+
+### Install with Linuxbrew
+brew update
+brew install httpie
+
+### Install with Single binary executables
+https --download packages.httpie.io/binaries/linux/http-latest -o http
+ln -ls ./http ./https
+chmod +x ./http ./https
+
 ## Features
 
 - Expressive and intuitive syntax
@@ -80,7 +127,7 @@ https httpie.io/hello
 Custom [HTTP method](https://httpie.io/docs#http-method), [HTTP headers](https://httpie.io/docs#http-headers) and [JSON](https://httpie.io/docs#json) data:
 
 ```bash
-http PUT pie.dev/put X-API-Token:123 name=John
+http PUT pie.dev/put X-API-Token:*** name=John
 ```
 
 Build and print a request without sending it using [offline mode](https://httpie.io/docs/cli/offline-mode):
