@@ -3,6 +3,10 @@
 This document records all notable changes to [HTTPie](https://httpie.io).
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## Unreleased
+
+- Sort HTTP header names case-insensitively while preserving the relative order of repeated fields. ([#1960](https://github.com/httpie/cli/issues/1960))
+
 ## [3.2.4](https://github.com/httpie/cli/compare/3.2.3...3.2.4) (2024-11-01)
 
 - Fix default certs loading and unpin `requests`. ([#1596](https://github.com/httpie/cli/issues/1596))
