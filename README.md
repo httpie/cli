@@ -38,7 +38,7 @@ They use simple and natural syntax and provide formatted and colorized output.
 <img src="https://raw.githubusercontent.com/httpie/cli/master/docs/httpie-animation.gif" alt="HTTPie in action" width="100%"/>
 
 
-</div>
+</div
 
 
 
@@ -54,6 +54,14 @@ Please note we recently accidentally made this repo private for a moment, and Gi
 
 - [Installation instructions →](https://httpie.io/docs#installation)
 - [Full documentation →](https://httpie.io/docs)
+
+## Install with pipx
+
+pipx is a tool for installing and running Python applications in isolated environments. It's particularly useful for CLI tools like HTTPie that you want to keep separate from your system Python packages.
+
+```bash
+pipx install httpie
+```
 
 ## Features
 
@@ -80,7 +88,7 @@ https httpie.io/hello
 Custom [HTTP method](https://httpie.io/docs#http-method), [HTTP headers](https://httpie.io/docs#http-headers) and [JSON](https://httpie.io/docs#json) data:
 
 ```bash
-http PUT pie.dev/put X-API-Token:123 name=John
+http PUT pie.dev/put X-API-Token:*** name=John
 ```
 
 Build and print a request without sending it using [offline mode](https://httpie.io/docs/cli/offline-mode):
