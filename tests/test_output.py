@@ -19,6 +19,7 @@ from httpie.cli.argtypes import (
 from httpie.cli.definition import parser
 from httpie.encoding import UTF8
 from httpie.output.formatters.colors import get_lexer, PIE_STYLE_NAMES, BUNDLED_STYLES
+from httpie.output.formatters.headers import HeadersFormatter
 from httpie.status import ExitStatus
 from .fixtures import XML_DATA_RAW, XML_DATA_FORMATTED
 from .utils import COLOR, CRLF, HTTP_OK, MockEnvironment, http, DUMMY_URL, strip_colors
@@ -378,6 +379,27 @@ class TestLineEndings:
 
 
 class TestFormatOptions:
+    def test_header_sort_is_case_insensitive_and_stable(self):
+        formatter = HeadersFormatter(
+            env=MockEnvironment(),
+            format_options=PARSED_DEFAULT_FORMAT_OPTIONS,
+        )
+        headers = (
+            'HTTP/1.1 200 OK\n'
+            'set-cookie: first=1\n'
+            'X-Z: last\n'
+            'Set-Cookie: second=2\n'
+            'accept: text/plain'
+        )
+
+        assert formatter.format_headers(headers) == (
+            'HTTP/1.1 200 OK\r\n'
+            'accept: text/plain\r\n'
+            'set-cookie: first=1\r\n'
+            'Set-Cookie: second=2\r\n'
+            'X-Z: last'
+        )
+
     def test_header_formatting_options(self):
         def get_headers(sort):
             return http(
