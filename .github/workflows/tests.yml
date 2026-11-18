@@ -23,15 +23,14 @@ jobs:
   test:
     strategy:
       fail-fast: false
+      # Pull requests run the two Python versions that catch the two failure
+      # modes a change here can actually cause (oldest interpreter, newest
+      # interpreter) on Linux. Pushes to master keep the full cross-platform
+      # matrix, so a platform-specific regression still surfaces before a
+      # release. 36 cells -> 4 on PRs, unchanged on master.
       matrix:
-        os: [ubuntu-latest, macos-13, windows-latest]
-        python-version:
-          - '3.12'
-          - '3.11'
-          - '3.10'
-          - '3.9'
-          - '3.8'
-          - '3.7'
+        os: ${{ github.event_name == 'pull_request' && fromJSON('["ubuntu-latest"]') || fromJSON('["ubuntu-latest","macos-13","windows-latest"]') }}
+        python-version: ${{ github.event_name == 'pull_request' && fromJSON('["3.7","3.12"]') || fromJSON('["3.12","3.11","3.10","3.9","3.8","3.7"]') }}
         pyopenssl: [0, 1]
     runs-on: ${{ matrix.os }}
     steps:
