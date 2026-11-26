@@ -1,11 +1,13 @@
 import pytest
 import socket
+import sys
 from unittest import mock
 from pytest import raises
 from requests import Request
 from requests.exceptions import ConnectionError
 
 from httpie.status import ExitStatus
+from httpie.utils import unwrap_context
 from .utils import HTTP_OK, http
 
 
@@ -46,6 +48,48 @@ def test_error_custom_dns(program, error_code, expected_message):
     r = http('www.google.com', tolerate_error_exit_status=True)
     assert r.exit_status == ExitStatus.ERROR
     assert expected_message in r.stderr
+
+
+@pytest.mark.parametrize('depth', [0, 1, sys.getrecursionlimit() + 1])
+def test_unwrap_context(depth):
+    original = ValueError('Original error')
+    exc = original
+    for _ in range(depth):
+        wrapper = RuntimeError('Wrapper')
+        wrapper.__context__ = exc
+        exc = wrapper
+
+    assert unwrap_context(exc) is original
+
+
+def test_unwrap_context_stops_at_base_exception():
+    exc = ValueError('Original error')
+    exc.__context__ = KeyboardInterrupt()
+
+    assert unwrap_context(exc) is exc
+
+
+@pytest.mark.parametrize('length', [1, 2, 3])
+def test_unwrap_context_cycle(length):
+    errors = [ValueError('Error') for _ in range(length)]
+    for index, error in enumerate(errors):
+        error.__context__ = errors[(index + 1) % length]
+
+    assert unwrap_context(errors[0]) is errors[-1]
+
+
+@mock.patch('httpie.core.program')
+def test_error_custom_dns_deep_context(program):
+    exc = socket.gaierror(socket.EAI_NONAME, '<test>')
+    for _ in range(sys.getrecursionlimit() + 1):
+        wrapper = ConnectionError('Connection aborted')
+        wrapper.__context__ = exc
+        exc = wrapper
+    program.side_effect = exc
+
+    r = http('example.org', tolerate_error_exit_status=True)
+    assert r.exit_status == ExitStatus.ERROR
+    assert 'check the URL' in r.stderr
 
 
 def test_max_headers_limit(httpbin_both):

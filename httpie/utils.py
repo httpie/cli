@@ -256,11 +256,15 @@ def split_iterable(iterable: Iterable[T], key: Callable[[T], bool]) -> Tuple[Lis
 
 
 def unwrap_context(exc: Exception) -> Optional[Exception]:
-    context = exc.__context__
-    if isinstance(context, Exception):
-        return unwrap_context(context)
-    else:
-        return exc
+    """Find the deepest exception context, stopping before a cycle repeats."""
+    seen = {id(exc)}
+    while isinstance(exc.__context__, Exception):
+        context = exc.__context__
+        if id(context) in seen:
+            break
+        seen.add(id(context))
+        exc = context
+    return exc
 
 
 def url_as_host(url: str) -> str:
