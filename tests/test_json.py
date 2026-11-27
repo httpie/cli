@@ -394,7 +394,7 @@ def test_complex_json_arguments_with_non_json(httpbin, request_type, value):
                     '\\2012 bleh': 2013,
                     'bleh \\2012': 2014,
                 },
-                '2012': {'x': 2, '[3]': 4},
+                r'\2012': {'x': 2, '[3]': 4},
             },
         ),
         (
@@ -429,14 +429,16 @@ def test_complex_json_arguments_with_non_json(httpbin, request_type, value):
         ),
         (
             [
+                r'\0=\0',
                 r'\1=top level int',
-                r'\\1=escaped top level int',
-                r'\2[\3][\4]:=5',
+                r'\\2=escaped top level int',
+                r'\3[\4][\5]:=5',
             ],
             {
-                '1': 'top level int',
-                '\\1': 'escaped top level int',
-                '2': {'3': {'4': 5}},
+                r'\0': r'\0',
+                r'\1': 'top level int',
+                r'\2': 'escaped top level int',
+                r'\3': {'4': {'5': 5}},
             },
         ),
         (

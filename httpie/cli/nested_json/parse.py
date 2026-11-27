@@ -128,6 +128,7 @@ def tokenize(source: str) -> Iterator[Token]:
     cursor = 0
     backslashes = 0
     buffer = []
+    seen_operator = False
 
     def send_buffer() -> Iterator[Token]:
         nonlocal backslashes
@@ -137,15 +138,16 @@ def tokenize(source: str) -> Iterator[Token]:
         value = ''.join(buffer)
         kind = TokenKind.TEXT
         if not backslashes:
-            for variation, kind in [
-                (int, TokenKind.NUMBER),
-                (check_escaped_int, TokenKind.TEXT),
-            ]:
+            variations = [(int, TokenKind.NUMBER)]
+            if seen_operator:
+                variations.append((check_escaped_int, TokenKind.TEXT))
+            for variation, candidate_kind in variations:
                 try:
                     value = variation(value)
                 except ValueError:
                     continue
                 else:
+                    kind = candidate_kind
                     break
         yield Token(
             kind=kind,
@@ -163,6 +165,7 @@ def tokenize(source: str) -> Iterator[Token]:
         index = source[cursor]
         if index in OPERATORS:
             yield from send_buffer()
+            seen_operator = True
             yield Token(OPERATORS[index], index, cursor, cursor + 1)
         elif index == BACKSLASH and can_advance():
             if source[cursor + 1] in SPECIAL_CHARS:
