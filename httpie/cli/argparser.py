@@ -156,7 +156,7 @@ class HTTPieArgumentParser(BaseHTTPieArgumentParser):
     ) -> argparse.Namespace:
         self.env = env
         self.env.args = namespace = namespace or argparse.Namespace()
-        self.args, no_options = super().parse_known_args(args, namespace)
+        self.args, no_options = super().parse_known_intermixed_args(args, namespace)
         if self.args.debug:
             self.args.traceback = True
         self.has_stdin_data = (
