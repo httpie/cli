@@ -241,6 +241,22 @@ def program(args: argparse.Namespace, env: Environment) -> ExitStatus:
             )
             prev_with_body = output_options.body
 
+        if (
+            final_response is not None
+            and final_response.status_code >= 400
+            and env.stdin
+            and not env.stdin_isatty
+            and not args.ignore_stdin
+            and args.raw is None
+            and initial_request is not None
+            and initial_request.body
+        ):
+            env.log_error(
+                'stdin contents detected on a failed request. '
+                'Retry with --ignore-stdin if stdin was not intended as request body.',
+                level=LogLevel.WARNING,
+            )
+
         # Cleanup
         if force_separator:
             separate()
