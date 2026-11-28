@@ -15,6 +15,8 @@ class JSONFormatter(FormatterPlugin):
             'javascript',
             'text',
         ]
+        # Media type names are case insensitive, so APPLICATION/JSON is JSON too.
+        mime = mime.lower()
         if (self.kwargs['explicit_json']
                 or any(token in mime for token in maybe_json)):
             from ..utils import load_prefixed_json
