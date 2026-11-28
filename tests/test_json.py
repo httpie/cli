@@ -91,6 +91,27 @@ def test_json_formatter_with_body_preceded_by_non_json_data(
     assert expected_body in r
 
 
+@pytest.mark.parametrize(
+    'content_type',
+    [
+        'application/json',
+        'APPLICATION/JSON',
+        'Application/Problem+JSON; charset=utf-8',
+    ],
+)
+@responses.activate
+def test_json_formatter_ignores_content_type_case(content_type):
+    """Media type names are case insensitive."""
+    responses.add(
+        responses.GET,
+        DUMMY_URL,
+        body='{"message":"ok"}',
+        content_type=content_type,
+    )
+    r = http('--pretty=format', '--body', DUMMY_URL)
+    assert '{\n    "message": "ok"\n}' in r
+
+
 @responses.activate
 def test_duplicate_keys_support_from_response():
     """JSON with duplicate keys should be handled correctly."""
