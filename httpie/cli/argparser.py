@@ -156,7 +156,9 @@ class HTTPieArgumentParser(BaseHTTPieArgumentParser):
     ) -> argparse.Namespace:
         self.env = env
         self.env.args = namespace = namespace or argparse.Namespace()
-        self.args, no_options = super().parse_known_args(args, namespace)
+        self.args, no_options = super().parse_known_args(
+            self._intermixed_args(args), namespace
+        )
         if self.args.debug:
             self.args.traceback = True
         self.has_stdin_data = (
@@ -192,6 +194,81 @@ class HTTPieArgumentParser(BaseHTTPieArgumentParser):
                 self.error('cannot combine --compress and --multipart')
 
         return self.args
+
+    def _intermixed_args(self, args):
+        """Allow flags to be specified between the positional arguments.
+
+        `argparse` consumes the positional arguments as a group, so a flag
+        placed between `METHOD` and `URL` (e.g. `http post -f example.com`)
+        ends up assigned to `URL`, and the remaining arguments are then
+        rejected. Since `parse_known_args()` is what powers the
+        `--no-OPTION` mechanism (see `_apply_no_options()`), we can't simply
+        switch to `parse_intermixed_args()`. Instead, the arguments are
+        sorted into optionals and positionals — each group keeping its
+        original relative order — before being handed over to `argparse`.
+
+        Command lines containing the `--` separator are passed through
+        untouched: older `argparse` versions cannot match positional
+        arguments that follow an optional and the separator, so reordering
+        them would break invocations that work today.
+
+        """
+        if args is None:
+            args = sys.argv[1:]
+
+        if '--' in args:
+            # Older `argparse` versions cannot match positional arguments
+            # that follow an optional and the `--` separator, so reordering
+            # such a command line would break invocations that work today.
+            return args
+
+        optionals = []
+        positionals = []
+
+        index = 0
+        while index < len(args):
+            arg = args[index]
+            index += 1
+            parsed = self._parse_optional(arg)
+            if parsed is None:
+                positionals.append(arg)
+                continue
+            # Depending on the Python version, `_parse_optional()` returns
+            # either a single (action, option_string, explicit_arg) tuple,
+            # or a list of (action, option_string, sep, explicit_arg)
+            # tuples — one per interpretation of an abbreviated option.
+            # Only the action and the explicit argument are needed here.
+            if isinstance(parsed, list):
+                parsed = parsed[0]
+            action, explicit_arg = parsed[0], parsed[-1]
+            optionals.append(arg)
+            if explicit_arg is not None or action is None:
+                # The option carries its own value (`--opt=value`,
+                # `-ovalue`), or it is unknown to this parser (such as the
+                # `--no-OPTION` forms handled by `_apply_no_options()`).
+                continue
+            # Consume the values that belong to this option, but never an
+            # argument that `argparse` wouldn't consume as a value itself
+            # (i.e. one that looks like an optional).
+            values_left = action.nargs
+            if values_left is None or values_left == argparse.OPTIONAL:
+                values_left = 1
+            while values_left and index < len(args):
+                if self._is_optional(args[index]):
+                    break
+                optionals.append(args[index])
+                index += 1
+                if isinstance(values_left, int):
+                    values_left -= 1
+
+        return positionals + optionals
+
+    def _is_optional(self, arg):
+        """Whether `argparse` would treat `arg` as an optional rather
+        than a positional argument.
+
+        """
+        return self._parse_optional(arg) is not None
 
     def _process_request_type(self):
         request_type = self.args.request_type

@@ -49,7 +49,8 @@ options = ParserSpec(
 positional_arguments = options.add_group(
     'Positional arguments',
     description="""
-    These arguments come after any flags and in the order they are listed here.
+    These arguments can be intermixed with any flags, and are matched
+    in the order they are listed here.
     Only URL is required.
     """,
 )

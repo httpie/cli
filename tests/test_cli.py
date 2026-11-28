@@ -317,6 +317,80 @@ class TestArgumentParser:
         ]
 
 
+class TestFlagsAfterPositionalArguments:
+    """Flags can be specified between the positional arguments.
+
+    See <https://github.com/httpie/httpie/issues/1433>.
+
+    """
+
+    def parse(self, *args):
+        return parser.parse_args(args=list(args), env=MockEnvironment())
+
+    def test_flag_between_method_and_url(self):
+        args = self.parse('post', '-f', 'example.com')
+        assert args.method == 'post'
+        assert args.url == 'http://example.com'
+        assert args.request_type is constants.RequestType.FORM
+        assert args.form
+
+    def test_flag_between_method_and_url_with_request_item(self):
+        args = self.parse('post', '-f', 'example.com', 'name=value')
+        assert args.method == 'post'
+        assert args.url == 'http://example.com'
+        assert [item.orig for item in args.request_items] == ['name=value']
+        assert args.data == {'name': 'value'}
+
+    def test_multiple_flags_between_positionals(self):
+        args = self.parse('post', '--json', 'example.com', 'x=1', '--verbose')
+        assert args.method == 'post'
+        assert args.url == 'http://example.com'
+        assert args.request_type is constants.RequestType.JSON
+        assert args.verbose == 1
+
+    def test_flags_parse_the_same_wherever_they_are(self):
+        for args in (
+            self.parse('-f', 'post', 'example.com'),
+            self.parse('post', '-f', 'example.com'),
+            self.parse('post', 'example.com', '-f'),
+        ):
+            assert args.method == 'post'
+            assert args.url == 'http://example.com'
+            assert args.request_type is constants.RequestType.FORM
+
+    def test_option_value_is_not_mistaken_for_a_flag(self):
+        args = self.parse('post', '--timeout', '-1', 'example.com')
+        assert args.method == 'post'
+        assert args.url == 'http://example.com'
+        assert args.timeout == -1
+
+    def test_no_option_between_method_and_url(self):
+        args = self.parse('post', '--verbose', '--no-verbose', 'example.com')
+        assert args.method == 'post'
+        assert args.url == 'http://example.com'
+        assert args.verbose == 0
+
+    def test_items_after_double_dash_stay_positional(self):
+        args = self.parse('post', 'example.com', '--', '-weird=name')
+        assert args.method == 'post'
+        assert args.url == 'http://example.com'
+        assert [item.orig for item in args.request_items] == ['-weird=name']
+
+    def test_flags_before_double_dash_keep_working(self):
+        # Reordering across `--` would break on older `argparse`
+        # versions, so such command lines are passed through as-is.
+        args = self.parse('-f', 'post', 'example.com', '--', 'name=value')
+        assert args.method == 'post'
+        assert args.url == 'http://example.com'
+        assert args.request_type is constants.RequestType.FORM
+        assert [item.orig for item in args.request_items] == ['name=value']
+
+    def test_request_with_flag_after_method(self, httpbin):
+        r = http('post', '-f', httpbin + '/post', 'name=value')
+        assert HTTP_OK in r
+        assert r.json['form'] == {'name': 'value'}
+
+
 class TestNoOptions:
 
     def test_valid_no_options(self, httpbin):

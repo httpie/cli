@@ -3,6 +3,10 @@
 This document records all notable changes to [HTTPie](https://httpie.io).
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## [3.3.0-dev](https://github.com/httpie/httpie/compare/3.2.4...master) (unreleased)
+
+- Allow flags to be specified between the positional arguments, e.g. `http post -f example.com`. ([#1433](https://github.com/httpie/httpie/issues/1433))
+
 ## [3.2.4](https://github.com/httpie/cli/compare/3.2.3...3.2.4) (2024-11-01)
 
 - Fix default certs loading and unpin `requests`. ([#1596](https://github.com/httpie/cli/issues/1596))
